@@ -746,7 +746,8 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, PF, "You hurt an Innocent", client, client);
 			}
-			return Plugin_Handled;
+			damage = 0.0;
+			return Plugin_Changed;
 		}
 		else if(g_b1Knife[iAttacker] && (StrContains(classname, "knife", false) != -1) || (StrContains(classname, "bayonet", false) != -1))
 		{
