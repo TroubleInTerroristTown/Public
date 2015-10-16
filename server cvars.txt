@@ -1,0 +1,26 @@
+// Required cvars for TTT server
+
+
+mp_join_grace_time 30 //The amount of time players can join teams after a round has started
+
+
+//ffa mode
+mp_teammates_are_enemies 1
+mp_radar_showall 0
+mp_free_armor 0
+
+sv_deadtalk 0
+sv_alltalk 1
+sv_ignoregrenaderadio 1
+
+
+//thirdperson
+sv_allow_thirdperson 1
+
+mp_playercashawards 0
+mp_teamcashawards 0
+
+mp_playerid 0
+mp_playerid_delay 0.1
+mp_playerid_hold 0.3
+weapon_reticle_knife_show 1

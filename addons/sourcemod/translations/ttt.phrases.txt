@@ -1,0 +1,534 @@
+"Phrases"
+{
+	"Your karma is"
+	{
+		"#format"       "{1:i}"
+		"en"            "Your KARMA is: {1}"
+		"es"            "Tu KARMA es: {1}"
+		"de"            "Dein Karma: {1}"
+		"chi"         "你的 KARMA 值: {1}"
+	}
+	
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"en"            "TEAMS HAVE BEEN SELECTED"
+		"es"            "LOS EQUIPOS HAN SIDO ELEGIDOS"
+		"de"            "Die Teams stehen fest"
+		"chi"           "按E可调查/拖动尸体/!menu打开各种职业的商店"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY: 3"
+	{
+		"en"            "MIN. PLAYERS REQUIRED TO PLAY: 2"
+		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: 2"
+		"de"            "Warte auf andere Spieler.."
+		"chi"           "游戏所需最少玩家数: 2"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"en"            "You are a {blue}DETECTIVE"
+		"es"            "Tu equipo es {blue}DETECTIVES"
+		"de"            "Du bist im Team der {blue}DETEKTIVE"
+		"chi"           "你的身份是 {blue}侦探"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"en"            "You are a {darkred}TRAITOR"
+		"es"            "Tu equipo es {darkred}TRAIDORES"
+		"de"            "Du bist im Team der {darkred}TRAITOR"
+		"chi"           "你的身份是 {darkred}叛徒"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"en"            "You are {green}INNOCENT"
+		"es"            "Tu equipo es {green}INOCENTES"
+		"de"            "Du bist im Team der {green}INNOCENTS"
+		"chi"           "你的身份是 {green}平民"
+	}
+
+
+	"Your REAL money is"
+	{
+		"#format"       "{1:i}"
+		"en"            "Your CREDITS are: {1}"
+		"es"            "Tus creditos son: {1}"
+		"de"            "Deine Credits: {1}"
+		"chi"           "你的金钱是: {1}"
+	}
+
+	"Your killer is Traitor"
+	{
+		"en"            "Your killer was a {darkred}TRAITOR"
+		"es"            "Tu asesino es {darkred}TRAIDOR"
+		"de"            "Dein Mörder ist ein {darkred}TRAITOR"
+		"chi"           "击杀你的是 {darkred}叛徒"
+	}
+
+	"Your killer is Detective"
+	{
+		"en"            "Your killer was a {blue}DETECTIVE"
+		"es"            "Tu asesino es {blue}DETECTIVE"
+		"de"            "Dein Mörder ist ein {blue}DETEKTIV"
+		"chi"           "击杀你的是 {blue}侦探"
+	}
+
+	"Your killer is Innocent"
+	{
+		"en"            "Your killer was {green}INNOCENT"
+		"es"            "Tu asesino es {green}INOCENTE"
+		"de"            "Dein Mörder ist ein {green}INNOCENT"
+		"chi"           "击杀你的是 {green}平民"
+	}
+
+	"You killed to a Traitor"
+	{
+		"en"            "You killed a {darkred}TRAITOR"
+		"es"            "Tu has matado a un {darkred}TRAIDOR"
+		"de"            "Du hast einen {darkred}TRAITOR getötet"
+		"chi"           "你击杀了1个 {darkred}叛徒"
+	}
+
+	"You killed to a Detective"
+	{
+		"en"            "You killed a {blue}DETECTIVE"
+		"es"            "Tu has matado a un {blue}DETECTIVE"
+		"de"            "Du hast einen {blue}DETEKTIV getötet"
+		"chi"           "你击杀了1个 {blue}侦探"
+	}
+
+	"You killed to a Innocent"
+	{
+		"en"            "You killed a {green}INNOCENT"
+		"es"            "Tu has matado a un {green}INOCENTE"
+		"de"            "Du hast einen {green}INNOCENT getötet"
+		"chi"           "你击杀了1个 {green}平民"
+	}
+
+	"You hurt to a Traitor"
+	{
+		"#format"       "{1:N}"
+		"en"            "You have used a detector on Player{darkred} {1} {default}and he is a {darkred}TRAITOR"
+		"es"            "Has usado un detector en{darkred} {1} {default}y el es {darkred}TRAIDOR"
+		"de"            "Du hast einen Tazer verwendet, Spieler{darkred} {1} {default}ist ein {darkred}TRAITOR"
+		"chi"           "你正在使用电击身份检测器{darkred} {1} {default}他是 {darkred}叛徒"
+	}
+
+	"You hurt to a Detective"
+	{
+		"#format"       "{1:N}"
+		"en"            "You have used a detector on Player{blue} {1} {default}and he is a {blue}DETECTIVE"
+		"es"            "Has usado un detector en{blue} {1} {default}y el es {blue}DETECTIVE"
+		"de"            "Du hast einen Tazer verwendet, Spieler{blue} {1} {default}ist ein {blue}DETEKTIV"
+		"chi"           "你正在使用电击身份检测器{blue} {1} {default}和他是 {blue}侦探"
+	}
+
+	"You hurt to a Innocent"
+	{
+		"#format"       "{1:N}"
+		"en"            "You have used a detector on Player{green} {1} {default}and he is {green}INNOCENT"
+		"es"            "Has usado un detector en{green} {1} {default}y el es {green}INOCENTE"
+		"de"            "Du hast einen Tazer verwendet, Spieler{green} {1} {default}ist ein {green}INNOCENT"
+		"chi"           "你正在使用电击身份检测器{green} {1} {default}和他是 {green}平民"
+	}
+
+	"is possibly RDMing"
+	{
+		"#format"       "{1:N}"
+		"en"            "{darkred}{1} is possibly RDMing"
+		"es"            "{darkred}{1} es posible RDMing"
+		"de"            "{darkred}{1} begeht RDM"
+	}
+
+	"Detective scan found body"
+	{
+		"#format"       "{1:N},{2:s},{3:s}"
+		"en"            "DETECTIVE{blue} {1} {default}Scanned a body, Killer is Player{darkred} {2} {default}with weapon{blue} {3}"
+		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, el asesino es{darkred} {2} {default}con el arma{blue} {3}"
+		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, der Mörder war: Player{darkred} {2} {default}mit einer {blue}{3}"
+		"chi"           "DETECTIVE{blue} {1} {default}扫描身体, 击杀玩家是{darkred} {2} {default}使用武器{blue} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"#format"       "{1:N}"
+		"en"            "DETECTIVE{blue} {1} {default}Scanned a body, player committed suicide"
+		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, parece que cometio suicidio"
+		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, es handelt sich um Selbstmord"
+		"chi"           "DETECTIVE{blue} {1} {default}扫描身体，玩家自杀"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"#format"		"{1:d}"
+		"en"            "1 hit kill knife (only usable once) - {1}"
+		"es"            "Cuchillo 1 golpe una muerte (solo para un uso) - {1}"
+		"de"            "1 Hit Messer Kill (Nur einmal verwendbar) - {1}"
+		"chi"           "1刀秒杀 (只能用一次) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"#format"		"{1:d}"
+		"en"            "FAKE ID card (type !id to show your innocence) - {1}"
+		"es"            "FALSA tarjeta ID (escribe !id para mostrar tu inocencia) - {1}"
+		"de"            "Gefälschter Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
+		"chi"           "假的身份 (输入 !id 证明你是无辜的) - {1}"
+	}
+	
+	"Health Station"
+	{
+		"#format"		"{1:d}"
+		"en"            "Health Station - {1}"
+		"es"            "estación Salud - {1}"
+		"de"            "Heil Station - {1}"
+		"chi"           "卫生站 - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"#format"		"{1:d}"
+		"en"            "DNA scanner (scan a dead body and show who the killer was) - {1}"
+		"es"            "DNA escaner (escanea un cuerpo y muestra el asesino) - {1}"
+		"de"            "DNA Scanner (Untersuche eine Leiche um zu sehen wer der Mörder war) - {1}"
+		"chi"           "DNA扫描 (检查尸体凶手是谁) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"#format"		"{1:d}"
+		"en"            "Kevlar - 2,500"
+		"es"            "Kevlar - 2,500"
+		"de"            "Kevlar - 2,500"
+	}
+
+	"Buy rol Traitor"
+	{
+		"#format"		"{1:d}"
+		"en"            "Buy role TRAITOR - 10,000"
+		"es"            "Comprar rol TRAIDOR - 10,000"
+		"de"            "TRAITOR-Pass - 10,000"
+	}
+
+	"Buy rol Detective"
+	{
+		"#format"		"{1:d}"
+		"en"            "Buy role DETECTIVE - {1}"
+		"es"            "Comprar rol DETECTIVE - {1}"
+		"de"            "DETEKTIV-Pass - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"#format"		"{1:d}"
+		"en"            "ID card (type !id to show your innocence) - 500"
+		"es"            "Tarjeta ID (escribe !id para mostrar tu inocencia) - 500"
+		"de"            "Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - 500"
+		"chi"           "身份证 (输入 !id 显示你的身份) - 500"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"en"            "Please wait till your team is assigned"
+		"es"            "Por favor espera a que se te asigne un equipo"
+		"de"            "Warte bis du einem Team zugeordnet wurdest"
+		"chi"           "请等待你的团队分配"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"#format"       "{1:i}"
+		"en"            "Item bought! Your CREDITS are {1}"
+		"es"            "Item comprado! Tus creditos son {1}"
+		"de"            "Gegenstand wurde erworben, deine Credits: {1}"
+		"chi"           "购买物品! 你的金钱是 {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"en"            "You don't have enough credits!"
+		"es"            "No tienes suficientes creditos"
+		"de"            "Du hast zu wenige Credits"
+		"chi"           "你没有足够的金钱!"
+	}
+
+	"Traitors"
+	{
+		"en"            "TRAITORS"
+		"es"            "TRAIDORes"
+		"de"            "TRAITOR"
+		"chi"           "叛徒们"
+	}
+
+	"Detectives"
+	{
+		"en"            "DETECTIVES"
+		"es"            "DETECTIVES"
+		"de"            "DETEKTIVE"
+		"chi"           "侦探们"
+	}
+
+	"Innocents"
+	{
+		"en"            "INNOCENTS"
+		"es"            "INOCENTEs"
+		"de"            "INNOCENT"
+		"chi"           "平民们"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"en"            "Inspected body. The extracted data were the following:"
+		"es"            "Cuerpo inspeccionado. Se han extraido los siguientes datos:"
+		"de"            "Die Leiche wurde untersucht, folgende Informationen wurden herausgefunden:"
+		"chi"           "检查了身体数据如下:"
+	}
+
+	"Victim name"
+	{
+		"#format"       "{1:s}"
+		"en"            "Victim name: {1}"
+		"es"            "Nombre de la victima: {1}"
+		"de"            "Name des Opfers: {1}"
+		"chi"           "受害者名字: {1}"
+	}
+
+	"Team victim"
+	{
+		"#format"       "{1:s}"
+		"en"            "Team: {1}"
+		"es"            "Equipo: {1}"
+		"de"            "Team: {1}"
+		"chi"           "队伍: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"#format"       "{1:i}"
+		"en"            "Elapsed since his death: {1} seconds"
+		"es"            "Tiempo transcurrido desde su muerte: {1} segundos"
+		"de"            "Er ist bereits {1} Sekunden tot"
+		"chi"           "已死亡: {1} 秒"
+	}
+
+	"The weapon used has been"
+	{
+		"#format"       "{1:s}"
+		"en"            "The weapon used has been: {1}"
+		"es"            "El arma usada ha sido: {1}"
+		"de"            "Die Mordwaffe war eine: {1}"
+		"chi"           "使用武器: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"en"            "The weapon used has been: himself (suicide)"
+		"es"            "El arma usada ha sido: el mismo (suicidio)"
+		"de"            "Die Waffe war: Erselbst (Selbstmord)"
+		"chi"           "使用的武器是：自己 (suicide)"
+	}
+
+	"Killer is Player"
+	{
+		"#format"       "{1:s}"
+		"en"            "Killer is Player: {1}"
+		"es"            "El asesino es: {1}"
+		"de"            "Der Mörder ist: {1}"
+		"chi"           "杀手玩家: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"en"            "Player committed suicide"
+		"es"            "El jugador cometio suicidio"
+		"de"            "Der Spieler beging Suizid"
+		"chi"           "该玩家自杀"
+	}
+
+	"Player Is an Innocent"
+	{
+		"#format"       "{1:N}"
+		"en"            "Player{green} {1} {default}is INNOCENT"
+		"es"            "El jugador{green} {1} {default}es un INOCENTE"
+		"de"            "Spieler{green} {1} {default} ist ein INNOCENT"
+		"chi"           "玩家{green} {1} {default}是无辜的"
+	}
+
+	"T channel"
+	{
+		"#format"       "{1:N},{2:s}"
+		"en"            "{darkred}*TRAITORS* {1}:{LIGHTGREEN} {2}"
+		"es"            "{darkred}*Chat de Traidores* {1}:{LIGHTGREEN} {2}"
+		"de"			"{darkred}*Traitor Chat* {1}:{LIGHTGREEN} {2}"
+		"chi"           "{darkred}*叛徒* {1}:{LIGHTGREEN} {2}"
+	}
+	
+	"D channel"
+	{
+		"#format"       "{1:N},{2:s}"
+		"en"            "{blue}*DETECTIVES* {1}:{LIGHTGREEN} {2}"
+		"es"            "{blue}*Chat de Detectives* {1}:{LIGHTGREEN} {2}"
+		"de"			"{blue}*Detektiv Chat* {1}:{LIGHTGREEN} {2}"
+		"chi"           "{blue}*侦探* {1}:{LIGHTGREEN} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"en"            "You dont have it!"
+		"es"            "Tu no tienes eso!"
+		"de"            "Du hast es nicht!"
+		"chi"           "你尚未购买身份证无法使用!"
+	}
+
+	"TTT Shop"
+	{
+		"en"            "TTT Shop"
+		"es"            "Tienda TTT"
+		"de"            "TTT Shop"
+		"chi"           "TTT 商店"
+	}
+
+	"credits earned"
+	{
+		"#format"       "{1:i},{2:i}"
+		"en"            "You won {1} credits\nYour current credits are: {2}"
+		"es"            "Has ganado {1} creditos\nTus creditos actuales son: {2}"
+		"de"            "Du gewinnst {1} Credits\nDu besitzt nun: {2}"
+		"chi"           "你赢得 {1} 金钱\n你的当前金钱是: {2}"
+	}
+
+	"lost credits"
+	{
+		"#format"       "{1:i},{2:i}"
+		"en"            "You lose {1} credits\nYour current credits are: {2}"
+		"es"            "Has perdido {1} creditos\nTus creditos actuales son: {2}"
+		"de"            "Du verlierst {1} Credits - du besitzt noch: {2}"
+		"chi"           "你杀错了玩家失去 {1} 金钱\n你的当前金钱是: {2}"
+	}
+	
+	"Aun no items"
+	{
+		"en"            "No logs yet"
+		"es"            "Aun no hay logs"
+		"de"            "Keine Logs vorhanden"
+		"chi"           "还没有日志"
+	}
+	
+	"See your console"
+	{
+		"en"            "Logs Received! Check your console to see the logs"
+		"es"            "Logs recibidos! Comprueba tu consola para ver los logs"
+		"de"            "Logs empfangen! Prüfe deine Konsole um die Logs dieser Runde einzusehen"
+		"chi"           "记录收到！打开您的控制台查看日志"
+	}
+
+	"you cant see logs"
+	{
+		"en"            "You can´t see the logs now, you need be dead or round has to be inactive"
+		"es"            "No puedes ver los logs ahora, necesitas estar muerto o no estar la ronda activa"
+		"de"            "Du kannst derzeitig keine Logs sehen, die Runde muss beendet sein, oder du Tod"
+		"chi"           "你现在可以看到日志"
+	}
+	
+	"Receiving logs"
+	{
+		"en"            "Receiving logs... wait a moment"
+		"es"            "Recibiendo logs... espera un momento"
+		"de"            "Empfange Logs... warte einen Moment"
+	}
+	
+	"Taser"
+	{
+		"en"            "Buy Taser (team detector) - 3,000"
+		"es"            "Comprar Taser (detector de equipo) - 3,000"
+		"de"            "Kaufe Taser (Team Detektor) - 3,000"
+		"chi"            "购买电击枪 (侦探专用枪) - 3,000"
+	}
+	
+	"USPS"
+	{
+		"en"            "Buy USP-S - 3,000"
+		"es"            "Comprar USP con silenciador - 3,000"
+		"de"            "Kaufe USP-S - 3,000"
+		"chi"           "购买 USP-S - 3,000"
+	}
+	
+	"M4S"
+	{
+		"en"            "Buy M4-S - 6,000"
+		"es"            "Comprar M4 con silenciador - 6,000"
+		"de"            "Kaufe M4-S - 6,000"
+		"chi"           "购买 M4-S - 6,000"
+	}
+
+	"Found Innocent"
+	{
+		"#format"       "{1:N},{2:s}"
+		"en"            "{1} has found the body of{green} {2} {default}that was a {green}INNOCENT"
+		"es"            "{1} ha encontrado el cuerpo de{green} {2} {default}que es {green}Inocente"
+		"de"            "{1} findet die Leiche von{green} {2} {default}er ist ein {green}INNOCENT"
+		"chi"            "{1} 已发现尸体{green} {2} {default}这是 {green}平民"
+	}
+	
+	"Found Detective"
+	{
+		"#format"       "{1:N},{2:s}"
+		"en"            "{1} has found the body of{blue} {2} {default}that was a {blue}DETECTIVE"
+		"es"            "{1} ha encontrado el cuerpo de{blue} {2} {default}que es {blue}Detective"
+		"de"            "{1} findet die Leiche von{blue} {2} {default}er ist ein {blue}DETEKTIV"
+		"chi"           "{1} 已发现尸体{blue} {2} {default}这是 {blue}侦探"
+	}
+	
+	"Found Traitor"
+	{
+		"#format"       "{1:N},{2:s}"
+		"en"            "{1} has found the body of{darkred} {2} {default}that was a {darkred}Traitor"
+		"es"            "{1} ha encontrado el cuerpo de{darkred} {2} {default}que es {darkred}Traidor"
+		"de"            "{1} findet die Leiche von{darkred} {2} {default}er ist ein {darkred}Traitor"
+		"chi"           "{1} 已发现尸体{darkred} {2} {default}这是 {darkred}叛徒"
+	}
+	
+	"Buy c4"
+	{
+		"#format"		"{1:d}"
+		"en"            "Buy C4 - {1}"
+		"es"            "Comprar c4 - {1}"
+		"de"            "Kaufe C4 - {1}"
+		"chi"           "购买C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"#format"		"{1:d}"
+		"en"            "Buy Jihad Bomb - {1}"
+		"es"            "Comprar bomba Jihad - {1}"
+		"de"            "Kaufe Jihad Bombe - {1}"
+		"chi"           "购买炸弹 - {1}"
+	}
+	
+	"Your bomb is not armed."
+	{
+		"en"            "Your bomb is not armed."
+		"es"            "Tu bomba aun no esta armada"
+		"de"            "Deine Bombe ist noch nicht aktiviert"
+		"chi"           "你未安装炸弹"
+	}
+	
+	"Your bomb is now armed."
+	{
+		"en"            "Your bomb is now armed."
+		"es"            "Tu bomba ya esta armada"
+		"de"            "Deine Bombe ist nun bereit"
+		"chi"           "你安装炸弹."
+	}
+	
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"en"            "bomb will arm in 60 seconds, double tab F to explode"
+		"es"            "La bomba se armara en 60 segundos, apreta 2 veces a la F para explotarla"
+		"de"            "Die Bombe ist in 60 Sekunden bereit, drücke 2x F um die Bombe mit dir zu sprengen"
+		"chi"           "炸弹将在60秒后爆炸 双击F爆炸"
+	}
+}
