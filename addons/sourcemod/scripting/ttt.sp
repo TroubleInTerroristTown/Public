@@ -590,9 +590,15 @@ stock void TeamInitialize(int client)
 	{
 		//icon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
-		int primario = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
-		if (primario == -1) GivePlayerItem(client, "weapon_m4a1");
-		GivePlayerItem(client, "weapon_taser");
+		int iPrimary = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
+		int iWeapon;
+		int iTaser;
+		if (iPrimary == -1)
+			iWeapon = GivePlayerItem(client, "weapon_m4a4");
+		iTaser = GivePlayerItem(client, "weapon_taser");
+		
+		EquipPlayerWeapon(client, iWeapon);
+		EquipPlayerWeapon(client, iTaser);
 			
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 	}
@@ -669,7 +675,7 @@ public void OnClientPutInServer(int client)
 	realMoney[client] = false;
 	g_bImmuneRDMManager[client] = false;
 	
-	SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamage);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	
 	SetEntData(client, g_iAccount, MONEYHIDE);
@@ -712,7 +718,7 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
-	if(!iAttacker || !IsClientValid(iAttacker))
+	if(!IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
 	char classname[64];
@@ -727,18 +733,18 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 			{
 				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt to a Traitor", client, client);
+				CPrintToChat(iAttacker, PF, "You hurt a Traitor", client, client);
 				addCredits(iAttacker, 2000);
 			}
 			else if(g_iRole[client] == D) {
 				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt to a Detective", client, client);
+				CPrintToChat(iAttacker, PF, "You hurt a Detective", client, client);
 			}
 			else if(g_iRole[client] == I) {
 				Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt to an Innocent", client, client);
+				CPrintToChat(iAttacker, PF, "You hurt an Innocent", client, client);
 			}
 			return Plugin_Handled;
 		}
@@ -1087,9 +1093,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
 	if(!iAttacker || iAttacker == client) return;
 	
- 	//if(CS_GetClientAssists(i) != 0) 
+ 	// if(CS_GetClientAssists(i) != 0) 
  		// CS_SetClientAssists(i, 0);
-	//if(CS_GetClientContributionScore(i) != 0)
+	// if(CS_GetClientContributionScore(i) != 0)
 		// CS_SetClientContributionScore(i, 0);
 		
 	if(GetEntProp(client, Prop_Data, "m_iDeaths") != 0)
@@ -2710,7 +2716,7 @@ stock void spawnHealthStation(int client)
 		SetEntProp(healthStationIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchKeyValue(healthStationIndex, "model", "models/props/cs_office/microwave.mdl");
 		DispatchSpawn(healthStationIndex);
-		SDKHook(healthStationIndex, SDKHook_OnTakeDamage, OnTakeDamageHealthStation);
+		SDKHook(healthStationIndex, SDKHook_OnTakeDamageAlive, OnTakeDamageHealthStation);
 		TeleportEntity(healthStationIndex, clientPos, NULL_VECTOR, NULL_VECTOR);
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;

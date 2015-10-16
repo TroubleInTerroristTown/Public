@@ -59,7 +59,7 @@
 		"chi"           "你的金钱是: {1}"
 	}
 
-	"Your killer is Traitor"
+	"Your killer is a Traitor"
 	{
 		"en"            "Your killer was a {darkred}TRAITOR"
 		"es"            "Tu asesino es {darkred}TRAIDOR"
@@ -67,7 +67,7 @@
 		"chi"           "击杀你的是 {darkred}叛徒"
 	}
 
-	"Your killer is Detective"
+	"Your killer is a Detective"
 	{
 		"en"            "Your killer was a {blue}DETECTIVE"
 		"es"            "Tu asesino es {blue}DETECTIVE"
@@ -75,7 +75,7 @@
 		"chi"           "击杀你的是 {blue}侦探"
 	}
 
-	"Your killer is Innocent"
+	"Your killer is an Innocent"
 	{
 		"en"            "Your killer was {green}INNOCENT"
 		"es"            "Tu asesino es {green}INOCENTE"
@@ -83,7 +83,7 @@
 		"chi"           "击杀你的是 {green}平民"
 	}
 
-	"You killed to a Traitor"
+	"You killed a Traitor"
 	{
 		"en"            "You killed a {darkred}TRAITOR"
 		"es"            "Tu has matado a un {darkred}TRAIDOR"
@@ -91,7 +91,7 @@
 		"chi"           "你击杀了1个 {darkred}叛徒"
 	}
 
-	"You killed to a Detective"
+	"You killed a Detective"
 	{
 		"en"            "You killed a {blue}DETECTIVE"
 		"es"            "Tu has matado a un {blue}DETECTIVE"
@@ -99,7 +99,7 @@
 		"chi"           "你击杀了1个 {blue}侦探"
 	}
 
-	"You killed to a Innocent"
+	"You killed an Innocent"
 	{
 		"en"            "You killed a {green}INNOCENT"
 		"es"            "Tu has matado a un {green}INOCENTE"
@@ -107,7 +107,7 @@
 		"chi"           "你击杀了1个 {green}平民"
 	}
 
-	"You hurt to a Traitor"
+	"You hurt a Traitor"
 	{
 		"#format"       "{1:N}"
 		"en"            "You have used a detector on Player{darkred} {1} {default}and he is a {darkred}TRAITOR"
@@ -116,7 +116,7 @@
 		"chi"           "你正在使用电击身份检测器{darkred} {1} {default}他是 {darkred}叛徒"
 	}
 
-	"You hurt to a Detective"
+	"You hurt a Detective"
 	{
 		"#format"       "{1:N}"
 		"en"            "You have used a detector on Player{blue} {1} {default}and he is a {blue}DETECTIVE"
@@ -125,7 +125,7 @@
 		"chi"           "你正在使用电击身份检测器{blue} {1} {default}和他是 {blue}侦探"
 	}
 
-	"You hurt to a Innocent"
+	"You hurt an Innocent"
 	{
 		"#format"       "{1:N}"
 		"en"            "You have used a detector on Player{green} {1} {default}and he is {green}INNOCENT"
