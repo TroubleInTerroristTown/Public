@@ -594,8 +594,8 @@ stock void TeamInitialize(int client)
 		int iWeapon;
 		int iTaser;
 		if (iPrimary == -1)
-			iWeapon = GivePlayerItem(client, "weapon_m4a4");
-		iTaser = GivePlayerItem(client, "weapon_taser");
+			GivePlayerItem(client, "weapon_m4a1_silencer");
+		GivePlayerItem(client, "weapon_taser");
 		
 		EquipPlayerWeapon(client, iWeapon);
 		EquipPlayerWeapon(client, iTaser);
