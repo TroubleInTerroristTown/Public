@@ -357,15 +357,15 @@ public void OnMapStart()
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_disarm.wav", true);
-	PrecacheSoundAny("slayersgaming/jihad/explosion.mp3", true);
-	PrecacheSoundAny("slayersgaming/jihad/jihad.mp3", true);
+	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
+	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
 	PrecacheSoundAny("resource/warning.wav", true);
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_disarm.wav", true);
 
-	AddFileToDownloadsTable("sound/slayersgaming/jihad/explosion.mp3"); 
-	AddFileToDownloadsTable("sound/slayersgaming/jihad/jihad.mp3");
+	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3"); 
+	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 	
 	ClearTrie(trie_info);
 	ClearArray(g_hLogsArray);
@@ -1943,7 +1943,7 @@ stock void Detonate(int client)
         SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
         //SetEntProp(ExplosionIndex, Prop_Send, "m_iTeamNum", clientTeam); 
          
-        EmitAmbientSoundAny("slayersgaming/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
+        EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
          
          
         AcceptEntityInput(ExplosionIndex, "Explode"); 
@@ -1967,7 +1967,7 @@ public Action Command_Detonate(int client, int args)
 		return Plugin_Handled; 
     } 
      
-    EmitAmbientSoundAny("slayersgaming/jihad/jihad.mp3", NULL_VECTOR, client); 
+    EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
          
     CreateTimer(2.0, TimerCallback_Detonate, client); 
     g_bJihadBomb[client] = false;
@@ -1996,7 +1996,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 
 	if(g_bDetonate[client])
 	{
-		EmitAmbientSoundAny("slayersgaming/jihad/jihad.mp3", NULL_VECTOR, client); 
+		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
          
 		CreateTimer(2.0, TimerCallback_Detonate, client); 
 		g_bJihadBomb[client] = false;
