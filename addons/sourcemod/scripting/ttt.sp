@@ -523,7 +523,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(Traitores == 0)
 		Traitores = 1;
 	
-	if(iCount < 4)
+	if(iCount < 8)
 		detectives = 0;
 	
 	int index;
@@ -2516,7 +2516,7 @@ stock float plantBomb(int client, float time)
 				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Your bomb was not found!"); // TODO: Translations
 		}
 	}
-	g_iWire[client] = Math_GetRandomInt(1,4);
+	g_iWire[client] = Math_GetRandomInt(1, 4);
 	PrintToChat(client, "[\x04T\x02T\x0BT\x01] The defuse wire is %i!", g_iWire[client]); // TODO: Translations
 }
 
