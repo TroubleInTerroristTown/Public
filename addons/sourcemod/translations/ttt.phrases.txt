@@ -441,26 +441,29 @@
 	
 	"Taser"
 	{
-		"en"            "Buy Taser (team detector) - 3,000"
-		"es"            "Comprar Taser (detector de equipo) - 3,000"
-		"de"            "Kaufe Taser (Team Detektor) - 3,000"
-		"chi"            "购买电击枪 (侦探专用枪) - 3,000"
+		"#format"		"{1:d}"
+		"en"            "Buy Taser (team detector) - {1}"
+		"es"            "Comprar Taser (detector de equipo) - {1}"
+		"de"            "Kaufe Taser (Team Detektor) - {1}"
+		"chi"            "购买电击枪 (侦探专用枪) - {1}"
 	}
 	
 	"USPS"
 	{
-		"en"            "Buy USP-S - 3,000"
-		"es"            "Comprar USP con silenciador - 3,000"
-		"de"            "Kaufe USP-S - 3,000"
-		"chi"           "购买 USP-S - 3,000"
+		"#format"		"{1:d}"
+		"en"            "Buy USP-S - {1}"
+		"es"            "Comprar USP con silenciador - {1}"
+		"de"            "Kaufe USP-S - {1}"
+		"chi"           "购买 USP-S - {1}"
 	}
 	
 	"M4S"
 	{
-		"en"            "Buy M4-S - 6,000"
-		"es"            "Comprar M4 con silenciador - 6,000"
-		"de"            "Kaufe M4-S - 6,000"
-		"chi"           "购买 M4-S - 6,000"
+		"#format"		"{1:d}"
+		"en"            "Buy M4-S - {1}"
+		"es"            "Comprar M4 con silenciador - {1}"
+		"de"            "Kaufe M4-S - {1}"
+		"chi"           "购买 M4-S - {1}"
 	}
 
 	"Found Innocent"
