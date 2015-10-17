@@ -3,10 +3,10 @@
 	"Your karma is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your KARMA is: {1}"
-		"es"            "Tu KARMA es: {1}"
-		"de"            "Dein Karma: {1}"
-		"chi"         "你的 KARMA 值: {1}"
+		"en"            "{green}Your KARMA is: {lightgreen}{1}"
+		"es"            "{green}Tu KARMA es: {lightgreen}{1}"
+		"de"            "{green}Dein Karma: {lightgreen}{1}"
+		"chi"         	"{green}你的 KARMA 值: {lightgreen}{1}"
 	}
 	
 	"TEAMS HAS BEEN SELECTED"
@@ -53,10 +53,10 @@
 	"Your REAL money is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your CREDITS are: {1}"
-		"es"            "Tus creditos son: {1}"
-		"de"            "Deine Credits: {1}"
-		"chi"           "你的金钱是: {1}"
+		"en"            "{green}Your CREDITS are: {default}{1}"
+		"es"            "{green}Tus creditos son: {default}{1}"
+		"de"            "{green}Deine Credits: {default}{1}"
+		"chi"           "{green}你的金钱是: {default}{1}"
 	}
 
 	"Your killer is a Traitor"
@@ -87,7 +87,7 @@
 	{
 		"en"            "You killed a {darkred}TRAITOR"
 		"es"            "Tu has matado a un {darkred}TRAIDOR"
-		"de"            "Du hast einen {darkred}TRAITOR getötet"
+		"de"            "Du hast einen {darkred}TRAITOR {default}getötet"
 		"chi"           "你击杀了1个 {darkred}叛徒"
 	}
 
@@ -95,7 +95,7 @@
 	{
 		"en"            "You killed a {blue}DETECTIVE"
 		"es"            "Tu has matado a un {blue}DETECTIVE"
-		"de"            "Du hast einen {blue}DETEKTIV getötet"
+		"de"            "Du hast einen {blue}DETEKTIV {default}getötet"
 		"chi"           "你击杀了1个 {blue}侦探"
 	}
 
@@ -103,7 +103,7 @@
 	{
 		"en"            "You killed a {green}INNOCENT"
 		"es"            "Tu has matado a un {green}INOCENTE"
-		"de"            "Du hast einen {green}INNOCENT getötet"
+		"de"            "Du hast einen {green}INNOCENT {default}getötet"
 		"chi"           "你击杀了1个 {green}平民"
 	}
 
