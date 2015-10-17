@@ -468,7 +468,7 @@
 		"#format"       "{1:N},{2:s}"
 		"en"            "{1} has found the body of{green} {2} {default}that was a {green}INNOCENT"
 		"es"            "{1} ha encontrado el cuerpo de{green} {2} {default}que es {green}Inocente"
-		"de"            "{1} findet die Leiche von{green} {2} {default}er ist ein {green}INNOCENT"
+		"de"            "{1} findet die Leiche von{green} {2} {default}er war ein {green}INNOCENT"
 		"chi"            "{1} 已发现尸体{green} {2} {default}这是 {green}平民"
 	}
 	
@@ -477,7 +477,7 @@
 		"#format"       "{1:N},{2:s}"
 		"en"            "{1} has found the body of{blue} {2} {default}that was a {blue}DETECTIVE"
 		"es"            "{1} ha encontrado el cuerpo de{blue} {2} {default}que es {blue}Detective"
-		"de"            "{1} findet die Leiche von{blue} {2} {default}er ist ein {blue}DETEKTIV"
+		"de"            "{1} findet die Leiche von{blue} {2} {default}er war ein {blue}DETEKTIV"
 		"chi"           "{1} 已发现尸体{blue} {2} {default}这是 {blue}侦探"
 	}
 	
@@ -486,7 +486,7 @@
 		"#format"       "{1:N},{2:s}"
 		"en"            "{1} has found the body of{darkred} {2} {default}that was a {darkred}Traitor"
 		"es"            "{1} ha encontrado el cuerpo de{darkred} {2} {default}que es {darkred}Traidor"
-		"de"            "{1} findet die Leiche von{darkred} {2} {default}er ist ein {darkred}Traitor"
+		"de"            "{1} findet die Leiche von{darkred} {2} {default}er war ein {darkred}Traitor"
 		"chi"           "{1} 已发现尸体{darkred} {2} {default}这是 {darkred}叛徒"
 	}
 	
