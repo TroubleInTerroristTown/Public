@@ -18,8 +18,9 @@
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
 #define PFA " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %t"
 #define TRAITORS_AMOUNT 0.25
-#define DETECTIVES_AMOUNT 0.125
-#define GRAB_DISTANCE 150.0
+#define DETECTIVES_AMOUNT 0.13
+#define MIN_PLAYERS_DETECTIVES 8
+
 #define U 0
 #define I 1
 #define T 2
@@ -523,7 +524,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(Traitores == 0)
 		Traitores = 1;
 	
-	if(iCount < 8)
+	if(iCount < MIN_PLAYERS_DETECTIVES)
 		detectives = 0;
 	
 	int index;
