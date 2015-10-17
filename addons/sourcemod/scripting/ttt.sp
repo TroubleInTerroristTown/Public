@@ -27,6 +27,8 @@
 #define D 3
 #define MONEYHIDE 16000
 
+
+// Add karma points and credits to eCvars (for 2.0.2 release)
 enum eCvars
 {
 	ConVar:c_shopKEVLAR,
@@ -425,20 +427,6 @@ public void OnThinkPost(int entity)
     {
         if (IsClientInGame(i))
 		{
-			if(g_bKarma[i] && g_iCvar[c_karmaBan].IntValue != 0 && g_iKarma[i] <= g_iCvar[c_karmaBan].IntValue)
-			{
-				char sReason[512];
-				Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", i);
-				
-				char sKarma[32];
-				g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
-				SetClientCookie(i, g_hKarmaCookie, sKarma);
-				
-				BanClient(i, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
-			}
-			
-			CS_SetClientContributionScore(i, g_iKarma[i]);
-			
 			if(IsPlayerAlive(i) || !g_bFound[i])
 				isAlive[i] = true;
 			else
@@ -700,10 +688,31 @@ public void OnClientPutInServer(int client)
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamage);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
+	SDKHook(client, SDKHook_ThinkPost, ThinkPost);
 	
 	SetEntData(client, g_iAccount, MONEYHIDE);
 		
 	g_iCredits[client] = 800;
+}
+
+public Action ThinkPost(int client)
+{
+	if(IsClientValid(client))
+	{
+		if(g_bKarma[client] && g_iCvar[c_karmaBan].IntValue != 0 && g_iKarma[client] <= g_iCvar[c_karmaBan].IntValue)
+		{
+			char sReason[512];
+			Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
+			
+			char sKarma[32];
+			g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
+			SetClientCookie(client, g_hKarmaCookie, sKarma);
+			
+			BanClient(client, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
+		}
+		
+		CS_SetClientContributionScore(client, g_iKarma[client]);
+	}
 }
 
 public void OnClientCookiesCached(int client) {
