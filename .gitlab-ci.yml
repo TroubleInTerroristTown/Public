@@ -2,11 +2,7 @@ TTT:
   script:
     - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5711-linux.tar.gz
     - tar xzf sourcemod-1.8.0-git5711-linux.tar.gz
-    - git clone https://github.com/Bara20/Multi-Colors.git multicolors
-    - cp -Ru multicolors/addons/sourcemod/scripting/include/ addons/sourcemod/scripting/
-    - rm -r multicolors
     - cd addons/sourcemod/scripting
-    - wget "https://forums.alliedmods.net/attachment.php?attachmentid=131610&d=1438960749" -O include/emitsoundany.inc
     - chmod +x spcomp
     - ./spcomp ttt.sp
     - ./spcomp crashcatcher.sp
