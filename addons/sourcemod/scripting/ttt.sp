@@ -2182,7 +2182,7 @@ public Action Timer_5(Handle timer)
 	}
 }
 
-public int OnEntityCreated(int entity, const char[] className)
+public void OnEntityCreated(int entity, const char[] className)
 {
 	//TargetName: Destroy_Trigger
 	if (StrEqual(className, "func_button"))
