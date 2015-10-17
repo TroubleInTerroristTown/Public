@@ -1084,13 +1084,15 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	AcceptEntityInput(ragdoll, "Kill");
 	
 	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	if(!iAttacker || iAttacker == client) return;
+	if(!iAttacker || iAttacker == client)
+		return;
 	
- 	// if(CS_GetClientAssists(i) != 0) 
- 		// CS_SetClientAssists(i, 0);
-	// if(CS_GetClientContributionScore(i) != 0)
-		// CS_SetClientContributionScore(i, 0);
-		
+	int assister = GetClientOfUserId(GetEventInt(event, "assister"));
+	if(!assister || assister == client)
+		return;
+	
+ 	if(CS_GetClientAssists(assister) != 0) 
+ 		CS_SetClientAssists(assister, 0);
 	if(GetEntProp(client, Prop_Data, "m_iDeaths") != 0)
 		SetEntProp(client, Prop_Data, "m_iDeaths", 0);
 	if(GetEntProp(iAttacker, Prop_Data, "m_iFrags") != 0)
@@ -1184,6 +1186,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	char result[32];
 	IntToString(g_iKarma[iAttacker], result, sizeof(result));
 	SetClientCookie(iAttacker, g_hKarmaCookie, result);
+	
+	CheckTeams();
 }
 
 stock int CreateIcon(int client) {
@@ -2778,4 +2782,29 @@ stock int Math_GetRandomInt(int min, int max)
 	}
 
 	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
+}
+
+stock void CheckTeams()
+{
+	int iT = 0;
+	int iD = 0;
+	int iI = 0;
+	
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientValid(i) && IsPlayerAlive(i))
+		{
+			if(g_iRole[i] == D)
+				iD++;
+			else if(g_iRole[i] == T)
+				iT++;
+			else if(g_iRole[i] == I)
+				iI++;
+		}
+	}
+	
+	if(iD == 0 && iI == 0)
+		CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+	else if(iT == 0)
+		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
 }
