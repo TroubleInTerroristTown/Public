@@ -167,7 +167,10 @@ public void OnPluginStart()
 			continue;
 		
 		if (!AreClientCookiesCached(i))
+		{
+			AddStartKarma(i);
 			continue;
+		}
 		
 		OnClientCookiesCached(i);
 		OnClientPutInServer(i);
@@ -701,14 +704,7 @@ public Action ThinkPost(int client)
 	{
 		if(g_bKarma[client] && g_iCvar[c_karmaBan].IntValue != 0 && g_iKarma[client] <= g_iCvar[c_karmaBan].IntValue)
 		{
-			char sReason[512];
-			Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
-			
-			char sKarma[32];
-			g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
-			SetClientCookie(client, g_hKarmaCookie, sKarma);
-			
-			BanClient(client, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
+			BanBadPlayerKarma(client);
 		}
 		
 		CS_SetClientContributionScore(client, g_iKarma[client]);
@@ -728,6 +724,8 @@ public void OnClientCookiesCached(int client) {
 		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
 		SetClientCookie(client, g_hKarmaCookie, sKarma);
 	}
+	else if (karma > 0 && karma <= g_iCvar[c_karmaBan].IntValue)
+		BanBadPlayerKarma(client);
 	else
 	{
 		g_iKarma[client] = karma;
@@ -735,6 +733,27 @@ public void OnClientCookiesCached(int client) {
 	}
 	
 	g_bKarma[client] = true;
+}
+
+stock void AddStartKarma(int client)
+{
+	g_iKarma[client] = g_iCvar[c_startKarma].IntValue;
+	
+	char sKarma[32];
+	IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
+	SetClientCookie(client, g_hKarmaCookie, sKarma);
+}
+
+stock void BanBadPlayerKarma(int client)
+{
+	char sReason[512];
+	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
+	
+	char sKarma[32];
+	g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
+	SetClientCookie(client, g_hKarmaCookie, sKarma);
+	
+	BanClient(client, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
 }
 
 stock bool IsClientValid(int client) 
