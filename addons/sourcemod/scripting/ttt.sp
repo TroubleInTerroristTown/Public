@@ -581,7 +581,7 @@ stock int GetRandomArray()
 	int size = GetArraySize(g_hPlayerArray);
 	if(size == 0)
 		return -1;
-	return GetRandomInt(0, size-1);
+	return Math_GetRandomInt(0, size-1);
 }
 
 stock void TeamInitialize(int client)
@@ -2516,7 +2516,7 @@ stock float plantBomb(int client, float time)
 				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Your bomb was not found!"); // TODO: Translations
 		}
 	}
-	g_iWire[client] = GetRandomInt(1,4);
+	g_iWire[client] = Math_GetRandomInt(1,4);
 	PrintToChat(client, "[\x04T\x02T\x0BT\x01] The defuse wire is %i!", g_iWire[client]); // TODO: Translations
 }
 
@@ -2752,4 +2752,16 @@ public Action Command_KarmaReset(int client, int args)
 		SetClientCookie(i, g_hKarmaCookie, result);
 	}
 	return Plugin_Handled;
+}
+
+// Thanks SMLib ( https://github.com/bcserv/smlib/blob/master/scripting/include/smlib/math.inc#L149 )
+stock int Math_GetRandomInt(int min, int max)
+{
+	int random = GetURandomInt();
+	
+	if (random == 0) {
+		random++;
+	}
+
+	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
 }
