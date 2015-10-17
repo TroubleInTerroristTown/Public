@@ -535,4 +535,10 @@
 		"de"            "Die Bombe ist in 60 Sekunden bereit, drücke 2x F um die Bombe mit dir zu sprengen"
 		"chi"           "炸弹将在60秒后爆炸 双击F爆炸"
 	}
+	
+	"Your Karma is too low"
+	{
+		"en"			"You was banned, because your karma is too low!"
+		"de"			"Sie wurden gebannt, weil ihr Karma zu niedrig ist!"
+	}
 }

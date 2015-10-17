@@ -42,12 +42,15 @@ enum eCvars
 	ConVar:c_shopC4,
 	ConVar:c_shopHEALTH,
 	ConVar:c_requiredPlayersD,
-	ConVar:c_requiredPlayers
+	ConVar:c_requiredPlayers,
+	ConVar:c_startKarma,
+	ConVar:c_karmaBan,
+	ConVar:c_karmaBanLength
 };
 
 int g_iCvar[eCvars];
 
-int g_iCredits[MAXPLAYERS+1] = {0, ...};
+int g_iCredits[MAXPLAYERS+1] = {800, ...};
 
 bool g_bHasC4[MAXPLAYERS+1] = {false, ...};
 
@@ -56,8 +59,6 @@ Handle g_hRDMTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
 bool g_bImmuneRDMManager[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingProp[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingSilencedWep[MAXPLAYERS+1] = {false, ...};
-
-Handle g_hKarmaCookie = INVALID_HANDLE;
 
 char g_sDetectiveNames[][] = { "detective", "detectlve" };
 
@@ -112,6 +113,7 @@ bool g_bInactive = false;
 int g_iCollisionGroup = -1;
 
 int g_iKarma[MAXPLAYERS+1] = {0, ...};
+Handle g_hKarmaCookie = INVALID_HANDLE;
 
 Handle g_hRagdollArray = null;
 
@@ -143,7 +145,6 @@ enum Playerinfo
 }
 
 bool g_bReceivingLogs[MAXPLAYERS+1];
-Handle trie_info;
 
 Handle g_hLogsArray;
 
@@ -153,6 +154,8 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases");
 	
 	g_hKarmaCookie = RegClientCookie("ttt_karma", "Stores Karma.", CookieAccess_Private);
+	
+	// Lateload support
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i))
@@ -164,8 +167,6 @@ public void OnPluginStart()
 		OnClientCookiesCached(i);
 		OnClientPutInServer(i);
 	}
-	
-	trie_info = CreateTrie();
 	
 	g_hRagdollArray = CreateArray(102);
 	g_hPlayerArray = CreateArray();
@@ -229,6 +230,9 @@ public void OnPluginStart()
 	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
 	g_iCvar[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
 	g_iCvar[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
+	g_iCvar[c_startKarma] = CreateConVar("ttt_start_karma", "100");
+	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
+	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	
 	AutoExecConfig(true, "ttt");
 }
@@ -364,7 +368,6 @@ public void OnMapStart()
 	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3"); 
 	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 	
-	ClearTrie(trie_info);
 	ClearArray(g_hLogsArray);
 
 	AddFileToDownloadsTable("materials/sprites/sg_detective_icon.vmt");
@@ -411,9 +414,6 @@ public void OnMapStart()
 
 public void OnThinkPost(int entity) 
 {
-    if(IsClientValid(entity))
-        CS_SetClientContributionScore(entity, g_iKarma[entity]);
-	
     int isAlive[65];
 	
     GetEntDataArray(entity, g_iAlive, isAlive, 65);
@@ -421,6 +421,20 @@ public void OnThinkPost(int entity)
     {
         if (IsClientInGame(i))
 		{
+			if(g_iCvar[c_karmaBan].IntValue > 0 && g_iKarma[i] <= g_iCvar[c_karmaBan].IntValue)
+			{
+				char sReason[512];
+				Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", i);
+				
+				char sKarma[32];
+				g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
+				SetClientCookie(i, g_hKarmaCookie, sKarma);
+				
+				BanClient(i, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
+			}
+			
+			CS_SetClientContributionScore(i, g_iKarma[i]);
+			
 			if(IsPlayerAlive(i) || !g_bFound[i])
 				isAlive[i] = true;
 			else
@@ -683,29 +697,26 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	
 	SetEntData(client, g_iAccount, MONEYHIDE);
-	
-	int Items[Playerinfo];
-	if(GetTrieArray(trie_info, steamid, Items[0], sizeof(Items)))
-		g_iCredits[client] = Items[money2];
-	else
-		g_iCredits[client] = 800;
+		
+	g_iCredits[client] = 800;
 }
 
 public void OnClientCookiesCached(int client) {
 	char sValue[32];
 	GetClientCookie(client, g_hKarmaCookie, sValue, sizeof(sValue));
-	int karmaSetting = StringToInt(sValue);
+	int karma = (sValue[0] != '\0' && StringToInt(sValue));
 	
-	if (karmaSetting <= 0)
+	if (karma == 0)
 	{
-		g_iKarma[client] = 100;
-		char result[32];
-		IntToString(g_iKarma[client], result, sizeof(result));
-		SetClientCookie(client, g_hKarmaCookie, result);
+		g_iKarma[client] = g_iCvar[c_startKarma].IntValue;
+		
+		char sKarma[32];
+		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
+		SetClientCookie(client, g_hKarmaCookie, sKarma);
 	}
 	else
 	{
-		g_iKarma[client] = StringToInt(sValue);
+		g_iKarma[client] = karma;
 		SetClientCookie(client, g_hKarmaCookie, sValue);
 	}
 }
@@ -867,13 +878,9 @@ public void OnClientDisconnect(int client)
 {
 	if(IsClientInGame(client))
 	{
-		char steamid[64];
-		GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));	
-		int Items2[Playerinfo];
-		Items2[money2] = g_iCredits[client];
-		Items2[karma2] = g_iKarma[client];
-	
-		SetTrieArray(trie_info, steamid, Items2[0], sizeof(Items2));
+		char sKarma[12];
+		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
+		SetClientCookie(client, g_hKarmaCookie, sKarma);
 	}
 	if (g_hRDMTimer[client] != INVALID_HANDLE) {
 		KillTimer(g_hRDMTimer[client]);
@@ -2541,7 +2548,13 @@ stock void resetPlayers()
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsClientInGame(i)) continue;
+		if (!IsClientInGame(i))
+			continue;
+		
+		char sKarma[32];
+		IntToString(g_iKarma[i], sKarma, sizeof(sKarma));
+		SetClientCookie(i, g_hKarmaCookie, sKarma);
+		
 		if (g_hExplosionTimer[i] != INVALID_HANDLE)
 		{
 			KillTimer(g_hExplosionTimer[i]);
@@ -2550,8 +2563,6 @@ stock void resetPlayers()
 		g_bHasActiveBomb[i] = false;
 	}
 }
-
-//health station
 
 stock void listTraitors(int client)
 {
