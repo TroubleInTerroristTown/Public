@@ -219,7 +219,7 @@ public void OnPluginStart()
 	g_iCvar[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000", "");
 	g_iCvar[c_shopT] = CreateConVar("ttt_shop_t", "100000", "");
 	g_iCvar[c_shopD] = CreateConVar("ttt_shop_d", "5000", "");
-	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "9001", "");
+	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000", "");
 	g_iCvar[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000", "");
 	g_iCvar[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000", "");
 	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000", "");
@@ -462,7 +462,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	if (g_hRoundTimer != INVALID_HANDLE) 
 		CloseHandle(g_hRoundTimer);
 		
-	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, on_round_time_end);
+	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
 	
 	ShowOverlayToAll("");
 	resetPlayers();
@@ -501,26 +501,26 @@ public Action Timer_Selection(Handle hTimer)
 	
 	ClearArray(g_hPlayerArray);
 	
-	int cuenta = 0;
+	int iCount = 0;
 	for(int i = 1; i <= MaxClients; i++)
 		if(IsClientInGame(i) && IsPlayerAlive(i))
 		{
-			cuenta++;
+			iCount++;
 			PushArrayCell(g_hPlayerArray, i);
 		}
 		
-	if(cuenta < 3) 
+	if(iCount < 3) 
 	{
 		g_bInactive = true;
 		CPrintToChatAll(PFA, "MIN PLAYERS REQUIRED FOR PLAY: 3");
 		return;
 	}
-	int detectives = RoundToNearest(cuenta * DETECTIVES_AMOUNT);
-	int Traitores = RoundToNearest(cuenta * TRAITORS_AMOUNT);
+	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
+	int Traitores = RoundToNearest(iCount * TRAITORS_AMOUNT);
 	if(detectives == 0) detectives = 1;
 	if(Traitores == 0) Traitores = 1;
 	
-	if(cuenta < 4) detectives = 0;
+	if(iCount < 4) detectives = 0;
 	
 	int index;
 	int player;
@@ -571,10 +571,10 @@ public Action Timer_Selection(Handle hTimer)
 
 stock int RandomArray()
 {
-	int tamanio = GetArraySize(g_hPlayerArray);
-	if(tamanio == 0)
+	int size = GetArraySize(g_hPlayerArray);
+	if(size == 0)
 		return -1;
-	return GetRandomInt(0, tamanio-1);
+	return GetRandomInt(0, size-1);
 }
 
 stock void TeamInitialize(int client)
@@ -638,13 +638,13 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(g_bInactive)
 	{
-		int cuenta = 0;
+		int iCount = 0;
 		
 		for(int i = 1; i <= MaxClients; i++)
 			if(IsClientInGame(i) && IsPlayerAlive(i))
-				cuenta++;
+				iCount++;
 		
-		if(cuenta >= 3)
+		if(iCount >= 3)
 			ServerCommand("mp_restartgame 2");
 	}
 	
@@ -1218,7 +1218,7 @@ public void OnMapEnd() {
 	resetPlayers();
 }
 
-public Action on_round_time_end(Handle timer) 
+public Action Timer_OnRoundEnd(Handle timer) 
 {
 	g_hRoundTimer = INVALID_HANDLE;
 	
