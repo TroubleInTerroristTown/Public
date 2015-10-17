@@ -538,7 +538,7 @@
 	
 	"Your Karma is too low"
 	{
-		"en"			"You was banned, because your karma is too low!"
+		"en"			"You were banned, because your karma is too low!"
 		"de"			"Sie wurden gebannt, weil ihr Karma zu niedrig ist!"
 	}
 }
