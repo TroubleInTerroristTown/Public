@@ -132,7 +132,6 @@ bool g_bFound[MAXPLAYERS + 1] = {false, ...};
 bool g_bDetonate[MAXPLAYERS + 1] = {false, ...};
 
 int g_iAlive = -1;
-bool g_bSourceBans = false;
 
 enum Ragdolls
 {
@@ -248,20 +247,6 @@ public void OnPluginStart()
 	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
-	
-	g_bSourceBans = LibraryExists("sourcebans");
-}
-
-public void OnLibraryAdded(const char[] name)
-{
-	if (StrEqual(name, "sourcebans"))
-		g_bSourceBans = true;
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "sourcebans"))
-		g_bSourceBans = true;
 }
 
 public Action Logs(int client, int args)
@@ -771,10 +756,7 @@ stock void BanBadPlayerKarma(int client)
 	g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
 	SetClientCookie(client, g_hKarmaCookie, sKarma);
 	
-	if(g_bSourceBans)
-		ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iCvar[c_karmaBanLength].IntValue, sReason);
-	else
-		BanClient(client, g_iCvar[c_karmaBanLength].IntValue, BANFLAG_AUTO, sReason, sReason);
+	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iCvar[c_karmaBanLength].IntValue, sReason);
 }
 
 stock bool IsClientValid(int client) 
