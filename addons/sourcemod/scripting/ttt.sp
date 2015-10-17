@@ -6,6 +6,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
+#include <autoexecconfig>
 
 #pragma newdecls required
 
@@ -215,24 +216,24 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass"); */
 
-	g_iCvar[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
-	g_iCvar[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
-	g_iCvar[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
-	g_iCvar[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
-	g_iCvar[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000");
-	g_iCvar[c_shopT] = CreateConVar("ttt_shop_t", "100000");
-	g_iCvar[c_shopD] = CreateConVar("ttt_shop_d", "5000");
-	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
-	g_iCvar[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000");
-	g_iCvar[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000");
-	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
-	g_iCvar[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
-	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
-	g_iCvar[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
-	g_iCvar[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
-	g_iCvar[c_startKarma] = CreateConVar("ttt_start_karma", "100");
-	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
-	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
+	g_iCvar[c_shopKEVLAR] = AutoExecConfig_CreateConVar("ttt_shop_kevlar", "2500");
+	g_iCvar[c_shop1KNIFE] = AutoExecConfig_CreateConVar("ttt_shop_1knife", "5000");
+	g_iCvar[c_shopDNA] = AutoExecConfig_CreateConVar("ttt_shop_dna_scanner", "5000");
+	g_iCvar[c_shopID] = AutoExecConfig_CreateConVar("ttt_shop_id_card", "500");
+	g_iCvar[c_shopFAKEID] = AutoExecConfig_CreateConVar("ttt_shop_fake_id_card", "5000");
+	g_iCvar[c_shopT] = AutoExecConfig_CreateConVar("ttt_shop_t", "100000");
+	g_iCvar[c_shopD] = AutoExecConfig_CreateConVar("ttt_shop_d", "5000");
+	g_iCvar[c_shopTASER] = AutoExecConfig_CreateConVar("ttt_shop_taser", "3000");
+	g_iCvar[c_shopUSP] = AutoExecConfig_CreateConVar("ttt_shop_usp", "3000");
+	g_iCvar[c_shopM4A1] = AutoExecConfig_CreateConVar("ttt_shop_m4a1", "6000");
+	g_iCvar[c_shopJIHADBOMB] = AutoExecConfig_CreateConVar("ttt_shop_jihad_bomb", "6000");
+	g_iCvar[c_shopC4] = AutoExecConfig_CreateConVar("ttt_shop_c4", "10000");
+	g_iCvar[c_shopHEALTH] = AutoExecConfig_CreateConVar("ttt_shop_health_station", "3000");
+	g_iCvar[c_requiredPlayersD] = AutoExecConfig_CreateConVar("ttt_required_players_detective", "6");
+	g_iCvar[c_requiredPlayers] = AutoExecConfig_CreateConVar("ttt_required_player", "3");
+	g_iCvar[c_startKarma] = AutoExecConfig_CreateConVar("ttt_start_karma", "100");
+	g_iCvar[c_karmaBan] = AutoExecConfig_CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
+	g_iCvar[c_karmaBanLength] = AutoExecConfig_CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	
 	AutoExecConfig(true, "ttt");
 }
