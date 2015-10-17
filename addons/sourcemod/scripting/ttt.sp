@@ -46,7 +46,8 @@ enum eCvars
 	ConVar:c_requiredPlayers,
 	ConVar:c_startKarma,
 	ConVar:c_karmaBan,
-	ConVar:c_karmaBanLength
+	ConVar:c_karmaBanLength,
+	ConVar:c_maxKarma
 };
 
 int g_iCvar[eCvars];
@@ -215,6 +216,10 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass"); */
+	
+	AutoExecConfig_SetFile("ttt", "sourcemod");
+	AutoExecConfig_SetCreateFile(true);
+	AutoExecConfig_CacheConvars();
 
 	g_iCvar[c_shopKEVLAR] = AutoExecConfig_CreateConVar("ttt_shop_kevlar", "2500");
 	g_iCvar[c_shop1KNIFE] = AutoExecConfig_CreateConVar("ttt_shop_1knife", "5000");
@@ -234,8 +239,11 @@ public void OnPluginStart()
 	g_iCvar[c_startKarma] = AutoExecConfig_CreateConVar("ttt_start_karma", "100");
 	g_iCvar[c_karmaBan] = AutoExecConfig_CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
 	g_iCvar[c_karmaBanLength] = AutoExecConfig_CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
+	g_iCvar[c_maxKarma] = AutoExecConfig_CreateConVar("ttt_max_karma", "200");
 	
-	AutoExecConfig(true, "ttt");
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
+
 }
 
 public Action Logs(int client, int args)
@@ -1179,10 +1187,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractCredits(iAttacker, 1500);
 	}
 	
-	if(g_iKarma[iAttacker] > 100)
-		g_iKarma[iAttacker] = 100;
-	else if(g_iKarma[iAttacker] < 1)
-		g_iKarma[iAttacker] = 1;
+	if(g_iKarma[iAttacker] > g_iCvar[c_maxKarma].IntValue)
+		g_iKarma[iAttacker] = g_iCvar[c_maxKarma].IntValue;
 
 	char result[32];
 	IntToString(g_iKarma[iAttacker], result, sizeof(result));
