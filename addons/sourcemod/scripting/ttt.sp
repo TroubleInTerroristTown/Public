@@ -275,7 +275,7 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "--------------------------------------");
 		return;
 	}
-	Handle pack;
+	Handle pack = CreateDataPack();
 	RequestFrame(OnCreate, pack);
 	WritePackCell(pack, client);
 	WritePackCell(pack, index);
