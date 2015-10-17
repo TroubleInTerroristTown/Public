@@ -114,7 +114,8 @@ bool g_bInactive = false;
 
 int g_iCollisionGroup = -1;
 
-int g_iKarma[MAXPLAYERS+1] = {0, ...};
+bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
+int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
 Handle g_hKarmaCookie = INVALID_HANDLE;
 
 Handle g_hRagdollArray = null;
@@ -430,7 +431,7 @@ public void OnThinkPost(int entity)
     {
         if (IsClientInGame(i))
 		{
-			if(g_iCvar[c_karmaBan].IntValue > 0 && g_iKarma[i] <= g_iCvar[c_karmaBan].IntValue)
+			if(g_bKarma[i] && g_iCvar[c_karmaBan].IntValue > 0 && g_iKarma[i] <= g_iCvar[c_karmaBan].IntValue)
 			{
 				char sReason[512];
 				Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", i);
@@ -694,6 +695,7 @@ public void OnClientPutInServer(int client)
 {
 	char steamid[64];
 	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
+	
 
 
 	//g_bFound[client] = true;
@@ -728,6 +730,8 @@ public void OnClientCookiesCached(int client) {
 		g_iKarma[client] = karma;
 		SetClientCookie(client, g_hKarmaCookie, sValue);
 	}
+	
+	g_bKarma[client] = true;
 }
 
 stock bool IsClientValid(int client) 
@@ -890,6 +894,7 @@ public void OnClientDisconnect(int client)
 		char sKarma[12];
 		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
 		SetClientCookie(client, g_hKarmaCookie, sKarma);
+		g_bKarma[client] = false;
 	}
 	if (g_hRDMTimer[client] != INVALID_HANDLE) {
 		KillTimer(g_hRDMTimer[client]);
@@ -2561,6 +2566,8 @@ stock void resetPlayers()
 	{
 		if (!IsClientInGame(i))
 			continue;
+			
+		g_bKarma[i] = false;
 		
 		char sKarma[32];
 		IntToString(g_iKarma[i], sKarma, sizeof(sKarma));
