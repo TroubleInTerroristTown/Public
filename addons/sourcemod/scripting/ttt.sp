@@ -1160,16 +1160,16 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		g_iKarma[iAttacker] += 7;
 		addCredits(iAttacker, 2100);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] != T)
+	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= 7;
+		g_iKarma[iAttacker] -= 3;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, 2100);
+		subtractCredits(iAttacker, 300);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] != T)
+	else if(g_iRole[iAttacker] == I && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
