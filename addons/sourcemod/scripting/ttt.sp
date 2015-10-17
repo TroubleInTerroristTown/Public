@@ -528,7 +528,7 @@ public Action Timer_Selection(Handle hTimer)
 	
 	int index;
 	int player;
-	while((index = RandomArray()) != -1)
+	while((index = GetRandomArray()) != -1)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 		
@@ -551,8 +551,11 @@ public Action Timer_Selection(Handle hTimer)
 			RemovePlayerItem(player, knife);
 			AcceptEntityInput(player, "Kill");
 		} */
-		GivePlayerItem(player, "weapon_knife");
-		GivePlayerItem(player, "weapon_glock");
+		if(GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
+			GivePlayerItem(player, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(player, "weapon_glock");
 		
 		TeamInitialize(player);
 		
@@ -573,7 +576,7 @@ public Action Timer_Selection(Handle hTimer)
 	ApplyIcons();
 }
 
-stock int RandomArray()
+stock int GetRandomArray()
 {
 	int size = GetArraySize(g_hPlayerArray);
 	if(size == 0)
@@ -587,15 +590,12 @@ stock void TeamInitialize(int client)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
-		int iPrimary = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
-		int iWeapon;
-		int iTaser;
-		if (iPrimary == -1)
+
+		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
+			
 		GivePlayerItem(client, "weapon_taser");
-		
-		EquipPlayerWeapon(client, iWeapon);
-		EquipPlayerWeapon(client, iTaser);
+
 			
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 	}
@@ -1243,7 +1243,8 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		return Plugin_Handled;
 	
 	for(int client = 1; client <=MaxClients; ++client)
-		if(IsClientInGame(client) && IsPlayerAlive(client)) ClearIcon(client);
+		if(IsClientInGame(client) && IsPlayerAlive(client))
+			ClearIcon(client);
 	
 	if(reason == CSRoundEnd_CTWin)
 	{
@@ -1714,6 +1715,9 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 			{
 				if (g_iRole[client] != T)
 					return;
+				if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+				
 				GivePlayerItem(client, "weapon_usp_silencer");
 				g_iCredits[client] -= g_iCvar[c_shopUSP].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
@@ -1726,6 +1730,10 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 			{
 				if (g_iRole[client] != T)
 					return;
+				
+				if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+				
 				GivePlayerItem(client, "weapon_m4a1_silencer");
 				g_iCredits[client] -= g_iCvar[c_shopM4A1].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
