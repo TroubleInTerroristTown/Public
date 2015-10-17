@@ -517,10 +517,14 @@ public Action Timer_Selection(Handle hTimer)
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
 	int Traitores = RoundToNearest(iCount * TRAITORS_AMOUNT);
-	if(detectives == 0) detectives = 1;
-	if(Traitores == 0) Traitores = 1;
 	
-	if(iCount < 4) detectives = 0;
+	if(detectives == 0)
+		detectives = 1;
+	if(Traitores == 0)
+		Traitores = 1;
+	
+	if(iCount < 4)
+		detectives = 0;
 	
 	int index;
 	int player;
@@ -627,32 +631,37 @@ stock void ApplyIcons()
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
-	g_iInnoKills[client] = 0;
-	CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
-	CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 	
-	StripAllWeapons(client);
-	
-	ClearTimer(g_hJihadBomb[client]);
-	g_bDetonate[client] = false;
-	
-	if(g_bInactive)
+	if(IsClientValid(client))
 	{
-		int iCount = 0;
+		CS_SetClientClanTag(client, "");
 		
-		for(int i = 1; i <= MaxClients; i++)
-			if(IsClientInGame(i) && IsPlayerAlive(i))
-				iCount++;
+		g_iInnoKills[client] = 0;
+		CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
+		CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 		
-		if(iCount >= 3)
-			ServerCommand("mp_restartgame 2");
+		StripAllWeapons(client);
+		
+		ClearTimer(g_hJihadBomb[client]);
+		g_bDetonate[client] = false;
+		
+		if(g_bInactive)
+		{
+			int iCount = 0;
+			
+			for(int i = 1; i <= MaxClients; i++)
+				if(IsClientInGame(i) && IsPlayerAlive(i))
+					iCount++;
+			
+			if(iCount >= 3)
+				ServerCommand("mp_restartgame 2");
+		}
+		
+		g_b1Knife[client] = false;
+		g_bScan[client] = false;
+		g_bID[client] = false;
+		g_bJihadBomb[client] = false;
 	}
-	
-	g_b1Knife[client] = false;
-	g_bScan[client] = false;
-	g_bID[client] = false;
-	g_bJihadBomb[client] = false;
-	
 }
 
 public void OnClientPutInServer(int client)
