@@ -236,9 +236,8 @@ public void OnPluginStart()
 	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
 	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
-	
-	AutoExecConfig(true);
 
+	AutoExecConfig(true, "ttt");
 }
 
 public Action Logs(int client, int args)
