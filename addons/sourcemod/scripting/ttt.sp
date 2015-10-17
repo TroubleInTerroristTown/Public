@@ -543,7 +543,8 @@ public Action Timer_Selection(Handle hTimer)
 			g_iRole[player] = T;
 			Traitores--;
 		}
-		else g_iRole[player] = I;
+		else
+			g_iRole[player] = I;
 		
 		
 /* 		int knife = GetPlayerWeaponSlot(player, 2);
@@ -596,8 +597,6 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
 			
 		GivePlayerItem(client, "weapon_taser");
-
-			
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 	}
 	else if(g_iRole[client] == T)
