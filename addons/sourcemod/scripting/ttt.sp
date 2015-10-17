@@ -6,6 +6,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
+#include <convar_append>
 
 #pragma newdecls required
 
@@ -237,7 +238,7 @@ public void OnPluginStart()
 	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
 
-	AutoExecConfig(true, "ttt");
+	AutoExecConfigAppend("ttt", "sourcemod");
 }
 
 public Action Logs(int client, int args)
