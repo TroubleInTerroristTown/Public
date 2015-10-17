@@ -5,7 +5,7 @@ TTT:
     - git clone https://github.com/Bara20/Multi-Colors.git multicolors
     - cp -Ru multicolors/addons/sourcemod/scripting/include/ addons/sourcemod/scripting/
     - rm -r multicolors
-    - cd addons/sourcemod/scripting/inlcude
+    - cd addons/sourcemod/scripting/include
     - wget https://forums.alliedmods.net/attachment.php?attachmentid=131610&d=1438960749
     - cd ..
     - chmod +x spcomp
