@@ -19,7 +19,7 @@
 #define PFA " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %t"
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
-#define MIN_PLAYERS_DETECTIVES 8
+#define MIN_PLAYERS_DETECTIVES 6
 
 #define U 0
 #define I 1
@@ -553,7 +553,7 @@ public Action Timer_Selection(Handle hTimer)
 			RemovePlayerItem(player, knife);
 			AcceptEntityInput(player, "Kill");
 		} */
-		if(GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
+		while (GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
 			GivePlayerItem(player, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
