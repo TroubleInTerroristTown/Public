@@ -180,9 +180,6 @@ public void OnPluginStart()
 	RegAdminCmd("sm_role", Command_Role, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	RegAdminCmd("sm_hs", Command_healthStation, ADMFLAG_ROOT);
-	// Nana, bad admins
-	// RegAdminCmd("sm_getdist", Command_GetDist, ADMFLAG_ROOT);
-	RegAdminCmd("sm_c4", Command_C4, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Showkarma);
@@ -2534,76 +2531,6 @@ stock void resetPlayers()
 	}
 }
 
-public Action Command_GetDist(int client, int args)
-{
-	if (!client || !IsClientInGame(client))
-		return Plugin_Handled;
-		
-	if (!IsPlayerAlive(client))
-	{
-		ReplyToCommand(client, "[SM] You need to be alive.");
-		return Plugin_Handled;
-	}
-	
-	char arg1[32];
-	GetCmdArg(1, arg1, sizeof(arg1));
-	int target = FindTarget(client, arg1);
-	if (target == -1)
-		return Plugin_Handled;
-	if (!IsPlayerAlive(target))
-	{
-		ReplyToCommand(client, "[SM] That player is not alive.");
-		return Plugin_Handled;
-	}
-	ReplyToCommand(client, "[SM] %N is %.2f from you.", target, getDistance(client, target));
-	return Plugin_Handled;
-}
-
-public Action Command_C4(int client, int args)
-{
-	if (!client || !IsClientInGame(client))
-		return Plugin_Handled;
-	
-	if (args != 1)
-	{
-		ReplyToCommand(client, "[SM] Usage: sm_c4 <#userid|name>");
-		return Plugin_Handled;
-	}
-	
-	char arg1[32];
-	GetCmdArg(1, arg1, sizeof(arg1));
-	char target_name[MAX_TARGET_LENGTH];
-	int target_list[MAXPLAYERS], target_count;
-	bool tn_is_ml;
- 
-	if ((target_count = ProcessTargetString(
-			arg1,
-			client,
-			target_list,
-			MAXPLAYERS,
-			COMMAND_FILTER_ALIVE,
-			target_name,
-			sizeof(target_name),
-			tn_is_ml)) <= 0)
-	{
-		ReplyToTargetError(client, target_count);
-		return Plugin_Handled;
-	}
-	
-	for (int i = 0; i < target_count; i++)
-	{
-		g_bHasC4[target_list[i]] = true;
-		PrintToChat(target_list[i], "[\x04T\x02T\x0BT\x01] Right click to use your C4"); // TODO: Translations
-	}
-	
-	if (tn_is_ml)
-		ReplyToCommand(client, "Gave %t a C4!", target_name);
-	else
-		ReplyToCommand(client, "Gave %s a C4!", target_name);
-
-	return Plugin_Handled;
-}
-
 //health station
 
 stock void listTraitors(int client)
@@ -2612,19 +2539,18 @@ stock void listTraitors(int client)
 		return;
 	
 	PrintToChat(client, "[\x02TTT\x01] Your Traitor partners are:"); // TODO: Translations
+	int iCount = 0;
+	
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsClientInGame(i) || !IsPlayerAlive(i) || client == i || g_iRole[i] != T) continue;
+		if (!IsClientInGame(i) || !IsPlayerAlive(i) || client == i || g_iRole[i] != T)
+			continue;
 		PrintToChat(client, "[\x02TTT\x01] %N", i); // TODO: Translations
+		iCount++;
 	}
-}
-
-float getDistance(int client, int other)
-{
-	float clientPos[3], otherPos[3];
-	GetEntPropVector(client, Prop_Send, "m_vecOrigin", clientPos);
-	GetEntPropVector(other, Prop_Send, "m_vecOrigin", otherPos);
-	return GetVectorDistance(clientPos, otherPos);
+	
+	if(iCount == 0)
+		PrintToChat(client, "[\x02TTT\x01] You have no partner."); // TODO: Translations
 }
 
 stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
