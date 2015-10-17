@@ -19,7 +19,6 @@
 #define PFA " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %t"
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
-#define MIN_PLAYERS_DETECTIVES 6
 
 #define U 0
 #define I 1
@@ -41,7 +40,9 @@ enum eCvars
 	ConVar:c_shopM4A1,
 	ConVar:c_shopJIHADBOMB,
 	ConVar:c_shopC4,
-	ConVar:c_shopHEALTH
+	ConVar:c_shopHEALTH,
+	ConVar:c_requiredPlayersD,
+	ConVar:c_requiredPlayers
 };
 
 int g_iCvar[eCvars];
@@ -213,19 +214,21 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass"); */
 
-	g_iCvar[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500", "");
-	g_iCvar[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000", "");
-	g_iCvar[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000", "");
-	g_iCvar[c_shopID] = CreateConVar("ttt_shop_id_card", "500", "");
-	g_iCvar[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000", "");
-	g_iCvar[c_shopT] = CreateConVar("ttt_shop_t", "100000", "");
-	g_iCvar[c_shopD] = CreateConVar("ttt_shop_d", "5000", "");
-	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000", "");
-	g_iCvar[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000", "");
-	g_iCvar[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000", "");
-	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000", "");
-	g_iCvar[c_shopC4] = CreateConVar("ttt_shop_c4", "10000", "");
-	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000", "");
+	g_iCvar[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
+	g_iCvar[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
+	g_iCvar[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
+	g_iCvar[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
+	g_iCvar[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000");
+	g_iCvar[c_shopT] = CreateConVar("ttt_shop_t", "100000");
+	g_iCvar[c_shopD] = CreateConVar("ttt_shop_d", "5000");
+	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
+	g_iCvar[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000");
+	g_iCvar[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000");
+	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
+	g_iCvar[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
+	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
+	g_iCvar[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
+	g_iCvar[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
 	
 	AutoExecConfig(true, "ttt");
 }
@@ -510,10 +513,10 @@ public Action Timer_Selection(Handle hTimer)
 			PushArrayCell(g_hPlayerArray, i);
 		}
 		
-	if(iCount < 3) 
+	if(iCount < g_iCvar[c_requiredPlayers].IntValue) 
 	{
 		g_bInactive = true;
-		CPrintToChatAll(PFA, "MIN PLAYERS REQUIRED FOR PLAY: 3");
+		CPrintToChatAll(PFA, "MIN PLAYERS REQUIRED FOR PLAY", g_iCvar[c_requiredPlayers].IntValue);
 		return;
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
@@ -524,7 +527,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(Traitores == 0)
 		Traitores = 1;
 	
-	if(iCount < MIN_PLAYERS_DETECTIVES)
+	if(iCount < g_iCvar[c_requiredPlayersD].IntValue)
 		detectives = 0;
 	
 	int index;

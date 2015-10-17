@@ -17,12 +17,13 @@
 		"chi"           "按E可调查/拖动尸体/!menu打开各种职业的商店"
 	}
 
-	"MIN PLAYERS REQUIRED FOR PLAY: 3"
+	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
-		"en"            "MIN. PLAYERS REQUIRED TO PLAY: 2"
-		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: 2"
-		"de"            "Warte auf andere Spieler.."
-		"chi"           "游戏所需最少玩家数: 2"
+		"#format"		"{1:d}"
+		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {1}"
+		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: {1}"
+		"de"            "Warten auf ingesamt {1} Spieler."
+		"chi"           "游戏所需最少玩家数: {1}"
 	}
 
 	"Your Team is DETECTIVES"
