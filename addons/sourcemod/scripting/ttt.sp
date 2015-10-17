@@ -12,16 +12,19 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara/Darkness/Zipcore"
 #define PLUGIN_DESCRIPTION ""
-#define PLUGIN_VERSION "2.0.0"
-#define PLUGIN_URL "git.tf"
+#define PLUGIN_VERSION "2.0.1"
+#define PLUGIN_URL "git.tf/Bara/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
 #define PFA " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %t"
-
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.125
-
 #define GRAB_DISTANCE 150.0
+#define U 0
+#define I 1
+#define T 2
+#define D 3
+#define MONEYHIDE 16000
 
 enum eCvars
 {
@@ -44,7 +47,6 @@ int g_iCvar[eCvars];
 
 int g_iCredits[MAXPLAYERS+1] = {0, ...};
 
-bool realMoney[MAXPLAYERS+1];
 bool g_bHasC4[MAXPLAYERS+1] = {false, ...};
 
 int g_iRDMAttacker[MAXPLAYERS+1] = {-1, ...};
@@ -83,45 +85,39 @@ bool g_bOnHealingCoolDown[MAXPLAYERS+1] = {false, ...};
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
 //
 
-bool g_b1Knife[MAXPLAYERS+1];
-bool scan[MAXPLAYERS+1];
-bool g_bJihadBomb[MAXPLAYERS+1];
-int ID[MAXPLAYERS+1];
-Handle g_hJihadBomb[MAXPLAYERS+1];
-int g_iRole[MAXPLAYERS+1];
+bool g_b1Knife[MAXPLAYERS+1] = {false, ...};
+bool g_bScan[MAXPLAYERS+1] = {false, ...};
+bool g_bJihadBomb[MAXPLAYERS+1] = {false, ...};
+bool g_bID[MAXPLAYERS+1] = {false, ...};
+Handle g_hJihadBomb[MAXPLAYERS+1] = {null, ...};
+int g_iRole[MAXPLAYERS+1] = {0, ...};
 
-#define U 0
-#define I 1
-#define T 2
-#define D 3
-
-#define MONEYHIDE 16000
 int g_iInnoKills[MAXPLAYERS + 1];
 
-Handle g_hGraceTime;
+Handle g_hGraceTime = null;
 
-Handle g_hStartTimer;
-Handle g_hPlayerArray;
+Handle g_hStartTimer = null;
+Handle g_hPlayerArray = null;
 
-int icon[MAXPLAYERS+1];
+int g_iIcon[MAXPLAYERS+1] = {0, ...};
 
-bool g_bRoundStarted;
+bool g_bRoundStarted = false;
 
-Handle g_hRoundTimer;
+Handle g_hRoundTimer = null;
 
-bool g_bInactive;
+bool g_bInactive = false;
 
-int g_iCollisionGroup;
+int g_iCollisionGroup = -1;
 
-int karma[MAXPLAYERS+1];
+int g_iKarma[MAXPLAYERS+1] = {0, ...};
 
-Handle g_hRagdollArray;
+Handle g_hRagdollArray = null;
 
-int g_iBeamSprite;
-int g_iHaloSprite;
+int g_iBeamSprite = -1;
+int g_iHaloSprite = -1;
 
-bool g_bFound[MAXPLAYERS + 1];
-bool g_bDetonate[MAXPLAYERS + 1];
+bool g_bFound[MAXPLAYERS + 1] = {false, ...};
+bool g_bDetonate[MAXPLAYERS + 1] = {false, ...};
 
 int g_iAlive = -1;
 
@@ -415,7 +411,7 @@ public void OnMapStart()
 public void OnThinkPost(int entity) 
 {
     if(IsClientValid(entity))
-        CS_SetClientContributionScore(entity, karma[entity]);
+        CS_SetClientContributionScore(entity, g_iKarma[entity]);
 	
     int isAlive[65];
 	
@@ -435,7 +431,7 @@ public void OnThinkPost(int entity)
 
 public Action Showkarma(int client, int args)
 {
-	CPrintToChat(client, PF, "Your karma is", client, karma[client]);
+	CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 	
 	return Plugin_Handled;
 }
@@ -588,7 +584,7 @@ stock void TeamInitialize(int client)
 {
 	if(g_iRole[client] == D)
 	{
-		//icon[client] = CreateIcon(client);
+		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
 		int iPrimary = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
 		int iWeapon;
@@ -604,7 +600,7 @@ stock void TeamInitialize(int client)
 	}
 	else if(g_iRole[client] == T)
 	{
-		//icon[client] = CreateIcon(client);
+		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
 	}
 	else if(g_iRole[client] == I)
@@ -628,7 +624,7 @@ stock void ApplyIcons()
 {
 	for(int i = 1; i <= MaxClients; i++)
 		if(IsClientInGame(i) && IsPlayerAlive(i))
-			icon[i] = CreateIcon(i);
+			g_iIcon[i] = CreateIcon(i);
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -636,7 +632,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	g_iInnoKills[client] = 0;
 	CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
-	CPrintToChat(client, PF, "Your karma is", client, karma[client]);
+	CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 	
 	StripAllWeapons(client);
 	
@@ -656,8 +652,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 	
 	g_b1Knife[client] = false;
-	scan[client] = false;
-	ID[client] = false;
+	g_bScan[client] = false;
+	g_bID[client] = false;
 	g_bJihadBomb[client] = false;
 	
 }
@@ -672,7 +668,6 @@ public void OnClientPutInServer(int client)
 	
 	//g_iRole[client] = U;
 	
-	realMoney[client] = false;
 	g_bImmuneRDMManager[client] = false;
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamage);
@@ -694,14 +689,14 @@ public void OnClientCookiesCached(int client) {
 	
 	if (karmaSetting <= 0)
 	{
-		karma[client] = 100;
+		g_iKarma[client] = 100;
 		char result[32];
-		IntToString(karma[client], result, sizeof(result));
+		IntToString(g_iKarma[client], result, sizeof(result));
 		SetClientCookie(client, g_hKarmaCookie, result);
 	}
 	else
 	{
-		karma[client] = StringToInt(sValue);
+		g_iKarma[client] = StringToInt(sValue);
 		SetClientCookie(client, g_hKarmaCookie, sValue);
 	}
 }
@@ -757,10 +752,10 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 		}
 	}
 	
-	if(karma[iAttacker] == 100)
+	if(g_iKarma[iAttacker] == 100)
 		return Plugin_Continue;
 	
-	damage = (damage * (karma[iAttacker] * 0.01));
+	damage = (damage * (g_iKarma[iAttacker] * 0.01));
 	
 	if(damage < 1.0)
 		damage = 1.0;
@@ -867,7 +862,7 @@ public void OnClientDisconnect(int client)
 		GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));	
 		int Items2[Playerinfo];
 		Items2[money2] = g_iCredits[client];
-		Items2[karma2] = karma[client];
+		Items2[karma2] = g_iKarma[client];
 	
 		SetTrieArray(trie_info, steamid, Items2[0], sizeof(Items2));
 	}
@@ -980,13 +975,12 @@ public Action Timer_Adjust(Handle timer)
 			{
 				I_lives++;
 			}
-			
-			if(realMoney[i]) continue;
+
 			int money = GetEntData(i, g_iAccount);
 			if(money != MONEYHIDE)
 			{
 				SetEntData(i, g_iAccount, MONEYHIDE);
-				//g_iCredits[i] += RoundToNearest((money-MONEYHIDE) * (karma[i] * 0.01));
+				//g_iCredits[i] += RoundToNearest((money-MONEYHIDE) * (g_iKarma[i] * 0.01));
 			}
 		}
 		
@@ -1054,28 +1048,10 @@ public Action Timer_Adjust(Handle timer)
 
 public Action ShowMoney(int client, int args)
 {
-	//ReplyToCommand(client, "Your REAL money is: %i", g_iCredits[client]);
 	CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
 	
 	return Plugin_Handled;
 }
-
-/* public Action CS_OnBuyCommand(client, const String:weapon[])
-{
-	SetEntData(client, g_iAccount, g_iCredits[client]);
-	realMoney[client] = true;
-	
-	CreateTimer(0.1, Pasado, client);
-}
-
-public Action Pasado(Handle timer, any client)
-{
-	if(!IsClientInGame(client)) return;
-	
-	g_iCredits[client] = GetEntData(client, g_iAccount);
-	SetEntData(client, g_iAccount, MONEYHIDE);
-	realMoney[client] = false;
-} */
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
@@ -1123,14 +1099,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		karma[iAttacker] += 5;
+		g_iKarma[iAttacker] += 5;
 		addCredits(iAttacker, 3000);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		karma[iAttacker] -= 7;
+		g_iKarma[iAttacker] -= 7;
 		subtractCredits(iAttacker, 4200);
 		//RDM(iAttacker);
 	}
@@ -1139,7 +1115,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		karma[iAttacker] += 3;
+		g_iKarma[iAttacker] += 3;
 		addCredits(iAttacker, 2400);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
@@ -1147,14 +1123,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		karma[iAttacker] += 2;
+		g_iKarma[iAttacker] += 2;
 		addCredits(iAttacker, 600);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		karma[iAttacker] += 7;
+		g_iKarma[iAttacker] += 7;
 		addCredits(iAttacker, 2100);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] != T)
@@ -1162,7 +1138,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		karma[iAttacker] -= 7;
+		g_iKarma[iAttacker] -= 7;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 2100);
 	}
@@ -1171,7 +1147,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		karma[iAttacker] -= 5;
+		g_iKarma[iAttacker] -= 5;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 1500);
 	}
@@ -1179,18 +1155,18 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		karma[iAttacker] -= 5;
+		g_iKarma[iAttacker] -= 5;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 1500);
 	}
 	
-	if(karma[iAttacker] > 100)
-		karma[iAttacker] = 100;
-	else if(karma[iAttacker] < 1)
-		karma[iAttacker] = 1;
+	if(g_iKarma[iAttacker] > 100)
+		g_iKarma[iAttacker] = 100;
+	else if(g_iKarma[iAttacker] < 1)
+		g_iKarma[iAttacker] = 1;
 
 	char result[32];
-	IntToString(karma[iAttacker], result, sizeof(result));
+	IntToString(g_iKarma[iAttacker], result, sizeof(result));
 	SetClientCookie(iAttacker, g_hKarmaCookie, result);
 }
 
@@ -1224,7 +1200,8 @@ stock int CreateIcon(int client) {
 	SetVariantString(iTarget);
 	AcceptEntityInput(Ent, "SetParent", Ent, Ent, 0);
  
-	if(g_iRole[client] == T) SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT); 
+	if(g_iRole[client] == T)
+		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT); 
 	return Ent;
 }
 
@@ -1459,7 +1436,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						addCredits(client, 1200);
 					}
 					
-					if(scan[client] && !Items[scanned] && IsPlayerAlive(client))
+					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
 					{
 						Items[scanned] = true;
 						if(Items[attacker] > 0 && Items[attacker] != Items[victim])
@@ -1517,7 +1494,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action ShowID(int client, int args)
 {
-	if(ID[client] && IsPlayerAlive(client))
+	if(g_bID[client] && IsPlayerAlive(client))
 		CPrintToChatAll(PFA, "Player Is an Innocent", client);
 	else
 		CPrintToChat(client, PF, "You dont have it!", client);
@@ -1667,7 +1644,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 		{
 			if(g_iCredits[client] >= g_iCvar[c_shopDNA].IntValue)
 			{
-				scan[client] = true;
+				g_bScan[client] = true;
 				g_iCredits[client] -= g_iCvar[c_shopDNA].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
@@ -1677,7 +1654,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 		{
 			if(g_iCredits[client] >= g_iCvar[c_shopID].IntValue)
 			{
-				ID[client] = true;
+				g_bID[client] = true;
 				g_iCredits[client] -= g_iCvar[c_shopID].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
@@ -1687,7 +1664,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 		{
 			if(g_iCredits[client] >= g_iCvar[c_shopFAKEID].IntValue)
 			{
-				ID[client] = true;
+				g_bID[client] = true;
 				g_iCredits[client] -= g_iCvar[c_shopFAKEID].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
@@ -1849,7 +1826,7 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 		}
 	}
 	
-	if(scan[client])
+	if(g_bScan[client])
 	{
 		if(atacante2 > 0 && atacante2 != victima2) Format(Item, sizeof(Item), "%T", "Killer is Player",client, atacantename2);
 		else Format(Item, sizeof(Item), "%T", "Player committed suicide", client);
@@ -1896,18 +1873,18 @@ stock void Remove1Knife(int client)
 
 stock void ClearIcon(int client)
 {
-	if(icon[client] > 0 && IsValidEdict(icon[client]))
+	if(g_iIcon[client] > 0 && IsValidEdict(g_iIcon[client]))
 	{
-		if(g_iRole[client] == T) SDKUnhook(icon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
-		AcceptEntityInput(icon[client], "Kill");
+		if(g_iRole[client] == T) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
+		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
-	icon[client] = 0;
+	g_iIcon[client] = 0;
 	
 }
 
 stock void addCredits(int client, int credits)
 {
-	credits = RoundToNearest((credits) * (karma[client] * 0.01));
+	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
 	g_iCredits[client] += credits;
 	
 	PrintHintText(client, "%T", "credits earned", client, credits, g_iCredits[client]);
@@ -2191,7 +2168,7 @@ public Action Timer_5(Handle timer)
 		if (!IsPlayerAlive(i))
 			continue;
 
-		icon[i] = CreateIcon(i);
+		g_iIcon[i] = CreateIcon(i);
 		
 		if (g_iRole[i] == D)
 			ShowOverlayToClient(i, "darkness/ttt/overlayDetective");
@@ -2826,9 +2803,9 @@ public Action Command_KarmaReset(int client, int args)
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i)) continue;
-		karma[i] = 100;
+		g_iKarma[i] = 100;
 		char result[32];
-		IntToString(karma[i], result, sizeof(result));
+		IntToString(g_iKarma[i], result, sizeof(result));
 		SetClientCookie(i, g_hKarmaCookie, result);
 	}
 	return Plugin_Handled;
