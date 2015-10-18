@@ -67,7 +67,16 @@ enum eCvars
 	ConVar:c_karmaTD,
 	ConVar:c_karmaDI,
 	ConVar:c_karmaDT,
-	ConVar:c_karmaDD
+	ConVar:c_karmaDD,
+	ConVar:c_creditsII,
+	ConVar:c_creditsIT,
+	ConVar:c_creditsID,
+	ConVar:c_creditsTI,
+	ConVar:c_creditsTT,
+	ConVar:c_creditsTD,
+	ConVar:c_creditsDI,
+	ConVar:c_creditsDT,
+	ConVar:c_creditsDD
 };
 
 int g_iCvar[eCvars];
@@ -161,12 +170,6 @@ enum Ragdolls
 	bool:found
 }
 
-enum Playerinfo
-{
-	money2,
-	karma2,
-}
-
 bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
@@ -253,24 +256,38 @@ public void OnPluginStart()
 	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
 	g_iCvar[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
 	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
+	
 	g_iCvar[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
 	g_iCvar[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
+	
 	g_iCvar[c_startKarma] = CreateConVar("ttt_start_karma", "100");
 	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
 	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
+	
 	g_iCvar[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
 	g_iCvar[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
 	g_iCvar[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
-	g_iCvar[c_karmaII] = CreateConVar("ttt_killer_innocent_victim_innocent_subtract", "5");
-	g_iCvar[c_karmaIT] = CreateConVar("ttt_killer_innocent_victim_traitor_add", "5");
-	g_iCvar[c_karmaID] = CreateConVar("ttt_killer_innocent_victim_detective_subtract", "7");
-	g_iCvar[c_karmaTI] = CreateConVar("ttt_killer_traitor_victim_innocent_add", "+");
-	g_iCvar[c_karmaTT] = CreateConVar("ttt_killer_traitor_victim_traitor_subtract", "5");
-	g_iCvar[c_karmaTD] = CreateConVar("ttt_killer_traitor_victim_detective_add", "3");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_innocent_subtract", "3");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_traitor_add", "7");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_detective_subtract", "7");
+	
+	g_iCvar[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
+	g_iCvar[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
+	g_iCvar[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
+	g_iCvar[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
+	g_iCvar[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
+	g_iCvar[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
+	
+	g_iCvar[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
+	g_iCvar[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
+	g_iCvar[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
+	g_iCvar[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
+	g_iCvar[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
+	g_iCvar[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
+	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
+	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
+	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
 }
@@ -1190,14 +1207,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		g_iKarma[iAttacker] += g_iCvar[c_karmaIT].IntValue;
-		addCredits(iAttacker, 3000);
+		addCredits(iAttacker, g_iCvar[c_creditsIT].IntValue);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		g_iKarma[iAttacker] -= g_iCvar[c_karmaID].IntValue;
-		subtractCredits(iAttacker, 4200);
+		subtractCredits(iAttacker, g_iCvar[c_creditsID].IntValue);
 		//RDM(iAttacker);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
@@ -1206,7 +1223,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		PushArrayString(g_hLogsArray, item);
 		
 		g_iKarma[iAttacker] += g_iCvar[c_karmaTD].IntValue;
-		addCredits(iAttacker, 2400);
+		addCredits(iAttacker, g_iCvar[c_creditsTD].IntValue);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
 	{
@@ -1214,14 +1231,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		PushArrayString(g_hLogsArray, item);
 		
 		g_iKarma[iAttacker] += g_iCvar[c_karmaTI].IntValue;
-		addCredits(iAttacker, 600);
+		addCredits(iAttacker, g_iCvar[c_creditsTI].IntValue);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		g_iKarma[iAttacker] += g_iCvar[c_karmaDT].IntValue;
-		addCredits(iAttacker, 2100);
+		addCredits(iAttacker, g_iCvar[c_creditsDT].IntValue);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
@@ -1230,7 +1247,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		
 		g_iKarma[iAttacker] -= g_iCvar[c_karmaDI].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, 300);
+		subtractCredits(iAttacker, g_iCvar[c_creditsDI].IntValue);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == I)
 	{
@@ -1239,7 +1256,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		
 		g_iKarma[iAttacker] -= g_iCvar[c_karmaII].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, 1500);
+		subtractCredits(iAttacker, g_iCvar[c_creditsII].IntValue);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
 	{
@@ -1247,7 +1264,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		PushArrayString(g_hLogsArray, item);
 		g_iKarma[iAttacker] -= g_iCvar[c_karmaTT].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, 1500);
+		subtractCredits(iAttacker, g_iCvar[c_creditsTT].IntValue);
 	}
 	
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
@@ -1256,7 +1273,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		PushArrayString(g_hLogsArray, item);
 		g_iKarma[iAttacker] -= g_iCvar[c_karmaDD].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, 3000);
+		subtractCredits(iAttacker, g_iCvar[c_creditsDD].IntValue);
 	}
 	
 	if(g_iKarma[iAttacker] > g_iCvar[c_maxKarma].IntValue)
