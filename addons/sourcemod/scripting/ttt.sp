@@ -6,6 +6,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
+#include <CustomPlayerSkins>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -39,6 +40,7 @@ enum eConfig
 	ConVar:c_shopDNA,
 	ConVar:c_shopID,
 	ConVar:c_shopFAKEID,
+	ConVar:c_shopRadar,
 	ConVar:c_shopT,
 	ConVar:c_shopD,
 	ConVar:c_shopTASER,
@@ -115,19 +117,20 @@ int g_iDefusePlayerIndex[MAXPLAYERS+1] = {-1, ...};
 //
 
 //health station
-int g_iHealthStationCharges[MAXPLAYERS+1] = {0, ...};
-int g_iHealthStationHealth[MAXPLAYERS+1] = {0, ...};
-bool g_bHasActiveHealthStation[MAXPLAYERS+1] = {false, ...};
-bool g_bOnHealingCoolDown[MAXPLAYERS+1] = {false, ...};
-Handle g_hRemoveCoolDownTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
+int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
+int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
+bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
+Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 //
 
-bool g_b1Knife[MAXPLAYERS+1] = {false, ...};
-bool g_bScan[MAXPLAYERS+1] = {false, ...};
-bool g_bJihadBomb[MAXPLAYERS+1] = {false, ...};
-bool g_bID[MAXPLAYERS+1] = {false, ...};
-Handle g_hJihadBomb[MAXPLAYERS+1] = {null, ...};
-int g_iRole[MAXPLAYERS+1] = {0, ...};
+bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
+bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
+bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
+bool g_bID[MAXPLAYERS + 1] =  { false, ... };
+bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
+Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
+int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iInnoKills[MAXPLAYERS + 1];
 
@@ -250,7 +253,8 @@ public void OnPluginStart()
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
 	g_iConfig[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
 	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
-	g_iConfig[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000");
+	g_iConfig[c_shopRadar] = CreateConVar("ttt_shop_radar", "7000");
+	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
 	g_iConfig[c_shopT] = CreateConVar("ttt_shop_t", "100000");
 	g_iConfig[c_shopD] = CreateConVar("ttt_shop_d", "5000");
 	g_iConfig[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
@@ -736,7 +740,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		g_b1Knife[client] = false;
 		g_bScan[client] = false;
 		g_bID[client] = false;
+		g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
+		
+		char model[PLATFORM_MAX_PATH];
+		GetClientModel(client, model, sizeof(model));
+		
+		CPS_RemoveSkin(client);
+		CPS_SetSkin(client, model, CPS_RENDER);
 	}
 }
 
@@ -1697,6 +1708,15 @@ public Action ShowMenu(int client, int args)
 		char MenuItem[128];
 		Handle menu = CreateMenu(DIDMenuHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
+		
+		if(team != I)
+		{
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
+			AddMenuItem(menu, "radar", MenuItem);
+			
+			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[c_shopKEVLAR].IntValue);
+			AddMenuItem(menu, "kevlar", MenuItem);
+		}
 	
 		if(team == T)
 		{
@@ -1705,7 +1725,6 @@ public Action ShowMenu(int client, int args)
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[c_shopJIHADBOMB].IntValue);
 			AddMenuItem(menu, "jbomb", MenuItem);
-			
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[c_shop1KNIFE].IntValue);
 			AddMenuItem(menu, "1knife", MenuItem);
@@ -1727,11 +1746,6 @@ public Action ShowMenu(int client, int args)
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[c_shopDNA].IntValue);
 			AddMenuItem(menu, "scan13", MenuItem);
-		}
-		if(team != I)
-		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[c_shopKEVLAR].IntValue);
-			AddMenuItem(menu, "kevlar", MenuItem);
 		}
 		if(team == I)
 		{
@@ -1804,6 +1818,16 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 			{
 				g_bID[client] = true;
 				g_iCredits[client] -= g_iConfig[c_shopID].IntValue;
+				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+			}
+			else CPrintToChat(client, PF, "You don't have enough money", client);
+		}
+		else if ( strcmp(info,"radar") == 0 )
+		{
+			if(g_iCredits[client] >= g_iConfig[c_shopRadar].IntValue)
+			{
+				g_bRadar[client] = true;
+				g_iCredits[client] -= g_iConfig[c_shopRadar].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
