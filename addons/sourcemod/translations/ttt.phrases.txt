@@ -541,4 +541,11 @@
 		"en"			"You were banned, because your karma is too low!"
 		"de"			"Sie wurden gebannt, weil ihr Karma zu niedrig ist!"
 	}
+	
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"#format"		"{1:d}"
+		"en"            "{1} TRAITORS HAVE BEEN SELECTED"
+		"de"            "{1} wurden ausgewählt!"
+	}
 }

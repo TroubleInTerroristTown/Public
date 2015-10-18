@@ -647,8 +647,16 @@ public Action Timer_Selection(Handle hTimer)
 {
 	g_hStartTimer = INVALID_HANDLE;
 	
+	int iTraitors = 0;
 	LoopValidClients(i)
+	{
 		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
+		iTraitors++;
+	}
+	
+	LoopValidClients(i)
+		if(g_iRole[i] != T)
+			CPrintToChat(i, PF, "TRAITORS HAS BEEN SELECTED", iTraitors);
 	
 	ClearArray(g_hPlayerArray);
 	
