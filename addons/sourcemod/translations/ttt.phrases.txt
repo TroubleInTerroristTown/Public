@@ -54,10 +54,10 @@
 	"Your REAL money is"
 	{
 		"#format"       "{1:i}"
-		"en"            "{green}Your CREDITS are: {default}{1}"
-		"es"            "{green}Tus creditos son: {default}{1}"
-		"de"            "{green}Deine Credits: {default}{1}"
-		"chi"           "{green}你的金钱是: {default}{1}"
+		"en"            "{green}Your CREDITS are: {lightgreen}{1}"
+		"es"            "{green}Tus creditos son: {lightgreen}{1}"
+		"de"            "{green}Deine Credits: {lightgreen}{1}"
+		"chi"           "{green}你的金钱是: {lightgreen}{1}"
 	}
 
 	"Your killer is a Traitor"
