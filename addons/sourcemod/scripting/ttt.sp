@@ -6,7 +6,6 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
-#include <convar_append>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -301,7 +300,7 @@ public void OnPluginStart()
 	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
 	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
 
-	AutoExecConfigAppend("ttt", "sourcemod");
+	AutoExecConfig(true);
 }
 
 public Action Logs(int client, int args)
