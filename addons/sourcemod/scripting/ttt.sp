@@ -33,7 +33,7 @@ if(IsClientValid(%1))
 #define D 3
 #define MONEYHIDE 16000
 
-enum eCvars
+enum eConfig
 {
 	ConVar:c_shopKEVLAR,
 	ConVar:c_shop1KNIFE,
@@ -83,7 +83,7 @@ enum eCvars
 	ConVar:c_traitorwinDeadTraitors
 };
 
-int g_iCvar[eCvars];
+int g_iConfig[eConfig];
 
 int g_iCredits[MAXPLAYERS+1] = {800, ...};
 
@@ -247,59 +247,59 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass"); */
 
-	g_iCvar[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
-	g_iCvar[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
-	g_iCvar[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
-	g_iCvar[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
-	g_iCvar[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000");
-	g_iCvar[c_shopT] = CreateConVar("ttt_shop_t", "100000");
-	g_iCvar[c_shopD] = CreateConVar("ttt_shop_d", "5000");
-	g_iCvar[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
-	g_iCvar[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000");
-	g_iCvar[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000");
-	g_iCvar[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
-	g_iCvar[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
-	g_iCvar[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
+	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
+	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
+	g_iConfig[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
+	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
+	g_iConfig[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "5000");
+	g_iConfig[c_shopT] = CreateConVar("ttt_shop_t", "100000");
+	g_iConfig[c_shopD] = CreateConVar("ttt_shop_d", "5000");
+	g_iConfig[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
+	g_iConfig[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000");
+	g_iConfig[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000");
+	g_iConfig[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
+	g_iConfig[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
+	g_iConfig[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
 	
-	g_iCvar[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
-	g_iCvar[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
+	g_iConfig[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
+	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
 	
-	g_iCvar[c_startKarma] = CreateConVar("ttt_start_karma", "100");
-	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
-	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
-	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
+	g_iConfig[c_startKarma] = CreateConVar("ttt_start_karma", "100");
+	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
+	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
+	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
 	
-	g_iCvar[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
-	g_iCvar[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
-	g_iCvar[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
+	g_iConfig[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
+	g_iConfig[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
+	g_iConfig[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
 	
-	g_iCvar[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
-	g_iCvar[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
-	g_iCvar[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
-	g_iCvar[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
-	g_iCvar[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
-	g_iCvar[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
-	g_iCvar[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
+	g_iConfig[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
+	g_iConfig[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
+	g_iConfig[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
+	g_iConfig[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
+	g_iConfig[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
+	g_iConfig[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
+	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
+	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
+	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
 	
-	g_iCvar[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
-	g_iCvar[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
-	g_iCvar[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
-	g_iCvar[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
-	g_iCvar[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
-	g_iCvar[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
-	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
-	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
-	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
+	g_iConfig[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
+	g_iConfig[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
+	g_iConfig[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
+	g_iConfig[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
+	g_iConfig[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
+	g_iConfig[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
+	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
+	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
+	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
 	
-	g_iCvar[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
-	g_iCvar[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
-	g_iCvar[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
-	g_iCvar[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
+	g_iConfig[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
+	g_iConfig[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
+	g_iConfig[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
+	g_iConfig[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
 	
-	g_iCvar[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
-	g_iCvar[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
+	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
+	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
 }
@@ -581,11 +581,11 @@ public Action Timer_Selection(Handle hTimer)
 			PushArrayCell(g_hPlayerArray, i);
 		}
 		
-	if(iCount < g_iCvar[c_requiredPlayers].IntValue) 
+	if(iCount < g_iConfig[c_requiredPlayers].IntValue) 
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
-			CPrintToChat(i, PF, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iCvar[c_requiredPlayers].IntValue);
+			CPrintToChat(i, PF, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[c_requiredPlayers].IntValue);
 		return;
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
@@ -596,7 +596,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(Traitores == 0)
 		Traitores = 1;
 	
-	if(iCount < g_iCvar[c_requiredPlayersD].IntValue)
+	if(iCount < g_iConfig[c_requiredPlayersD].IntValue)
 		detectives = 0;
 	
 	int index;
@@ -670,18 +670,18 @@ stock void TeamInitialize(int client)
 			
 		GivePlayerItem(client, "weapon_taser");
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
-		SetEntityHealth(client, g_iCvar[c_spawnHPD].IntValue);
+		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
-		SetEntityHealth(client, g_iCvar[c_spawnHPT].IntValue);
+		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
 	}
 	else if(g_iRole[client] == I)
 	{
 		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
-		SetEntityHealth(client, g_iCvar[c_spawnHPI].IntValue);
+		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
 	}
 }
 
@@ -767,7 +767,7 @@ public Action ThinkPost(int client)
 {
 	if(IsClientValid(client))
 	{
-		if(g_bKarma[client] && g_iCvar[c_karmaBan].IntValue != 0 && g_iKarma[client] <= g_iCvar[c_karmaBan].IntValue)
+		if(g_bKarma[client] && g_iConfig[c_karmaBan].IntValue != 0 && g_iKarma[client] <= g_iConfig[c_karmaBan].IntValue)
 		{
 			BanBadPlayerKarma(client);
 		}
@@ -783,13 +783,13 @@ public void OnClientCookiesCached(int client) {
 	
 	if (karma == 0)
 	{
-		g_iKarma[client] = g_iCvar[c_startKarma].IntValue;
+		g_iKarma[client] = g_iConfig[c_startKarma].IntValue;
 		
 		char sKarma[32];
 		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
 		SetClientCookie(client, g_hKarmaCookie, sKarma);
 	}
-	else if (karma > 0 && karma <= g_iCvar[c_karmaBan].IntValue)
+	else if (karma > 0 && karma <= g_iConfig[c_karmaBan].IntValue)
 		BanBadPlayerKarma(client);
 	else
 	{
@@ -802,7 +802,7 @@ public void OnClientCookiesCached(int client) {
 
 stock void AddStartKarma(int client)
 {
-	g_iKarma[client] = g_iCvar[c_startKarma].IntValue;
+	g_iKarma[client] = g_iConfig[c_startKarma].IntValue;
 	
 	char sKarma[32];
 	IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
@@ -815,10 +815,10 @@ stock void BanBadPlayerKarma(int client)
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 	
 	char sKarma[32];
-	g_iCvar[c_startKarma].GetString(sKarma, sizeof(sKarma));
+	g_iConfig[c_startKarma].GetString(sKarma, sizeof(sKarma));
 	SetClientCookie(client, g_hKarmaCookie, sKarma);
 	
-	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iCvar[c_karmaBanLength].IntValue, sReason);
+	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
 
 stock bool IsClientValid(int client) 
@@ -849,7 +849,7 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, PF, "You hurt a Traitor", client, client);
-				addCredits(iAttacker, g_iCvar[c_creditsTaserHurtTraitor].IntValue);
+				addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
 			}
 			else if(g_iRole[client] == D) {
 				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
@@ -1218,15 +1218,15 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += g_iCvar[c_karmaIT].IntValue;
-		addCredits(iAttacker, g_iCvar[c_creditsIT].IntValue);
+		g_iKarma[iAttacker] += g_iConfig[c_karmaIT].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsIT].IntValue);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iCvar[c_karmaID].IntValue;
-		subtractCredits(iAttacker, g_iCvar[c_creditsID].IntValue);
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaID].IntValue;
+		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue);
 		//RDM(iAttacker);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
@@ -1234,62 +1234,62 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += g_iCvar[c_karmaTD].IntValue;
-		addCredits(iAttacker, g_iCvar[c_creditsTD].IntValue);
+		g_iKarma[iAttacker] += g_iConfig[c_karmaTD].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += g_iCvar[c_karmaTI].IntValue;
-		addCredits(iAttacker, g_iCvar[c_creditsTI].IntValue);
+		g_iKarma[iAttacker] += g_iConfig[c_karmaTI].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += g_iCvar[c_karmaDT].IntValue;
-		addCredits(iAttacker, g_iCvar[c_creditsDT].IntValue);
+		g_iKarma[iAttacker] += g_iConfig[c_karmaDT].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= g_iCvar[c_karmaDI].IntValue;
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaDI].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iCvar[c_creditsDI].IntValue);
+		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= g_iCvar[c_karmaII].IntValue;
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaII].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iCvar[c_creditsII].IntValue);
+		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iCvar[c_karmaTT].IntValue;
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaTT].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iCvar[c_creditsTT].IntValue);
+		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue);
 	}
 	
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iCvar[c_karmaDD].IntValue;
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaDD].IntValue;
 		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iCvar[c_creditsDD].IntValue);
+		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue);
 	}
 	
-	if(g_iKarma[iAttacker] > g_iCvar[c_maxKarma].IntValue)
-		g_iKarma[iAttacker] = g_iCvar[c_maxKarma].IntValue;
+	if(g_iKarma[iAttacker] > g_iConfig[c_maxKarma].IntValue)
+		g_iKarma[iAttacker] = g_iConfig[c_maxKarma].IntValue;
 
 	char result[32];
 	IntToString(g_iKarma[iAttacker], result, sizeof(result));
@@ -1376,9 +1376,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 				if(g_iRole[client] != T && g_iRole[client] != U)
 				{
 					if(IsPlayerAlive(client))
-						addCredits(client, g_iCvar[c_traitorloseAliveNonTraitors].IntValue);
+						addCredits(client, g_iConfig[c_traitorloseAliveNonTraitors].IntValue);
 					else
-						addCredits(client, g_iCvar[c_traitorloseDeadNonTraitors].IntValue);
+						addCredits(client, g_iConfig[c_traitorloseDeadNonTraitors].IntValue);
 				}
 			}
 			
@@ -1392,9 +1392,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 				if(g_iRole[client] == T)
 				{
 					if(IsPlayerAlive(client))
-						addCredits(client, g_iCvar[c_traitorwinAliveTraitors].IntValue);
+						addCredits(client, g_iConfig[c_traitorwinAliveTraitors].IntValue);
 					else
-						addCredits(client, g_iCvar[c_traitorwinDeadTraitors].IntValue);
+						addCredits(client, g_iConfig[c_traitorwinDeadTraitors].IntValue);
 				}
 			}
 			
@@ -1569,7 +1569,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						
 						
-						addCredits(client, g_iCvar[c_creditsFoundBody].IntValue);
+						addCredits(client, g_iConfig[c_creditsFoundBody].IntValue);
 					}
 					
 					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
@@ -1697,51 +1697,51 @@ public Action ShowMenu(int client, int args)
 	
 		if(team == T)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iCvar[c_shopC4].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[c_shopC4].IntValue);
 			AddMenuItem(menu, "C4", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iCvar[c_shopJIHADBOMB].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[c_shopJIHADBOMB].IntValue);
 			AddMenuItem(menu, "jbomb", MenuItem);
 			
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iCvar[c_shop1KNIFE].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[c_shop1KNIFE].IntValue);
 			AddMenuItem(menu, "1knife", MenuItem);
 
-			Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iCvar[c_shopFAKEID].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[c_shopFAKEID].IntValue);
 			AddMenuItem(menu, "fakeID", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iCvar[c_shopM4A1].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[c_shopM4A1].IntValue);
 			AddMenuItem(menu, "m4s", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iCvar[c_shopUSP].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[c_shopUSP].IntValue);
 			AddMenuItem(menu, "usps", MenuItem);
 			
 		}
 		if(team == D)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iCvar[c_shopHEALTH].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[c_shopHEALTH].IntValue);
 			AddMenuItem(menu, "HealthStation", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iCvar[c_shopDNA].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[c_shopDNA].IntValue);
 			AddMenuItem(menu, "scan13", MenuItem);
 		}
 		if(team != I)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iCvar[c_shopKEVLAR].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[c_shopKEVLAR].IntValue);
 			AddMenuItem(menu, "kevlar", MenuItem);
 		}
 		if(team == I)
 		{
-/*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iCvar[c_shopT].IntValue);
+/*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[c_shopT].IntValue);
 			AddMenuItem(menu, "buyT", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iCvar[c_shopD].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[c_shopD].IntValue);
 			AddMenuItem(menu, "buyD", MenuItem); */
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iCvar[c_shopID].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[c_shopID].IntValue);
 			AddMenuItem(menu, "ID", MenuItem);
 		}
-		Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iCvar[c_shopTASER].IntValue);
+		Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[c_shopTASER].IntValue);
 		AddMenuItem(menu, "taser", MenuItem);
 		
 		SetMenuExitButton(menu, true);
@@ -1765,91 +1765,91 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		if ( strcmp(info,"kevlar") == 0 ) 
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopKEVLAR].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopKEVLAR].IntValue)
 			{
 				GivePlayerItem( client, "item_assaultsuit");
-				g_iCredits[client] -= g_iCvar[c_shopKEVLAR].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopKEVLAR].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"1knife") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shop1KNIFE].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shop1KNIFE].IntValue)
 			{
 				if (g_iRole[client] != T)
 					return;
 				Set1Knife(client);
-				g_iCredits[client] -= g_iCvar[c_shop1KNIFE].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shop1KNIFE].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"scan13") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopDNA].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopDNA].IntValue)
 			{
 				g_bScan[client] = true;
-				g_iCredits[client] -= g_iCvar[c_shopDNA].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopDNA].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"ID") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopID].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopID].IntValue)
 			{
 				g_bID[client] = true;
-				g_iCredits[client] -= g_iCvar[c_shopID].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopID].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"fakeID") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopFAKEID].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopFAKEID].IntValue)
 			{
 				g_bID[client] = true;
-				g_iCredits[client] -= g_iCvar[c_shopFAKEID].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopFAKEID].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyT") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopT].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopT].IntValue)
 			{
 				g_iRole[client] = T;
 				TeamInitialize(client);
-				g_iCredits[client] -= g_iCvar[c_shopT].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopT].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyD") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopD].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopD].IntValue)
 			{
 				g_iRole[client] = D;
 				TeamInitialize(client);
-				g_iCredits[client] -= g_iCvar[c_shopD].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopD].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopTASER].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopTASER].IntValue)
 			{
 				GivePlayerItem(client, "weapon_taser");
-				g_iCredits[client] -= g_iCvar[c_shopTASER].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopTASER].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"usps") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopUSP].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopUSP].IntValue)
 			{
 				if (g_iRole[client] != T)
 					return;
@@ -1857,14 +1857,14 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
 				
 				GivePlayerItem(client, "weapon_usp_silencer");
-				g_iCredits[client] -= g_iCvar[c_shopUSP].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopUSP].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"m4s") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopM4A1].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopM4A1].IntValue)
 			{
 				if (g_iRole[client] != T)
 					return;
@@ -1873,39 +1873,39 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 				
 				GivePlayerItem(client, "weapon_m4a1_silencer");
-				g_iCredits[client] -= g_iCvar[c_shopM4A1].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopM4A1].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"jbomb") == 0 )
 		{
-			if(g_iCredits[client] >= g_iCvar[c_shopJIHADBOMB].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopJIHADBOMB].IntValue)
 			{
 				if (g_iRole[client] != T)
 					return;
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
 				g_hJihadBomb[client] = CreateTimer(60.0, BombaArmada, client);
-				g_iCredits[client] -= g_iCvar[c_shopJIHADBOMB].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopJIHADBOMB].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, PF, "bomb will arm in 60 seconds, double tab F to explode", client);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "C4") == 0) {
-			if (g_iCredits[client] >= g_iCvar[c_shopC4].IntValue) {
+			if (g_iCredits[client] >= g_iConfig[c_shopC4].IntValue) {
 				if (g_iRole[client] != T)
 					return;
 				g_bHasC4[client] = true;
-				g_iCredits[client] -= g_iCvar[c_shopC4].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopC4].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Right click to plant the C4!"); // TODO: Translations
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "HealthStation") == 0) {
-			if (g_iCredits[client] >= g_iCvar[c_shopHEALTH].IntValue) {
+			if (g_iCredits[client] >= g_iConfig[c_shopHEALTH].IntValue) {
 				if (g_iRole[client] != D)
 					return;
 				if (g_bHasActiveHealthStation[client]) {
@@ -1913,7 +1913,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 					return;
 				}
 				spawnHealthStation(client);
-				g_iCredits[client] -= g_iCvar[c_shopHEALTH].IntValue;
+				g_iCredits[client] -= g_iConfig[c_shopHEALTH].IntValue;
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}
