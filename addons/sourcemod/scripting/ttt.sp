@@ -16,7 +16,7 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara/Darkness/Zipcore"
 #define PLUGIN_DESCRIPTION ""
-#define PLUGIN_VERSION "2.0.1"
+#define PLUGIN_VERSION "2.0.2"
 #define PLUGIN_URL "git.tf/Bara/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
