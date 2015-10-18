@@ -58,7 +58,16 @@ enum eCvars
 	ConVar:c_maxKarma,
 	ConVar:c_spawnHPT,
 	ConVar:c_spawnHPD,
-	ConVar:c_spawnHPI
+	ConVar:c_spawnHPI,
+	ConVar:c_karmaII,
+	ConVar:c_karmaIT,
+	ConVar:c_karmaID,
+	ConVar:c_karmaTI,
+	ConVar:c_karmaTT,
+	ConVar:c_karmaTD,
+	ConVar:c_karmaDI,
+	ConVar:c_karmaDT,
+	ConVar:c_karmaDD
 };
 
 int g_iCvar[eCvars];
@@ -199,7 +208,6 @@ public void OnPluginStart()
 	
 	RegAdminCmd("sm_role", Command_Role, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
-	RegAdminCmd("sm_hs", Command_healthStation, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Showkarma);
@@ -254,6 +262,15 @@ public void OnPluginStart()
 	g_iCvar[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
 	g_iCvar[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
 	g_iCvar[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
+	g_iCvar[c_karmaII] = CreateConVar("ttt_killer_innocent_victim_innocent_subtract", "5");
+	g_iCvar[c_karmaIT] = CreateConVar("ttt_killer_innocent_victim_traitor_add", "5");
+	g_iCvar[c_karmaID] = CreateConVar("ttt_killer_innocent_victim_detective_subtract", "7");
+	g_iCvar[c_karmaTI] = CreateConVar("ttt_killer_traitor_victim_innocent_add", "+");
+	g_iCvar[c_karmaTT] = CreateConVar("ttt_killer_traitor_victim_traitor_subtract", "5");
+	g_iCvar[c_karmaTD] = CreateConVar("ttt_killer_traitor_victim_detective_add", "3");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_innocent_subtract", "3");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_traitor_add", "7");
+	g_iCvar[c_karmaDD] = CreateConVar("ttt_killer_detective_victim_detective_subtract", "7");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
 }
@@ -1172,14 +1189,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += 5;
+		g_iKarma[iAttacker] += g_iCvar[c_karmaIT].IntValue;
 		addCredits(iAttacker, 3000);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= 7;
+		g_iKarma[iAttacker] -= g_iCvar[c_karmaID].IntValue;
 		subtractCredits(iAttacker, 4200);
 		//RDM(iAttacker);
 	}
@@ -1188,7 +1205,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += 3;
+		g_iKarma[iAttacker] += g_iCvar[c_karmaTD].IntValue;
 		addCredits(iAttacker, 2400);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
@@ -1196,14 +1213,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += 2;
+		g_iKarma[iAttacker] += g_iCvar[c_karmaTI].IntValue;
 		addCredits(iAttacker, 600);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += 7;
+		g_iKarma[iAttacker] += g_iCvar[c_karmaDT].IntValue;
 		addCredits(iAttacker, 2100);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
@@ -1211,7 +1228,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= 3;
+		g_iKarma[iAttacker] -= g_iCvar[c_karmaDI].IntValue;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 300);
 	}
@@ -1220,7 +1237,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= 5;
+		g_iKarma[iAttacker] -= g_iCvar[c_karmaII].IntValue;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 1500);
 	}
@@ -1228,9 +1245,18 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= 5;
+		g_iKarma[iAttacker] -= g_iCvar[c_karmaTT].IntValue;
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, 1500);
+	}
+	
+	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
+	{
+		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
+		PushArrayString(g_hLogsArray, item);
+		g_iKarma[iAttacker] -= g_iCvar[c_karmaDD].IntValue;
+		//RDM(iAttacker);
+		subtractCredits(iAttacker, 3000);
 	}
 	
 	if(g_iKarma[iAttacker] > g_iCvar[c_maxKarma].IntValue)
@@ -1395,7 +1421,12 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	
 	int damage = GetEventInt(event, "dmg_health");
 	char item[512];
-	if(g_iRole[iAttacker] == I && g_iRole[client] == T)
+	if(g_iRole[iAttacker] == I && g_iRole[client] == I)
+	{
+		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
+		PushArrayString(g_hLogsArray, item);
+	}
+	else if(g_iRole[iAttacker] == I && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
@@ -1405,15 +1436,26 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
+	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
+	{
+		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage]", iAttacker, client, damage);
+		PushArrayString(g_hLogsArray, item);
+		
+	}
+	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
+	{
+		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
+		PushArrayString(g_hLogsArray, item);
+		
+	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Detective) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
-		
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage]", iAttacker, client, damage);
+		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 		
 	}
@@ -1422,21 +1464,9 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] != T)
+	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
-		
-	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] != T)
-	{
-		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
-		
-	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
-	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Traitor) for %i damage] - BAD ACTION", iAttacker, client, damage);
+		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
 }
@@ -2679,26 +2709,6 @@ stock void healthStation_cleanUp()
 			g_hRemoveCoolDownTimer[i] = INVALID_HANDLE;
 		}
 	}
-}
-
-public Action Command_healthStation(int client, int args)
-{
-	if (!client || !IsClientInGame(client))
-		return Plugin_Handled;
-	
-	if (!IsPlayerAlive(client))
-	{
-		ReplyToCommand(client, "[SM] You must be alive to use this command!");
-		return Plugin_Handled;
-	}
-	
-	if (g_bHasActiveHealthStation[client])
-	{
-		ReplyToCommand(client, "[SM] You already have an active health station!");
-		return Plugin_Handled;
-	}
-	spawnHealthStation(client);
-	return Plugin_Handled;
 }
 
 public Action removeCoolDown(Handle timer, any userid)
