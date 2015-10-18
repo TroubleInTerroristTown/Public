@@ -76,7 +76,13 @@ enum eCvars
 	ConVar:c_creditsTD,
 	ConVar:c_creditsDI,
 	ConVar:c_creditsDT,
-	ConVar:c_creditsDD
+	ConVar:c_creditsDD,
+	ConVar:c_creditsFoundBody,
+	ConVar:c_creditsTaserHurtTraitor,
+	ConVar:c_traitorloseAliveNonTraitors,
+	ConVar:c_traitorloseDeadNonTraitors,
+	ConVar:c_traitorwinAliveTraitors,
+	ConVar:c_traitorwinDeadTraitors
 };
 
 int g_iCvar[eCvars];
@@ -288,6 +294,14 @@ public void OnPluginStart()
 	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
 	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
 	g_iCvar[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
+	
+	g_iCvar[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
+	g_iCvar[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
+	g_iCvar[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
+	g_iCvar[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
+	
+	g_iCvar[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
+	g_iCvar[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
 }
@@ -837,7 +851,7 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, PF, "You hurt a Traitor", client, client);
-				addCredits(iAttacker, 2000);
+				addCredits(iAttacker, g_iCvar[c_creditsTaserHurtTraitor].IntValue);
 			}
 			else if(g_iRole[client] == D) {
 				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
@@ -1364,9 +1378,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 				if(g_iRole[client] != T && g_iRole[client] != U)
 				{
 					if(IsPlayerAlive(client))
-						addCredits(client, 4800);
+						addCredits(client, g_iCvar[c_traitorloseAliveNonTraitors].IntValue);
 					else
-						addCredits(client, 1200);
+						addCredits(client, g_iCvar[c_traitorloseDeadNonTraitors].IntValue);
 				}
 			}
 			
@@ -1380,9 +1394,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 				if(g_iRole[client] == T)
 				{
 					if(IsPlayerAlive(client))
-						addCredits(client, 4800);
+						addCredits(client, g_iCvar[c_traitorwinAliveTraitors].IntValue);
 					else
-						addCredits(client, 1200);
+						addCredits(client, g_iCvar[c_traitorwinDeadTraitors].IntValue);
 				}
 			}
 			
@@ -1557,7 +1571,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						
 						
-						addCredits(client, 1200);
+						addCredits(client, g_iCvar[c_creditsFoundBody].IntValue);
 					}
 					
 					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
