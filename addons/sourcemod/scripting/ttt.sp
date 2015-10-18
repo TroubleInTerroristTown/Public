@@ -16,7 +16,7 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara/Darkness/Zipcore"
 #define PLUGIN_DESCRIPTION ""
-#define PLUGIN_VERSION "2.0.2"
+#define PLUGIN_VERSION "2.0.3"
 #define PLUGIN_URL "git.tf/Bara/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
@@ -33,8 +33,6 @@ if(IsClientValid(%1))
 #define D 3
 #define MONEYHIDE 16000
 
-
-// Add karma points and credits to eCvars (for 2.0.2 release)
 enum eCvars
 {
 	ConVar:c_shopKEVLAR,
