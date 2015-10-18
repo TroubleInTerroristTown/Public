@@ -180,6 +180,82 @@ bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
 
+char g_sTModels[][] =  {
+ "models/player/tm_anarchist.mdl",
+ "models/player/tm_anarchist_variantA.mdl",
+ "models/player/tm_anarchist_variantB.mdl",
+ "models/player/tm_anarchist_variantC.mdl",
+ "models/player/tm_anarchist_variantD.mdl",
+ "models/player/tm_balkan_variantA.mdl",
+ "models/player/tm_balkan_variantB.mdl",
+ "models/player/tm_balkan_variantC.mdl",
+ "models/player/tm_balkan_variantD.mdl",
+ "models/player/tm_leet_variantA.mdl",
+ "models/player/tm_leet_variantB.mdl",
+ "models/player/tm_leet_variantC.mdl",
+ "models/player/tm_leet_variantD.mdl",
+ "models/player/tm_phoenix.mdl",
+ "models/player/tm_phoenix_variantA.mdl",
+ "models/player/tm_phoenix_variantB.mdl",
+ "models/player/tm_phoenix_variantC.mdl",
+ "models/player/tm_phoenix_variantD.mdl",
+ "models/player/tm_pirate.mdl",
+ "models/player/tm_pirate_variantA.mdl",
+ "models/player/tm_pirate_variantB.mdl",
+ "models/player/tm_pirate_variantC.mdl",
+ "models/player/tm_pirate_variantD.mdl",
+ "models/player/tm_professional.mdl",
+ "models/player/tm_professional_var1.mdl",
+ "models/player/tm_professional_var2.mdl",
+ "models/player/tm_professional_var3.mdl",
+ "models/player/tm_professional_var4.mdl",
+ "models/player/tm_separatist.mdl",
+ "models/player/tm_separatist_variantA.mdl",
+ "models/player/tm_separatist_variantB.mdl",
+ "models/player/tm_separatist_variantC.mdl",
+ "models/player/tm_separatist_variantD.mdl"
+};
+
+char g_sCTModels[][] =  {
+ "models/player/ctm_fbi.mdl",
+ "models/player/ctm_fbi_variantA.mdl",
+ "models/player/ctm_fbi_variantB.mdl",
+ "models/player/ctm_fbi_variantC.mdl",
+ "models/player/ctm_fbi_variantD.mdl",
+ "models/player/ctm_gign.mdl",
+ "models/player/ctm_gign_variantA.mdl",
+ "models/player/ctm_gign_variantB.mdl",
+ "models/player/ctm_gign_variantC.mdl",
+ "models/player/ctm_gign_variantD.mdl",
+ "models/player/ctm_gsg9.mdl",
+ "models/player/ctm_gsg9_variantA.mdl",
+ "models/player/ctm_gsg9_variantB.mdl",
+ "models/player/ctm_gsg9_variantC.mdl",
+ "models/player/ctm_gsg9_variantD.mdl",
+ "models/player/ctm_idf.mdl",
+ "models/player/ctm_idf_variantB.mdl",
+ "models/player/ctm_idf_variantC.mdl",
+ "models/player/ctm_idf_variantD.mdl",
+ "models/player/ctm_idf_variantE.mdl",
+ "models/player/ctm_idf_variantF.mdl",
+ "models/player/ctm_sas.mdl",
+ "models/player/ctm_sas_variantA.mdl",
+ "models/player/ctm_sas_variantB.mdl",
+ "models/player/ctm_sas_variantC.mdl",
+ "models/player/ctm_sas_variantD.mdl",
+ "models/player/ctm_sas_variantE.mdl",
+ "models/player/ctm_st6.mdl",
+ "models/player/ctm_st6_variantA.mdl",
+ "models/player/ctm_st6_variantB.mdl",
+ "models/player/ctm_st6_variantC.mdl",
+ "models/player/ctm_st6_variantD.mdl",
+ "models/player/ctm_swat.mdl",
+ "models/player/ctm_swat_variantA.mdl",
+ "models/player/ctm_swat_variantB.mdl",
+ "models/player/ctm_swat_variantC.mdl",
+ "models/player/ctm_swat_variantD.mdl"
+};
+
 public void OnPluginStart()
 {
 	LoadTranslations("ttt.phrases");
@@ -674,17 +750,20 @@ stock void TeamInitialize(int client)
 		GivePlayerItem(client, "weapon_taser");
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
+		SetSkin(client, D);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
+		SetSkin(client, T);
 	}
 	else if(g_iRole[client] == I)
 	{
 		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
+		SetSkin(client, I);
 	}
 }
 
@@ -2940,4 +3019,16 @@ stock void CheckTeams()
 		CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
 	else if(iT == 0)
 		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+}
+
+stock void SetSkin(int client, int role)
+{
+	char sModel[128];
+	
+	if(role == D)
+		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sCTModels))]);
+	else
+		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sTModels))]);
+	
+	CPS_SetSkin(client, sModel, CPS_RENDER);
 }
