@@ -20,9 +20,12 @@
 #define PLUGIN_URL "git.tf/Bara/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
-#define PFA " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %t"
+
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
+
+#define LoopValidClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
+if(IsClientValid(%1))
 
 #define U 0
 #define I 1
@@ -52,7 +55,10 @@ enum eCvars
 	ConVar:c_startKarma,
 	ConVar:c_karmaBan,
 	ConVar:c_karmaBanLength,
-	ConVar:c_maxKarma
+	ConVar:c_maxKarma,
+	ConVar:c_spawnHPT,
+	ConVar:c_spawnHPD,
+	ConVar:c_spawnHPI
 };
 
 int g_iCvar[eCvars];
@@ -245,6 +251,9 @@ public void OnPluginStart()
 	g_iCvar[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
 	g_iCvar[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	g_iCvar[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
+	g_iCvar[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
+	g_iCvar[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
+	g_iCvar[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
 
 	AutoExecConfigAppend("ttt", "sourcemod");
 }
@@ -513,7 +522,8 @@ public Action Timer_Selection(Handle hTimer)
 {
 	g_hStartTimer = INVALID_HANDLE;
 	
-	CPrintToChatAll(PFA, "TEAMS HAS BEEN SELECTED");
+	LoopValidClients(i)
+		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
 	
 	ClearArray(g_hPlayerArray);
 	
@@ -528,7 +538,8 @@ public Action Timer_Selection(Handle hTimer)
 	if(iCount < g_iCvar[c_requiredPlayers].IntValue) 
 	{
 		g_bInactive = true;
-		CPrintToChatAll(PFA, "MIN PLAYERS REQUIRED FOR PLAY", g_iCvar[c_requiredPlayers].IntValue);
+		LoopValidClients(i)
+			CPrintToChat(i, PF, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iCvar[c_requiredPlayers].IntValue);
 		return;
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
@@ -613,14 +624,19 @@ stock void TeamInitialize(int client)
 			
 		GivePlayerItem(client, "weapon_taser");
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
+		SetEntityHealth(client, g_iCvar[c_spawnHPD].IntValue);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
+		SetEntityHealth(client, g_iCvar[c_spawnHPT].IntValue);
 	}
 	else if(g_iRole[client] == I)
+	{
 		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
+		SetEntityHealth(client, g_iCvar[c_spawnHPI].IntValue);
+	}
 }
 
 stock void TeamTag(int client)
@@ -1473,17 +1489,20 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						if(g_iRole[Items[victim]] == I) 
 						{
-							CPrintToChatAll(PFA, "Found Innocent", client, Items[victimName]);
+							LoopValidClients(j)
+								CPrintToChat(j, PF, "Found Innocent", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 255, 0, 255);
 						}
 						else if(g_iRole[Items[victim]] == D)
 						{
-							CPrintToChatAll(PFA, "Found Detective", client, Items[victimName]);
+							LoopValidClients(j)
+								CPrintToChat(j, PF, "Found Detective", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
 						else if(g_iRole[Items[victim]] == T) 
 						{
-							CPrintToChatAll(PFA, "Found Traitor", client,Items[victimName]);
+							LoopValidClients(j)
+								CPrintToChat(j, PF, "Found Traitor", j, client,Items[victimName]);
 							SetEntityRenderColor(entidad, 255, 0, 0, 255);
 						}
 						
@@ -1498,9 +1517,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					{
 						Items[scanned] = true;
 						if(Items[attacker] > 0 && Items[attacker] != Items[victim])
-							CPrintToChatAll(PFA, "Detective scan found body", client, Items[attackerName], Items[weaponused]);
+						{
+							LoopValidClients(j)
+								CPrintToChat(j, PF, "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
+						}
 						else
-							CPrintToChatAll(PFA, "Detective scan found body suicide", client);
+						{
+							LoopValidClients(j)
+								CPrintToChat(j, PF, "Detective scan found body suicide", j, client);
+						}
 						
 						
 					}
@@ -1553,7 +1578,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 public Action ShowID(int client, int args)
 {
 	if(g_bID[client] && IsPlayerAlive(client))
-		CPrintToChatAll(PFA, "Player Is an Innocent", client);
+	{
+		LoopValidClients(i)
+			CPrintToChat(i, PF, "Player Is an Innocent", i, client);
+	}
 	else
 		CPrintToChat(client, PF, "You dont have it!", client);
 	
