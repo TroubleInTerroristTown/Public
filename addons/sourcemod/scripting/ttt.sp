@@ -473,12 +473,12 @@ public void OnMapStart()
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
     
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
-	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, OnThinkPost); // TODO: Better way?
+	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
 	
 	resetPlayers();
 }
 
-public void OnThinkPost(int entity) 
+public void ThinkPost(int entity) 
 {
     int isAlive[65];
 	
@@ -755,14 +755,14 @@ public void OnClientPutInServer(int client)
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamage);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
-	SDKHook(client, SDKHook_ThinkPost, ThinkPost);
+	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
 	SetEntData(client, g_iAccount, MONEYHIDE);
 		
 	g_iCredits[client] = 800;
 }
 
-public Action ThinkPost(int client)
+public Action OnPreThink(int client)
 {
 	if(IsClientValid(client))
 	{
@@ -772,6 +772,15 @@ public Action ThinkPost(int client)
 		}
 		
 		CS_SetClientContributionScore(client, g_iKarma[client]);
+		
+		// Disable player glow
+		SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
+		
+		int offset = GetEntSendPropOffs(client, "m_clrGlow");
+		SetEntData(client, offset, 255, _, true);
+		SetEntData(client, offset + 1, 255, _, true);
+		SetEntData(client, offset + 2, 255, _, true);
+		SetEntData(client, offset + 3, 255, _, true);
 	}
 }
 
@@ -1063,11 +1072,6 @@ public Action Timer_Adjust(Handle timer)
 	for(int i = 1; i <=MaxClients; ++i)
 		if(IsClientInGame(i) && IsPlayerAlive(i))
 		{
-			if(CS_GetClientAssists(i) != 0)
-				CS_SetClientAssists(i, 0);
-			if(CS_GetClientContributionScore(i) != 0)
-				CS_SetClientContributionScore(i, 0);
-				
 			if(g_iRole[i] == T)
 			{
 				GetClientAbsOrigin(i, vec);
