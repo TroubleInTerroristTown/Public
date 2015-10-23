@@ -1345,7 +1345,16 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	
 	char item[512];
 	
-	if(g_iRole[iAttacker] == I && g_iRole[client] == T)
+	if(g_iRole[iAttacker] == I && g_iRole[client] == I)
+	{
+		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
+		PushArrayString(g_hLogsArray, item);
+		
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaII].IntValue;
+		//RDM(iAttacker);
+		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue);
+	}
+	else if(g_iRole[iAttacker] == I && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1360,14 +1369,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue);
 		//RDM(iAttacker);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
-	{
-		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
-		
-		g_iKarma[iAttacker] += g_iConfig[c_karmaTD].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue);
-	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
@@ -1376,12 +1377,21 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		g_iKarma[iAttacker] += g_iConfig[c_karmaTI].IntValue;
 		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
+		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += g_iConfig[c_karmaDT].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue);
+		g_iKarma[iAttacker] -= g_iConfig[c_karmaTT].IntValue;
+		//RDM(iAttacker);
+		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue);
+	}
+	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
+	{
+		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
+		PushArrayString(g_hLogsArray, item);
+		
+		g_iKarma[iAttacker] += g_iConfig[c_karmaTD].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
@@ -1392,24 +1402,13 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		//RDM(iAttacker);
 		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
+		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaII].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue);
+		g_iKarma[iAttacker] += g_iConfig[c_karmaDT].IntValue;
+		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
-	{
-		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaTT].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue);
-	}
-	
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
