@@ -677,11 +677,9 @@ public Action Timer_Selection(Handle hTimer)
 {
 	g_hStartTimer = INVALID_HANDLE;
 	
-	int iTraitors = 0;
 	LoopValidClients(i)
 	{
 		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
-		iTraitors++;
 	}
 	
 	ClearArray(g_hPlayerArray);
@@ -751,11 +749,14 @@ public Action Timer_Selection(Handle hTimer)
 		RemoveFromArray(g_hPlayerArray, index);
 	}
 	
-	for (int i = 1; i <= MaxClients; i++)
+	int iTraitors = 0;
+	
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i) || !IsPlayerAlive(i) || g_iRole[i] != T)
+		if (!IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != T)
 			continue;
 		listTraitors(i);
+		iTraitors++;
 	}
 	
 	LoopValidClients(i)
