@@ -873,11 +873,6 @@ public Action OnPreThink(int client)
 {
 	if(IsClientValid(client))
 	{
-		if(g_bKarma[client] && g_iConfig[c_karmaBan].IntValue != 0 && g_iKarma[client] <= g_iConfig[c_karmaBan].IntValue)
-		{
-			BanBadPlayerKarma(client);
-		}
-		
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
@@ -907,8 +902,6 @@ public void OnClientCookiesCached(int client) {
 		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
 		SetClientCookie(client, g_hKarmaCookie, sKarma);
 	}
-	else if (karma > 0 && karma <= g_iConfig[c_karmaBan].IntValue)
-		BanBadPlayerKarma(client);
 	else
 	{
 		g_iKarma[client] = karma;
@@ -1287,11 +1280,10 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	
 	if (!IsClientValid(client))
 		return;
     
-    int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 	if (iRagdoll < 0)
 		return;
 
@@ -1327,6 +1319,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		CPrintToChat(iAttacker, PF, "You killed a Detective", client);
 	else if(g_iRole[client] == I)
 		CPrintToChat(iAttacker, PF, "You killed an Innocent", client);
+	
 	char item[512];
 	
 	if(g_iRole[iAttacker] == I && g_iRole[client] == T)
@@ -2442,7 +2435,7 @@ public Action Timer_5(Handle timer)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (!IsClientInGame(i))
+		if (!IsClientValid(i))
 			continue;
 			
 		if (!IsPlayerAlive(i))
@@ -2459,6 +2452,11 @@ public Action Timer_5(Handle timer)
 		
 		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
 			g_iHealthStationCharges[i]++;
+			
+		if(g_bKarma[i] && g_iConfig[c_karmaBan].IntValue != 0 && g_iKarma[i] <= g_iConfig[c_karmaBan].IntValue)
+		{
+			BanBadPlayerKarma(i);
+		}
 	}
 }
 
