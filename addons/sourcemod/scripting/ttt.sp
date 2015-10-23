@@ -892,7 +892,7 @@ public Action OnPreThink(int client)
 {
 	if(IsClientValid(client))
 	{
-		CS_SetClientContributionScore(client, g_iKarma[client]);
+		// CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
 		if (g_bCPS && IsClientValid(client))
