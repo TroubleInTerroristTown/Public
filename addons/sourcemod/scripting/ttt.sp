@@ -345,7 +345,7 @@ public void OnPluginStart()
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
 	g_iConfig[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
 	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
-	g_iConfig[c_shopRadar] = CreateConVar("ttt_shop_radar", "7000");
+	// g_iConfig[c_shopRadar] = CreateConVar("ttt_shop_radar", "7000");
 	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
 	g_iConfig[c_shopT] = CreateConVar("ttt_shop_t", "100000");
 	g_iConfig[c_shopD] = CreateConVar("ttt_shop_d", "5000");
@@ -1828,8 +1828,8 @@ public Action ShowMenu(int client, int args)
 		
 		if(team != I)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
-			AddMenuItem(menu, "radar", MenuItem);
+			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
+			// AddMenuItem(menu, "radar", MenuItem);
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[c_shopKEVLAR].IntValue);
 			AddMenuItem(menu, "kevlar", MenuItem);

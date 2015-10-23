@@ -200,17 +200,17 @@
 	"Kevlar"
 	{
 		"#format"		"{1:d}"
-		"en"            "Kevlar - 2,500"
-		"es"            "Kevlar - 2,500"
-		"de"            "Kevlar - 2,500"
+		"en"            "Kevlar - {1}"
+		"es"            "Kevlar - {1}"
+		"de"            "Kevlar - {1}"
 	}
 
 	"Buy rol Traitor"
 	{
 		"#format"		"{1:d}"
-		"en"            "Buy role TRAITOR - 10,000"
-		"es"            "Comprar rol TRAIDOR - 10,000"
-		"de"            "TRAITOR-Pass - 10,000"
+		"en"            "Buy role TRAITOR - {1}"
+		"es"            "Comprar rol TRAIDOR - {1}"
+		"de"            "TRAITOR-Pass - {1}"
 	}
 
 	"Buy rol Detective"
@@ -224,10 +224,10 @@
 	"ID card (type !id for show your innocence)"
 	{
 		"#format"		"{1:d}"
-		"en"            "ID card (type !id to show your innocence) - 500"
-		"es"            "Tarjeta ID (escribe !id para mostrar tu inocencia) - 500"
-		"de"            "Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - 500"
-		"chi"           "身份证 (输入 !id 显示你的身份) - 500"
+		"en"            "ID card (type !id to show your innocence) - {1}"
+		"es"            "Tarjeta ID (escribe !id para mostrar tu inocencia) - {1}"
+		"de"            "Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
+		"chi"           "身份证 (输入 !id 显示你的身份) - {1}"
 	}
 
 	"Please wait till your team is assigned"
@@ -547,5 +547,12 @@
 		"#format"		"{1:d}"
 		"en"            "{1} TRAITORS HAVE BEEN SELECTED"
 		"de"            "{1} wurden ausgewählt!"
+	}
+	
+	"Buy radar"
+	{
+		"#format"		"{1:d}"
+		"en"            "Buy radar - {1}"
+		"de"            "Kaufe Radar - {1}"
 	}
 }
