@@ -895,7 +895,7 @@ public Action OnPreThink(int client)
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
-		if (g_bCPS && IsValidEntity(client))
+		if (g_bCPS && IsClientValid(client))
 		{
 			char sModel[PLATFORM_MAX_PATH];
 			GetClientModel(client, sModel, sizeof(sModel));
@@ -905,7 +905,8 @@ public Action OnPreThink(int client)
 			
 			int iSkin = CPS_GetSkin(client);
 			
-			SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
+			if(iSkin > 0)
+				SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
 		}
 	}
 }
