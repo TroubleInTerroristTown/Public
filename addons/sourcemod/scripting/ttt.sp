@@ -684,10 +684,6 @@ public Action Timer_Selection(Handle hTimer)
 		iTraitors++;
 	}
 	
-	LoopValidClients(i)
-		if(g_iRole[i] != T)
-			CPrintToChat(i, PF, "TRAITORS HAS BEEN SELECTED", iTraitors);
-	
 	ClearArray(g_hPlayerArray);
 	
 	int iCount = 0;
@@ -761,6 +757,10 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		listTraitors(i);
 	}
+	
+	LoopValidClients(i)
+		if(g_iRole[i] != T)
+			CPrintToChat(i, PF, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 	
 	ClearArray(g_hLogsArray);
 	g_bRoundStarted = true;
