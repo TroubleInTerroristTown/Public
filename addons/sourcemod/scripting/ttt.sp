@@ -99,7 +99,7 @@ int g_iCredits[MAXPLAYERS+1] = {800, ...};
 bool g_bHasC4[MAXPLAYERS+1] = {false, ...};
 
 int g_iRDMAttacker[MAXPLAYERS+1] = {-1, ...};
-Handle g_hRDMTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
+Handle g_hRDMTimer[MAXPLAYERS+1] = {null, ...};
 bool g_bImmuneRDMManager[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingProp[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingSilencedWep[MAXPLAYERS+1] = {false, ...};
@@ -118,7 +118,7 @@ public Plugin myinfo =
 int g_iAccount;
 
 //C4 MOD
-Handle g_hExplosionTimer[MAXPLAYERS+1] = {INVALID_HANDLE, ...};
+Handle g_hExplosionTimer[MAXPLAYERS+1] = {null, ...};
 bool g_bHasActiveBomb[MAXPLAYERS+1] = {false, ...};
 int g_iWire[MAXPLAYERS+1] = {-1, ...};
 int g_iDefusePlayerIndex[MAXPLAYERS+1] = {-1, ...};
@@ -129,7 +129,7 @@ int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
 int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
 bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
 bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
-Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 //
 
 bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
@@ -159,7 +159,7 @@ int g_iCollisionGroup = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
-Handle g_hKarmaCookie = INVALID_HANDLE;
+Handle g_hKarmaCookie = null;
 
 Handle g_hRagdollArray = null;
 
@@ -304,7 +304,7 @@ public void OnPluginStart()
 	
 
 	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
-	CreateTimer(1.0, healthStationDistanceCheck, INVALID_HANDLE, TIMER_REPEAT);
+	CreateTimer(1.0, healthStationDistanceCheck, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
 	RegAdminCmd("sm_role", Command_Role, ADMFLAG_ROOT);
@@ -632,14 +632,14 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		}
 	}
 
-	if(g_hStartTimer != INVALID_HANDLE)
+	if(g_hStartTimer != null)
 		KillTimer(g_hStartTimer);
 		
 	g_hStartTimer = CreateTimer(GetConVarFloat(g_hGraceTime) + 5.0, Timer_Selection);
 	
 	g_bRoundStarted = false;
 	
-	if (g_hRoundTimer != INVALID_HANDLE) 
+	if (g_hRoundTimer != null) 
 		CloseHandle(g_hRoundTimer);
 		
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
@@ -665,9 +665,9 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	}
 		
 		
-	if (g_hRoundTimer != INVALID_HANDLE) {
+	if (g_hRoundTimer != null) {
 		CloseHandle(g_hRoundTimer);
-		g_hRoundTimer = INVALID_HANDLE;
+		g_hRoundTimer = null;
 	}
 	resetPlayers();
 	healthStation_cleanUp();
@@ -675,7 +675,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 
 public Action Timer_Selection(Handle hTimer)
 {
-	g_hStartTimer = INVALID_HANDLE;
+	g_hStartTimer = null;
 	
 	LoopValidClients(i)
 	{
@@ -1068,17 +1068,17 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		//int addition
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client]) {
 			if (g_iRole[iAttacker] == T && g_iRole[client] == T) {
-				if (g_hRDMTimer[client] != INVALID_HANDLE)
+				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			} else if (g_iRole[iAttacker] == D && g_iRole[client] == D) {
-				if (g_hRDMTimer[client] != INVALID_HANDLE)
+				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			} else if (g_iRole[iAttacker] == I && g_iRole[client] == D) {
-				if (g_hRDMTimer[client] != INVALID_HANDLE)
+				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
@@ -1117,13 +1117,13 @@ public void OnClientDisconnect(int client)
 		SetClientCookie(client, g_hKarmaCookie, sKarma);
 		g_bKarma[client] = false;
 	}
-	if (g_hRDMTimer[client] != INVALID_HANDLE) {
+	if (g_hRDMTimer[client] != null) {
 		KillTimer(g_hRDMTimer[client]);
-		g_hRDMTimer[client] = INVALID_HANDLE;
+		g_hRDMTimer[client] = null;
 	}
-	if (g_hRemoveCoolDownTimer[client] != INVALID_HANDLE) {
+	if (g_hRemoveCoolDownTimer[client] != null) {
 		KillTimer(g_hRemoveCoolDownTimer[client]);
-		g_hRemoveCoolDownTimer[client] = INVALID_HANDLE;
+		g_hRemoveCoolDownTimer[client] = null;
 	}
 	ClearIcon(client);
 	
@@ -1151,9 +1151,9 @@ public void OnClientDisconnect(int client)
 		}
 	}  */
 	
-	if (g_hExplosionTimer[client] != INVALID_HANDLE) {
+	if (g_hExplosionTimer[client] != null) {
 		KillTimer(g_hExplosionTimer[client]);
-		g_hExplosionTimer[client] = INVALID_HANDLE;
+		g_hExplosionTimer[client] = null;
 	}
 }
 
@@ -1473,16 +1473,16 @@ public Action Hook_SetTransmitT(int entity, int client)
 }  
 
 public void OnMapEnd() {
-	if (g_hRoundTimer != INVALID_HANDLE) {
+	if (g_hRoundTimer != null) {
 		CloseHandle(g_hRoundTimer);
-		g_hRoundTimer = INVALID_HANDLE;
+		g_hRoundTimer = null;
 	}
 	resetPlayers();
 }
 
 public Action Timer_OnRoundEnd(Handle timer) 
 {
-	g_hRoundTimer = INVALID_HANDLE;
+	g_hRoundTimer = null;
 	
 	//CS_TerminateRound(7.0, CSRoundEnd_Draw);
 	
@@ -2073,7 +2073,7 @@ public Action BombaArmada(Handle timer, any client)
 { 
 	CPrintToChat(client, PF, "Your bomb is now armed.", client);
 	EmitAmbientSound("buttons/blip2.wav", NULL_VECTOR, client);
-	g_hJihadBomb[client] = INVALID_HANDLE;	
+	g_hJihadBomb[client] = null;	
 } 
 
 stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
@@ -2195,10 +2195,10 @@ stock void subtractCredits(int client, int credits)
 
 stock void ClearTimer(Handle &timer)
 {
-    if (timer != INVALID_HANDLE)
+    if (timer != null)
     {
         KillTimer(timer);
-        timer = INVALID_HANDLE;
+        timer = null;
     }     
 } 
 
@@ -2241,7 +2241,7 @@ public Action Command_Detonate(int client, int args)
 		return Plugin_Handled; 
     } 
 	
-    if (g_hJihadBomb[client] != INVALID_HANDLE) 
+    if (g_hJihadBomb[client] != null) 
     { 
 		CPrintToChat(client, PF, "Your bomb is not armed.", client);
 		return Plugin_Handled; 
@@ -2271,7 +2271,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	if(!IsClientInGame(client))
 		return;
 
-	if(!IsPlayerAlive(client) || !g_bJihadBomb[client] || g_hJihadBomb[client] != INVALID_HANDLE)
+	if(!IsPlayerAlive(client) || !g_bJihadBomb[client] || g_hJihadBomb[client] != null)
 		return;	
 
 	if(g_bDetonate[client])
@@ -2370,7 +2370,7 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 public Action Timer_RDMTimer(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	g_hRDMTimer[client] = INVALID_HANDLE;
+	g_hRDMTimer[client] = null;
 	manageRDM(client);
 	return Plugin_Stop;
 }
@@ -2528,7 +2528,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	if (IsClientValid(client))
 	{
 		g_bHasActiveBomb[client] = false;
-		g_hExplosionTimer[client] = INVALID_HANDLE;
+		g_hExplosionTimer[client] = null;
 		g_bImmuneRDMManager[client] = true;
 		PrintToChat(client, "[\x04T\x02T\x0BT\x01] Your bomb has been detonated!"); // TODO: Translations
 	}
@@ -2743,10 +2743,10 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 					PrintToChat(planter, "[\x04T\x02T\x0BT\x01] %N has defused your bomb!", client); // TODO: Translations
 					EmitAmbientSoundAny("weapons/c4/c4_disarm.wav", bombPos);
 					g_bHasActiveBomb[planter] = false;
-					if (g_hExplosionTimer[planter] != INVALID_HANDLE)
+					if (g_hExplosionTimer[planter] != null)
 					{
 						KillTimer(g_hExplosionTimer[planter]);
-						g_hExplosionTimer[planter] = INVALID_HANDLE;
+						g_hExplosionTimer[planter] = null;
 					}
 					SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
 				}
@@ -2789,7 +2789,7 @@ stock float plantBomb(int client, float time)
 			{
 				Handle explosionPack;
 				Handle beepPack;
-				if (g_hExplosionTimer[client] != INVALID_HANDLE)
+				if (g_hExplosionTimer[client] != null)
 					KillTimer(g_hExplosionTimer[client]);
 				g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack);
 				CreateDataTimer(1.0, bombBeep, beepPack);
@@ -2834,10 +2834,10 @@ stock void resetPlayers()
 		IntToString(g_iKarma[i], sKarma, sizeof(sKarma));
 		SetClientCookie(i, g_hKarmaCookie, sKarma);
 		
-		if (g_hExplosionTimer[i] != INVALID_HANDLE)
+		if (g_hExplosionTimer[i] != null)
 		{
 			KillTimer(g_hExplosionTimer[i]);
-			g_hExplosionTimer[i] = INVALID_HANDLE;
+			g_hExplosionTimer[i] = null;
 		}
 		g_bHasActiveBomb[i] = false;
 	}
@@ -2881,10 +2881,10 @@ stock void healthStation_cleanUp()
 		g_bHasActiveHealthStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
 		
-		if (g_hRemoveCoolDownTimer[i] != INVALID_HANDLE)
+		if (g_hRemoveCoolDownTimer[i] != null)
 		{
 			KillTimer(g_hRemoveCoolDownTimer[i]);
-			g_hRemoveCoolDownTimer[i] = INVALID_HANDLE;
+			g_hRemoveCoolDownTimer[i] = null;
 		}
 	}
 }
@@ -2893,7 +2893,7 @@ public Action removeCoolDown(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	g_bOnHealingCoolDown[client] = false;
-	g_hRemoveCoolDownTimer[client] = INVALID_HANDLE;
+	g_hRemoveCoolDownTimer[client] = null;
 	return Plugin_Stop;
 }
 
