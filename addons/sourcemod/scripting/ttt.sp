@@ -895,8 +895,8 @@ public Action OnPreThink(int client)
 	{
 		// CS_SetClientContributionScore(client, g_iKarma[client]);
 		
-		if(GetEntProp(GetPlayerResourceEntity(), Prop_Data, "m_iScore") != 0)
-			SetEntProp(GetPlayerResourceEntity(), Prop_Data, "m_iScore", g_iKarma[client]);
+		// Workaround for CS_SetClientContributionScore
+		SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", g_iKarma[client], _, client);
 		
 		// Disable player glow
 		if (g_bCPS && IsClientValid(client))
