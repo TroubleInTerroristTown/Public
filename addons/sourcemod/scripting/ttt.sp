@@ -267,6 +267,12 @@ char g_sCTModels[][] =  {
 
 public void OnPluginStart()
 {
+	if(GetEngineVersion() != Engine_CSGO)
+	{
+		SetFailState("Only CS:GO is supported");
+		return;
+	}
+	
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
 	
@@ -851,8 +857,6 @@ public void OnClientPutInServer(int client)
 {
 	char steamid[64];
 	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
-	
-
 
 	//g_bFound[client] = true;
 	
@@ -876,23 +880,15 @@ public Action OnPreThink(int client)
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
-		if (GetEntProp(client, Prop_Send, "m_bShouldGlow") != 0)
-		{
-			SetEntProp(client, Prop_Send, "m_bShouldGlow", false);
-			
-			int offset = GetEntSendPropOffs(client, "m_clrGlow");
-			SetEntData(client, offset, 255, _, true);
-			SetEntData(client, offset + 1, 255, _, true);
-			SetEntData(client, offset + 2, 255, _, true);
-			SetEntData(client, offset + 3, 255, _, true);
-		}
+		if (IsValidEntity(client) && IsValidEdict(client) && !IsPlayerAlive(client))
+			SetEntProp(EntRefToEntIndex(client), Prop_Send, "m_bShouldGlow", false, true);
 	}
 }
 
 public void OnClientCookiesCached(int client) {
 	char sValue[32];
 	GetClientCookie(client, g_hKarmaCookie, sValue, sizeof(sValue));
-	int karma = (sValue[0] != '\0' && StringToInt(sValue));
+	int karma = StringToInt(sValue);
 	
 	if (karma == 0)
 	{
