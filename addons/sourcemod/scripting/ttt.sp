@@ -1,3 +1,12 @@
+/*
+	Credits:
+		- Francisco (original author)
+		- Darkness
+		- Zipcore
+		
+*/
+
+
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -6,7 +15,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
-#include <CustomPlayerSkins>
+// #include <CustomPlayerSkins>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -14,12 +23,12 @@
 #pragma newdecls required
 
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
-#define PLUGIN_AUTHOR "Bara/Darkness/Zipcore"
+#define PLUGIN_AUTHOR "Bara"
 #define PLUGIN_DESCRIPTION ""
 #define PLUGIN_VERSION "2.0.3"
 #define PLUGIN_URL "git.tf/Bara/TTT"
 
-#define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{default} %T"
+#define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
 
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
@@ -128,7 +137,7 @@ bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
 bool g_bID[MAXPLAYERS + 1] =  { false, ... };
-bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
+// bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -180,7 +189,7 @@ bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
 
-char g_sTModels[][] =  {
+/* char g_sTModels[][] =  {
  "models/player/tm_anarchist.mdl",
  "models/player/tm_anarchist_variantA.mdl",
  "models/player/tm_anarchist_variantB.mdl",
@@ -254,7 +263,7 @@ char g_sCTModels[][] =  {
  "models/player/ctm_swat_variantB.mdl",
  "models/player/ctm_swat_variantC.mdl",
  "models/player/ctm_swat_variantD.mdl"
-};
+}; */
 
 public void OnPluginStart()
 {
@@ -661,8 +670,8 @@ public Action Timer_Selection(Handle hTimer)
 	ClearArray(g_hPlayerArray);
 	
 	int iCount = 0;
-	for(int i = 1; i <= MaxClients; i++)
-		if(IsClientInGame(i) && IsPlayerAlive(i))
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
 		{
 			iCount++;
 			PushArrayCell(g_hPlayerArray, i);
@@ -758,20 +767,20 @@ stock void TeamInitialize(int client)
 		GivePlayerItem(client, "weapon_taser");
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
-		SetSkin(client, D);
+		// SetSkin(client, D);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
-		SetSkin(client, T);
+		// SetSkin(client, T);
 	}
 	else if(g_iRole[client] == I)
 	{
 		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
-		SetSkin(client, I);
+		// SetSkin(client, I);
 	}
 }
 
@@ -827,14 +836,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		g_b1Knife[client] = false;
 		g_bScan[client] = false;
 		g_bID[client] = false;
-		g_bRadar[client] = false;
+		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
 		
-		char model[PLATFORM_MAX_PATH];
+		/* bchar model[PLATFORM_MAX_PATH];
 		GetClientModel(client, model, sizeof(model));
 		
 		CPS_RemoveSkin(client);
-		CPS_SetSkin(client, model, CPS_RENDER);
+		CPS_SetSkin(client, model, CPS_RENDER); */
 	}
 }
 
@@ -872,13 +881,16 @@ public Action OnPreThink(int client)
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
-		SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
-		
-		int offset = GetEntSendPropOffs(client, "m_clrGlow");
-		SetEntData(client, offset, 255, _, true);
-		SetEntData(client, offset + 1, 255, _, true);
-		SetEntData(client, offset + 2, 255, _, true);
-		SetEntData(client, offset + 3, 255, _, true);
+		if (GetEntProp(client, Prop_Send, "m_bShouldGlow") != 0)
+		{
+			SetEntProp(client, Prop_Send, "m_bShouldGlow", false);
+			
+			int offset = GetEntSendPropOffs(client, "m_clrGlow");
+			SetEntData(client, offset, 255, _, true);
+			SetEntData(client, offset + 1, 255, _, true);
+			SetEntData(client, offset + 2, 255, _, true);
+			SetEntData(client, offset + 3, 255, _, true);
+		}
 	}
 }
 
@@ -1909,7 +1921,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
-		else if ( strcmp(info,"radar") == 0 )
+		/* else if ( strcmp(info,"radar") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopRadar].IntValue)
 			{
@@ -1918,7 +1930,7 @@ public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
-		}
+		} */
 		else if ( strcmp(info,"fakeID") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopFAKEID].IntValue)
@@ -3029,7 +3041,7 @@ stock void CheckTeams()
 		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
 }
 
-stock void SetSkin(int client, int role)
+/* stock void SetSkin(int client, int role)
 {
 	char sModel[128];
 	
@@ -3039,4 +3051,4 @@ stock void SetSkin(int client, int role)
 		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sTModels))]);
 	
 	CPS_SetSkin(client, sModel, CPS_RENDER);
-}
+} */

@@ -3,10 +3,10 @@
 	"Your karma is"
 	{
 		"#format"       "{1:i}"
-		"en"            "{green}Your KARMA is: {lightgreen}{1}"
-		"es"            "{green}Tu KARMA es: {lightgreen}{1}"
-		"de"            "{green}Dein Karma: {lightgreen}{1}"
-		"chi"         	"{green}你的 KARMA 值: {lightgreen}{1}"
+		"en"            "Your KARMA is: {lightgreen}{1}"
+		"es"            "Tu KARMA es: {lightgreen}{1}"
+		"de"            "Dein Karma: {lightgreen}{1}"
+		"chi"         	"你的 KARMA 值: {lightgreen}{1}"
 	}
 	
 	"TEAMS HAS BEEN SELECTED"
@@ -22,7 +22,7 @@
 		"#format"		"{1:d}"
 		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {1}"
 		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: {1}"
-		"de"            "Warten auf ingesamt {1} Spieler."
+		"de"            "Warten auf insgesamt {1} Spieler."
 		"chi"           "游戏所需最少玩家数: {1}"
 	}
 
@@ -54,10 +54,10 @@
 	"Your REAL money is"
 	{
 		"#format"       "{1:i}"
-		"en"            "{green}Your CREDITS are: {lightgreen}{1}"
-		"es"            "{green}Tus creditos son: {lightgreen}{1}"
-		"de"            "{green}Deine Credits: {lightgreen}{1}"
-		"chi"           "{green}你的金钱是: {lightgreen}{1}"
+		"en"            "Your CREDITS are: {lightgreen}{1}"
+		"es"            "Tus creditos son: {lightgreen}{1}"
+		"de"            "Deine Credits: {lightgreen}{1}"
+		"chi"           "你的金钱是: {lightgreen}{1}"
 	}
 
 	"Your killer is a Traitor"
