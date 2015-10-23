@@ -15,10 +15,9 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <clientprefs>
-// #include <CustomPlayerSkins>
 
 #undef REQUIRE_PLUGIN
-#tryinclude <sourcebans>
+#tryinclude <CustomPlayerSkins>
 
 #pragma newdecls required
 
@@ -188,6 +187,8 @@ enum Ragdolls
 bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
+
+bool g_bCPS = false;
 
 /* char g_sTModels[][] =  {
  "models/player/tm_anarchist.mdl",
@@ -396,6 +397,20 @@ public void OnPluginStart()
 	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
 
 	AutoExecConfig(true);
+	
+	g_bCPS = LibraryExists("CustomPlayerSkins");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+		g_bCPS = true;
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+		g_bCPS = false;
 }
 
 public Action Logs(int client, int args)
@@ -880,8 +895,18 @@ public Action OnPreThink(int client)
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Disable player glow
-		if (IsValidEntity(client) && IsValidEdict(client) && !IsPlayerAlive(client))
-			SetEntProp(EntRefToEntIndex(client), Prop_Send, "m_bShouldGlow", false, true);
+		if (g_bCPS && IsValidEntity(client))
+		{
+			char sModel[PLATFORM_MAX_PATH];
+			GetClientModel(client, sModel, sizeof(sModel));
+			
+			CPS_RemoveSkin(client);
+			CPS_SetSkin(client, sModel, CPS_RENDER);
+			
+			int iSkin = CPS_GetSkin(client);
+			
+			SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
+		}
 	}
 }
 
