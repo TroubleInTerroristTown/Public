@@ -1288,27 +1288,29 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
 	
-	if (!IsValidEntity(client))
+	if (!IsClientValid(client))
 		return;
     
-	int ragdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-	if (ragdoll<0)
+    int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+	if (iRagdoll < 0)
 		return;
 
-	AcceptEntityInput(ragdoll, "Kill");
+	AcceptEntityInput(iRagdoll, "Kill");
 	
 	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	if(!iAttacker || iAttacker == client)
+	if(!IsClientValid(iAttacker) || iAttacker == client)
 		return;
 	
 	int assister = GetClientOfUserId(GetEventInt(event, "assister"));
-	if(!assister || assister == client)
+	if(!IsClientValid(assister) || assister == client)
 		return;
 	
  	if(CS_GetClientAssists(assister) != 0) 
  		CS_SetClientAssists(assister, 0);
+ 		
 	if(GetEntProp(client, Prop_Data, "m_iDeaths") != 0)
 		SetEntProp(client, Prop_Data, "m_iDeaths", 0);
+		
 	if(GetEntProp(iAttacker, Prop_Data, "m_iFrags") != 0)
 		SetEntProp(iAttacker, Prop_Data, "m_iFrags", 0);
 	
