@@ -360,19 +360,19 @@
 	"T channel"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{darkred}*TRAITORS* {1}:{LIGHTGREEN} {2}"
-		"es"            "{darkred}*Chat de Traidores* {1}:{LIGHTGREEN} {2}"
-		"de"			"{darkred}*Traitor Chat* {1}:{LIGHTGREEN} {2}"
-		"chi"           "{darkred}*叛徒* {1}:{LIGHTGREEN} {2}"
+		"en"            "{darkred}*TRAITORS* {1}:{lightgreen} {2}"
+		"es"            "{darkred}*Chat de Traidores* {1}:{lightgreen} {2}"
+		"de"			"{darkred}*Traitor Chat* {1}:{lightgreen} {2}"
+		"chi"           "{darkred}*叛徒* {1}:{lightgreen} {2}"
 	}
 	
 	"D channel"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{blue}*DETECTIVES* {1}:{LIGHTGREEN} {2}"
-		"es"            "{blue}*Chat de Detectives* {1}:{LIGHTGREEN} {2}"
-		"de"			"{blue}*Detektiv Chat* {1}:{LIGHTGREEN} {2}"
-		"chi"           "{blue}*侦探* {1}:{LIGHTGREEN} {2}"
+		"en"            "{blue}*DETECTIVES* {1}:{lightgreen} {2}"
+		"es"            "{blue}*Chat de Detectives* {1}:{lightgreen} {2}"
+		"de"			"{blue}*Detektiv Chat* {1}:{lightgreen} {2}"
+		"chi"           "{blue}*侦探* {1}:{lightgreen} {2}"
 	}
 
 	"You dont have it!"

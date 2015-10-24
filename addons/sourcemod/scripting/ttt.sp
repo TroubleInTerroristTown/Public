@@ -28,6 +28,7 @@
 #define PLUGIN_URL "git.tf/Bara/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
+#define SOUND_MESSAGE "buttons/button18.wav"
 
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
@@ -39,6 +40,7 @@ if(IsClientValid(%1))
 #define I 1
 #define T 2
 #define D 3
+
 #define MONEYHIDE 16000
 
 enum eConfig
@@ -311,17 +313,17 @@ public void OnPluginStart()
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
-	RegConsoleCmd("sm_karma", Showkarma);
-	RegConsoleCmd("sm_money", ShowMoney);
-	RegConsoleCmd("sm_credits", ShowMoney);
+	RegConsoleCmd("sm_karma", Command_Karma);
+	RegConsoleCmd("sm_credits", Command_Credits);
 	RegConsoleCmd("sm_boom", Command_Detonate); 
 	RegConsoleCmd("sm_jihad_detonate", Command_Detonate); 
-	RegConsoleCmd("sm_logs", Logs);
-	RegConsoleCmd("sm_log", Logs);
-	RegConsoleCmd("say_team", SayTeam);
-	RegConsoleCmd("sm_menu", ShowMenu);
-	RegConsoleCmd("sm_shop", ShowMenu);
-	RegConsoleCmd("sm_id", ShowID);
+	RegConsoleCmd("sm_logs", Command_Logs);
+	RegConsoleCmd("sm_log", Command_Logs);
+	RegConsoleCmd("sm_menu", Command_Shop);
+	RegConsoleCmd("sm_shop", Command_Shop);
+	RegConsoleCmd("sm_id", Command_ID);
+	
+	AddCommandListener(Command_SayTeam, "say_team");
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
@@ -413,7 +415,7 @@ public void OnLibraryRemoved(const char[] name)
 		g_bCPS = false;
 }
 
-public Action Logs(int client, int args)
+public Action Command_Logs(int client, int args)
 {
 	if(!IsPlayerAlive(client) || !g_bRoundStarted)
 		ShowLogs(client);
@@ -434,7 +436,7 @@ stock void ShowLogs(int client)
 	g_bReceivingLogs[client] = true;
 	CPrintToChat(client, PF, "Receiving logs", client);
 	PrintToConsole(client, "--------------------------------------");
-	PrintToConsole(client, "-------------TTT LOGS---------------");
+	PrintToConsole(client, "-------------TTT Logs---------------");
 	char item[512];
 	int index = 5;
 	bool end = false;
@@ -527,9 +529,9 @@ public void OnMapStart()
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
 	
-	PrecacheSound("buttons/blip2.wav", true); 
-	PrecacheSound("buttons/button11.wav", true);
-	PrecacheSound("buttons/button18.wav", true);
+	PrecacheSoundAny("buttons/blip2.wav", true); 
+	// PrecacheSoundAny("buttons/button11.wav", true); - Unused
+	PrecacheSoundAny(SOUND_MESSAGE, true);
 	
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
@@ -606,7 +608,7 @@ public void ThinkPost(int entity)
     SetEntDataArray(entity, g_iAlive, isAlive, 65);
 }
 
-public Action Showkarma(int client, int args)
+public Action Command_Karma(int client, int args)
 {
 	CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 	
@@ -676,11 +678,6 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 public Action Timer_Selection(Handle hTimer)
 {
 	g_hStartTimer = null;
-	
-	LoopValidClients(i)
-	{
-		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
-	}
 	
 	ClearArray(g_hPlayerArray);
 	
@@ -758,10 +755,14 @@ public Action Timer_Selection(Handle hTimer)
 		listTraitors(i);
 		iTraitors++;
 	}
-	
+
 	LoopValidClients(i)
+	{
+		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
+		
 		if(g_iRole[i] != T)
 			CPrintToChat(i, PF, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
+	}
 	
 	ClearArray(g_hLogsArray);
 	g_bRoundStarted = true;
@@ -1295,7 +1296,7 @@ public Action Timer_Adjust(Handle timer)
 	}
 } */
 
-public Action ShowMoney(int client, int args)
+public Action Command_Credits(int client, int args)
 {
 	CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
 	
@@ -1767,7 +1768,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	//
 }
 
-public Action ShowID(int client, int args)
+public Action Command_ID(int client, int args)
 {
 	if(g_bID[client] && IsPlayerAlive(client))
 	{
@@ -1781,37 +1782,40 @@ public Action ShowID(int client, int args)
 
 }
 
-public Action SayTeam(int client, int args)
+public Action Command_SayTeam(int client, const char[] command, int argc)
 {
-	if(!client || !IsPlayerAlive(client)) return Plugin_Continue;
+	if(!IsClientValid(client) || !IsPlayerAlive(client))
+		return Plugin_Continue;
 	
-	char SayText[512];
-	GetCmdArgString(SayText,sizeof(SayText));
+	char sText[MAX_MESSAGE_LENGTH];
+	GetCmdArgString(sText, sizeof(sText));
 	
-	StripQuotes(SayText);
+	StripQuotes(sText);
 	
-	if(strlen(SayText) < 2) return Plugin_Continue;
+	if(strlen(sText) < 2)
+		return Plugin_Continue;
 		
-	if (SayText[0] == '@') return Plugin_Continue;
+	if (sText[0] == '@')
+		return Plugin_Continue;
 	
 	if(g_iRole[client] == T)
 	{
-		for(int i = 1; i <=MaxClients; ++i)
-			if(IsClientInGame(i) && (g_iRole[i] == T || !IsPlayerAlive(i))) 
+		LoopValidClients(i)
+			if(IsClientValid(i) && (g_iRole[i] == T || !IsPlayerAlive(i))) 
 			{
-				EmitSoundToClient(i, "buttons/button18.wav");
-				CPrintToChat(i, " %T", "T channel", i, client, SayText);
+				EmitSoundToClient(i, SOUND_MESSAGE);
+				CPrintToChat(i, "%T", "T channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
 	}
 	else if(g_iRole[client] == D)
 	{
-		for(int i = 1; i <=MaxClients; ++i)
-			if(IsClientInGame(i) && (g_iRole[i] == D || !IsPlayerAlive(i))) 
+		LoopValidClients(i)
+			if(IsClientValid(i) && (g_iRole[i] == D || !IsPlayerAlive(i))) 
 			{
-				EmitSoundToClient(i, "buttons/button18.wav");
-				CPrintToChat(i, " %T", "D channel", i, client, SayText);
+				EmitSoundToClient(i, SOUND_MESSAGE);
+				CPrintToChat(i, "%T", "D channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
@@ -1819,13 +1823,13 @@ public Action SayTeam(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action ShowMenu(int client, int args)
+public Action Command_Shop(int client, int args)
 {
 	int team = g_iRole[client];
 	if(team != U)
 	{
 		char MenuItem[128];
-		Handle menu = CreateMenu(DIDMenuHandler);
+		Handle menu = CreateMenu(Menu_ShopHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
 		
 		if(team != I)
@@ -1891,7 +1895,7 @@ public Action ShowMenu(int client, int args)
 
 }
 
-public int DIDMenuHandler(Menu menu, MenuAction action, int client, int itemNum) 
+public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum) 
 {
 	if ( action == MenuAction_Select ) 
 	{
