@@ -333,12 +333,11 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_shop", Command_Shop);
 	RegConsoleCmd("sm_id", Command_ID);
 	
-	AddCommandListener(Command_SayTeam, "say_team");
-	
-	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_start", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
+	
+	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_changename", Event_ChangeName);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_hurt", Event_PlayerHurt);
@@ -346,8 +345,8 @@ public void OnPluginStart()
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
-	
- 	AddCommandListener(Command_InterceptSuicide, "kill");
+	AddCommandListener(Command_SayTeam, "say_team");
+	AddCommandListener(Command_InterceptSuicide, "kill");
 	AddCommandListener(Command_InterceptSuicide, "explode");
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
@@ -852,7 +851,7 @@ stock void ApplyIcons()
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(IsClientValid(client))
 	{
@@ -893,6 +892,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		
 		CPS_RemoveSkin(client);
 		CPS_SetSkin(client, sModel, CPS_RENDER);
+		
+		// Hide Radar
+		SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
 	}
 }
 
@@ -925,12 +927,15 @@ public Action OnPreThink(int client)
 		// Workaround for CS_SetClientContributionScore
 		// SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", g_iKarma[client], _, client);
 		
-		int iSkin = CPS_GetSkin(client);
-		
-		// Disable player glow
-		if (g_bCPS && g_iConfig[c_disablePlayerGlowing].IntValue)
-			if(IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
-				SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
+		if(g_bCPS)
+		{
+			int iSkin = CPS_GetSkin(client);
+			
+			// Disable player glow
+			if (g_iConfig[c_disablePlayerGlowing].IntValue)
+				if(IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
+					SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
+		}
 	}
 }
 
