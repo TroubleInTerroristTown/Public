@@ -194,7 +194,7 @@ Handle g_hLogsArray;
 
 bool g_bCPS = false;
 
-/* char g_sTModels[][] =  {
+char g_sTModels[][] =  {
  "models/player/tm_anarchist.mdl",
  "models/player/tm_anarchist_variantA.mdl",
  "models/player/tm_anarchist_variantB.mdl",
@@ -268,7 +268,7 @@ char g_sCTModels[][] =  {
  "models/player/ctm_swat_variantB.mdl",
  "models/player/ctm_swat_variantC.mdl",
  "models/player/ctm_swat_variantD.mdl"
-}; */
+};
 
 public void OnPluginStart()
 {
@@ -795,21 +795,20 @@ stock void TeamInitialize(int client)
 		GivePlayerItem(client, "weapon_taser");
 		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
-		// SetSkin(client, D);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
-		// SetSkin(client, T);
 	}
 	else if(g_iRole[client] == I)
 	{
 		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
-		// SetSkin(client, I);
 	}
+	
+	SetSkin(client, g_iRole[client]);
 }
 
 stock void TeamTag(int client)
@@ -841,8 +840,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		CS_SetClientClanTag(client, "");
 		
 		g_iInnoKills[client] = 0;
-		CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
-		CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 		
 		StripAllWeapons(client);
 		
@@ -860,6 +857,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			if(iCount >= 3)
 				ServerCommand("mp_restartgame 2");
 		}
+		else
+		{
+			CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
+			CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
+		}
 		
 		g_b1Knife[client] = false;
 		g_bScan[client] = false;
@@ -867,11 +869,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
 		
-		/* bchar model[PLATFORM_MAX_PATH];
-		GetClientModel(client, model, sizeof(model));
+		char sModel[PLATFORM_MAX_PATH];
+		GetClientModel(client, sModel, sizeof(sModel));
 		
 		CPS_RemoveSkin(client);
-		CPS_SetSkin(client, model, CPS_RENDER); */
+		CPS_SetSkin(client, sModel, CPS_RENDER);
 	}
 }
 
@@ -907,12 +909,6 @@ public Action OnPreThink(int client)
 		// Disable player glow
 		if (g_bCPS && IsClientValid(client))
 		{
-			char sModel[PLATFORM_MAX_PATH];
-			GetClientModel(client, sModel, sizeof(sModel));
-			
-			CPS_RemoveSkin(client);
-			CPS_SetSkin(client, sModel, CPS_RENDER);
-			
 			int iSkin = CPS_GetSkin(client);
 			
 			if(iSkin > 0)
@@ -3081,7 +3077,7 @@ stock void CheckTeams()
 		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
 }
 
-/* stock void SetSkin(int client, int role)
+stock void SetSkin(int client, int role)
 {
 	char sModel[128];
 	
@@ -3091,4 +3087,4 @@ stock void CheckTeams()
 		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sTModels))]);
 	
 	CPS_SetSkin(client, sModel, CPS_RENDER);
-} */
+}
