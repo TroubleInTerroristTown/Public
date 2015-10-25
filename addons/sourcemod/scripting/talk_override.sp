@@ -3,7 +3,9 @@
 #include <sourcemod>
 #include <sdktools>
 
-#define LoopClients(%1) for(new %1=1;%1<=MaxClients;++%1)\
+#pragma newdecls required
+
+#define LoopClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
 if(IsClientInGame(%1))
 
 public Plugin myinfo = 
