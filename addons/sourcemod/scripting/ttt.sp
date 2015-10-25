@@ -25,7 +25,7 @@
 #define PLUGIN_AUTHOR "Bara"
 #define PLUGIN_DESCRIPTION ""
 #define PLUGIN_VERSION "2.0.3"
-#define PLUGIN_URL "git.tf/Bara/TTT"
+#define PLUGIN_URL "git.tf/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
 #define SOUND_MESSAGE "buttons/button18.wav"
