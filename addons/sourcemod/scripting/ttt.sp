@@ -99,7 +99,9 @@ enum eConfig
 	ConVar:c_showLoseKarmaMessage,
 	ConVar:c_showLoseCreditsMessage,
 	ConVar:c_messageTypKarma,
-	ConVar:c_messageTypCredits
+	ConVar:c_messageTypCredits,
+	ConVar:c_disablePlayerGlowing,
+	ConVar:c_blockSuicide
 };
 
 int g_iConfig[eConfig];
@@ -345,11 +347,11 @@ public void OnPluginStart()
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	
-/* 	AddCommandListener(Command_InterceptSuicide, "kill");
+ 	AddCommandListener(Command_InterceptSuicide, "kill");
 	AddCommandListener(Command_InterceptSuicide, "explode");
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
-	AddCommandListener(Command_InterceptSuicide, "joinclass"); */
+	AddCommandListener(Command_InterceptSuicide, "joinclass");
 
 	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
@@ -416,6 +418,9 @@ public void OnPluginStart()
 	
 	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
 	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
+	
+	g_iConfig[c_disablePlayerGlowing] = CreateConVar("ttt_disable_player_glowing", "1");
+	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
 
 	AutoExecConfig(true);
 	
@@ -448,14 +453,14 @@ stock void ShowLogs(int client)
 	int sizearray = GetArraySize(g_hLogsArray);
 	if(sizearray == 0)
 	{
-		CPrintToChat(client, PF, "Aun no items", client);
+		CPrintToChat(client, PF, "no logs yet", client);
 		return;
 	}
 	if(g_bReceivingLogs[client]) return;
 	g_bReceivingLogs[client] = true;
 	CPrintToChat(client, PF, "Receiving logs", client);
 	PrintToConsole(client, "--------------------------------------");
-	PrintToConsole(client, "-------------TTT Logs---------------");
+	PrintToConsole(client, "-------------TTT LOGS---------------");
 	char item[512];
 	int index = 5;
 	bool end = false;
@@ -479,10 +484,10 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "--------------------------------------");
 		return;
 	}
-	Handle pack = CreateDataPack();
+	DataPack pack = new DataPack();
 	RequestFrame(OnCreate, pack);
-	WritePackCell(pack, client);
-	WritePackCell(pack, index);
+	pack.WriteCell(client);
+	pack.WriteCell(index);
 }
 
 public void OnCreate(any pack)
@@ -522,22 +527,22 @@ public void OnCreate(any pack)
 			PrintToConsole(client, "--------------------------------------");
 			return;
 		}
-		Handle pack2;
+		DataPack pack2 = new DataPack();
 		RequestFrame(OnCreate, pack2);
-		WritePackCell(pack2, client);
-		WritePackCell(pack2, index);
+		pack2.WriteCell(client);
+		pack2.WriteCell(index);
 	}
 }
 
-/* public Action Command_InterceptSuicide(client, const char[] command, args)
+public Action Command_InterceptSuicide(int client, const char[] command, int args)
 {
-	if(IsPlayerAlive(client))
+	if(g_iConfig[c_blockSuicide].IntValue && IsPlayerAlive(client))
 	{
-		CPrintToChat(client, " {default}[{green}T{RED}T{blue}T{default}]{PURPLE} Suicide blocked");
+		CPrintToChat(client, PF, "Suicide Blocked", client);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
-} */
+}
 
 public void OnMapStart()
 {
@@ -915,19 +920,17 @@ public Action OnPreThink(int client)
 {
 	if(IsClientValid(client))
 	{
-		// CS_SetClientContributionScore(client, g_iKarma[client]);
+		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
 		// Workaround for CS_SetClientContributionScore
-		SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", g_iKarma[client], _, client);
+		// SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", g_iKarma[client], _, client);
+		
+		int iSkin = CPS_GetSkin(client);
 		
 		// Disable player glow
-		if (g_bCPS && IsClientValid(client))
-		{
-			int iSkin = CPS_GetSkin(client);
-			
-			if(iSkin > 0)
+		if (g_bCPS && g_iConfig[c_disablePlayerGlowing].IntValue)
+			if(IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
 				SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
-		}
 	}
 }
 

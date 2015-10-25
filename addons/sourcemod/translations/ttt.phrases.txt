@@ -423,7 +423,7 @@
 		"de"            "Du verlierst {1} Karma\nDein Karma ist jetzt: {2}"
 	}
 	
-	"Aun no items"
+	"no logs yet"
 	{
 		"en"            "No logs yet"
 		"es"            "Aun no hay logs"
@@ -569,4 +569,9 @@
 		"en"            "Buy radar - {1}"
 		"de"            "Kaufe Radar - {1}"
 	}
+	
+	"Suicide Blocked"
+	{
+		"en"			"Suicide blocked"
+		"de"			"Selbstmord blockiert"
 }
