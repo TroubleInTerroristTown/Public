@@ -101,7 +101,9 @@ enum eConfig
 	ConVar:c_messageTypKarma,
 	ConVar:c_messageTypCredits,
 	ConVar:c_disablePlayerGlowing,
-	ConVar:c_blockSuicide
+	ConVar:c_blockSuicide,
+	ConVar:c_allowFlash,
+	ConVar:c_blockLookAtWeapon
 };
 
 int g_iConfig[eConfig];
@@ -420,6 +422,9 @@ public void OnPluginStart()
 	
 	g_iConfig[c_disablePlayerGlowing] = CreateConVar("ttt_disable_player_glowing", "1");
 	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
+	
+	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
+	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
 
 	AutoExecConfig(true);
 	
@@ -2343,10 +2348,10 @@ public Action Command_LAW(int client, const char[] command, int argc)
 {
 
 	if(!IsClientInGame(client))
-		return;
+		return Plugin_Continue;
 
 	if(!IsPlayerAlive(client) || !g_bJihadBomb[client] || g_hJihadBomb[client] != null)
-		return;	
+		return Plugin_Continue;	
 
 	if(g_bDetonate[client])
 	{
@@ -2360,7 +2365,14 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		g_bDetonate[client] = true;
 		CreateTimer(2.0, PasarJ, client);
 	}
-
+	
+	if(g_iConfig[c_allowFlash].IntValue)
+		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4); 
+	
+	if(g_iConfig[c_blockLookAtWeapon].IntValue)
+		return Plugin_Handled;
+	
+	return Plugin_Continue;
 }
 
 public Action PasarJ(Handle timer, any client) 
