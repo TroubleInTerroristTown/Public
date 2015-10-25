@@ -892,9 +892,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		
 		CPS_RemoveSkin(client);
 		CPS_SetSkin(client, sModel, CPS_RENDER);
-		
-		// Hide Radar
-		SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
 	}
 }
 
