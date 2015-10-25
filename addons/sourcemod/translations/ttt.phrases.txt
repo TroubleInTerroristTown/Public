@@ -574,4 +574,5 @@
 	{
 		"en"			"Suicide blocked"
 		"de"			"Selbstmord blockiert"
+	}
 }
