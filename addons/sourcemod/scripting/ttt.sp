@@ -2073,7 +2073,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				g_bHasC4[client] = true;
 				subtractCredits(client, g_iConfig[c_shopC4].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
-				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Right click to plant the C4!"); // TODO: Translations
+				CPrintToChat(client, PF, "Right click to plant the C4", client);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
 		}
@@ -2082,7 +2082,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				if (g_iRole[client] != D)
 					return;
 				if (g_bHasActiveHealthStation[client]) {
-					PrintToChat(client, "[\x04T\x02T\x0BT\x01]You already have an active Health Station!"); // TODO: Translations
+					CPrintToChat(client, PF, "You already have an active Health Station", client);
 					return;
 				}
 				spawnHealthStation(client);
@@ -2382,18 +2382,18 @@ stock void manageRDM(int client)
 	int iAttacker = g_iRDMAttacker[client];
 	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
 	{
-		PrintToChat(client, "[RDM Manager] The player who RDM'd you is no longer available!"); // TODO: Translations
+		CPrintToChat(client, PF, "The player who RDM'd you is no longer available", client);
 		return;
 	}
 	char sAttackerName[MAX_NAME_LENGTH];
 	GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
 	char display[256];
-	Format(display, sizeof(display), "You were RDM'd by %s!", sAttackerName);
+	Format(display, sizeof(display), "You were RDM'd by %s!", sAttackerName); // TODO: Translation
 	
 	Handle menuHandle = CreateMenu(manageRDMHandle);
 	SetMenuTitle(menuHandle, display);
-	AddMenuItem(menuHandle, "Forgive", "Forgive");
-	AddMenuItem(menuHandle, "Punish", "Punish");
+	AddMenuItem(menuHandle, "Forgive", "Forgive"); // TODO: Translation
+	AddMenuItem(menuHandle, "Punish", "Punish"); // TODO: Translation
 	DisplayMenu(menuHandle, client, 10);
 }
 
@@ -2485,7 +2485,7 @@ public Action Command_Role(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		CS_SetClientClanTag(target, "");
-		ReplyToCommand(client, "[SM] %N is now an Innocent!", target);
+		ReplyToCommand(client, "[SM] %N is now an Innocent!", target); // TODO: Translation
 		return Plugin_Handled;
 	}
 	else if (role == 2)
@@ -2495,7 +2495,7 @@ public Action Command_Role(int client, int args)
 		ClearIcon(target);
 		ApplyIcons();
 		CS_SetClientClanTag(target, "");
-		ReplyToCommand(client, "[SM] %N is now a Traitor!", target);
+		ReplyToCommand(client, "[SM] %N is now a Traitor!", target); // TODO: Translation
 		return Plugin_Handled;
 	}
 	else if (role == 3)
@@ -2504,7 +2504,7 @@ public Action Command_Role(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
-		ReplyToCommand(client, "[SM] %N is now a Detective!", target);
+		ReplyToCommand(client, "[SM] %N is now a Detective!", target); // TODO: Translation
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
@@ -2516,13 +2516,13 @@ public Action Command_Status(int client, int args)
 		return Plugin_Handled;
 		
 	if (g_iRole[client] == U)
-		ReplyToCommand(client, "[SM] You role has not been assigned yet!");
+		ReplyToCommand(client, "[SM] You role has not been assigned yet!"); // TODO: Translation
 	else if (g_iRole[client] == I)
-		ReplyToCommand(client, "[SM] You are an Innocent!");
+		ReplyToCommand(client, "[SM] You are an Innocent!"); // TODO: Translation
 	else if (g_iRole[client] == D)
-		ReplyToCommand(client, "[SM] You are a Detective!");
+		ReplyToCommand(client, "[SM] You are a Detective!"); // TODO: Translation
 	else if (g_iRole[client] == T)
-		ReplyToCommand(client, "[SM] You are a Traitor!");
+		ReplyToCommand(client, "[SM] You are a Traitor!"); // TODO: Translation
 	
 	return Plugin_Handled;
 }
@@ -2582,7 +2582,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 		if (g_iRole[activator] == I || g_iRole[activator] == D || g_iRole[activator] == U)
 		{
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
-			PrintToChatAll("%N triggered the falling building as a Non-Traitor.", activator);
+			PrintToChatAll("%N triggered the falling building as a Non-Traitor.", activator); // TODO: Translation
 		}
 	}
 	return Plugin_Continue;
@@ -2710,13 +2710,13 @@ stock void showPlantMenu(int client)
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
 	Handle menuHandle = CreateMenu(plantBombMenu);
-	SetMenuTitle(menuHandle, "Set the C4 Timer.");
-	AddMenuItem(menuHandle, "10", "10 seconds");
-	AddMenuItem(menuHandle, "20", "20 seconds");
-	AddMenuItem(menuHandle, "30", "30 seconds");
-	AddMenuItem(menuHandle, "40", "40 seconds");
-	AddMenuItem(menuHandle, "50", "50 seconds");
-	AddMenuItem(menuHandle, "60", "60 seconds");
+	SetMenuTitle(menuHandle, "Set the C4 Timer."); // TODO: Translation
+	AddMenuItem(menuHandle, "10", "10 seconds"); // TODO: Translation
+	AddMenuItem(menuHandle, "20", "20 seconds"); // TODO: Translation
+	AddMenuItem(menuHandle, "30", "30 seconds"); // TODO: Translation
+	AddMenuItem(menuHandle, "40", "40 seconds"); // TODO: Translation
+	AddMenuItem(menuHandle, "50", "50 seconds"); // TODO: Translation
+	AddMenuItem(menuHandle, "60", "60 seconds"); // TODO: Translation
 	SetMenuPagination(menuHandle, 6);
 	DisplayMenu(menuHandle, client, 10);
 }
@@ -2727,11 +2727,11 @@ stock void showDefuseMenu(int client)
 		return;
 	
 	Handle menuHandle= CreateMenu(defuseBombMenu);
-	SetMenuTitle(menuHandle, "Defuse the C4!");
-	AddMenuItem(menuHandle, "1", "Wire 1");
-	AddMenuItem(menuHandle, "2", "Wire 2");
-	AddMenuItem(menuHandle, "3", "Wire 3");
-	AddMenuItem(menuHandle, "4", "Wire 4");
+	SetMenuTitle(menuHandle, "Defuse the C4!"); // TODO: Translation
+	AddMenuItem(menuHandle, "1", "Wire 1"); // TODO: Translation
+	AddMenuItem(menuHandle, "2", "Wire 2"); // TODO: Translation
+	AddMenuItem(menuHandle, "3", "Wire 3"); // TODO: Translation
+	AddMenuItem(menuHandle, "4", "Wire 4"); // TODO: Translation
 	SetMenuPagination(menuHandle, 4);
 	DisplayMenu(menuHandle, client, 10);
 }
@@ -2941,7 +2941,7 @@ stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 {
 	for (int i = 0; i < sizeof(g_sDetectiveNames); i++)
 		if (StrContains(name, g_sDetectiveNames[i]) != -1)
-			KickClient(client, "Remove the word Detective from your name.");
+			KickClient(client, "Remove the word Detective from your name."); // TODO: Translation
 }
 
 stock void healthStation_cleanUp()

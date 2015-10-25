@@ -575,4 +575,22 @@
 		"en"			"Suicide blocked"
 		"de"			"Selbstmord blockiert"
 	}
+	
+	"Right click to plant the C4"
+	{
+		"en"			"Right click to plant the C4!"
+		"de"			"Rechtsklick um C4 zu platzieren!"
+	}
+	
+	"You already have an active Health Station"
+	{
+		"en"			"You already have an active Health Station!"
+		"de"			"Sie haben bereits eine Heilstation!"
+	}
+	
+	"The player who RDM'd you is no longer available"
+	{
+		"en"			"The player who RDM'd you is no longer available!"
+		"de"			"Der Spieler der RDM'd hat, ist nicht mehr verfügbar!"
+	}
 }
