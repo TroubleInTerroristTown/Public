@@ -2892,7 +2892,8 @@ stock float plantBomb(int client, float time)
 		return;
 	}
 	
-	PrintToChat(client, "[\x04T\x02T\x0BT\x01] Deploying a c4 that will explode in %.2f seconds.", time); // TODO: Translations
+	CPrintToChat(client, PF, "Will Explode In", client, time);
+	
 	int bombEnt;
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
 	{
@@ -2913,11 +2914,11 @@ stock float plantBomb(int client, float time)
 				g_bHasActiveBomb[client] = true;
 			}
 			else
-				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Your bomb was not found!"); // TODO: Translations
+				CPrintToChat(client, PF, "Bomb Was Not Found", client);
 		}
 	}
 	g_iWire[client] = Math_GetRandomInt(1, 4);
-	PrintToChat(client, "[\x04T\x02T\x0BT\x01] The defuse wire is %i!", g_iWire[client]); // TODO: Translations
+	CPrintToChat(client, PF, "Wire Is", client, g_iWire[client]);
 }
 
 stock int findBomb(int client)
@@ -2961,26 +2962,26 @@ stock void listTraitors(int client)
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
 		return;
 	
-	PrintToChat(client, "[\x02TTT\x01] Your Traitor partners are:"); // TODO: Translations
+	CPrintToChat(client, PF, "Your Traitor Partners", client);
 	int iCount = 0;
 	
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsClientInGame(i) || !IsPlayerAlive(i) || client == i || g_iRole[i] != T)
 			continue;
-		PrintToChat(client, "[\x02TTT\x01] %N", i); // TODO: Translations
+		PrintToChat(client, "%N", i);
 		iCount++;
 	}
 	
 	if(iCount == 0)
-		PrintToChat(client, "[\x02TTT\x01] You have no partner."); // TODO: Translations
+		CPrintToChat(client, PF, "No Traitor Partners", client);
 }
 
 stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 {
 	for (int i = 0; i < sizeof(g_sDetectiveNames); i++)
 		if (StrContains(name, g_sDetectiveNames[i]) != -1)
-			KickClient(client, "Remove the word Detective from your name."); // TODO: Translation
+			KickClient(client, "%T", "Kick Bad Name", client, g_sDetectiveNames[i]);
 }
 
 stock void healthStation_cleanUp()
@@ -3028,7 +3029,7 @@ stock void spawnHealthStation(int client)
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;
 		g_iHealthStationCharges[client] = 10;
-		PrintToChat(client, "[\x04T\x02T\x0BT\x01] Health Station deployed. Stand near it to gain HP!"); // TODO: Translations
+		CPrintToChat(client, PF, "Health Station Deployed", client);
 	}
 }
 
@@ -3102,7 +3103,7 @@ stock void checkDistanceFromHealthStation(int client) {
 			else
 				SetEntityHealth(client, newHealth);
 
-			PrintToChat(client, "[\x04T\x02T\x0BT\x01] Healing from %N's Health Station!", owner); // TODO: Translations
+			CPrintToChat(client, PF, "Healing From", client, owner);
 			EmitSoundToClientAny(client, "resource/warning.wav");
 			g_iHealthStationCharges[owner]--;
 			g_bOnHealingCoolDown[client] = true;
@@ -3110,7 +3111,7 @@ stock void checkDistanceFromHealthStation(int client) {
 		}
 		else
 		{
-			PrintToChat(client, "[\x04T\x02T\x0BT\x01] This Health Station is out of charges! Wait for it to recharge!"); // TODO: Translations
+			CPrintToChat(client, PF, "Health Station Out Of Charges", client);
 			g_bOnHealingCoolDown[client] = true;
 			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}

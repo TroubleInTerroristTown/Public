@@ -741,4 +741,62 @@
 		"en"		"You must be alive to plant a bomb!"
 		"de"		"Du musst leben um eine Bombe zu legen!"
 	}
+	
+	"Will Explode In"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"Deploying a c4 that will explode in {1} seconds."
+		"de"		"Platzieren einer C4, die in {1} Sekunden explodiert."
+	}
+	
+	"Bomb Was Not Found"
+	{
+		"en"		"Your bomb was not found!"
+		"de"		"Deine Bombe wurde nicht gefunden!"
+	}
+	
+	"Wire Is"
+	{
+		"#format"	"{1:d}"
+		"en"		"The defuse wire is {1}!"
+		"de"		"Der Entschärfungs-Draht ist {1}!"
+	}
+	
+	"Your Traitor Partners"
+	{
+		"en"		"Your Traitor partners are:"
+		"de"		"Deine Traitor Partner sind:"
+	}
+	
+	"No Traitor Partners"
+	{
+		"en"		"You have no partners."
+		"de"		"Du hast keine partner."
+	}
+	
+	"Kick Bad Name"
+	{
+		"#format"	"{1:s}"
+		"en"		"Remove the word {1} form your name!"
+		"de"		"Entferne das Wort {1} aus dein Name!"
+	}
+	
+	"Health Station Deployed"
+	{
+		"en"		"Health Station deployed. Stand near it to gain HP!"
+		"de"		"Heil Station plaziert. Bleibe in der nähe um HP zu bekommen!"
+	}
+	
+	"Healing From"
+	{
+		"#format"	"{1:N}"
+		"en"		"Healing from {1}'s Health Station!"
+		"de"		"Heilen von der Heil Station von {1}"
+	}
+	
+	"Health Station Out Of Charges"
+	{
+		"en"		"This Health Station is out of charges! Wait for it to recharge!"
+		"de"		"Die Heil Station ist außer Betrieb! Warte auf Wiederaufladung!"
+	}
 }
