@@ -93,7 +93,13 @@ enum eConfig
 	ConVar:c_traitorwinAliveTraitors,
 	ConVar:c_traitorwinDeadTraitors,
 	ConVar:c_showDeathMessage,
-	ConVar:c_showKillMessage
+	ConVar:c_showKillMessage,
+	ConVar:c_showEarnKarmaMessage,
+	ConVar:c_showEarnCreditsMessage,
+	ConVar:c_showLoseKarmaMessage,
+	ConVar:c_showLoseCreditsMessage,
+	ConVar:c_messageTypKarma,
+	ConVar:c_messageTypCredits
 };
 
 int g_iConfig[eConfig];
@@ -402,6 +408,14 @@ public void OnPluginStart()
 	
 	g_iConfig[c_showDeathMessage] = CreateConVar("ttt_show_death_message", "1");
 	g_iConfig[c_showKillMessage] = CreateConVar("ttt_show_kill_message", "1");
+	
+	g_iConfig[c_showEarnKarmaMessage] = CreateConVar("ttt_show_message_earn_karma", "1");
+	g_iConfig[c_showEarnCreditsMessage] = CreateConVar("ttt_show_message_earn_credits", "1");
+	g_iConfig[c_showLoseKarmaMessage] = CreateConVar("ttt_show__message_lose_karmna", "1");
+	g_iConfig[c_showLoseCreditsMessage] = CreateConVar("ttt_show_message_lose_credits", "1");
+	
+	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
+	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
 
 	AutoExecConfig(true);
 	
@@ -859,7 +873,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		}
 		else
 		{
-			CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
+			CPrintToChat(client, PF, "Your credits is", client, g_iCredits[client]);
 			CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
 		}
 		
@@ -1299,7 +1313,7 @@ public Action Timer_Adjust(Handle timer)
 
 public Action Command_Credits(int client, int args)
 {
-	CPrintToChat(client, PF, "Your REAL money is", client, g_iCredits[client]);
+	CPrintToChat(client, PF, "Your credits is", client, g_iCredits[client]);
 	
 	return Plugin_Handled;
 }
@@ -1361,77 +1375,74 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaII].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue);
+		subtractKarma(iAttacker, g_iConfig[c_karmaII].IntValue, true);
+		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += g_iConfig[c_karmaIT].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsIT].IntValue);
+		
+		addKarma(iAttacker, g_iConfig[c_karmaIT].IntValue, true);
+		addCredits(iAttacker, g_iConfig[c_creditsIT].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaID].IntValue;
-		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue);
-		//RDM(iAttacker);
+		
+		subtractKarma(iAttacker, g_iConfig[c_karmaID].IntValue, true);
+		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += g_iConfig[c_karmaTI].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue);
+		addKarma(iAttacker, g_iConfig[c_karmaTI].IntValue, true);
+		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaTT].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue);
+		
+		subtractKarma(iAttacker, g_iConfig[c_karmaTT].IntValue, true);
+		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] += g_iConfig[c_karmaTD].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue);
+		addKarma(iAttacker, g_iConfig[c_karmaTD].IntValue, true);
+		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaDI].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue);
+		subtractKarma(iAttacker, g_iConfig[c_karmaDI].IntValue, true);
+		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] += g_iConfig[c_karmaDT].IntValue;
-		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue);
+		
+		addKarma(iAttacker, g_iConfig[c_karmaDT].IntValue, true);
+		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue, true);
 	}
 	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		g_iKarma[iAttacker] -= g_iConfig[c_karmaDD].IntValue;
-		//RDM(iAttacker);
-		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue);
+		
+		subtractKarma(iAttacker, g_iConfig[c_karmaDD].IntValue, true);
+		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue, true);
 	}
 	
-	if(g_iKarma[iAttacker] > g_iConfig[c_maxKarma].IntValue)
-		g_iKarma[iAttacker] = g_iConfig[c_maxKarma].IntValue;
-
 	char result[32];
 	IntToString(g_iKarma[iAttacker], result, sizeof(result));
 	SetClientCookie(iAttacker, g_hKarmaCookie, result);
@@ -1915,7 +1926,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopKEVLAR].IntValue)
 			{
 				GivePlayerItem( client, "item_assaultsuit");
-				g_iCredits[client] -= g_iConfig[c_shopKEVLAR].IntValue;
+				subtractCredits(client, g_iConfig[c_shopKEVLAR].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1927,7 +1938,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				if (g_iRole[client] != T)
 					return;
 				Set1Knife(client);
-				g_iCredits[client] -= g_iConfig[c_shop1KNIFE].IntValue;
+				subtractCredits(client, g_iConfig[c_shop1KNIFE].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1937,7 +1948,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopDNA].IntValue)
 			{
 				g_bScan[client] = true;
-				g_iCredits[client] -= g_iConfig[c_shopDNA].IntValue;
+				subtractCredits(client, g_iConfig[c_shopDNA].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1947,7 +1958,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopID].IntValue)
 			{
 				g_bID[client] = true;
-				g_iCredits[client] -= g_iConfig[c_shopID].IntValue;
+				subtractCredits(client, g_iConfig[c_shopID].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1957,7 +1968,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopRadar].IntValue)
 			{
 				g_bRadar[client] = true;
-				g_iCredits[client] -= g_iConfig[c_shopRadar].IntValue;
+				subtractCredits(client, g_iConfig[c_shopRadar].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1967,7 +1978,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopFAKEID].IntValue)
 			{
 				g_bID[client] = true;
-				g_iCredits[client] -= g_iConfig[c_shopFAKEID].IntValue;
+				subtractCredits(client, g_iConfig[c_shopFAKEID].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1978,7 +1989,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_iRole[client] = T;
 				TeamInitialize(client);
-				g_iCredits[client] -= g_iConfig[c_shopT].IntValue;
+				subtractCredits(client, g_iConfig[c_shopT].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1989,7 +2000,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_iRole[client] = D;
 				TeamInitialize(client);
-				g_iCredits[client] -= g_iConfig[c_shopD].IntValue;
+				subtractCredits(client, g_iConfig[c_shopD].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -1999,7 +2010,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			if(g_iCredits[client] >= g_iConfig[c_shopTASER].IntValue)
 			{
 				GivePlayerItem(client, "weapon_taser");
-				g_iCredits[client] -= g_iConfig[c_shopTASER].IntValue;
+				subtractCredits(client, g_iConfig[c_shopTASER].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -2014,7 +2025,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
 				
 				GivePlayerItem(client, "weapon_usp_silencer");
-				g_iCredits[client] -= g_iConfig[c_shopUSP].IntValue;
+				subtractCredits(client, g_iConfig[c_shopUSP].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -2030,7 +2041,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 				
 				GivePlayerItem(client, "weapon_m4a1_silencer");
-				g_iCredits[client] -= g_iConfig[c_shopM4A1].IntValue;
+				subtractCredits(client, g_iConfig[c_shopM4A1].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, PF, "You don't have enough money", client);
@@ -2044,7 +2055,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
 				g_hJihadBomb[client] = CreateTimer(60.0, BombaArmada, client);
-				g_iCredits[client] -= g_iConfig[c_shopJIHADBOMB].IntValue;
+				subtractCredits(client, g_iConfig[c_shopJIHADBOMB].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, PF, "bomb will arm in 60 seconds, double tab F to explode", client);
 			}
@@ -2055,7 +2066,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				if (g_iRole[client] != T)
 					return;
 				g_bHasC4[client] = true;
-				g_iCredits[client] -= g_iConfig[c_shopC4].IntValue;
+				subtractCredits(client, g_iConfig[c_shopC4].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Right click to plant the C4!"); // TODO: Translations
 			}
@@ -2070,7 +2081,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				}
 				spawnHealthStation(client);
-				g_iCredits[client] -= g_iConfig[c_shopHEALTH].IntValue;
+				subtractCredits(client, g_iConfig[c_shopHEALTH].IntValue);
 				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}
@@ -2191,19 +2202,64 @@ stock void ClearIcon(int client)
 	
 }
 
-stock void addCredits(int client, int credits)
+stock void addKarma(int client, int karma, bool message = false)
 {
-	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
-	g_iCredits[client] += credits;
+	g_iKarma[client] += karma;
 	
-	PrintHintText(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+	if(g_iKarma[client] > g_iConfig[c_maxKarma].IntValue)
+		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
+	
+	if (g_iConfig[c_showEarnKarmaMessage].IntValue && message)
+	{
+		if(g_iConfig[c_messageTypKarma].IntValue == 1)
+	  		PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
+	  	else
+	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
+	}
 }
 
-stock void subtractCredits(int client, int credits)
+stock void subtractKarma(int client, int karma, bool message = false)
+{
+	g_iKarma[client] -= karma;
+	
+	if (g_iConfig[c_showLoseKarmaMessage].IntValue && message)
+	{
+		if(g_iConfig[c_messageTypKarma].IntValue == 1)
+	  		PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
+	  	else
+	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
+	}
+}
+
+stock void addCredits(int client, int credits, bool message = false)
+{
+	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
+	
+	g_iCredits[client] += credits;
+	
+	if (g_iConfig[c_showEarnCreditsMessage].IntValue && message)
+	{
+		if(g_iConfig[c_messageTypCredits].IntValue == 1)
+			PrintHintText(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+		else
+			CPrintToChat(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+	}
+}
+
+stock void subtractCredits(int client, int credits, bool message = false)
 {
 	g_iCredits[client] -= credits;
-	if(g_iCredits[client] < 0) g_iCredits[client] = 0;
-	PrintHintText(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+	
+	if(g_iCredits[client] < 0)
+		g_iCredits[client] = 0;
+	
+	if (g_iConfig[c_showLoseCreditsMessage].IntValue && message)
+	{
+		if(g_iConfig[c_messageTypCredits].IntValue == 1)
+			PrintHintText(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+		else
+			CPrintToChat(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+	}
 }
 
 stock void ClearTimer(Handle &timer)

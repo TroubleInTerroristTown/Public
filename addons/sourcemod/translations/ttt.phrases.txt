@@ -51,7 +51,7 @@
 	}
 
 
-	"Your REAL money is"
+	"Your credits is"
 	{
 		"#format"       "{1:i}"
 		"en"            "Your CREDITS are: {lightgreen}{1}"
@@ -407,6 +407,20 @@
 		"es"            "Has perdido {1} creditos\nTus creditos actuales son: {2}"
 		"de"            "Du verlierst {1} Credits - du besitzt noch: {2}"
 		"chi"           "你杀错了玩家失去 {1} 金钱\n你的当前金钱是: {2}"
+	}
+	
+	"karma earned"
+	{
+		"#format"       "{1:i},{2:i}"
+		"en"            "You earn {1} karma\nYour karma is now: {2}"
+		"de"            "Du bekommst {1} Karma\nDein Karma ist jetzt: {2}"
+	}
+
+	"lost karma"
+	{
+		"#format"       "{1:i},{2:i}"
+		"en"            "You lose {1} karma\nYour karma is now: {2}"
+		"de"            "Du verlierst {1} Karma\nDein Karma ist jetzt: {2}"
 	}
 	
 	"Aun no items"
