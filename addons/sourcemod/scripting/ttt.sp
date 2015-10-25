@@ -2387,13 +2387,16 @@ stock void manageRDM(int client)
 	}
 	char sAttackerName[MAX_NAME_LENGTH];
 	GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
-	char display[256];
-	Format(display, sizeof(display), "You were RDM'd by %s!", sAttackerName); // TODO: Translation
+	
+	char display[256], sForgive[64], sPunish[64];
+	Format(display, sizeof(display), PF, "You were RDM'd", client, sAttackerName);
+	Format(sForgive, sizeof(sForgive), PF, "Forgive", client);
+	Format(sPunish, sizeof(sPunish), PF, "Punish", client);
 	
 	Handle menuHandle = CreateMenu(manageRDMHandle);
 	SetMenuTitle(menuHandle, display);
-	AddMenuItem(menuHandle, "Forgive", "Forgive"); // TODO: Translation
-	AddMenuItem(menuHandle, "Punish", "Punish"); // TODO: Translation
+	AddMenuItem(menuHandle, "Forgive", sForgive);
+	AddMenuItem(menuHandle, "Punish", sPunish);
 	DisplayMenu(menuHandle, client, 10);
 }
 
@@ -2414,28 +2417,29 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 			GetMenuItem(menu, option, info, sizeof(info));
 			if (StrEqual(info, "Forgive", false))
 			{
-				PrintToChat(client, "[RDM Manager] You have chosen to forgive %N for RDMing you!", iAttacker); // TODO: Translations
-				PrintToChat(iAttacker, "[RDM Manager] %N has chosen to forgive you for RDMing them!", client); // TODO: Translations
+				CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
+				CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
 				g_iRDMAttacker[client] = -1;
 			}
 			if (StrEqual(info, "Punish", false))
 			{
-				PrintToChatAll("[RDM Manager] %N has chosen to punish %N for RDMing them!", client, iAttacker); // TODO: Translations
+				LoopValidClients(i)
+					CPrintToChat(i, PF, "Choose Punish", i, client, iAttacker);
 				ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
 				g_iRDMAttacker[client] = -1;
 			}
 		}
 		case MenuAction_Cancel:
 		{
-			PrintToChat(client, "[RDM Manager] You have chosen to forgive %N for RDMing you!", iAttacker); // TODO: Translations
-			PrintToChat(iAttacker, "[RDM Manager] %N has chosen to forgive you for RDMing them!", client); // TODO: Translations
+			CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 		case MenuAction_End:
 		{
 			CloseHandle(menu);
-			PrintToChat(client, "[RDM Manager] You have chosen to forgive %N for RDMing you!", iAttacker); // TODO: Translations
-			PrintToChat(iAttacker, "[RDM Manager] %N has chosen to forgive you for RDMing them!", client); // TODO: Translations
+			CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 	}
@@ -2479,32 +2483,32 @@ public Action Command_Role(int client, int args)
 		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
 		return Plugin_Handled;
 	}
-	else if (role == 1)
+	else if (role == I)
 	{
 		g_iRole[target] = I;
 		TeamInitialize(target);
 		ClearIcon(target);
 		CS_SetClientClanTag(target, "");
-		ReplyToCommand(client, "[SM] %N is now an Innocent!", target); // TODO: Translation
+		CPrintToChat(client, PF, "Player is Now Innocent", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == 2)
+	else if (role == T)
 	{
 		g_iRole[target] = T;
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
 		CS_SetClientClanTag(target, "");
-		ReplyToCommand(client, "[SM] %N is now a Traitor!", target); // TODO: Translation
+		CPrintToChat(client, PF, "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == 3)
+	else if (role == D)
 	{
 		g_iRole[target] = D;
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
-		ReplyToCommand(client, "[SM] %N is now a Detective!", target); // TODO: Translation
+		CPrintToChat(client, PF, "Player is Now Detective", client, target);
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
@@ -2516,13 +2520,13 @@ public Action Command_Status(int client, int args)
 		return Plugin_Handled;
 		
 	if (g_iRole[client] == U)
-		ReplyToCommand(client, "[SM] You role has not been assigned yet!"); // TODO: Translation
+		CPrintToChat(client, PF, "You Are Unassigned", client); 
 	else if (g_iRole[client] == I)
-		ReplyToCommand(client, "[SM] You are an Innocent!"); // TODO: Translation
+		CPrintToChat(client, PF, "You Are Now Innocent", client);
 	else if (g_iRole[client] == D)
-		ReplyToCommand(client, "[SM] You are a Detective!"); // TODO: Translation
+		CPrintToChat(client, PF, "You Are Now Traitor", client);
 	else if (g_iRole[client] == T)
-		ReplyToCommand(client, "[SM] You are a Traitor!"); // TODO: Translation
+		CPrintToChat(client, PF, "You Are Now Detective", client);
 	
 	return Plugin_Handled;
 }
@@ -2582,7 +2586,9 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 		if (g_iRole[activator] == I || g_iRole[activator] == D || g_iRole[activator] == U)
 		{
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
-			PrintToChatAll("%N triggered the falling building as a Non-Traitor.", activator); // TODO: Translation
+			
+			LoopValidClients(i)
+				CPrintToChat(i, PF, "Triggered Falling Building", i, activator);
 		}
 	}
 	return Plugin_Continue;
@@ -2604,7 +2610,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		g_bHasActiveBomb[client] = false;
 		g_hExplosionTimer[client] = null;
 		g_bImmuneRDMManager[client] = true;
-		PrintToChat(client, "[\x04T\x02T\x0BT\x01] Your bomb has been detonated!"); // TODO: Translations
+		CPrintToChat(client, PF, "Bomb Detonated", client);
 	}
 	else
 		return Plugin_Stop;
@@ -2709,14 +2715,26 @@ stock void showPlantMenu(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
+	
+	char sTitle[128];
+	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
+	
+	Format(sTitle, sizeof(sTitle), PF, "Set C4 Timer", client);
+	Format(s10, sizeof(s10), PF, "Seconds", client, 10);
+	Format(s20, sizeof(s20), PF, "Seconds", client, 10);
+	Format(s30, sizeof(s30), PF, "Seconds", client, 30);
+	Format(s40, sizeof(s40), PF, "Seconds", client, 40);
+	Format(s50, sizeof(s50), PF, "Seconds", client, 50);
+	Format(s60, sizeof(s60), PF, "Seconds", client, 60);
+	
 	Handle menuHandle = CreateMenu(plantBombMenu);
-	SetMenuTitle(menuHandle, "Set the C4 Timer."); // TODO: Translation
-	AddMenuItem(menuHandle, "10", "10 seconds"); // TODO: Translation
-	AddMenuItem(menuHandle, "20", "20 seconds"); // TODO: Translation
-	AddMenuItem(menuHandle, "30", "30 seconds"); // TODO: Translation
-	AddMenuItem(menuHandle, "40", "40 seconds"); // TODO: Translation
-	AddMenuItem(menuHandle, "50", "50 seconds"); // TODO: Translation
-	AddMenuItem(menuHandle, "60", "60 seconds"); // TODO: Translation
+	SetMenuTitle(menuHandle, sTitle);
+	AddMenuItem(menuHandle, "10", s10);
+	AddMenuItem(menuHandle, "20", s20);
+	AddMenuItem(menuHandle, "30", s30);
+	AddMenuItem(menuHandle, "40", s40);
+	AddMenuItem(menuHandle, "50", s50);
+	AddMenuItem(menuHandle, "60", s60);
 	SetMenuPagination(menuHandle, 6);
 	DisplayMenu(menuHandle, client, 10);
 }
@@ -2726,12 +2744,21 @@ stock void showDefuseMenu(int client)
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
 	
+	char sTitle[128];
+	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
+	
+	Format(sTitle, sizeof(sTitle), PF, "Defuse C4", client);
+	Format(sWire1, sizeof(sWire1), PF, "C4 Wire", client, 1);
+	Format(sWire2, sizeof(sWire2), PF, "C4 Wire", client, 2);
+	Format(sWire3, sizeof(sWire3), PF, "C4 Wire", client, 3);
+	Format(sWire4, sizeof(sWire4), PF, "C4 Wire", client, 4);
+	
 	Handle menuHandle= CreateMenu(defuseBombMenu);
-	SetMenuTitle(menuHandle, "Defuse the C4!"); // TODO: Translation
-	AddMenuItem(menuHandle, "1", "Wire 1"); // TODO: Translation
-	AddMenuItem(menuHandle, "2", "Wire 2"); // TODO: Translation
-	AddMenuItem(menuHandle, "3", "Wire 3"); // TODO: Translation
-	AddMenuItem(menuHandle, "4", "Wire 4"); // TODO: Translation
+	SetMenuTitle(menuHandle, sTitle);
+	AddMenuItem(menuHandle, "1", sWire1);
+	AddMenuItem(menuHandle, "2", sWire2);
+	AddMenuItem(menuHandle, "3", sWire3);
+	AddMenuItem(menuHandle, "4", sWire4);
 	SetMenuPagination(menuHandle, 4);
 	DisplayMenu(menuHandle, client, 10);
 }
@@ -2813,8 +2840,8 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			{
 				if (1 <= planter <= MaxClients && IsClientInGame(planter))
 				{
-					PrintToChat(client, "[\x04T\x02T\x0BT\x01] You have defused %N's bomb!", planter); // TODO: Translations
-					PrintToChat(planter, "[\x04T\x02T\x0BT\x01] %N has defused your bomb!", client); // TODO: Translations
+					CPrintToChat(client, PF, "You Defused Bomb", client, planter);
+					CPrintToChat(planter, PF, "Has Defused Bomb", planter, client);
 					EmitAmbientSoundAny("weapons/c4/c4_disarm.wav", bombPos);
 					g_bHasActiveBomb[planter] = false;
 					if (g_hExplosionTimer[planter] != null)
@@ -2827,7 +2854,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			}
 			else
 			{
-				PrintToChat(client, "[\x04T\x02T\x0BT\x01] Failed to defuse!"); // TODO: Translations
+				CPrintToChat(client, PF, "Failed Defuse", client);
 				ForcePlayerSuicide(client);
 				g_iDefusePlayerIndex[client] = -1;
 			}
@@ -2849,7 +2876,7 @@ stock float plantBomb(int client, float time)
 		
 	if (!IsPlayerAlive(client))
 	{
-		PrintToChat(client, "[\x04T\x02T\x0BT\x01] You must be alive to plant a bomb!"); // TODO: Translations
+		CPrintToChat(client, PF, "Alive to Plant", client);
 		return;
 	}
 	

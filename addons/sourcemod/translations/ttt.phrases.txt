@@ -593,4 +593,152 @@
 		"en"			"The player who RDM'd you is no longer available!"
 		"de"			"Der Spieler der RDM'd hat, ist nicht mehr verfügbar!"
 	}
+	
+	"You were RDM'd"
+	{
+		"#format"		"{1:s}"
+		"en"			"You were RDM'd by {1}!"
+		"de"			"Du wurdest von {1} RDM'd!"
+	}
+	
+	"Forgive"
+	{
+		"en"			"Forgive"
+		"de"			"Vergeben"
+	}
+	
+	"Punish"
+	{
+		"en"			"Punish"
+		"de"			"Bestrafen"
+	}
+	
+	"Choose Punish"
+	{
+		"#format"		"{1:N},{2:N}"
+		"en"			"{1} has chosen to punish {2} for RDMing them!"
+		"de"			"{1} hat gewählt, {2} für RDM zu bestrafen!"
+	}
+	
+	"Choose Forgive Victim"
+	{
+		"#format"		"{1:N}"
+		"en"			"You have chosen to forgive {1} for RDMing you!"
+		"de"			"Sie vergeben {1} für sein RDM!"
+	}
+	"Choose Forgive Attacker"
+	{
+		"#format"		"{1:N}"
+		"en"			"{1} has chosen to forgive you for RDMing them!"
+		"de"			"{1} vergibt Dir für dein RDM!"
+	}
+	
+	"Player is Now Innocent"
+	{
+		"#format"		"{1:N}"
+		"en"			"{1} is now Innocent!"
+		"de"			"{1} ist jetzt Innocent!"
+	}
+	
+	"Player is Now Traitor"
+	{
+		"#format"		"{1:N}"
+		"en"			"{1} is now Traitor!"
+		"de"			"{1} ist jetzt Traitor!"
+	}
+	
+	"Player is Now Detective"
+	{
+		"#format"		"{1:N}"
+		"en"			"{1} is now Detective!"
+		"de"			"{1} ist jetzt Detective!"
+	}
+	
+	"You Are Unassigned"
+	{
+		"en"			"You role has not been assigned yet!"
+		"de"			"Deine Rolle wurde noch nicht zugeordnet!"
+	}
+	
+	"You Are Now Innocent"
+	{
+		"en"			"You are an Innocent!"
+		"de"			"Sie sind jetzt ein Innocent!"
+	}
+	
+	"You Are Now Traitor"
+	{
+		"en"			"You are a Detective!"
+		"de"			"Sie sind jetzt ein Detective!"
+	}
+	
+	"You Are Now Detective"
+	{
+		"en"			"You are a Traitor!"
+		"de"			"Sie sind jetzt ein Traitor!"
+	}
+	
+	"Triggered Falling Building"
+	{
+		"#format"		"{1:N}"
+		"en"			"{1} triggered the falling building as a Non-Traitor."
+		"de"			"{1} hat das fallende Gebäude als Nicht-Traitor ausgelöst."
+	}
+	
+	"Bomb Detonated"
+	{
+		"en"		"Your bomb has been detonated!"
+		"de"		"Deine Bombe ist explodiert!"		
+	}
+	
+	"Set C4 Timer"
+	{
+		"en"		"Set the C4 Timer..."
+		"de"		"Stelle den C4 Timer..."
+	}
+	
+	"Seconds"
+	{
+		"#format"	"{1:d}"
+		"en"		"{1} seconds"
+		"de"		"{1} Sekunden"
+	}
+	
+	"Defuse C4"
+	{
+		"en"		"Defuse the C4!"
+	}
+	
+	"C4 Wire"
+	{
+		"#format"	"{1}"
+		"en"		"Wire {1}"
+		"de"		"Draht {1}"
+	}
+	
+	"You Defused Bomb"
+	{
+		"#format"	"{1:N}"
+		"en"		"You have defused {1}'s bomb!"
+		"de"		"Du hast die Bombe von {1} entschärft!"
+	}
+	
+	"Has Defused Bomb"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} has defused your bomb!"
+		"de"		"{1} hat deine Bombe entschärft!"
+	}
+	
+	"Failed Defuse"
+	{
+		"en"		"Failed to defuse!"
+		"de"		"Bombe nicht geschafft zu entschärfen!"
+	}
+	
+	"Alive to Plant"
+	{
+		"en"		"You must be alive to plant a bomb!"
+		"de"		"Du musst leben um eine Bombe zu legen!"
+	}
 }
