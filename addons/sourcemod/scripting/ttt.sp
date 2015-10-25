@@ -484,10 +484,10 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "--------------------------------------");
 		return;
 	}
-	DataPack pack = new DataPack();
+	Handle pack = CreateDataPack();
 	RequestFrame(OnCreate, pack);
-	pack.WriteCell(client);
-	pack.WriteCell(index);
+	WritePackCell(pack, client);
+	WritePackCell(pack, index);
 }
 
 public void OnCreate(any pack)
@@ -527,10 +527,10 @@ public void OnCreate(any pack)
 			PrintToConsole(client, "--------------------------------------");
 			return;
 		}
-		DataPack pack2 = new DataPack();
+		Handle pack2 = CreateDataPack();
 		RequestFrame(OnCreate, pack2);
-		pack2.WriteCell(client);
-		pack2.WriteCell(index);
+		WritePackCell(pack2, client);
+		WritePackCell(pack2, index);
 	}
 }
 
