@@ -91,7 +91,9 @@ enum eConfig
 	ConVar:c_traitorloseAliveNonTraitors,
 	ConVar:c_traitorloseDeadNonTraitors,
 	ConVar:c_traitorwinAliveTraitors,
-	ConVar:c_traitorwinDeadTraitors
+	ConVar:c_traitorwinDeadTraitors,
+	ConVar:c_showDeathMessage,
+	ConVar:c_showKillMessage
 };
 
 int g_iConfig[eConfig];
@@ -397,6 +399,9 @@ public void OnPluginStart()
 	
 	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
 	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
+	
+	g_iConfig[c_showDeathMessage] = CreateConVar("ttt_show_death_message", "1");
+	g_iConfig[c_showKillMessage] = CreateConVar("ttt_show_kill_message", "1");
 
 	AutoExecConfig(true);
 	
@@ -1333,19 +1338,25 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if(GetEntProp(iAttacker, Prop_Data, "m_iFrags") != 0)
 		SetEntProp(iAttacker, Prop_Data, "m_iFrags", 0);
 	
-	if(g_iRole[iAttacker] == T)
-		CPrintToChat(client, PF, "Your killer is a Traitor", client);
-	else if(g_iRole[iAttacker] == D)
-		CPrintToChat(client, PF, "Your killer is a Detective", client);
-	else if(g_iRole[iAttacker] == I)
-		CPrintToChat(client, PF, "Your killer is an Innocent", client);
+	if (g_iConfig[c_showDeathMessage].IntValue)
+	{
+		if(g_iRole[iAttacker] == T)
+			CPrintToChat(client, PF, "Your killer is a Traitor", client);
+		else if(g_iRole[iAttacker] == D)
+			CPrintToChat(client, PF, "Your killer is a Detective", client);
+		else if(g_iRole[iAttacker] == I)
+			CPrintToChat(client, PF, "Your killer is an Innocent", client);
+	}
 	
-	if(g_iRole[client] == T)
-		CPrintToChat(iAttacker, PF, "You killed a Traitor", client);
-	else if(g_iRole[client] == D)
-		CPrintToChat(iAttacker, PF, "You killed a Detective", client);
-	else if(g_iRole[client] == I)
-		CPrintToChat(iAttacker, PF, "You killed an Innocent", client);
+	if(g_iConfig[c_showKillMessage].IntValue)
+	{
+		if(g_iRole[client] == T)
+			CPrintToChat(iAttacker, PF, "You killed a Traitor", client);
+		else if(g_iRole[client] == D)
+			CPrintToChat(iAttacker, PF, "You killed a Detective", client);
+		else if(g_iRole[client] == I)
+			CPrintToChat(iAttacker, PF, "You killed an Innocent", client);
+	}
 	
 	char item[512];
 	
