@@ -42,6 +42,16 @@ public Action Timer_OverrideListener(Handle timer)
 				SetListenOverride(i, j, Listen_Yes);
 				SetListenOverride(j, i, Listen_Yes);
 			}
+			else if(IsPlayerAlive(i) && !IsPlayerAlive(j))
+			{
+				SetListenOverride(j, i, Listen_Yes);
+				SetListenOverride(i, j, Listen_No);
+			}
+			else if(!IsPlayerAlive(i) && IsPlayerAlive(j))
+			{
+				SetListenOverride(j, i, Listen_No);
+				SetListenOverride(i, j, Listen_Yes);
+			}
 			else
 			{
 				SetListenOverride(i, j, Listen_No);
