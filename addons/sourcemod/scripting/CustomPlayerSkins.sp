@@ -282,3 +282,9 @@ public NativeCheck_IsClientValid(client) {
 	}
 	return true;
 }
+
+stock SetCvar(String:scvar[], String:svalue[])
+{
+	new Handle:cvar = FindConVar(scvar);
+	SetConVarString(cvar, svalue, true);
+}
