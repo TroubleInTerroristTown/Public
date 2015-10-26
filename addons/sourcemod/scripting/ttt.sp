@@ -952,7 +952,7 @@ stock void BanBadPlayerKarma(int client)
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 	
-	setKarma(client, g_iConfig[c_startKarma]);
+	setKarma(client, g_iConfig[c_startKarma].IntValue);
 	
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
@@ -2202,8 +2202,8 @@ stock void addKarma(int client, int karma, bool message = false)
 	}
 	
 	char result[32];
-	IntToString(g_iKarma[i], result, sizeof(result));
-	SetClientCookie(i, g_hKarmaCookie, result);
+	IntToString(g_iKarma[client], result, sizeof(result));
+	SetClientCookie(client, g_hKarmaCookie, result);
 }
 
 stock void setKarma(int client, int karma)
@@ -2214,8 +2214,8 @@ stock void setKarma(int client, int karma)
 		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
 	
 	char result[32];
-	IntToString(g_iKarma[i], result, sizeof(result));
-	SetClientCookie(i, g_hKarmaCookie, result);
+	IntToString(g_iKarma[client], result, sizeof(result));
+	SetClientCookie(client, g_hKarmaCookie, result);
 }
 
 stock void subtractKarma(int client, int karma, bool message = false)
@@ -2231,8 +2231,8 @@ stock void subtractKarma(int client, int karma, bool message = false)
 	}
 	
 	char result[32];
-	IntToString(g_iKarma[i], result, sizeof(result));
-	SetClientCookie(i, g_hKarmaCookie, result);
+	IntToString(g_iKarma[client], result, sizeof(result));
+	SetClientCookie(client, g_hKarmaCookie, result);
 }
 
 stock void addCredits(int client, int credits, bool message = false)
