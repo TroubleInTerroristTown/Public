@@ -624,7 +624,7 @@
 	{
 		"#format"		"{1:d}"
 		"en"            "{1} TRAITORS HAVE BEEN SELECTED"
-		"de"            "{1} wurden ausgewählt!"
+		"de"            "{1} Traitors wurden ausgewählt!"
 		"ru"            "БЫЛО ВЫБРАНО {1} ПРЕДАТЕЛЕЙ"
 	}
 	
