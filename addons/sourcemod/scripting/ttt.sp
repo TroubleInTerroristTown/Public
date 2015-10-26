@@ -103,7 +103,9 @@ enum eConfig
 	ConVar:c_disablePlayerGlowing,
 	ConVar:c_blockSuicide,
 	ConVar:c_allowFlash,
-	ConVar:c_blockLookAtWeapon
+	ConVar:c_blockLookAtWeapon,
+	ConVar:c_blockGrenadeMessage,
+	ConVar:c_blockRadioMessage
 };
 
 int g_iConfig[eConfig];
@@ -280,6 +282,32 @@ char g_sCTModels[][] =  {
  "models/player/ctm_swat_variantD.mdl"
 };
 
+char g_sRadioCMDs[][] = {
+	"coverme",
+	"takepoint",
+	"holdpos",
+	"regroup",
+	"followme",
+	"takingfire",
+	"go",
+	"fallback",
+	"sticktog",
+	"getinpos",
+	"stormfront",
+	"report",
+	"roger",
+	"enemyspot",
+	"needbackup",
+	"sectorclear",
+	"inposition",
+	"reportingin",
+	"getout",
+	"negative",
+	"enemydown",
+	"compliment",
+	"thanks",
+	"cheer"};
+
 public void OnPluginStart()
 {
 	if(GetEngineVersion() != Engine_CSGO)
@@ -350,6 +378,11 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass");
+	
+	for(int i; i < sizeof(g_sRadioCMDs); i++)
+	{
+		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
+	}
 
 	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
@@ -419,6 +452,8 @@ public void OnPluginStart()
 	
 	g_iConfig[c_disablePlayerGlowing] = CreateConVar("ttt_disable_player_glowing", "1");
 	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
+	g_iConfig[c_blockGrenadeMessage] = CreateConVar("ttt_block_grenade_message", "1");
+	g_iConfig[c_blockRadioMessage] = CreateConVar("ttt_block_radio_message", "1");
 	
 	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
 	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
@@ -426,6 +461,12 @@ public void OnPluginStart()
 	AutoExecConfig(true);
 	
 	g_bCPS = LibraryExists("CustomPlayerSkins");
+}
+
+public void OnConfigsExecuted()
+{
+	if(g_iConfig[c_blockGrenadeMessage].IntValue)
+		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), false);
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -542,6 +583,13 @@ public Action Command_InterceptSuicide(int client, const char[] command, int arg
 		CPrintToChat(client, PF, "Suicide Blocked", client);
 		return Plugin_Handled;
 	}
+	return Plugin_Continue;
+}
+
+public Action Command_RadioCMDs(int client, const char[] command, int args)
+{
+	if(g_iConfig[c_blockRadioMessage].IntValue)
+		return Plugin_Handled;
 	return Plugin_Continue;
 }
 
@@ -2341,18 +2389,17 @@ public Action TimerCallback_Detonate(Handle timer, any client)
 public Action Command_LAW(int client, const char[] command, int argc)
 {
 
-	if(!IsClientInGame(client))
+	if(!IsClientValid(client))
 		return Plugin_Continue;
-
-	if(!IsPlayerAlive(client) || !g_bJihadBomb[client] || g_hJihadBomb[client] != null)
-		return Plugin_Continue;	
-
-	if(g_bDetonate[client])
+	
+	if(IsPlayerAlive(client) && g_bJihadBomb[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
          
 		CreateTimer(2.0, TimerCallback_Detonate, client); 
 		g_bJihadBomb[client] = false;
+		
+		return Plugin_Continue;
 	}
 	else
 	{
