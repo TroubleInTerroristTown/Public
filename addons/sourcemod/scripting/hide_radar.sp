@@ -37,7 +37,7 @@ public Action RemoveRadar(Handle timer, any userid)
 public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadcast)
 {
 	int userid = event.GetInt("userid");
-	int client = userid;
+	int client = GetClientOfUserId(userid);
 	
 	if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) > 1)
 	{
