@@ -294,11 +294,8 @@ public void OnPluginStart()
 	g_hKarmaCookie = RegClientCookie("ttt_karma", "Stores Karma.", CookieAccess_Private);
 	
 	// Lateload support
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i))
-			continue;
-		
 		if (!AreClientCookiesCached(i))
 		{
 			AddStartKarma(i);
@@ -623,15 +620,12 @@ public void ThinkPost(int entity)
     int isAlive[65];
 	
     GetEntDataArray(entity, g_iAlive, isAlive, 65);
-    for (int i = 1; i <= MaxClients; ++i)
+    LoopValidClients(i)
     {
-        if (IsClientInGame(i))
-		{
-			if(IsPlayerAlive(i) || !g_bFound[i])
-				isAlive[i] = true;
-			else
-				isAlive[i] = false;
-		}
+		if(IsPlayerAlive(i) || !g_bFound[i])
+			isAlive[i] = true;
+		else
+			isAlive[i] = false;
     }
     SetEntDataArray(entity, g_iAlive, isAlive, 65);
 }
@@ -648,18 +642,15 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	ClearArray(g_hRagdollArray);
 	
 	g_bInactive = false;
-	for(int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
 		g_iRole[i] = U;
 		g_bFound[i] = true;
+		g_iInnoKills[i] = 0;
+		g_bHasC4[i] = false;
+		g_bImmuneRDMManager[i] = false;
 		
-		if(IsClientInGame(i)) 
-		{
-			CS_SetClientClanTag(i, "");
-			g_iInnoKills[i] = 0;
-			g_bHasC4[i] = false;
-			g_bImmuneRDMManager[i] = false;
-		}
+		CS_SetClientClanTag(i, "");
 	}
 
 	if(g_hStartTimer != null)
@@ -681,17 +672,14 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
 {
-	for(int i = 1; i <=MaxClients; ++i)
+	LoopValidClients(i)
 	{
 		g_bFound[i] = true;
-		if(IsClientInGame(i))
-		{
-			ShowLogs(i);
-			
-			TeamTag(i);
-			g_iInnoKills[i] = 0;
-			g_bImmuneRDMManager[i] = false;
-		}
+		g_iInnoKills[i] = 0;
+		g_bImmuneRDMManager[i] = false;
+		
+		ShowLogs(i);
+		TeamTag(i);
 	}
 		
 		
@@ -849,8 +837,8 @@ stock void TeamTag(int client)
 
 stock void ApplyIcons()
 {
-	for(int i = 1; i <= MaxClients; i++)
-		if(IsClientInGame(i) && IsPlayerAlive(i))
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
 			g_iIcon[i] = CreateIcon(i);
 }
 
@@ -873,8 +861,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		{
 			int iCount = 0;
 			
-			for(int i = 1; i <= MaxClients; i++)
-				if(IsClientInGame(i) && IsPlayerAlive(i))
+			LoopValidClients(i)
+				if(IsPlayerAlive(i))
 					iCount++;
 			
 			if(iCount >= 3)
@@ -1224,8 +1212,8 @@ public Action Timer_Adjust(Handle timer)
 	int I_lives = 0;
 	int T_lives = 0;
 	float vec[3];
-	for(int i = 1; i <=MaxClients; ++i)
-		if(IsClientInGame(i) && IsPlayerAlive(i))
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
 		{
 			if(g_iRole[i] == T)
 			{
@@ -1236,10 +1224,11 @@ public Action Timer_Adjust(Handle timer)
 				//TE_SetupBeamRingPoint(vec, 10.0, 190.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 1.0, 5.0, 0.0, {0, 0, 255, 255}, 10, 0);
 				int[] clients = new int[MaxClients];
 				int index = 0;
-				for(int i2 = 1; i2 <=MaxClients; ++i2)
-					if(IsClientInGame(i2) && IsPlayerAlive(i2) && i2 != i && (g_iRole[i2] == T))
+				
+				LoopValidClients(j)
+					if(IsPlayerAlive(j) && j != i && (g_iRole[j] == T))
 					{
-						clients[ent] = i2;
+						clients[ent] = j;
 						index++;
 					}
 				
@@ -1585,15 +1574,9 @@ stock void ShowOverlayToClient(int client, const char[] overlaypath)
 
 stock void ShowOverlayToAll(const char[] overlaypath)
 {
-	// x = client index.
-	for (int x = 1; x <= MaxClients; x++)
-	{
-		// If client isn't in-game, then stop.
-		if (IsClientInGame(x) && !IsFakeClient(x))
-		{
-			ShowOverlayToClient(x, overlaypath);
-		}
-	}
+	LoopValidClients(i)
+		if(!IsFakeClient(i))
+			ShowOverlayToClient(i, overlaypath);
 }
 
 stock void StripAllWeapons(int client)
@@ -1672,8 +1655,9 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 
 /* RDM(client)
 {
-	for(int i = 1; i <=MaxClients; ++i)
-		if(IsClientInGame(i) && (GetUserFlagBits(i) & ADMFLAG_BAN)) CPrintToChat(i, PF, "is possibly RDMing", client);
+	LoopValidClients(i)
+		if((GetUserFlagBits(i) & ADMFLAG_BAN))
+			CPrintToChat(i, PF, "is possibly RDMing", client);
 } */
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
@@ -2554,11 +2538,8 @@ public Action Command_Status(int client, int args)
 // Custom HUD
 public Action Timer_5(Handle timer)
 {
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientValid(i))
-			continue;
-			
 		if (!IsPlayerAlive(i))
 			continue;
 
@@ -2663,13 +2644,15 @@ public Action explodeC4(Handle timer, Handle pack)
 		AcceptEntityInput(particleIndex, "Start");
 		AcceptEntityInput(shakeIndex, "StartShake");
 		AcceptEntityInput(explosionIndex, "Kill");
-		for (int i = 1; i <= MaxClients; i++)
+		
+		LoopValidClients(i)
 		{
-			if (!IsClientInGame(i) || !IsPlayerAlive(i))
+			if (!IsPlayerAlive(i))
 				continue;
 				
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
+			
 			if (GetVectorDistance(clientOrigin, explosionOrigin) <= 275.0)
 			{
 				Handle killEvent = CreateEvent("player_death", true);
@@ -2679,6 +2662,7 @@ public Action explodeC4(Handle timer, Handle pack)
 				ForcePlayerSuicide(i);
 			}
 		}
+		
 		for (int i = 1; i <= 2; i++)
 			EmitAmbientSoundAny("training/firewerks_burst_02.wav", explosionOrigin, _, SNDLEVEL_RAIDSIREN);
 			
@@ -2945,11 +2929,8 @@ stock int findBomb(int client)
 
 stock void resetPlayers()
 {
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i))
-			continue;
-			
 		g_bKarma[i] = false;
 		
 		char sKarma[32];
@@ -2973,9 +2954,9 @@ stock void listTraitors(int client)
 	CPrintToChat(client, PF, "Your Traitor Partners", client);
 	int iCount = 0;
 	
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i) || !IsPlayerAlive(i) || client == i || g_iRole[i] != T)
+		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != T)
 			continue;
 		PrintToChat(client, "%N", i);
 		iCount++;
@@ -2994,11 +2975,8 @@ stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 
 stock void healthStation_cleanUp()
 {
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i))
-			continue;
-			
 		g_iHealthStationCharges[i] = 0;
 		g_bHasActiveHealthStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
@@ -3062,11 +3040,8 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 
 public Action healthStationDistanceCheck(Handle timer)
 {
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i))
-			continue;
-			
 		if (!IsPlayerAlive(i))
 			continue;
 		
@@ -3138,10 +3113,9 @@ public void OnWeaponPostSwitch(int client, int weapon)
 
 public Action Command_KarmaReset(int client, int args)
 {
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if (!IsClientInGame(i)) continue;
-		g_iKarma[i] = 100;
+		g_iKarma[i] = 100; // TODO: SetKarma
 		char result[32];
 		IntToString(g_iKarma[i], result, sizeof(result));
 		SetClientCookie(i, g_hKarmaCookie, result);
@@ -3167,9 +3141,9 @@ stock void CheckTeams()
 	int iD = 0;
 	int iI = 0;
 	
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if(IsClientValid(i) && IsPlayerAlive(i))
+		if(IsPlayerAlive(i))
 		{
 			if(g_iRole[i] == D)
 				iD++;
