@@ -1842,7 +1842,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	StripQuotes(sText);
 	
 	if(strlen(sText) < 2)
-		return Plugin_Continue;
+		return Plugin_Handled;
 		
 	if (sText[0] == '@')
 		return Plugin_Continue;
