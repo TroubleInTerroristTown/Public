@@ -761,8 +761,11 @@ public Action Timer_Selection(Handle hTimer)
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		iCount++;
-		PushArrayCell(g_hPlayerArray, i);
+		if(GetClientTeam(i) == CS_TEAM_T || GetClientTeam(i) == CS_TEAM_CT)
+		{
+			iCount++;
+			PushArrayCell(g_hPlayerArray, i);
+		}
 	}
 		
 	if(iCount < g_iConfig[c_requiredPlayers].IntValue) 
