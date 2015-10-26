@@ -24,7 +24,7 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara"
 #define PLUGIN_DESCRIPTION ""
-#define PLUGIN_VERSION "2.0.3"
+#define PLUGIN_VERSION "2.0.4"
 #define PLUGIN_URL "git.tf/TTT"
 
 #define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
