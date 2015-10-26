@@ -356,7 +356,7 @@ public void OnPluginStart()
 	g_iConfig[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
 	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
 	// g_iConfig[c_shopRadar] = CreateConVar("ttt_shop_radar", "7000");
-	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
+	g_iConfig[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "3000");
 	g_iConfig[c_shopT] = CreateConVar("ttt_shop_t", "100000");
 	g_iConfig[c_shopD] = CreateConVar("ttt_shop_d", "5000");
 	g_iConfig[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
@@ -384,8 +384,8 @@ public void OnPluginStart()
 	g_iConfig[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
 	g_iConfig[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
 	g_iConfig[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
-	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
-	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
+	g_iConfig[c_karmaDI] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
+	g_iConfig[c_karmaDT] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
 	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
 	
 	g_iConfig[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
@@ -394,8 +394,8 @@ public void OnPluginStart()
 	g_iConfig[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
 	g_iConfig[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
 	g_iConfig[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
-	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
-	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
+	g_iConfig[c_creditsDI] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
+	g_iConfig[c_creditsDT] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
 	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
 	
 	g_iConfig[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
