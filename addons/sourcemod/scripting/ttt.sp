@@ -604,9 +604,9 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayInnocent.vtf");
 	PrecacheDecal("darkness/ttt/overlayInnocent", true);
 	
-/* 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vmt");
+ 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vmt");
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
-	PrecacheDecal("overlays/ttt/detectives_win", true); */
+	PrecacheDecal("overlays/ttt/detectives_win", true);
 	
 	g_iAlive = FindSendPropOffs("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
@@ -1530,40 +1530,48 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		if(IsClientInGame(client) && IsPlayerAlive(client))
 			ClearIcon(client);
 	
+	bool bInnoAlive = false;
+	
 	if(reason == CSRoundEnd_CTWin)
 	{
-		for(int client = 1; client <=MaxClients; ++client)
-			if(IsClientInGame(client))
+		LoopValidClients(client)
+		{
+			if(g_iRole[client] != T && g_iRole[client] != U)
 			{
-				if(g_iRole[client] != T && g_iRole[client] != U)
+				if(IsPlayerAlive(client))
 				{
-					if(IsPlayerAlive(client))
-						addCredits(client, g_iConfig[c_traitorloseAliveNonTraitors].IntValue);
-					else
-						addCredits(client, g_iConfig[c_traitorloseDeadNonTraitors].IntValue);
+					if(g_iRole[client] == I)
+						bInnoAlive = true;
+					
+					addCredits(client, g_iConfig[c_traitorloseAliveNonTraitors].IntValue);
 				}
+				else
+					addCredits(client, g_iConfig[c_traitorloseDeadNonTraitors].IntValue);
 			}
-			
-		ShowOverlayToAll("overlays/ttt/innocents_win");
+		}
+		
+		if(bInnoAlive)
+			ShowOverlayToAll("overlays/ttt/innocents_win");
 	}
 	else if(reason == CSRoundEnd_TerroristWin)
 	{
-		for(int client = 1; client <=MaxClients; ++client)
-			if(IsClientInGame(client))
+		LoopValidClients(client)
+		{
+			if(g_iRole[client] == T)
 			{
-				if(g_iRole[client] == T)
-				{
-					if(IsPlayerAlive(client))
-						addCredits(client, g_iConfig[c_traitorwinAliveTraitors].IntValue);
-					else
-						addCredits(client, g_iConfig[c_traitorwinDeadTraitors].IntValue);
-				}
+				if(IsPlayerAlive(client))
+					addCredits(client, g_iConfig[c_traitorwinAliveTraitors].IntValue);
+				else
+					addCredits(client, g_iConfig[c_traitorwinDeadTraitors].IntValue);
 			}
+		}
 			
 			
 		ShowOverlayToAll("overlays/ttt/traitors_win");
 	}
-	//if(reason == CSRoundEnd_CTWin) ShowOverlayToAll("overlays/ttt/detectives_win");
+	
+	if(reason == CSRoundEnd_CTWin && !bInnoAlive)
+		ShowOverlayToAll("overlays/ttt/detectives_win");
 	
 	//ShowLog();
 	healthStation_cleanUp();
