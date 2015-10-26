@@ -711,7 +711,7 @@
 	
 	"C4 Wire"
 	{
-		"#format"	"{1}"
+		"#format"	"{1:d}"
 		"en"		"Wire {1}"
 		"de"		"Draht {1}"
 	}
