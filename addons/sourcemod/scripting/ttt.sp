@@ -17,7 +17,7 @@
 #include <clientprefs>
 
 #undef REQUIRE_PLUGIN
-#tryinclude <CustomPlayerSkins>
+// #tryinclude <CustomPlayerSkins>
 
 #pragma newdecls required
 
@@ -204,7 +204,7 @@ bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
 
-bool g_bCPS = false;
+// bool g_bCPS = false;
 
 char g_sTModels[][] =  {
  "models/player/tm_anarchist.mdl",
@@ -460,7 +460,7 @@ public void OnPluginStart()
 
 	AutoExecConfig(true);
 	
-	g_bCPS = LibraryExists("CustomPlayerSkins");
+	// g_bCPS = LibraryExists("CustomPlayerSkins");
 }
 
 public void OnConfigsExecuted()
@@ -469,7 +469,7 @@ public void OnConfigsExecuted()
 		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), false);
 }
 
-public void OnLibraryAdded(const char[] name)
+/* public void OnLibraryAdded(const char[] name)
 {
 	if (StrEqual(name, "CustomPlayerSkins"))
 		g_bCPS = true;
@@ -479,7 +479,7 @@ public void OnLibraryRemoved(const char[] name)
 {
 	if (StrEqual(name, "CustomPlayerSkins"))
 		g_bCPS = false;
-}
+} */
 
 public Action Command_Logs(int client, int args)
 {
@@ -866,7 +866,7 @@ stock void TeamInitialize(int client)
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
 	}
 	
-	SetSkin(client, g_iRole[client]);
+	// SetSkin(client, g_iRole[client]);
 }
 
 stock void TeamTag(int client)
@@ -927,11 +927,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
 		
-		char sModel[PLATFORM_MAX_PATH];
+		/* char sModel[PLATFORM_MAX_PATH];
 		GetClientModel(client, sModel, sizeof(sModel));
 		
 		CPS_RemoveSkin(client);
-		CPS_SetSkin(client, sModel, CPS_RENDER);
+		CPS_SetSkin(client, sModel, CPS_RENDER); */
 	}
 }
 
@@ -964,7 +964,7 @@ public Action OnPreThink(int client)
 		// Workaround for CS_SetClientContributionScore
 		// SetEntProp(GetPlayerResourceEntity(), Prop_Send, "m_iScore", g_iKarma[client], _, client);
 		
-		if(g_bCPS)
+		/* if(g_bCPS)
 		{
 			int iSkin = CPS_GetSkin(client);
 			
@@ -972,7 +972,7 @@ public Action OnPreThink(int client)
 			if (g_iConfig[c_disablePlayerGlowing].IntValue)
 				if(IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
 					SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
-		}
+		} */
 	}
 }
 
