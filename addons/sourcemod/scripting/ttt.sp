@@ -105,7 +105,8 @@ enum eConfig
 	ConVar:c_allowFlash,
 	ConVar:c_blockLookAtWeapon,
 	ConVar:c_blockGrenadeMessage,
-	ConVar:c_blockRadioMessage
+	ConVar:c_blockRadioMessage,
+	ConVar:c_enableNoBlock
 };
 
 int g_iConfig[eConfig];
@@ -457,6 +458,7 @@ public void OnPluginStart()
 	
 	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
 	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
+	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
 
 	AutoExecConfig(true);
 	
@@ -926,6 +928,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		g_bID[client] = false;
 		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
+		
+		if(g_iConfig[c_enableNoBlock].IntValue)
+			SetNoBlock(client);
 		
 		/* char sModel[PLATFORM_MAX_PATH];
 		GetClientModel(client, sModel, sizeof(sModel));
@@ -3209,4 +3214,9 @@ stock void SetSkin(int client, int role)
 		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sTModels))]);
 	
 	CPS_SetSkin(client, sModel, CPS_RENDER);
+}
+
+stock void SetNoBlock(int client)
+{
+	SetEntData(client, g_iCollisionGroup, 2, 4, true);
 }
