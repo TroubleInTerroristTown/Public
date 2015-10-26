@@ -747,11 +747,10 @@ public Action Timer_Selection(Handle hTimer)
 	
 	int iCount = 0;
 	LoopValidClients(i)
-		if(IsPlayerAlive(i))
-		{
-			iCount++;
-			PushArrayCell(g_hPlayerArray, i);
-		}
+	{
+		iCount++;
+		PushArrayCell(g_hPlayerArray, i);
+	}
 		
 	if(iCount < g_iConfig[c_requiredPlayers].IntValue) 
 	{
