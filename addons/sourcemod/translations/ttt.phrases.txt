@@ -7,6 +7,7 @@
 		"es"            "Tu KARMA es: {lightgreen}{1}"
 		"de"            "Dein Karma: {lightgreen}{1}"
 		"chi"         	"你的 KARMA 值: {lightgreen}{1}"
+		"ru"         	"Ваша карма: {lightgreen}{1}"
 	}
 	
 	"TEAMS HAS BEEN SELECTED"
@@ -15,6 +16,7 @@
 		"es"            "LOS EQUIPOS HAN SIDO ELEGIDOS"
 		"de"            "Die Teams stehen fest"
 		"chi"           "按E可调查/拖动尸体/!menu打开各种职业的商店"
+		"ru"            "Команды сформированы!"
 	}
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
@@ -24,6 +26,7 @@
 		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: {1}"
 		"de"            "Warten auf insgesamt {1} Spieler."
 		"chi"           "游戏所需最少玩家数: {1}"
+		"ru"            "МИН. КОЛ-ВО ИГРОКОВ ДЛЯ ИГРЫ: {1}"
 	}
 
 	"Your Team is DETECTIVES"
@@ -32,6 +35,7 @@
 		"es"            "Tu equipo es {blue}DETECTIVES"
 		"de"            "Du bist im Team der {blue}DETEKTIVE"
 		"chi"           "你的身份是 {blue}侦探"
+		"ru"            "Ваша роль - {blue}ДЕТЕКТИВ"
 	}
 
 	"Your Team is TRAITORS"
@@ -40,6 +44,7 @@
 		"es"            "Tu equipo es {darkred}TRAIDORES"
 		"de"            "Du bist im Team der {darkred}TRAITOR"
 		"chi"           "你的身份是 {darkred}叛徒"
+		"ru"            "Ваша роль - {darkred}ПРЕДАТЕЛЬ"
 	}
 
 	"Your Team is INNOCENTS"
@@ -48,6 +53,7 @@
 		"es"            "Tu equipo es {green}INOCENTES"
 		"de"            "Du bist im Team der {green}INNOCENTS"
 		"chi"           "你的身份是 {green}平民"
+		"ru"            "Ваша роль - {green}НЕВИНОВНЫЙ"
 	}
 
 
@@ -58,6 +64,7 @@
 		"es"            "Tus creditos son: {lightgreen}{1}"
 		"de"            "Deine Credits: {lightgreen}{1}"
 		"chi"           "你的金钱是: {lightgreen}{1}"
+		"ru"            "Количесво ваших кредитов: {lightgreen}{1}"
 	}
 
 	"Your killer is a Traitor"
@@ -66,6 +73,7 @@
 		"es"            "Tu asesino es {darkred}TRAIDOR"
 		"de"            "Dein Mörder ist ein {darkred}TRAITOR"
 		"chi"           "击杀你的是 {darkred}叛徒"
+		"ru"            "Вас убил {darkred}ПРЕДАТЕЛЬ"
 	}
 
 	"Your killer is a Detective"
@@ -74,6 +82,7 @@
 		"es"            "Tu asesino es {blue}DETECTIVE"
 		"de"            "Dein Mörder ist ein {blue}DETEKTIV"
 		"chi"           "击杀你的是 {blue}侦探"
+		"ru"            "Вас убил {blue}ДЕТЕКТИВ"
 	}
 
 	"Your killer is an Innocent"
@@ -82,6 +91,7 @@
 		"es"            "Tu asesino es {green}INOCENTE"
 		"de"            "Dein Mörder ist ein {green}INNOCENT"
 		"chi"           "击杀你的是 {green}平民"
+		"ru"            "Вас убил {green}НЕВИНОВНЫЙ"
 	}
 
 	"You killed a Traitor"
@@ -90,6 +100,7 @@
 		"es"            "Tu has matado a un {darkred}TRAIDOR"
 		"de"            "Du hast einen {darkred}TRAITOR {default}getötet"
 		"chi"           "你击杀了1个 {darkred}叛徒"
+		"ru"            "Вы убили {darkred}ПРЕДАТЕЛЯ"
 	}
 
 	"You killed a Detective"
@@ -98,6 +109,7 @@
 		"es"            "Tu has matado a un {blue}DETECTIVE"
 		"de"            "Du hast einen {blue}DETEKTIV {default}getötet"
 		"chi"           "你击杀了1个 {blue}侦探"
+		"ru"            "Вы убили {blue}ДЕТЕКТИВА"
 	}
 
 	"You killed an Innocent"
@@ -106,6 +118,7 @@
 		"es"            "Tu has matado a un {green}INOCENTE"
 		"de"            "Du hast einen {green}INNOCENT {default}getötet"
 		"chi"           "你击杀了1个 {green}平民"
+		"ru"            "Вы убили {green}НЕВИНОВНОГО"
 	}
 
 	"You hurt a Traitor"
@@ -115,6 +128,7 @@
 		"es"            "Has usado un detector en{darkred} {1} {default}y el es {darkred}TRAIDOR"
 		"de"            "Du hast einen Tazer verwendet, Spieler{darkred} {1} {default}ist ein {darkred}TRAITOR"
 		"chi"           "你正在使用电击身份检测器{darkred} {1} {default}他是 {darkred}叛徒"
+		"ru"            "Вы использовали детектор на {darkred}{1}{default}, и он оказался {darkred}ПРЕДАТЕЛЕМ"
 	}
 
 	"You hurt a Detective"
@@ -124,6 +138,7 @@
 		"es"            "Has usado un detector en{blue} {1} {default}y el es {blue}DETECTIVE"
 		"de"            "Du hast einen Tazer verwendet, Spieler{blue} {1} {default}ist ein {blue}DETEKTIV"
 		"chi"           "你正在使用电击身份检测器{blue} {1} {default}和他是 {blue}侦探"
+		"ru"            "Вы использовали детектор на {blue}{1}{default}, и он оказался {blue}ДЕТЕКТИВОМ"
 	}
 
 	"You hurt an Innocent"
@@ -133,6 +148,7 @@
 		"es"            "Has usado un detector en{green} {1} {default}y el es {green}INOCENTE"
 		"de"            "Du hast einen Tazer verwendet, Spieler{green} {1} {default}ist ein {green}INNOCENT"
 		"chi"           "你正在使用电击身份检测器{green} {1} {default}和他是 {green}平民"
+		"ru"            "Вы использовали детектор на {green}{1}{default}, и он оказался {green}НЕВИНОВНЫМ"
 	}
 
 	"is possibly RDMing"
@@ -141,6 +157,7 @@
 		"en"            "{darkred}{1} is possibly RDMing"
 		"es"            "{darkred}{1} es posible RDMing"
 		"de"            "{darkred}{1} begeht RDM"
+		"ru"            "{darkred}{1} воможно РДМил"
 	}
 
 	"Detective scan found body"
@@ -150,6 +167,7 @@
 		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, el asesino es{darkred} {2} {default}con el arma{blue} {3}"
 		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, der Mörder war: Player{darkred} {2} {default}mit einer {blue}{3}"
 		"chi"           "DETECTIVE{blue} {1} {default}扫描身体, 击杀玩家是{darkred} {2} {default}使用武器{blue} {3}"
+		"ru"            "ДЕТЕКТИВ{blue} {1} {default}просканировано тело: Убийца {darkred}{2} {default}с оружием{blue} {3}"
 	}
 
 	"Detective scan found body suicide"
@@ -159,6 +177,7 @@
 		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, parece que cometio suicidio"
 		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, es handelt sich um Selbstmord"
 		"chi"           "DETECTIVE{blue} {1} {default}扫描身体，玩家自杀"
+		"ru"            "DETECTIVE{blue} {1} {default}просканировано тело: игрок совершил самоубийство"
 	}
 
 	"1 hit kill knife (only good for 1 shot)"
@@ -168,6 +187,7 @@
 		"es"            "Cuchillo 1 golpe una muerte (solo para un uso) - {1}"
 		"de"            "1 Hit Messer Kill (Nur einmal verwendbar) - {1}"
 		"chi"           "1刀秒杀 (只能用一次) - {1}"
+		"ru"            "Нож, убийство с 1 удара (можно использовать 1 раз) - {1}"
 	}
 
 	"FAKE ID card (type !id for show your innocence)"
@@ -177,6 +197,7 @@
 		"es"            "FALSA tarjeta ID (escribe !id para mostrar tu inocencia) - {1}"
 		"de"            "Gefälschter Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
 		"chi"           "假的身份 (输入 !id 证明你是无辜的) - {1}"
+		"ru"            "Поддельная ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
 	}
 	
 	"Health Station"
@@ -186,6 +207,7 @@
 		"es"            "estación Salud - {1}"
 		"de"            "Heil Station - {1}"
 		"chi"           "卫生站 - {1}"
+		"ru"            "Станция для лечения - {1}"
 	}
 
 	"DNA scanner (scan a dead body and show who the killer is)"
@@ -195,6 +217,7 @@
 		"es"            "DNA escaner (escanea un cuerpo y muestra el asesino) - {1}"
 		"de"            "DNA Scanner (Untersuche eine Leiche um zu sehen wer der Mörder war) - {1}"
 		"chi"           "DNA扫描 (检查尸体凶手是谁) - {1}"
+		"ru"            "ДНК сканнер (сканирование трупа и показ, кто убийца) - {1}"
 	}
 
 	"Kevlar"
@@ -203,6 +226,7 @@
 		"en"            "Kevlar - {1}"
 		"es"            "Kevlar - {1}"
 		"de"            "Kevlar - {1}"
+		"ru"            "Бронежилет - {1}"
 	}
 
 	"Buy rol Traitor"
@@ -211,6 +235,7 @@
 		"en"            "Buy role TRAITOR - {1}"
 		"es"            "Comprar rol TRAIDOR - {1}"
 		"de"            "TRAITOR-Pass - {1}"
+		"ru"            "Роль ПРЕДАТЕЛЯ - {1}"
 	}
 
 	"Buy rol Detective"
@@ -219,6 +244,7 @@
 		"en"            "Buy role DETECTIVE - {1}"
 		"es"            "Comprar rol DETECTIVE - {1}"
 		"de"            "DETEKTIV-Pass - {1}"
+		"ru"            "Роль ДЕТЕКТИВА - {1}"
 	}
 
 	"ID card (type !id for show your innocence)"
@@ -228,6 +254,7 @@
 		"es"            "Tarjeta ID (escribe !id para mostrar tu inocencia) - {1}"
 		"de"            "Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
 		"chi"           "身份证 (输入 !id 显示你的身份) - {1}"
+		"ru"            "ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
 	}
 
 	"Please wait till your team is assigned"
@@ -236,6 +263,7 @@
 		"es"            "Por favor espera a que se te asigne un equipo"
 		"de"            "Warte bis du einem Team zugeordnet wurdest"
 		"chi"           "请等待你的团队分配"
+		"ru"            "Пожалуйста, подождите, пока ваша роль назначается"
 	}
 
 	"Item bought! Your REAL money is"
@@ -245,6 +273,7 @@
 		"es"            "Item comprado! Tus creditos son {1}"
 		"de"            "Gegenstand wurde erworben, deine Credits: {1}"
 		"chi"           "购买物品! 你的金钱是 {1}"
+		"ru"            "Предмет куплен! Количество ваших КРЕДИТОВ {1}"
 	}
 
 	"You don't have enough money"
@@ -253,6 +282,7 @@
 		"es"            "No tienes suficientes creditos"
 		"de"            "Du hast zu wenige Credits"
 		"chi"           "你没有足够的金钱!"
+		"ru"            "У вас недостаточно кредитов!"
 	}
 
 	"Traitors"
@@ -261,6 +291,7 @@
 		"es"            "TRAIDORes"
 		"de"            "TRAITOR"
 		"chi"           "叛徒们"
+		"ru"            "ПРЕД."
 	}
 
 	"Detectives"
@@ -269,6 +300,7 @@
 		"es"            "DETECTIVES"
 		"de"            "DETEKTIVE"
 		"chi"           "侦探们"
+		"ru"            "ДЕТЕК."
 	}
 
 	"Innocents"
@@ -277,6 +309,7 @@
 		"es"            "INOCENTEs"
 		"de"            "INNOCENT"
 		"chi"           "平民们"
+		"ru"            "НЕВИНОВ."
 	}
 
 	"Inspected body. The extracted data are the following"
@@ -285,6 +318,7 @@
 		"es"            "Cuerpo inspeccionado. Se han extraido los siguientes datos:"
 		"de"            "Die Leiche wurde untersucht, folgende Informationen wurden herausgefunden:"
 		"chi"           "检查了身体数据如下:"
+		"ru"            "Тело осмотрено. Извлеченные данные:"
 	}
 
 	"Victim name"
@@ -294,6 +328,7 @@
 		"es"            "Nombre de la victima: {1}"
 		"de"            "Name des Opfers: {1}"
 		"chi"           "受害者名字: {1}"
+		"ru"            "Имя жертвы: {1}"
 	}
 
 	"Team victim"
@@ -303,6 +338,7 @@
 		"es"            "Equipo: {1}"
 		"de"            "Team: {1}"
 		"chi"           "队伍: {1}"
+		"ru"            "Роль: {1}"
 	}
 
 	"Elapsed since his death"
@@ -312,6 +348,7 @@
 		"es"            "Tiempo transcurrido desde su muerte: {1} segundos"
 		"de"            "Er ist bereits {1} Sekunden tot"
 		"chi"           "已死亡: {1} 秒"
+		"ru"            "Прошедшее время со смерти: {1} сек"
 	}
 
 	"The weapon used has been"
@@ -321,6 +358,7 @@
 		"es"            "El arma usada ha sido: {1}"
 		"de"            "Die Mordwaffe war eine: {1}"
 		"chi"           "使用武器: {1}"
+		"ru"            "Оружие убийства: {1}"
 	}
 
 	"The weapon used has been: himself (suicide)"
@@ -329,6 +367,7 @@
 		"es"            "El arma usada ha sido: el mismo (suicidio)"
 		"de"            "Die Waffe war: Erselbst (Selbstmord)"
 		"chi"           "使用的武器是：自己 (suicide)"
+		"ru"            "Оружие убийства: сам себя (самоубийство)"
 	}
 
 	"Killer is Player"
@@ -338,6 +377,7 @@
 		"es"            "El asesino es: {1}"
 		"de"            "Der Mörder ist: {1}"
 		"chi"           "杀手玩家: {1}"
+		"ru"            "Убийца: {1}"
 	}
 
 	"Player committed suicide"
@@ -346,6 +386,7 @@
 		"es"            "El jugador cometio suicidio"
 		"de"            "Der Spieler beging Suizid"
 		"chi"           "该玩家自杀"
+		"ru"            "Игрок покончил жизнь самоубийством"
 	}
 
 	"Player Is an Innocent"
@@ -355,6 +396,7 @@
 		"es"            "El jugador{green} {1} {default}es un INOCENTE"
 		"de"            "Spieler{green} {1} {default} ist ein INNOCENT"
 		"chi"           "玩家{green} {1} {default}是无辜的"
+		"ru"            "Игрок{green} {1} {default} НЕВИНОВНЫЙ!"
 	}
 
 	"T channel"
@@ -364,6 +406,7 @@
 		"es"            "{darkred}*Chat de Traidores* {1}:{lightgreen} {2}"
 		"de"			"{darkred}*Traitor Chat* {1}:{lightgreen} {2}"
 		"chi"           "{darkred}*叛徒* {1}:{lightgreen} {2}"
+		"ru"            "{darkred}*ПРЕДАТЕЛИ* {1}:{lightgreen} {2}"
 	}
 	
 	"D channel"
@@ -373,6 +416,7 @@
 		"es"            "{blue}*Chat de Detectives* {1}:{lightgreen} {2}"
 		"de"			"{blue}*Detektiv Chat* {1}:{lightgreen} {2}"
 		"chi"           "{blue}*侦探* {1}:{lightgreen} {2}"
+		"ru"            "{blue}*ДЕТЕКТИВЫ* {1}:{lightgreen} {2}"
 	}
 
 	"You dont have it!"
@@ -381,6 +425,7 @@
 		"es"            "Tu no tienes eso!"
 		"de"            "Du hast es nicht!"
 		"chi"           "你尚未购买身份证无法使用!"
+		"ru"            "Вы не можете это сделать!"
 	}
 
 	"TTT Shop"
@@ -389,6 +434,7 @@
 		"es"            "Tienda TTT"
 		"de"            "TTT Shop"
 		"chi"           "TTT 商店"
+		"ru"            "TTT магазин"
 	}
 
 	"credits earned"
@@ -398,6 +444,7 @@
 		"es"            "Has ganado {1} creditos\nTus creditos actuales son: {2}"
 		"de"            "Du gewinnst {1} Credits\nDu besitzt nun: {2}"
 		"chi"           "你赢得 {1} 金钱\n你的当前金钱是: {2}"
+		"ru"            "Вы выйграли {1} кредитов\nКоличество ваших кредитов: {2}"
 	}
 
 	"lost credits"
@@ -407,6 +454,7 @@
 		"es"            "Has perdido {1} creditos\nTus creditos actuales son: {2}"
 		"de"            "Du verlierst {1} Credits - du besitzt noch: {2}"
 		"chi"           "你杀错了玩家失去 {1} 金钱\n你的当前金钱是: {2}"
+		"ru"            "Вы проиграли {1} кредитов\nКоличество ваших кредитов: {2}"
 	}
 	
 	"karma earned"
@@ -429,6 +477,7 @@
 		"es"            "Aun no hay logs"
 		"de"            "Keine Logs vorhanden"
 		"chi"           "还没有日志"
+		"ru"            "Нет логов"
 	}
 	
 	"See your console"
@@ -437,6 +486,7 @@
 		"es"            "Logs recibidos! Comprueba tu consola para ver los logs"
 		"de"            "Logs empfangen! Prüfe deine Konsole um die Logs dieser Runde einzusehen"
 		"chi"           "记录收到！打开您的控制台查看日志"
+		"ru"            "Логи записаны! Посмотрите в вашей консоли"
 	}
 
 	"you cant see logs"
@@ -445,6 +495,7 @@
 		"es"            "No puedes ver los logs ahora, necesitas estar muerto o no estar la ronda activa"
 		"de"            "Du kannst derzeitig keine Logs sehen, die Runde muss beendet sein, oder du Tod"
 		"chi"           "你现在可以看到日志"
+		"ru"            "Вы не можете посмотреть логи сейчас, вы должны быть мертвым"
 	}
 	
 	"Receiving logs"
@@ -452,6 +503,7 @@
 		"en"            "Receiving logs... wait a moment"
 		"es"            "Recibiendo logs... espera un momento"
 		"de"            "Empfange Logs... warte einen Moment"
+		"ru"            "Запись логов..."
 	}
 	
 	"Taser"
@@ -461,6 +513,7 @@
 		"es"            "Comprar Taser (detector de equipo) - {1}"
 		"de"            "Kaufe Taser (Team Detektor) - {1}"
 		"chi"            "购买电击枪 (侦探专用枪) - {1}"
+		"ru"            "Электрошокер (детектор ролей) - {1}"
 	}
 	
 	"USPS"
@@ -470,6 +523,7 @@
 		"es"            "Comprar USP con silenciador - {1}"
 		"de"            "Kaufe USP-S - {1}"
 		"chi"           "购买 USP-S - {1}"
+		"ru"            "USP-S - {1}"
 	}
 	
 	"M4S"
@@ -479,6 +533,7 @@
 		"es"            "Comprar M4 con silenciador - {1}"
 		"de"            "Kaufe M4-S - {1}"
 		"chi"           "购买 M4-S - {1}"
+		"ru"            "M4-S - {1}"
 	}
 
 	"Found Innocent"
@@ -488,6 +543,7 @@
 		"es"            "{1} ha encontrado el cuerpo de{green} {2} {default}que es {green}Inocente"
 		"de"            "{1} findet die Leiche von{green} {2} {default}er war ein {green}INNOCENT"
 		"chi"            "{1} 已发现尸体{green} {2} {default}这是 {green}平民"
+		"ru"            "{1} нашел тело{green} {2} {default}, он был {green}НЕВИНОВНЫМ"
 	}
 	
 	"Found Detective"
@@ -497,6 +553,7 @@
 		"es"            "{1} ha encontrado el cuerpo de{blue} {2} {default}que es {blue}Detective"
 		"de"            "{1} findet die Leiche von{blue} {2} {default}er war ein {blue}DETEKTIV"
 		"chi"           "{1} 已发现尸体{blue} {2} {default}这是 {blue}侦探"
+		"ru"            "{1} нашел тело{blue} {2} {default}, он был {blue}ДЕТЕКТИВОМ"
 	}
 	
 	"Found Traitor"
@@ -506,6 +563,7 @@
 		"es"            "{1} ha encontrado el cuerpo de{darkred} {2} {default}que es {darkred}Traidor"
 		"de"            "{1} findet die Leiche von{darkred} {2} {default}er war ein {darkred}Traitor"
 		"chi"           "{1} 已发现尸体{darkred} {2} {default}这是 {darkred}叛徒"
+		"ru"            "{1} нашел тело{darkred} {2} {default}, он был {darkred}ПРЕДАТЕЛЕМ"
 	}
 	
 	"Buy c4"
@@ -515,6 +573,7 @@
 		"es"            "Comprar c4 - {1}"
 		"de"            "Kaufe C4 - {1}"
 		"chi"           "购买C4 - {1}"
+		"ru"            "Бомба C4 - {1}"
 	}
 
 	"Buy jihadbomb"
@@ -524,6 +583,7 @@
 		"es"            "Comprar bomba Jihad - {1}"
 		"de"            "Kaufe Jihad Bombe - {1}"
 		"chi"           "购买炸弹 - {1}"
+		"ru"            "Джихад бомба - {1}"
 	}
 	
 	"Your bomb is not armed."
@@ -532,6 +592,7 @@
 		"es"            "Tu bomba aun no esta armada"
 		"de"            "Deine Bombe ist noch nicht aktiviert"
 		"chi"           "你未安装炸弹"
+		"ru"            "Твоя бомба еще не поставлена."
 	}
 	
 	"Your bomb is now armed."
@@ -540,6 +601,7 @@
 		"es"            "Tu bomba ya esta armada"
 		"de"            "Deine Bombe ist nun bereit"
 		"chi"           "你安装炸弹."
+		"ru"            "Ваша бомба готова."
 	}
 	
 	"bomb will arm in 60 seconds, double tab F to explode"
@@ -548,12 +610,14 @@
 		"es"            "La bomba se armara en 60 segundos, apreta 2 veces a la F para explotarla"
 		"de"            "Die Bombe ist in 60 Sekunden bereit, drücke 2x F um die Bombe mit dir zu sprengen"
 		"chi"           "炸弹将在60秒后爆炸 双击F爆炸"
+		"ru"            "Бомба будет готова через 60 сек, нажмите на F, чтобы взорвать"
 	}
 	
 	"Your Karma is too low"
 	{
 		"en"			"You were banned, because your karma is too low!"
 		"de"			"Sie wurden gebannt, weil ihr Karma zu niedrig ist!"
+		"ru"			"Вы были забанены, т.к. у вас маленькая карма!"
 	}
 	
 	"TRAITORS HAS BEEN SELECTED"
@@ -561,6 +625,7 @@
 		"#format"		"{1:d}"
 		"en"            "{1} TRAITORS HAVE BEEN SELECTED"
 		"de"            "{1} wurden ausgewählt!"
+		"ru"            "БЫЛО ВЫБРАНО {1} ПРЕДАТЕЛЕЙ"
 	}
 	
 	"Buy radar"
@@ -568,6 +633,7 @@
 		"#format"		"{1:d}"
 		"en"            "Buy radar - {1}"
 		"de"            "Kaufe Radar - {1}"
+		"ru"            "Радар - {1}"
 	}
 	
 	"Suicide Blocked"
