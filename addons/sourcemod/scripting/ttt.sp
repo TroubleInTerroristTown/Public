@@ -935,29 +935,16 @@ public void OnClientCookiesCached(int client) {
 	int karma = StringToInt(sValue);
 	
 	if (karma == 0)
-	{
-		g_iKarma[client] = g_iConfig[c_startKarma].IntValue;
-		
-		char sKarma[32];
-		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
-		SetClientCookie(client, g_hKarmaCookie, sKarma);
-	}
+		setKarma(client, g_iConfig[c_startKarma].IntValue);
 	else
-	{
-		g_iKarma[client] = karma;
-		SetClientCookie(client, g_hKarmaCookie, sValue);
-	}
+		setKarma(client, karma);
 	
 	g_bKarma[client] = true;
 }
 
 stock void AddStartKarma(int client)
 {
-	g_iKarma[client] = g_iConfig[c_startKarma].IntValue;
-	
-	char sKarma[32];
-	IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
-	SetClientCookie(client, g_hKarmaCookie, sKarma);
+	setKarma(client, g_iConfig[c_startKarma].IntValue);
 }
 
 stock void BanBadPlayerKarma(int client)
@@ -965,9 +952,7 @@ stock void BanBadPlayerKarma(int client)
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 	
-	char sKarma[32];
-	g_iConfig[c_startKarma].GetString(sKarma, sizeof(sKarma));
-	SetClientCookie(client, g_hKarmaCookie, sKarma);
+	setKarma(client, g_iConfig[c_startKarma]);
 	
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
@@ -1129,48 +1114,49 @@ public void OnClientDisconnect(int client)
 {
 	if(IsClientInGame(client))
 	{
-		char sKarma[12];
-		IntToString(g_iKarma[client], sKarma, sizeof(sKarma));
-		SetClientCookie(client, g_hKarmaCookie, sKarma);
 		g_bKarma[client] = false;
-	}
-	if (g_hRDMTimer[client] != null) {
-		KillTimer(g_hRDMTimer[client]);
-		g_hRDMTimer[client] = null;
-	}
-	if (g_hRemoveCoolDownTimer[client] != null) {
-		KillTimer(g_hRemoveCoolDownTimer[client]);
-		g_hRemoveCoolDownTimer[client] = null;
-	}
-	ClearIcon(client);
-	
-	ClearTimer(g_hJihadBomb[client]);
-	
-	g_bReceivingLogs[client] = false;
-	g_bImmuneRDMManager[client] = false;
-/* 	int thesize = GetArraySize(g_hRagdollArray);
-	
-	if(thesize == 0) return;
-	
-	int Items[Ragdolls];
-			
-	for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
-	{
-		GetArrayArray(g_hRagdollArray, i, Items[0]);
-				
-		if(client == Items[attacker] || client == Items[victim])
+		
+		if (g_hRDMTimer[client] != null)
 		{
-			int entity = EntRefToEntIndex(Items[index]);
-			if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
-					
-			RemoveFromArray(g_hRagdollArray, i);
-			break;
+			KillTimer(g_hRDMTimer[client]);
+			g_hRDMTimer[client] = null;
 		}
-	}  */
-	
-	if (g_hExplosionTimer[client] != null) {
-		KillTimer(g_hExplosionTimer[client]);
-		g_hExplosionTimer[client] = null;
+		if (g_hRemoveCoolDownTimer[client] != null)
+		{
+			KillTimer(g_hRemoveCoolDownTimer[client]);
+			g_hRemoveCoolDownTimer[client] = null;
+		}
+		ClearIcon(client);
+		
+		ClearTimer(g_hJihadBomb[client]);
+		
+		g_bReceivingLogs[client] = false;
+		g_bImmuneRDMManager[client] = false;
+	/* 	int thesize = GetArraySize(g_hRagdollArray);
+		
+		if(thesize == 0) return;
+		
+		int Items[Ragdolls];
+				
+		for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
+		{
+			GetArrayArray(g_hRagdollArray, i, Items[0]);
+					
+			if(client == Items[attacker] || client == Items[victim])
+			{
+				int entity = EntRefToEntIndex(Items[index]);
+				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
+						
+				RemoveFromArray(g_hRagdollArray, i);
+				break;
+			}
+		}  */
+		
+		if (g_hExplosionTimer[client] != null)
+		{
+			KillTimer(g_hExplosionTimer[client]);
+			g_hExplosionTimer[client] = null;
+		}
 	}
 }
 
@@ -1441,10 +1427,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaDD].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue, true);
 	}
-	
-	char result[32];
-	IntToString(g_iKarma[iAttacker], result, sizeof(result));
-	SetClientCookie(iAttacker, g_hKarmaCookie, result);
 	
 	CheckTeams();
 }
@@ -2218,6 +2200,22 @@ stock void addKarma(int client, int karma, bool message = false)
 	  	else
 	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
 	}
+	
+	char result[32];
+	IntToString(g_iKarma[i], result, sizeof(result));
+	SetClientCookie(i, g_hKarmaCookie, result);
+}
+
+stock void setKarma(int client, int karma)
+{
+	g_iKarma[client] = karma;
+	
+	if(g_iKarma[client] > g_iConfig[c_maxKarma].IntValue)
+		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
+	
+	char result[32];
+	IntToString(g_iKarma[i], result, sizeof(result));
+	SetClientCookie(i, g_hKarmaCookie, result);
 }
 
 stock void subtractKarma(int client, int karma, bool message = false)
@@ -2231,6 +2229,10 @@ stock void subtractKarma(int client, int karma, bool message = false)
 	  	else
 	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
 	}
+	
+	char result[32];
+	IntToString(g_iKarma[i], result, sizeof(result));
+	SetClientCookie(i, g_hKarmaCookie, result);
 }
 
 stock void addCredits(int client, int credits, bool message = false)
@@ -2933,10 +2935,6 @@ stock void resetPlayers()
 	{
 		g_bKarma[i] = false;
 		
-		char sKarma[32];
-		IntToString(g_iKarma[i], sKarma, sizeof(sKarma));
-		SetClientCookie(i, g_hKarmaCookie, sKarma);
-		
 		if (g_hExplosionTimer[i] != null)
 		{
 			KillTimer(g_hExplosionTimer[i]);
@@ -3114,12 +3112,7 @@ public void OnWeaponPostSwitch(int client, int weapon)
 public Action Command_KarmaReset(int client, int args)
 {
 	LoopValidClients(i)
-	{
-		g_iKarma[i] = 100; // TODO: SetKarma
-		char result[32];
-		IntToString(g_iKarma[i], result, sizeof(result));
-		SetClientCookie(i, g_hKarmaCookie, result);
-	}
+		setKarma(g_iKarma[i], 100);
 	return Plugin_Handled;
 }
 
