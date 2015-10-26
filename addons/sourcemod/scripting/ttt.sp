@@ -283,6 +283,11 @@ char g_sCTModels[][] =  {
  "models/player/ctm_swat_variantD.mdl"
 };
 
+char g_sShopCMDs[][] = {
+	"menu",
+	"shop"
+};
+
 char g_sRadioCMDs[][] = {
 	"coverme",
 	"takepoint",
@@ -357,9 +362,14 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_jihad_detonate", Command_Detonate); 
 	RegConsoleCmd("sm_logs", Command_Logs);
 	RegConsoleCmd("sm_log", Command_Logs);
-	RegConsoleCmd("sm_menu", Command_Shop);
-	RegConsoleCmd("sm_shop", Command_Shop);
 	RegConsoleCmd("sm_id", Command_ID);
+	
+	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
+	{
+		char sBuffer[64];
+		Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShopCMDs[i]);
+		RegConsoleCmd(sBuffer, Command_Shop);
+	}
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_start", Event_RoundStartPre, EventHookMode_Pre);
@@ -373,6 +383,7 @@ public void OnPluginStart()
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
+	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_SayTeam, "say_team");
 	AddCommandListener(Command_InterceptSuicide, "kill");
 	AddCommandListener(Command_InterceptSuicide, "explode");
@@ -380,7 +391,7 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass");
 	
-	for(int i; i < sizeof(g_sRadioCMDs); i++)
+	for(int i= 0; i < sizeof(g_sRadioCMDs); i++)
 	{
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	}
@@ -1836,6 +1847,31 @@ public Action Command_ID(int client, int args)
 
 }
 
+public Action Command_Say(int client, const char[] command, int argc)
+{
+	if(!IsClientValid(client) || !IsPlayerAlive(client))
+		return Plugin_Continue;
+	
+	char sText[MAX_MESSAGE_LENGTH];
+	GetCmdArgString(sText, sizeof(sText));
+	
+	StripQuotes(sText);
+	
+	if (sText[0] == '@')
+		return Plugin_Continue;
+	
+	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
+	{
+		char sBuffer[64];
+		Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
+		
+		if (StrEqual(sText, sBuffer, false))
+			return Plugin_Handled;
+	}
+	
+	return Plugin_Continue;
+}
+
 public Action Command_SayTeam(int client, const char[] command, int argc)
 {
 	if(!IsClientValid(client) || !IsPlayerAlive(client))
@@ -1851,6 +1887,15 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 		
 	if (sText[0] == '@')
 		return Plugin_Continue;
+		
+	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
+	{
+		char sBuffer[64];
+		Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
+		
+		if (StrEqual(sText, sBuffer, false))
+			return Plugin_Handled;
+	}
 	
 	if(g_iRole[client] == T)
 	{
