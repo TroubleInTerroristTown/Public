@@ -24,7 +24,7 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara"
 #define PLUGIN_DESCRIPTION ""
-#define PLUGIN_VERSION "2.0.4"
+#define PLUGIN_VERSION "2.0.5-dev"
 #define PLUGIN_URL "git.tf/TTT"
 
 #define PLUGIN_TAG "{purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
@@ -33,8 +33,7 @@
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
 
-#define LoopValidClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
-if(IsClientValid(%1))
+#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
 
 #define U 0
 #define I 1
