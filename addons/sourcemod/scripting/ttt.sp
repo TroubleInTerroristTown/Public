@@ -2660,7 +2660,8 @@ public Action Timer_5(Handle timer)
 		}
 	}
 	
-	CheckTeams();
+	if(g_bRoundStarted)
+		CheckTeams();
 }
 
 public void OnEntityCreated(int entity, const char[] className)
@@ -3247,9 +3248,15 @@ stock void CheckTeams()
 	}
 	
 	if(iD == 0 && iI == 0)
+	{
+		g_bRoundStarted = false;
 		CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+	}
 	else if(iT == 0)
+	{
+		g_bRoundStarted = false;
 		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+	}
 }
 
 stock void SetSkin(int client, int role)
