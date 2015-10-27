@@ -27,7 +27,7 @@
 #define PLUGIN_VERSION "2.0.4"
 #define PLUGIN_URL "git.tf/TTT"
 
-#define PF " {purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
+#define PLUGIN_TAG "{purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
 #define SOUND_MESSAGE "buttons/button18.wav"
 
 #define TRAITORS_AMOUNT 0.25
@@ -499,7 +499,7 @@ public Action Command_Logs(int client, int args)
 	if(!IsPlayerAlive(client) || !g_bRoundStarted)
 		ShowLogs(client);
 	else
-		CPrintToChat(client, PF, "you cant see logs", client);
+		CPrintToChat(client, PLUGIN_TAG, "you cant see logs", client);
 	return Plugin_Handled;
 }
 
@@ -508,12 +508,12 @@ stock void ShowLogs(int client)
 	int sizearray = GetArraySize(g_hLogsArray);
 	if(sizearray == 0)
 	{
-		CPrintToChat(client, PF, "no logs yet", client);
+		CPrintToChat(client, PLUGIN_TAG, "no logs yet", client);
 		return;
 	}
 	if(g_bReceivingLogs[client]) return;
 	g_bReceivingLogs[client] = true;
-	CPrintToChat(client, PF, "Receiving logs", client);
+	CPrintToChat(client, PLUGIN_TAG, "Receiving logs", client);
 	PrintToConsole(client, "--------------------------------------");
 	PrintToConsole(client, "-------------TTT LOGS---------------");
 	char item[512];
@@ -533,7 +533,7 @@ stock void ShowLogs(int client)
 	
 	if(end)
 	{
-		CPrintToChat(client, PF, "See your console", client);
+		CPrintToChat(client, PLUGIN_TAG, "See your console", client);
 		g_bReceivingLogs[client] = false;
 		PrintToConsole(client, "--------------------------------------");
 		PrintToConsole(client, "--------------------------------------");
@@ -576,7 +576,7 @@ public void OnCreate(any pack)
 		}
 		if(end)
 		{
-			CPrintToChat(client, PF, "See your console", client);
+			CPrintToChat(client, PLUGIN_TAG, "See your console", client);
 			g_bReceivingLogs[client] = false;
 			PrintToConsole(client, "--------------------------------------");
 			PrintToConsole(client, "--------------------------------------");
@@ -593,7 +593,7 @@ public Action Command_InterceptSuicide(int client, const char[] command, int arg
 {
 	if(g_iConfig[c_blockSuicide].IntValue && IsPlayerAlive(client))
 	{
-		CPrintToChat(client, PF, "Suicide Blocked", client);
+		CPrintToChat(client, PLUGIN_TAG, "Suicide Blocked", client);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -693,7 +693,7 @@ public void ThinkPost(int entity)
 
 public Action Command_Karma(int client, int args)
 {
-	CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
+	CPrintToChat(client, PLUGIN_TAG, "Your karma is", client, g_iKarma[client]);
 	
 	return Plugin_Handled;
 }
@@ -772,7 +772,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
-			CPrintToChat(i, PF, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[c_requiredPlayers].IntValue);
+			CPrintToChat(i, PLUGIN_TAG, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[c_requiredPlayers].IntValue);
 		return;
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
@@ -837,10 +837,10 @@ public Action Timer_Selection(Handle hTimer)
 
 	LoopValidClients(i)
 	{
-		CPrintToChat(i, PF, "TEAMS HAS BEEN SELECTED", i);
+		CPrintToChat(i, PLUGIN_TAG, "TEAMS HAS BEEN SELECTED", i);
 		
 		if(g_iRole[i] != T)
-			CPrintToChat(i, PF, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
+			CPrintToChat(i, PLUGIN_TAG, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 	}
 	
 	ClearArray(g_hLogsArray);
@@ -867,18 +867,18 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
 			
 		GivePlayerItem(client, "weapon_taser");
-		CPrintToChat(client, PF, "Your Team is DETECTIVES", client);
+		CPrintToChat(client, PLUGIN_TAG, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
 	}
 	else if(g_iRole[client] == T)
 	{
 		g_iIcon[client] = CreateIcon(client);
-		CPrintToChat(client, PF, "Your Team is TRAITORS", client);
+		CPrintToChat(client, PLUGIN_TAG, "Your Team is TRAITORS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
 	}
 	else if(g_iRole[client] == I)
 	{
-		CPrintToChat(client, PF, "Your Team is INNOCENTS", client);
+		CPrintToChat(client, PLUGIN_TAG, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
 	}
 	
@@ -933,8 +933,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		}
 		else
 		{
-			CPrintToChat(client, PF, "Your credits is", client, g_iCredits[client]);
-			CPrintToChat(client, PF, "Your karma is", client, g_iKarma[client]);
+			CPrintToChat(client, PLUGIN_TAG, "Your credits is", client, g_iCredits[client]);
+			CPrintToChat(client, PLUGIN_TAG, "Your karma is", client, g_iKarma[client]);
 		}
 		
 		g_b1Knife[client] = false;
@@ -1050,18 +1050,18 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 			{
 				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt a Traitor", client, client);
+				CPrintToChat(iAttacker, PLUGIN_TAG, "You hurt a Traitor", client, client);
 				addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
 			}
 			else if(g_iRole[client] == D) {
 				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt a Detective", client, client);
+				CPrintToChat(iAttacker, PLUGIN_TAG, "You hurt a Detective", client, client);
 			}
 			else if(g_iRole[client] == I) {
 				Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, PF, "You hurt an Innocent", client, client);
+				CPrintToChat(iAttacker, PLUGIN_TAG, "You hurt an Innocent", client, client);
 			}
 			damage = 0.0;
 			return Plugin_Changed;
@@ -1364,7 +1364,7 @@ public Action Timer_Adjust(Handle timer)
 
 public Action Command_Credits(int client, int args)
 {
-	CPrintToChat(client, PF, "Your credits is", client, g_iCredits[client]);
+	CPrintToChat(client, PLUGIN_TAG, "Your credits is", client, g_iCredits[client]);
 	
 	return Plugin_Handled;
 }
@@ -1402,21 +1402,21 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if (g_iConfig[c_showDeathMessage].IntValue)
 	{
 		if(g_iRole[iAttacker] == T)
-			CPrintToChat(client, PF, "Your killer is a Traitor", client);
+			CPrintToChat(client, PLUGIN_TAG, "Your killer is a Traitor", client);
 		else if(g_iRole[iAttacker] == D)
-			CPrintToChat(client, PF, "Your killer is a Detective", client);
+			CPrintToChat(client, PLUGIN_TAG, "Your killer is a Detective", client);
 		else if(g_iRole[iAttacker] == I)
-			CPrintToChat(client, PF, "Your killer is an Innocent", client);
+			CPrintToChat(client, PLUGIN_TAG, "Your killer is an Innocent", client);
 	}
 	
 	if(g_iConfig[c_showKillMessage].IntValue)
 	{
 		if(g_iRole[client] == T)
-			CPrintToChat(iAttacker, PF, "You killed a Traitor", client);
+			CPrintToChat(iAttacker, PLUGIN_TAG, "You killed a Traitor", client);
 		else if(g_iRole[client] == D)
-			CPrintToChat(iAttacker, PF, "You killed a Detective", client);
+			CPrintToChat(iAttacker, PLUGIN_TAG, "You killed a Detective", client);
 		else if(g_iRole[client] == I)
-			CPrintToChat(iAttacker, PF, "You killed an Innocent", client);
+			CPrintToChat(iAttacker, PLUGIN_TAG, "You killed an Innocent", client);
 	}
 	
 	char item[512];
@@ -1703,7 +1703,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 {
 	LoopValidClients(i)
 		if((GetUserFlagBits(i) & ADMFLAG_BAN))
-			CPrintToChat(i, PF, "is possibly RDMing", client);
+			CPrintToChat(i, PLUGIN_TAG, "is possibly RDMing", client);
 } */
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
@@ -1749,19 +1749,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						if(g_iRole[Items[victim]] == I) 
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, PF, "Found Innocent", j, client, Items[victimName]);
+								CPrintToChat(j, PLUGIN_TAG, "Found Innocent", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 255, 0, 255);
 						}
 						else if(g_iRole[Items[victim]] == D)
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, PF, "Found Detective", j, client, Items[victimName]);
+								CPrintToChat(j, PLUGIN_TAG, "Found Detective", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
 						else if(g_iRole[Items[victim]] == T) 
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, PF, "Found Traitor", j, client,Items[victimName]);
+								CPrintToChat(j, PLUGIN_TAG, "Found Traitor", j, client,Items[victimName]);
 							SetEntityRenderColor(entidad, 255, 0, 0, 255);
 						}
 						
@@ -1778,12 +1778,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						if(Items[attacker] > 0 && Items[attacker] != Items[victim])
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, PF, "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
+								CPrintToChat(j, PLUGIN_TAG, "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
 						}
 						else
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, PF, "Detective scan found body suicide", j, client);
+								CPrintToChat(j, PLUGIN_TAG, "Detective scan found body suicide", j, client);
 						}
 						
 						
@@ -1839,10 +1839,10 @@ public Action Command_ID(int client, int args)
 	if(g_bID[client] && IsPlayerAlive(client))
 	{
 		LoopValidClients(i)
-			CPrintToChat(i, PF, "Player Is an Innocent", i, client);
+			CPrintToChat(i, PLUGIN_TAG, "Player Is an Innocent", i, client);
 	}
 	else
-		CPrintToChat(client, PF, "You dont have it!", client);
+		CPrintToChat(client, PLUGIN_TAG, "You dont have it!", client);
 	
 	return Plugin_Handled;
 
@@ -1989,7 +1989,7 @@ public Action Command_Shop(int client, int args)
 	
 	}
 	else
-		CPrintToChat(client, PF, "Please wait till your team is assigned", client);
+		CPrintToChat(client, PLUGIN_TAG, "Please wait till your team is assigned", client);
 	
 	return Plugin_Handled;
 
@@ -2009,9 +2009,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				GivePlayerItem( client, "item_assaultsuit");
 				subtractCredits(client, g_iConfig[c_shopKEVLAR].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"1knife") == 0 )
 		{
@@ -2021,9 +2021,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				Set1Knife(client);
 				subtractCredits(client, g_iConfig[c_shop1KNIFE].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"scan13") == 0 )
 		{
@@ -2031,9 +2031,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_bScan[client] = true;
 				subtractCredits(client, g_iConfig[c_shopDNA].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"ID") == 0 )
 		{
@@ -2041,9 +2041,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_bID[client] = true;
 				subtractCredits(client, g_iConfig[c_shopID].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		/* else if ( strcmp(info,"radar") == 0 )
 		{
@@ -2051,9 +2051,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_bRadar[client] = true;
 				subtractCredits(client, g_iConfig[c_shopRadar].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		} */
 		else if ( strcmp(info,"fakeID") == 0 )
 		{
@@ -2061,9 +2061,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_bID[client] = true;
 				subtractCredits(client, g_iConfig[c_shopFAKEID].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyT") == 0 )
 		{
@@ -2072,9 +2072,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				g_iRole[client] = T;
 				TeamInitialize(client);
 				subtractCredits(client, g_iConfig[c_shopT].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyD") == 0 )
 		{
@@ -2083,9 +2083,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				g_iRole[client] = D;
 				TeamInitialize(client);
 				subtractCredits(client, g_iConfig[c_shopD].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
@@ -2093,9 +2093,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				GivePlayerItem(client, "weapon_taser");
 				subtractCredits(client, g_iConfig[c_shopTASER].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"usps") == 0 )
 		{
@@ -2108,9 +2108,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				
 				GivePlayerItem(client, "weapon_usp_silencer");
 				subtractCredits(client, g_iConfig[c_shopUSP].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"m4s") == 0 )
 		{
@@ -2124,9 +2124,9 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				
 				GivePlayerItem(client, "weapon_m4a1_silencer");
 				subtractCredits(client, g_iConfig[c_shopM4A1].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"jbomb") == 0 )
 		{
@@ -2138,10 +2138,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				ClearTimer(g_hJihadBomb[client]);
 				g_hJihadBomb[client] = CreateTimer(60.0, BombaArmada, client);
 				subtractCredits(client, g_iConfig[c_shopJIHADBOMB].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
-				CPrintToChat(client, PF, "bomb will arm in 60 seconds, double tab F to explode", client);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "bomb will arm in 60 seconds, double tab F to explode", client);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "C4") == 0) {
 			if (g_iCredits[client] >= g_iConfig[c_shopC4].IntValue) {
@@ -2149,22 +2149,22 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				g_bHasC4[client] = true;
 				subtractCredits(client, g_iConfig[c_shopC4].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
-				CPrintToChat(client, PF, "Right click to plant the C4", client);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Right click to plant the C4", client);
 			}
-			else CPrintToChat(client, PF, "You don't have enough money", client);
+			else CPrintToChat(client, PLUGIN_TAG, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "HealthStation") == 0) {
 			if (g_iCredits[client] >= g_iConfig[c_shopHEALTH].IntValue) {
 				if (g_iRole[client] != D)
 					return;
 				if (g_bHasActiveHealthStation[client]) {
-					CPrintToChat(client, PF, "You already have an active Health Station", client);
+					CPrintToChat(client, PLUGIN_TAG, "You already have an active Health Station", client);
 					return;
 				}
 				spawnHealthStation(client);
 				subtractCredits(client, g_iConfig[c_shopHEALTH].IntValue);
-				CPrintToChat(client, PF, "Item bought! Your REAL money is", client, g_iCredits[client]);
+				CPrintToChat(client, PLUGIN_TAG, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}
 	}
@@ -2177,7 +2177,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 
 public Action BombaArmada(Handle timer, any client) 
 { 
-	CPrintToChat(client, PF, "Your bomb is now armed.", client);
+	CPrintToChat(client, PLUGIN_TAG, "Your bomb is now armed.", client);
 	EmitAmbientSound("buttons/blip2.wav", NULL_VECTOR, client);
 	g_hJihadBomb[client] = null;	
 } 
@@ -2408,13 +2408,13 @@ public Action Command_Detonate(int client, int args)
 { 
     if (!g_bJihadBomb[client]) 
     { 
-		CPrintToChat(client, PF, "You dont have it!", client);
+		CPrintToChat(client, PLUGIN_TAG, "You dont have it!", client);
 		return Plugin_Handled; 
     } 
 	
     if (g_hJihadBomb[client] != null) 
     { 
-		CPrintToChat(client, PF, "Your bomb is not armed.", client);
+		CPrintToChat(client, PLUGIN_TAG, "Your bomb is not armed.", client);
 		return Plugin_Handled; 
     } 
      
@@ -2485,16 +2485,16 @@ stock void manageRDM(int client)
 	int iAttacker = g_iRDMAttacker[client];
 	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
 	{
-		CPrintToChat(client, PF, "The player who RDM'd you is no longer available", client);
+		CPrintToChat(client, PLUGIN_TAG, "The player who RDM'd you is no longer available", client);
 		return;
 	}
 	char sAttackerName[MAX_NAME_LENGTH];
 	GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
 	
 	char display[256], sForgive[64], sPunish[64];
-	Format(display, sizeof(display), PF, "You were RDM'd", client, sAttackerName);
-	Format(sForgive, sizeof(sForgive), PF, "Forgive", client);
-	Format(sPunish, sizeof(sPunish), PF, "Punish", client);
+	Format(display, sizeof(display), PLUGIN_TAG, "You were RDM'd", client, sAttackerName);
+	Format(sForgive, sizeof(sForgive), PLUGIN_TAG, "Forgive", client);
+	Format(sPunish, sizeof(sPunish), PLUGIN_TAG, "Punish", client);
 	
 	Handle menuHandle = CreateMenu(manageRDMHandle);
 	SetMenuTitle(menuHandle, display);
@@ -2520,29 +2520,29 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 			GetMenuItem(menu, option, info, sizeof(info));
 			if (StrEqual(info, "Forgive", false))
 			{
-				CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
-				CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
+				CPrintToChat(client, PLUGIN_TAG, "Choose Forgive Victim", client, iAttacker);
+				CPrintToChat(iAttacker, PLUGIN_TAG, "Choose Forgive Attacker", iAttacker, client);
 				g_iRDMAttacker[client] = -1;
 			}
 			if (StrEqual(info, "Punish", false))
 			{
 				LoopValidClients(i)
-					CPrintToChat(i, PF, "Choose Punish", i, client, iAttacker);
+					CPrintToChat(i, PLUGIN_TAG, "Choose Punish", i, client, iAttacker);
 				ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
 				g_iRDMAttacker[client] = -1;
 			}
 		}
 		case MenuAction_Cancel:
 		{
-			CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
-			CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
+			CPrintToChat(client, PLUGIN_TAG, "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, PLUGIN_TAG, "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 		case MenuAction_End:
 		{
 			CloseHandle(menu);
-			CPrintToChat(client, PF, "Choose Forgive Victim", client, iAttacker);
-			CPrintToChat(iAttacker, PF, "Choose Forgive Attacker", iAttacker, client);
+			CPrintToChat(client, PLUGIN_TAG, "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, PLUGIN_TAG, "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 	}
@@ -2592,7 +2592,7 @@ public Action Command_Role(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		CS_SetClientClanTag(target, "");
-		CPrintToChat(client, PF, "Player is Now Innocent", client, target);
+		CPrintToChat(client, PLUGIN_TAG, "Player is Now Innocent", client, target);
 		return Plugin_Handled;
 	}
 	else if (role == T)
@@ -2602,7 +2602,7 @@ public Action Command_Role(int client, int args)
 		ClearIcon(target);
 		ApplyIcons();
 		CS_SetClientClanTag(target, "");
-		CPrintToChat(client, PF, "Player is Now Traitor", client, target);
+		CPrintToChat(client, PLUGIN_TAG, "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
 	else if (role == D)
@@ -2611,7 +2611,7 @@ public Action Command_Role(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
-		CPrintToChat(client, PF, "Player is Now Detective", client, target);
+		CPrintToChat(client, PLUGIN_TAG, "Player is Now Detective", client, target);
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
@@ -2623,13 +2623,13 @@ public Action Command_Status(int client, int args)
 		return Plugin_Handled;
 		
 	if (g_iRole[client] == U)
-		CPrintToChat(client, PF, "You Are Unassigned", client); 
+		CPrintToChat(client, PLUGIN_TAG, "You Are Unassigned", client); 
 	else if (g_iRole[client] == I)
-		CPrintToChat(client, PF, "You Are Now Innocent", client);
+		CPrintToChat(client, PLUGIN_TAG, "You Are Now Innocent", client);
 	else if (g_iRole[client] == D)
-		CPrintToChat(client, PF, "You Are Now Traitor", client);
+		CPrintToChat(client, PLUGIN_TAG, "You Are Now Traitor", client);
 	else if (g_iRole[client] == T)
-		CPrintToChat(client, PF, "You Are Now Detective", client);
+		CPrintToChat(client, PLUGIN_TAG, "You Are Now Detective", client);
 	
 	return Plugin_Handled;
 }
@@ -2691,7 +2691,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
 			
 			LoopValidClients(i)
-				CPrintToChat(i, PF, "Triggered Falling Building", i, activator);
+				CPrintToChat(i, PLUGIN_TAG, "Triggered Falling Building", i, activator);
 		}
 	}
 	return Plugin_Continue;
@@ -2713,7 +2713,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		g_bHasActiveBomb[client] = false;
 		g_hExplosionTimer[client] = null;
 		g_bImmuneRDMManager[client] = true;
-		CPrintToChat(client, PF, "Bomb Detonated", client);
+		CPrintToChat(client, PLUGIN_TAG, "Bomb Detonated", client);
 	}
 	else
 		return Plugin_Stop;
@@ -2825,13 +2825,13 @@ stock void showPlantMenu(int client)
 	char sTitle[128];
 	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
 	
-	Format(sTitle, sizeof(sTitle), PF, "Set C4 Timer", client);
-	Format(s10, sizeof(s10), PF, "Seconds", client, 10);
-	Format(s20, sizeof(s20), PF, "Seconds", client, 10);
-	Format(s30, sizeof(s30), PF, "Seconds", client, 30);
-	Format(s40, sizeof(s40), PF, "Seconds", client, 40);
-	Format(s50, sizeof(s50), PF, "Seconds", client, 50);
-	Format(s60, sizeof(s60), PF, "Seconds", client, 60);
+	Format(sTitle, sizeof(sTitle), PLUGIN_TAG, "Set C4 Timer", client);
+	Format(s10, sizeof(s10), PLUGIN_TAG, "Seconds", client, 10);
+	Format(s20, sizeof(s20), PLUGIN_TAG, "Seconds", client, 10);
+	Format(s30, sizeof(s30), PLUGIN_TAG, "Seconds", client, 30);
+	Format(s40, sizeof(s40), PLUGIN_TAG, "Seconds", client, 40);
+	Format(s50, sizeof(s50), PLUGIN_TAG, "Seconds", client, 50);
+	Format(s60, sizeof(s60), PLUGIN_TAG, "Seconds", client, 60);
 	
 	Handle menuHandle = CreateMenu(plantBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
@@ -2853,11 +2853,11 @@ stock void showDefuseMenu(int client)
 	char sTitle[128];
 	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
 	
-	Format(sTitle, sizeof(sTitle), PF, "Defuse C4", client);
-	Format(sWire1, sizeof(sWire1), PF, "C4 Wire", client, 1);
-	Format(sWire2, sizeof(sWire2), PF, "C4 Wire", client, 2);
-	Format(sWire3, sizeof(sWire3), PF, "C4 Wire", client, 3);
-	Format(sWire4, sizeof(sWire4), PF, "C4 Wire", client, 4);
+	Format(sTitle, sizeof(sTitle), PLUGIN_TAG, "Defuse C4", client);
+	Format(sWire1, sizeof(sWire1), PLUGIN_TAG, "C4 Wire", client, 1);
+	Format(sWire2, sizeof(sWire2), PLUGIN_TAG, "C4 Wire", client, 2);
+	Format(sWire3, sizeof(sWire3), PLUGIN_TAG, "C4 Wire", client, 3);
+	Format(sWire4, sizeof(sWire4), PLUGIN_TAG, "C4 Wire", client, 4);
 	
 	Handle menuHandle= CreateMenu(defuseBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
@@ -2946,8 +2946,8 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			{
 				if (1 <= planter <= MaxClients && IsClientInGame(planter))
 				{
-					CPrintToChat(client, PF, "You Defused Bomb", client, planter);
-					CPrintToChat(planter, PF, "Has Defused Bomb", planter, client);
+					CPrintToChat(client, PLUGIN_TAG, "You Defused Bomb", client, planter);
+					CPrintToChat(planter, PLUGIN_TAG, "Has Defused Bomb", planter, client);
 					EmitAmbientSoundAny("weapons/c4/c4_disarm.wav", bombPos);
 					g_bHasActiveBomb[planter] = false;
 					if (g_hExplosionTimer[planter] != null)
@@ -2960,7 +2960,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			}
 			else
 			{
-				CPrintToChat(client, PF, "Failed Defuse", client);
+				CPrintToChat(client, PLUGIN_TAG, "Failed Defuse", client);
 				ForcePlayerSuicide(client);
 				g_iDefusePlayerIndex[client] = -1;
 			}
@@ -2982,11 +2982,11 @@ stock float plantBomb(int client, float time)
 		
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, PF, "Alive to Plant", client);
+		CPrintToChat(client, PLUGIN_TAG, "Alive to Plant", client);
 		return;
 	}
 	
-	CPrintToChat(client, PF, "Will Explode In", client, time);
+	CPrintToChat(client, PLUGIN_TAG, "Will Explode In", client, time);
 	
 	int bombEnt;
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
@@ -3008,11 +3008,11 @@ stock float plantBomb(int client, float time)
 				g_bHasActiveBomb[client] = true;
 			}
 			else
-				CPrintToChat(client, PF, "Bomb Was Not Found", client);
+				CPrintToChat(client, PLUGIN_TAG, "Bomb Was Not Found", client);
 		}
 	}
 	g_iWire[client] = Math_GetRandomInt(1, 4);
-	CPrintToChat(client, PF, "Wire Is", client, g_iWire[client]);
+	CPrintToChat(client, PLUGIN_TAG, "Wire Is", client, g_iWire[client]);
 }
 
 stock int findBomb(int client)
@@ -3049,7 +3049,7 @@ stock void listTraitors(int client)
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
 		return;
 	
-	CPrintToChat(client, PF, "Your Traitor Partners", client);
+	CPrintToChat(client, PLUGIN_TAG, "Your Traitor Partners", client);
 	int iCount = 0;
 	
 	LoopValidClients(i)
@@ -3061,7 +3061,7 @@ stock void listTraitors(int client)
 	}
 	
 	if(iCount == 0)
-		CPrintToChat(client, PF, "No Traitor Partners", client);
+		CPrintToChat(client, PLUGIN_TAG, "No Traitor Partners", client);
 }
 
 stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
@@ -3113,7 +3113,7 @@ stock void spawnHealthStation(int client)
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;
 		g_iHealthStationCharges[client] = 10;
-		CPrintToChat(client, PF, "Health Station Deployed", client);
+		CPrintToChat(client, PLUGIN_TAG, "Health Station Deployed", client);
 	}
 }
 
@@ -3184,7 +3184,7 @@ stock void checkDistanceFromHealthStation(int client) {
 			else
 				SetEntityHealth(client, newHealth);
 
-			CPrintToChat(client, PF, "Healing From", client, owner);
+			CPrintToChat(client, PLUGIN_TAG, "Healing From", client, owner);
 			EmitSoundToClientAny(client, "resource/warning.wav");
 			g_iHealthStationCharges[owner]--;
 			g_bOnHealingCoolDown[client] = true;
@@ -3192,7 +3192,7 @@ stock void checkDistanceFromHealthStation(int client) {
 		}
 		else
 		{
-			CPrintToChat(client, PF, "Health Station Out Of Charges", client);
+			CPrintToChat(client, PLUGIN_TAG, "Health Station Out Of Charges", client);
 			g_bOnHealingCoolDown[client] = true;
 			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}
