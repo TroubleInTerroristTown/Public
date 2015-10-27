@@ -121,8 +121,6 @@ bool g_bImmuneRDMManager[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingProp[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingSilencedWep[MAXPLAYERS+1] = {false, ...};
 
-char g_sDetectiveNames[][] = { "detective", "detectlve" };
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -187,6 +185,9 @@ bool g_bFound[MAXPLAYERS + 1] = {false, ...};
 bool g_bDetonate[MAXPLAYERS + 1] = {false, ...};
 
 int g_iAlive = -1;
+
+char g_sBadNames[256][MAX_NAME_LENGTH];
+int g_iBadNameCount = 0;
 
 enum Ragdolls
 {
@@ -324,6 +325,8 @@ public void OnPluginStart()
 	
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
+	
+	LoadBadNames();
 	
 	g_hKarmaCookie = RegClientCookie("ttt_karma", "Stores Karma.", CookieAccess_Private);
 	
@@ -608,6 +611,12 @@ public Action Command_RadioCMDs(int client, const char[] command, int args)
 
 public void OnMapStart()
 {
+	for(int i; i < g_iBadNameCount; i++)
+		g_sBadNames[i] = "";
+	g_iBadNameCount = 0;
+	
+	LoadBadNames();
+	
 	g_iBeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
 	g_iHaloSprite = PrecacheModel("materials/sprites/halo.vtf");
 	
@@ -1238,7 +1247,8 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	
  	int thesize = GetArraySize(g_hRagdollArray);
 	
-	if(thesize == 0) return;
+	if(thesize == 0)
+		return;
 	
 	int Items[Ragdolls];
 			
@@ -3066,9 +3076,9 @@ stock void listTraitors(int client)
 
 stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 {
-	for (int i = 0; i < sizeof(g_sDetectiveNames); i++)
-		if (StrContains(name, g_sDetectiveNames[i]) != -1)
-			KickClient(client, "%T", "Kick Bad Name", client, g_sDetectiveNames[i]);
+	for(int i; i < g_iBadNameCount; i++)
+		if (StrContains(g_sBadNames[i], name, false) != -1)
+			KickClient(client, "%T", "Kick Bad Name", client, g_sBadNames[i]);
 }
 
 stock void healthStation_cleanUp()
@@ -3275,3 +3285,59 @@ stock void SetNoBlock(int client)
 {
 	SetEntData(client, g_iCollisionGroup, 2, 4, true);
 }
+
+stock void LoadBadNames()
+{
+	char sFile[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/badnames.ini");
+	
+	Handle hFile = OpenFile(sFile, "rt");
+	
+	if(hFile == null)
+		SetFailState("[TTT] Can't open File: %s", sFile);
+	
+	char sLine[MAX_NAME_LENGTH];
+	
+	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)))
+	{
+		if(strlen(sLine) > 1)
+		{
+			strcopy(g_sBadNames[g_iBadNameCount], sizeof(g_sBadNames[]), sLine);
+			g_iBadNameCount++;
+		}
+	}
+	
+	delete hFile;
+}
+
+/* stock LoadBadNames()
+{
+	new String:sFile[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/BadNames.ini");
+	
+	new Handle:hFile = OpenFile(sFile, "rt");
+	
+	if (hFile == INVALID_HANDLE)
+	{
+		LogError("Could not open bad name config file: %s", sFile);
+		return false;
+	}
+	
+	new String:sLine[64];
+
+	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)))
+	{
+		if(strlen(sLine) > 1)
+		{
+			strcopy(g_sBadNames[g_iLines], sizeof(g_sBadNames[]), sLine);
+			g_iLines++;
+			char sBuffer[128];
+			Format(sBuffer, sizeof(sBuffer), "(LoadBadNames) %s", sLine);
+			PrintToServer(sBuffer);
+		}
+	}
+	
+	CloseHandle(hFile);
+	
+	return true;
+} */
