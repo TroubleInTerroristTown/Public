@@ -1280,7 +1280,7 @@ public Action Timer_Adjust(Handle timer)
 				LoopValidClients(j)
 					if(IsPlayerAlive(j) && j != i && (g_iRole[j] == T))
 					{
-						clients[ent] = j;
+						clients[index] = j;
 						index++;
 					}
 				
@@ -1493,8 +1493,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaDD].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue, true);
 	}
-	
-	CheckTeams();
 }
 
 stock int CreateIcon(int client) {
@@ -2661,6 +2659,8 @@ public Action Timer_5(Handle timer)
 			BanBadPlayerKarma(i);
 		}
 	}
+	
+	CheckTeams();
 }
 
 public void OnEntityCreated(int entity, const char[] className)
