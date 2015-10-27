@@ -100,7 +100,7 @@ enum eConfig
 	ConVar:c_showLoseCreditsMessage,
 	ConVar:c_messageTypKarma,
 	ConVar:c_messageTypCredits,
-	ConVar:c_disablePlayerGlowing,
+	// ConVar:c_disablePlayerGlowing,
 	ConVar:c_blockSuicide,
 	ConVar:c_allowFlash,
 	ConVar:c_blockLookAtWeapon,
@@ -462,7 +462,7 @@ public void OnPluginStart()
 	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
 	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
 	
-	g_iConfig[c_disablePlayerGlowing] = CreateConVar("ttt_disable_player_glowing", "1");
+	// g_iConfig[c_disablePlayerGlowing] = CreateConVar("ttt_disable_player_glowing", "1");
 	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
 	g_iConfig[c_blockGrenadeMessage] = CreateConVar("ttt_block_grenade_message", "1");
 	g_iConfig[c_blockRadioMessage] = CreateConVar("ttt_block_radio_message", "1");
