@@ -1270,8 +1270,8 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 
 public Action Timer_Adjust(Handle timer)
 {
-	int I_lives = 0;
-	int T_lives = 0;
+	int g_iInnoAlive = 0;
+	int g_iTraitorAlive = 0;
 	float vec[3];
 	LoopValidClients(i)
 		if(IsPlayerAlive(i))
@@ -1281,7 +1281,7 @@ public Action Timer_Adjust(Handle timer)
 				GetClientAbsOrigin(i, vec);
 		
 				vec[2] += 10;
-				T_lives++;
+				g_iTraitorAlive++;
 				//TE_SetupBeamRingPoint(vec, 10.0, 190.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 1.0, 5.0, 0.0, {0, 0, 255, 255}, 10, 0);
 				int[] clients = new int[MaxClients];
 				int index = 0;
@@ -1298,7 +1298,7 @@ public Action Timer_Adjust(Handle timer)
 			}
 			else if(g_iRole[i] == I)
 			{
-				I_lives++;
+				g_iInnoAlive++;
 			}
 
 			int money = GetEntData(i, g_iAccount);
@@ -1311,12 +1311,13 @@ public Action Timer_Adjust(Handle timer)
 		
 	if(g_bRoundStarted)
 	{
-		if(I_lives == 0)
+		if(g_iInnoAlive == 0)
 		{
 			g_bRoundStarted = false;
-			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+			// Old -> CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
 		}
-		else if(T_lives == 0)
+		else if(g_iTraitorAlive == 0)
 		{		
 			g_bRoundStarted = false;
 			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
@@ -1553,6 +1554,10 @@ public void OnMapEnd() {
 		g_hRoundTimer = null;
 	}
 	resetPlayers();
+	
+	
+	LoopValidClients(i)
+		g_bKarma[i] = false;
 }
 
 public Action Timer_OnRoundEnd(Handle timer) 
@@ -1570,8 +1575,8 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	if(g_bRoundStarted)
 		return Plugin_Handled;
 	
-	for(int client = 1; client <=MaxClients; ++client)
-		if(IsClientInGame(client) && IsPlayerAlive(client))
+	LoopValidClients(client)
+		if(IsPlayerAlive(client))
 			ClearIcon(client);
 	
 	bool bInnoAlive = false;
@@ -1753,7 +1758,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					if(!Items[found] && IsPlayerAlive(client))
 					{
 						Items[found] = true;
-						if(IsClientInGame(Items[victim])) g_bFound[Items[victim]] = true;
+						if(IsClientInGame(Items[victim]))
+							g_bFound[Items[victim]] = true;
 						
 						if(g_iRole[Items[victim]] == I) 
 						{
@@ -1817,7 +1823,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			int iEnt;
 			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1) {
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
-				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter)) return Plugin_Continue;
+				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
+					return Plugin_Continue;
 				if (target == iEnt) {
 					g_iDefusePlayerIndex[client] = planter;
 					showDefuseMenu(client);
@@ -3042,8 +3049,6 @@ stock void resetPlayers()
 {
 	LoopValidClients(i)
 	{
-		g_bKarma[i] = false;
-		
 		if (g_hExplosionTimer[i] != null)
 		{
 			KillTimer(g_hExplosionTimer[i]);
