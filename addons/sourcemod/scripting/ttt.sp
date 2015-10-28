@@ -2357,7 +2357,12 @@ stock void addCredits(int client, int credits, bool message = false)
 	if (g_iConfig[c_showEarnCreditsMessage].IntValue && message)
 	{
 		if(g_iConfig[c_messageTypCredits].IntValue == 1)
-			PrintHintText(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+		{
+			char sBuffer[MAX_MESSAGE_LENGTH];
+			Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
+			CFormatColor(sBuffer, sizeof(sBuffer), client);
+			PrintHintText(client, sBuffer);
+		}
 		else
 			CPrintToChat(client, "%T", "credits earned", client, credits, g_iCredits[client]);
 	}
@@ -2373,7 +2378,12 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	if (g_iConfig[c_showLoseCreditsMessage].IntValue && message)
 	{
 		if(g_iConfig[c_messageTypCredits].IntValue == 1)
-			PrintHintText(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+		{
+			char sBuffer[MAX_MESSAGE_LENGTH];
+			Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
+			CFormatColor(sBuffer, sizeof(sBuffer), client);
+			PrintHintText(client, sBuffer);
+		}
 		else
 			CPrintToChat(client, "%T", "lost credits", client, credits, g_iCredits[client]);
 	}
