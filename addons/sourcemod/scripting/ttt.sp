@@ -1272,6 +1272,7 @@ public Action Timer_Adjust(Handle timer)
 {
 	int g_iInnoAlive = 0;
 	int g_iTraitorAlive = 0;
+	int g_iDetectiveAlive = 0;
 	float vec[3];
 	LoopValidClients(i)
 		if(IsPlayerAlive(i))
@@ -1297,9 +1298,9 @@ public Action Timer_Adjust(Handle timer)
 				TE_Send(clients, index);
 			}
 			else if(g_iRole[i] == I)
-			{
 				g_iInnoAlive++;
-			}
+			else if(g_iRole[i] == D)
+				g_iDetectiveAlive++;
 
 			int money = GetEntData(i, g_iAccount);
 			if(money != MONEYHIDE)
@@ -1311,11 +1312,10 @@ public Action Timer_Adjust(Handle timer)
 		
 	if(g_bRoundStarted)
 	{
-		if(g_iInnoAlive == 0)
+		if(g_iInnoAlive == 0 && g_iDetectiveAlive == 0)
 		{
 			g_bRoundStarted = false;
-			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
-			// Old -> CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
 		}
 		else if(g_iTraitorAlive == 0)
 		{		
@@ -1598,9 +1598,6 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 					addCredits(client, g_iConfig[c_traitorloseDeadNonTraitors].IntValue);
 			}
 		}
-		
-		if(bInnoAlive)
-			ShowOverlayToAll("overlays/ttt/innocents_win");
 	}
 	else if(reason == CSRoundEnd_TerroristWin)
 	{
@@ -1614,13 +1611,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 					addCredits(client, g_iConfig[c_traitorwinDeadTraitors].IntValue);
 			}
 		}
-			
-			
-		ShowOverlayToAll("overlays/ttt/traitors_win");
 	}
 	
-	if(reason == CSRoundEnd_CTWin && !bInnoAlive)
+	if(reason == CSRoundEnd_TerroristWin)
+		ShowOverlayToAll("overlays/ttt/traitors_win");
+	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
+		ShowOverlayToAll("overlays/ttt/innocents_win");
+	else if(reason == CSRoundEnd_CTWin && !bInnoAlive)
 		ShowOverlayToAll("overlays/ttt/detectives_win");
+	
 	
 	//ShowLog();
 	healthStation_cleanUp();
