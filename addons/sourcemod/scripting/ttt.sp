@@ -1170,16 +1170,8 @@ public void OnClientDisconnect(int client)
 	{
 		g_bKarma[client] = false;
 		
-		if (g_hRDMTimer[client] != null)
-		{
-			KillTimer(g_hRDMTimer[client]);
-			g_hRDMTimer[client] = null;
-		}
-		if (g_hRemoveCoolDownTimer[client] != null)
-		{
-			KillTimer(g_hRemoveCoolDownTimer[client]);
-			g_hRemoveCoolDownTimer[client] = null;
-		}
+		ClearTimer(g_hRDMTimer[client]);
+		ClearTimer(g_hRemoveCoolDownTimer[client]);
 		ClearIcon(client);
 		
 		ClearTimer(g_hJihadBomb[client]);
@@ -1206,11 +1198,7 @@ public void OnClientDisconnect(int client)
 			}
 		}  */
 		
-		if (g_hExplosionTimer[client] != null)
-		{
-			KillTimer(g_hExplosionTimer[client]);
-			g_hExplosionTimer[client] = null;
-		}
+		ClearTimer(g_hExplosionTimer[client]);
 	}
 }
 
@@ -2963,11 +2951,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 					CPrintToChat(planter, PLUGIN_TAG, "Has Defused Bomb", planter, client);
 					EmitAmbientSoundAny("weapons/c4/c4_disarm.wav", bombPos);
 					g_bHasActiveBomb[planter] = false;
-					if (g_hExplosionTimer[planter] != null)
-					{
-						KillTimer(g_hExplosionTimer[planter]);
-						g_hExplosionTimer[planter] = null;
-					}
+					ClearTimer(g_hExplosionTimer[planter]);
 					SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
 				}
 			}
@@ -3046,11 +3030,7 @@ stock void resetPlayers()
 {
 	LoopValidClients(i)
 	{
-		if (g_hExplosionTimer[i] != null)
-		{
-			KillTimer(g_hExplosionTimer[i]);
-			g_hExplosionTimer[i] = null;
-		}
+		ClearTimer(g_hExplosionTimer[i]);
 		g_bHasActiveBomb[i] = false;
 	}
 }
@@ -3090,11 +3070,7 @@ stock void healthStation_cleanUp()
 		g_bHasActiveHealthStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
 		
-		if (g_hRemoveCoolDownTimer[i] != null)
-		{
-			KillTimer(g_hRemoveCoolDownTimer[i]);
-			g_hRemoveCoolDownTimer[i] = null;
-		}
+		ClearTimer(g_hRemoveCoolDownTimer[i]);
 	}
 }
 
