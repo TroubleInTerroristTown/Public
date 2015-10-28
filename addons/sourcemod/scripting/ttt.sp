@@ -27,7 +27,7 @@
 #define PLUGIN_VERSION "2.0.5-dev"
 #define PLUGIN_URL "git.tf/TTT"
 
-#define PLUGIN_TAG "{purple}[{green}T{darkred}T{blue}T{purple}]{green} %T"
+#define PLUGIN_TAG "{purple}[{green}T{darkred}T{blue}T{purple}]{lightgreen} %T"
 #define SOUND_MESSAGE "buttons/button18.wav"
 
 #define TRAITORS_AMOUNT 0.25

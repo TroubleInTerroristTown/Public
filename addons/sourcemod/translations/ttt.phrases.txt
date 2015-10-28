@@ -3,37 +3,37 @@
 	"Your karma is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your KARMA is: {lightgreen}{1}"
-		"es"            "Tu KARMA es: {lightgreen}{1}"
-		"de"            "Dein Karma: {lightgreen}{1}"
-		"chi"         	"你的 KARMA 值: {lightgreen}{1}"
-		"ru"         	"Ваша карма: {lightgreen}{1}"
+		"en"            "Your KARMA is: {purple}{1}"
+		"es"            "Tu KARMA es: {purple}{1}"
+		"de"            "Dein Karma: {purple}{1}"
+		"chi"         	"你的 KARMA 值: {purple}{1}"
+		"ru"         	"Ваша карма: {purple}{1}"
 	}
 	
 	"TEAMS HAS BEEN SELECTED"
 	{
-		"en"            "TEAMS HAVE BEEN SELECTED"
-		"es"            "LOS EQUIPOS HAN SIDO ELEGIDOS"
-		"de"            "Die Teams stehen fest"
-		"chi"           "按E可调查/拖动尸体/!menu打开各种职业的商店"
+		"en"            "TEAMS HAVE BEEN SELECTED!"
+		"es"            "LOS EQUIPOS HAN SIDO ELEGIDOS!"
+		"de"            "Die Teams stehen fest!"
+		"chi"           "按E可调查/拖动尸体/!menu打开各种职业的商店!"
 		"ru"            "Команды сформированы!"
 	}
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
 		"#format"		"{1:d}"
-		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {1}"
-		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: {1}"
-		"de"            "Warten auf insgesamt {1} Spieler."
-		"chi"           "游戏所需最少玩家数: {1}"
-		"ru"            "МИН. КОЛ-ВО ИГРОКОВ ДЛЯ ИГРЫ: {1}"
+		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {purple}{1}"
+		"es"            "JUGADORES MINIMOS PARA PODER JUGAR: {purple}{1}"
+		"de"            "Warten auf insgesamt {purple}{1} {lightgreen}Spieler."
+		"chi"           "游戏所需最少玩家数: {purple}{1}"
+		"ru"            "МИН. КОЛ-ВО ИГРОКОВ ДЛЯ ИГРЫ: {purple}{1}"
 	}
 
 	"Your Team is DETECTIVES"
 	{
 		"en"            "You are a {blue}DETECTIVE"
 		"es"            "Tu equipo es {blue}DETECTIVES"
-		"de"            "Du bist im Team der {blue}DETEKTIVE"
+		"de"            "Du bist ein {blue}DETEKTIVE"
 		"chi"           "你的身份是 {blue}侦探"
 		"ru"            "Ваша роль - {blue}ДЕТЕКТИВ"
 	}
@@ -42,7 +42,7 @@
 	{
 		"en"            "You are a {darkred}TRAITOR"
 		"es"            "Tu equipo es {darkred}TRAIDORES"
-		"de"            "Du bist im Team der {darkred}TRAITOR"
+		"de"            "Du bist ein {darkred}TRAITOR"
 		"chi"           "你的身份是 {darkred}叛徒"
 		"ru"            "Ваша роль - {darkred}ПРЕДАТЕЛЬ"
 	}
@@ -51,7 +51,7 @@
 	{
 		"en"            "You are {green}INNOCENT"
 		"es"            "Tu equipo es {green}INOCENTES"
-		"de"            "Du bist im Team der {green}INNOCENTS"
+		"de"            "Du bist ein {green}INNOCENTS"
 		"chi"           "你的身份是 {green}平民"
 		"ru"            "Ваша роль - {green}НЕВИНОВНЫЙ"
 	}
@@ -60,124 +60,124 @@
 	"Your credits is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your CREDITS are: {lightgreen}{1}"
-		"es"            "Tus creditos son: {lightgreen}{1}"
-		"de"            "Deine Credits: {lightgreen}{1}"
-		"chi"           "你的金钱是: {lightgreen}{1}"
-		"ru"            "Количесво ваших кредитов: {lightgreen}{1}"
+		"en"            "Your CREDITS are: {purple}{1}"
+		"es"            "Tus creditos son: {purple}{1}"
+		"de"            "Deine Credits: {purple}{1}"
+		"chi"           "你的金钱是: {purple}{1}"
+		"ru"            "Количесво ваших кредитов: {purple}{1}"
 	}
 
 	"Your killer is a Traitor"
 	{
-		"en"            "Your killer was a {darkred}TRAITOR"
-		"es"            "Tu asesino es {darkred}TRAIDOR"
-		"de"            "Dein Mörder ist ein {darkred}TRAITOR"
-		"chi"           "击杀你的是 {darkred}叛徒"
-		"ru"            "Вас убил {darkred}ПРЕДАТЕЛЬ"
+		"en"            "Your killer was a {darkred}TRAITOR!"
+		"es"            "Tu asesino es {darkred}TRAIDOR!"
+		"de"            "Dein Mörder ist ein {darkred}TRAITOR!"
+		"chi"           "击杀你的是 {darkred}叛徒!"
+		"ru"            "Вас убил {darkred}ПРЕДАТЕЛЬ!"
 	}
 
 	"Your killer is a Detective"
 	{
-		"en"            "Your killer was a {blue}DETECTIVE"
-		"es"            "Tu asesino es {blue}DETECTIVE"
-		"de"            "Dein Mörder ist ein {blue}DETEKTIV"
-		"chi"           "击杀你的是 {blue}侦探"
-		"ru"            "Вас убил {blue}ДЕТЕКТИВ"
+		"en"            "Your killer was a {blue}DETECTIVE!"
+		"es"            "Tu asesino es {blue}DETECTIVE!"
+		"de"            "Dein Mörder ist ein {blue}DETEKTIV!"
+		"chi"           "击杀你的是 {blue}侦探!"
+		"ru"            "Вас убил {blue}ДЕТЕКТИВ!"
 	}
 
 	"Your killer is an Innocent"
 	{
-		"en"            "Your killer was {green}INNOCENT"
-		"es"            "Tu asesino es {green}INOCENTE"
-		"de"            "Dein Mörder ist ein {green}INNOCENT"
-		"chi"           "击杀你的是 {green}平民"
-		"ru"            "Вас убил {green}НЕВИНОВНЫЙ"
+		"en"            "Your killer was {green}INNOCENT!"
+		"es"            "Tu asesino es {green}INOCENTE!"
+		"de"            "Dein Mörder ist ein {green}INNOCENT!"
+		"chi"           "击杀你的是 {green}平民!"
+		"ru"            "Вас убил {green}НЕВИНОВНЫЙ!"
 	}
 
 	"You killed a Traitor"
 	{
-		"en"            "You killed a {darkred}TRAITOR"
-		"es"            "Tu has matado a un {darkred}TRAIDOR"
-		"de"            "Du hast einen {darkred}TRAITOR {default}getötet"
-		"chi"           "你击杀了1个 {darkred}叛徒"
-		"ru"            "Вы убили {darkred}ПРЕДАТЕЛЯ"
+		"en"            "You killed a {darkred}TRAITOR!"
+		"es"            "Tu has matado a un {darkred}TRAIDOR!"
+		"de"            "Du hast einen {darkred}TRAITOR {lightgreen}getötet!"
+		"chi"           "你击杀了1个 {darkred}叛徒!"
+		"ru"            "Вы убили {darkred}ПРЕДАТЕЛЯ!"
 	}
 
 	"You killed a Detective"
 	{
-		"en"            "You killed a {blue}DETECTIVE"
-		"es"            "Tu has matado a un {blue}DETECTIVE"
-		"de"            "Du hast einen {blue}DETEKTIV {default}getötet"
-		"chi"           "你击杀了1个 {blue}侦探"
-		"ru"            "Вы убили {blue}ДЕТЕКТИВА"
+		"en"            "You killed a {blue}DETECTIVE!"
+		"es"            "Tu has matado a un {blue}DETECTIVE!"
+		"de"            "Du hast einen {blue}DETEKTIV {lightgreen}getötet!"
+		"chi"           "你击杀了1个 {blue}侦探!"
+		"ru"            "Вы убили {blue}ДЕТЕКТИВА!"
 	}
 
 	"You killed an Innocent"
 	{
-		"en"            "You killed a {green}INNOCENT"
-		"es"            "Tu has matado a un {green}INOCENTE"
-		"de"            "Du hast einen {green}INNOCENT {default}getötet"
-		"chi"           "你击杀了1个 {green}平民"
-		"ru"            "Вы убили {green}НЕВИНОВНОГО"
+		"en"            "You killed a {green}INNOCENT!"
+		"es"            "Tu has matado a un {green}INOCENTE!"
+		"de"            "Du hast einen {green}INNOCENT {lightgreen}getötet!"
+		"chi"           "你击杀了1个 {green}平民!"
+		"ru"            "Вы убили {green}НЕВИНОВНОГО!"
 	}
 
 	"You hurt a Traitor"
 	{
 		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player{darkred} {1} {default}and he is a {darkred}TRAITOR"
-		"es"            "Has usado un detector en{darkred} {1} {default}y el es {darkred}TRAIDOR"
-		"de"            "Du hast einen Tazer verwendet, Spieler{darkred} {1} {default}ist ein {darkred}TRAITOR"
-		"chi"           "你正在使用电击身份检测器{darkred} {1} {default}他是 {darkred}叛徒"
-		"ru"            "Вы использовали детектор на {darkred}{1}{default}, и он оказался {darkred}ПРЕДАТЕЛЕМ"
+		"en"            "You have used a detector on Player {darkred}{1} {lightgreen}and he is a {darkred}TRAITOR!"
+		"es"            "Has usado un detector en {darkred}{1} {lightgreen}y el es {darkred}TRAIDOR!"
+		"de"            "Du hast einen Tazer verwendet, Spieler {darkred}{1} {lightgreen}ist ein {darkred}TRAITOR!"
+		"chi"           "你正在使用电击身份检测器 {darkred}{1} {lightgreen}他是 {darkred}叛徒!"
+		"ru"            "Вы использовали детектор на {darkred}{1} {lightgreen}, и он оказался {darkred}ПРЕДАТЕЛЕМ!"
 	}
 
 	"You hurt a Detective"
 	{
 		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player{blue} {1} {default}and he is a {blue}DETECTIVE"
-		"es"            "Has usado un detector en{blue} {1} {default}y el es {blue}DETECTIVE"
-		"de"            "Du hast einen Tazer verwendet, Spieler{blue} {1} {default}ist ein {blue}DETEKTIV"
-		"chi"           "你正在使用电击身份检测器{blue} {1} {default}和他是 {blue}侦探"
-		"ru"            "Вы использовали детектор на {blue}{1}{default}, и он оказался {blue}ДЕТЕКТИВОМ"
+		"en"            "You have used a detector on Player{blue} {1} {lightgreen}and he is a {blue}DETECTIVE!"
+		"es"            "Has usado un detector en{blue} {1} {lightgreen}y el es {blue}DETECTIVE!"
+		"de"            "Du hast einen Tazer verwendet, Spieler{blue} {1} {lightgreen}ist ein {blue}DETEKTIV!"
+		"chi"           "你正在使用电击身份检测器{blue} {1} {lightgreen}和他是 {blue}侦探!"
+		"ru"            "Вы использовали детектор на {blue}{1}{lightgreen}, и он оказался {blue}ДЕТЕКТИВОМ!"
 	}
 
 	"You hurt an Innocent"
 	{
 		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player{green} {1} {default}and he is {green}INNOCENT"
-		"es"            "Has usado un detector en{green} {1} {default}y el es {green}INOCENTE"
-		"de"            "Du hast einen Tazer verwendet, Spieler{green} {1} {default}ist ein {green}INNOCENT"
-		"chi"           "你正在使用电击身份检测器{green} {1} {default}和他是 {green}平民"
-		"ru"            "Вы использовали детектор на {green}{1}{default}, и он оказался {green}НЕВИНОВНЫМ"
+		"en"            "You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
+		"es"            "Has usado un detector en{green} {1} {lightgreen}y el es {green}INOCENTE!"
+		"de"            "Du hast einen Tazer verwendet, Spieler{green} {1} {lightgreen}ist ein {green}INNOCENT!"
+		"chi"           "你正在使用电击身份检测器{green} {1} {lightgreen}和他是 {green}平民!"
+		"ru"            "Вы использовали детектор на {green}{1}{lightgreen}, и он оказался {green}НЕВИНОВНЫМ!"
 	}
 
 	"is possibly RDMing"
 	{
 		"#format"       "{1:N}"
-		"en"            "{darkred}{1} is possibly RDMing"
-		"es"            "{darkred}{1} es posible RDMing"
-		"de"            "{darkred}{1} begeht RDM"
-		"ru"            "{darkred}{1} воможно РДМил"
+		"en"            "{darkred}{1} {lightgreen}is possibly RDMing"
+		"es"            "{darkred}{1} {lightgreen}es posible RDMing"
+		"de"            "{darkred}{1} {lightgreen}begeht RDM"
+		"ru"            "{darkred}{1} {lightgreen}воможно РДМил"
 	}
 
 	"Detective scan found body"
 	{
 		"#format"       "{1:N},{2:s},{3:s}"
-		"en"            "DETECTIVE{blue} {1} {default}Scanned a body, Killer is Player{darkred} {2} {default}with weapon{blue} {3}"
-		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, el asesino es{darkred} {2} {default}con el arma{blue} {3}"
-		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, der Mörder war: Player{darkred} {2} {default}mit einer {blue}{3}"
-		"chi"           "DETECTIVE{blue} {1} {default}扫描身体, 击杀玩家是{darkred} {2} {default}使用武器{blue} {3}"
-		"ru"            "ДЕТЕКТИВ{blue} {1} {default}просканировано тело: Убийца {darkred}{2} {default}с оружием{blue} {3}"
+		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{purple} {3}"
+		"es"            "DETECTIVE{blue} {1} {lightgreen}escaneo un cuerpo, el asesino es{darkred} {2} {lightgreen}con el arma{purple} {3}"
+		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {purple}{3}"
+		"chi"           "DETECTIVE{blue} {1} {lightgreen}扫描身体, 击杀玩家是{darkred} {2} {lightgreen}使用武器{purple} {3}"
+		"ru"            "ДЕТЕКТИВ{blue} {1} {lightgreen}просканировано тело: Убийца {darkred}{2} {lightgreen}с оружием{purple} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
 		"#format"       "{1:N}"
-		"en"            "DETECTIVE{blue} {1} {default}Scanned a body, player committed suicide"
-		"es"            "DETECTIVE{blue} {1} {default}escaneo un cuerpo, parece que cometio suicidio"
-		"de"            "DETEKTIV{blue} {1} {default}hat eine Leiche untersucht, es handelt sich um Selbstmord"
-		"chi"           "DETECTIVE{blue} {1} {default}扫描身体，玩家自杀"
-		"ru"            "DETECTIVE{blue} {1} {default}просканировано тело: игрок совершил самоубийство"
+		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, player committed suicide"
+		"es"            "DETECTIVE{blue} {1} {lightgreen}escaneo un cuerpo, parece que cometio suicidio"
+		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, es handelt sich um Selbstmord"
+		"chi"           "DETECTIVE{blue} {1} {lightgreen}扫描身体，玩家自杀"
+		"ru"            "DETECTIVE{blue} {1} {lightgreen}просканировано тело: игрок совершил самоубийство"
 	}
 
 	"1 hit kill knife (only good for 1 shot)"
@@ -392,31 +392,31 @@
 	"Player Is an Innocent"
 	{
 		"#format"       "{1:N}"
-		"en"            "Player{green} {1} {default}is INNOCENT"
-		"es"            "El jugador{green} {1} {default}es un INOCENTE"
-		"de"            "Spieler{green} {1} {default} ist ein INNOCENT"
-		"chi"           "玩家{green} {1} {default}是无辜的"
-		"ru"            "Игрок{green} {1} {default} НЕВИНОВНЫЙ!"
+		"en"            "Player{green} {1} {lightgreen}is {green}INNOCENT"
+		"es"            "El jugador{green} {1} {lightgreen}es un {green}INOCENTE"
+		"de"            "Spieler{green} {1} {lightgreen} ist ein {green}INNOCENT"
+		"chi"           "玩家{green} {1} {lightgreen}是无辜的"
+		"ru"            "Игрок{green} {1} {lightgreen} НЕВИНОВНЫЙ!"
 	}
 
 	"T channel"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{darkred}*TRAITORS* {1}:{lightgreen} {2}"
-		"es"            "{darkred}*Chat de Traidores* {1}:{lightgreen} {2}"
-		"de"			"{darkred}*Traitor Chat* {1}:{lightgreen} {2}"
-		"chi"           "{darkred}*叛徒* {1}:{lightgreen} {2}"
-		"ru"            "{darkred}*ПРЕДАТЕЛИ* {1}:{lightgreen} {2}"
+		"en"            "{darkred}*TRAITORS* {1}:{green} {2}"
+		"es"            "{darkred}*Chat de Traidores* {1}:{green} {2}"
+		"de"			"{darkred}*Traitor Chat* {1}:{green} {2}"
+		"chi"           "{darkred}*叛徒* {1}:{green} {2}"
+		"ru"            "{darkred}*ПРЕДАТЕЛИ* {1}:{green} {2}"
 	}
 	
 	"D channel"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{blue}*DETECTIVES* {1}:{lightgreen} {2}"
-		"es"            "{blue}*Chat de Detectives* {1}:{lightgreen} {2}"
-		"de"			"{blue}*Detektiv Chat* {1}:{lightgreen} {2}"
-		"chi"           "{blue}*侦探* {1}:{lightgreen} {2}"
-		"ru"            "{blue}*ДЕТЕКТИВЫ* {1}:{lightgreen} {2}"
+		"en"            "{blue}*DETECTIVES* {1}:{green} {2}"
+		"es"            "{blue}*Chat de Detectives* {1}:{green} {2}"
+		"de"			"{blue}*Detektiv Chat* {1}:{green} {2}"
+		"chi"           "{blue}*侦探* {1}:{green} {2}"
+		"ru"            "{blue}*ДЕТЕКТИВЫ* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -442,7 +442,7 @@
 		"#format"       "{1:i},{2:i}"
 		"en"            "You won {1} credits\nYour current credits are: {2}"
 		"es"            "Has ganado {1} creditos\nTus creditos actuales son: {2}"
-		"de"            "Du gewinnst {1} Credits\nDu besitzt nun: {2}"
+		"de"            "Du gewinnst {1} Credits\nDu hast nun: {2}"
 		"chi"           "你赢得 {1} 金钱\n你的当前金钱是: {2}"
 		"ru"            "Вы выйграли {1} кредитов\nКоличество ваших кредитов: {2}"
 	}
@@ -452,7 +452,7 @@
 		"#format"       "{1:i},{2:i}"
 		"en"            "You lose {1} credits\nYour current credits are: {2}"
 		"es"            "Has perdido {1} creditos\nTus creditos actuales son: {2}"
-		"de"            "Du verlierst {1} Credits - du besitzt noch: {2}"
+		"de"            "Du verlierst {1} Credits\nDu hast nun: {2}"
 		"chi"           "你杀错了玩家失去 {1} 金钱\n你的当前金钱是: {2}"
 		"ru"            "Вы проиграли {1} кредитов\nКоличество ваших кредитов: {2}"
 	}
@@ -539,31 +539,31 @@
 	"Found Innocent"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{1} has found the body of{green} {2} {default}that was a {green}INNOCENT"
-		"es"            "{1} ha encontrado el cuerpo de{green} {2} {default}que es {green}Inocente"
-		"de"            "{1} findet die Leiche von{green} {2} {default}er war ein {green}INNOCENT"
-		"chi"            "{1} 已发现尸体{green} {2} {default}这是 {green}平民"
-		"ru"            "{1} нашел тело{green} {2} {default}, он был {green}НЕВИНОВНЫМ"
+		"en"            "{purple}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
+		"es"            "{purple}{1} {lightgreen}ha encontrado el cuerpo de {green}{2}. {lightgreen}que es {green}Inocente!"
+		"de"            "{purple}{1} {lightgreen}findet die Leiche von{green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
+		"chi"           "{purple}{1} {lightgreen}已发现尸体 {green}{2}. {lightgreen}这是 {lightgreen}平民!"
+		"ru"            "{purple}{1} {lightgreen}нашел тело {green}{2}. {lightgreen}, он был {lightgreen}НЕВИНОВНЫМ!"
 	}
 	
 	"Found Detective"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{1} has found the body of{blue} {2} {default}that was a {blue}DETECTIVE"
-		"es"            "{1} ha encontrado el cuerpo de{blue} {2} {default}que es {blue}Detective"
-		"de"            "{1} findet die Leiche von{blue} {2} {default}er war ein {blue}DETEKTIV"
-		"chi"           "{1} 已发现尸体{blue} {2} {default}这是 {blue}侦探"
-		"ru"            "{1} нашел тело{blue} {2} {default}, он был {blue}ДЕТЕКТИВОМ"
+		"en"            "{purple}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
+		"es"            "{purple}{1} {lightgreen}ha encontrado el cuerpo de {blue}{2}. {lightgreen}que es {blue}Detective!"
+		"de"            "{purple}{1} {lightgreen}findet die Leiche von {blue}{2}. {lightgreen}Er war ein {blue}DETEKTIV!"
+		"chi"           "{purple}{1} {lightgreen}已发现尸体 {blue}{2}. {lightgreen}这是 {blue}侦探!"
+		"ru"            "{purple}{1} {lightgreen}нашел тело {blue}{2}. {lightgreen}, он был {blue}ДЕТЕКТИВОМ!"
 	}
 	
 	"Found Traitor"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{1} has found the body of{darkred} {2} {default}that was a {darkred}Traitor"
-		"es"            "{1} ha encontrado el cuerpo de{darkred} {2} {default}que es {darkred}Traidor"
-		"de"            "{1} findet die Leiche von{darkred} {2} {default}er war ein {darkred}Traitor"
-		"chi"           "{1} 已发现尸体{darkred} {2} {default}这是 {darkred}叛徒"
-		"ru"            "{1} нашел тело{darkred} {2} {default}, он был {darkred}ПРЕДАТЕЛЕМ"
+		"en"            "{purple}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
+		"es"            "{purple}{1} {lightgreen}ha encontrado el cuerpo de {darkred}{2}. {lightgreen}que es {darkred}Traidor!"
+		"de"            "{purple}{1} {lightgreen}findet die Leiche von {darkred}{2}. {lightgreen}Er war ein {darkred}Traitor!"
+		"chi"           "{purple}{1} {lightgreen}已发现尸体 {darkred}{2}. {lightgreen}这是 {darkred}叛徒!"
+		"ru"            "{purple}{1} {lightgreen}нашел тело {darkred}{2}. {lightgreen}, он был {darkred}ПРЕДАТЕЛЕМ!"
 	}
 	
 	"Buy c4"
@@ -623,9 +623,9 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"#format"		"{1:d}"
-		"en"            "{1} TRAITORS HAVE BEEN SELECTED"
-		"de"            "{1} Traitors wurden ausgewählt!"
-		"ru"            "БЫЛО ВЫБРАНО {1} ПРЕДАТЕЛЕЙ"
+		"en"            "{purple}{1} {lightgreen}TRAITORS HAVE BEEN SELECTED"
+		"de"            "{purple}{1} {lightgreen}Traitors wurden ausgewählt!"
+		"ru"            "БЫЛО ВЫБРАНО {purple}{1} {lightgreen}ПРЕДАТЕЛЕЙ"
 	}
 	
 	"Buy radar"
@@ -702,22 +702,22 @@
 	"Player is Now Innocent"
 	{
 		"#format"		"{1:N}"
-		"en"			"{1} is now Innocent!"
-		"de"			"{1} ist jetzt Innocent!"
+		"en"			"{purple}{1} {lightgreen}is now {green}Innocent!"
+		"de"			"{purple}{1} {lightgreen}ist jetzt {green}Innocent!"
 	}
 	
 	"Player is Now Traitor"
 	{
 		"#format"		"{1:N}"
-		"en"			"{1} is now Traitor!"
-		"de"			"{1} ist jetzt Traitor!"
+		"en"			"{purple}{1} {lightgreen}is now {darkred}Traitor!"
+		"de"			"{purple}{1} {lightgreen}ist jetzt {darkred}Traitor!"
 	}
 	
 	"Player is Now Detective"
 	{
 		"#format"		"{1:N}"
-		"en"			"{1} is now Detective!"
-		"de"			"{1} ist jetzt Detective!"
+		"en"			"{purple}{1} {lightgreen}is now {blue}Detective!"
+		"de"			"{purple}{1} {lightgreen}ist jetzt {blue}Detective!"
 	}
 	
 	"You Are Unassigned"
@@ -728,20 +728,20 @@
 	
 	"You Are Now Innocent"
 	{
-		"en"			"You are an Innocent!"
-		"de"			"Sie sind jetzt ein Innocent!"
+		"en"			"You are an {green}Innocent!"
+		"de"			"Sie sind jetzt ein {green}Innocent!"
 	}
 	
 	"You Are Now Traitor"
 	{
-		"en"			"You are a Detective!"
-		"de"			"Sie sind jetzt ein Detective!"
+		"en"			"You are a {blue}Detective!"
+		"de"			"Sie sind jetzt ein {blue}Detective!"
 	}
 	
 	"You Are Now Detective"
 	{
-		"en"			"You are a Traitor!"
-		"de"			"Sie sind jetzt ein Traitor!"
+		"en"			"You are a {darkred}Traitor!"
+		"de"			"Sie sind jetzt ein {darkred}Traitor!"
 	}
 	
 	"Triggered Falling Building"
@@ -785,15 +785,15 @@
 	"You Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have defused {1}'s bomb!"
-		"de"		"Du hast die Bombe von {1} entschärft!"
+		"en"		"You have defused {purple}{1}{lightgreen}'s bomb!"
+		"de"		"Du hast die Bombe von {purple}{1} {lightgreen}entschärft!"
 	}
 	
 	"Has Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"{1} has defused your bomb!"
-		"de"		"{1} hat deine Bombe entschärft!"
+		"en"		"{purple}{1} {lightgreen}has defused your bomb!"
+		"de"		"{purple}{1} {lightgreen}hat deine Bombe entschärft!"
 	}
 	
 	"Failed Defuse"
@@ -811,8 +811,8 @@
 	"Will Explode In"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Deploying a c4 that will explode in {1} seconds."
-		"de"		"Platzieren einer C4, die in {1} Sekunden explodiert."
+		"en"		"Deploying a c4 that will explode in {purple}{1} {lightgreen}seconds."
+		"de"		"Platzieren einer C4, die in {purple}{1} {lightgreen}Sekunden explodiert."
 	}
 	
 	"Bomb Was Not Found"
@@ -824,8 +824,8 @@
 	"Wire Is"
 	{
 		"#format"	"{1:d}"
-		"en"		"The defuse wire is {1}!"
-		"de"		"Der Entschärfungs-Draht ist {1}!"
+		"en"		"The defuse wire is {purple}{1} {lightgreen}!"
+		"de"		"Der Entschärfungs-Draht ist {purple}{1} {lightgreen}!"
 	}
 	
 	"Your Traitor Partners"
@@ -837,7 +837,7 @@
 	"No Traitor Partners"
 	{
 		"en"		"You have no partners."
-		"de"		"Du hast keine partner."
+		"de"		"Du hast keine Partner."
 	}
 	
 	"Kick Bad Name"
@@ -856,8 +856,8 @@
 	"Healing From"
 	{
 		"#format"	"{1:N}"
-		"en"		"Healing from {1}'s Health Station!"
-		"de"		"Heilen von der Heil Station von {1}"
+		"en"		"Healing from {purple}{1} {lightgreen}'s Health Station!"
+		"de"		"Heilen von der Heil Station von {purple}{1}"
 	}
 	
 	"Health Station Out Of Charges"
