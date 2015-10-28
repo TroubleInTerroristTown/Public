@@ -2508,9 +2508,9 @@ stock void manageRDM(int client)
 	GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
 	
 	char display[256], sForgive[64], sPunish[64];
-	Format(display, sizeof(display), PLUGIN_TAG, "You were RDM'd", client, sAttackerName);
-	Format(sForgive, sizeof(sForgive), PLUGIN_TAG, "Forgive", client);
-	Format(sPunish, sizeof(sPunish), PLUGIN_TAG, "Punish", client);
+	Format(display, sizeof(display), "%T", "You were RDM'd", client, sAttackerName);
+	Format(sForgive, sizeof(sForgive), "%T", "Forgive", client);
+	Format(sPunish, sizeof(sPunish), "%T", "Punish", client);
 	
 	Handle menuHandle = CreateMenu(manageRDMHandle);
 	SetMenuTitle(menuHandle, display);
@@ -2841,13 +2841,13 @@ stock void showPlantMenu(int client)
 	char sTitle[128];
 	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
 	
-	Format(sTitle, sizeof(sTitle), PLUGIN_TAG, "Set C4 Timer", client);
-	Format(s10, sizeof(s10), PLUGIN_TAG, "Seconds", client, 10);
-	Format(s20, sizeof(s20), PLUGIN_TAG, "Seconds", client, 10);
-	Format(s30, sizeof(s30), PLUGIN_TAG, "Seconds", client, 30);
-	Format(s40, sizeof(s40), PLUGIN_TAG, "Seconds", client, 40);
-	Format(s50, sizeof(s50), PLUGIN_TAG, "Seconds", client, 50);
-	Format(s60, sizeof(s60), PLUGIN_TAG, "Seconds", client, 60);
+	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
+	Format(s10, sizeof(s10), "%T", "Seconds", client, 10);
+	Format(s20, sizeof(s20), "%T", "Seconds", client, 10);
+	Format(s30, sizeof(s30), "%T", "Seconds", client, 30);
+	Format(s40, sizeof(s40), "%T", "Seconds", client, 40);
+	Format(s50, sizeof(s50), "%T", "Seconds", client, 50);
+	Format(s60, sizeof(s60), "%T", "Seconds", client, 60);
 	
 	Handle menuHandle = CreateMenu(plantBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
@@ -2869,11 +2869,11 @@ stock void showDefuseMenu(int client)
 	char sTitle[128];
 	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
 	
-	Format(sTitle, sizeof(sTitle), PLUGIN_TAG, "Defuse C4", client);
-	Format(sWire1, sizeof(sWire1), PLUGIN_TAG, "C4 Wire", client, 1);
-	Format(sWire2, sizeof(sWire2), PLUGIN_TAG, "C4 Wire", client, 2);
-	Format(sWire3, sizeof(sWire3), PLUGIN_TAG, "C4 Wire", client, 3);
-	Format(sWire4, sizeof(sWire4), PLUGIN_TAG, "C4 Wire", client, 4);
+	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
+	Format(sWire1, sizeof(sWire1), "%T", "C4 Wire", client, 1);
+	Format(sWire2, sizeof(sWire2), "%T", "C4 Wire", client, 2);
+	Format(sWire3, sizeof(sWire3), "%T", "C4 Wire", client, 3);
+	Format(sWire4, sizeof(sWire4), "%T", "C4 Wire", client, 4);
 	
 	Handle menuHandle= CreateMenu(defuseBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
