@@ -14,7 +14,6 @@
 #include <sdkhooks>
 #include <multicolors>
 #include <emitsoundany>
-#include <clientprefs>
 
 #undef REQUIRE_PLUGIN
 // #tryinclude <CustomPlayerSkins>
@@ -173,7 +172,6 @@ int g_iCollisionGroup = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
-Handle g_hKarmaCookie = null;
 
 Handle g_hRagdollArray = null;
 
@@ -187,6 +185,8 @@ int g_iAlive = -1;
 
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
+
+Database g_dDatabase = null;
 
 enum Ragdolls
 {
@@ -322,25 +322,18 @@ public void OnPluginStart()
 		return;
 	}
 	
+	if (!SQL_CheckConfig("ttt"))
+	{
+		SetFailState("(OnPluginStart) Database failure: Couldn't find Database entry \"ttt\"");
+		return;
+	}
+	else
+		Database.Connect(SQLConnect, "ttt");
+	
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
 	
 	LoadBadNames();
-	
-	g_hKarmaCookie = RegClientCookie("ttt_karma", "Stores Karma.", CookieAccess_Private);
-	
-	// Lateload support
-	LoopValidClients(i)
-	{
-		if (!AreClientCookiesCached(i))
-		{
-			AddStartKarma(i);
-			continue;
-		}
-		
-		OnClientCookiesCached(i);
-		OnClientPutInServer(i);
-	}
 	
 	g_hRagdollArray = CreateArray(102);
 	g_hPlayerArray = CreateArray();
@@ -1001,19 +994,6 @@ public Action OnPreThink(int client)
 					SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
 		} */
 	}
-}
-
-public void OnClientCookiesCached(int client) {
-	char sValue[32];
-	GetClientCookie(client, g_hKarmaCookie, sValue, sizeof(sValue));
-	int karma = StringToInt(sValue);
-	
-	if (karma == 0)
-		setKarma(client, g_iConfig[c_startKarma].IntValue);
-	else
-		setKarma(client, karma);
-	
-	g_bKarma[client] = true;
 }
 
 stock void AddStartKarma(int client)
@@ -1685,7 +1665,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	}
 	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
+		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Traitor) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 		
 	}
@@ -2314,9 +2294,7 @@ stock void addKarma(int client, int karma, bool message = false)
 	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
 	}
 	
-	char result[32];
-	IntToString(g_iKarma[client], result, sizeof(result));
-	SetClientCookie(client, g_hKarmaCookie, result);
+	UpdateKarma(client, g_iKarma[client]);
 }
 
 stock void setKarma(int client, int karma)
@@ -2326,9 +2304,7 @@ stock void setKarma(int client, int karma)
 	if(g_iKarma[client] > g_iConfig[c_maxKarma].IntValue)
 		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
 	
-	char result[32];
-	IntToString(g_iKarma[client], result, sizeof(result));
-	SetClientCookie(client, g_hKarmaCookie, result);
+	UpdateKarma(client, g_iKarma[client]);
 }
 
 stock void subtractKarma(int client, int karma, bool message = false)
@@ -2343,9 +2319,21 @@ stock void subtractKarma(int client, int karma, bool message = false)
 	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
 	}
 	
-	char result[32];
-	IntToString(g_iKarma[client], result, sizeof(result));
-	SetClientCookie(client, g_hKarmaCookie, result);
+	UpdateKarma(client, g_iKarma[client]);
+}
+
+stock void UpdateKarma(int client, int karma)
+{
+	char sCommunityID[64];
+		
+	if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+		return;
+	
+	char sQuery[2048];
+	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"communityid\"", sCommunityID);
+	
+	if(g_dDatabase != null)
+		g_dDatabase.Query(SQL_OnClientAuthorized, sQuery, GetClientUserId(client));
 }
 
 stock void addCredits(int client, int credits, bool message = false)
@@ -3323,34 +3311,134 @@ stock void LoadBadNames()
 	delete hFile;
 }
 
-/* stock LoadBadNames()
+public void SQLConnect(Database db, const char[] error, any data)
 {
-	new String:sFile[PLATFORM_MAX_PATH + 1];
-	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/BadNames.ini");
-	
-	new Handle:hFile = OpenFile(sFile, "rt");
-	
-	if (hFile == INVALID_HANDLE)
+	if(db == null || strlen(error) > 0)
 	{
-		LogError("Could not open bad name config file: %s", sFile);
-		return false;
+		SetFailState("(SQLConnect) Connection to database failed!: %s", error);
+		return;
 	}
 	
-	new String:sLine[64];
-
-	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)))
+	DBDriver iDriver = db.Driver;
+		
+	char sDriver[16];
+	iDriver.GetIdentifier(sDriver, sizeof(sDriver));
+	
+	if (!StrEqual(sDriver, "mysql", false) && !StrEqual(sDriver, "sqlite", false))
 	{
-		if(strlen(sLine) > 1)
+		SetFailState("(SQLConnect) Only mysql/sqlite support!");
+		return;
+	}
+
+	g_dDatabase = db;
+	
+	CheckAndCreateTables(sDriver);
+
+	g_dDatabase.SetCharset("utf8");
+	
+	// Lateload
+	LoadClients();
+}
+
+stock void CheckAndCreateTables(const char[] driver)
+{
+	char sQuery[256];
+	if (StrEqual(driver, "mysql", false))
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT, `communityid` varchar(64) NOT NULL, `karma` int(11) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+	else if (StrEqual(driver, "sqlite", false))
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`)) COLLATE='utf8_general_ci'");
+
+	g_dDatabase.Query(Callback_CheckAndCreateTables, sQuery);
+}
+
+public void Callback_CheckAndCreateTables(Database db, DBResultSet results, const char[] error, any userid)
+{
+	if(db == null || strlen(error) > 0)
+	{
+		LogError("(SQLCallback_Create) Query failed: %s", error);
+		return;
+	}
+}
+
+public void Callback_Karma(Database db, DBResultSet results, const char[] error, any userid)
+{
+	if(db == null || strlen(error) > 0)
+	{
+		LogError("(Callback_Karma) Query failed: %s", error);
+		return;
+	}
+}
+
+stock void LoadClients()
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if(IsClientValid(i))
 		{
-			strcopy(g_sBadNames[g_iLines], sizeof(g_sBadNames[]), sLine);
-			g_iLines++;
-			char sBuffer[128];
-			Format(sBuffer, sizeof(sBuffer), "(LoadBadNames) %s", sLine);
-			PrintToServer(sBuffer);
+			char sSteamID[32];
+			GetClientAuthId(i, AuthId_Steam2, sSteamID, sizeof(sSteamID));
+			OnClientAuthorized(i, sSteamID);
 		}
 	}
+}
+
+public void OnClientAuthorized(int client, const char[] auth)
+{
+	int userid = GetClientUserId(client);
+	LoadClientKarma(userid);
+}
+
+stock void LoadClientKarma(int userid)
+{
+	int client = GetClientOfUserId(userid);
 	
-	CloseHandle(hFile);
+	if(IsClientValid(client) && !IsFakeClient(client))
+	{
+		char sCommunityID[64];
+		
+		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+			return;
+		
+		char sQuery[2048];
+		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communiyid`= \"%s\"", sCommunityID);
+		
+		if(g_dDatabase != null)
+			g_dDatabase.Query(SQL_OnClientAuthorized, sQuery, userid);
+	}
+}
+
+public void SQL_OnClientAuthorized(Database db, DBResultSet results, const char[] error, any userid)
+{
+	int client = GetClientOfUserId(userid);
 	
-	return true;
-} */
+	if(!client || !IsClientValid(client) || IsFakeClient(client))
+		return;
+	
+	if(db == null || strlen(error) > 0)
+	{
+		LogError("(SQL_OnClientAuthorized) Query failed: %s", error);
+		return;
+	}
+	else
+	{
+		if(results.HasResults)
+		{
+			char sCommunityID[64];
+			
+			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+				return;
+			
+			while(results.FetchRow())
+			{
+				int karma = results.FetchInt(0);
+				
+				if (karma == 0)
+					setKarma(client, g_iConfig[c_startKarma].IntValue);
+				else
+					setKarma(client, karma);
+				
+				g_bKarma[client] = true;
+			}
+		}
+	}
+}
