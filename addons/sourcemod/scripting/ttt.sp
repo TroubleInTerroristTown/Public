@@ -186,7 +186,7 @@ int g_iAlive = -1;
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
 
-Database g_dDatabase = null;
+Handle g_hDatabase = null;
 
 enum Ragdolls
 {
@@ -328,7 +328,7 @@ public void OnPluginStart()
 		return;
 	}
 	else
-		Database.Connect(SQLConnect, "ttt");
+		SQL_TConnect(SQLConnect, "ttt");
 	
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
@@ -347,8 +347,9 @@ public void OnPluginStart()
 	CreateTimer(1.0, healthStationDistanceCheck, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
-	RegAdminCmd("sm_role", Command_Role, ADMFLAG_ROOT);
+	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
+	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
@@ -1162,6 +1163,8 @@ public void OnClientPostAdminCheck(int client)
 	char name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
 	nameCheck(client, name);
+	
+	LoadClientKarma(GetClientUserId(client));
 }
 
 public void OnClientDisconnect(int client)
@@ -2318,10 +2321,10 @@ stock void UpdateKarma(int client, int karma)
 		return;
 	
 	char sQuery[2048];
-	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"communityid\"", sCommunityID);
+	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"%s\";", karma, sCommunityID);
 	
-	if(g_dDatabase != null)
-		g_dDatabase.Query(SQL_OnClientAuthorized, sQuery, GetClientUserId(client));
+	if(g_hDatabase != null)
+		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
 }
 
 stock void addCredits(int client, int credits, bool message = false)
@@ -2558,7 +2561,7 @@ public Action Timer_RDMTimer(Handle timer, any userid)
 }
 
 //Force Role
-public Action Command_Role(int client, int args)
+public Action Command_SetRole(int client, int args)
 {
 	if (args < 2 || args > 3)
 	{
@@ -2616,6 +2619,30 @@ public Action Command_Role(int client, int args)
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
+}
+
+public Action Command_SetKarma(int client, int args)
+{
+	if (args < 2 || args > 3)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
+		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
+		return Plugin_Handled;
+	}
+	char arg1[32];
+	char arg2[32];
+	GetCmdArg(1, arg1, sizeof(arg1));
+	GetCmdArg(2, arg2, sizeof(arg2));
+	int target = FindTarget(client, arg1);
+	
+	if (target == -1)
+		return Plugin_Handled;
+
+	int karma = StringToInt(arg2);
+	
+	setKarma(client, karma);
+	
+	return Plugin_Continue;
 }
 
 public Action Command_Status(int client, int args)
@@ -3287,18 +3314,16 @@ stock void LoadBadNames()
 	delete hFile;
 }
 
-public void SQLConnect(Database db, const char[] error, any data)
+public void SQLConnect(Handle owner, Handle hndl, const char[] error, any data)
 {
-	if(db == null || strlen(error) > 0)
+	if(hndl == null || strlen(error) > 0)
 	{
 		SetFailState("(SQLConnect) Connection to database failed!: %s", error);
 		return;
 	}
 	
-	DBDriver iDriver = db.Driver;
-		
 	char sDriver[16];
-	iDriver.GetIdentifier(sDriver, sizeof(sDriver));
+	SQL_GetDriverIdent(owner, sDriver, sizeof(sDriver));
 	
 	if (!StrEqual(sDriver, "mysql", false) && !StrEqual(sDriver, "sqlite", false))
 	{
@@ -3306,11 +3331,11 @@ public void SQLConnect(Database db, const char[] error, any data)
 		return;
 	}
 
-	g_dDatabase = db;
+	g_hDatabase = CloneHandle(hndl);
 	
 	CheckAndCreateTables(sDriver);
 
-	g_dDatabase.SetCharset("utf8");
+	SQL_SetCharset(g_hDatabase, "utf8");
 	
 	// Lateload
 	LoadClients();
@@ -3320,48 +3345,43 @@ stock void CheckAndCreateTables(const char[] driver)
 {
 	char sQuery[256];
 	if (StrEqual(driver, "mysql", false))
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`id` INT UNSIGNED NOT NULL AUTO_INCREMENT, `communityid` varchar(64) NOT NULL, `karma` int(11) NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB;");
 	else if (StrEqual(driver, "sqlite", false))
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`)) COLLATE='utf8_general_ci'");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`))");
 
-	g_dDatabase.Query(Callback_CheckAndCreateTables, sQuery);
+	SQL_TQuery(g_hDatabase, Callback_CheckAndCreateTables, sQuery);
 }
 
-public void Callback_CheckAndCreateTables(Database db, DBResultSet results, const char[] error, any userid)
+public void Callback_CheckAndCreateTables(Handle owner, Handle hndl, const char[] error, any userid)
 {
-	if(db == null || strlen(error) > 0)
+	if(hndl == null || strlen(error) > 0)
 	{
 		LogError("(SQLCallback_Create) Query failed: %s", error);
 		return;
 	}
 }
 
-public void Callback_Karma(Database db, DBResultSet results, const char[] error, any userid)
+public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any userid)
 {
-	if(db == null || strlen(error) > 0)
+	if(hndl == null || strlen(error) > 0)
 	{
 		LogError("(Callback_Karma) Query failed: %s", error);
+		return;
+	}
+}
+public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if(hndl == null || strlen(error) > 0)
+	{
+		LogError("(Callback_InsertPlayer) Query failed: %s", error);
 		return;
 	}
 }
 
 stock void LoadClients()
 {
-	for (int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientValid(i))
-		{
-			char sSteamID[32];
-			GetClientAuthId(i, AuthId_Steam2, sSteamID, sizeof(sSteamID));
-			OnClientAuthorized(i, sSteamID);
-		}
-	}
-}
-
-public void OnClientAuthorized(int client, const char[] auth)
-{
-	int userid = GetClientUserId(client);
-	LoadClientKarma(userid);
+	LoopValidClients(i)
+		OnClientPostAdminCheck(i);
 }
 
 stock void LoadClientKarma(int userid)
@@ -3376,45 +3396,66 @@ stock void LoadClientKarma(int userid)
 			return;
 		
 		char sQuery[2048];
-		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communiyid`= \"%s\"", sCommunityID);
+		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\"", sCommunityID);
 		
-		if(g_dDatabase != null)
-			g_dDatabase.Query(SQL_OnClientAuthorized, sQuery, userid);
+		if(g_hDatabase != null)
+			SQL_TQuery(g_hDatabase, SQL_OnClientPostAdminCheck, sQuery, userid);
 	}
 }
 
-public void SQL_OnClientAuthorized(Database db, DBResultSet results, const char[] error, any userid)
+public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
 	if(!client || !IsClientValid(client) || IsFakeClient(client))
 		return;
 	
-	if(db == null || strlen(error) > 0)
+	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(SQL_OnClientAuthorized) Query failed: %s", error);
+		LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
 		return;
 	}
 	else
 	{
-		if(results.HasResults)
+		if (!SQL_FetchRow(hndl))
+			InsertPlayer(userid);
+		else
 		{
 			char sCommunityID[64];
 			
 			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 				return;
+				
+			int karma = SQL_FetchInt(hndl, 0);
+				
+			g_bKarma[client] = true;
 			
-			while(results.FetchRow())
-			{
-				int karma = results.FetchInt(0);
-				
-				if (karma == 0)
-					setKarma(client, g_iConfig[c_startKarma].IntValue);
-				else
-					setKarma(client, karma);
-				
-				g_bKarma[client] = true;
-			}
+			if (karma == 0)
+				setKarma(client, g_iConfig[c_startKarma].IntValue);
+			else
+				setKarma(client, karma);
 		}
+	}
+}
+
+stock void InsertPlayer(int userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(IsClientValid(client) && !IsFakeClient(client))
+	{
+		int karma = g_iConfig[c_startKarma].IntValue;
+		g_iKarma[client] = karma;
+		
+		char sCommunityID[64];
+			
+		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+			return;
+		
+		char sQuery[2048];
+		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d)", sCommunityID, karma);
+		
+		if(g_hDatabase != null)
+			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
 }
