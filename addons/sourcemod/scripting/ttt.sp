@@ -1,10 +1,4 @@
-/*
-	Credits:
-		- Francisco (original author)
-		- Darkness
-		- Zipcore
-		
-*/
+// Credits? Look here: http://git.tf/TTT/Plugin/blob/master/CREDITS.md
 
 
 #pragma semicolon 1
