@@ -1,0 +1,4 @@
+- Francisco (original author)
+- SlayersGaming
+- Zipcore
+- Authors of troubleinterroristtown.com
