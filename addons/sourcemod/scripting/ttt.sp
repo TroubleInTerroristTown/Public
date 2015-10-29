@@ -104,7 +104,8 @@ enum eConfig
 	ConVar:c_blockGrenadeMessage,
 	ConVar:c_blockRadioMessage,
 	ConVar:c_enableNoBlock,
-	ConVar:c_pluginTag
+	ConVar:c_pluginTag,
+	ConVar:c_kadRemover
 };
 
 int g_iConfig[eConfig];
@@ -182,6 +183,9 @@ bool g_bFound[MAXPLAYERS + 1] = {false, ...};
 bool g_bDetonate[MAXPLAYERS + 1] = {false, ...};
 
 int g_iAlive = -1;
+int g_iKills = -1;
+int g_iDeaths = -1;
+int g_iAssists = -1;
 
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
@@ -468,6 +472,7 @@ public void OnPluginStart()
 	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
 	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
 	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
+	g_iConfig[c_kadRemover] = CreateConVar("ttt_kad_remover", "1"); // Kills, Assists and Death remover
 	
 	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}T{darkred}T{blue}T{purple}]{lightgreen} %T");
 
@@ -677,6 +682,20 @@ public void OnMapStart()
 	g_iAlive = FindSendPropOffs("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
+	
+	g_iKills = FindSendPropInfo("CCSPlayerResource", "m_iKills");
+	if (g_iKills == -1)
+		SetFailState("CCSPlayerResource \"m_iKills\" offset is invalid");
+	
+	g_iDeaths = FindSendPropInfo("CCSPlayerResource", "m_iDeaths");
+	if (g_iDeaths == -1)
+		SetFailState("CCSPlayerResource \"m_iDeaths\"  offset is invalid");
+	
+	g_iAssists = FindSendPropInfo("CCSPlayerResource", "m_iAssists");
+	if (g_iAssists == -1)
+		SetFailState("CCSPlayerResource \"m_iAssists\"  offset is invalid");
+	
+	
     
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
 	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
@@ -686,17 +705,26 @@ public void OnMapStart()
 
 public void ThinkPost(int entity) 
 {
-    int isAlive[65];
+	int isAlive[65];
 	
-    GetEntDataArray(entity, g_iAlive, isAlive, 65);
-    LoopValidClients(i)
-    {
+	GetEntDataArray(entity, g_iAlive, isAlive, 65);
+	LoopValidClients(i)
+	{
 		if(IsPlayerAlive(i) || !g_bFound[i])
 			isAlive[i] = true;
 		else
 			isAlive[i] = false;
-    }
-    SetEntDataArray(entity, g_iAlive, isAlive, 65);
+	}
+	SetEntDataArray(entity, g_iAlive, isAlive, 65);
+	
+	if(g_iConfig[c_kadRemover].IntValue)
+	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
+		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
+	}
 }
 
 public Action Command_Karma(int client, int args)
