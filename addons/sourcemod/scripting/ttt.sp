@@ -22,7 +22,7 @@
 
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara"
-#define PLUGIN_DESCRIPTION ""
+#define PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
 #define PLUGIN_VERSION "2.0.5-dev"
 #define PLUGIN_URL "git.tf/TTT"
 
@@ -397,6 +397,9 @@ public void OnPluginStart()
 	{
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	}
+	
+	// ttt_version is already used
+	CreateConVar("ttt2_version", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
 	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
@@ -2650,8 +2653,8 @@ public Action Command_SetKarma(int client, int args)
 {
 	if (args < 2 || args > 3)
 	{
-		ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
-		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
+		ReplyToCommand(client, "[SM] Usage: sm_setkarma <#userid|name> <karma>");
+
 		return Plugin_Handled;
 	}
 	char arg1[32];
