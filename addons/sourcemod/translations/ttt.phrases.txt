@@ -541,7 +541,7 @@
 		"#format"       "{1:N},{2:s}"
 		"en"            "{purple}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
 		"es"            "{purple}{1} {lightgreen}ha encontrado el cuerpo de {green}{2}. {lightgreen}que es {green}Inocente!"
-		"de"            "{purple}{1} {lightgreen}findet die Leiche von{green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
+		"de"            "{purple}{1} {lightgreen}findet die Leiche von {green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
 		"chi"           "{purple}{1} {lightgreen}已发现尸体 {green}{2}. {lightgreen}这是 {lightgreen}平民!"
 		"ru"            "{purple}{1} {lightgreen}нашел тело {green}{2}. {lightgreen}, он был {lightgreen}НЕВИНОВНЫМ!"
 	}
@@ -623,9 +623,9 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"#format"		"{1:d}"
-		"en"            "{purple}{1} {lightgreen}TRAITORS HAVE BEEN SELECTED"
-		"de"            "{purple}{1} {lightgreen}Traitors wurden ausgewählt!"
-		"ru"            "БЫЛО ВЫБРАНО {purple}{1} {lightgreen}ПРЕДАТЕЛЕЙ"
+		"en"            "{darkred}{1} TRAITORS {lightgreen}HAVE BEEN SELECTED"
+		"de"            "{darkred}{1} Traitors {lightgreen}wurden ausgewählt!"
+		"ru"            "БЫЛО ВЫБРАНО {darkred}{1} ПРЕДАТЕЛЕЙ"
 	}
 	
 	"Buy radar"
