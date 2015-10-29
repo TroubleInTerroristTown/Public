@@ -1405,15 +1405,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if(!IsClientValid(assister) || assister == client)
 		return;
 	
- 	if(CS_GetClientAssists(assister) != 0) 
- 		CS_SetClientAssists(assister, 0);
- 		
-	if(GetEntProp(client, Prop_Data, "m_iDeaths") != 0)
-		SetEntProp(client, Prop_Data, "m_iDeaths", 0);
-		
-	if(GetEntProp(iAttacker, Prop_Data, "m_iFrags") != 0)
-		SetEntProp(iAttacker, Prop_Data, "m_iFrags", 0);
-	
 	if (g_iConfig[c_showDeathMessage].IntValue)
 	{
 		if(g_iRole[iAttacker] == T)
