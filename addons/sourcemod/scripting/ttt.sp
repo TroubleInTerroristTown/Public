@@ -3080,7 +3080,7 @@ stock void listTraitors(int client)
 	{
 		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != T)
 			continue;
-		PrintToChat(client, "%N", i);
+		CPrintToChat(client, g_sTag, "Traitor List", client, i);
 		iCount++;
 	}
 	

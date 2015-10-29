@@ -865,4 +865,11 @@
 		"en"		"This Health Station is out of charges! Wait for it to recharge!"
 		"de"		"Die Heil Station ist außer Betrieb! Warte auf Wiederaufladung!"
 	}
+	
+	"Traitor List"
+	{
+		"#format"	"{1:N}"
+		"en"		"{darkred} {1}"
+		"de"		"{darkred} {1}"
+	}
 }
