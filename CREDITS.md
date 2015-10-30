@@ -1,5 +1,5 @@
 - Francisco (original author)
-- SlayersGaming
-- Dream Community
+- SlayersGaming/Darkess (for C4, RDM Manager and Health Station)
+- Dream Community (for testing)
 - Zipcore
 - Authors of troubleinterroristtown.com
