@@ -906,6 +906,9 @@ stock void TeamInitialize(int client)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
+		
+		if(GetClientTeam(client) != CS_TEAM_CT)
+			CS_SwitchTeam(client, CS_TEAM_CT);
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
@@ -919,12 +922,20 @@ stock void TeamInitialize(int client)
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, g_sTag, "Your Team is TRAITORS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
+		
+		if(GetClientTeam(client) != CS_TEAM_T)
+			CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	else if(g_iRole[client] == I)
 	{
 		CPrintToChat(client, g_sTag, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
+		
+		if(GetClientTeam(client) != CS_TEAM_T)
+			CS_SwitchTeam(client, CS_TEAM_T);
 	}
+	
+	CS_UpdateClientModel(client);
 	
 	// SetSkin(client, g_iRole[client]);
 }
