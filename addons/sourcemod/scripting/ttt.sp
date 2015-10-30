@@ -15,7 +15,7 @@
 #pragma newdecls required
 
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
-#define PLUGIN_AUTHOR "Bara"
+#define PLUGIN_AUTHOR "Bara & Franc1sco"
 #define PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
 #define PLUGIN_VERSION "2.0.5"
 #define PLUGIN_URL "git.tf/TTT"
@@ -2877,7 +2877,7 @@ stock void showPlantMenu(int client)
 	
 	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
 	Format(s10, sizeof(s10), "%T", "Seconds", client, 10);
-	Format(s20, sizeof(s20), "%T", "Seconds", client, 10);
+	Format(s20, sizeof(s20), "%T", "Seconds", client, 20);
 	Format(s30, sizeof(s30), "%T", "Seconds", client, 30);
 	Format(s40, sizeof(s40), "%T", "Seconds", client, 40);
 	Format(s50, sizeof(s50), "%T", "Seconds", client, 50);
