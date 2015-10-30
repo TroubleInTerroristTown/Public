@@ -17,7 +17,7 @@
 #define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define PLUGIN_AUTHOR "Bara"
 #define PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
-#define PLUGIN_VERSION "2.0.5-dev"
+#define PLUGIN_VERSION "2.0.5"
 #define PLUGIN_URL "git.tf/TTT"
 
 #define SOUND_MESSAGE "buttons/button18.wav"
