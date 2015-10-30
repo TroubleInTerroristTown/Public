@@ -786,4 +786,29 @@
 		"en"		"{darkred} {1}"
 		"de"		"{darkred} {1}"
 	}
+	
+	"Welcome Menu"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"Hello {1},\nthis is a Trouble in Terrorist Town Server\nwritten by {2}\n\nAre you familiar with the rules?"
+		"de"		"Hallo {1},\ndas ist ein Trouble in Terrist Town Server\ngeschrieben von {2}\n\nSind Sie mit den Regeln vertraut?"
+	}
+	
+	"WM Yes"
+	{
+		"en"		"Yes, I'm familiar with the rules!"
+		"de"		"Ja, Ich bin mit den Regeln vertraut!"
+	}
+	
+	"WM No"
+	{
+		"en"		"No, show me the rules!"
+		"de"		"Nein, zeigen sie mir die Regeln!"
+	}
+	
+	"WM Kick Message"
+	{
+		"en"		"You are inactive or close rules menu!"
+		"de"		"Sie waren inaktiv oder haben das Regel-Menü geschlossen!"
+	}
 }

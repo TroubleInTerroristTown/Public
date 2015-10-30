@@ -99,7 +99,10 @@ enum eConfig
 	ConVar:c_blockRadioMessage,
 	ConVar:c_enableNoBlock,
 	ConVar:c_pluginTag,
-	ConVar:c_kadRemover
+	ConVar:c_kadRemover,
+	ConVar:c_rulesType,
+	ConVar:c_rulesLink,
+	ConVar:c_rulesClosePunishment
 };
 
 int g_iConfig[eConfig];
@@ -202,6 +205,9 @@ enum Ragdolls
 bool g_bReceivingLogs[MAXPLAYERS+1];
 
 Handle g_hLogsArray;
+
+bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
+bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sTag[MAX_MESSAGE_LENGTH];
 
@@ -472,6 +478,10 @@ public void OnPluginStart()
 	g_iConfig[c_kadRemover] = CreateConVar("ttt_kad_remover", "1"); // Kills, Assists and Death remover
 	
 	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}T{darkred}T{blue}T{purple}]{lightgreen} %T");
+	
+	g_iConfig[c_rulesType] = CreateConVar("ttt_rules_type", "0"); // 0 = command, 1 - url/motd
+	g_iConfig[c_rulesLink] = CreateConVar("ttt_rules_type", "sm_rules");
+	g_iConfig[c_rulesClosePunishment] = CreateConVar("ttt_rules_close_punishment", "0"); // 0 - Kick, 1 - Nothing
 
 	AutoExecConfig(true);
 	
@@ -1196,6 +1206,72 @@ public void OnClientPostAdminCheck(int client)
 	nameCheck(client, name);
 	
 	LoadClientKarma(GetClientUserId(client));
+	
+	CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
+}
+
+public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(IsClientValid(client))
+	{
+		char sText[512], sYes[64], sNo[64];
+		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, PLUGIN_AUTHOR);
+		Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
+		Format(sNo, sizeof(sNo), "%T", "WM No", client);
+		
+		Menu menu = new Menu(Menu_ShowWelcomeMenu);
+		menu.AddItem("no", sNo);
+		menu.AddItem("yes", sYes);
+		menu.ExitButton = false;
+		menu.ExitBackButton = false;
+		menu.Display(client, 10);
+	}
+}
+
+public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param) 
+{
+	if ( action == MenuAction_Select ) 
+	{
+		char sParam[32];
+		GetMenuItem(menu, param, sParam, sizeof(sParam));
+		
+		if (!StrEqual(sParam, "yes", false))
+		{
+			char sCommand[64];
+			g_iConfig[c_rulesLink].GetString(sCommand, sizeof(sCommand));
+			
+			if(g_iConfig[c_rulesType].IntValue == 0)
+				ClientCommand(client, sCommand);
+			else if(g_iConfig[c_rulesType].IntValue == 1)
+			{
+				char sURL[512];
+				Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sCommand);
+				ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
+				
+				g_bKnowRules[client] = false;
+				g_bReadRules[client] = true;
+			}
+		}
+		else
+		{
+			g_bKnowRules[client] = true;
+			g_bReadRules[client] = false;
+		}			
+		delete menu;
+	}
+	
+	else if (action == MenuAction_End || action == MenuAction_Cancel)
+	{
+		if(g_iConfig[c_rulesClosePunishment].IntValue == 0)
+		{
+			char sMessage[128];
+			Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
+			KickClient(client, sMessage);
+		}
+		delete menu;
+	}
 }
 
 public void OnClientDisconnect(int client)
