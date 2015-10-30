@@ -356,6 +356,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
+	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
@@ -2466,6 +2467,14 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	}
 }
 
+stock void setCredits(int client, int credits)
+{
+	g_iCredits[client] = credits;
+	
+	if(g_iCredits[client] < 0)
+		g_iCredits[client] = 0;
+}
+
 stock void ClearTimer(Handle &timer)
 {
     if (timer != null)
@@ -2739,6 +2748,30 @@ public Action Command_SetKarma(int client, int args)
 	int karma = StringToInt(arg2);
 	
 	setKarma(client, karma);
+	
+	return Plugin_Continue;
+}
+
+public Action Command_SetCredits(int client, int args)
+{
+	if (args < 2 || args > 3)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
+
+		return Plugin_Handled;
+	}
+	char arg1[32];
+	char arg2[32];
+	GetCmdArg(1, arg1, sizeof(arg1));
+	GetCmdArg(2, arg2, sizeof(arg2));
+	int target = FindTarget(client, arg1);
+	
+	if (target == -1)
+		return Plugin_Handled;
+
+	int credits = StringToInt(arg2);
+	
+	setCredits(client, credits);
 	
 	return Plugin_Continue;
 }
