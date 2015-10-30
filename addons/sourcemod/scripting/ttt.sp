@@ -414,9 +414,9 @@ public void OnPluginStart()
 	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
 	
 	g_iConfig[c_startKarma] = CreateConVar("ttt_start_karma", "100");
-	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "50"); // 0 = disabled
+	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "75"); // 0 = disabled
 	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
-	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "200");
+	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "150");
 	
 	g_iConfig[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
 	g_iConfig[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
