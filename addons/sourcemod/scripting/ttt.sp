@@ -1262,12 +1262,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			g_bKnowRules[client] = true;
 			g_bReadRules[client] = false;
 		}
-		delete menu;
 		
 		AskClientForMicrophone(client);
 	}
-	
-	else if (action == MenuAction_End || action == MenuAction_Cancel)
+	else if(action == MenuAction_Cancel)
 	{
 		if(g_iConfig[c_rulesClosePunishment].IntValue == 0)
 		{
@@ -1275,8 +1273,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
 			KickClient(client, sMessage);
 		}
-		delete menu;
 	}
+	else if (action == MenuAction_End)
+		delete menu;
+	
+	return 0;
 }
 
 stock void AskClientForMicrophone(int client)
@@ -1311,14 +1312,13 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 		{
 			g_bConfirmDetectiveRules[client] = true;
 		}
-		delete menu;
 	}
-	
-	else if (action == MenuAction_End || action == MenuAction_Cancel)
-	{
+	else if(action == MenuAction_Cancel)
 		g_bConfirmDetectiveRules[client] = false;
+	else if (action == MenuAction_End)
 		delete menu;
-	}
+	
+	return 0;
 }
 
 public void OnClientDisconnect(int client)
