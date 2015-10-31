@@ -1224,6 +1224,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 		Format(sNo, sizeof(sNo), "%T", "WM No", client);
 		
 		Menu menu = new Menu(Menu_ShowWelcomeMenu);
+		menu.SetTitle(sText);
 		menu.AddItem("no", sNo);
 		menu.AddItem("yes", sYes);
 		menu.ExitButton = false;
@@ -1286,6 +1287,7 @@ stock void AskClientForMicrophone(int client)
 	Format(sNo, sizeof(sNo), "%T", "AM No", client);
 	
 	Menu menu = new Menu(Menu_AskClientForMicrophone);
+	menu.SetTitle(sText);
 	menu.AddItem("no", sNo);
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;

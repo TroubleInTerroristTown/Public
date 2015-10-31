@@ -791,7 +791,7 @@
 	{
 		"#format"	"{1:N},{2:s}"
 		"en"		"Hello {1},\nthis is a Trouble in Terrorist Town Server\nwritten by {2}\n\nAre you familiar with the rules?"
-		"de"		"Hallo {1},\ndas ist ein Trouble in Terrist Town Server\ngeschrieben von {2}\n\nSind Sie mit den Regeln vertraut?"
+		"de"		"Hallo {1},\ndas ist ein Trouble in Terrorist Town Server\ngeschrieben von {2}\n\nSind Sie mit den Regeln vertraut?"
 	}
 	
 	"WM Yes"
