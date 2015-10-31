@@ -17,6 +17,8 @@
 #define TTT_TEAM_DETECTIVE 3
 
 native int TTT_GetClientRole(int client);
+native int TTT_GetClientKarma(int client);
+native int TTT_GetClientCredits(int client);
 
 stock bool TTT_IsLoaded()
 {
