@@ -234,6 +234,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	
+	CreateNative("TTT_SetClientRole", Native_SetClientRole);
+	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
+	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
+	
 	RegPluginLibrary("ttt");
 	
 	return APLRes_Success;
@@ -3459,6 +3463,53 @@ public int Native_GetClientCredits(Handle plugin, int numParams)
 	
 	if(TTT_IsClientValid(client))
 		return g_iCredits[client];
+	else
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	return 0;
+}
+
+public int Native_SetClientRole(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int role = GetNativeCell(2);
+	
+	if(TTT_IsClientValid(client))
+	{
+		g_iRole[client] = role;
+		return g_iRole[client];
+	}
+	else if(role < TTT_TEAM_UNASSIGNED || role > TTT_TEAM_DETECTIVE)
+		ThrowNativeError(SP_ERROR_NATIVE, "Invalid role %d", role);
+	else
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	return 0;
+}
+
+public int Native_SetClientKarma(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int karma = GetNativeCell(2);
+	
+	if(TTT_IsClientValid(client) && g_bKarma[client])
+	{
+		setKarma(client, karma);
+		return g_iKarma[client];
+	}
+	else
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	return 0;
+}
+
+public int Native_SetClientCredits(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int credits = GetNativeCell(2);
+	
+	if(TTT_IsClientValid(client))
+	{
+		setCredits(client, credits);
+		return g_iCredits[client];
+	}
 	else
 		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;

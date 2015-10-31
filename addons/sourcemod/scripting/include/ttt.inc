@@ -20,6 +20,10 @@ native int TTT_GetClientRole(int client);
 native int TTT_GetClientKarma(int client);
 native int TTT_GetClientCredits(int client);
 
+native int TTT_SetClientRole(int client, int role);
+native int TTT_SetClientKarma(int client, int karma);
+native int TTT_SetClientCredits(int client, int credits);
+
 stock bool TTT_IsLoaded()
 {
 	return LibraryExists("ttt");
