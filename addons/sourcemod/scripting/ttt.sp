@@ -2669,7 +2669,7 @@ public Action Timer_5(Handle timer)
 		CheckTeams();
 }
 
-#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
+#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
 public void OnEntityCreated(int entity, const char[] className)
 #else
 public int OnEntityCreated(int entity, const char[] className)
