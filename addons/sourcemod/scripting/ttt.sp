@@ -230,7 +230,10 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	CreateNative("TTT_GetClientRole", Native_GetClientRole);
+	
 	RegPluginLibrary("ttt");
+	
 	return APLRes_Success;
 }
 
@@ -3425,3 +3428,17 @@ stock void InsertPlayer(int userid)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
 }
+
+public int Native_GetClientRole(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if(TTT_IsClientValid(client))
+		return g_iRole[client];
+	else
+	{
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	}
+	return 0;
+}
+

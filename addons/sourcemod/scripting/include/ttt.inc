@@ -16,6 +16,8 @@
 #define TTT_TEAM_TRAITOR 2
 #define TTT_TEAM_DETECTIVE 3
 
+native int TTT_GetClientRole(int client);
+
 stock bool TTT_IsLoaded()
 {
 	return LibraryExists("ttt");
