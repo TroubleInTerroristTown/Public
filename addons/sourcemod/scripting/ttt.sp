@@ -239,7 +239,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_String);
+	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -247,6 +247,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
+	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
+	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
 	
 	RegPluginLibrary("ttt");
 	
@@ -1253,9 +1255,9 @@ public void OnClientDisconnect(int client)
 		
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
-	/* 	int thesize = GetArraySize(g_hRagdollArray);
+	/* 	int iSize = GetArraySize(g_hRagdollArray);
 		
-		if(thesize == 0) return;
+		if(iSize == 0) return;
 		
 		int Items[Ragdolls];
 				
@@ -1287,9 +1289,9 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	GetEventString(event, "newname", userName, sizeof(userName));
 	nameCheck(client, userName);
 	
- 	int thesize = GetArraySize(g_hRagdollArray);
+ 	int iSize = GetArraySize(g_hRagdollArray);
 	
-	if(thesize == 0)
+	if(iSize == 0)
 		return;
 	
 	int Items[Ragdolls];
@@ -1713,14 +1715,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0) return Plugin_Continue;
 			
 			
-		 	int thesize = GetArraySize(g_hRagdollArray);
+		 	int iSize = GetArraySize(g_hRagdollArray);
 	
-			if(thesize == 0) return Plugin_Continue;
+			if(iSize == 0) return Plugin_Continue;
 	
 			int Items[Ragdolls];
 			int entity;
 			
-			for(int i = 0;i < thesize;i++)
+			for(int i = 0;i < iSize;i++)
 			{
 				GetArrayArray(g_hRagdollArray, i, Items[0]);
 				entity = EntRefToEntIndex(Items[ent]);
@@ -1758,6 +1760,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						Call_StartForward(g_hOnBodyFound);
 						Call_PushCell(client);
+						Call_PushCell(Items[victim]);
 						Call_PushString(Items[victimName]);
 						Call_Finish();
 						
@@ -2219,8 +2222,10 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 	
 	if(g_bScan[client])
 	{
-		if(atacante2 > 0 && atacante2 != victima2) Format(Item, sizeof(Item), "%T", "Killer is Player",client, atacantename2);
-		else Format(Item, sizeof(Item), "%T", "Player committed suicide", client);
+		if(atacante2 > 0 && atacante2 != victima2)
+			Format(Item, sizeof(Item), "%T", "Killer is Player",client, atacantename2);
+		else
+			Format(Item, sizeof(Item), "%T", "Player committed suicide", client);
 		
 		AddMenuItem(menu, "", Item);
 	}
@@ -3556,6 +3561,62 @@ public int Native_SetClientCredits(Handle plugin, int numParams)
 	{
 		setCredits(client, credits);
 		return g_iCredits[client];
+	}
+	else
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	return 0;
+}
+
+public int Native_WasBodyFound(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if(TTT_IsClientValid(client))
+	{
+		int iSize = GetArraySize(g_hRagdollArray);
+		
+		if(iSize == 0)
+			return false;
+		
+		int Items[Ragdolls];
+		
+		for(int i = 0; i < iSize; i++)
+		{
+			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			
+			if(Items[victim] == client)
+			{
+				return Items[found];
+			}
+		}
+	}
+	else
+		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
+	return 0;
+}
+
+public int Native_WasBodyScanned(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if(TTT_IsClientValid(client))
+	{
+		int iSize = GetArraySize(g_hRagdollArray);
+		
+		if(iSize == 0)
+			return false;
+		
+		int Items[Ragdolls];
+		
+		for(int i = 0; i < iSize; i++)
+		{
+			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			
+			if(Items[victim] == client)
+			{
+				return Items[scanned];
+			}
+		}
 	}
 	else
 		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
