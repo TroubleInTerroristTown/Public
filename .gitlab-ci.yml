@@ -8,6 +8,5 @@ TTT:
     - ./spcomp crashcatcher.sp
     - ./spcomp grabbermod.sp
     - ./spcomp talk_override.sp
-    - ./spcomp CustomPlayerSkins.sp
     - ./spcomp hide_radar.sp
     - ls *.smx
