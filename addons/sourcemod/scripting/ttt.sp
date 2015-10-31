@@ -93,23 +93,22 @@ enum eConfig
 
 int g_iConfig[eConfig];
 
-int g_iCredits[MAXPLAYERS+1] = {800, ...};
+int g_iCredits[MAXPLAYERS + 1] =  { 800, ... };
 
-bool g_bHasC4[MAXPLAYERS+1] = {false, ...};
+bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 
-int g_iRDMAttacker[MAXPLAYERS+1] = {-1, ...};
-Handle g_hRDMTimer[MAXPLAYERS+1] = {null, ...};
-bool g_bImmuneRDMManager[MAXPLAYERS+1] = {false, ...};
-bool g_bHoldingProp[MAXPLAYERS+1] = {false, ...};
-bool g_bHoldingSilencedWep[MAXPLAYERS+1] = {false, ...};
+int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
+Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
+bool g_bImmuneRDMManager[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHoldingProp[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAccount;
 
-Handle g_hExplosionTimer[MAXPLAYERS+1] = {null, ...};
-bool g_bHasActiveBomb[MAXPLAYERS+1] = {false, ...};
-int g_iWire[MAXPLAYERS+1] = {-1, ...};
-int g_iDefusePlayerIndex[MAXPLAYERS+1] = {-1, ...};
-//
+Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
+bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
+int g_iWire[MAXPLAYERS + 1] =  { -1, ... };
+int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
 
 int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
 int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
@@ -132,7 +131,7 @@ Handle g_hGraceTime = null;
 Handle g_hStartTimer = null;
 Handle g_hPlayerArray = null;
 
-int g_iIcon[MAXPLAYERS+1] = {0, ...};
+int g_iIcon[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bRoundStarted = false;
 
