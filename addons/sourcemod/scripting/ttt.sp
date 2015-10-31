@@ -634,7 +634,6 @@ public void OnMapStart()
 	
 	PrecacheModel("props/cs_office/microwave.mdl", true);
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
-	PrecacheModel("weapons/w_c4_planted.mdl", true);
 	
 	PrecacheSoundAny("buttons/blip2.wav", true); 
 	// PrecacheSoundAny("buttons/button11.wav", true); - Unused
