@@ -189,6 +189,7 @@ char g_sTag[MAX_MESSAGE_LENGTH];
 Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnClientGetRole = null;
+Handle g_hOnClientDeath = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -236,11 +237,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
-	
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
@@ -1483,6 +1484,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaDD].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue, true);
 	}
+	
+	Call_StartForward(g_hOnClientDeath);
+	Call_PushCell(client);
+	Call_PushCell(iAttacker);
+	Call_Finish();
 }
 
 stock int CreateIcon(int client) {
