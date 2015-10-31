@@ -3476,6 +3476,9 @@ public int Native_SetClientRole(Handle plugin, int numParams)
 	if(TTT_IsClientValid(client))
 	{
 		g_iRole[client] = role;
+		TeamInitialize(client);
+		ClearIcon(client);
+		ApplyIcons();
 		return g_iRole[client];
 	}
 	else if(role < TTT_TEAM_UNASSIGNED || role > TTT_TEAM_DETECTIVE)
