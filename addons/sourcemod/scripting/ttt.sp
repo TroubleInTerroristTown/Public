@@ -1844,7 +1844,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i))) 
 			{
 				EmitSoundToClient(i, SND_TCHAT);
-				CPrintToChat(i, "%T", "TTT_TEAM_TRAITOR channel", i, client, sText);
+				CPrintToChat(i, "%T", "T channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
@@ -1855,7 +1855,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i))) 
 			{
 				EmitSoundToClient(i, SND_TCHAT);
-				CPrintToChat(i, "%T", "TTT_TEAM_DETECTIVE channel", i, client, sText);
+				CPrintToChat(i, "%T", "D channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
