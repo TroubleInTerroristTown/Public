@@ -8,31 +8,15 @@
 #include <sdkhooks>
 #include <multicolors>
 #include <emitsoundany>
-
-#undef REQUIRE_PLUGIN
-// #tryinclude <CustomPlayerSkins>
+#include <ttt>
 
 #pragma newdecls required
 
-#define PLUGIN_NAME "TTT - Trouble in Terrorist Town"
-#define PLUGIN_AUTHOR "Bara & Franc1sco"
-#define PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
-#define PLUGIN_VERSION "2.0.5"
-#define PLUGIN_URL "git.tf/TTT"
-
-#define SOUND_MESSAGE "buttons/button18.wav"
+#define SND_TCHAT "buttons/button18.wav"
+#define SND_FLASHLIGHT "items/flashlight1.wav"
 
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
-
-#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
-
-#define U 0
-#define I 1
-#define T 2
-#define D 3
-
-#define MONEYHIDE 16000
 
 enum eConfig
 {
@@ -118,15 +102,6 @@ bool g_bImmuneRDMManager[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingProp[MAXPLAYERS+1] = {false, ...};
 bool g_bHoldingSilencedWep[MAXPLAYERS+1] = {false, ...};
 
-public Plugin myinfo =
-{
-	name = PLUGIN_NAME,
-	author = PLUGIN_AUTHOR,
-	description = PLUGIN_DESCRIPTION,
-	version = PLUGIN_VERSION,
-	url = PLUGIN_URL
-};
-
 int g_iAccount;
 
 //C4 MOD
@@ -209,6 +184,8 @@ Handle g_hLogsArray;
 
 bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
+
+bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sTag[MAX_MESSAGE_LENGTH];
 
@@ -319,7 +296,17 @@ char g_sRadioCMDs[][] = {
 	"enemydown",
 	"compliment",
 	"thanks",
-	"cheer"};
+	"cheer"
+};
+
+public Plugin myinfo =
+{
+	name = TTT_PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
+};
 
 public void OnPluginStart()
 {
@@ -401,7 +388,7 @@ public void OnPluginStart()
 	}
 	
 	// ttt_version is already used
-	CreateConVar("ttt2_version", PLUGIN_VERSION, PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
+	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
 	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
 	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
@@ -479,7 +466,7 @@ public void OnPluginStart()
 	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
 	g_iConfig[c_kadRemover] = CreateConVar("ttt_kad_remover", "1"); // Kills, Assists and Death remover
 	
-	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}T{darkred}T{blue}T{purple}]{lightgreen} %T");
+	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}TTT_TEAM_TRAITOR{darkred}TTT_TEAM_TRAITOR{blue}TTT_TEAM_TRAITOR{purple}]{lightgreen} %T");
 	
 	g_iConfig[c_rulesType] = CreateConVar("ttt_rules_type", "0"); // 0 = command, 1 - url/motd
 	g_iConfig[c_rulesLink] = CreateConVar("ttt_rules_link", "sm_rules");
@@ -640,7 +627,8 @@ public void OnMapStart()
 	
 	PrecacheSoundAny("buttons/blip2.wav", true); 
 	// PrecacheSoundAny("buttons/button11.wav", true); - Unused
-	PrecacheSoundAny(SOUND_MESSAGE, true);
+	PrecacheSoundAny(SND_TCHAT, true);
+	PrecacheSoundAny(SND_FLASHLIGHT, true);
 	
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
@@ -751,7 +739,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	g_bInactive = false;
 	LoopValidClients(i)
 	{
-		g_iRole[i] = U;
+		g_iRole[i] = TTT_TEAM_UNASSIGNED;
 		g_bFound[i] = true;
 		g_iInnoKills[i] = 0;
 		g_bHasC4[i] = false;
@@ -838,18 +826,18 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 		
-		if(detectives > 0)
+		if(detectives > 0 && g_bConfirmDetectiveRules[player])
 		{
-			g_iRole[player] = D;
+			g_iRole[player] = TTT_TEAM_DETECTIVE;
 			detectives--;
 		}
 		else if(Traitores > 0)
 		{
-			g_iRole[player] = T;
+			g_iRole[player] = TTT_TEAM_TRAITOR;
 			Traitores--;
 		}
 		else
-			g_iRole[player] = I;
+			g_iRole[player] = TTT_TEAM_INNOCENT;
 		
 		
 /* 		int knife = GetPlayerWeaponSlot(player, 2);
@@ -875,7 +863,7 @@ public Action Timer_Selection(Handle hTimer)
 	
 	LoopValidClients(i)
 	{
-		if (!IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != T)
+		if (!IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != TTT_TEAM_TRAITOR)
 			continue;
 		listTraitors(i);
 		iTraitors++;
@@ -885,7 +873,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		CPrintToChat(i, g_sTag, "TEAMS HAS BEEN SELECTED", i);
 		
-		if(g_iRole[i] != T)
+		if(g_iRole[i] != TTT_TEAM_TRAITOR)
 			CPrintToChat(i, g_sTag, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 	}
 	
@@ -904,7 +892,7 @@ stock int GetRandomArray()
 
 stock void TeamInitialize(int client)
 {
-	if(g_iRole[client] == D)
+	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
@@ -919,7 +907,7 @@ stock void TeamInitialize(int client)
 		CPrintToChat(client, g_sTag, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
 	}
-	else if(g_iRole[client] == T)
+	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, g_sTag, "Your Team is TRAITORS", client);
@@ -928,7 +916,7 @@ stock void TeamInitialize(int client)
 		if(GetClientTeam(client) != CS_TEAM_T)
 			CS_SwitchTeam(client, CS_TEAM_T);
 	}
-	else if(g_iRole[client] == I)
+	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		CPrintToChat(client, g_sTag, "Your Team is INNOCENTS", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
@@ -947,11 +935,11 @@ stock void TeamTag(int client)
 	if (!IsClientInGame(client) || client < 0 || client > MaxClients)
 		return;
 		
-	if(g_iRole[client] == D)
+	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 		CS_SetClientClanTag(client, "DETECTIVE");
-	else if(g_iRole[client] == T)
+	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
 		CS_SetClientClanTag(client, "TRAITOR");
-	else if(g_iRole[client] == I)
+	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 		CS_SetClientClanTag(client, "INNOCENT");
 }
 
@@ -1018,7 +1006,7 @@ public void OnClientPutInServer(int client)
 
 	//g_bFound[client] = true;
 	
-	//g_iRole[client] = U;
+	//g_iRole[client] = TTT_TEAM_UNASSIGNED;
 	
 	g_bImmuneRDMManager[client] = false;
 	
@@ -1026,7 +1014,7 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
-	SetEntData(client, g_iAccount, MONEYHIDE);
+	SetEntData(client, g_iAccount, 16000);
 		
 	g_iCredits[client] = 800;
 }
@@ -1090,19 +1078,19 @@ public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &da
 		GetClientWeapon(iAttacker, classname, sizeof(classname));
 		if(StrEqual(classname, "weapon_taser"))
 		{
-			if(g_iRole[client] == T)
+			if(g_iRole[client] == TTT_TEAM_TRAITOR)
 			{
 				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", client, client);
 				addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
 			}
-			else if(g_iRole[client] == D) {
+			else if(g_iRole[client] == TTT_TEAM_DETECTIVE) {
 				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, g_sTag, "You hurt a Detective", client, client);
 			}
-			else if(g_iRole[client] == I) {
+			else if(g_iRole[client] == TTT_TEAM_INNOCENT) {
 				Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
 				PushArrayString(g_hLogsArray, item);
 				CPrintToChat(iAttacker, g_sTag, "You hurt an Innocent", client, client);
@@ -1137,7 +1125,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	ClearIcon(client);
 	
 	ClearTimer(g_hJihadBomb[client]);
-	if(g_iRole[client] > U)
+	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
@@ -1179,22 +1167,22 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		
 		//int addition
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client]) {
-			if (g_iRole[iAttacker] == T && g_iRole[client] == T) {
+			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR) {
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
-			} else if (g_iRole[iAttacker] == D && g_iRole[client] == D) {
+			} else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE) {
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
-			} else if (g_iRole[iAttacker] == I && g_iRole[client] == D) {
+			} else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE) {
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
-			} else if ((g_iRole[iAttacker] == I && g_iRole[client] == I) || (g_iRole[iAttacker] == D && g_iRole[client] == I)) {
+			} else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)) {
 				g_iInnoKills[iAttacker]++;
 			}
 
@@ -1231,7 +1219,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 	if(IsClientValid(client))
 	{
 		char sText[512], sYes[64], sNo[64];
-		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, PLUGIN_AUTHOR);
+		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
 		Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
 		Format(sNo, sizeof(sNo), "%T", "WM No", client);
 		
@@ -1272,8 +1260,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		{
 			g_bKnowRules[client] = true;
 			g_bReadRules[client] = false;
-		}			
+		}
 		delete menu;
+		
+		AskClientForMicrophone(client);
 	}
 	
 	else if (action == MenuAction_End || action == MenuAction_Cancel)
@@ -1284,6 +1274,47 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
 			KickClient(client, sMessage);
 		}
+		delete menu;
+	}
+}
+
+stock void AskClientForMicrophone(int client)
+{
+	char sText[512], sYes[64], sNo[64];
+	Format(sText, sizeof(sText), "%T", "AM Question", client);
+	Format(sYes, sizeof(sYes), "%T", "AM Yes", client);
+	Format(sNo, sizeof(sNo), "%T", "AM No", client);
+	
+	Menu menu = new Menu(Menu_AskClientForMicrophone);
+	menu.AddItem("no", sNo);
+	menu.AddItem("yes", sYes);
+	menu.ExitButton = false;
+	menu.ExitBackButton = false;
+	menu.Display(client, 10);
+}
+
+
+public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client, int param) 
+{
+	if ( action == MenuAction_Select ) 
+	{
+		char sParam[32];
+		GetMenuItem(menu, param, sParam, sizeof(sParam));
+		
+		if (!StrEqual(sParam, "yes", false))
+		{
+			g_bConfirmDetectiveRules[client] = false;
+		}
+		else
+		{
+			g_bConfirmDetectiveRules[client] = true;
+		}
+		delete menu;
+	}
+	
+	else if (action == MenuAction_End || action == MenuAction_Cancel)
+	{
+		g_bConfirmDetectiveRules[client] = false;
 		delete menu;
 	}
 }
@@ -1369,7 +1400,7 @@ public Action Timer_Adjust(Handle timer)
 	LoopValidClients(i)
 		if(IsPlayerAlive(i))
 		{
-			if(g_iRole[i] == T)
+			if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			{
 				GetClientAbsOrigin(i, vec);
 		
@@ -1380,7 +1411,7 @@ public Action Timer_Adjust(Handle timer)
 				int index = 0;
 				
 				LoopValidClients(j)
-					if(IsPlayerAlive(j) && j != i && (g_iRole[j] == T))
+					if(IsPlayerAlive(j) && j != i && (g_iRole[j] == TTT_TEAM_TRAITOR))
 					{
 						clients[index] = j;
 						index++;
@@ -1389,17 +1420,14 @@ public Action Timer_Adjust(Handle timer)
 				TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, {0, 0, 255, 255}, 10, 0);
 				TE_Send(clients, index);
 			}
-			else if(g_iRole[i] == I)
+			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				g_iInnoAlive++;
-			else if(g_iRole[i] == D)
+			else if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 				g_iDetectiveAlive++;
 
 			int money = GetEntData(i, g_iAccount);
-			if(money != MONEYHIDE)
-			{
-				SetEntData(i, g_iAccount, MONEYHIDE);
-				//g_iCredits[i] += RoundToNearest((money-MONEYHIDE) * (g_iKarma[i] * 0.01));
-			}
+			if(money != 16000)
+				SetEntData(i, g_iAccount, 16000);
 		}
 		
 	if(g_bRoundStarted)
@@ -1494,27 +1522,27 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	
 	if (g_iConfig[c_showDeathMessage].IntValue)
 	{
-		if(g_iRole[iAttacker] == T)
+		if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
 			CPrintToChat(client, g_sTag, "Your killer is a Traitor", client);
-		else if(g_iRole[iAttacker] == D)
+		else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE)
 			CPrintToChat(client, g_sTag, "Your killer is a Detective", client);
-		else if(g_iRole[iAttacker] == I)
+		else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT)
 			CPrintToChat(client, g_sTag, "Your killer is an Innocent", client);
 	}
 	
 	if(g_iConfig[c_showKillMessage].IntValue)
 	{
-		if(g_iRole[client] == T)
+		if(g_iRole[client] == TTT_TEAM_TRAITOR)
 			CPrintToChat(iAttacker, g_sTag, "You killed a Traitor", client);
-		else if(g_iRole[client] == D)
+		else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 			CPrintToChat(iAttacker, g_sTag, "You killed a Detective", client);
-		else if(g_iRole[client] == I)
+		else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 			CPrintToChat(iAttacker, g_sTag, "You killed an Innocent", client);
 	}
 	
 	char item[512];
 	
-	if(g_iRole[iAttacker] == I && g_iRole[client] == I)
+	if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1522,7 +1550,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaII].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1530,7 +1558,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addKarma(iAttacker, g_iConfig[c_karmaIT].IntValue, true);
 		addCredits(iAttacker, g_iConfig[c_creditsIT].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1538,7 +1566,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaID].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1546,7 +1574,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addKarma(iAttacker, g_iConfig[c_karmaTI].IntValue, true);
 		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1554,7 +1582,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaTT].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1562,7 +1590,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addKarma(iAttacker, g_iConfig[c_karmaTD].IntValue, true);
 		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1570,7 +1598,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractKarma(iAttacker, g_iConfig[c_karmaDI].IntValue, true);
 		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1578,7 +1606,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addKarma(iAttacker, g_iConfig[c_karmaDT].IntValue, true);
 		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue, true);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
@@ -1591,7 +1619,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 stock int CreateIcon(int client) {
   
 	ClearIcon(client);
-	if(g_iRole[client] < T || !g_bRoundStarted)
+	if(g_iRole[client] < TTT_TEAM_TRAITOR || !g_bRoundStarted)
 		return 0;
 	
 	char iTarget[16];
@@ -1606,8 +1634,8 @@ stock int CreateIcon(int client) {
 	int Ent = CreateEntityByName("env_sprite");
 	if(!Ent) return -1;
 
-	if(g_iRole[client] == D) DispatchKeyValue(Ent, "model", "sprites/sg_detective_icon.vmt");
-	else if(g_iRole[client] == T) DispatchKeyValue(Ent, "model", "sprites/sg_traitor_icon.vmt");
+	if(g_iRole[client] == TTT_TEAM_DETECTIVE) DispatchKeyValue(Ent, "model", "sprites/sg_detective_icon.vmt");
+	else if(g_iRole[client] == TTT_TEAM_TRAITOR) DispatchKeyValue(Ent, "model", "sprites/sg_traitor_icon.vmt");
 	DispatchKeyValue(Ent, "classname", "env_sprite");
 	DispatchKeyValue(Ent, "spawnflags", "1");
 	DispatchKeyValue(Ent, "scale", "0.08");
@@ -1618,14 +1646,14 @@ stock int CreateIcon(int client) {
 	SetVariantString(iTarget);
 	AcceptEntityInput(Ent, "SetParent", Ent, Ent, 0);
  
-	if(g_iRole[client] == T)
+	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT); 
 	return Ent;
 }
 
 public Action Hook_SetTransmitT(int entity, int client) 
 { 
-    if (entity != client && g_iRole[client] != T && IsPlayerAlive(client)) 
+    if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
         return Plugin_Handled;
      
     return Plugin_Continue; 
@@ -1668,11 +1696,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	{
 		LoopValidClients(client)
 		{
-			if(g_iRole[client] != T && g_iRole[client] != U)
+			if(g_iRole[client] != TTT_TEAM_TRAITOR && g_iRole[client] != TTT_TEAM_UNASSIGNED)
 			{
 				if(IsPlayerAlive(client))
 				{
-					if(g_iRole[client] == I)
+					if(g_iRole[client] == TTT_TEAM_INNOCENT)
 						bInnoAlive = true;
 					
 					addCredits(client, g_iConfig[c_traitorloseAliveNonTraitors].IntValue);
@@ -1686,7 +1714,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	{
 		LoopValidClients(client)
 		{
-			if(g_iRole[client] == T)
+			if(g_iRole[client] == TTT_TEAM_TRAITOR)
 			{
 				if(IsPlayerAlive(client))
 					addCredits(client, g_iConfig[c_traitorwinAliveTraitors].IntValue);
@@ -1745,50 +1773,50 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	
 	int damage = GetEventInt(event, "dmg_health");
 	char item[512];
-	if(g_iRole[iAttacker] == I && g_iRole[client] == I)
+	if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == I && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 		
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Traitor) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 		
 	}
-	else if(g_iRole[iAttacker] == T && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Detective) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == I)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 		
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == T)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
-	else if(g_iRole[iAttacker] == D && g_iRole[client] == D)
+	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
@@ -1843,19 +1871,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						if(IsClientInGame(Items[victim]))
 							g_bFound[Items[victim]] = true;
 						
-						if(g_iRole[Items[victim]] == I) 
+						if(g_iRole[Items[victim]] == TTT_TEAM_INNOCENT) 
 						{
 							LoopValidClients(j)
 								CPrintToChat(j, g_sTag, "Found Innocent", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 255, 0, 255);
 						}
-						else if(g_iRole[Items[victim]] == D)
+						else if(g_iRole[Items[victim]] == TTT_TEAM_DETECTIVE)
 						{
 							LoopValidClients(j)
 								CPrintToChat(j, g_sTag, "Found Detective", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
-						else if(g_iRole[Items[victim]] == T) 
+						else if(g_iRole[Items[victim]] == TTT_TEAM_TRAITOR) 
 						{
 							LoopValidClients(j)
 								CPrintToChat(j, g_sTag, "Found Traitor", j, client,Items[victimName]);
@@ -1996,24 +2024,24 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 			return Plugin_Handled;
 	}
 	
-	if(g_iRole[client] == T)
+	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		LoopValidClients(i)
-			if(IsClientValid(i) && (g_iRole[i] == T || !IsPlayerAlive(i))) 
+			if(IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i))) 
 			{
-				EmitSoundToClient(i, SOUND_MESSAGE);
-				CPrintToChat(i, "%T", "T channel", i, client, sText);
+				EmitSoundToClient(i, SND_TCHAT);
+				CPrintToChat(i, "%T", "TTT_TEAM_TRAITOR channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
 	}
-	else if(g_iRole[client] == D)
+	else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		LoopValidClients(i)
-			if(IsClientValid(i) && (g_iRole[i] == D || !IsPlayerAlive(i))) 
+			if(IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i))) 
 			{
-				EmitSoundToClient(i, SOUND_MESSAGE);
-				CPrintToChat(i, "%T", "D channel", i, client, sText);
+				EmitSoundToClient(i, SND_TCHAT);
+				CPrintToChat(i, "%T", "TTT_TEAM_DETECTIVE channel", i, client, sText);
 			}
 			
 		return Plugin_Handled;
@@ -2024,13 +2052,13 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 public Action Command_Shop(int client, int args)
 {
 	int team = g_iRole[client];
-	if(team != U)
+	if(team != TTT_TEAM_UNASSIGNED)
 	{
 		char MenuItem[128];
 		Handle menu = CreateMenu(Menu_ShopHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
 		
-		if(team != I)
+		if(team != TTT_TEAM_INNOCENT)
 		{
 			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
 			// AddMenuItem(menu, "radar", MenuItem);
@@ -2039,7 +2067,7 @@ public Action Command_Shop(int client, int args)
 			AddMenuItem(menu, "kevlar", MenuItem);
 		}
 	
-		if(team == T)
+		if(team == TTT_TEAM_TRAITOR)
 		{
 			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[c_shopC4].IntValue);
 			AddMenuItem(menu, "C4", MenuItem);
@@ -2060,7 +2088,7 @@ public Action Command_Shop(int client, int args)
 			AddMenuItem(menu, "usps", MenuItem);
 			
 		}
-		if(team == D)
+		if(team == TTT_TEAM_DETECTIVE)
 		{
 			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[c_shopHEALTH].IntValue);
 			AddMenuItem(menu, "HealthStation", MenuItem);
@@ -2068,13 +2096,17 @@ public Action Command_Shop(int client, int args)
 			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[c_shopDNA].IntValue);
 			AddMenuItem(menu, "scan13", MenuItem);
 		}
-		if(team == I)
+		if(team == TTT_TEAM_INNOCENT)
 		{
 /*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[c_shopT].IntValue);
 			AddMenuItem(menu, "buyT", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[c_shopD].IntValue);
-			AddMenuItem(menu, "buyD", MenuItem); */
+			if(g_bConfirmDetectiveRules[client])
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[c_shopD].IntValue);
+				AddMenuItem(menu, "buyD", MenuItem);
+			}
+*/
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[c_shopID].IntValue);
 			AddMenuItem(menu, "ID", MenuItem);
@@ -2115,7 +2147,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shop1KNIFE].IntValue)
 			{
-				if (g_iRole[client] != T)
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				Set1Knife(client);
 				subtractCredits(client, g_iConfig[c_shop1KNIFE].IntValue);
@@ -2167,7 +2199,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopT].IntValue)
 			{
-				g_iRole[client] = T;
+				g_iRole[client] = TTT_TEAM_TRAITOR;
 				TeamInitialize(client);
 				subtractCredits(client, g_iConfig[c_shopT].IntValue);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
@@ -2178,7 +2210,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopD].IntValue)
 			{
-				g_iRole[client] = D;
+				g_iRole[client] = TTT_TEAM_DETECTIVE;
 				TeamInitialize(client);
 				subtractCredits(client, g_iConfig[c_shopD].IntValue);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
@@ -2199,7 +2231,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopUSP].IntValue)
 			{
-				if (g_iRole[client] != T)
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
@@ -2214,7 +2246,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopM4A1].IntValue)
 			{
-				if (g_iRole[client] != T)
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				
 				if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
@@ -2230,7 +2262,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		{
 			if(g_iCredits[client] >= g_iConfig[c_shopJIHADBOMB].IntValue)
 			{
-				if (g_iRole[client] != T)
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
@@ -2243,7 +2275,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else if (strcmp(info, "C4") == 0) {
 			if (g_iCredits[client] >= g_iConfig[c_shopC4].IntValue) {
-				if (g_iRole[client] != T)
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bHasC4[client] = true;
 				subtractCredits(client, g_iConfig[c_shopC4].IntValue);
@@ -2254,7 +2286,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else if (strcmp(info, "HealthStation") == 0) {
 			if (g_iCredits[client] >= g_iConfig[c_shopHEALTH].IntValue) {
-				if (g_iRole[client] != D)
+				if (g_iRole[client] != TTT_TEAM_DETECTIVE)
 					return;
 				if (g_bHasActiveHealthStation[client]) {
 					CPrintToChat(client, g_sTag, "You already have an active Health Station", client);
@@ -2285,15 +2317,15 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 	//if(!IsClientValid(victima2)) return;
 	
 	char team[32];
-	if(g_iRole[victima2] == T)
+	if(g_iRole[victima2] == TTT_TEAM_TRAITOR)
 	{
 		Format(team, sizeof(team), "%T", "Traitors", client);
 	}
-	else if(g_iRole[victima2] == D)
+	else if(g_iRole[victima2] == TTT_TEAM_DETECTIVE)
 	{
 		Format(team, sizeof(team), "%T", "Detectives", client);
 	}
-	else if(g_iRole[victima2] == I) 
+	else if(g_iRole[victima2] == TTT_TEAM_INNOCENT) 
 	{
 		Format(team, sizeof(team), "%T", "Innocents", client);
 	}
@@ -2309,7 +2341,7 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 	Format(Item, sizeof(Item), "%T", "Team victim", client, team);
 	AddMenuItem(menu, "", Item);
 	
-	if(g_iRole[client] == D)
+	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(Item, sizeof(Item), "%T", "Elapsed since his death", client, tiempo2);
 		AddMenuItem(menu, "", Item);
@@ -2375,7 +2407,7 @@ stock void ClearIcon(int client)
 {
 	if(g_iIcon[client] > 0 && IsValidEdict(g_iIcon[client]))
 	{
-		if(g_iRole[client] == T) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
+		if(g_iRole[client] == TTT_TEAM_TRAITOR) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
 	g_iIcon[client] = 0;
@@ -2582,7 +2614,10 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	}
 	
 	if(g_iConfig[c_allowFlash].IntValue)
-		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4); 
+	{
+		EmitSoundToAll(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
+		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
+	}		
 	
 	if(g_iConfig[c_blockLookAtWeapon].IntValue)
 		return Plugin_Handled;
@@ -2710,18 +2745,18 @@ public Action Command_SetRole(int client, int args)
 		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
 		return Plugin_Handled;
 	}
-	else if (role == I)
+	else if (role == TTT_TEAM_INNOCENT)
 	{
-		g_iRole[target] = I;
+		g_iRole[target] = TTT_TEAM_INNOCENT;
 		TeamInitialize(target);
 		ClearIcon(target);
 		CS_SetClientClanTag(target, "");
 		CPrintToChat(client, g_sTag, "Player is Now Innocent", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == T)
+	else if (role == TTT_TEAM_TRAITOR)
 	{
-		g_iRole[target] = T;
+		g_iRole[target] = TTT_TEAM_TRAITOR;
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
@@ -2729,9 +2764,9 @@ public Action Command_SetRole(int client, int args)
 		CPrintToChat(client, g_sTag, "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == D)
+	else if (role == TTT_TEAM_DETECTIVE && g_bConfirmDetectiveRules[target])
 	{
-		g_iRole[target] = D;
+		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
@@ -2794,13 +2829,13 @@ public Action Command_Status(int client, int args)
 	if (0 > client || client > MaxClients || !IsClientInGame(client))
 		return Plugin_Handled;
 		
-	if (g_iRole[client] == U)
+	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
 		CPrintToChat(client, g_sTag, "You Are Unassigned", client); 
-	else if (g_iRole[client] == I)
+	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 		CPrintToChat(client, g_sTag, "You Are Now Innocent", client);
-	else if (g_iRole[client] == D)
+	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 		CPrintToChat(client, g_sTag, "You Are Now Traitor", client);
-	else if (g_iRole[client] == T)
+	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 		CPrintToChat(client, g_sTag, "You Are Now Detective", client);
 	
 	return Plugin_Handled;
@@ -2816,11 +2851,11 @@ public Action Timer_5(Handle timer)
 
 		g_iIcon[i] = CreateIcon(i);
 		
-		if (g_iRole[i] == D)
+		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
 			ShowOverlayToClient(i, "darkness/ttt/overlayDetective");
-		else if (g_iRole[i] == T)
+		else if (g_iRole[i] == TTT_TEAM_TRAITOR)
 			ShowOverlayToClient(i, "darkness/ttt/overlayTraitor");
-		else if (g_iRole[i] == I)
+		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
 			ShowOverlayToClient(i, "darkness/ttt/overlayInnocent");
 		
 		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
@@ -2858,7 +2893,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 		
 	else
 	{
-		if (g_iRole[activator] == I || g_iRole[activator] == D || g_iRole[activator] == U)
+		if (g_iRole[activator] == TTT_TEAM_INNOCENT || g_iRole[activator] == TTT_TEAM_DETECTIVE || g_iRole[activator] == TTT_TEAM_UNASSIGNED)
 		{
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
 			
@@ -3216,7 +3251,7 @@ stock void listTraitors(int client)
 	
 	LoopValidClients(i)
 	{
-		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != T)
+		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != TTT_TEAM_TRAITOR)
 			continue;
 		CPrintToChat(client, g_sTag, "Traitor List", client, i);
 		iCount++;
@@ -3396,11 +3431,11 @@ stock void CheckTeams()
 	{
 		if(IsPlayerAlive(i))
 		{
-			if(g_iRole[i] == D)
+			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 				iD++;
-			else if(g_iRole[i] == T)
+			else if(g_iRole[i] == TTT_TEAM_TRAITOR)
 				iT++;
-			else if(g_iRole[i] == I)
+			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				iI++;
 		}
 	}
@@ -3421,7 +3456,7 @@ stock void SetSkin(int client, int role)
 {
 	char sModel[128];
 	
-	if(role == D)
+	if(role == TTT_TEAM_DETECTIVE)
 		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sCTModels))]);
 	else
 		strcopy(sModel, sizeof(sModel), sModel[GetRandomInt(0, sizeof(g_sTModels))]);

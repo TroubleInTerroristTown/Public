@@ -811,4 +811,22 @@
 		"en"		"You are inactive or close rules menu!"
 		"de"		"Sie waren inaktiv oder haben das Regel-Menü geschlossen!"
 	}
+	
+	"AM Question"
+	{
+		"en"		"You want to play as detective?\nThen you need the following stuff:\n\n-working microphone\n-talk to other players\n-active Playing\n\nYou can confirm this?"
+		"de"		"Sie möchten als Detektive spielen?\nDann müssen die folgenden Foderungen erfüllen:\n\n-funktionierendes Mikrofon\n-mit anderen Spielern reden\n-aktives spielen\n\nKönne Sie das bestätigen?"
+	}
+	
+	"AM Yes"
+	{
+		"en"		"Yes, I confirm this."
+		"de"		"Ja, kann ich bestätigen."
+	}
+	
+	"AM No"
+	{
+		"en"		"No, I can't confirm this."
+		"de"		"Nein, kann ich nicht bestätigen."
+	}
 }
