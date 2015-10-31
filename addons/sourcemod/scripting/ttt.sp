@@ -3303,7 +3303,7 @@ stock void spawnHealthStation(int client)
 		SetEntProp(healthStationIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchKeyValue(healthStationIndex, "model", "models/props/cs_office/microwave.mdl");
 		DispatchSpawn(healthStationIndex);
-		SDKHook(healthStationIndex, SDKHook_OnTakeDamageAlive, OnTakeDamageHealthStation);
+		SDKHook(healthStationIndex, SDKHook_OnTakeDamage, OnTakeDamageHealthStation);
 		TeleportEntity(healthStationIndex, clientPos, NULL_VECTOR, NULL_VECTOR);
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;
