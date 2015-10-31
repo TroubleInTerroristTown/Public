@@ -3,9 +3,9 @@
 	"Your karma is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your KARMA is: {purple}{1}"
-		"de"            "Dein Karma: {purple}{1}"
-		"ru"         	"Ваша карма: {purple}{1}"
+		"en"            "Your KARMA is: {orchid}{1}"
+		"de"            "Dein Karma: {orchid}{1}"
+		"ru"         	"Ваша карма: {orchid}{1}"
 	}
 	
 	"TEAMS HAS BEEN SELECTED"
@@ -18,9 +18,9 @@
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
 		"#format"		"{1:d}"
-		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {purple}{1}"
-		"de"            "Warten auf insgesamt {purple}{1} {lightgreen}Spieler."
-		"ru"            "Минимальное кол-во игроков для игры: {purple}{1}"
+		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
+		"de"            "Warten auf insgesamt {orchid}{1} {lightgreen}Spieler."
+		"ru"            "Минимальное кол-во игроков для игры: {orchid}{1}"
 	}
 
 	"Your Team is DETECTIVES"
@@ -48,9 +48,9 @@
 	"Your credits is"
 	{
 		"#format"       "{1:i}"
-		"en"            "Your CREDITS are: {purple}{1}"
-		"de"            "Deine Credits: {purple}{1}"
-		"ru"            "Количесво ваших кредитов: {purple}{1}"
+		"en"            "Your CREDITS are: {orchid}{1}"
+		"de"            "Deine Credits: {orchid}{1}"
+		"ru"            "Количесво ваших кредитов: {orchid}{1}"
 	}
 
 	"Your killer is a Traitor"
@@ -130,9 +130,9 @@
 	"Detective scan found body"
 	{
 		"#format"       "{1:N},{2:s},{3:s}"
-		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{purple} {3}"
-		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {purple}{3}"
-		"ru"            "ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{purple} {3}"
+		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {orchid}{3}"
+		"ru"            "ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
@@ -436,25 +436,25 @@
 	"Found Innocent"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{purple}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
-		"de"            "{purple}{1} {lightgreen}findet die Leiche von {green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
-		"ru"            "{purple}{1} {lightgreen}нашел тело {green}{2}{lightgreen}. Он был {green}НЕВИНОВНЫМ"
+		"en"            "{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
+		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
+		"ru"            "{orchid}{1} {lightgreen}нашел тело {green}{2}{lightgreen}. Он был {green}НЕВИНОВНЫМ"
 	}
 	
 	"Found Detective"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{purple}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
-		"de"            "{purple}{1} {lightgreen}findet die Leiche von {blue}{2}. {lightgreen}Er war ein {blue}DETEKTIV!"
-		"ru"            "{purple}{1} {lightgreen}нашел тело {blue}{2}{lightgreen}. Он был {blue}ДЕТЕКТИВОМ"
+		"en"            "{orchid}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
+		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {blue}{2}. {lightgreen}Er war ein {blue}DETEKTIV!"
+		"ru"            "{orchid}{1} {lightgreen}нашел тело {blue}{2}{lightgreen}. Он был {blue}ДЕТЕКТИВОМ"
 	}
 	
 	"Found Traitor"
 	{
 		"#format"       "{1:N},{2:s}"
-		"en"            "{purple}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
-		"de"            "{purple}{1} {lightgreen}findet die Leiche von {darkred}{2}. {lightgreen}Er war ein {darkred}Traitor!"
-		"ru"            "{purple}{1} {lightgreen}нашел тело {darkred}{2}{lightgreen}. Он был {darkred}ПРЕДАТЕЛЕМ"
+		"en"            "{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
+		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {darkred}{2}. {lightgreen}Er war ein {darkred}Traitor!"
+		"ru"            "{orchid}{1} {lightgreen}нашел тело {darkred}{2}{lightgreen}. Он был {darkred}ПРЕДАТЕЛЕМ"
 	}
 	
 	"Buy c4"
@@ -592,25 +592,25 @@
 	"Player is Now Innocent"
 	{
 		"#format"		"{1:N}"
-		"en"			"{purple}{1} {lightgreen}is now {green}Innocent!"
-		"de"			"{purple}{1} {lightgreen}ist jetzt {green}Innocent!"
-		"ru"			"{purple}{1} {green}НЕВИНОВНЫЙ"
+		"en"			"{orchid}{1} {lightgreen}is now {green}Innocent!"
+		"de"			"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
+		"ru"			"{orchid}{1} {green}НЕВИНОВНЫЙ"
 	}
 	
 	"Player is Now Traitor"
 	{
 		"#format"		"{1:N}"
-		"en"			"{purple}{1} {lightgreen}is now {darkred}Traitor!"
-		"de"			"{purple}{1} {lightgreen}ist jetzt {darkred}Traitor!"
-		"ru"			"{purple}{1} {darkred}ПРЕДАТЕЛЬ"
+		"en"			"{orchid}{1} {lightgreen}is now {darkred}Traitor!"
+		"de"			"{orchid}{1} {lightgreen}ist jetzt {darkred}Traitor!"
+		"ru"			"{orchid}{1} {darkred}ПРЕДАТЕЛЬ"
 	}
 	
 	"Player is Now Detective"
 	{
 		"#format"		"{1:N}"
-		"en"			"{purple}{1} {lightgreen}is now {blue}Detective!"
-		"de"			"{purple}{1} {lightgreen}ist jetzt {blue}Detective!"
-		"ru"			"{purple}{1} {blue}ДЕТЕКТИВ!"
+		"en"			"{orchid}{1} {lightgreen}is now {blue}Detective!"
+		"de"			"{orchid}{1} {lightgreen}ist jetzt {blue}Detective!"
+		"ru"			"{orchid}{1} {blue}ДЕТЕКТИВ!"
 	}
 	
 	"You Are Unassigned"
@@ -687,17 +687,17 @@
 	"You Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have defused {purple}{1}{lightgreen}'s bomb!"
-		"de"		"Du hast die Bombe von {purple}{1} {lightgreen}entschärft!"
-		"ru"		"Вы обзвредили бомбу игрока {purple}{1}{lightgreen}!"
+		"en"		"You have defused {orchid}{1}{lightgreen}'s bomb!"
+		"de"		"Du hast die Bombe von {orchid}{1} {lightgreen}entschärft!"
+		"ru"		"Вы обзвредили бомбу игрока {orchid}{1}{lightgreen}!"
 	}
 	
 	"Has Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"{purple}{1} {lightgreen}has defused your bomb!"
-		"de"		"{purple}{1} {lightgreen}hat deine Bombe entschärft!"
-		"ru"		"{purple}{1} {lightgreen}обезвредил вашу бомбу!"
+		"en"		"{orchid}{1} {lightgreen}has defused your bomb!"
+		"de"		"{orchid}{1} {lightgreen}hat deine Bombe entschärft!"
+		"ru"		"{orchid}{1} {lightgreen}обезвредил вашу бомбу!"
 	}
 	
 	"Failed Defuse"
@@ -717,8 +717,8 @@
 	"Will Explode In"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Deploying a c4 that will explode in {purple}{1} {lightgreen}seconds."
-		"de"		"Platzieren einer C4, die in {purple}{1} {lightgreen}Sekunden explodiert."
+		"en"		"Deploying a c4 that will explode in {orchid}{1} {lightgreen}seconds."
+		"de"		"Platzieren einer C4, die in {orchid}{1} {lightgreen}Sekunden explodiert."
 	}
 	
 	"Bomb Was Not Found"
@@ -732,8 +732,8 @@
 	"Wire Is"
 	{
 		"#format"	"{1:d}"
-		"en"		"The defuse wire is {purple}{1} {lightgreen}!"
-		"de"		"Der Entschärfungs-Draht ist {purple}{1} {lightgreen}!"
+		"en"		"The defuse wire is {orchid}{1} {lightgreen}!"
+		"de"		"Der Entschärfungs-Draht ist {orchid}{1} {lightgreen}!"
 	}
 	
 	"Your Traitor Partners"
@@ -768,9 +768,9 @@
 	"Healing From"
 	{
 		"#format"	"{1:N}"
-		"en"		"Healing from {purple}{1} {lightgreen}'s Health Station!"
-		"de"		"Heilen von der Heil Station von {purple}{1}"
-		"ru"		"Аптечка игрока {purple}{1}{lightgreen}!"
+		"en"		"Healing from {orchid}{1} {lightgreen}'s Health Station!"
+		"de"		"Heilen von der Heil Station von {orchid}{1}"
+		"ru"		"Аптечка игрока {orchid}{1}{lightgreen}!"
 	}
 	
 	"Health Station Out Of Charges"
