@@ -466,7 +466,7 @@ public void OnPluginStart()
 	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
 	g_iConfig[c_kadRemover] = CreateConVar("ttt_kad_remover", "1"); // Kills, Assists and Death remover
 	
-	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}TTT_TEAM_TRAITOR{darkred}TTT_TEAM_TRAITOR{blue}TTT_TEAM_TRAITOR{purple}]{lightgreen} %T");
+	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{purple}[{green}T{darkred}T{blue}T{purple}]{lightgreen} %T");
 	
 	g_iConfig[c_rulesType] = CreateConVar("ttt_rules_type", "0"); // 0 = command, 1 - url/motd
 	g_iConfig[c_rulesLink] = CreateConVar("ttt_rules_link", "sm_rules");
