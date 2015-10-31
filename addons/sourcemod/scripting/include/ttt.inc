@@ -20,6 +20,7 @@ forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
 forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
 forward void TTT_OnClientGetRole(int client, int role);
 forward void TTT_OnClientDeath(int victim, int attacker);
+forward void TTT_OnBodyFound(int client, const char[] deadPlayer);
 
 native int TTT_GetClientRole(int client);
 native int TTT_GetClientKarma(int client);

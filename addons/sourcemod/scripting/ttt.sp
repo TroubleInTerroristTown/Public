@@ -190,6 +190,7 @@ Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
+Handle g_hOnBodyFound = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -238,6 +239,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_String);
 	
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -1754,7 +1756,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						TeamTag(Items[victim]);
 						
-						
+						Call_StartForward(g_hOnBodyFound);
+						Call_PushCell(client);
+						Call_PushString(Items[victimName]);
+						Call_Finish();
 						
 						addCredits(client, g_iConfig[c_creditsFoundBody].IntValue);
 					}
