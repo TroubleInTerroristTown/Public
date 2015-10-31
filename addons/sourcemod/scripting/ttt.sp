@@ -102,7 +102,8 @@ enum eConfig
 	ConVar:c_kadRemover,
 	ConVar:c_rulesType,
 	ConVar:c_rulesLink,
-	ConVar:c_rulesClosePunishment
+	ConVar:c_rulesClosePunishment,
+	ConVar:c_punishInnoKills
 };
 
 int g_iConfig[eConfig];
@@ -483,6 +484,8 @@ public void OnPluginStart()
 	g_iConfig[c_rulesType] = CreateConVar("ttt_rules_type", "0"); // 0 = command, 1 - url/motd
 	g_iConfig[c_rulesLink] = CreateConVar("ttt_rules_link", "sm_rules");
 	g_iConfig[c_rulesClosePunishment] = CreateConVar("ttt_rules_close_punishment", "0"); // 0 - Kick, 1 - Nothing
+	
+	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
 
 	AutoExecConfig(true, "ttt");
 	
@@ -1195,7 +1198,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				g_iInnoKills[iAttacker]++;
 			}
 
-			if (g_iInnoKills[iAttacker] >= 3) {
+			if (g_iInnoKills[iAttacker] >= g_iConfig[c_punishInnoKills].IntValue) {
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 			}
 		}
