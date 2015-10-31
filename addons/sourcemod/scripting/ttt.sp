@@ -308,6 +308,12 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	RegPluginLibrary("ttt");
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
 	if(GetEngineVersion() != Engine_CSGO)
@@ -863,7 +869,7 @@ public Action Timer_Selection(Handle hTimer)
 	
 	LoopValidClients(i)
 	{
-		if (!IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != TTT_TEAM_TRAITOR)
+		if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != TTT_TEAM_TRAITOR)
 			continue;
 		listTraitors(i);
 		iTraitors++;
@@ -954,7 +960,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(IsClientValid(client))
+	if(TTT_IsClientValid(client))
 	{
 		CS_SetClientClanTag(client, "");
 		
@@ -1021,7 +1027,7 @@ public void OnClientPutInServer(int client)
 
 public Action OnPreThink(int client)
 {
-	if(IsClientValid(client))
+	if(TTT_IsClientValid(client))
 	{
 		CS_SetClientContributionScore(client, g_iKarma[client]);
 		
@@ -1034,7 +1040,7 @@ public Action OnPreThink(int client)
 			
 			// Disable player glow
 			if (g_iConfig[c_disablePlayerGlowing].IntValue)
-				if(IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
+				if(TTT_IsClientValid(client) && iSkin > 0 && GetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true) == 1)
 					SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
 		} */
 	}
@@ -1055,19 +1061,12 @@ stock void BanBadPlayerKarma(int client)
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
 
-stock bool IsClientValid(int client) 
-{ 
-	if (client > 0 && client <= MaxClients && IsClientInGame(client))
-		return true;
-	return false;
-}
-
 public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
-	if(!IsClientValid(iAttacker))
+	if(!TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
 	char classname[64];
@@ -1216,7 +1215,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(IsClientValid(client))
+	if(TTT_IsClientValid(client))
 	{
 		char sText[512], sYes[64], sNo[64];
 		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
@@ -1305,13 +1304,9 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
 		
 		if (!StrEqual(sParam, "yes", false))
-		{
 			g_bConfirmDetectiveRules[client] = false;
-		}
 		else
-		{
 			g_bConfirmDetectiveRules[client] = true;
-		}
 	}
 	else if(action == MenuAction_Cancel)
 		g_bConfirmDetectiveRules[client] = false;
@@ -1505,7 +1500,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(GetEventInt(event, "userid"));
 	
-	if (!IsClientValid(client))
+	if (!TTT_IsClientValid(client))
 		return;
     
 	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
@@ -1515,11 +1510,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	AcceptEntityInput(iRagdoll, "Kill");
 	
 	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
-	if(!IsClientValid(iAttacker) || iAttacker == client)
+	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
 		return;
 	
 	int assister = GetClientOfUserId(GetEventInt(event, "assister"));
-	if(!IsClientValid(assister) || assister == client)
+	if(!TTT_IsClientValid(assister) || assister == client)
 		return;
 	
 	if (g_iConfig[c_showDeathMessage].IntValue)
@@ -1863,7 +1858,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				
 				if(entity == entidad)
 				{
-					//if(!IsClientValid(Items[victim])) return;
+					//if(!TTT_IsClientValid(Items[victim])) return;
 					
 					MostrarMenu(client, Items[victim], Items[attacker], RoundToNearest(GetGameTime()-Items[gameTime]), Items[weaponused], Items[victimName], Items[attackerName]);
 					
@@ -1978,7 +1973,7 @@ public Action Command_ID(int client, int args)
 
 public Action Command_Say(int client, const char[] command, int argc)
 {
-	if(!IsClientValid(client) || !IsPlayerAlive(client))
+	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 	
 	char sText[MAX_MESSAGE_LENGTH];
@@ -2003,7 +1998,7 @@ public Action Command_Say(int client, const char[] command, int argc)
 
 public Action Command_SayTeam(int client, const char[] command, int argc)
 {
-	if(!IsClientValid(client) || !IsPlayerAlive(client))
+	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
 	
 	char sText[MAX_MESSAGE_LENGTH];
@@ -2029,7 +2024,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		LoopValidClients(i)
-			if(IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i))) 
+			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i))) 
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "TTT_TEAM_TRAITOR channel", i, client, sText);
@@ -2040,7 +2035,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		LoopValidClients(i)
-			if(IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i))) 
+			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i))) 
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "TTT_TEAM_DETECTIVE channel", i, client, sText);
@@ -2316,7 +2311,7 @@ public Action BombaArmada(Handle timer, any client)
 
 stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
 {
-	//if(!IsClientValid(victima2)) return;
+	//if(!TTT_IsClientValid(victima2)) return;
 	
 	char team[32];
 	if(g_iRole[victima2] == TTT_TEAM_TRAITOR)
@@ -2597,7 +2592,7 @@ public Action TimerCallback_Detonate(Handle timer, any client)
 public Action Command_LAW(int client, const char[] command, int argc)
 {
 
-	if(!IsClientValid(client))
+	if(!TTT_IsClientValid(client))
 		return Plugin_Continue;
 	
 	if(IsPlayerAlive(client) && g_bJihadBomb[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
@@ -2917,7 +2912,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
 	GetEntPropVector(bombEnt, Prop_Send, "m_vecOrigin", explosionOrigin);
-	if (IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
 		g_bHasActiveBomb[client] = false;
 		g_hExplosionTimer[client] = null;
@@ -2985,7 +2980,7 @@ public Action explodeC4(Handle timer, Handle pack)
 public Action UnImmune(Handle timer, any userId)
 {
 	int client = GetClientOfUserId(userId);
-	if (IsClientValid(client))
+	if (TTT_IsClientValid(client))
 		g_bImmuneRDMManager[client] = false;
 	return Plugin_Stop;
 }
@@ -3001,7 +2996,7 @@ public Action bombBeep(Handle timer, Handle pack)
 		return Plugin_Stop;
 		
 	int owner = GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity");
-	if (!IsClientValid(owner))
+	if (!TTT_IsClientValid(owner))
 		return Plugin_Stop;
 		
 	float bombPos[3];
@@ -3569,7 +3564,7 @@ stock void LoadClientKarma(int userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(IsClientValid(client) && !IsFakeClient(client))
+	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		char sCommunityID[64];
 		
@@ -3588,7 +3583,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(!client || !IsClientValid(client) || IsFakeClient(client))
+	if(!client || !TTT_IsClientValid(client) || IsFakeClient(client))
 		return;
 	
 	if(hndl == null || strlen(error) > 0)
@@ -3623,7 +3618,7 @@ stock void InsertPlayer(int userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(IsClientValid(client) && !IsFakeClient(client))
+	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		int karma = g_iConfig[c_startKarma].IntValue;
 		g_iKarma[client] = karma;

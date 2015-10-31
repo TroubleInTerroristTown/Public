@@ -3,7 +3,7 @@
 #endif
 #define _TTT_included
 
-#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
+#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(TTT_IsClientValid(%1))
 
 #define TTT_PLUGIN_NAME "TTT - Trouble in Terrorist Town"
 #define TTT_PLUGIN_AUTHOR "Bara & Franc1sco"
@@ -16,3 +16,14 @@
 #define TTT_TEAM_TRAITOR 2
 #define TTT_TEAM_DETECTIVE 3
 
+stock bool TTT_IsLoaded()
+{
+	return LibraryExists("ttt");
+}
+
+stock bool TTT_IsClientValid(int client) 
+{ 
+	if (client > 0 && client <= MaxClients && IsClientInGame(client))
+		return true;
+	return false;
+}
