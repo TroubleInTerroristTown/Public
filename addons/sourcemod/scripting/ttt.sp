@@ -1266,7 +1266,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	}
 	else if(action == MenuAction_Cancel)
 	{
-		if(g_iConfig[c_rulesClosePunishment].IntValue == 0)
+		if(TTT_IsClientValid(client) && g_iConfig[c_rulesClosePunishment].IntValue == 0)
 		{
 			char sMessage[128];
 			Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
