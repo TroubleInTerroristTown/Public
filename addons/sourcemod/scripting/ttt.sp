@@ -186,6 +186,9 @@ bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sTag[MAX_MESSAGE_LENGTH];
 
+Handle g_hOnRoundStart = null;
+Handle g_hOnRoundStartFailed = null;
+Handle g_hOnClientGetRole = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -230,6 +233,10 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
+	
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -726,6 +733,12 @@ public Action Timer_Selection(Handle hTimer)
 		g_bInactive = true;
 		LoopValidClients(i)
 			CPrintToChat(i, g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[c_requiredPlayers].IntValue);
+		
+		Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(iCount);
+		Call_PushCell(g_iConfig[c_requiredPlayers].IntValue);
+		Call_Finish();
+		
 		return;
 	}
 	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
@@ -779,13 +792,21 @@ public Action Timer_Selection(Handle hTimer)
 	}
 	
 	int iTraitors = 0;
+	int iInnocent = 0;
+	int iDetective = 0;
 	
 	LoopValidClients(i)
 	{
-		if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || g_iRole[i] != TTT_TEAM_TRAITOR)
+		if (!TTT_IsClientValid(i) || !IsPlayerAlive(i))
 			continue;
 		listTraitors(i);
-		iTraitors++;
+		
+		if(g_iRole[i] == TTT_TEAM_TRAITOR)
+			iTraitors++;
+		else if(g_iRole[i] == TTT_TEAM_INNOCENT)
+			iInnocent++;
+		else if(g_iRole[i] == TTT_TEAM_DETECTIVE)
+			iDetective++;
 	}
 
 	LoopValidClients(i)
@@ -798,6 +819,13 @@ public Action Timer_Selection(Handle hTimer)
 	
 	ClearArray(g_hLogsArray);
 	g_bRoundStarted = true;
+	
+	Call_StartForward(g_hOnRoundStart);
+	Call_PushCell(iInnocent);
+	Call_PushCell(iTraitors);
+	Call_PushCell(iDetective);
+	Call_Finish();
+	
 	ApplyIcons();
 }
 
@@ -845,6 +873,11 @@ stock void TeamInitialize(int client)
 	}
 	
 	CS_UpdateClientModel(client);
+	
+	Call_StartForward(g_hOnClientGetRole);
+	Call_PushCell(client);
+	Call_PushCell(g_iRole[client]);
+	Call_Finish();
 }
 
 stock void TeamTag(int client)

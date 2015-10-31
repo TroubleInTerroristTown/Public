@@ -16,10 +16,13 @@
 #define TTT_TEAM_TRAITOR 2
 #define TTT_TEAM_DETECTIVE 3
 
+forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
+forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
+forward void TTT_OnClientGetRole(int client, int role);
+
 native int TTT_GetClientRole(int client);
 native int TTT_GetClientKarma(int client);
 native int TTT_GetClientCredits(int client);
-
 native int TTT_SetClientRole(int client, int role);
 native int TTT_SetClientKarma(int client, int karma);
 native int TTT_SetClientCredits(int client, int credits);
