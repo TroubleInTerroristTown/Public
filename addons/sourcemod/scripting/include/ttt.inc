@@ -21,6 +21,7 @@ forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detect
 forward void TTT_OnClientGetRole(int client, int role);
 forward void TTT_OnClientDeath(int victim, int attacker);
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
+forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 
 native int TTT_GetClientRole(int client);
 native int TTT_GetClientKarma(int client);
