@@ -43,3 +43,17 @@ stock bool TTT_IsClientValid(int client)
 		return true;
 	return false;
 }
+
+stock bool TTT_HasFlags(int client, AdminFlag flags[16])
+{
+	int iFlags = GetUserFlagBits(client);
+	
+	if(iFlags & ADMFLAG_ROOT)
+		return true;
+	
+	for(new i = 0; i < sizeof(flags); i++)
+		if(iFlags & FlagToBit(flags[i]))
+			return true;
+	
+	return false;
+}

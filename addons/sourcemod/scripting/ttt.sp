@@ -90,7 +90,8 @@ enum eConfig
 	ConVar:c_timeToReadRules,
 	ConVar:c_timeToReadDetectiveRules,
 	ConVar:c_showRulesMenu,
-	ConVar:c_showDetectiveMenu
+	ConVar:c_showDetectiveMenu,
+	ConVar:c_kickImmunity
 };
 
 int g_iConfig[eConfig];
@@ -426,6 +427,7 @@ public void OnPluginStart()
 	g_iConfig[c_showRulesMenu] = CreateConVar("ttt_show_rules_menu", "1");
 	
 	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
+	g_iConfig[c_kickImmunity] = CreateConVar("ttt_kick_immunity", "bz");
 
 	AutoExecConfig(true, "ttt");
 }
@@ -564,8 +566,8 @@ public void OnMapStart()
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
 	
 	PrecacheSoundAny("buttons/blip2.wav", true); 
-	PrecacheSoundAny(SND_TCHAT, true);
-	PrecacheSoundAny(SND_FLASHLIGHT, true);
+	PrecacheSound(SND_TCHAT, true);
+	PrecacheSound(SND_FLASHLIGHT, true);
 	
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
@@ -1204,9 +1206,18 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	{
 		if(TTT_IsClientValid(client) && g_iConfig[c_rulesClosePunishment].IntValue == 0)
 		{
-			char sMessage[128];
-			Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
-			KickClient(client, sMessage);
+			char sFlags[16];
+			AdminFlag aFlags[16];
+			
+			g_iConfig[c_kickImmunity].GetString(sFlags, sizeof(sFlags));
+			FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
+			
+			if (!TTT_HasFlags(client, aFlags))
+			{
+				char sMessage[128];
+				Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
+				KickClient(client, sMessage);
+			}
 		}
 	}
 	else if (action == MenuAction_End)
@@ -2502,7 +2513,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	
 	if(g_iConfig[c_allowFlash].IntValue)
 	{
-		EmitSoundToAll(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
+		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
 	}		
 	
