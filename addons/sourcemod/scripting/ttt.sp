@@ -88,7 +88,9 @@ enum eConfig
 	ConVar:c_rulesClosePunishment,
 	ConVar:c_punishInnoKills,
 	ConVar:c_timeToReadRules,
-	ConVar:c_timeToReadDetectiveRules
+	ConVar:c_timeToReadDetectiveRules,
+	ConVar:c_showRulesMenu,
+	ConVar:c_showDetectiveMenu
 };
 
 int g_iConfig[eConfig];
@@ -420,6 +422,8 @@ public void OnPluginStart()
 	g_iConfig[c_rulesClosePunishment] = CreateConVar("ttt_rules_close_punishment", "0"); // 0 - Kick, 1 - Nothing
 	g_iConfig[c_timeToReadDetectiveRules] = CreateConVar("ttt_time_to_read_detective_rules", "10");
 	g_iConfig[c_timeToReadRules] = CreateConVar("ttt_time_to_read_rules", "10");
+	g_iConfig[c_showDetectiveMenu] = CreateConVar("ttt_show_detective_menu", "1");
+	g_iConfig[c_showRulesMenu] = CreateConVar("ttt_show_rules_menu", "1");
 	
 	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
 
@@ -1135,7 +1139,11 @@ public void OnClientPostAdminCheck(int client)
 	
 	LoadClientKarma(GetClientUserId(client));
 	
-	CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
+	if(g_iConfig[c_showRulesMenu].IntValue)
+		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
+	else
+		if(g_iConfig[c_showDetectiveMenu].IntValue)
+			CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
 public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
@@ -1189,7 +1197,8 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			g_bReadRules[client] = false;
 		}
 		
-		AskClientForMicrophone(client);
+		if(g_iConfig[c_showDetectiveMenu].IntValue)
+			AskClientForMicrophone(client);
 	}
 	else if(action == MenuAction_Cancel)
 	{
@@ -1204,6 +1213,16 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		delete menu;
 	
 	return 0;
+}
+
+public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(TTT_IsClientValid(client))
+	{
+		AskClientForMicrophone(client);
+	}
 }
 
 stock void AskClientForMicrophone(int client)
