@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <ttt>
 
 #pragma newdecls required
 
@@ -13,8 +14,8 @@ public Plugin myinfo =
 	name = "Fix DeadTalk",
 	author = "Bara",
 	description = "",
-	version = "1.0.0",
-	url = "git.tf/TTT"
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
