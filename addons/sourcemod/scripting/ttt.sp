@@ -91,7 +91,8 @@ enum eConfig
 	ConVar:c_timeToReadDetectiveRules,
 	ConVar:c_showRulesMenu,
 	ConVar:c_showDetectiveMenu,
-	ConVar:c_kickImmunity
+	ConVar:c_kickImmunity,
+	ConVar:c_updateClientModel
 };
 
 int g_iConfig[eConfig];
@@ -428,6 +429,7 @@ public void OnPluginStart()
 	
 	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
 	g_iConfig[c_kickImmunity] = CreateConVar("ttt_kick_immunity", "bz");
+	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
 
 	AutoExecConfig(true, "ttt");
 }
@@ -885,7 +887,8 @@ stock void TeamInitialize(int client)
 			CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	
-	CS_UpdateClientModel(client);
+	if(g_iConfig[c_updateClientModel].IntValue)
+		CS_UpdateClientModel(client);
 	
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
