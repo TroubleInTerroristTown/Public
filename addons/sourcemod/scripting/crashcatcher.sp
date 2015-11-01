@@ -1,39 +1,61 @@
+#pragma semicolon 1
+
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <ttt>
 
-new FreezeSpeed = 500;
-new RemoveSpeed = 4000;
+#pragma newdecls required
 
-new FreezeTime = 3;
+int FreezeSpeed = 500;
+int RemoveSpeed = 4000;
 
-public OnEntityCreated(entity, const String:classname[])
+int FreezeTime = 3;
+
+public Plugin myinfo =
+{
+	name = "Crash Catcher",
+	author = "Franc1sco & Bara",
+	description = "",
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
+};
+
+#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
+public void OnEntityCreated(int entity, const char[] classname)
+#else
+public int OnEntityCreated(int entity, const char[] classname)
+#endif
 {
 	if(StrEqual(classname, "prop_ragdoll"))
 		SDKHook(entity, SDKHook_SpawnPost, Spawned);
 }
 
-public Spawned(entity)
+public void Spawned(int entity)
 {
 	SDKHook(entity, SDKHook_Think, OnThink);
 }
 
-public OnEntityDestroyed(entity)
+#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
+public void OnEntityDestroyed(int entity)
+#else
+public int OnEntityDestroyed(int entity)
+#endif
 {
 	if(!IsValidEdict(entity) || !IsValidEntity(entity))
 		return;
 	
-	decl String:classname[128];
+	char classname[128];
 	GetEdictClassname(entity, classname, sizeof(classname));
 	if(StrEqual(classname, "prop_ragdoll"))
 		SDKUnhook(entity, SDKHook_Think, OnThink);
 }
 
-public OnThink(entity)
+public void OnThink(int entity)
 {
-	decl Float:fVelocity[3];
+	float fVelocity[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecVelocity", fVelocity);
-	new Float:speed = GetVectorLength(fVelocity);
+	float speed = GetVectorLength(fVelocity);
 	if(speed >= RemoveSpeed)
 		RemoveEdict(entity);
 	else if(speed >= FreezeSpeed)
@@ -41,21 +63,21 @@ public OnThink(entity)
 			KillVelocity(entity);
 }
 
-KillVelocity(entity)
+stock void KillVelocity(int entity)
 {
-	new flags = GetEntityFlags(entity);
+	int flags = GetEntityFlags(entity);
 	SetEntityFlags(entity, flags|FL_FROZEN);
 	CreateTimer(FreezeTime * 1.0, Restore, EntIndexToEntRef(entity));
 }
 
-public Action:Restore(Handle:timer, any:ref2)
+public Action Restore(Handle timer, any ref2)
 {
-	new entity = EntRefToEntIndex(ref2);
+	int entity = EntRefToEntIndex(ref2);
 	if(entity != INVALID_ENT_REFERENCE)
 	{
 		if(GetEntityFlags(entity) & FL_FROZEN)
 		{
-			new flags = GetEntityFlags(entity);
+			int flags = GetEntityFlags(entity);
 			SetEntityFlags(entity, flags&~FL_FROZEN);
 		}
 	}

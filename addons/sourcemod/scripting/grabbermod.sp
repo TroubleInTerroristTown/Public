@@ -1,51 +1,55 @@
 #pragma semicolon 1
+
 #include <sourcemod>
 #include <sdktools>
+#include <ttt>
 
-#define PLUGIN_VERSION "1.0"
+#pragma newdecls required
 
 #define GRAB_DISTANCE 150.0
 
-new g_sprite;
-new	EngineVersion:CurrentVersion;
+int g_sprite;
+EngineVersion CurrentVersion;
 	
-public Plugin:myinfo =
+public Plugin myinfo =
 {
 	name = "SM Grabber mod",
-	author = "Franc1sco Steam: franug",
+	author = "Franc1sco & Bara",
 	description = "",
-	version = PLUGIN_VERSION,
-	url = "http://steamcommunity.com/id/franug"
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
 };
 
 
-new gObj[MAXPLAYERS+1];
-new Float:gDistance[MAXPLAYERS+1];
+int gObj[MAXPLAYERS + 1] =  { 0, ... };
+float gDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 
 
-public OnPluginStart()
+public void OnPluginStart()
 {
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 	
 	CurrentVersion = GetEngineVersion();
 }
 
-public OnMapStart()
+public void OnMapStart()
 {
-	if(CurrentVersion == Engine_CSGO) g_sprite = PrecacheModel("materials/sprites/laserbeam.vmt");
-	else g_sprite = PrecacheModel("materials/sprites/laser.vmt");
+	if(CurrentVersion == Engine_CSGO)
+		g_sprite = PrecacheModel("materials/sprites/laserbeam.vmt");
+	else
+		g_sprite = PrecacheModel("materials/sprites/laser.vmt");
 }
 
-Command_Grab(client)
+stock void Command_Grab(int client)
 {
 	GrabSomething(client);
 }
 
-Command_UnGrab(client)
+stock void Command_UnGrab(int client)
 {
 	if (ValidGrab(client))
 	{
-		new String:edictname[128];
+		char edictname[128];
 		GetEdictClassname(gObj[client], edictname, 128);
 		
 		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
@@ -55,11 +59,11 @@ Command_UnGrab(client)
 	gObj[client] = -1;
 }
 
-stock GrabSomething(client)
+stock void GrabSomething(int client)
 {
 
-		new ent;
-		new Float:VecPos_Ent[3], Float:VecPos_Client[3];
+		int ent;
+		float VecPos_Ent[3], VecPos_Client[3];
 		
 		ent = GetObject(client, false);
 		
@@ -76,8 +80,7 @@ stock GrabSomething(client)
 		GetClientEyePosition(client, VecPos_Client);
 		if(GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0) return;
 		
-		// only grab physics entities
-		new String:edictname[128];
+		char edictname[128];
 		GetEdictClassname(ent, edictname, 128);
 
 		if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
@@ -88,7 +91,6 @@ stock GrabSomething(client)
 		{
 			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
 			{
-				// Convert to prop_physics_override
 				if (IsValidEdict(ent) && IsValidEntity(ent)) 
 				{
 					ent = ReplacePhysicsEntity(ent);
@@ -118,16 +120,14 @@ stock GrabSomething(client)
 
 		gDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
-		new Float:position[3];
+		float position[3];
 		TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
-		
-		//EmitSoundToClient(client, "buttons/combine_button5.wav");
 
 }
 
-stock bool:ValidGrab(client)
+stock bool ValidGrab(int client)
 {
-	new obj = gObj[client];
+	int obj = gObj[client];
 	if (obj != -1 && IsValidEntity(obj) && IsValidEdict(obj))
 		return (true);
 
@@ -135,9 +135,9 @@ stock bool:ValidGrab(client)
 	return (false);
 }
 
-stock GetObject(client, bool:hitSelf=true)
+stock int GetObject(int client, bool hitSelf=true)
 {
-	new ent = -1;
+	int ent = -1;
 	
 	if (IsClientInGame(client))
 	{
@@ -147,11 +147,11 @@ stock GetObject(client, bool:hitSelf=true)
 			return (ent);
 		}
 
-		ent = TraceToEntity(client); // GetClientAimTarget(client);
+		ent = TraceToEntity(client);
 		
 		if (IsValidEntity(ent) && IsValidEdict(ent))
 		{
-			new String:edictname[64];
+			char edictname[64];
 			GetEdictClassname(ent, edictname, 64);
 			if (StrEqual(edictname, "worldspawn"))
 			{
@@ -162,17 +162,15 @@ stock GetObject(client, bool:hitSelf=true)
 			}
 		}
 		else
-		{
 			ent = -1;
-		}
 	}
 	
 	return (ent);
 }
 
-public TraceToEntity(client)
+public int TraceToEntity(int client)
 {
-	new Float:vecClientEyePos[3], Float:vecClientEyeAng[3];
+	float vecClientEyePos[3], vecClientEyeAng[3];
 	GetClientEyePosition(client, vecClientEyePos);
 	GetClientEyeAngles(client, vecClientEyeAng);    
 
@@ -184,17 +182,16 @@ public TraceToEntity(client)
 	return (-1);
 }
 
-public bool:TraceASDF(entity, mask, any:data)
+public bool TraceASDF(int entity, int mask, any data)
 {
 	return (data != entity);
 }
 
-stock ReplacePhysicsEntity(ent)
+stock int ReplacePhysicsEntity(int ent)
 {
-	new Float:VecPos_Ent[3], Float:VecAng_Ent[3];
+	float VecPos_Ent[3], VecAng_Ent[3];
 
-	// Copy Entity
-	new String:model[128];
+	char model[128];
 	GetEntPropString(ent, Prop_Data, "m_ModelName", model, 128);
 	GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 	GetEntPropVector(ent, Prop_Send, "m_angRotation", VecAng_Ent);
@@ -203,44 +200,32 @@ stock ReplacePhysicsEntity(ent)
 	AcceptEntityInput(ent, "EnableDamageForces");
 	DispatchKeyValue(ent, "physdamagescale", "0.0");
 	
-/*
-	RemoveEdict(ent);
-
-	//decl Ent;
-	PrecacheModel(model, true);
-	ent = CreateEntityByName("prop_physics_override"); 
-	
-	DispatchKeyValue(ent, "physdamagescale", "0.0");
-	DispatchKeyValue(ent, "model", model);
-	DispatchSpawn(ent);
-*/
 	TeleportEntity(ent, VecPos_Ent, VecAng_Ent, NULL_VECTOR);
 	SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
 
 	return (ent);
 }
 
-public Action:OnPlayerRunCmd(client, &buttons, &impulse, Float:vel[3], Float:angles[3])
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
 {
 	if(!IsClientInGame(client)) return;
 	
 	if(buttons & IN_USE)
 	{
-		if(IsPlayerAlive(client) && !ValidGrab(client)) Command_Grab(client);
+		if(IsPlayerAlive(client) && !ValidGrab(client))
+			Command_Grab(client);
 	}
 	else if(ValidGrab(client))
-	{
 		Command_UnGrab(client);
-	}
 }
 
-public Action:Adjust(Handle:timer)
+public Action Adjust(Handle timer)
 {	
 	
-	new Float:vecDir[3], Float:vecPos[3], Float:vecPos2[3], Float:vecVel[3];
-	new Float:viewang[3];
+	float vecDir[3], vecPos[3], vecPos2[3], vecVel[3];
+	float viewang[3];
 
-	for(new i = 1; i <=MaxClients; ++i)
+	for(int i = 1; i <=MaxClients; ++i)
 		if(IsClientInGame(i) && IsPlayerAlive(i))
 		{
 			if (ValidGrab(i))
@@ -250,7 +235,7 @@ public Action:Adjust(Handle:timer)
 				GetAngleVectors(viewang, vecDir, NULL_VECTOR, NULL_VECTOR);
 				GetClientEyePosition(i, vecPos);
 				
-				new color[4];
+				int color[4];
 				color[0] = 255; 
 				color[1] = 0;
 				color[2] = 0;
@@ -275,7 +260,7 @@ public Action:Adjust(Handle:timer)
 		}
 }
 
-public OnClientDisconnect(client)
+public void OnClientDisconnect(int client)
 {
 	gObj[client] = -1;
 }

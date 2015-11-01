@@ -3,6 +3,8 @@
 #include <sourcemod>
 #include <ttt>
 
+#pragma newdecls required
+
 public Plugin myinfo = 
 {
 	name = "TTT API Test",
