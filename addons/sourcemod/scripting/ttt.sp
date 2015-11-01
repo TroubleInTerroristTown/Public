@@ -92,7 +92,9 @@ enum eConfig
 	ConVar:c_showRulesMenu,
 	ConVar:c_showDetectiveMenu,
 	ConVar:c_kickImmunity,
-	ConVar:c_updateClientModel
+	ConVar:c_updateClientModel,
+	ConVar:c_removeHostages,
+	ConVar:c_removeBomb
 };
 
 int g_iConfig[eConfig];
@@ -323,6 +325,7 @@ public void OnPluginStart()
 	HookEvent("player_changename", Event_ChangeName);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_hurt", Event_PlayerHurt);
+	HookEvent("item_pickup", Event_ItemPickup);
 	
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 	
@@ -430,6 +433,8 @@ public void OnPluginStart()
 	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
 	g_iConfig[c_kickImmunity] = CreateConVar("ttt_kick_immunity", "bz");
 	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
+	g_iConfig[c_removeHostages] = CreateConVar("ttt_remove_hostages", "1");
+	g_iConfig[c_removeBomb] = CreateConVar("ttt_remove_bomb_on_spawn", "1");
 
 	AutoExecConfig(true, "ttt");
 }
@@ -701,9 +706,19 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
 	
+	if(g_iConfig[c_removeHostages].IntValue)
+		RemoveHostages();
+	
 	ShowOverlayToAll("");
 	resetPlayers();
 	healthStation_cleanUp();
+}
+
+stock void RemoveHostages()
+{
+	int entity = -1;
+	while((entity  = FindEntityByClassname(entity, "func_bomb_target")) != -1)
+		AcceptEntityInput(entity, "kill");
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -1731,6 +1746,29 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
 	}
+}
+
+public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
+{
+	if(g_iConfig[c_removeBomb].IntValue == 0)
+		return Plugin_Continue;
+
+	char sItem[32];
+	event.GetString("item", sItem, sizeof(sItem));
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(TTT_IsClientValid(client))
+	{
+		if(!g_bHasC4[client] && !g_bJihadBomb[client])
+		{
+			int iC4 = GetPlayerWeaponSlot(client, CS_SLOT_C4);
+			RemovePlayerItem(client, iC4); 
+			AcceptEntityInput(iC4, "Kill");
+			
+			return Plugin_Handled;
+		}
+	}
+	return Plugin_Continue;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
