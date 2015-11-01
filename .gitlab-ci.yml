@@ -9,6 +9,8 @@ TTT18:
     - ./spcomp grabbermod.sp
     - ./spcomp talk_override.sp
     - ./spcomp hide_radar.sp
+    - ./spcomp show_name.sp
+    - ./spcomp ttt_api_test.sp
     - ls *.smx
 
 TTT17:
@@ -22,4 +24,6 @@ TTT17:
     - ./spcomp grabbermod.sp
     - ./spcomp talk_override.sp
     - ./spcomp hide_radar.sp
+    - ./spcomp show_name.sp
+    - ./spcomp ttt_api_test.sp
     - ls *.smx
