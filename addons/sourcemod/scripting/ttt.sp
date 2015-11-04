@@ -446,8 +446,8 @@ public void OnPluginStart()
 	g_iConfig[c_removeBomb] = CreateConVar("ttt_remove_bomb_on_spawn", "1");
 	
 	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0", "", _, true, 0.0, true, 1.0);
-	g_iConfig[c_roleAgain] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
-	g_iConfig[c_roleAgain] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
+	g_iConfig[c_traitorRatio] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
+	g_iConfig[c_detectiveRatio] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
 	
 	g_iConfig[c_taserAllow] = CreateConVar("ttt_taser_allow", "1", "", _, true, 0.0, true, 1.0);
 
