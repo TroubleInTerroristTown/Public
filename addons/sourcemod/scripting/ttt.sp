@@ -1849,8 +1849,11 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 		if(!g_bHasC4[client] && !g_bJihadBomb[client])
 		{
 			int iC4 = GetPlayerWeaponSlot(client, CS_SLOT_C4);
-			RemovePlayerItem(client, iC4); 
-			AcceptEntityInput(iC4, "Kill");
+			if(iC4 != -1)
+			{
+				RemovePlayerItem(client, iC4); 
+				AcceptEntityInput(iC4, "Kill");
+			}
 			
 			return Plugin_Handled;
 		}
