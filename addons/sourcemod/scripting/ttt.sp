@@ -20,9 +20,6 @@
 #define SND_DISARM "weapons/c4/c4_disarm.wav"
 #define SND_WARNING "resource/warning.wav"
 
-#define TRAITORS_AMOUNT 0.25
-#define DETECTIVES_AMOUNT 0.13
-
 enum eConfig
 {
 	ConVar:c_shopKEVLAR,
@@ -100,7 +97,9 @@ enum eConfig
 	ConVar:c_updateClientModel,
 	ConVar:c_removeHostages,
 	ConVar:c_removeBomb,
-	ConVar:c_roleAgain
+	ConVar:c_roleAgain,
+	ConVar:c_traitorRatio,
+	ConVar:c_detectiveRatio
 };
 
 int g_iConfig[eConfig];
@@ -444,7 +443,10 @@ public void OnPluginStart()
 	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
 	g_iConfig[c_removeHostages] = CreateConVar("ttt_remove_hostages", "1");
 	g_iConfig[c_removeBomb] = CreateConVar("ttt_remove_bomb_on_spawn", "1");
-	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0");
+	
+	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0", "", _, true, 0.0, true, 1.0);
+	g_iConfig[c_roleAgain] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
+	g_iConfig[c_roleAgain] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
 
 	AutoExecConfig(true, "ttt");
 }
@@ -779,7 +781,7 @@ public Action Timer_Selection(Handle hTimer)
 		return;
 	}
 	
-	int iDetectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
+	int iDetectives = RoundToNearest(iCount * float(g_iConfig[c_detectiveRatio].IntValue)/100.0);
 	if(iDetectives == 0)
 		iDetectives = 1;
 	
@@ -789,7 +791,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(!needDetective)
 		iDetectives = 0;
 		
-	int iTraitores = RoundToNearest(iCount * TRAITORS_AMOUNT);
+	int iTraitores = RoundToNearest(iCount * float(g_iConfig[c_traitorRatio].IntValue)/100.0);
 	if(iTraitores == 0)
 		iTraitores = 1;
 	
