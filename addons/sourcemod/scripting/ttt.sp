@@ -869,6 +869,9 @@ stock int GetRandomArray()
 
 stock void TeamInitialize(int client)
 {
+	if(!TTT_IsClientValid(client))
+		return;
+	
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		g_iIcon[client] = CreateIcon(client);
