@@ -15,6 +15,10 @@
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"
+#define SND_BURST "training/firewerks_burst_02.wav"
+#define SND_BEEP "weapons/c4/c4_beep1.wav"
+#define SND_DISARM "weapons/c4/c4_disarm.wav"
+#define SND_WARNING "resource/warning.wav"
 
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
@@ -576,16 +580,13 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_BLIP, true); 
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
+	PrecacheSoundAny(SND_BURST, true);
+	PrecacheSoundAny(SND_BEEP, true);
+	PrecacheSoundAny(SND_DISARM, true);
+	PrecacheSoundAny(SND_WARNING, true);
 	
-	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
-	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
-	PrecacheSoundAny("weapons/c4/c4_disarm.wav", true);
 	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
 	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
-	PrecacheSoundAny("resource/warning.wav", true);
-	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
-	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
-	PrecacheSoundAny("weapons/c4/c4_disarm.wav", true);
 
 	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3"); 
 	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
@@ -2913,7 +2914,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		}
 		
 		for (int i = 1; i <= 2; i++)
-			EmitAmbientSoundAny("training/firewerks_burst_02.wav", explosionOrigin, _, SNDLEVEL_RAIDSIREN);
+			EmitAmbientSoundAny(SND_BURST, explosionOrigin, _, SNDLEVEL_RAIDSIREN);
 			
 		CreateTimer(2.0, UnImmune, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
@@ -2947,7 +2948,7 @@ public Action bombBeep(Handle timer, Handle pack)
 	bool stopBeeping = false;
 	if (beeps > 0)
 	{
-		EmitAmbientSoundAny("weapons/c4/c4_beep1.wav", bombPos);
+		EmitAmbientSoundAny(SND_BEEP, bombPos);
 		beeps--;
 		stopBeeping = false;
 	}
@@ -3095,7 +3096,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 				{
 					CPrintToChat(client, g_sTag, "You Defused Bomb", client, planter);
 					CPrintToChat(planter, g_sTag, "Has Defused Bomb", planter, client);
-					EmitAmbientSoundAny("weapons/c4/c4_disarm.wav", bombPos);
+					EmitAmbientSoundAny(SND_DISARM, bombPos);
 					g_bHasActiveBomb[planter] = false;
 					ClearTimer(g_hExplosionTimer[planter]);
 					SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
@@ -3318,7 +3319,7 @@ stock void checkDistanceFromHealthStation(int client) {
 				SetEntityHealth(client, newHealth);
 
 			CPrintToChat(client, g_sTag, "Healing From", client, owner);
-			EmitSoundToClientAny(client, "resource/warning.wav");
+			EmitSoundToClientAny(client, SND_WARNING);
 			g_iHealthStationCharges[owner]--;
 			g_bOnHealingCoolDown[client] = true;
 			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
