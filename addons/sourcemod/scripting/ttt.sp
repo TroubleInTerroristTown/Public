@@ -99,7 +99,8 @@ enum eConfig
 	ConVar:c_kickImmunity,
 	ConVar:c_updateClientModel,
 	ConVar:c_removeHostages,
-	ConVar:c_removeBomb
+	ConVar:c_removeBomb,
+	ConVar:c_roleAgain
 };
 
 int g_iConfig[eConfig];
@@ -141,6 +142,9 @@ Handle g_hGraceTime = null;
 
 Handle g_hStartTimer = null;
 Handle g_hPlayerArray = null;
+
+Handle g_hDetectives = null;
+Handle g_hTraitores = null;
 
 int g_iIcon[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -440,6 +444,7 @@ public void OnPluginStart()
 	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
 	g_iConfig[c_removeHostages] = CreateConVar("ttt_remove_hostages", "1");
 	g_iConfig[c_removeBomb] = CreateConVar("ttt_remove_bomb_on_spawn", "1");
+	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0");
 
 	AutoExecConfig(true, "ttt");
 }
@@ -753,11 +758,11 @@ public Action Timer_Selection(Handle hTimer)
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		if(GetClientTeam(i) == CS_TEAM_T || GetClientTeam(i) == CS_TEAM_CT)
-		{
-			iCount++;
-			PushArrayCell(g_hPlayerArray, i);
-		}
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
+			continue;
+		
+		iCount++;
+		PushArrayCell(g_hPlayerArray, i);
 	}
 		
 	if(iCount < g_iConfig[c_requiredPlayers].IntValue) 
@@ -773,55 +778,51 @@ public Action Timer_Selection(Handle hTimer)
 		
 		return;
 	}
-	int detectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
-	int Traitores = RoundToNearest(iCount * TRAITORS_AMOUNT);
 	
-	if(detectives == 0)
-		detectives = 1;
-	if(Traitores == 0)
-		Traitores = 1;
+	int iDetectives = RoundToNearest(iCount * DETECTIVES_AMOUNT);
+	if(iDetectives == 0)
+		iDetectives = 1;
 	
-	if(iCount < g_iConfig[c_requiredPlayersD].IntValue)
-		detectives = 0;
+	bool needDetective = ( iCount >= g_iConfig[c_requiredPlayersD].IntValue );
+	
+	/* Not enough players to allow a detective */
+	if(!needDetective)
+		iDetectives = 0;
+		
+	int iTraitores = RoundToNearest(iCount * TRAITORS_AMOUNT);
+	if(iTraitores == 0)
+		iTraitores = 1;
 	
 	int index;
 	int player;
-	while((index = GetRandomArray()) != -1)
+	while((index = GetRandomArray(g_hPlayerArray)) != -1)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 		
-		if(detectives > 0 && g_bConfirmDetectiveRules[player])
+		if(iDetectives > 0 && g_bConfirmDetectiveRules[player] && !IsPlayerInArray(player, g_hDetectives))
 		{
 			g_iRole[player] = TTT_TEAM_DETECTIVE;
-			detectives--;
+			iDetectives--;
 		}
-		else if(Traitores > 0)
+		else if(iTraitores > 0 && !IsPlayerInArray(player, g_hTraitores))
 		{
 			g_iRole[player] = TTT_TEAM_TRAITOR;
-			Traitores--;
+			iTraitores--;
 		}
-		else
-			g_iRole[player] = TTT_TEAM_INNOCENT;
+		else g_iRole[player] = TTT_TEAM_INNOCENT;
 		
-		
-/* 		int knife = GetPlayerWeaponSlot(player, 2);
-		if (knife != -1)
-		{
-			RemovePlayerItem(player, knife);
-			AcceptEntityInput(player, "Kill");
-		} */
 		while (GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
 			GivePlayerItem(player, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(player, "weapon_glock");
 		
-		TeamInitialize(player);
-		
 		g_bFound[player] = false;
 		
 		RemoveFromArray(g_hPlayerArray, index);
 	}
+	
+	/* Recount roles */
 	
 	int iTraitors = 0;
 	int iInnocent = 0;
@@ -829,16 +830,71 @@ public Action Timer_Selection(Handle hTimer)
 	
 	LoopValidClients(i)
 	{
-		if (!TTT_IsClientValid(i) || !IsPlayerAlive(i))
+		if (!IsPlayerAlive(i))
 			continue;
+			
 		listTraitors(i);
 		
 		if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			iTraitors++;
-		else if(g_iRole[i] == TTT_TEAM_INNOCENT)
-			iInnocent++;
 		else if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 			iDetective++;
+		else if(g_iRole[i] == TTT_TEAM_INNOCENT)
+			iInnocent++;
+	}
+	
+	/* No detective found, but we need one */
+	if(iDetective == 0 && needDetective)
+	{
+		LoopValidClients(i)
+		{
+			if(g_iRole[i] != TTT_TEAM_INNOCENT)
+				continue;
+				
+			iInnocent--;
+			iDetective++;
+			
+			g_iRole[i] = TTT_TEAM_DETECTIVE;
+			break;
+		}
+	}
+	
+	/* No triaitor found, but we need one */
+	if(iTraitors == 0)
+	{
+		LoopValidClients(i)
+		{
+			if(g_iRole[i] != TTT_TEAM_INNOCENT)
+				continue;
+				
+			iInnocent--;
+			iTraitors++;
+			
+			g_iRole[i] = TTT_TEAM_TRAITOR;
+			break;
+		}
+	}
+	
+	/* Remember role, to prevent same role next round for players */
+	
+	if(g_hDetectives != null)
+		ClearArray(g_hDetectives);
+	else g_hDetectives = CreateArray(1);
+	
+	if(g_hTraitores != null)
+		ClearArray(g_hTraitores);
+	else g_hTraitores = CreateArray(1);
+	
+	LoopValidClients(i)
+	{
+		
+		if(g_iConfig[c_removeBomb].IntValue == 0)
+		{
+			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
+				PushArrayCell(g_hDetectives, i);
+			else if(g_iRole[i] == TTT_TEAM_TRAITOR)
+				PushArrayCell(g_hTraitores, i);
+		}
 	}
 
 	LoopValidClients(i)
@@ -847,6 +903,14 @@ public Action Timer_Selection(Handle hTimer)
 		
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
 			CPrintToChat(i, g_sTag, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
+		
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
+			continue;
+			
+		if(!IsPlayerAlive(i))
+			continue;
+			
+		TeamInitialize(i);
 	}
 	
 	ClearArray(g_hLogsArray);
@@ -861,12 +925,23 @@ public Action Timer_Selection(Handle hTimer)
 	ApplyIcons();
 }
 
-stock int GetRandomArray()
+stock int GetRandomArray(Handle array)
 {
-	int size = GetArraySize(g_hPlayerArray);
+	int size = GetArraySize(array);
 	if(size == 0)
 		return -1;
 	return Math_GetRandomInt(0, size-1);
+}
+
+stock bool IsPlayerInArray(int player, Handle array)
+{
+	for(int i = 0;i < GetArraySize(array);i++)
+	{
+		if(player == GetArrayCell(array, i))
+			return true;
+	}
+	
+	return false;
 }
 
 stock void TeamInitialize(int client)
