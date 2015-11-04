@@ -99,7 +99,8 @@ enum eConfig
 	ConVar:c_removeBomb,
 	ConVar:c_roleAgain,
 	ConVar:c_traitorRatio,
-	ConVar:c_detectiveRatio
+	ConVar:c_detectiveRatio,
+	ConVar:c_taserAllow
 };
 
 int g_iConfig[eConfig];
@@ -447,6 +448,8 @@ public void OnPluginStart()
 	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0", "", _, true, 0.0, true, 1.0);
 	g_iConfig[c_roleAgain] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
 	g_iConfig[c_roleAgain] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
+	
+	g_iConfig[c_taserAllow] = CreateConVar("ttt_taser_allow", "1", "", _, true, 0.0, true, 1.0);
 
 	AutoExecConfig(true, "ttt");
 }
@@ -962,7 +965,9 @@ stock void TeamInitialize(int client)
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
 			
-		GivePlayerItem(client, "weapon_taser");
+		if(g_iConfig[c_taserAllow].IntValue == 1)
+			GivePlayerItem(client, "weapon_taser");
+			
 		CPrintToChat(client, g_sTag, "Your Team is DETECTIVES", client);
 		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
 	}
@@ -2142,8 +2147,12 @@ public Action Command_Shop(int client, int args)
 			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[c_shopID].IntValue);
 			AddMenuItem(menu, "ID", MenuItem);
 		}
-		Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[c_shopTASER].IntValue);
-		AddMenuItem(menu, "taser", MenuItem);
+		
+		if(g_iConfig[c_taserAllow].IntValue == 1)
+		{
+			Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[c_shopTASER].IntValue);
+			AddMenuItem(menu, "taser", MenuItem);
+		}
 		
 		SetMenuExitButton(menu, true);
 		DisplayMenu(menu, client, 15);
@@ -2250,7 +2259,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopTASER].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopTASER].IntValue && g_iConfig[c_taserAllow].IntValue == 1)
 			{
 				GivePlayerItem(client, "weapon_taser");
 				subtractCredits(client, g_iConfig[c_shopTASER].IntValue);
