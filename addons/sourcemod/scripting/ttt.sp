@@ -14,6 +14,7 @@
 
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
+#define SND_BLIP "buttons/blip2.wav"
 
 #define TRAITORS_AMOUNT 0.25
 #define DETECTIVES_AMOUNT 0.13
@@ -572,9 +573,9 @@ public void OnMapStart()
 	PrecacheModel("props/cs_office/microwave.mdl", true);
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
 	
-	PrecacheSoundAny("buttons/blip2.wav", true); 
-	PrecacheSound(SND_TCHAT, true);
-	PrecacheSound(SND_FLASHLIGHT, true);
+	PrecacheSoundAny(SND_BLIP, true); 
+	PrecacheSoundAny(SND_TCHAT, true);
+	PrecacheSoundAny(SND_FLASHLIGHT, true);
 	
 	PrecacheSoundAny("training/firewerks_burst_02.wav", true);
 	PrecacheSoundAny("weapons/c4/c4_beep1.wav", true);
@@ -2260,7 +2261,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 public Action BombaArmada(Handle timer, any client) 
 { 
 	CPrintToChat(client, g_sTag, "Your bomb is now armed.", client);
-	EmitAmbientSound("buttons/blip2.wav", NULL_VECTOR, client);
+	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
 	g_hJihadBomb[client] = null;	
 } 
 
@@ -2536,7 +2537,6 @@ public Action TimerCallback_Detonate(Handle timer, any client)
 
 public Action Command_LAW(int client, const char[] command, int argc)
 {
-
 	if(!TTT_IsClientValid(client))
 		return Plugin_Continue;
 	
