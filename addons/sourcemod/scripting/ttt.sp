@@ -284,11 +284,25 @@ public void OnPluginStart()
 	
 	if (!SQL_CheckConfig("ttt"))
 	{
-		SetFailState("(OnPluginStart) Database failure: Couldn't find Database entry \"ttt\"");
-		return;
+		char error[255];
+		Handle kv = INVALID_HANDLE;
+		
+		kv = CreateKeyValues("");
+		KvSetString(kv, "database", "ttt");
+		g_hDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);  
+		CloseHandle(kv);
+		
+		if(g_hDatabase == INVALID_HANDLE)
+		{
+			SetFailState("(OnPluginStart) Database failure: Couldn't find Database entry \"ttt\" and can't use SQlite as default.");
+			return;
+		}
+		
+		CheckAndCreateTables("sqlite");
+		SQL_SetCharset(g_hDatabase, "utf8");
+		LoadClients();
 	}
-	else
-		SQL_TConnect(SQLConnect, "ttt");
+	else SQL_TConnect(SQLConnect, "ttt");
 	
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
