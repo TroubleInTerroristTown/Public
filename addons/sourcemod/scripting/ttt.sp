@@ -242,6 +242,13 @@ char g_sRadioCMDs[][] = {
 	"cheer"
 };
 
+char g_sRemoveEntityList[][] = {
+	"func_bomb_target",
+	"hostage_entity",
+	"func_hostage_rescue",
+	"info_hostage_spawn"
+};
+
 public Plugin myinfo =
 {
 	name = TTT_PLUGIN_NAME,
@@ -1893,12 +1900,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			float OriginG[3], TargetOriginG[3];
 			GetClientEyePosition(client, TargetOriginG);
 			GetEntPropVector(entidad, Prop_Data, "m_vecOrigin", OriginG);
-			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0) return Plugin_Continue;
-			
+			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0) 
+				return Plugin_Continue;
 			
 		 	int iSize = GetArraySize(g_hRagdollArray);
-	
-			if(iSize == 0) return Plugin_Continue;
+			if(iSize == 0)
+				return Plugin_Continue;
 	
 			int Items[Ragdolls];
 			int entity;
@@ -1967,8 +1974,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							LoopValidClients(j)
 								CPrintToChat(j, g_sTag, "Detective scan found body suicide", j, client);
 						}
-						
-						
 					}
 					SetArrayArray(g_hRagdollArray, i, Items[0]);
 					
@@ -2953,6 +2958,17 @@ public int OnEntityCreated(int entity, const char[] className)
 		GetEntPropString(entity, Prop_Data, "m_iName", targetName, sizeof(targetName));
 		if (StrEqual(targetName, "Destroy_Trigger", false))
 			SDKHook(entity, SDKHook_Use, OnUse);
+	}
+	else
+	{
+		for (int i = 0; i < sizeof(g_sRemoveEntityList); i++)
+		{
+			if (!StrEqual(className, g_sRemoveEntityList[i]))
+				continue;
+				
+			AcceptEntityInput(entity, "Kill");
+			break;
+		}
 	}
 }
 
