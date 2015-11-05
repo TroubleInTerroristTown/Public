@@ -143,6 +143,10 @@ int g_iInnoKills[MAXPLAYERS + 1];
 Handle g_hGraceTime = null;
 
 Handle g_hStartTimer = null;
+
+float g_fRealRoundStart;
+Handle g_hCountdownTimer = null;
+
 Handle g_hPlayerArray = null;
 
 Handle g_hDetectives = null;
@@ -731,8 +735,15 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	if(g_hStartTimer != null)
 		KillTimer(g_hStartTimer);
-		
-	g_hStartTimer = CreateTimer(GetConVarFloat(g_hGraceTime) + 5.0, Timer_Selection);
+
+	if(g_hCountdownTimer != null)
+		KillTimer(g_hCountdownTimer);
+	
+	float warmupTime = GetConVarFloat(g_hGraceTime) + 5.0;
+	g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _ , TIMER_FLAG_NO_MAPCHANGE);
+	
+	g_fRealRoundStart = GetGameTime() + warmupTime;
+	g_hCountdownTimer = CreateTimer(0.5, Timer_SelectionCountdown, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 	
 	g_bRoundStarted = false;
 	
@@ -775,6 +786,25 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	}
 	resetPlayers();
 	healthStation_cleanUp();
+}
+
+public Action Timer_SelectionCountdown(Handle hTimer)
+{
+	int timeLeft = RoundToFloor(g_fRealRoundStart - GetGameTime());
+	
+	if (g_fRealRoundStart <= 0.0 || timeLeft <= 0)
+	{
+		g_hCountdownTimer = null;
+		return Plugin_Stop;
+	}
+	
+	char centerText[512];
+	Format(centerText, sizeof(centerText), "<font size='32' color='00ff00'>%ds</font>", timeLeft);
+	
+	LoopValidClients(iClient)
+		PrintHintText(iClient, centerText);
+	
+	return Plugin_Continue;
 }
 
 public Action Timer_Selection(Handle hTimer)
@@ -1705,6 +1735,9 @@ public void OnMapEnd()
 		CloseHandle(g_hRoundTimer);
 		g_hRoundTimer = null;
 	}
+	
+	g_hStartTimer = null;
+	g_hCountdownTimer = null;
 	
 	resetPlayers();
 	
