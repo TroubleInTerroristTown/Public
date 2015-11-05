@@ -9,7 +9,7 @@
 public Plugin myinfo =
 {
 	name = "Show Nickname",
-	author = "Bara",
+	author = "Bara & .#Zipcore",
 	description = "",
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
@@ -26,12 +26,17 @@ public Action Timer_UpdateText(Handle timer)
 	{
 		if (IsPlayerAlive(i))
 		{
-			int target = GetClientAimTarget(i) ;
-			if(target > 0 && target <= MaxClients && IsClientInGame(target) && IsPlayerAlive(target))
-			{
-				PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target));
-			}
+			int target = GetClientAimTarget(i);
+			
+			if(!TTT_IsClientValid(target))
+				continue;
+			
+			if(!IsPlayerAlive(target))
+				continue;
+			
+			PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target));
 		}
 	}
+	
 	return Plugin_Continue; 
 }

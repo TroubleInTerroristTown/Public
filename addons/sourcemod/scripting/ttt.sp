@@ -760,6 +760,12 @@ public Action Timer_Selection(Handle hTimer)
 	
 	ClearArray(g_hPlayerArray);
 	
+	if(g_hDetectives == null) 
+		g_hDetectives = CreateArray(1);
+	
+	if(g_hTraitores == null) 
+		g_hTraitores = CreateArray(1);
+	
 	int iCount = 0;
 	LoopValidClients(i)
 	{
@@ -882,13 +888,8 @@ public Action Timer_Selection(Handle hTimer)
 	
 	/* Remember role, to prevent same role next round for players */
 	
-	if(g_hDetectives != null)
-		ClearArray(g_hDetectives);
-	else g_hDetectives = CreateArray(1);
-	
-	if(g_hTraitores != null)
-		ClearArray(g_hTraitores);
-	else g_hTraitores = CreateArray(1);
+	ClearArray(g_hDetectives);
+	ClearArray(g_hTraitores);
 	
 	LoopValidClients(i)
 	{
