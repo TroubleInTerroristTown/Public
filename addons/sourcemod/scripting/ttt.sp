@@ -20,6 +20,8 @@
 #define SND_DISARM "weapons/c4/c4_disarm.wav"
 #define SND_WARNING "resource/warning.wav"
 
+#define MDL_C4 "models/weapons/w_c4_planted.mdl"
+
 enum eConfig
 {
 	ConVar:c_shopKEVLAR,
@@ -1961,38 +1963,53 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			} 
 		}
 	}
-	else
-		g_bHoldingProp[client] = false;
-
-
-	if (buttons & IN_RELOAD && g_iDefusePlayerIndex[client] == -1) {
+	else g_bHoldingProp[client] = false;
+	
+	if (buttons & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
+	{
 		int target = GetClientAimTarget(client, false);
-		if (target > 0) {
+		if (target > 0)
+		{
 			float clientEyes[3], targetOrigin[3];
 			GetClientEyePosition(client, clientEyes);
 			GetEntPropVector(target, Prop_Data, "m_vecOrigin", targetOrigin);
-			if (GetVectorDistance(clientEyes, targetOrigin) > 100.0) return Plugin_Continue;
+			if (GetVectorDistance(clientEyes, targetOrigin) > 100.0)
+				return Plugin_Continue;
+				
 			int iEnt;
-			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1) {
+			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
+			{
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
+				
 				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
 					return Plugin_Continue;
-				if (target == iEnt) {
+				
+				char sModelPath[PLATFORM_MAX_PATH];
+				GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+				
+				if(!StrEqual(MDL_C4, sModelPath))
+					return Plugin_Continue;
+					
+				if (target == iEnt)
+				{
 					g_iDefusePlayerIndex[client] = planter;
 					showDefuseMenu(client);
 				}
 			}
 		}
 	}
-	if (buttons & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client]) {
+	
+	if (buttons & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client])
+	{
 		g_bHasActiveBomb[client] = true;
 		int bombEnt = CreateEntityByName("prop_physics");
-		if (bombEnt != -1) {
+		if (bombEnt != -1)
+		{
 			float clientPos[3];
 			GetClientAbsOrigin(client, clientPos);
 			SetEntProp(bombEnt, Prop_Data, "m_CollisionGroup", 1);
 			SetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity", client);
-			DispatchKeyValue(bombEnt, "model", "models/weapons/w_c4_planted.mdl");
+			DispatchKeyValue(bombEnt, "model", MDL_C4);
 			DispatchSpawn(bombEnt);
 			TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
 			showPlantMenu(client);
@@ -2815,14 +2832,25 @@ public Action Command_SetKarma(int client, int args)
 
 		return Plugin_Handled;
 	}
+	
 	char arg1[32];
 	char arg2[32];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
+	
 	int target = FindTarget(client, arg1);
 	
 	if (target == -1)
+	{
+		ReplyToCommand(client, "[SM] Invalid target.");
 		return Plugin_Handled;
+	}
+		
+	if(g_bKarma[client])
+	{
+		ReplyToCommand(client, "[SM] Player data not loaded yet.");
+		return Plugin_Handled;
+	}
 
 	int karma = StringToInt(arg2);
 	
@@ -2942,6 +2970,10 @@ public Action explodeC4(Handle timer, Handle pack)
 	ResetPack(pack);
 	clientUserId = ReadPackCell(pack);
 	bombEnt = ReadPackCell(pack);
+	
+	if(!IsValidEntity(bombEnt))
+		return Plugin_Stop;
+	
 	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
 	GetEntPropVector(bombEnt, Prop_Send, "m_vecOrigin", explosionOrigin);
@@ -2952,8 +2984,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		g_bImmuneRDMManager[client] = true;
 		CPrintToChat(client, g_sTag, "Bomb Detonated", client);
 	}
-	else
-		return Plugin_Stop;
+	else return Plugin_Stop;
 
 	int explosionIndex = CreateEntityByName("env_explosion");
 	int particleIndex = CreateEntityByName("info_particle_system");
@@ -3041,8 +3072,8 @@ public Action bombBeep(Handle timer, Handle pack)
 		beeps--;
 		stopBeeping = false;
 	}
-	else
-		stopBeeping = true;
+	else stopBeeping = true;
+	
 	if (stopBeeping)
 		return Plugin_Stop;
 
@@ -3135,19 +3166,12 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 		{
 			CloseHandle(menu);
 			g_bHasActiveBomb[client] = false;
-			int iEnt;
-			
-			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
-				if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") == client)
-					AcceptEntityInput(iEnt, "Kill");
+			removeBomb(client);
 		}
 		case MenuAction_Cancel:
 		{
 			g_bHasActiveBomb[client] = false;
-			int iEnt;
-			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
-				if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") == client)
-					AcceptEntityInput(iEnt, "Kill");
+			removeBomb(client);
 		}
 	}
 }
@@ -3221,31 +3245,61 @@ stock float plantBomb(int client, float time)
 	
 	CPrintToChat(client, g_sTag, "Will Explode In", client, time);
 	
+	bool bombFound;
 	int bombEnt;
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
 	{
-		if (GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity") == client)
-		{
-			if (bombEnt != -1)
-			{
-				Handle explosionPack;
-				Handle beepPack;
-				if (g_hExplosionTimer[client] != null)
-					KillTimer(g_hExplosionTimer[client]);
-				g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack);
-				CreateDataTimer(1.0, bombBeep, beepPack);
-				WritePackCell(explosionPack, GetClientUserId(client));
-				WritePackCell(explosionPack, bombEnt);
-				WritePackCell(beepPack, bombEnt);
-				WritePackCell(beepPack, (time - 1));
-				g_bHasActiveBomb[client] = true;
-			}
-			else
-				CPrintToChat(client, g_sTag, "Bomb Was Not Found", client);
-		}
+		if (GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity") != client)
+			continue;
+			
+		char sModelPath[PLATFORM_MAX_PATH];
+		GetEntPropString(bombEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+		
+		if(!StrEqual(MDL_C4, sModelPath))
+			continue;
+		
+		Handle explosionPack;
+		Handle beepPack;
+		if (g_hExplosionTimer[client] != null)
+			KillTimer(g_hExplosionTimer[client]);
+		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack);
+		CreateDataTimer(1.0, bombBeep, beepPack);
+		WritePackCell(explosionPack, GetClientUserId(client));
+		WritePackCell(explosionPack, bombEnt);
+		WritePackCell(beepPack, bombEnt);
+		WritePackCell(beepPack, (time - 1));
+		g_bHasActiveBomb[client] = true;
+		bombFound = true;
 	}
+	
+	if(!bombFound)
+		CPrintToChat(client, g_sTag, "Bomb Was Not Found", client);
+	
 	g_iWire[client] = Math_GetRandomInt(1, 4);
 	CPrintToChat(client, g_sTag, "Wire Is", client, g_iWire[client]);
+}
+
+stock int findBombPlanter(int &bomb)
+{	
+	int iEnt;
+	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
+	{
+		int iPlanter = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
+		
+		if (iPlanter <= 0)
+			continue;
+			
+		char sModelPath[PLATFORM_MAX_PATH];
+		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+		
+		if(!StrEqual(MDL_C4, sModelPath))
+			continue;
+		
+		bomb = iEnt;
+		return iPlanter;
+	}
+	
+	return -1;
 }
 
 stock int findBomb(int client)
@@ -3256,10 +3310,36 @@ stock int findBomb(int client)
 	int iEnt;
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
-		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") == client)
-			return iEnt;
+		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
+			continue;
+			
+		char sModelPath[PLATFORM_MAX_PATH];
+		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+		
+		if(!StrEqual(MDL_C4, sModelPath))
+			continue;
+		
+		return iEnt;
 	}
 	return -1;
+}
+
+stock void removeBomb(int client)
+{
+	int iEnt;
+	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
+	{
+		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
+			continue;
+			
+		char sModelPath[PLATFORM_MAX_PATH];
+		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+		
+		if(!StrEqual(MDL_C4, sModelPath))
+			continue;
+		
+		AcceptEntityInput(iEnt, "Kill");
+	}
 }
 
 stock void resetPlayers()
