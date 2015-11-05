@@ -1249,9 +1249,8 @@ public void OnClientPostAdminCheck(int client)
 	
 	if(g_iConfig[c_showRulesMenu].IntValue)
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
-	else
-		if(g_iConfig[c_showDetectiveMenu].IntValue)
-			CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
+	else if(g_iConfig[c_showDetectiveMenu].IntValue)
+		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
 public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
@@ -1676,13 +1675,15 @@ public Action Hook_SetTransmitT(int entity, int client)
     return Plugin_Continue; 
 }  
 
-public void OnMapEnd() {
-	if (g_hRoundTimer != null) {
+public void OnMapEnd() 
+{
+	if (g_hRoundTimer != null) 
+	{
 		CloseHandle(g_hRoundTimer);
 		g_hRoundTimer = null;
 	}
-	resetPlayers();
 	
+	resetPlayers();
 	
 	LoopValidClients(i)
 		g_bKarma[i] = false;
@@ -2891,9 +2892,7 @@ public Action Timer_5(Handle timer)
 			g_iHealthStationCharges[i]++;
 			
 		if(g_bKarma[i] && g_iConfig[c_karmaBan].IntValue != 0 && g_iKarma[i] <= g_iConfig[c_karmaBan].IntValue)
-		{
 			BanBadPlayerKarma(i);
-		}
 	}
 	
 	if(g_bRoundStarted)
@@ -3590,7 +3589,10 @@ stock void LoadClientKarma(int userid)
 		char sCommunityID[64];
 		
 		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+		{
+			LogError("(LoadClientKarma) Auth failed: #%d", client);
 			return;
+		}
 		
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\"", sCommunityID);
@@ -3621,7 +3623,10 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			char sCommunityID[64];
 			
 			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+			{
+				LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
 				return;
+			}
 				
 			int karma = SQL_FetchInt(hndl, 0);
 				
@@ -3629,8 +3634,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			
 			if (karma == 0)
 				setKarma(client, g_iConfig[c_startKarma].IntValue);
-			else
-				setKarma(client, karma);
+			else setKarma(client, karma);
 		}
 	}
 }
