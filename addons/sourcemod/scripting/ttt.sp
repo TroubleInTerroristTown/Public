@@ -3720,7 +3720,10 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 stock void LoadClients()
 {
 	LoopValidClients(i)
+	{
 		OnClientPostAdminCheck(i);
+		OnClientPutInServer(i);
+	}
 }
 
 stock void LoadClientKarma(int userid)
