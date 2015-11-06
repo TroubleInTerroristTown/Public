@@ -102,7 +102,8 @@ enum eConfig
 	ConVar:c_roleAgain,
 	ConVar:c_traitorRatio,
 	ConVar:c_detectiveRatio,
-	ConVar:c_taserAllow
+	ConVar:c_taserAllow,
+	ConVar:c_jihadPreparingTime
 };
 
 int g_iConfig[eConfig];
@@ -477,6 +478,7 @@ public void OnPluginStart()
 	g_iConfig[c_detectiveRatio] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
 	
 	g_iConfig[c_taserAllow] = CreateConVar("ttt_taser_allow", "1", "", _, true, 0.0, true, 1.0);
+	g_iConfig[c_jihadPreparingTime] = CreateConVar("ttt_jihad_preparing_time", "60");
 
 	AutoExecConfig(true, "ttt");
 }
@@ -2380,7 +2382,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
-				g_hJihadBomb[client] = CreateTimer(60.0, BombaArmada, client);
+				g_hJihadBomb[client] = CreateTimer(g_iConfig[c_jihadPreparingTime].FloatValue, Timer_JihadPreparing, client);
 				subtractCredits(client, g_iConfig[c_shopJIHADBOMB].IntValue);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, g_sTag, "bomb will arm in 60 seconds, double tab F to explode", client);
@@ -2419,7 +2421,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	}
 }
 
-public Action BombaArmada(Handle timer, any client) 
+public Action Timer_JihadPreparing(Handle timer, any client) 
 { 
 	CPrintToChat(client, g_sTag, "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
