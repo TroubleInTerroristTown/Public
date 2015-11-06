@@ -3010,8 +3010,13 @@ public int OnEntityCreated(int entity, const char[] name)
 		{
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
-				
-			AcceptEntityInput(entity, "Kill");
+			
+			if(g_iConfig[c_removeBomb].IntValue && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
+				AcceptEntityInput(entity, "Kill");
+			
+			if(g_iConfig[c_removeHostages].IntValue && (StrEqual("hostage_entity", g_sRemoveEntityList[i], false) || StrEqual("func_hostage_rescue", g_sRemoveEntityList[i], false) || StrEqual("info_hostage_spawn", g_sRemoveEntityList[i], false)))
+				AcceptEntityInput(entity, "Kill");
+			
 			break;
 		}
 	}
