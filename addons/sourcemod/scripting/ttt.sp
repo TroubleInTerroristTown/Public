@@ -1162,40 +1162,36 @@ public Action OnTakeDamageAlive(int client, int &iAttacker, int &inflictor, floa
 	if(!TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
-	char classname[64];
-	GetEdictClassname(inflictor, classname, sizeof(classname));
-	char item[512];
-	if(StrContains(classname, "_projectile") == -1)
+
+	char item[512], sWeapon[64];
+	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
+	if(StrEqual(sWeapon, "weapon_taser"))
 	{
-		GetClientWeapon(iAttacker, classname, sizeof(classname));
-		if(StrEqual(classname, "weapon_taser"))
+		if(g_iRole[client] == TTT_TEAM_TRAITOR)
 		{
-			if(g_iRole[client] == TTT_TEAM_TRAITOR)
-			{
-				Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
-				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", client, client);
-				addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
-			}
-			else if(g_iRole[client] == TTT_TEAM_DETECTIVE) {
-				Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
-				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, g_sTag, "You hurt a Detective", client, client);
-			}
-			else if(g_iRole[client] == TTT_TEAM_INNOCENT) {
-				Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
-				PushArrayString(g_hLogsArray, item);
-				CPrintToChat(iAttacker, g_sTag, "You hurt an Innocent", client, client);
-			}
-			damage = 0.0;
-			return Plugin_Changed;
+			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
+			PushArrayString(g_hLogsArray, item);
+			CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", client, client);
+			addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
 		}
-		else if(g_b1Knife[iAttacker] && (StrContains(classname, "knife", false) != -1) || (StrContains(classname, "bayonet", false) != -1))
-		{
-			Remove1Knife(iAttacker);
-			damage = 1000.0;
-			return Plugin_Changed;
+		else if(g_iRole[client] == TTT_TEAM_DETECTIVE) {
+			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
+			PushArrayString(g_hLogsArray, item);
+			CPrintToChat(iAttacker, g_sTag, "You hurt a Detective", client, client);
 		}
+		else if(g_iRole[client] == TTT_TEAM_INNOCENT) {
+			Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
+			PushArrayString(g_hLogsArray, item);
+			CPrintToChat(iAttacker, g_sTag, "You hurt an Innocent", client, client);
+		}
+		damage = 0.0;
+		return Plugin_Changed;
+	}
+	else if(g_b1Knife[iAttacker] && (StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
+	{
+		Remove1Knife(iAttacker);
+		damage = 1000.0;
+		return Plugin_Changed;
 	}
 	
 	if(g_iKarma[iAttacker] == 100)
@@ -2982,12 +2978,12 @@ public Action Timer_5(Handle timer)
 }
 
 #if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
-public void OnEntityCreated(int entity, const char[] className)
+public void OnEntityCreated(int entity, const char[] name)
 #else
-public int OnEntityCreated(int entity, const char[] className)
+public int OnEntityCreated(int entity, const char[] name)
 #endif
 {
-	if (StrEqual(className, "func_button"))
+	if (StrEqual(name, "func_button"))
 	{
 		char targetName[128];
 		GetEntPropString(entity, Prop_Data, "m_iName", targetName, sizeof(targetName));
@@ -2998,7 +2994,7 @@ public int OnEntityCreated(int entity, const char[] className)
 	{
 		for (int i = 0; i < sizeof(g_sRemoveEntityList); i++)
 		{
-			if (!StrEqual(className, g_sRemoveEntityList[i]))
+			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 				
 			AcceptEntityInput(entity, "Kill");
