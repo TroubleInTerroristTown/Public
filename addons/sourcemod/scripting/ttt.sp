@@ -107,6 +107,7 @@ enum eConfig
 };
 
 int g_iConfig[eConfig];
+char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 
 int g_iCredits[MAXPLAYERS + 1] =  { 800, ... };
 
@@ -294,17 +295,19 @@ public void OnPluginStart()
 		return;
 	}
 	
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	
 	if (!SQL_CheckConfig("ttt"))
 	{
 		char error[255];
-		Handle kv = INVALID_HANDLE;
+		Handle kv = null;
 		
 		kv = CreateKeyValues("");
 		KvSetString(kv, "database", "ttt");
 		g_hDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);  
-		CloseHandle(kv);
+		delete kv;
 		
-		if(g_hDatabase == INVALID_HANDLE)
+		if(g_hDatabase == null)
 		{
 			SetFailState("(OnPluginStart) Database failure: Couldn't find Database entry \"ttt\" and can't use SQlite as default.");
 			return;
@@ -1166,7 +1169,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	
 	char item[512], sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-	if(StrEqual(sWeapon, "weapon_taser"))
+	if(StrEqual(sWeapon, "weapon_taser", false))
 	{
 		if(g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 		{
@@ -1198,7 +1201,6 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	
 	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
-	
 
 	char sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
@@ -3831,8 +3833,6 @@ public int Native_GetClientRole(Handle plugin, int numParams)
 	
 	if(TTT_IsClientValid(client))
 		return g_iRole[client];
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3842,8 +3842,6 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 	
 	if(TTT_IsClientValid(client) && g_bKarma[client])
 		return g_iKarma[client];
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3853,8 +3851,6 @@ public int Native_GetClientCredits(Handle plugin, int numParams)
 	
 	if(TTT_IsClientValid(client))
 		return g_iCredits[client];
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3873,8 +3869,6 @@ public int Native_SetClientRole(Handle plugin, int numParams)
 	}
 	else if(role < TTT_TEAM_UNASSIGNED || role > TTT_TEAM_DETECTIVE)
 		ThrowNativeError(SP_ERROR_NATIVE, "Invalid role %d", role);
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3888,8 +3882,6 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 		setKarma(client, karma);
 		return g_iKarma[client];
 	}
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3903,8 +3895,6 @@ public int Native_SetClientCredits(Handle plugin, int numParams)
 		setCredits(client, credits);
 		return g_iCredits[client];
 	}
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3931,8 +3921,6 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 			}
 		}
 	}
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
 }
 
@@ -3959,7 +3947,98 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 			}
 		}
 	}
-	else
-		ThrowNativeError(SP_ERROR_NATIVE, "Client (%d) is invalid", client);
 	return 0;
+}
+
+stock int AddInt(const char[] name, int value, const char[] description)
+{
+	KeyValues kv = CreateKeyValues("TTT");
+	
+	if(!kv.ImportFromFile(g_sConfigFile))
+		LogError("Can't read ttt.cfg correctly! Return the default value!");
+	
+	if(kv.JumpToKey(name, false))
+		value = kv.GetNum("value");
+	else
+	{
+		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		kv.JumpToKey(name, true);
+		kv.SetNum("value", value);
+		kv.SetString("description", description);
+		kv.Rewind();
+		kv.ExportToFile(g_sConfigFile);
+	}
+	
+	delete kv;
+	return value;
+}
+
+stock bool AddBool(const char[] name, bool value, const char[] description)
+{
+	KeyValues kv = CreateKeyValues("TTT");
+	
+	if(!kv.ImportFromFile(g_sConfigFile))
+		LogError("Can't read ttt.cfg correctly! Return the default value!");
+
+	if(kv.JumpToKey(name, false))
+		value = view_as<bool>(kv.GetNum("value"));
+	else
+	{
+		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		kv.JumpToKey(name, true);
+		kv.SetNum("value", value);
+		kv.SetString("description", description);
+		kv.Rewind();
+		kv.ExportToFile(g_sConfigFile);
+	}
+
+	delete kv;
+	return value;
+}
+
+stock float AddFloat(const char[] name, float value, const char[] description)
+{
+	KeyValues kv = CreateKeyValues("TTT");
+	
+	if(!kv.ImportFromFile(g_sConfigFile))
+		LogError("Can't read ttt.cfg correctly! Return the default value!");
+	
+	if(kv.JumpToKey(name, false))
+		value = view_as<float>(kv.GetFloat("value"));
+	else
+	{
+		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		kv.JumpToKey(name, true);
+		kv.SetFloat("value", value);
+		kv.SetString("description", description);
+		kv.Rewind();
+		kv.ExportToFile(g_sConfigFile);
+	}
+	
+	delete kv;
+	return value;
+}
+
+stock void AddString(const char[] name, const char[] value, const char[] description, char[] output, int size)
+{
+	Format(output, size, value);
+	
+	KeyValues kv = CreateKeyValues("TTT");
+	
+	if(!kv.ImportFromFile(g_sConfigFile))
+		LogError("Can't read ttt.cfg correctly! Return the default value!");
+	
+	if(kv.JumpToKey(name, false))
+		kv.GetString("value", output, size);
+	else
+	{
+		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		kv.JumpToKey(name, true);
+		kv.SetString("value", value);
+		kv.SetString("description", description);
+		kv.Rewind();
+		kv.ExportToFile(g_sConfigFile);
+	}
+	
+	delete kv;
 }
