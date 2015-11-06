@@ -912,7 +912,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		LoopValidClients(i)
 		{
-			if(g_iRole[i] != TTT_TEAM_INNOCENT)
+			if(g_iRole[i] != TTT_TEAM_INNOCENT && !g_bConfirmDetectiveRules[i])
 				continue;
 				
 			iInnocent--;
