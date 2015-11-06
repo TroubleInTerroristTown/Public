@@ -898,8 +898,9 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		if (!IsPlayerAlive(i))
 			continue;
-			
-		listTraitors(i);
+		
+		if(g_iRole[i] == TTT_TEAM_TRAITOR)
+			listTraitors(i);
 		
 		if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			iTraitors++;
