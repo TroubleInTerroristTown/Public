@@ -8,7 +8,7 @@
 
 public Plugin myinfo =
 {
-	name = "Show Nickname",
+	name = "Show Nickname & Spec Menu",
 	author = "Bara & .#Zipcore",
 	description = "",
 	version = TTT_PLUGIN_VERSION,
@@ -35,6 +35,20 @@ public Action Timer_UpdateText(Handle timer)
 				continue;
 			
 			PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target));
+		}
+		else
+		{
+			int iMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
+			int iTarget = GetEntPropEnt(i, Prop_Send, "m_hObserverTarget");
+			
+			if (!TTT_IsClientValid(iTarget))
+				continue;
+			
+			if(!IsPlayerAlive(iTarget))
+				continue;
+			
+			if(iMode == 4 || iMode == 5)
+				PrintHintText(i, "Player: \"%N\"\nKarma: %d", iTarget, TTT_GetClientKarma(iTarget));
 		}
 	}
 	
