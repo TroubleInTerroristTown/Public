@@ -1125,6 +1125,7 @@ public void OnClientPutInServer(int client)
 	g_bImmuneRDMManager[client] = false;
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
+	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
@@ -1154,55 +1155,68 @@ stock void BanBadPlayerKarma(int client)
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
 
-public Action OnTakeDamageAlive(int client, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
-	if(!TTT_IsClientValid(iAttacker))
+	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
-
 	char item[512], sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
 	if(StrEqual(sWeapon, "weapon_taser"))
 	{
-		if(g_iRole[client] == TTT_TEAM_TRAITOR)
+		if(g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 		{
-			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, client);
+			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", client, client);
+			CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", iVictim, iVictim);
 			addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
 		}
-		else if(g_iRole[client] == TTT_TEAM_DETECTIVE) {
-			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", client, iAttacker, client);
+		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE) {
+			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_sTag, "You hurt a Detective", client, client);
+			CPrintToChat(iAttacker, g_sTag, "You hurt a Detective", iVictim, iVictim);
 		}
-		else if(g_iRole[client] == TTT_TEAM_INNOCENT) {
-			Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", client, iAttacker, client);
+		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT) {
+			Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_sTag, "You hurt an Innocent", client, client);
+			CPrintToChat(iAttacker, g_sTag, "You hurt an Innocent", iVictim, iVictim);
 		}
-		damage = 0.0;
-		return Plugin_Changed;
+
+		return Plugin_Handled;
 	}
-	else if(g_b1Knife[iAttacker] && (StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
+	return Plugin_Continue;
+}
+
+public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+{
+	if(!g_bRoundStarted)
+		return Plugin_Handled;
+	
+	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+		return Plugin_Continue;
+	
+
+	char sWeapon[64];
+	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
+	if(g_b1Knife[iAttacker] && (StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
 	{
 		Remove1Knife(iAttacker);
-		damage = 1000.0;
+		damage = float(GetClientHealth(iVictim) + GetClientArmor(iVictim));
 		return Plugin_Changed;
 	}
 	
-	if(g_iKarma[iAttacker] == 100)
+	/* if(g_iKarma[iAttacker] > 100)
 		return Plugin_Continue;
 	
 	damage = (damage * (g_iKarma[iAttacker] * 0.01));
 	
 	if(damage < 1.0)
-		damage = 1.0;
+		damage = 1.0; */
 	
-	return Plugin_Changed;
+	return Plugin_Continue;
 }
 
 
