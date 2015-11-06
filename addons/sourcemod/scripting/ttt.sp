@@ -947,7 +947,7 @@ public Action Timer_Selection(Handle hTimer)
 	LoopValidClients(i)
 	{
 		
-		if(g_iConfig[c_removeBomb].IntValue == 0)
+		if(g_iConfig[c_roleAgain].IntValue == 0)
 		{
 			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 				PushArrayCell(g_hDetectives, i);
@@ -1122,7 +1122,7 @@ public void OnClientPutInServer(int client)
 	
 	g_bImmuneRDMManager[client] = false;
 	
-	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamage);
+	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
@@ -1152,7 +1152,7 @@ stock void BanBadPlayerKarma(int client)
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
 }
 
-public Action OnTakeDamage(int client, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+public Action OnTakeDamageAlive(int client, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
