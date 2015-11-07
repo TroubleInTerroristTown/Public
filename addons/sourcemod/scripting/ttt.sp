@@ -1154,6 +1154,9 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
+	if(IsWorldDamage(iAttacker, damagetype))
+		return Plugin_Continue;
+	
 	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
@@ -1189,6 +1192,9 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
+	if(IsWorldDamage(iAttacker, damagetype))
+		return Plugin_Continue;
+	
 	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 
@@ -1212,6 +1218,33 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	return Plugin_Continue;
 }
 
+stock bool IsWorldDamage(int iAttacker, int damagetype)
+{
+	if(damagetype == DMG_FALL
+		|| damagetype == DMG_GENERIC
+		|| damagetype == DMG_CRUSH
+		|| damagetype == DMG_SLASH
+		|| damagetype == DMG_BURN
+		|| damagetype == DMG_VEHICLE
+		|| damagetype == DMG_FALL
+		|| damagetype == DMG_BLAST
+		|| damagetype == DMG_SHOCK
+		|| damagetype == DMG_SONIC
+		|| damagetype == DMG_ENERGYBEAM
+		|| damagetype == DMG_DROWN
+		|| damagetype == DMG_PARALYZE
+		|| damagetype == DMG_NERVEGAS
+		|| damagetype == DMG_POISON
+		|| damagetype == DMG_ACID
+		|| damagetype == DMG_AIRBOAT
+		|| damagetype == DMG_PLASMA
+		|| damagetype == DMG_RADIATION
+		|| damagetype == DMG_SLOWBURN
+		|| iAttacker == 0
+	)
+		return true;
+	return false;
+}
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
