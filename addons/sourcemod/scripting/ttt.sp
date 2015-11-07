@@ -900,7 +900,7 @@ public Action Timer_Selection(Handle hTimer)
 			iInnocent++;
 	}
 	
-	/* No detective found, but we need at least one */
+	/* No detective found, but we need one */
 	if(iDetective == 0 && needDetective)
 	{
 		LoopValidClients(i)
@@ -916,7 +916,7 @@ public Action Timer_Selection(Handle hTimer)
 		}
 	}
 	
-	/* No triaitor found, but we need at least one */
+	/* No triaitor found, but we need one */
 	if(iTraitors == 0)
 	{
 		LoopValidClients(i)
@@ -953,10 +953,8 @@ public Action Timer_Selection(Handle hTimer)
 		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
 		
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
-		{
 			CPrintToChat(i, g_iConfig[s_pluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
-			listTraitors(i);
-		}
+		else listTraitors(i);
 		
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
 			continue;
