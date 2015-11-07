@@ -44,9 +44,9 @@ enum eConfig
 	ConVar:c_karmaBan,
 	ConVar:c_karmaBanLength,
 	ConVar:c_maxKarma,
-	ConVar:c_spawnHPT,
-	ConVar:c_spawnHPD,
-	ConVar:c_spawnHPI,
+	i_spawnHPT,
+	i_spawnHPD,
+	i_spawnHPI,
 	ConVar:c_karmaII,
 	ConVar:c_karmaIT,
 	ConVar:c_karmaID,
@@ -97,13 +97,13 @@ enum eConfig
 	ConVar:c_showDetectiveMenu,
 	ConVar:c_kickImmunity,
 	ConVar:c_updateClientModel,
-	ConVar:c_removeHostages,
-	ConVar:c_removeBomb,
-	ConVar:c_roleAgain,
+	bool:b_removeHostages,
+	bool:b_removeBomb,
+	bool:b_roleAgain,
 	ConVar:c_traitorRatio,
 	ConVar:c_detectiveRatio,
-	ConVar:c_taserAllow,
-	ConVar:c_jihadPreparingTime,
+	bool:b_taserAllow,
+	Float:f_jihadPreparingTime,
 	bool:b_newConfig
 };
 
@@ -409,9 +409,9 @@ public void OnPluginStart()
 	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
 	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "150");
 	
-	g_iConfig[c_spawnHPT] = CreateConVar("ttt_spawn_t", "100");
-	g_iConfig[c_spawnHPD] = CreateConVar("ttt_spawn_d", "100");
-	g_iConfig[c_spawnHPI] = CreateConVar("ttt_spawn_i", "100");
+	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "Amount of health for players as traitor");
+	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "Amount of health for players as detective");
+	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "Amount of health for players as innocent");
 	
 	g_iConfig[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
 	g_iConfig[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
@@ -474,17 +474,17 @@ public void OnPluginStart()
 	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
 	g_iConfig[c_kickImmunity] = CreateConVar("ttt_kick_immunity", "bz");
 	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
-	g_iConfig[c_removeHostages] = CreateConVar("ttt_remove_hostages", "1");
-	g_iConfig[c_removeBomb] = CreateConVar("ttt_remove_bomb_on_spawn", "1");
+	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all bomb stuff?");
+	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove all hostage stuff?");
 	
-	g_iConfig[c_roleAgain] = CreateConVar("ttt_role_again", "0", "", _, true, 0.0, true, 1.0);
+	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Prevent same role next round for players");
 	g_iConfig[c_traitorRatio] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
 	g_iConfig[c_detectiveRatio] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
 	
-	g_iConfig[c_taserAllow] = CreateConVar("ttt_taser_allow", "1", "", _, true, 0.0, true, 1.0);
-	g_iConfig[c_jihadPreparingTime] = CreateConVar("ttt_jihad_preparing_time", "60");
+	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Allow Weapon Taser/Zeus");
+	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "Time (in seconds) until the jihad bomb is ready after buying.");
 	
-	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "Please set this to 1 to accept the new config, otherwise you can't run ttt anymore!");
+	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "Please set this cvar value to 1 to accept the new config, otherwise you can't run ttt anymore!");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -766,7 +766,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
 	
-	if(g_iConfig[c_removeHostages].IntValue)
+	if(g_iConfig[b_removeHostages])
 		RemoveHostages();
 	
 	ShowOverlayToAll("");
@@ -962,7 +962,7 @@ public Action Timer_Selection(Handle hTimer)
 	LoopValidClients(i)
 	{
 		
-		if(g_iConfig[c_roleAgain].IntValue == 0)
+		if(g_iConfig[b_roleAgain])
 		{
 			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 				PushArrayCell(g_hDetectives, i);
@@ -1034,17 +1034,17 @@ stock void TeamInitialize(int client)
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
 			
-		if(g_iConfig[c_taserAllow].IntValue == 1)
+		if(g_iConfig[b_taserAllow])
 			GivePlayerItem(client, "weapon_taser");
 			
 		CPrintToChat(client, g_sTag, "Your Team is DETECTIVES", client);
-		SetEntityHealth(client, g_iConfig[c_spawnHPD].IntValue);
+		SetEntityHealth(client, g_iConfig[i_spawnHPD]);
 	}
 	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, g_sTag, "Your Team is TRAITORS", client);
-		SetEntityHealth(client, g_iConfig[c_spawnHPT].IntValue);
+		SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
 		if(GetClientTeam(client) != CS_TEAM_T)
 			CS_SwitchTeam(client, CS_TEAM_T);
@@ -1052,7 +1052,7 @@ stock void TeamInitialize(int client)
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		CPrintToChat(client, g_sTag, "Your Team is INNOCENTS", client);
-		SetEntityHealth(client, g_iConfig[c_spawnHPI].IntValue);
+		SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
 		if(GetClientTeam(client) != CS_TEAM_T)
 			CS_SwitchTeam(client, CS_TEAM_T);
@@ -1919,7 +1919,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 
 public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
 {
-	if(g_iConfig[c_removeBomb].IntValue == 0)
+	if(!g_iConfig[b_removeBomb])
 		return Plugin_Continue;
 
 	char sItem[32];
@@ -2246,7 +2246,7 @@ public Action Command_Shop(int client, int args)
 			AddMenuItem(menu, "ID", MenuItem);
 		}
 		
-		if(g_iConfig[c_taserAllow].IntValue == 1)
+		if(g_iConfig[b_taserAllow])
 		{
 			Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
 			AddMenuItem(menu, "taser", MenuItem);
@@ -2357,7 +2357,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[i_shopTASER] && g_iConfig[c_taserAllow].IntValue == 1)
+			if(g_iCredits[client] >= g_iConfig[i_shopTASER] && g_iConfig[b_taserAllow])
 			{
 				GivePlayerItem(client, "weapon_taser");
 				subtractCredits(client, g_iConfig[i_shopTASER]);
@@ -2404,7 +2404,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
-				g_hJihadBomb[client] = CreateTimer(g_iConfig[c_jihadPreparingTime].FloatValue, Timer_JihadPreparing, client);
+				g_hJihadBomb[client] = CreateTimer(g_iConfig[f_jihadPreparingTime], Timer_JihadPreparing, client);
 				subtractCredits(client, g_iConfig[i_shopJIHADBOMB]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, g_sTag, "bomb will arm in 60 seconds, double tab F to explode", client);
@@ -3023,10 +3023,10 @@ public int OnEntityCreated(int entity, const char[] name)
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 			
-			if(g_iConfig[c_removeBomb].IntValue && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
+			if(g_iConfig[b_removeBomb] && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
 				AcceptEntityInput(entity, "Kill");
 			
-			if(g_iConfig[c_removeHostages].IntValue && (StrEqual("hostage_entity", g_sRemoveEntityList[i], false) || StrEqual("func_hostage_rescue", g_sRemoveEntityList[i], false) || StrEqual("info_hostage_spawn", g_sRemoveEntityList[i], false)))
+			if(g_iConfig[b_removeHostages] && (StrEqual("hostage_entity", g_sRemoveEntityList[i], false) || StrEqual("func_hostage_rescue", g_sRemoveEntityList[i], false) || StrEqual("info_hostage_spawn", g_sRemoveEntityList[i], false)))
 				AcceptEntityInput(entity, "Kill");
 			
 			break;
