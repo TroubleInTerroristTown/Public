@@ -858,7 +858,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 		
-		if(iDetectives > 0 && g_bConfirmDetectiveRules[player] && !IsPlayerInArray(player, g_hDetectives))
+		if(iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && !IsPlayerInArray(player, g_hDetectives))
 		{
 			g_iRole[player] = TTT_TEAM_DETECTIVE;
 			iDetectives--;
@@ -905,7 +905,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		LoopValidClients(i)
 		{
-			if(g_iRole[i] != TTT_TEAM_INNOCENT && !g_bConfirmDetectiveRules[i])
+			if(g_iRole[i] != TTT_TEAM_INNOCENT && (!g_bConfirmDetectiveRules[i] && g_iConfig[b_showDetectiveMenu]))
 				continue;
 				
 			iInnocent--;
@@ -2246,7 +2246,7 @@ public Action Command_Shop(int client, int args)
 /*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
 			AddMenuItem(menu, "buyT", MenuItem);
 			
-			if(g_bConfirmDetectiveRules[client])
+			if(g_bConfirmDetectiveRules[client] || !g_iConfig[b_showDetectiveMenu])
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
@@ -2899,7 +2899,7 @@ public Action Command_SetRole(int client, int args)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_DETECTIVE && g_bConfirmDetectiveRules[target])
+	else if (role == TTT_TEAM_DETECTIVE && (g_bConfirmDetectiveRules[target] || !g_iConfig[b_showDetectiveMenu]))
 	{
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
