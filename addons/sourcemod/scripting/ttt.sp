@@ -38,53 +38,53 @@ enum eConfig
 	i_shopJIHADBOMB,
 	i_shopC4,
 	i_shopHEALTH,
-	ConVar:c_requiredPlayersD,
-	ConVar:c_requiredPlayers,
-	ConVar:c_startKarma,
-	ConVar:c_karmaBan,
-	ConVar:c_karmaBanLength,
-	ConVar:c_maxKarma,
+	i_requiredPlayersD,
+	i_requiredPlayers,
+	i_startKarma,
+	i_karmaBan,
+	i_karmaBanLength,
+	i_maxKarma,
 	i_spawnHPT,
 	i_spawnHPD,
 	i_spawnHPI,
-	ConVar:c_karmaII,
-	ConVar:c_karmaIT,
-	ConVar:c_karmaID,
-	ConVar:c_karmaTI,
-	ConVar:c_karmaTT,
-	ConVar:c_karmaTD,
-	ConVar:c_karmaDI,
-	ConVar:c_karmaDT,
-	ConVar:c_karmaDD,
-	ConVar:c_creditsII,
-	ConVar:c_creditsIT,
-	ConVar:c_creditsID,
-	ConVar:c_creditsTI,
-	ConVar:c_creditsTT,
-	ConVar:c_creditsTD,
-	ConVar:c_creditsDI,
-	ConVar:c_creditsDT,
-	ConVar:c_creditsDD,
-	ConVar:c_creditsFoundBody,
-	ConVar:c_creditsTaserHurtTraitor,
-	ConVar:c_traitorloseAliveNonTraitors,
-	ConVar:c_traitorloseDeadNonTraitors,
-	ConVar:c_traitorwinAliveTraitors,
-	ConVar:c_traitorwinDeadTraitors,
-	ConVar:c_showDeathMessage,
-	ConVar:c_showKillMessage,
-	ConVar:c_showEarnKarmaMessage,
-	ConVar:c_showEarnCreditsMessage,
-	ConVar:c_showLoseKarmaMessage,
-	ConVar:c_showLoseCreditsMessage,
-	ConVar:c_messageTypKarma,
-	ConVar:c_messageTypCredits,
-	ConVar:c_blockSuicide,
-	ConVar:c_allowFlash,
-	ConVar:c_blockLookAtWeapon,
-	ConVar:c_blockGrenadeMessage,
-	ConVar:c_blockRadioMessage,
-	ConVar:c_enableNoBlock,
+	i_karmaII,
+	i_karmaIT,
+	i_karmaID,
+	i_karmaTI,
+	i_karmaTT,
+	i_karmaTD,
+	i_karmaDI,
+	i_karmaDT,
+	i_karmaDD,
+	i_creditsII,
+	i_creditsIT,
+	i_creditsID,
+	i_creditsTI,
+	i_creditsTT,
+	i_creditsTD,
+	i_creditsDI,
+	i_creditsDT,
+	i_creditsDD,
+	i_creditsFoundBody,
+	i_creditsTaserHurtTraitor,
+	i_traitorloseAliveNonTraitors,
+	i_traitorloseDeadNonTraitors,
+	i_traitorwinAliveTraitors,
+	i_traitorwinDeadTraitors,
+	bool:b_showDeathMessage,
+	bool:b_showKillMessage,
+	bool:b_showEarnKarmaMessage,
+	bool:b_showEarnCreditsMessage,
+	bool:b_showLoseKarmaMessage,
+	bool:b_showLoseCreditsMessage,
+	i_messageTypKarma,
+	i_messageTypCredits,
+	bool:b_blockSuicide,
+	bool:b_allowFlash,
+	bool:b_blockLookAtWeapon,
+	bool:b_blockGrenadeMessage,
+	bool:b_blockRadioMessage,
+	bool:b_enableNoBlock,
 	String:s_pluginTag,
 	bool:b_kadRemover,
 	i_rulesType,
@@ -386,51 +386,50 @@ public void OnPluginStart()
 	
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
-	g_iConfig[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
-	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
-	g_iConfig[c_startKarma] = CreateConVar("ttt_start_karma", "100");
-	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "75"); // 0 = disabled
-	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
-	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "150");
-	g_iConfig[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
-	g_iConfig[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
-	g_iConfig[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
-	g_iConfig[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
-	g_iConfig[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
-	g_iConfig[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
-	g_iConfig[c_karmaDI] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
-	g_iConfig[c_karmaDT] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
-	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
-	g_iConfig[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
-	g_iConfig[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
-	g_iConfig[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
-	g_iConfig[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
-	g_iConfig[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
-	g_iConfig[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
-	g_iConfig[c_creditsDI] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
-	g_iConfig[c_creditsDT] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
-	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
-	g_iConfig[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
-	g_iConfig[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
-	g_iConfig[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
-	g_iConfig[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
-	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
-	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
-	g_iConfig[c_showDeathMessage] = CreateConVar("ttt_show_death_message", "1");
-	g_iConfig[c_showKillMessage] = CreateConVar("ttt_show_kill_message", "1");
-	g_iConfig[c_showEarnKarmaMessage] = CreateConVar("ttt_show_message_earn_karma", "1");
-	g_iConfig[c_showEarnCreditsMessage] = CreateConVar("ttt_show_message_earn_credits", "1");
-	g_iConfig[c_showLoseKarmaMessage] = CreateConVar("ttt_show__message_lose_karmna", "1");
-	g_iConfig[c_showLoseCreditsMessage] = CreateConVar("ttt_show_message_lose_credits", "1");
-	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
-	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
-	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
-	g_iConfig[c_blockGrenadeMessage] = CreateConVar("ttt_block_grenade_message", "1");
-	g_iConfig[c_blockRadioMessage] = CreateConVar("ttt_block_radio_message", "1");
-	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
-	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
-	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
-	
+	g_iConfig[i_creditsII] = AddInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "Losing of how much credits for killing innocent as innocent");
+	g_iConfig[i_creditsIT] = AddInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "Receiving of how much credits for killing traitor as innocent");
+	g_iConfig[i_creditsID] = AddInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "Losing of how much credits for killing detective as innocent");
+	g_iConfig[i_creditsTI] = AddInt("ttt_credits_killer_traitor_victim_innocent_add", 600, "Receiving of how much credits for killing innocent as traitor");
+	g_iConfig[i_creditsTT] = AddInt("ttt_credits_killer_traitor_victim_traitor_subtract", 3000, "Losing of how much credits for killing traitor as traitor");
+	g_iConfig[i_creditsTD] = AddInt("ttt_credits_killer_traitor_victim_detective_add", 4200, "Receiving of how much credits for killing detective as traitor");
+	g_iConfig[i_creditsDI] = AddInt("ttt_credits_killer_detective_victim_innocent_subtract", 300, "Losing of how much credits for killing innocent as detective");
+	g_iConfig[i_creditsDT] = AddInt("ttt_credits_killer_detective_victim_traitor_add", 2100, "Receiving of how much credits for killing traitor as detective");
+	g_iConfig[i_creditsDD] = AddInt("ttt_credits_killer_detective_victim_detective_subtract", 300, "Losing of how much credits for killing detective as detective");
+	g_iConfig[i_karmaII] = AddInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "Losing of how much karma for killing innocent as innocent");
+	g_iConfig[i_karmaIT] = AddInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "Receiving of how much karma for killing traitor as innocent");
+	g_iConfig[i_karmaID] = AddInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "Losing of how much karma for killing detective as innocent");
+	g_iConfig[i_karmaTI] = AddInt("ttt_karma_killer_traitor_victim_innocent_add", 2, "Receiving of how much karma for killing innocent as traitor");
+	g_iConfig[i_karmaTT] = AddInt("ttt_karma_killer_traitor_victim_traitor_subtract", 5, "Losing of how much karma for killing traitor as traitor");
+	g_iConfig[i_karmaTD] = AddInt("ttt_karma_killer_traitor_victim_detective_add", 3, "Receiving of how much karma for killing detective as traitor");
+	g_iConfig[i_karmaDI] = AddInt("ttt_karma_killer_detective_victim_innocent_subtract", 3, "Losing of how much karma for killing innocent as detective");
+	g_iConfig[i_karmaDT] = AddInt("ttt_karma_killer_detective_victim_traitor_add", 7, "Receiving of how much karma for killing traitor as detective");
+	g_iConfig[i_karmaDD] = AddInt("ttt_karma_killer_detective_victim_detective_subtract", 7, "Losing of how much karma for killing detective as detective");
+	g_iConfig[i_startKarma] = AddInt("ttt_start_karma", 100, "Start karma for all new/karma banned players");
+	g_iConfig[i_karmaBan] = AddInt("ttt_with_karma_ban", 75, "Amount of karma to get banned for bad karma (0 = disabled)");
+	g_iConfig[i_karmaBanLength] = AddInt("ttt_with_karma_ban_length", 10080, "Length of the bad karma ban (Default is one week)");
+	g_iConfig[i_maxKarma] = AddInt("ttt_max_karma", 150, "Maximum of karma");
+	g_iConfig[i_requiredPlayersD] = AddInt("ttt_required_players_detective", 6, "Amount of required players to get detectove role/s");
+	g_iConfig[i_requiredPlayers] = AddInt("ttt_required_player", 3, "Amount of required players to start the game");
+	g_iConfig[i_traitorloseAliveNonTraitors] = AddInt("ttt_credits_roundend_traitorlose_alive_nontraitors", 4800, "Innocents/Detectve Wins: Credits for non traitors for the survival of a round");
+	g_iConfig[i_traitorloseDeadNonTraitors] = AddInt("ttt_credits_roundend_traitorlose_dead_nontraitors", 1200, "Innocents/Detectve Wins: Credits for dead non traitors");
+	g_iConfig[i_traitorwinAliveTraitors] = AddInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "Traitor Wins: Credits for traitors for the survival of a round");
+	g_iConfig[i_traitorwinDeadTraitors] = AddInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "Traitor Wins: Credits for dead traitors");
+	g_iConfig[i_creditsFoundBody] = AddInt("ttt_credits_found_body_add", 1200, "Amount of credits for foundbody");
+	g_iConfig[i_creditsTaserHurtTraitor] = AddInt("ttt_hurt_traitor_with_taser", 2000, "Amount of credits for find a traitor with taser/zeus");
+	g_iConfig[b_showDeathMessage] = AddBool("ttt_show_death_message", true, "Show death message (Who killed you)");
+	g_iConfig[b_showKillMessage] = AddBool("ttt_show_kill_message", true, "Show kill message (Who killed you)");
+	g_iConfig[b_showEarnKarmaMessage] = AddBool("ttt_show_message_earn_karma", true, "Show message if anyone earn karma");
+	g_iConfig[b_showEarnCreditsMessage] = AddBool("ttt_show_message_earn_credits", true, "Show message if anyone earn credits");
+	g_iConfig[b_showLoseKarmaMessage] = AddBool("ttt_show__message_lose_karmna", true, "Show message if anyone lose karma");
+	g_iConfig[b_showLoseCreditsMessage] = AddBool("ttt_show_message_lose_credits", true, "Show message if anyone lose credits");
+	g_iConfig[i_messageTypKarma] = AddInt("ttt_message_typ_karma", 1, "Show karma message as 1 = KeyHint or 2 = Chat Message");
+	g_iConfig[i_messageTypCredits] = AddInt("ttt_message_typ_credits", 1, "Show credits message as 1 = KeyHint or 2 = Chat Message");
+	g_iConfig[b_blockSuicide] = AddBool("ttt_block_suicide", false, "Block suicide commands");
+	g_iConfig[b_blockGrenadeMessage] = AddBool("ttt_block_grenade_message", true, "Block grenade messages");
+	g_iConfig[b_blockRadioMessage] = AddBool("ttt_block_radio_message", true, "Block radio messages");
+	g_iConfig[b_allowFlash] = AddBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon)");
+	g_iConfig[b_blockLookAtWeapon] = AddBool("ttt_block_look_at_weapon", true, "Block 'Look at Weapon'?");
+	g_iConfig[b_enableNoBlock] = AddBool("ttt_enable_noblock", false, "Enable noblock");
 	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Reset Kills/Assists/Deaths every time?");
 	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "Customize the plugin tag (DON'T DELETE '%T')", g_iConfig[s_pluginTag], 256);
 	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "Shop price for item 'Kevlar'");
@@ -480,7 +479,7 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	if(g_iConfig[c_blockGrenadeMessage].IntValue)
+	if(g_iConfig[b_blockGrenadeMessage])
 		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), false);
 	
 	Format(g_sTag, sizeof(g_sTag), g_iConfig[s_pluginTag]);
@@ -582,7 +581,7 @@ public void OnCreate(any pack)
 
 public Action Command_InterceptSuicide(int client, const char[] command, int args)
 {
-	if(g_iConfig[c_blockSuicide].IntValue && IsPlayerAlive(client))
+	if(g_iConfig[b_blockSuicide] && IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sTag, "Suicide Blocked", client);
 		return Plugin_Handled;
@@ -592,7 +591,7 @@ public Action Command_InterceptSuicide(int client, const char[] command, int arg
 
 public Action Command_RadioCMDs(int client, const char[] command, int args)
 {
-	if(g_iConfig[c_blockRadioMessage].IntValue)
+	if(g_iConfig[b_blockRadioMessage])
 		return Plugin_Handled;
 	return Plugin_Continue;
 }
@@ -826,15 +825,15 @@ public Action Timer_Selection(Handle hTimer)
 		PushArrayCell(g_hPlayerArray, i);
 	}
 		
-	if(iCount < g_iConfig[c_requiredPlayers].IntValue) 
+	if(iCount < g_iConfig[i_requiredPlayers]) 
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
-			CPrintToChat(i, g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[c_requiredPlayers].IntValue);
+			CPrintToChat(i, g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
 		
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(iCount);
-		Call_PushCell(g_iConfig[c_requiredPlayers].IntValue);
+		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
 		
 		return;
@@ -844,7 +843,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(iDetectives == 0)
 		iDetectives = 1;
 	
-	bool needDetective = ( iCount >= g_iConfig[c_requiredPlayersD].IntValue );
+	bool needDetective = ( iCount >= g_iConfig[i_requiredPlayersD]);
 	
 	/* Not enough players to allow a detective */
 	if(!needDetective)
@@ -1108,7 +1107,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
 		
-		if(g_iConfig[c_enableNoBlock].IntValue)
+		if(g_iConfig[b_enableNoBlock])
 			SetNoBlock(client);
 	}
 }
@@ -1138,7 +1137,7 @@ public Action OnPreThink(int client)
 
 stock void AddStartKarma(int client)
 {
-	setKarma(client, g_iConfig[c_startKarma].IntValue);
+	setKarma(client, g_iConfig[i_startKarma]);
 }
 
 stock void BanBadPlayerKarma(int client)
@@ -1146,9 +1145,9 @@ stock void BanBadPlayerKarma(int client)
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 	
-	setKarma(client, g_iConfig[c_startKarma].IntValue);
+	setKarma(client, g_iConfig[i_startKarma]);
 	
-	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[c_karmaBanLength].IntValue, sReason);
+	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -1168,7 +1167,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_sTag, "You hurt a Traitor", iVictim, iVictim);
-			addCredits(iAttacker, g_iConfig[c_creditsTaserHurtTraitor].IntValue);
+			addCredits(iAttacker, g_iConfig[i_creditsTaserHurtTraitor]);
 		}
 		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE) {
 			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", iVictim, iAttacker, iVictim);
@@ -1591,7 +1590,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if(!TTT_IsClientValid(assister) || assister == client)
 		return;
 	
-	if (g_iConfig[c_showDeathMessage].IntValue)
+	if (g_iConfig[b_showDeathMessage])
 	{
 		if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
 			CPrintToChat(client, g_sTag, "Your killer is a Traitor", client);
@@ -1601,7 +1600,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(client, g_sTag, "Your killer is an Innocent", client);
 	}
 	
-	if(g_iConfig[c_showKillMessage].IntValue)
+	if(g_iConfig[b_showKillMessage])
 	{
 		if(g_iRole[client] == TTT_TEAM_TRAITOR)
 			CPrintToChat(iAttacker, g_sTag, "You killed a Traitor", client);
@@ -1618,72 +1617,72 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		subtractKarma(iAttacker, g_iConfig[c_karmaII].IntValue, true);
-		subtractCredits(iAttacker, g_iConfig[c_creditsII].IntValue, true);
+		subtractKarma(iAttacker, g_iConfig[i_karmaII], true);
+		subtractCredits(iAttacker, g_iConfig[i_creditsII], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		addKarma(iAttacker, g_iConfig[c_karmaIT].IntValue, true);
-		addCredits(iAttacker, g_iConfig[c_creditsIT].IntValue, true);
+		addKarma(iAttacker, g_iConfig[i_karmaIT], true);
+		addCredits(iAttacker, g_iConfig[i_creditsIT], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		subtractKarma(iAttacker, g_iConfig[c_karmaID].IntValue, true);
-		subtractCredits(iAttacker, g_iConfig[c_creditsID].IntValue, true);
+		subtractKarma(iAttacker, g_iConfig[i_karmaID], true);
+		subtractCredits(iAttacker, g_iConfig[i_creditsID], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		addKarma(iAttacker, g_iConfig[c_karmaTI].IntValue, true);
-		addCredits(iAttacker, g_iConfig[c_creditsTI].IntValue, true);
+		addKarma(iAttacker, g_iConfig[i_karmaTI], true);
+		addCredits(iAttacker, g_iConfig[i_creditsTI], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		subtractKarma(iAttacker, g_iConfig[c_karmaTT].IntValue, true);
-		subtractCredits(iAttacker, g_iConfig[c_creditsTT].IntValue, true);
+		subtractKarma(iAttacker, g_iConfig[i_karmaTT], true);
+		subtractCredits(iAttacker, g_iConfig[i_creditsTT], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		addKarma(iAttacker, g_iConfig[c_karmaTD].IntValue, true);
-		addCredits(iAttacker, g_iConfig[c_creditsTD].IntValue, true);
+		addKarma(iAttacker, g_iConfig[i_karmaTD], true);
+		addCredits(iAttacker, g_iConfig[i_creditsTD], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		subtractKarma(iAttacker, g_iConfig[c_karmaDI].IntValue, true);
-		subtractCredits(iAttacker, g_iConfig[c_creditsDI].IntValue, true);
+		subtractKarma(iAttacker, g_iConfig[i_karmaDI], true);
+		subtractCredits(iAttacker, g_iConfig[i_creditsDI], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		addKarma(iAttacker, g_iConfig[c_karmaDT].IntValue, true);
-		addCredits(iAttacker, g_iConfig[c_creditsDT].IntValue, true);
+		addKarma(iAttacker, g_iConfig[i_karmaDT], true);
+		addCredits(iAttacker, g_iConfig[i_creditsDT], true);
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
 		
-		subtractKarma(iAttacker, g_iConfig[c_karmaDD].IntValue, true);
-		subtractCredits(iAttacker, g_iConfig[c_creditsDD].IntValue, true);
+		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
+		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
 	
 	Call_StartForward(g_hOnClientDeath);
@@ -1781,10 +1780,10 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 					if(g_iRole[client] == TTT_TEAM_INNOCENT)
 						bInnoAlive = true;
 					
-					addCredits(client, g_iConfig[c_traitorloseAliveNonTraitors].IntValue);
+					addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
 				}
 				else
-					addCredits(client, g_iConfig[c_traitorloseDeadNonTraitors].IntValue);
+					addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
 			}
 		}
 	}
@@ -1795,9 +1794,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 			if(g_iRole[client] == TTT_TEAM_TRAITOR)
 			{
 				if(IsPlayerAlive(client))
-					addCredits(client, g_iConfig[c_traitorwinAliveTraitors].IntValue);
+					addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
 				else
-					addCredits(client, g_iConfig[c_traitorwinDeadTraitors].IntValue);
+					addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
 			}
 		}
 	}
@@ -1992,7 +1991,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Call_PushString(Items[victimName]);
 						Call_Finish();
 						
-						addCredits(client, g_iConfig[c_creditsFoundBody].IntValue);
+						addCredits(client, g_iConfig[i_creditsFoundBody]);
 					}
 					
 					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
@@ -2177,7 +2176,7 @@ public Action Command_Shop(int client, int args)
 		
 		if(team != TTT_TEAM_INNOCENT)
 		{
-			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
+			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar]);
 			// AddMenuItem(menu, "radar", MenuItem);
 			
 			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
@@ -2298,10 +2297,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		/* else if ( strcmp(info,"radar") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopRadar].IntValue)
+			if(g_iCredits[client] >= g_iConfig[c_shopRadar])
 			{
 				g_bRadar[client] = true;
-				subtractCredits(client, g_iConfig[c_shopRadar].IntValue);
+				subtractCredits(client, g_iConfig[c_shopRadar]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
@@ -2533,12 +2532,12 @@ stock void addKarma(int client, int karma, bool message = false)
 {
 	g_iKarma[client] += karma;
 	
-	if(g_iKarma[client] > g_iConfig[c_maxKarma].IntValue)
-		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
+	if(g_iKarma[client] > g_iConfig[i_maxKarma])
+		g_iKarma[client] = g_iConfig[i_maxKarma];
 	
-	if (g_iConfig[c_showEarnKarmaMessage].IntValue && message)
+	if (g_iConfig[b_showEarnKarmaMessage] && message)
 	{
-		if(g_iConfig[c_messageTypKarma].IntValue == 1)
+		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
 	  	else
 	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
@@ -2551,8 +2550,8 @@ stock void setKarma(int client, int karma)
 {
 	g_iKarma[client] = karma;
 	
-	if(g_iKarma[client] > g_iConfig[c_maxKarma].IntValue)
-		g_iKarma[client] = g_iConfig[c_maxKarma].IntValue;
+	if(g_iKarma[client] > g_iConfig[i_maxKarma])
+		g_iKarma[client] = g_iConfig[i_maxKarma];
 	
 	UpdateKarma(client, g_iKarma[client]);
 }
@@ -2561,9 +2560,9 @@ stock void subtractKarma(int client, int karma, bool message = false)
 {
 	g_iKarma[client] -= karma;
 	
-	if (g_iConfig[c_showLoseKarmaMessage].IntValue && message)
+	if (g_iConfig[b_showLoseKarmaMessage] && message)
 	{
-		if(g_iConfig[c_messageTypKarma].IntValue == 1)
+		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
 	  	else
 	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
@@ -2592,9 +2591,9 @@ stock void addCredits(int client, int credits, bool message = false)
 	
 	g_iCredits[client] += credits;
 	
-	if (g_iConfig[c_showEarnCreditsMessage].IntValue && message)
+	if (g_iConfig[b_showEarnCreditsMessage] && message)
 	{
-		if(g_iConfig[c_messageTypCredits].IntValue == 1)
+		if(g_iConfig[i_messageTypCredits] == 1)
 		{
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
@@ -2613,9 +2612,9 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	if(g_iCredits[client] < 0)
 		g_iCredits[client] = 0;
 	
-	if (g_iConfig[c_showLoseCreditsMessage].IntValue && message)
+	if (g_iConfig[b_showLoseCreditsMessage] && message)
 	{
-		if(g_iConfig[c_messageTypCredits].IntValue == 1)
+		if(g_iConfig[i_messageTypCredits] == 1)
 		{
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
@@ -2723,13 +2722,13 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		CreateTimer(2.0, PasarJ, client);
 	}
 	
-	if(g_iConfig[c_allowFlash].IntValue)
+	if(g_iConfig[b_allowFlash])
 	{
 		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
 	}		
 	
-	if(g_iConfig[c_blockLookAtWeapon].IntValue)
+	if(g_iConfig[b_blockLookAtWeapon])
 		return Plugin_Handled;
 	
 	return Plugin_Continue;
@@ -2978,7 +2977,7 @@ public Action Timer_5(Handle timer)
 		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
 			g_iHealthStationCharges[i]++;
 			
-		if(g_bKarma[i] && g_iConfig[c_karmaBan].IntValue != 0 && g_iKarma[i] <= g_iConfig[c_karmaBan].IntValue)
+		if(g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
 	}
 	
@@ -3791,7 +3790,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			g_bKarma[client] = true;
 			
 			if (karma == 0)
-				setKarma(client, g_iConfig[c_startKarma].IntValue);
+				setKarma(client, g_iConfig[i_startKarma]);
 			else setKarma(client, karma);
 		}
 	}
@@ -3803,7 +3802,7 @@ stock void InsertPlayer(int userid)
 	
 	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
-		int karma = g_iConfig[c_startKarma].IntValue;
+		int karma = g_iConfig[i_startKarma];
 		g_iKarma[client] = karma;
 		
 		char sCommunityID[64];
