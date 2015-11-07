@@ -24,20 +24,20 @@
 
 enum eConfig
 {
-	ConVar:c_shopKEVLAR,
-	ConVar:c_shop1KNIFE,
-	ConVar:c_shopDNA,
-	ConVar:c_shopID,
-	ConVar:c_shopFAKEID,
-	ConVar:c_shopRadar,
-	ConVar:c_shopT,
-	ConVar:c_shopD,
-	ConVar:c_shopTASER,
-	ConVar:c_shopUSP,
-	ConVar:c_shopM4A1,
-	ConVar:c_shopJIHADBOMB,
-	ConVar:c_shopC4,
-	ConVar:c_shopHEALTH,
+	i_shopKEVLAR,
+	i_shop1KNIFE,
+	i_shopDNA,
+	i_shopID,
+	i_shopFAKEID,
+	i_shopRadar,
+	i_shopT,
+	i_shopD,
+	i_shopTASER,
+	i_shopUSP,
+	i_shopM4A1,
+	i_shopJIHADBOMB,
+	i_shopC4,
+	i_shopHEALTH,
 	ConVar:c_requiredPlayersD,
 	ConVar:c_requiredPlayers,
 	ConVar:c_startKarma,
@@ -385,20 +385,20 @@ public void OnPluginStart()
 	
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
-	g_iConfig[c_shopKEVLAR] = CreateConVar("ttt_shop_kevlar", "2500");
-	g_iConfig[c_shop1KNIFE] = CreateConVar("ttt_shop_1knife", "5000");
-	g_iConfig[c_shopDNA] = CreateConVar("ttt_shop_dna_scanner", "5000");
-	g_iConfig[c_shopID] = CreateConVar("ttt_shop_id_card", "500");
-	// g_iConfig[c_shopRadar] = CreateConVar("ttt_shop_radar", "7000");
-	g_iConfig[c_shopFAKEID] = CreateConVar("ttt_shop_fake_id_card", "3000");
-	g_iConfig[c_shopT] = CreateConVar("ttt_shop_t", "100000");
-	g_iConfig[c_shopD] = CreateConVar("ttt_shop_d", "5000");
-	g_iConfig[c_shopTASER] = CreateConVar("ttt_shop_taser", "3000");
-	g_iConfig[c_shopUSP] = CreateConVar("ttt_shop_usp", "3000");
-	g_iConfig[c_shopM4A1] = CreateConVar("ttt_shop_m4a1", "6000");
-	g_iConfig[c_shopJIHADBOMB] = CreateConVar("ttt_shop_jihad_bomb", "6000");
-	g_iConfig[c_shopC4] = CreateConVar("ttt_shop_c4", "10000");
-	g_iConfig[c_shopHEALTH] = CreateConVar("ttt_shop_health_station", "3000");
+	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "Shop price for item 'Kevlar'");
+	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "Shop price for item '1 Hit Knife'");
+	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "Shop price for item 'DNA Scanner'");
+	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "Shop price for item 'ID Card'");
+	// g_iConfig[i_shopRadar] = AddInt("ttt_shop_radar", 7000, "Shop price for item 'Radar'");
+	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "Shop price for item 'Fake ID Card'");
+	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 10000, "Shop price for item 'Traitor Role'");
+	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 5000, "Shop price for item 'Decetive Role'");
+	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "Shop price for item 'Taser'");
+	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "Shop price for item 'USP'");
+	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "Shop price for item 'MA41'");
+	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "Shop price for item 'Jihad Bomb'");
+	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "Shop price for item 'C4'");
+	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "Shop price for item 'Health Station'");
 	
 	g_iConfig[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
 	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
@@ -2188,58 +2188,58 @@ public Action Command_Shop(int client, int args)
 			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar].IntValue);
 			// AddMenuItem(menu, "radar", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[c_shopKEVLAR].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
 			AddMenuItem(menu, "kevlar", MenuItem);
 		}
 	
 		if(team == TTT_TEAM_TRAITOR)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[c_shopC4].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[i_shopC4]);
 			AddMenuItem(menu, "C4", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[c_shopJIHADBOMB].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[i_shopJIHADBOMB]);
 			AddMenuItem(menu, "jbomb", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[c_shop1KNIFE].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[i_shop1KNIFE]);
 			AddMenuItem(menu, "1knife", MenuItem);
 
-			Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[c_shopFAKEID].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
 			AddMenuItem(menu, "fakeID", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[c_shopM4A1].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[i_shopM4A1]);
 			AddMenuItem(menu, "m4s", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[c_shopUSP].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[i_shopUSP]);
 			AddMenuItem(menu, "usps", MenuItem);
 			
 		}
 		if(team == TTT_TEAM_DETECTIVE)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[c_shopHEALTH].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[i_shopHEALTH]);
 			AddMenuItem(menu, "HealthStation", MenuItem);
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[c_shopDNA].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
 			AddMenuItem(menu, "scan13", MenuItem);
 		}
 		if(team == TTT_TEAM_INNOCENT)
 		{
-/*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[c_shopT].IntValue);
+/*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
 			AddMenuItem(menu, "buyT", MenuItem);
 			
 			if(g_bConfirmDetectiveRules[client])
 			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[c_shopD].IntValue);
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
 			}
 */
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[c_shopID].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[i_shopID]);
 			AddMenuItem(menu, "ID", MenuItem);
 		}
 		
 		if(g_iConfig[c_taserAllow].IntValue == 1)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[c_shopTASER].IntValue);
+			Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
 			AddMenuItem(menu, "taser", MenuItem);
 		}
 		
@@ -2264,42 +2264,42 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		if ( strcmp(info,"kevlar") == 0 ) 
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopKEVLAR].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopKEVLAR])
 			{
 				GivePlayerItem( client, "item_assaultsuit");
-				subtractCredits(client, g_iConfig[c_shopKEVLAR].IntValue);
+				subtractCredits(client, g_iConfig[i_shopKEVLAR]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"1knife") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shop1KNIFE].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shop1KNIFE])
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				Set1Knife(client);
-				subtractCredits(client, g_iConfig[c_shop1KNIFE].IntValue);
+				subtractCredits(client, g_iConfig[i_shop1KNIFE]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"scan13") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopDNA].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopDNA])
 			{
 				g_bScan[client] = true;
-				subtractCredits(client, g_iConfig[c_shopDNA].IntValue);
+				subtractCredits(client, g_iConfig[i_shopDNA]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"ID") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopID].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopID])
 			{
 				g_bID[client] = true;
-				subtractCredits(client, g_iConfig[c_shopID].IntValue);
+				subtractCredits(client, g_iConfig[i_shopID]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
@@ -2316,49 +2316,49 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		} */
 		else if ( strcmp(info,"fakeID") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopFAKEID].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopFAKEID])
 			{
 				g_bID[client] = true;
-				subtractCredits(client, g_iConfig[c_shopFAKEID].IntValue);
+				subtractCredits(client, g_iConfig[i_shopFAKEID]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyT") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopT].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopT])
 			{
 				g_iRole[client] = TTT_TEAM_TRAITOR;
 				TeamInitialize(client);
-				subtractCredits(client, g_iConfig[c_shopT].IntValue);
+				subtractCredits(client, g_iConfig[i_shopT]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"buyD") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopD].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopD])
 			{
 				g_iRole[client] = TTT_TEAM_DETECTIVE;
 				TeamInitialize(client);
-				subtractCredits(client, g_iConfig[c_shopD].IntValue);
+				subtractCredits(client, g_iConfig[i_shopD]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopTASER].IntValue && g_iConfig[c_taserAllow].IntValue == 1)
+			if(g_iCredits[client] >= g_iConfig[i_shopTASER] && g_iConfig[c_taserAllow].IntValue == 1)
 			{
 				GivePlayerItem(client, "weapon_taser");
-				subtractCredits(client, g_iConfig[c_shopTASER].IntValue);
+				subtractCredits(client, g_iConfig[i_shopTASER]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"usps") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopUSP].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopUSP])
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
@@ -2366,14 +2366,14 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
 				
 				GivePlayerItem(client, "weapon_usp_silencer");
-				subtractCredits(client, g_iConfig[c_shopUSP].IntValue);
+				subtractCredits(client, g_iConfig[i_shopUSP]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"m4s") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopM4A1].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopM4A1])
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
@@ -2382,39 +2382,39 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 				
 				GivePlayerItem(client, "weapon_m4a1_silencer");
-				subtractCredits(client, g_iConfig[c_shopM4A1].IntValue);
+				subtractCredits(client, g_iConfig[i_shopM4A1]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if ( strcmp(info,"jbomb") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopJIHADBOMB].IntValue)
+			if(g_iCredits[client] >= g_iConfig[i_shopJIHADBOMB])
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
 				g_hJihadBomb[client] = CreateTimer(g_iConfig[c_jihadPreparingTime].FloatValue, Timer_JihadPreparing, client);
-				subtractCredits(client, g_iConfig[c_shopJIHADBOMB].IntValue);
+				subtractCredits(client, g_iConfig[i_shopJIHADBOMB]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, g_sTag, "bomb will arm in 60 seconds, double tab F to explode", client);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "C4") == 0) {
-			if (g_iCredits[client] >= g_iConfig[c_shopC4].IntValue) {
+			if (g_iCredits[client] >= g_iConfig[i_shopC4]) {
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bHasC4[client] = true;
-				subtractCredits(client, g_iConfig[c_shopC4].IntValue);
+				subtractCredits(client, g_iConfig[i_shopC4]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, g_sTag, "Right click to plant the C4", client);
 			}
 			else CPrintToChat(client, g_sTag, "You don't have enough money", client);
 		}
 		else if (strcmp(info, "HealthStation") == 0) {
-			if (g_iCredits[client] >= g_iConfig[c_shopHEALTH].IntValue) {
+			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH]) {
 				if (g_iRole[client] != TTT_TEAM_DETECTIVE)
 					return;
 				if (g_bHasActiveHealthStation[client]) {
@@ -2422,7 +2422,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					return;
 				}
 				spawnHealthStation(client);
-				subtractCredits(client, g_iConfig[c_shopHEALTH].IntValue);
+				subtractCredits(client, g_iConfig[i_shopHEALTH]);
 				CPrintToChat(client, g_sTag, "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}
