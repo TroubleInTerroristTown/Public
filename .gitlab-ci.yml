@@ -1,7 +1,7 @@
 TTT18:
   script:
-    - wget http://www.sourcemod.net/smdrop/1.8/sourcemod-1.8.0-git5729-linux.tar.gz
-    - tar xzf sourcemod-1.8.0-git5729-linux.tar.gz
+    - wget "http://www.sourcemod.net/latest.php?version=1.8&os=linux" -O sourcemod-1.8-linux.tar.gz
+    - tar -xzf sourcemod-1.8-linux.tar.gz
     - cd addons/sourcemod/scripting
     - chmod +x spcomp
     - ./spcomp ttt.sp
@@ -15,8 +15,8 @@ TTT18:
 
 TTT17:
   script:
-    - wget http://www.sourcemod.net/smdrop/1.7/sourcemod-1.7.3-git5272-linux.tar.gz
-    - tar xzf sourcemod-1.7.3-git5272-linux.tar.gz
+    - wget "http://www.sourcemod.net/latest.php?version=1.7&os=linux" -O sourcemod-1.7-linux.tar.gz
+    - tar -xzf sourcemod-1.7-linux.tar.gz
     - cd addons/sourcemod/scripting
     - chmod +x spcomp
     - ./spcomp ttt.sp
