@@ -180,6 +180,7 @@ int g_iAlive = -1;
 int g_iKills = -1;
 int g_iDeaths = -1;
 int g_iAssists = -1;
+int g_iMVPs = -1;
 
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
@@ -670,6 +671,9 @@ public void OnMapStart()
 	if (g_iAssists == -1)
 		SetFailState("CCSPlayerResource \"m_iAssists\"  offset is invalid");
 	
+	g_iMVPs = FindSendPropInfo("CCSPlayerResource", "m_iMVPs");
+	if (g_iMVPs == -1)
+		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	
     
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
@@ -699,6 +703,7 @@ public void ThinkPost(int entity)
 		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
 }
 
