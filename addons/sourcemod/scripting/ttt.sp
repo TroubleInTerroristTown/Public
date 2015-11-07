@@ -85,23 +85,23 @@ enum eConfig
 	ConVar:c_blockGrenadeMessage,
 	ConVar:c_blockRadioMessage,
 	ConVar:c_enableNoBlock,
-	ConVar:c_pluginTag,
-	ConVar:c_kadRemover,
-	ConVar:c_rulesType,
-	ConVar:c_rulesLink,
-	ConVar:c_rulesClosePunishment,
-	ConVar:c_punishInnoKills,
-	ConVar:c_timeToReadRules,
-	ConVar:c_timeToReadDetectiveRules,
-	ConVar:c_showRulesMenu,
-	ConVar:c_showDetectiveMenu,
-	ConVar:c_kickImmunity,
-	ConVar:c_updateClientModel,
+	String:s_pluginTag,
+	bool:b_kadRemover,
+	i_rulesType,
+	String:s_rulesLink,
+	i_rulesClosePunishment,
+	i_punishInnoKills,
+	i_timeToReadRules,
+	i_timeToReadDetectiveRules,
+	bool:b_showRulesMenu,
+	bool:b_showDetectiveMenu,
+	String:s_kickImmunity,
+	bool:b_updateClientModel,
 	bool:b_removeHostages,
 	bool:b_removeBomb,
 	bool:b_roleAgain,
-	ConVar:c_traitorRatio,
-	ConVar:c_detectiveRatio,
+	i_traitorRatio,
+	i_detectiveRatio,
 	bool:b_taserAllow,
 	Float:f_jihadPreparingTime,
 	bool:b_newConfig
@@ -386,6 +386,53 @@ public void OnPluginStart()
 	
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
+	g_iConfig[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
+	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
+	g_iConfig[c_startKarma] = CreateConVar("ttt_start_karma", "100");
+	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "75"); // 0 = disabled
+	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
+	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "150");
+	g_iConfig[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
+	g_iConfig[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
+	g_iConfig[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
+	g_iConfig[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
+	g_iConfig[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
+	g_iConfig[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
+	g_iConfig[c_karmaDI] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
+	g_iConfig[c_karmaDT] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
+	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
+	g_iConfig[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
+	g_iConfig[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
+	g_iConfig[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
+	g_iConfig[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
+	g_iConfig[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
+	g_iConfig[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
+	g_iConfig[c_creditsDI] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
+	g_iConfig[c_creditsDT] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
+	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
+	g_iConfig[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
+	g_iConfig[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
+	g_iConfig[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
+	g_iConfig[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
+	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
+	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
+	g_iConfig[c_showDeathMessage] = CreateConVar("ttt_show_death_message", "1");
+	g_iConfig[c_showKillMessage] = CreateConVar("ttt_show_kill_message", "1");
+	g_iConfig[c_showEarnKarmaMessage] = CreateConVar("ttt_show_message_earn_karma", "1");
+	g_iConfig[c_showEarnCreditsMessage] = CreateConVar("ttt_show_message_earn_credits", "1");
+	g_iConfig[c_showLoseKarmaMessage] = CreateConVar("ttt_show__message_lose_karmna", "1");
+	g_iConfig[c_showLoseCreditsMessage] = CreateConVar("ttt_show_message_lose_credits", "1");
+	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
+	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
+	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
+	g_iConfig[c_blockGrenadeMessage] = CreateConVar("ttt_block_grenade_message", "1");
+	g_iConfig[c_blockRadioMessage] = CreateConVar("ttt_block_radio_message", "1");
+	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
+	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
+	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
+	
+	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Reset Kills/Assists/Deaths every time?");
+	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "Customize the plugin tag (DON'T DELETE '%T')", g_iConfig[s_pluginTag], 256);
 	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "Shop price for item 'Kevlar'");
 	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "Shop price for item '1 Hit Knife'");
 	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "Shop price for item 'DNA Scanner'");
@@ -400,90 +447,26 @@ public void OnPluginStart()
 	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "Shop price for item 'Jihad Bomb'");
 	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "Shop price for item 'C4'");
 	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "Shop price for item 'Health Station'");
-	
-	g_iConfig[c_requiredPlayersD] = CreateConVar("ttt_required_players_detective", "6");
-	g_iConfig[c_requiredPlayers] = CreateConVar("ttt_required_player", "3");
-	
-	g_iConfig[c_startKarma] = CreateConVar("ttt_start_karma", "100");
-	g_iConfig[c_karmaBan] = CreateConVar("ttt_with_karma_ban", "75"); // 0 = disabled
-	g_iConfig[c_karmaBanLength] = CreateConVar("ttt_with_karma_ban_length", "10080"); // one week = 10080 minutes
-	g_iConfig[c_maxKarma] = CreateConVar("ttt_max_karma", "150");
-	
 	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "Amount of health for players as traitor");
 	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "Amount of health for players as detective");
 	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "Amount of health for players as innocent");
-	
-	g_iConfig[c_karmaII] = CreateConVar("ttt_karma_killer_innocent_victim_innocent_subtract", "5");
-	g_iConfig[c_karmaIT] = CreateConVar("ttt_karma_killer_innocent_victim_traitor_add", "5");
-	g_iConfig[c_karmaID] = CreateConVar("ttt_karma_killer_innocent_victim_detective_subtract", "7");
-	g_iConfig[c_karmaTI] = CreateConVar("ttt_karma_killer_traitor_victim_innocent_add", "2");
-	g_iConfig[c_karmaTT] = CreateConVar("ttt_karma_killer_traitor_victim_traitor_subtract", "5");
-	g_iConfig[c_karmaTD] = CreateConVar("ttt_karma_killer_traitor_victim_detective_add", "3");
-	g_iConfig[c_karmaDI] = CreateConVar("ttt_karma_killer_detective_victim_innocent_subtract", "3");
-	g_iConfig[c_karmaDT] = CreateConVar("ttt_karma_killer_detective_victim_traitor_add", "7");
-	g_iConfig[c_karmaDD] = CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7");
-	
-	g_iConfig[c_creditsII] = CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500");
-	g_iConfig[c_creditsIT] = CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000");
-	g_iConfig[c_creditsID] = CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200");
-	g_iConfig[c_creditsTI] = CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600");
-	g_iConfig[c_creditsTT] = CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000");
-	g_iConfig[c_creditsTD] = CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200");
-	g_iConfig[c_creditsDI] = CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300");
-	g_iConfig[c_creditsDT] = CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100");
-	g_iConfig[c_creditsDD] = CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300");
-	
-	g_iConfig[c_traitorloseAliveNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800");
-	g_iConfig[c_traitorloseDeadNonTraitors] = CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200");
-	g_iConfig[c_traitorwinAliveTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800");
-	g_iConfig[c_traitorwinDeadTraitors] = CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200");
-	
-	g_iConfig[c_creditsFoundBody] = CreateConVar("ttt_credits_found_body_add", "1200");
-	g_iConfig[c_creditsTaserHurtTraitor] = CreateConVar("ttt_hurt_traitor_with_taser", "2000");
-	
-	g_iConfig[c_showDeathMessage] = CreateConVar("ttt_show_death_message", "1");
-	g_iConfig[c_showKillMessage] = CreateConVar("ttt_show_kill_message", "1");
-	
-	g_iConfig[c_showEarnKarmaMessage] = CreateConVar("ttt_show_message_earn_karma", "1");
-	g_iConfig[c_showEarnCreditsMessage] = CreateConVar("ttt_show_message_earn_credits", "1");
-	g_iConfig[c_showLoseKarmaMessage] = CreateConVar("ttt_show__message_lose_karmna", "1");
-	g_iConfig[c_showLoseCreditsMessage] = CreateConVar("ttt_show_message_lose_credits", "1");
-	
-	g_iConfig[c_messageTypKarma] = CreateConVar("ttt_message_typ_karma", "1"); // 1 - KeyHint (default), 2 - Chat Message
-	g_iConfig[c_messageTypCredits] = CreateConVar("ttt_message_typ_credits", "1"); // 1 - KeyHint (default), 2 - Chat Message
-	
-	g_iConfig[c_blockSuicide] = CreateConVar("ttt_block_suicide", "0");
-	g_iConfig[c_blockGrenadeMessage] = CreateConVar("ttt_block_grenade_message", "1");
-	g_iConfig[c_blockRadioMessage] = CreateConVar("ttt_block_radio_message", "1");
-	
-	g_iConfig[c_allowFlash] = CreateConVar("ttt_allow_flash", "1");
-	g_iConfig[c_blockLookAtWeapon] = CreateConVar("ttt_block_look_at_weapon", "1");
-	g_iConfig[c_enableNoBlock] = CreateConVar("ttt_enable_noblock", "0");
-	g_iConfig[c_kadRemover] = CreateConVar("ttt_kad_remover", "1"); // Kills, Assists and Death remover
-	
-	g_iConfig[c_pluginTag] = CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T");
-	
-	g_iConfig[c_rulesType] = CreateConVar("ttt_rules_type", "0"); // 0 = command, 1 - url/motd
-	g_iConfig[c_rulesLink] = CreateConVar("ttt_rules_link", "sm_rules");
-	g_iConfig[c_rulesClosePunishment] = CreateConVar("ttt_rules_close_punishment", "0"); // 0 - Kick, 1 - Nothing
-	g_iConfig[c_timeToReadDetectiveRules] = CreateConVar("ttt_time_to_read_detective_rules", "10");
-	g_iConfig[c_timeToReadRules] = CreateConVar("ttt_time_to_read_rules", "10");
-	g_iConfig[c_showDetectiveMenu] = CreateConVar("ttt_show_detective_menu", "1");
-	g_iConfig[c_showRulesMenu] = CreateConVar("ttt_show_rules_menu", "1");
-	
-	g_iConfig[c_punishInnoKills] = CreateConVar("ttt_punish_ttt_for_rdm_kils", "3");
-	g_iConfig[c_kickImmunity] = CreateConVar("ttt_kick_immunity", "bz");
-	g_iConfig[c_updateClientModel] = CreateConVar("ttt_update_client_model", "1");
+	g_iConfig[i_rulesType] = AddInt("ttt_rules_type", 0, "Method to show the rules (0 = Command, 1 = URL");
+	AddString("ttt_rules_link", "sm_rules", "Command, URL, ... for ttt_rules_type", g_iConfig[s_rulesLink], 512);
+	g_iConfig[i_rulesClosePunishment] = AddInt("ttt_rules_close_punishment", 0, "Punish for abuse rules menu, time out, .... (0 = Kick, otherwise nothing");
+	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 10, "Time (in seconds) for reading detective rules");
+	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 10, "Time (in seconds) for reading rules");
+	g_iConfig[b_showDetectiveMenu] = AddBool("ttt_show_detective_menu", true, "Show detective menu?");
+	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show rules menu?");
+	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_ttt_for_rdm_kils", 3, "After how much kills innocents (as innocent) to get rdm punishing");
+	AddString("ttt_kick_immunity", "bz", "Admin flags for kick immunity for rules menu", g_iConfig[s_kickImmunity], 16);
+	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update client model on role choose?");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all bomb stuff?");
 	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove all hostage stuff?");
-	
 	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Prevent same role next round for players");
-	g_iConfig[c_traitorRatio] = CreateConVar("ttt_traitor_ratio", "25", "", _, true, 1.0, true, 75.0);
-	g_iConfig[c_detectiveRatio] = CreateConVar("ttt_detective_ratio", "13", "", _, true, 1.0, true, 25.0);
-	
+	g_iConfig[i_traitorRatio] = AddInt("ttt_traitor_ratio", 25, "Chance as traitor");
+	g_iConfig[i_detectiveRatio] = AddInt("ttt_detective_ratio", 13, "Chance as detective");
 	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Allow Weapon Taser/Zeus");
 	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "Time (in seconds) until the jihad bomb is ready after buying.");
-	
 	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "Please set this cvar value to 1 to accept the new config, otherwise you can't run ttt anymore!");
 	
 	if(!g_iConfig[b_newConfig])
@@ -500,7 +483,7 @@ public void OnConfigsExecuted()
 	if(g_iConfig[c_blockGrenadeMessage].IntValue)
 		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), false);
 	
-	g_iConfig[c_pluginTag].GetString(g_sTag, sizeof(g_sTag));
+	Format(g_sTag, sizeof(g_sTag), g_iConfig[s_pluginTag]);
 }
 
 public Action Command_Logs(int client, int args)
@@ -714,7 +697,7 @@ public void ThinkPost(int entity)
 	}
 	SetEntDataArray(entity, g_iAlive, isAlive, 65);
 	
-	if(g_iConfig[c_kadRemover].IntValue)
+	if(g_iConfig[b_kadRemover])
 	{
 		int iZero[MAXPLAYERS + 1] =  { 0, ... };
 		
@@ -857,7 +840,7 @@ public Action Timer_Selection(Handle hTimer)
 		return;
 	}
 	
-	int iDetectives = RoundToNearest(iCount * float(g_iConfig[c_detectiveRatio].IntValue)/100.0);
+	int iDetectives = RoundToNearest(iCount * float(g_iConfig[i_detectiveRatio])/100.0);
 	if(iDetectives == 0)
 		iDetectives = 1;
 	
@@ -867,7 +850,7 @@ public Action Timer_Selection(Handle hTimer)
 	if(!needDetective)
 		iDetectives = 0;
 		
-	int iTraitores = RoundToNearest(iCount * float(g_iConfig[c_traitorRatio].IntValue)/100.0);
+	int iTraitores = RoundToNearest(iCount * float(g_iConfig[i_traitorRatio])/100.0);
 	if(iTraitores == 0)
 		iTraitores = 1;
 	
@@ -1058,7 +1041,7 @@ stock void TeamInitialize(int client)
 			CS_SwitchTeam(client, CS_TEAM_T);
 	}
 	
-	if(g_iConfig[c_updateClientModel].IntValue)
+	if(g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
 	
 	Call_StartForward(g_hOnClientGetRole);
@@ -1304,7 +1287,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				g_iInnoKills[iAttacker]++;
 			}
 
-			if (g_iInnoKills[iAttacker] >= g_iConfig[c_punishInnoKills].IntValue)
+			if (g_iInnoKills[iAttacker] >= g_iConfig[i_punishInnoKills])
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 		}
 	}
@@ -1324,9 +1307,9 @@ public void OnClientPostAdminCheck(int client)
 	
 	LoadClientKarma(GetClientUserId(client));
 	
-	if(g_iConfig[c_showRulesMenu].IntValue)
+	if(g_iConfig[b_showRulesMenu])
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
-	else if(g_iConfig[c_showDetectiveMenu].IntValue)
+	else if(g_iConfig[b_showDetectiveMenu])
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
@@ -1347,7 +1330,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 		menu.AddItem("yes", sYes);
 		menu.ExitButton = false;
 		menu.ExitBackButton = false;
-		menu.Display(client, g_iConfig[c_timeToReadRules].IntValue);
+		menu.Display(client, g_iConfig[i_timeToReadRules]);
 	}
 }
 
@@ -1360,12 +1343,12 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		
 		if (!StrEqual(sParam, "yes", false))
 		{
-			char sCommand[64];
-			g_iConfig[c_rulesLink].GetString(sCommand, sizeof(sCommand));
+			char sCommand[512];
+			Format(sCommand, sizeof(sCommand), g_iConfig[s_rulesLink]);
 			
-			if(g_iConfig[c_rulesType].IntValue == 0)
+			if(g_iConfig[i_rulesType] == 0)
 				ClientCommand(client, sCommand);
-			else if(g_iConfig[c_rulesType].IntValue == 1)
+			else if(g_iConfig[i_rulesType] == 1)
 			{
 				char sURL[512];
 				Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sCommand);
@@ -1381,17 +1364,17 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			g_bReadRules[client] = false;
 		}
 		
-		if(g_iConfig[c_showDetectiveMenu].IntValue)
+		if(g_iConfig[b_showDetectiveMenu])
 			AskClientForMicrophone(client);
 	}
 	else if(action == MenuAction_Cancel)
 	{
-		if(TTT_IsClientValid(client) && g_iConfig[c_rulesClosePunishment].IntValue == 0)
+		if(TTT_IsClientValid(client) && g_iConfig[i_rulesClosePunishment] == 0)
 		{
 			char sFlags[16];
 			AdminFlag aFlags[16];
 			
-			g_iConfig[c_kickImmunity].GetString(sFlags, sizeof(sFlags));
+			Format(sFlags, sizeof(sFlags), g_iConfig[s_kickImmunity]);
 			FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
 			
 			if (!TTT_HasFlags(client, aFlags))
@@ -1431,7 +1414,7 @@ stock void AskClientForMicrophone(int client)
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
 	menu.ExitBackButton = false;
-	menu.Display(client, g_iConfig[c_timeToReadDetectiveRules].IntValue);
+	menu.Display(client, g_iConfig[i_timeToReadDetectiveRules]);
 }
 
 
@@ -4030,7 +4013,7 @@ stock float AddFloat(const char[] name, float value, const char[] description)
 
 stock void AddString(const char[] name, const char[] value, const char[] description, char[] output, int size)
 {
-	Format(output, size, value);
+	strcopy(output, size, value);
 	
 	KeyValues kv = CreateKeyValues("TTT");
 	
