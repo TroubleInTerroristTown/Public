@@ -460,7 +460,7 @@ public void OnPluginStart()
 	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Prevent players for getting the same role twice in a row.");
+	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
 	g_iConfig[i_traitorRatio] = AddInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
 	g_iConfig[i_detectiveRatio] = AddInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
 	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
