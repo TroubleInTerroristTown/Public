@@ -103,7 +103,8 @@ enum eConfig
 	ConVar:c_traitorRatio,
 	ConVar:c_detectiveRatio,
 	ConVar:c_taserAllow,
-	ConVar:c_jihadPreparingTime
+	ConVar:c_jihadPreparingTime,
+	bool:b_newConfig
 };
 
 int g_iConfig[eConfig];
@@ -482,6 +483,14 @@ public void OnPluginStart()
 	
 	g_iConfig[c_taserAllow] = CreateConVar("ttt_taser_allow", "1", "", _, true, 0.0, true, 1.0);
 	g_iConfig[c_jihadPreparingTime] = CreateConVar("ttt_jihad_preparing_time", "60");
+	
+	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "Please set this to 1 to accept the new config, otherwise you can't run ttt anymore!");
+	
+	if(!g_iConfig[b_newConfig])
+	{
+		SetFailState("Please accept the new config file! Open %s and set \"ttt_new_config\" to 1", g_sConfigFile);
+		return;
+	}
 
 	AutoExecConfig(true, "ttt");
 }
