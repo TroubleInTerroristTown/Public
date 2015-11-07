@@ -1225,7 +1225,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	g_iInnoKills[client] = 0;
 	ClearIcon(client);
 	
@@ -1252,7 +1252,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
 	
 
-		int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[32];
 		GetClientName(client, name, sizeof(name));
 		int Items[Ragdolls];
@@ -1264,7 +1264,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		Items[attacker] = iAttacker;
 		Format(Items[attackerName], 32, name);
 		Items[gameTime] = GetGameTime();
-		GetEventString(event, "weapon", Items[weaponused], sizeof(Items[weaponused]));
+		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
 	
 		PushArrayArray(g_hRagdollArray, Items[0]);
 		
@@ -1486,12 +1486,12 @@ public void OnClientDisconnect(int client)
 
 public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if (!IsClientInGame(client)) return;
 		
 	char userName[32];
-	GetEventString(event, "newname", userName, sizeof(userName));
+	event.GetString("newname", userName, sizeof(userName));
 	nameCheck(client, userName);
 	
  	int iSize = GetArraySize(g_hRagdollArray);
@@ -1580,7 +1580,7 @@ public Action Command_Credits(int client, int args)
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (!TTT_IsClientValid(client))
 		return;
@@ -1591,11 +1591,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 	AcceptEntityInput(iRagdoll, "Kill");
 	
-	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
 		return;
 	
-	int assister = GetClientOfUserId(GetEventInt(event, "assister"));
+	int assister = GetClientOfUserId(event.GetInt("assister"));
 	if(!TTT_IsClientValid(assister) || assister == client)
 		return;
 	
@@ -1849,14 +1849,14 @@ stock void StripAllWeapons(int client)
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
 {	
-	int iAttacker = GetClientOfUserId(GetEventInt(event, "attacker"));
+	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!iAttacker)
 		return;
 
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	
-	int damage = GetEventInt(event, "dmg_health");
+	int damage = event.GetInt("dmg_health");
 	char item[512];
 	if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
