@@ -35,14 +35,19 @@ public Action Timer_UpdateText(Handle timer)
 				continue;
 			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
 			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR) PrintHintText(i, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT) PrintHintText(i, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
+				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR) 
+					PrintHintText(i, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
+				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) 
+					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
+				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT) 
+					PrintHintText(i, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
 			}
 			else 
 			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
+				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) 
+					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
+				else 
+					PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
 			}
 		}
 		else
