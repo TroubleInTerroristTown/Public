@@ -799,13 +799,7 @@
 		"en"		"Yes, I'm familiar with the rules!"
 		"de"		"Ja, Ich bin mit den Regeln vertraut!"
 	}
-	
-	"WM No"
-	{
-		"en"		"No, show me the rules!"
-		"de"		"Nein, zeigen sie mir die Regeln!"
-	}
-	
+
 	"WM Kick Message"
 	{
 		"en"		"You are inactive or close rules menu!"

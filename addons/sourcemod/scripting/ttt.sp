@@ -106,7 +106,9 @@ enum eConfig
 };
 
 int g_iConfig[eConfig];
+
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
+char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 
 int g_iCredits[MAXPLAYERS + 1] =  { 800, ... };
 
@@ -294,6 +296,7 @@ public void OnPluginStart()
 	}
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");
 	
 	if (!SQL_CheckConfig("ttt"))
 	{
@@ -1344,14 +1347,46 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 	
 	if(TTT_IsClientValid(client))
 	{
-		char sText[512], sYes[64], sNo[64];
+		char sText[512], sYes[64];
 		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
 		Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
-		Format(sNo, sizeof(sNo), "%T", "WM No", client);
 		
 		Menu menu = new Menu(Menu_ShowWelcomeMenu);
 		menu.SetTitle(sText);
-		menu.AddItem("no", sNo);
+		
+		// open rule file
+		Handle hFile = OpenFile(g_sRulesFile, "rt");
+		
+		if(hFile == null)
+			SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+			
+		KeyValues kvRules = CreateKeyValues("Rules");
+		
+		if(!kvRules.ImportFromFile(g_sRulesFile))
+		{
+			SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+			return;
+		}
+		
+		if (!kvRules.GotoFirstSubKey())
+		{
+			SetFailState("Can't read rules/start.cfg correctly! (GotoFirstSubKey)");
+			return;
+		}
+		
+		do
+		{
+			char sNumber[4];
+			char sTitle[64];
+			
+			kvRules.GetSectionName(sNumber, sizeof(sNumber));
+			kvRules.GetString("title", sTitle, sizeof(sTitle));
+			menu.AddItem(sNumber, sTitle);
+		}
+		while (kvRules.GotoNextKey());
+		
+		delete kvRules;
+		
 		menu.AddItem("yes", sYes);
 		menu.ExitButton = false;
 		menu.ExitBackButton = false;
