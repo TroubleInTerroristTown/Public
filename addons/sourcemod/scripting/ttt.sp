@@ -328,8 +328,8 @@ public void OnPluginStart()
 	g_hPlayerArray = CreateArray();
 	g_hLogsArray = CreateArray(512);
 	
-	g_iCollisionGroup = FindSendPropOffs("CBaseEntity", "m_CollisionGroup");
-	g_iAccount = FindSendPropOffs("CCSPlayer", "m_iAccount");
+	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
+	g_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
 	
 
 	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
@@ -653,7 +653,7 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
 	PrecacheDecal("overlays/ttt/detectives_win", true);
 	
-	g_iAlive = FindSendPropOffs("CCSPlayerResource", "m_bAlive");
+	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
 	
