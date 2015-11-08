@@ -87,8 +87,6 @@ enum eConfig
 	bool:b_enableNoBlock,
 	String:s_pluginTag[MAX_MESSAGE_LENGTH],
 	bool:b_kadRemover,
-	i_rulesType,
-	String:s_rulesLink[512],
 	i_rulesClosePunishment,
 	i_punishInnoKills,
 	i_timeToReadRules,
@@ -448,8 +446,6 @@ public void OnPluginStart()
 	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "The amount of health traitors spawn with.");
 	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "The amount of health detectives spawn with.");
 	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "The amount of health innocents spawn with.");
-	g_iConfig[i_rulesType] = AddInt("ttt_rules_type", 0, "The way rules shall be shown. 0 = Command, 1 = URL");
-	AddString("ttt_rules_link", "sm_rules", "The URL to open when using the rules command if ttt_rules_type is set to 1.", g_iConfig[s_rulesLink], sizeof(g_iConfig[s_rulesLink]));
 	g_iConfig[i_rulesClosePunishment] = AddInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
 	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 10, "The time in seconds the detective rules menu will stay open.");
 	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 10, "The time in seconds the general rules menu will stay open.");
@@ -1372,20 +1368,8 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		
 		if (!StrEqual(sParam, "yes", false))
 		{
-			char sCommand[512];
-			Format(sCommand, sizeof(sCommand), g_iConfig[s_rulesLink]);
-			
-			if(g_iConfig[i_rulesType] == 0)
-				ClientCommand(client, sCommand);
-			else if(g_iConfig[i_rulesType] == 1)
-			{
-				char sURL[512];
-				Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sCommand);
-				ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
-				
-				g_bKnowRules[client] = false;
-				g_bReadRules[client] = true;
-			}
+			g_bKnowRules[client] = false;
+			g_bReadRules[client] = true;
 		}
 		else
 		{
