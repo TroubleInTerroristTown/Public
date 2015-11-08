@@ -460,7 +460,7 @@ public void OnPluginStart()
 	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Prevent players for getting the same role twice in a row.");
+	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
 	g_iConfig[i_traitorRatio] = AddInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
 	g_iConfig[i_detectiveRatio] = AddInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
 	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
@@ -858,7 +858,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 		
-		if(iDetectives > 0 && g_bConfirmDetectiveRules[player] && !IsPlayerInArray(player, g_hDetectives))
+		if(iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && !IsPlayerInArray(player, g_hDetectives))
 		{
 			g_iRole[player] = TTT_TEAM_DETECTIVE;
 			iDetectives--;
@@ -893,9 +893,6 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		
 		if(g_iRole[i] == TTT_TEAM_TRAITOR)
-			listTraitors(i);
-		
-		if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			iTraitors++;
 		else if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 			iDetective++;
@@ -908,7 +905,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		LoopValidClients(i)
 		{
-			if(g_iRole[i] != TTT_TEAM_INNOCENT && !g_bConfirmDetectiveRules[i])
+			if(g_iRole[i] != TTT_TEAM_INNOCENT && (!g_bConfirmDetectiveRules[i] && g_iConfig[b_showDetectiveMenu]))
 				continue;
 				
 			iInnocent--;
@@ -942,7 +939,6 @@ public Action Timer_Selection(Handle hTimer)
 	
 	LoopValidClients(i)
 	{
-		
 		if(g_iConfig[b_roleAgain])
 		{
 			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
@@ -958,6 +954,8 @@ public Action Timer_Selection(Handle hTimer)
 		
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
 			CPrintToChat(i, g_iConfig[s_pluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
+		else
+			listTraitors(i);
 		
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
 			continue;
@@ -2249,7 +2247,7 @@ public Action Command_Shop(int client, int args)
 /*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
 			AddMenuItem(menu, "buyT", MenuItem);
 			
-			if(g_bConfirmDetectiveRules[client])
+			if(g_bConfirmDetectiveRules[client] || !g_iConfig[b_showDetectiveMenu])
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
@@ -2902,7 +2900,7 @@ public Action Command_SetRole(int client, int args)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_DETECTIVE && g_bConfirmDetectiveRules[target])
+	else if (role == TTT_TEAM_DETECTIVE && (g_bConfirmDetectiveRules[target] || !g_iConfig[b_showDetectiveMenu]))
 	{
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
