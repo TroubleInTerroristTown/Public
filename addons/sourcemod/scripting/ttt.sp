@@ -447,8 +447,8 @@ public void OnPluginStart()
 	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "The amount of health detectives spawn with.");
 	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "The amount of health innocents spawn with.");
 	g_iConfig[i_rulesClosePunishment] = AddInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
-	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 10, "The time in seconds the detective rules menu will stay open.");
-	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 10, "The time in seconds the general rules menu will stay open.");
+	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
+	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
 	g_iConfig[b_showDetectiveMenu] = AddBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
 	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
 	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_ttt_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
