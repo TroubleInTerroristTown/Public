@@ -102,7 +102,8 @@ enum eConfig
 	i_detectiveRatio,
 	bool:b_taserAllow,
 	Float:f_jihadPreparingTime,
-	bool:b_newConfig
+	bool:b_newConfig,
+	bool:b_denyFire
 };
 
 int g_iConfig[eConfig];
@@ -467,6 +468,7 @@ public void OnPluginStart()
 	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
 	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
 	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
+	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Block fire (mouse1+mouse2) for unassigned players");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -2041,7 +2043,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
 	
-	if (g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
+	if (g_iConfig[b_denyFire] && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
 	{
 		buttons &= ~IN_ATTACK;
 		buttons &= ~IN_ATTACK2;
