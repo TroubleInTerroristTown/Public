@@ -192,12 +192,14 @@ enum Ragdolls
 	ent,
 	victim,
 	attacker,
-	String:victimName[32],
-	String:attackerName[32],
+	String:victimName[MAX_NAME_LENGTH],
+	String:attackerName[MAX_NAME_LENGTH],
 	bool:scanned,
 	Float:gameTime,
 	String:weaponused[32],
-	bool:found
+	bool:found,
+	String:victimID[64],
+	bool:dead
 }
 
 bool g_bReceivingLogs[MAXPLAYERS+1];
@@ -1077,6 +1079,31 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
+		if(g_bRoundStarted)
+		{
+			char sCommunityID[64];
+			GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID));
+			if(g_hRagdollArray != null)
+			{
+				int iSize = GetArraySize(g_hRagdollArray);
+				
+				if(iSize == 0)
+					return;
+				
+				int Items[Ragdolls];
+				
+				for(int i = 0; i < iSize; i++)
+				{
+					GetArrayArray(g_hRagdollArray, i, Items[0]);
+					
+					if (StrEqual(Items[victimID], sCommunityID) && Items[dead])
+					{
+						RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
+						break;
+					}
+				}
+			}
+		}
 		CS_SetClientClanTag(client, "");
 		
 		g_iInnoKills[client] = 0;
@@ -1112,6 +1139,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		if(g_iConfig[b_enableNoBlock])
 			SetNoBlock(client);
 	}
+}
+
+public void Frame_SlayPlayer(any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(TTT_IsClientValid(client))
+		ForcePlayerSuicide(client);
 }
 
 public void OnClientPutInServer(int client)
@@ -1279,18 +1314,20 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	
 
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
-		char name[32];
+		char name[MAX_NAME_LENGTH];
 		GetClientName(client, name, sizeof(name));
 		int Items[Ragdolls];
 		Items[ent] = EntIndexToEntRef(iEntity);
 		Items[victim] = client;
-		Format(Items[victimName], 32, name);
+		Format(Items[victimName], MAX_NAME_LENGTH, name);
 		Items[scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
 		Items[attacker] = iAttacker;
-		Format(Items[attackerName], 32, name);
+		Format(Items[attackerName], MAX_NAME_LENGTH, name);
 		Items[gameTime] = GetGameTime();
 		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
+		GetClientAuthId(client, AuthId_SteamID64, Items[victimID], sizeof(Items[victimID]));
+		Items[dead] = true;
 	
 		PushArrayArray(g_hRagdollArray, Items[0]);
 		
@@ -1555,7 +1592,7 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 
 	if (!IsClientInGame(client)) return;
 		
-	char userName[32];
+	char userName[MAX_NAME_LENGTH];
 	event.GetString("newname", userName, sizeof(userName));
 	nameCheck(client, userName);
 	
@@ -1572,12 +1609,12 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 				
 		if(client == Items[attacker])
 		{
-			Format(Items[attackerName], 32, userName);
+			Format(Items[attackerName], MAX_NAME_LENGTH, userName);
 			SetArrayArray(g_hRagdollArray, i, Items[0]);
 		}
 		else if(client == Items[victim])
 		{
-			Format(Items[victimName], 32, userName);
+			Format(Items[victimName], MAX_NAME_LENGTH, userName);
 			SetArrayArray(g_hRagdollArray, i, Items[0]);
 		}
 	} 
