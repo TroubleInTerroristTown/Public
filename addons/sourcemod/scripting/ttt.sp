@@ -1354,7 +1354,6 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 		Menu menu = new Menu(Menu_ShowWelcomeMenu);
 		menu.SetTitle(sText);
 		
-		// open rule file
 		Handle hFile = OpenFile(g_sRulesFile, "rt");
 		
 		if(hFile == null)
@@ -1403,6 +1402,26 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		
 		if (!StrEqual(sParam, "yes", false))
 		{
+			Handle hFile = OpenFile(g_sRulesFile, "rt");
+			
+			if(hFile == null)
+				SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+				
+			KeyValues kvRules = CreateKeyValues("Rules");
+			
+			if(!kvRules.ImportFromFile(g_sRulesFile))
+			{
+				SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+				return 0;
+			}
+			
+			if(kvRules.JumpToKey(sParam, false))
+			{
+				// code...
+			}
+			
+			delete kvRules;
+			
 			g_bKnowRules[client] = false;
 			g_bReadRules[client] = true;
 		}
@@ -1976,7 +1995,15 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
 {
-	if(!IsClientInGame(client)) return Plugin_Continue;
+	if(!IsClientInGame(client))
+		return Plugin_Continue;
+	
+	if (g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
+	{
+		buttons &= ~IN_ATTACK;
+		buttons &= ~IN_ATTACK2;
+		return Plugin_Changed; 
+	}
 	
 	if(buttons & IN_USE)
 	{
@@ -3000,9 +3027,9 @@ public Action Command_Status(int client, int args)
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Innocent", client);
 	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Traitor", client);
-	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Detective", client);
+	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
+		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Traitor", client);
 	
 	return Plugin_Handled;
 }
