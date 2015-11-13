@@ -432,23 +432,23 @@ public void OnPluginStart()
 	g_iConfig[b_enableNoBlock] = AddBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
 	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
-	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "The price of 'Kevlar' in the shop.");
-	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "The price of a '1 Hit Knife' in the shop.");
-	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop.");
-	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop.");
-	// g_iConfig[i_shopRadar] = AddInt("ttt_shop_radar", 7000, "The price of a 'Radar' in the shop.");
-	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop.");
-	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 10000, "The price of the 'Traitor Role' in the shop.");
-	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 5000, "The price of the 'Detective Role' in the shop.");
-	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop.");
-	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "The price of the 'USP-S' in the shop.");
-	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "The price of the 'MA41' in the shop.");
-	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop.");
-	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop.");
-	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop.");
-	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "The amount of health traitors spawn with.");
-	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "The amount of health detectives spawn with.");
-	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "The amount of health innocents spawn with.");
+	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "The price of 'Kevlar' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "The price of a '1 Hit Knife' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
+	// g_iConfig[i_shopRadar] = AddInt("ttt_shop_radar", 7000, "The price of a 'Radar' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
+	// g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
+	// g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "The price of the 'USP-S' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "The price of the 'MA41' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
+	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
+	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
+	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
 	g_iConfig[i_rulesClosePunishment] = AddInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
 	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
 	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
@@ -1016,13 +1016,17 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_taser");
 			
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is DETECTIVES", client);
-		SetEntityHealth(client, g_iConfig[i_spawnHPD]);
+		
+		if(g_iConfig[i_spawnHPD] > 0)
+			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
 	}
 	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is TRAITORS", client);
-		SetEntityHealth(client, g_iConfig[i_spawnHPT]);
+		
+		if(g_iConfig[i_spawnHPT] > 0)
+			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
 		if(GetClientTeam(client) != CS_TEAM_T)
 			CS_SwitchTeam(client, CS_TEAM_T);
@@ -1030,7 +1034,9 @@ stock void TeamInitialize(int client)
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is INNOCENTS", client);
-		SetEntityHealth(client, g_iConfig[i_spawnHPI]);
+		
+		if(g_iConfig[i_spawnHPI] > 0)
+			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
 		if(GetClientTeam(client) != CS_TEAM_T)
 			CS_SwitchTeam(client, CS_TEAM_T);
@@ -2252,62 +2258,102 @@ public Action Command_Shop(int client, int args)
 		
 		if(team != TTT_TEAM_INNOCENT)
 		{
-			// Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[c_shopRadar]);
-			// AddMenuItem(menu, "radar", MenuItem);
+			/* if(g_iConfig[i_shopRadar] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[i_shopRadar]);
+				AddMenuItem(menu, "radar", MenuItem);
+			} */
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
-			AddMenuItem(menu, "kevlar", MenuItem);
+			if(g_iConfig[i_shopKEVLAR] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
+				AddMenuItem(menu, "kevlar", MenuItem);
+			}
 		}
 	
 		if(team == TTT_TEAM_TRAITOR)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[i_shopC4]);
-			AddMenuItem(menu, "C4", MenuItem);
+			if(g_iConfig[i_shopC4] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[i_shopC4]);
+				AddMenuItem(menu, "C4", MenuItem);
+			}
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[i_shopJIHADBOMB]);
-			AddMenuItem(menu, "jbomb", MenuItem);
+			if(g_iConfig[i_shopJIHADBOMB] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[i_shopJIHADBOMB]);
+				AddMenuItem(menu, "jbomb", MenuItem);
+			}
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[i_shop1KNIFE]);
-			AddMenuItem(menu, "1knife", MenuItem);
-
-			Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
-			AddMenuItem(menu, "fakeID", MenuItem);
+			if(g_iConfig[i_shop1KNIFE] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[i_shop1KNIFE]);
+				AddMenuItem(menu, "1knife", MenuItem);
+			}
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[i_shopM4A1]);
-			AddMenuItem(menu, "m4s", MenuItem);
+			if(g_iConfig[i_shopFAKEID] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
+				AddMenuItem(menu, "fakeID", MenuItem);
+			}
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[i_shopUSP]);
-			AddMenuItem(menu, "usps", MenuItem);
+			if(g_iConfig[i_shopM4A1] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[i_shopM4A1]);
+				AddMenuItem(menu, "m4s", MenuItem);
+			}
+			
+			if(g_iConfig[i_shopUSP] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[i_shopUSP]);
+				AddMenuItem(menu, "usps", MenuItem);
+			}
 			
 		}
 		if(team == TTT_TEAM_DETECTIVE)
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[i_shopHEALTH]);
-			AddMenuItem(menu, "HealthStation", MenuItem);
+			if(g_iConfig[i_shopHEALTH] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[i_shopHEALTH]);
+				AddMenuItem(menu, "HealthStation", MenuItem);
+			}
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
-			AddMenuItem(menu, "scan13", MenuItem);
+			if(g_iConfig[i_shopDNA] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
+				AddMenuItem(menu, "scan13", MenuItem);
+			}
 		}
 		if(team == TTT_TEAM_INNOCENT)
 		{
-/*    		Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
-			AddMenuItem(menu, "buyT", MenuItem);
+/*
+			if(g_iConfig[i_shopT] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
+				AddMenuItem(menu, "buyT", MenuItem);
+			}
 			
-			if(g_bConfirmDetectiveRules[client] || !g_iConfig[b_showDetectiveMenu])
+			if(g_iConfig[i_shopD] > 0 && (g_bConfirmDetectiveRules[client] || !g_iConfig[b_showDetectiveMenu]))
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
 			}
 */
 			
-			Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[i_shopID]);
-			AddMenuItem(menu, "ID", MenuItem);
+			if(g_iConfig[i_shopID] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[i_shopID]);
+				AddMenuItem(menu, "ID", MenuItem);
+			}
 		}
 		
 		if(g_iConfig[b_taserAllow])
 		{
-			Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
-			AddMenuItem(menu, "taser", MenuItem);
+			if(g_iConfig[i_shopTASER] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
+				AddMenuItem(menu, "taser", MenuItem);
+			}
 		}
 		
 		SetMenuExitButton(menu, true);
@@ -2371,16 +2417,16 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		/* else if ( strcmp(info,"radar") == 0 )
+		else if ( strcmp(info,"radar") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[c_shopRadar])
+			if(g_iCredits[client] >= g_iConfig[i_shopRadar])
 			{
-				g_bRadar[client] = true;
-				subtractCredits(client, g_iConfig[c_shopRadar]);
+				// g_bRadar[client] = true; // TODO
+				subtractCredits(client, g_iConfig[i_shopRadar]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		} */
+		}
 		else if ( strcmp(info,"fakeID") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[i_shopFAKEID])
