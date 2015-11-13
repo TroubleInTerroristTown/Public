@@ -476,7 +476,7 @@ public void OnPluginStart()
 public void OnConfigsExecuted()
 {
 	if(g_iConfig[b_blockGrenadeMessage])
-		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), false);
+		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), true);
 }
 
 public Action Command_Logs(int client, int args)
@@ -1902,7 +1902,7 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 stock void StripAllWeapons(int client)
 {
     int iEnt;
-    for (int i = 0; i <= 4; i++)
+    for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
     {
 		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
 		{
