@@ -1,826 +1,629 @@
+// Exported from SourceMod Translator
+// Date: 2015-11-13 18:50:19 UTC
+// Language: English (en)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
 "Phrases"
 {
+
 	"Your karma is"
 	{
-		"#format"       "{1:i}"
-		"en"            "Your KARMA is: {orchid}{1}"
-		"de"            "Dein Karma: {orchid}{1}"
-		"ru"         	"Ваша карма: {orchid}{1}"
+		"#format"	"{1:i}"
+		"en"		"Your KARMA is: {orchid}{1}"
 	}
-	
+
 	"TEAMS HAS BEEN SELECTED"
 	{
-		"en"            "TEAMS HAVE BEEN SELECTED!"
-		"de"            "Die Teams stehen fest!"
-		"ru"            "Команды сформированы!"
+		"en"		"TEAMS HAVE BEEN SELECTED!"
 	}
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
-		"#format"		"{1:d}"
-		"en"            "MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
-		"de"            "Warten auf insgesamt {orchid}{1} {lightgreen}Spieler."
-		"ru"            "Минимальное кол-во игроков для игры: {orchid}{1}"
+		"#format"	"{1:d}"
+		"en"		"MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
 	}
 
 	"Your Team is DETECTIVES"
 	{
-		"en"            "You are a {blue}DETECTIVE"
-		"de"            "Du bist ein {blue}DETEKTIVE"
-		"ru"            "Ваша роль - {blue}ДЕТЕКТИВ"
+		"en"		"You are a {blue}DETECTIVE"
 	}
 
 	"Your Team is TRAITORS"
 	{
-		"en"            "You are a {darkred}TRAITOR"
-		"de"            "Du bist ein {darkred}TRAITOR"
-		"ru"            "Ваша роль - {darkred}ПРЕДАТЕЛЬ"
+		"en"		"You are a {darkred}TRAITOR"
 	}
 
 	"Your Team is INNOCENTS"
 	{
-		"en"            "You are {green}INNOCENT"
-		"de"            "Du bist ein {green}INNOCENTS"
-		"ru"            "Ваша роль - {green}НЕВИНОВНЫЙ"
+		"en"		"You are {green}INNOCENT"
 	}
-
 
 	"Your credits is"
 	{
-		"#format"       "{1:i}"
-		"en"            "Your CREDITS are: {orchid}{1}"
-		"de"            "Deine Credits: {orchid}{1}"
-		"ru"            "Количесво ваших кредитов: {orchid}{1}"
+		"#format"	"{1:i}"
+		"en"		"Your CREDITS are: {orchid}{1}"
 	}
 
 	"Your killer is a Traitor"
 	{
-		"en"            "Your killer was a {darkred}TRAITOR!"
-		"de"            "Dein Mörder ist ein {darkred}TRAITOR!"
-		"ru"            "Вас убил {darkred}ПРЕДАТЕЛЬ"
+		"en"		"Your killer was a {darkred}TRAITOR!"
 	}
 
 	"Your killer is a Detective"
 	{
-		"en"            "Your killer was a {blue}DETECTIVE!"
-		"de"            "Dein Mörder ist ein {blue}DETEKTIV!"
-		"ru"            "Вас убил {blue}ДЕТЕКТИВ"
+		"en"		"Your killer was a {blue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
 	{
-		"en"            "Your killer was {green}INNOCENT!"
-		"de"            "Dein Mörder ist ein {green}INNOCENT!"
-		"ru"            "Вас убил {green}НЕВИНОВНЫЙ"
+		"en"		"Your killer was {green}INNOCENT!"
 	}
 
 	"You killed a Traitor"
 	{
-		"en"            "You killed a {darkred}TRAITOR!"
-		"de"            "Du hast einen {darkred}TRAITOR {lightgreen}getötet!"
-		"ru"            "Вы убили {darkred}ПРЕДАТЕЛЯ"
+		"en"		"You killed a {darkred}TRAITOR!"
 	}
 
 	"You killed a Detective"
 	{
-		"en"            "You killed a {blue}DETECTIVE!"
-		"de"            "Du hast einen {blue}DETEKTIV {lightgreen}getötet!"
-		"ru"            "Вы убили {blue}ДЕТЕКТИВА"
+		"en"		"You killed a {blue}DETECTIVE!"
 	}
 
 	"You killed an Innocent"
 	{
-		"en"            "You killed a {green}INNOCENT!"
-		"de"            "Du hast einen {green}INNOCENT {lightgreen}getötet!"
-		"ru"            "Вы убили {green}НЕВИНОВНОГО"
+		"en"		"You killed a {green}INNOCENT!"
 	}
 
 	"You hurt a Traitor"
 	{
-		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player {darkred}{1} {lightgreen}and he is a {darkred}TRAITOR!"
-		"de"            "Du hast einen Tazer verwendet, Spieler {darkred}{1} {lightgreen}ist ein {darkred}TRAITOR!"
-		"ru"            "Вы использовали детектор на {darkred}{1}{lightgreen}, и он оказался {darkred}ПРЕДАТЕЛЕМ"
+		"#format"	"{1:N}"
+		"en"		"You have used a detector on Player {darkred}{1} {lightgreen}and he is a {darkred}TRAITOR!"
 	}
 
 	"You hurt a Detective"
 	{
-		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player{blue} {1} {lightgreen}and he is a {blue}DETECTIVE!"
-		"de"            "Du hast einen Tazer verwendet, Spieler{blue} {1} {lightgreen}ist ein {blue}DETEKTIV!"
-		"ru"            "Вы использовали детектор на {blue}{1}{lightgreen}, и он оказался {blue}ДЕТЕКТИВОМ"
+		"#format"	"{1:N}"
+		"en"		"You have used a detector on Player{blue} {1} {lightgreen}and he is a {blue}DETECTIVE!"
 	}
 
 	"You hurt an Innocent"
 	{
-		"#format"       "{1:N}"
-		"en"            "You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
-		"de"            "Du hast einen Tazer verwendet, Spieler{green} {1} {lightgreen}ist ein {green}INNOCENT!"
-		"ru"            "Вы использовали детектор на {green}{1}{lightgreen}, и он оказался {green}НЕВИНОВНЫМ"
+		"#format"	"{1:N}"
+		"en"		"You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
 	}
 
 	"is possibly RDMing"
 	{
-		"#format"       "{1:N}"
-		"en"            "{darkred}{1} {lightgreen}is possibly RDMing"
-		"de"            "{darkred}{1} {lightgreen}begeht RDM"
-		"ru"            "{darkred}{1} {lightgreen}возможно РДМил"
+		"#format"	"{1:N}"
+		"en"		"{darkred}{1} {lightgreen}is possibly RDMing"
 	}
 
 	"Detective scan found body"
 	{
-		"#format"       "{1:N},{2:s},{3:s}"
-		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
-		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {orchid}{3}"
-		"ru"            "ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"#format"       "{1:N}"
-		"en"            "DETECTIVE{blue} {1} {lightgreen}Scanned a body, player committed suicide"
-		"de"            "DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, es handelt sich um Selbstmord"
-		"ru"            "ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: игрок совершил самоубийство"
+		"#format"	"{1:N}"
+		"en"		"DETECTIVE{blue} {1} {lightgreen}Scanned a body, player committed suicide"
 	}
 
 	"1 hit kill knife (only good for 1 shot)"
 	{
-		"#format"		"{1:d}"
-		"en"            "1 hit kill knife (only usable once) - {1}"
-		"de"            "1 Hit Messer Kill (Nur einmal verwendbar) - {1}"
-		"ru"            "Нож, убийство с 1 удара (можно использовать 1 раз) - {1}"
+		"#format"	"{1:d}"
+		"en"		"1 hit kill knife (only usable once) - {1}"
 	}
 
 	"FAKE ID card (type !id for show your innocence)"
 	{
-		"#format"		"{1:d}"
-		"en"            "FAKE ID card (type !id to show your innocence) - {1}"
-		"de"            "Gefälschter Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
-		"ru"            "Поддельная ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
+		"#format"	"{1:d}"
+		"en"		"FAKE ID card (type !id to show your innocence) - {1}"
 	}
-	
+
 	"Health Station"
 	{
-		"#format"		"{1:d}"
-		"en"            "Health Station - {1}"
-		"de"            "Heil Station - {1}"
-		"ru"            "Аптечка - {1}"
+		"#format"	"{1:d}"
+		"en"		"Health Station - {1}"
 	}
 
 	"DNA scanner (scan a dead body and show who the killer is)"
 	{
-		"#format"		"{1:d}"
-		"en"            "DNA scanner (scan a dead body and show who the killer was) - {1}"
-		"de"            "DNA Scanner (Untersuche eine Leiche um zu sehen wer der Mörder war) - {1}"
-		"ru"            "ДНК сканнер (сканирование трупа и показ, кто убийца) - {1}"
+		"#format"	"{1:d}"
+		"en"		"DNA scanner (scan a dead body and show who the killer was) - {1}"
 	}
 
 	"Kevlar"
 	{
-		"#format"		"{1:d}"
-		"en"            "Kevlar - {1}"
-		"de"            "Kevlar - {1}"
-		"ru"            "Бронежилет - {1}"
+		"#format"	"{1:d}"
+		"en"		"Kevlar - {1}"
 	}
 
 	"Buy rol Traitor"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy role TRAITOR - {1}"
-		"de"            "TRAITOR-Pass - {1}"
-		"ru"            "Роль ПРЕДАТЕЛЯ - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy role TRAITOR - {1}"
 	}
 
 	"Buy rol Detective"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy role DETECTIVE - {1}"
-		"de"            "DETEKTIV-Pass - {1}"
-		"ru"            "Роль ДЕТЕКТИВА - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy role DETECTIVE - {1}"
 	}
 
 	"ID card (type !id for show your innocence)"
 	{
-		"#format"		"{1:d}"
-		"en"            "ID card (type !id to show your innocence) - {1}"
-		"de"            "Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
-		"ru"            "ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
+		"#format"	"{1:d}"
+		"en"		"ID card (type !id to show your innocence) - {1}"
 	}
 
 	"Please wait till your team is assigned"
 	{
-		"en"            "Please wait till your team is assigned"
-		"de"            "Warte bis du einem Team zugeordnet wurdest"
-		"ru"            "Пожалуйста, подождите, пока ваша роль назначается"
+		"en"		"Please wait till your team is assigned"
 	}
 
 	"Item bought! Your REAL money is"
 	{
-		"#format"       "{1:i}"
-		"en"            "Item bought! Your CREDITS are {1}"
-		"de"            "Gegenstand wurde erworben, deine Credits: {1}"
-		"ru"            "Предмет куплен! Количество ваших КРЕДИТОВ {1}"
+		"#format"	"{1:i}"
+		"en"		"Item bought! Your CREDITS are {1}"
 	}
 
 	"You don't have enough money"
 	{
-		"en"            "You don't have enough credits!"
-		"de"            "Du hast zu wenige Credits"
-		"ru"            "У вас недостаточно кредитов!"
+		"en"		"You don't have enough credits!"
 	}
 
 	"Traitors"
 	{
-		"en"            "TRAITORS"
-		"de"            "TRAITOR"
-		"ru"            "ПРЕДАТЕЛЬ"
+		"en"		"TRAITORS"
 	}
 
 	"Detectives"
 	{
-		"en"            "DETECTIVES"
-		"de"            "DETEKTIVE"
-		"ru"            "ДЕТЕКТИВ"
+		"en"		"DETECTIVES"
 	}
 
 	"Innocents"
 	{
-		"en"            "INNOCENTS"
-		"de"            "INNOCENT"
-		"ru"            "НЕВИНОВНЫЙ"
+		"en"		"INNOCENTS"
 	}
 
 	"Inspected body. The extracted data are the following"
 	{
-		"en"            "Inspected body. The extracted data were the following:"
-		"de"            "Die Leiche wurde untersucht, folgende Informationen wurden herausgefunden:"
-		"ru"            "Тело осмотрено. Извлеченные данные:"
+		"en"		"Inspected body. The extracted data were the following:"
 	}
 
 	"Victim name"
 	{
-		"#format"       "{1:s}"
-		"en"            "Victim name: {1}"
-		"de"            "Name des Opfers: {1}"
-		"ru"            "Имя жертвы: {1}"
+		"#format"	"{1:s}"
+		"en"		"Victim name: {1}"
 	}
 
 	"Team victim"
 	{
-		"#format"       "{1:s}"
-		"en"            "Team: {1}"
-		"de"            "Team: {1}"
-		"ru"            "Роль: {1}"
+		"#format"	"{1:s}"
+		"en"		"Team: {1}"
 	}
 
 	"Elapsed since his death"
 	{
-		"#format"       "{1:i}"
-		"en"            "Elapsed since his death: {1} seconds"
-		"de"            "Er ist bereits {1} Sekunden tot"
-		"ru"            "Прошедшее время со смерти: {1} сек"
+		"#format"	"{1:i}"
+		"en"		"Elapsed since his death: {1} seconds"
 	}
 
 	"The weapon used has been"
 	{
-		"#format"       "{1:s}"
-		"en"            "The weapon used has been: {1}"
-		"de"            "Die Mordwaffe war eine: {1}"
-		"ru"            "Оружие убийства: {1}"
+		"#format"	"{1:s}"
+		"en"		"The weapon used has been: {1}"
 	}
 
 	"The weapon used has been: himself (suicide)"
 	{
-		"en"            "The weapon used has been: himself (suicide)"
-		"de"            "Die Waffe war: Erselbst (Selbstmord)"
-		"ru"            "Оружие убийства: самоубийство"
+		"en"		"The weapon used has been: himself (suicide)"
 	}
 
 	"Killer is Player"
 	{
-		"#format"       "{1:s}"
-		"en"            "Killer is Player: {1}"
-		"de"            "Der Mörder ist: {1}"
-		"ru"            "Убийца: {1}"
+		"#format"	"{1:s}"
+		"en"		"Killer is Player: {1}"
 	}
 
 	"Player committed suicide"
 	{
-		"en"            "Player committed suicide"
-		"de"            "Der Spieler beging Suizid"
-		"ru"            "Игрок покончил жизнь самоубийством"
+		"en"		"Player committed suicide"
 	}
 
 	"Player Is an Innocent"
 	{
-		"#format"       "{1:N}"
-		"en"            "Player{green} {1} {lightgreen}is {green}INNOCENT"
-		"de"            "Spieler{green} {1} {lightgreen} ist ein {green}INNOCENT"
-		"ru"            "Игрок{green} {1} {lightgreen}НЕВИНОВНЫЙ!"
+		"#format"	"{1:N}"
+		"en"		"Player{green} {1} {lightgreen}is {green}INNOCENT"
 	}
 
 	"T channel"
 	{
-		"#format"       "{1:N},{2:s}"
-		"en"            "{darkred}*TRAITORS* {1}:{green} {2}"
-		"de"			"{darkred}*Traitor Chat* {1}:{green} {2}"
-		"ru"            "{darkred}*ПРЕДАТЕЛИ* {1}:{green} {2}"
+		"#format"	"{1:N},{2:s}"
+		"en"		"{darkred}*TRAITORS* {1}:{green} {2}"
 	}
-	
+
 	"D channel"
 	{
-		"#format"       "{1:N},{2:s}"
-		"en"            "{blue}*DETECTIVES* {1}:{green} {2}"
-		"de"			"{blue}*Detektiv Chat* {1}:{green} {2}"
-		"ru"            "{blue}*ДЕТЕКТИВЫ* {1}:{green} {2}"
+		"#format"	"{1:N},{2:s}"
+		"en"		"{blue}*DETECTIVES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
 	{
-		"en"            "You dont have it!"
-		"de"            "Du hast es nicht!"
-		"ru"            "Вы не можете это сделать!"
+		"en"		"You dont have it!"
 	}
 
 	"TTT Shop"
 	{
-		"en"            "TTT Shop"
-		"de"            "TTT Shop"
-		"ru"            "TTT магазин"
+		"en"		"TTT Shop"
 	}
 
 	"credits earned"
 	{
-		"#format"       "{1:i},{2:i}"
-		"en"            "You won {1} credits\nYour current credits are: {2}"
-		"de"            "Du gewinnst {1} Credits\nDu hast nun: {2}"
-		"ru"            "Вы выйграли {1} кредитов\nКоличество ваших кредитов: {2}"
+		"#format"	"{1:i},{2:i}"
+		"en"		"You won {1} credits\nYour current credits are: {2}"
 	}
 
 	"lost credits"
 	{
-		"#format"       "{1:i},{2:i}"
-		"en"            "You lose {1} credits\nYour current credits are: {2}"
-		"de"            "Du verlierst {1} Credits\nDu hast nun: {2}"
-		"ru"            "Вы проиграли {1} кредитов\nКоличество ваших кредитов: {2}"
+		"#format"	"{1:i},{2:i}"
+		"en"		"You lose {1} credits\nYour current credits are: {2}"
 	}
-	
+
 	"karma earned"
 	{
-		"#format"       "{1:i},{2:i}"
-		"en"            "You earn {1} karma\nYour karma is now: {2}"
-		"de"            "Du bekommst {1} Karma\nDein Karma ist jetzt: {2}"
-		"ru"            "Вы выйграли {1} кармы\nВаша карма сейчас: {2}"
+		"#format"	"{1:i},{2:i}"
+		"en"		"You earn {1} karma\nYour karma is now: {2}"
 	}
 
 	"lost karma"
 	{
-		"#format"       "{1:i},{2:i}"
-		"en"            "You lose {1} karma\nYour karma is now: {2}"
-		"de"            "Du verlierst {1} Karma\nDein Karma ist jetzt: {2}"
-		"ru"            "Вы потеряли {1} кармы\nВаша карма сейчас: {2}"
+		"#format"	"{1:i},{2:i}"
+		"en"		"You lose {1} karma\nYour karma is now: {2}"
 	}
-	
+
 	"no logs yet"
 	{
-		"en"            "No logs yet"
-		"de"            "Keine Logs vorhanden"
-		"ru"            "Нет логов"
+		"en"		"No logs yet"
 	}
-	
+
 	"See your console"
 	{
-		"en"            "Logs Received! Check your console to see the logs"
-		"de"            "Logs empfangen! Prüfe deine Konsole um die Logs dieser Runde einzusehen"
-		"ru"            "Логи записаны! Посмотрите в вашей консоли"
+		"en"		"Logs Received! Check your console to see the logs"
 	}
 
 	"you cant see logs"
 	{
-		"en"            "You can´t see the logs now, you need be dead or round has to be inactive"
-		"de"            "Du kannst derzeitig keine Logs sehen, die Runde muss beendet sein, oder du Tod"
-		"ru"            "Вы не можете посмотреть логи сейчас, вы должны быть мертвым"
+		"en"		"You can´t see the logs now, you need be dead or round has to be inactive"
 	}
-	
+
 	"Receiving logs"
 	{
-		"en"            "Receiving logs... wait a moment"
-		"de"            "Empfange Logs... warte einen Moment"
-		"ru"            "Запись логов..."
+		"en"		"Receiving logs... wait a moment"
 	}
-	
+
 	"Taser"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy Taser (team detector) - {1}"
-		"de"            "Kaufe Taser (Team Detektor) - {1}"
-		"ru"            "Электрошокер (детектор ролей) - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy Taser (team detector) - {1}"
 	}
-	
+
 	"USPS"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy USP-S - {1}"
-		"de"            "Kaufe USP-S - {1}"
-		"ru"            "USP-S - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy USP-S - {1}"
 	}
-	
+
 	"M4S"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy M4-S - {1}"
-		"de"            "Kaufe M4-S - {1}"
-		"ru"            "M4-S - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy M4-S - {1}"
 	}
 
 	"Found Innocent"
 	{
-		"#format"       "{1:N},{2:s}"
-		"en"            "{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
-		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
-		"ru"            "{orchid}{1} {lightgreen}нашел тело {green}{2}{lightgreen}. Он был {green}НЕВИНОВНЫМ"
+		"#format"	"{1:N},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
 	}
-	
+
 	"Found Detective"
 	{
-		"#format"       "{1:N},{2:s}"
-		"en"            "{orchid}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
-		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {blue}{2}. {lightgreen}Er war ein {blue}DETEKTIV!"
-		"ru"            "{orchid}{1} {lightgreen}нашел тело {blue}{2}{lightgreen}. Он был {blue}ДЕТЕКТИВОМ"
+		"#format"	"{1:N},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
 	}
-	
+
 	"Found Traitor"
 	{
-		"#format"       "{1:N},{2:s}"
-		"en"            "{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
-		"de"            "{orchid}{1} {lightgreen}findet die Leiche von {darkred}{2}. {lightgreen}Er war ein {darkred}Traitor!"
-		"ru"            "{orchid}{1} {lightgreen}нашел тело {darkred}{2}{lightgreen}. Он был {darkred}ПРЕДАТЕЛЕМ"
+		"#format"	"{1:N},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
 	}
-	
+
 	"Buy c4"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy C4 - {1}"
-		"de"            "Kaufe C4 - {1}"
-		"ru"            "Бомба C4 - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy C4 - {1}"
 	}
 
 	"Buy jihadbomb"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy Jihad Bomb - {1}"
-		"de"            "Kaufe Jihad Bombe - {1}"
-		"ru"            "Джихад бомба - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy Jihad Bomb - {1}"
 	}
-	
+
 	"Your bomb is not armed."
 	{
-		"en"            "Your bomb is not armed."
-		"de"            "Deine Bombe ist noch nicht aktiviert"
-		"ru"            "Ваша бомба еще не собрана."
+		"en"		"Your bomb is not armed."
 	}
-	
+
 	"Your bomb is now armed."
 	{
-		"en"            "Your bomb is now armed."
-		"de"            "Deine Bombe ist nun bereit"
-		"ru"            "Ваша бомба готова."
+		"en"		"Your bomb is now armed."
 	}
-	
+
 	"bomb will arm in 60 seconds, double tab F to explode"
 	{
-		"en"            "bomb will arm in 60 seconds, double tab F to explode"
-		"de"            "Die Bombe ist in 60 Sekunden bereit, drücke 2x F um die Bombe mit dir zu sprengen"
-		"ru"            "Бомба будет готова через 60 сек, нажмите на F, чтобы взорвать"
+		"en"		"bomb will arm in 60 seconds, double tab F to explode"
 	}
-	
+
 	"Your Karma is too low"
 	{
-		"en"			"You were banned, because your karma is too low!"
-		"de"			"Sie wurden gebannt, weil ihr Karma zu niedrig ist!"
-		"ru"			"Вы были забанены, т.к. у вас маленькая карма!"
+		"en"		"You were banned, because your karma is too low!"
 	}
-	
+
 	"TRAITORS HAS BEEN SELECTED"
 	{
-		"#format"		"{1:d}"
-		"en"            "{darkred}{1} TRAITORS {lightgreen}HAVE BEEN SELECTED"
-		"de"            "{darkred}{1} Traitors {lightgreen}wurden ausgewählt!"
-		"ru"            "БЫЛО ВЫБРАНО {darkred}{1} ПРЕДАТЕЛЕЙ"
+		"#format"	"{1:d}"
+		"en"		"{darkred}{1} TRAITORS {lightgreen}HAVE BEEN SELECTED"
 	}
-	
+
 	"Buy radar"
 	{
-		"#format"		"{1:d}"
-		"en"            "Buy radar - {1}"
-		"de"            "Kaufe Radar - {1}"
-		"ru"            "Радар - {1}"
+		"#format"	"{1:d}"
+		"en"		"Buy radar - {1}"
 	}
-	
+
 	"Suicide Blocked"
 	{
-		"en"			"Suicide blocked"
-		"de"			"Selbstmord blockiert"
-		"ru"			"Суицид заблокирован"
+		"en"		"Suicide blocked"
 	}
-	
+
 	"Right click to plant the C4"
 	{
-		"en"			"Right click to plant the C4!"
-		"de"			"Rechtsklick um C4 zu platzieren!"
-		"ru"			"Нажмите на правую кнопку мыши для закладки C4!"
+		"en"		"Right click to plant the C4!"
 	}
-	
+
 	"You already have an active Health Station"
 	{
-		"en"			"You already have an active Health Station!"
-		"de"			"Sie haben bereits eine Heilstation!"
-		"ru"			"Вы уже активировали аптечку!"
+		"en"		"You already have an active Health Station!"
 	}
-	
+
 	"The player who RDM'd you is no longer available"
 	{
-		"en"			"The player who RDM'd you is no longer available!"
-		"de"			"Der Spieler der RDM'd hat, ist nicht mehr verfügbar!"
+		"en"		"The player who RDM'd you is no longer available!"
 	}
-	
+
 	"You were RDM'd"
 	{
-		"#format"		"{1:s}"
-		"en"			"You were RDM'd by {1}!"
-		"de"			"Du wurdest von {1} RDM'd!"
-		"ru"			"Вы были заРДМлены игроком {1}!"
+		"#format"	"{1:s}"
+		"en"		"You were RDM'd by {1}!"
 	}
-	
+
 	"Forgive"
 	{
-		"en"			"Forgive"
-		"de"			"Vergeben"
-		"ru"			"Простить"
+		"en"		"Forgive"
 	}
-	
+
 	"Punish"
 	{
-		"en"			"Punish"
-		"de"			"Bestrafen"
-		"ru"			"Наказать"
+		"en"		"Punish"
 	}
-	
+
 	"Choose Punish"
 	{
-		"#format"		"{1:N},{2:N}"
-		"en"			"{1} has chosen to punish {2} for RDMing them!"
-		"de"			"{1} hat gewählt, {2} für RDM zu bestrafen!"
-		"ru"			"{1} решил наказать {2} за РДМ!"
+		"#format"	"{1:N},{2:N}"
+		"en"		"{1} has chosen to punish {2} for RDMing them!"
 	}
-	
+
 	"Choose Forgive Victim"
 	{
-		"#format"		"{1:N}"
-		"en"			"You have chosen to forgive {1} for RDMing you!"
-		"de"			"Sie vergeben {1} für sein RDM!"
-		"ru"			"Вы решили простить РДМ игроку {1}!"
+		"#format"	"{1:N}"
+		"en"		"You have chosen to forgive {1} for RDMing you!"
 	}
+
 	"Choose Forgive Attacker"
 	{
-		"#format"		"{1:N}"
-		"en"			"{1} has chosen to forgive you for RDMing them!"
-		"de"			"{1} vergibt Dir für dein RDM!"
-		"ru"			"{1} решил простить вам РДМ!"
+		"#format"	"{1:N}"
+		"en"		"{1} has chosen to forgive you for RDMing them!"
 	}
-	
+
 	"Player is Now Innocent"
 	{
-		"#format"		"{1:N}"
-		"en"			"{orchid}{1} {lightgreen}is now {green}Innocent!"
-		"de"			"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
-		"ru"			"{orchid}{1} {green}НЕВИНОВНЫЙ"
+		"#format"	"{1:N}"
+		"en"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
 	}
-	
+
 	"Player is Now Traitor"
 	{
-		"#format"		"{1:N}"
-		"en"			"{orchid}{1} {lightgreen}is now {darkred}Traitor!"
-		"de"			"{orchid}{1} {lightgreen}ist jetzt {darkred}Traitor!"
-		"ru"			"{orchid}{1} {darkred}ПРЕДАТЕЛЬ"
+		"#format"	"{1:N}"
+		"en"		"{orchid}{1} {lightgreen}is now {darkred}Traitor!"
 	}
-	
+
 	"Player is Now Detective"
 	{
-		"#format"		"{1:N}"
-		"en"			"{orchid}{1} {lightgreen}is now {blue}Detective!"
-		"de"			"{orchid}{1} {lightgreen}ist jetzt {blue}Detective!"
-		"ru"			"{orchid}{1} {blue}ДЕТЕКТИВ!"
+		"#format"	"{1:N}"
+		"en"		"{orchid}{1} {lightgreen}is now {blue}Detective!"
 	}
-	
+
 	"You Are Unassigned"
 	{
-		"en"			"You role has not been assigned yet!"
-		"de"			"Deine Rolle wurde noch nicht zugeordnet!"
-		"ru"			"Ваша роль еще не назначена!"
+		"en"		"You role has not been assigned yet!"
 	}
-	
+
 	"You Are Now Innocent"
 	{
-		"en"			"You are an {green}Innocent!"
-		"de"			"Sie sind jetzt ein {green}Innocent!"
-		"ru"			"Вы {green}НЕВИНОВНЫЙ"
+		"en"		"You are an {green}Innocent!"
 	}
-	
+
 	"You Are Now Traitor"
 	{
-		"en"			"You are a {blue}Detective!"
-		"de"			"Sie sind jetzt ein {blue}Detective!"
-		"ru"			"Вы {blue}ДЕТЕКТИВ"
+		"en"		"You are a {darkred}Traitor!"
 	}
-	
+
 	"You Are Now Detective"
 	{
-		"en"			"You are a {darkred}Traitor!"
-		"de"			"Sie sind jetzt ein {darkred}Traitor!"
-		"ru"			"Вы {darkred}ПРЕДАТЕЛЬ"
+		"en"		"You are a {blue}Detective!"
 	}
-	
+
 	"Triggered Falling Building"
 	{
-		"#format"		"{1:N}"
-		"en"			"{1} triggered the falling building as a Non-Traitor."
-		"de"			"{1} hat das fallende Gebäude als Nicht-Traitor ausgelöst."
+		"#format"	"{1:N}"
+		"en"		"{1} triggered the falling building as a Non-Traitor."
 	}
-	
+
 	"Bomb Detonated"
 	{
 		"en"		"Your bomb has been detonated!"
-		"de"		"Deine Bombe ist explodiert!"
-		"ru"		"Ваша бомба взорвалась!"		
 	}
-	
+
 	"Set C4 Timer"
 	{
 		"en"		"Set the C4 Timer..."
-		"de"		"Stelle den C4 Timer..."
-		"ru"		"Ввести время таймера C4"
 	}
-	
+
 	"Seconds"
 	{
 		"#format"	"{1:d}"
 		"en"		"{1} seconds"
-		"de"		"{1} Sekunden"
-		"ru"		"{1} сек"
 	}
-	
+
 	"Defuse C4"
 	{
 		"en"		"Defuse the C4!"
-		"ru"		"Обезвреживание C4!"
 	}
-	
+
 	"C4 Wire"
 	{
 		"#format"	"{1:d}"
 		"en"		"Wire {1}"
-		"de"		"Draht {1}"
-		"ru"		"Провод {1}"
 	}
-	
+
 	"You Defused Bomb"
 	{
 		"#format"	"{1:N}"
 		"en"		"You have defused {orchid}{1}{lightgreen}'s bomb!"
-		"de"		"Du hast die Bombe von {orchid}{1} {lightgreen}entschärft!"
-		"ru"		"Вы обзвредили бомбу игрока {orchid}{1}{lightgreen}!"
 	}
-	
+
 	"Has Defused Bomb"
 	{
 		"#format"	"{1:N}"
 		"en"		"{orchid}{1} {lightgreen}has defused your bomb!"
-		"de"		"{orchid}{1} {lightgreen}hat deine Bombe entschärft!"
-		"ru"		"{orchid}{1} {lightgreen}обезвредил вашу бомбу!"
 	}
-	
+
 	"Failed Defuse"
 	{
 		"en"		"Failed to defuse!"
-		"de"		"Bombe nicht geschafft zu entschärfen!"
-		"ru"		"Неудачное обезвреживание!"
 	}
-	
+
 	"Alive to Plant"
 	{
 		"en"		"You must be alive to plant a bomb!"
-		"de"		"Du musst leben um eine Bombe zu legen!"
-		"ru"		"Вы должны быть живым, чтобы обезвредить бомбу!"
 	}
-	
+
 	"Will Explode In"
 	{
 		"#format"	"{1:.2f}"
 		"en"		"Deploying a c4 that will explode in {orchid}{1} {lightgreen}seconds."
-		"de"		"Platzieren einer C4, die in {orchid}{1} {lightgreen}Sekunden explodiert."
 	}
-	
+
 	"Bomb Was Not Found"
 	{
 		"en"		"Your bomb was not found!"
-		"de"		"Deine Bombe wurde nicht gefunden!"
-		"ru"		"Ваша бомба не найдена!"
-		
 	}
-	
+
 	"Wire Is"
 	{
 		"#format"	"{1:d}"
 		"en"		"The defuse wire is {orchid}{1} {lightgreen}!"
-		"de"		"Der Entschärfungs-Draht ist {orchid}{1} {lightgreen}!"
 	}
-	
+
 	"Your Traitor Partners"
 	{
 		"en"		"Your Traitor partners are:"
-		"de"		"Deine Traitor Partner sind:"
-		"ru"		"Ваши товарищи по команде:"
 	}
-	
+
 	"No Traitor Partners"
 	{
 		"en"		"You have no partners."
-		"de"		"Du hast keine Partner."
-		"ru"		"У вас нет товарищей по команде."
 	}
-	
+
 	"Kick Bad Name"
 	{
 		"#format"	"{1:s}"
 		"en"		"Remove the word {1} form your name!"
-		"de"		"Entferne das Wort {1} aus dein Name!"
-		"ru"		"Удалите из вашего ника слово {1}!"
 	}
-	
+
 	"Health Station Deployed"
 	{
 		"en"		"Health Station deployed. Stand near it to gain HP!"
-		"de"		"Heil Station plaziert. Bleibe in der nähe um HP zu bekommen!"
-		"ru"		"Аптечка развернута. Стойте рядом и получайте ХП!"
 	}
-	
+
 	"Healing From"
 	{
 		"#format"	"{1:N}"
 		"en"		"Healing from {orchid}{1} {lightgreen}'s Health Station!"
-		"de"		"Heilen von der Heil Station von {orchid}{1}"
-		"ru"		"Аптечка игрока {orchid}{1}{lightgreen}!"
 	}
-	
+
 	"Health Station Out Of Charges"
 	{
 		"en"		"This Health Station is out of charges! Wait for it to recharge!"
-		"de"		"Die Heil Station ist außer Betrieb! Warte auf Wiederaufladung!"
-		"ru"		"Аптечка пока закончалась, подождите немного!"
 	}
-	
+
 	"Traitor List"
 	{
 		"#format"	"{1:N}"
 		"en"		"{darkred} {1}"
-		"de"		"{darkred} {1}"
 	}
-	
+
 	"Welcome Menu"
 	{
 		"#format"	"{1:N},{2:s}"
 		"en"		"Hello {1},\nthis is a Trouble in Terrorist Town Server\nwritten by {2}\n\nAre you familiar with the rules?"
-		"de"		"Hallo {1},\ndas ist ein Trouble in Terrorist Town Server\ngeschrieben von {2}\n\nSind Sie mit den Regeln vertraut?"
 	}
-	
+
 	"WM Yes"
 	{
 		"en"		"Yes, I'm familiar with the rules!"
-		"de"		"Ja, Ich bin mit den Regeln vertraut!"
 	}
 
 	"WM Kick Message"
 	{
 		"en"		"You are inactive or close rules menu!"
-		"de"		"Sie waren inaktiv oder haben das Regel-Menü geschlossen!"
 	}
-	
+
 	"AM Question"
 	{
 		"en"		"You want to play as detective?\nThen you need the following stuff:\n\n-working microphone\n-talk to other players\n-active Playing\n\nYou can confirm this?"
-		"de"		"Sie möchten als Detektive spielen?\nDann müssen die folgenden Foderungen erfüllen:\n\n-funktionierendes Mikrofon\n-mit anderen Spielern reden\n-aktives spielen\n\nKönne Sie das bestätigen?"
 	}
-	
+
 	"AM Yes"
 	{
 		"en"		"Yes, I confirm this."
-		"de"		"Ja, kann ich bestätigen."
 	}
-	
+
 	"AM No"
 	{
 		"en"		"No, I can't confirm this."
-		"de"		"Nein, kann ich nicht bestätigen."
 	}
+
+	"WM No"
+	{
+		"en"		"No, show me the rules!"
+	}
+
 }
