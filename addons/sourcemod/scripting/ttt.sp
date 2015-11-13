@@ -103,7 +103,8 @@ enum eConfig
 	bool:b_taserAllow,
 	Float:f_jihadPreparingTime,
 	bool:b_newConfig,
-	bool:b_denyFire
+	bool:b_denyFire,
+	bool:b_slayAfterStart
 };
 
 int g_iConfig[eConfig];
@@ -198,9 +199,7 @@ enum Ragdolls
 	bool:scanned,
 	Float:gameTime,
 	String:weaponused[32],
-	bool:found,
-	String:victimID[64],
-	bool:dead
+	bool:found
 }
 
 bool g_bReceivingLogs[MAXPLAYERS+1];
@@ -469,6 +468,7 @@ public void OnPluginStart()
 	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
 	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
 	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Block fire (mouse1+mouse2) for unassigned players");
+	g_iConfig[b_slayAfterStart] = AddBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -1081,31 +1081,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
-		if(g_bRoundStarted)
-		{
-			char sCommunityID[64];
-			GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID));
-			if(g_hRagdollArray != null)
-			{
-				int iSize = GetArraySize(g_hRagdollArray);
-				
-				if(iSize == 0)
-					return;
-				
-				int Items[Ragdolls];
-				
-				for(int i = 0; i < iSize; i++)
-				{
-					GetArrayArray(g_hRagdollArray, i, Items[0]);
-					
-					if (StrEqual(Items[victimID], sCommunityID) && Items[dead])
-					{
-						RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
-						break;
-					}
-				}
-			}
-		}
+		if(g_bRoundStarted && g_iConfig[b_slayAfterStart])
+			CreateTimer(0.3, Timer_SlayPlayer, GetClientUserId(client));
+
 		CS_SetClientClanTag(client, "");
 		
 		g_iInnoKills[client] = 0;
@@ -1143,11 +1121,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void Frame_SlayPlayer(any userid)
+public Action Timer_SlayPlayer(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(TTT_IsClientValid(client))
+	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 		ForcePlayerSuicide(client);
 }
 
@@ -1328,8 +1306,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		Format(Items[attackerName], MAX_NAME_LENGTH, name);
 		Items[gameTime] = GetGameTime();
 		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
-		GetClientAuthId(client, AuthId_SteamID64, Items[victimID], sizeof(Items[victimID]));
-		Items[dead] = true;
 	
 		PushArrayArray(g_hRagdollArray, Items[0]);
 		
