@@ -1441,7 +1441,14 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			
 			if(kvRules.JumpToKey(sParam, false))
 			{
-				// code...
+				char sValue[MAX_MESSAGE_LENGTH];
+				
+				kvRules.GetString("text", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					CPrintToChat(client, sValue);
+					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+				}
 			}
 			
 			delete kvRules;
