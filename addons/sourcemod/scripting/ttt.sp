@@ -104,7 +104,9 @@ enum eConfig
 	Float:f_jihadPreparingTime,
 	bool:b_newConfig,
 	bool:b_denyFire,
-	bool:b_slayAfterStart
+	bool:b_slayAfterStart,
+	i_c4ShakeRadius,
+	Float:f_c4DamageRadius
 };
 
 int g_iConfig[eConfig];
@@ -469,6 +471,8 @@ public void OnPluginStart()
 	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
 	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Block fire (mouse1+mouse2) for unassigned players");
 	g_iConfig[b_slayAfterStart] = AddBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
+	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "Shake radius on c4 explosion");
+	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "Damage radius on c4 expliosion");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -3202,10 +3206,13 @@ public Action explodeC4(Handle timer, Handle pack)
 	int shakeIndex = CreateEntityByName("env_shake");
 	if (explosionIndex != -1 && particleIndex != -1 && shakeIndex != -1)
 	{
+		char sShakeRadius[8];
+		IntToString(g_iConfig[i_c4ShakeRadius], sShakeRadius, sizeof(sShakeRadius));
+		
 		DispatchKeyValue(shakeIndex, "amplitude", "4"); 
 		DispatchKeyValue(shakeIndex, "duration", "1"); 
 		DispatchKeyValue(shakeIndex, "frequency", "2.5"); 
-		DispatchKeyValue(shakeIndex, "radius", "5000");
+		DispatchKeyValue(shakeIndex, "radius", sShakeRadius);
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
 		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", 850);
@@ -3234,7 +3241,7 @@ public Action explodeC4(Handle timer, Handle pack)
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
 			
-			if (GetVectorDistance(clientOrigin, explosionOrigin) <= 275.0)
+			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_iConfig[f_c4DamageRadius])
 			{
 				Handle killEvent = CreateEvent("player_death", true);
 				SetEventInt(killEvent, "userid", GetClientUserId(i));
