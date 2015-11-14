@@ -1429,13 +1429,21 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			Handle hFile = OpenFile(g_sRulesFile, "rt");
 			
 			if(hFile == null)
+			{
 				SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+				delete menu;
+				return 0;
+			}
 				
 			KeyValues kvRules = CreateKeyValues("Rules");
 			
 			if(!kvRules.ImportFromFile(g_sRulesFile))
 			{
 				SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+				
+				delete kvRules;
+				delete menu;
+				
 				return 0;
 			}
 			
@@ -1448,13 +1456,46 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				{
 					CPrintToChat(client, sValue);
 					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					delete menu;
+					
+					return 0;
+				}
+				
+				kvRules.GetString("command", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					ClientCommand(client, sValue);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					delete menu;
+					
+					return 0;
+				}
+				
+				kvRules.GetString("url", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					char sURL[512];
+					Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
+					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					delete menu;
+					
+					return 0;
 				}
 			}
-			
-			delete kvRules;
-			
-			g_bKnowRules[client] = false;
-			g_bReadRules[client] = true;
 		}
 		else
 		{
