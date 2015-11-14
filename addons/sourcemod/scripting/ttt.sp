@@ -3870,6 +3870,13 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 		LogError("(Callback_InsertPlayer) Query failed: %s", error);
 		return;
 	}
+	else
+	{
+		int client = GetClientOfUserId(userid);
+		
+		if(TTT_IsClientValid(client))
+			g_bKarma[client] = true;
+	}
 }
 
 stock void LoadClients()
