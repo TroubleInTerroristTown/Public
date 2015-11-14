@@ -106,7 +106,8 @@ enum eConfig
 	bool:b_denyFire,
 	bool:b_slayAfterStart,
 	i_c4ShakeRadius,
-	Float:f_c4DamageRadius
+	Float:f_c4DamageRadius,
+	i_startCredits
 };
 
 int g_iConfig[eConfig];
@@ -114,7 +115,7 @@ int g_iConfig[eConfig];
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 
-int g_iCredits[MAXPLAYERS + 1] =  { 800, ... };
+int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 
@@ -473,6 +474,7 @@ public void OnPluginStart()
 	g_iConfig[b_slayAfterStart] = AddBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
 	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "Shake radius on c4 explosion");
 	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "Damage radius on c4 expliosion");
+	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits on server join.");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -1135,9 +1137,6 @@ public Action Timer_SlayPlayer(Handle timer, any userid)
 
 public void OnClientPutInServer(int client)
 {
-	char steamid[64];
-	GetClientAuthId(client, AuthId_Steam2, steamid, sizeof(steamid));
-	
 	g_bImmuneRDMManager[client] = false;
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
@@ -1147,7 +1146,7 @@ public void OnClientPutInServer(int client)
 	
 	SetEntData(client, g_iAccount, 16000);
 		
-	g_iCredits[client] = 800;
+	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
 public Action OnPreThink(int client)
@@ -3953,8 +3952,7 @@ stock void InsertPlayer(int userid)
 	
 	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
-		int karma = g_iConfig[i_startKarma];
-		g_iKarma[client] = karma;
+		g_iKarma[client] = g_iConfig[i_startKarma];
 		
 		char sCommunityID[64];
 			
@@ -3962,7 +3960,7 @@ stock void InsertPlayer(int userid)
 			return;
 		
 		char sQuery[2048];
-		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d)", sCommunityID, karma);
+		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d)", sCommunityID, g_iKarma[client]);
 		
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
