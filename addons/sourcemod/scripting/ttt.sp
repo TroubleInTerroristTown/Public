@@ -2910,7 +2910,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		CreateTimer(2.0, PasarJ, client);
 	}
 	
-	if(g_iConfig[b_allowFlash])
+	if(g_iConfig[b_allowFlash] && IsPlayerAlive(client))
 	{
 		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
