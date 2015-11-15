@@ -470,11 +470,11 @@ public void OnPluginStart()
 	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
 	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
 	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
-	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Block fire (mouse1+mouse2) for unassigned players");
+	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
 	g_iConfig[b_slayAfterStart] = AddBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
-	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "Shake radius on c4 explosion");
-	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "Damage radius on c4 expliosion");
-	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits on server join.");
+	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
+	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
+	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
 	
 	if(!g_iConfig[b_newConfig])
 	{
