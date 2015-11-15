@@ -214,6 +214,8 @@ bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
 
 bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
+int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
+
 Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnClientGetRole = null;
@@ -1371,50 +1373,55 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 	
 	if(TTT_IsClientValid(client))
 	{
-		char sText[512], sYes[64];
-		Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
-		Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
-		
-		Menu menu = new Menu(Menu_ShowWelcomeMenu);
-		menu.SetTitle(sText);
-		
-		Handle hFile = OpenFile(g_sRulesFile, "rt");
-		
-		if(hFile == null)
-			SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
-			
-		KeyValues kvRules = CreateKeyValues("Rules");
-		
-		if(!kvRules.ImportFromFile(g_sRulesFile))
-		{
-			SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
-			return;
-		}
-		
-		if (!kvRules.GotoFirstSubKey())
-		{
-			SetFailState("Can't read rules/start.cfg correctly! (GotoFirstSubKey)");
-			return;
-		}
-		
-		do
-		{
-			char sNumber[4];
-			char sTitle[64];
-			
-			kvRules.GetSectionName(sNumber, sizeof(sNumber));
-			kvRules.GetString("title", sTitle, sizeof(sTitle));
-			menu.AddItem(sNumber, sTitle);
-		}
-		while (kvRules.GotoNextKey());
-		
-		delete kvRules;
-		
-		menu.AddItem("yes", sYes);
-		menu.ExitButton = false;
-		menu.ExitBackButton = false;
-		menu.Display(client, g_iConfig[i_timeToReadRules]);
+		ShowRules(client, g_iSite[client]);
 	}
+}
+
+stock void ShowRules(int client, int item)
+{
+	char sText[512], sYes[64];
+	Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
+	Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
+	
+	Menu menu = new Menu(Menu_ShowWelcomeMenu);
+	menu.SetTitle(sText);
+	
+	Handle hFile = OpenFile(g_sRulesFile, "rt");
+	
+	if(hFile == null)
+		SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+		
+	KeyValues kvRules = CreateKeyValues("Rules");
+	
+	if(!kvRules.ImportFromFile(g_sRulesFile))
+	{
+		SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+		return;
+	}
+	
+	if (!kvRules.GotoFirstSubKey())
+	{
+		SetFailState("Can't read rules/start.cfg correctly! (GotoFirstSubKey)");
+		return;
+	}
+	
+	do
+	{
+		char sNumber[4];
+		char sTitle[64];
+		
+		kvRules.GetSectionName(sNumber, sizeof(sNumber));
+		kvRules.GetString("title", sTitle, sizeof(sTitle));
+		menu.AddItem(sNumber, sTitle);
+	}
+	while (kvRules.GotoNextKey());
+	
+	delete kvRules;
+	
+	menu.AddItem("yes", sYes);
+	menu.ExitButton = false;
+	menu.ExitBackButton = false;
+	menu.DisplayAt(client, item, g_iConfig[i_timeToReadRules]);
 }
 
 public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param) 
@@ -1495,6 +1502,47 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 					
 					return 0;
 				}
+				
+				kvRules.GetString("file", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					g_iSite[client] = menu.Selection;
+					
+					char sFile[PLATFORM_MAX_PATH + 1];
+					BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
+					
+					Handle hRFile = OpenFile(sFile, "rt");
+					
+					if(hRFile == null)
+						SetFailState("[TTT] Can't open File: %s", sFile);
+					
+					char sLine[64], sTitle[64];
+					
+					Menu rMenu = new Menu(Menu_RulesPage);
+					
+					kvRules.GetString("title", sTitle, sizeof(sTitle));
+					rMenu.SetTitle(sTitle);
+					
+					while(!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
+					{
+						if(strlen(sLine) > 1)
+						{
+							rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
+						}
+					}
+					
+					rMenu.ExitButton = false;
+					rMenu.ExitBackButton = true;
+					rMenu.Display(client, g_iConfig[i_timeToReadRules]);
+					
+					delete hRFile;
+					delete kvRules;
+					delete menu;
+					
+					return 0;
+				}
+				
+				delete kvRules;
 			}
 		}
 		else
@@ -1524,6 +1572,16 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			}
 		}
 	}
+	else if (action == MenuAction_End)
+		delete menu;
+	
+	return 0;
+}
+
+public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param) 
+{
+	if(action == MenuAction_Cancel)
+		ShowRules(client, g_iSite[client]);
 	else if (action == MenuAction_End)
 		delete menu;
 	
