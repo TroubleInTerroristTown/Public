@@ -1581,7 +1581,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param) 
 {
 	if(action == MenuAction_Cancel)
-		ShowRules(client, g_iSite[client]);
+		CreateTimer(0.3, Timer_ShowWelcomeMenu, GetClientOfUserId(client));
 	else if (action == MenuAction_End)
 		delete menu;
 	
