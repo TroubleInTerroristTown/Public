@@ -2704,7 +2704,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}else{
 			for(int i = 0; i < g_iCustomItemCount; i++){
 				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0)){
-					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])){
+					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i]))){
 						subtractCredits(client, g_iCustomItems_Price[i]);
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
