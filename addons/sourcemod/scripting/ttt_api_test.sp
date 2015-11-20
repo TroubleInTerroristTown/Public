@@ -5,18 +5,35 @@
 
 #pragma newdecls required
 
-public Plugin myinfo = 
-{
-	name = "TTT API Test",
-	author = "Bara",
+#define PLUGIN_ITEM_SHORT "testitem"
+#define PLUGIN_ITEM_LONG  "Test Item"
+#define PLUGIN_ITEM_PRICE 350
+
+public Plugin myinfo = {
+	name = "TTT API Test + Item Test",
+	author = "Bara, whocodes",
 	description = "",
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
-public void OnPluginStart()
-{
+public void OnPluginStart(){
 	HookEvent("weapon_fire", Event_WeaponFire);
+}
+
+
+public void OnAllPluginsLoaded(){
+    if(TTT_IsLoaded()){
+        TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
+    }
+}
+
+public void TTT_OnItemPurchased(int client, const char[] item){
+    if(TTT_IsValidClient(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0)){
+        CPrintToChatClient(client, "It works! Hooray! Item: %s", item);
+        
+        IgniteEntity(client, 5.0);
+    }
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
