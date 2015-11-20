@@ -3,5 +3,6 @@
 - [Dream Community](http://dream-community.de/)
 - [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
 - [AdaM](http://steamcommunity.com/profiles/76561198134328733/)
+- [whocodes/cam/cam0](http://steamcommunity.com/profiles/76561197960807126/)
 
 - Authors of troubleinterroristtown.com
