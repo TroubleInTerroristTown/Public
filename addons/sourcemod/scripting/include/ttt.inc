@@ -23,6 +23,8 @@ forward void TTT_OnClientDeath(int victim, int attacker);
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
 forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 
+forward void TTT_OnItemPurchased(int client, const char[] itemshort);
+
 native int TTT_GetClientRole(int client);
 native int TTT_GetClientKarma(int client);
 native int TTT_GetClientCredits(int client);
@@ -31,6 +33,11 @@ native int TTT_SetClientKarma(int client, int karma);
 native int TTT_SetClientCredits(int client, int credits);
 native bool TTT_WasBodyFound(int client);
 native bool TTT_WasBodyScanned(int client);
+
+
+native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role);
+native int TTT_GetCustomItemPrice(const char[] item);
+native int TTT_GetCustomItemRole(const char[] item);
 
 stock bool TTT_IsLoaded()
 {
