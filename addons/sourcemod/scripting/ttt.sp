@@ -1472,6 +1472,20 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 					
 					return 0;
 				}
+
+				kvRules.GetString("fakecommand", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					FakeClientCommand(client, sValue);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					delete menu;
+					
+					return 0;
+				}
 				
 				kvRules.GetString("command", sValue, sizeof(sValue));
 				if(strlen(sValue) > 0)
