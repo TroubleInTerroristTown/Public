@@ -110,6 +110,13 @@ enum eConfig
 	i_startCredits
 };
 
+
+int g_iCustomItemCount = 0;
+char g_cCustomItems_Long[MAX_CUSTOM_ITEMS][64];
+char g_cCustomItems_Short[MAX_CUSTOM_ITEMS][16];
+int g_iCustomItems_Price[MAX_CUSTOM_ITEMS];
+int g_iCustomItems_Role[MAX_CUSTOM_ITEMS];
+
 int g_iConfig[eConfig];
 
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
@@ -222,6 +229,7 @@ Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyScanned = null;
+Handle g_hOnItemPurchased = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -280,6 +288,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
+	
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -288,6 +298,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
+	
+	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
+	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
+	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
 	
 	RegPluginLibrary("ttt");
 	
@@ -2494,6 +2508,17 @@ public Action Command_Shop(int client, int args)
 			}
 		}
 		
+		char display[128];
+		for(int i = 0; i < g_iCustomItemCount; i++){
+			if(strlen(g_cCustomItems_Short[i]) > 1){
+				if(g_iCustomItems_Role == 0 || g_iCustomItems_Role == team){
+					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
+					
+					AddMenuItem(menu, g_cCustomItems_Short[i], display);
+				}
+			}
+		}
+		
 		SetMenuExitButton(menu, true);
 		DisplayMenu(menu, client, 15);
 	
@@ -2675,6 +2700,18 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				spawnHealthStation(client);
 				subtractCredits(client, g_iConfig[i_shopHEALTH]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+			}
+		}else{
+			for(int i = 0; i < g_iCustomItemCount; i++){
+				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0)){
+					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])){
+						subtractCredits(client, g_iCustomItems_Price[i]);
+						Call_StartForward(g_hOnItemPurchased);
+						Call_PushCell(client);
+						Call_PushString(g_cCustomItems_Short[i]);
+						Call_Finish();
+					}
+				}
 			}
 		}
 	}
@@ -4208,6 +4245,55 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		}
 	}
 	return 0;
+}
+
+public int Native_RegisterCustomItem(Handle plugin, int numParams){
+	if(numParams < 3){
+		return false;
+	}
+	
+	char temp_short[32];
+	char temp_long[64];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	GetNativeString(2, temp_long, sizeof(temp_long));
+	
+	int temp_price = GetNativeCell(3);
+	int temp_role = GetNativeCell(4);
+	
+	if((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
+		return false;
+		
+	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(g_cCustomItems_Short[g_iCustomItemCount]), "%s", temp_short);
+	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(g_cCustomItems_Long[g_iCustomItemCount]), "%s", temp_long);
+	g_iCustomItems_Price[g_iCustomItemCount] = temp_price;
+	g_iCustomItems_Role[g_iCustomItemCount] = temp_role;
+	
+	g_iCustomItemCount++;
+	return true;
+}
+
+public int Native_GetCustomItemPrice(Handle plugin, int numParams){
+	char temp_short[32];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	
+	for(int i = 0; i < g_iCustomItemCount; i++){
+		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
+			return g_iCustomItems_Price[i];
+	}
+
+	return 0;
+}
+
+public int Native_GetCustomItemRole(Handle plugin, int numParams){
+	char temp_short[32];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	
+	for(int i = 0; i < g_iCustomItemCount; i++){
+		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
+			return g_iCustomItems_Role[i];
+	}
+
+	return -1;
 }
 
 stock int AddInt(const char[] name, int value, const char[] description)
