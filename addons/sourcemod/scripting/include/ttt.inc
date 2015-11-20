@@ -37,7 +37,7 @@ native bool TTT_WasBodyFound(int client);
 native bool TTT_WasBodyScanned(int client);
 
 
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role);
+native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0);
 native int TTT_GetCustomItemPrice(const char[] item);
 native int TTT_GetCustomItemRole(const char[] item);
 
