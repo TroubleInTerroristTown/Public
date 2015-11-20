@@ -3286,7 +3286,6 @@ public int OnEntityCreated(int entity, const char[] name)
 	{
 		for (int i = 0; i < sizeof(g_sRemoveEntityList); i++)
 		{
-			PrintToServer("%s", g_sRemoveEntityList[i]);
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 			
