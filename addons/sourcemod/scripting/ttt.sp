@@ -2511,7 +2511,7 @@ public Action Command_Shop(int client, int args)
 		char display[128];
 		for(int i = 0; i < g_iCustomItemCount; i++){
 			if(strlen(g_cCustomItems_Short[i]) > 1){
-				if(g_iCustomItems_Role == 0 || g_iCustomItems_Role == team){
+				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team){
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
 					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);
@@ -4252,7 +4252,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams){
 		return false;
 	}
 	
-	char temp_short[32];
+	char temp_short[16];
 	char temp_long[64];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	GetNativeString(2, temp_long, sizeof(temp_long));
@@ -4263,8 +4263,8 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams){
 	if((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 		return false;
 		
-	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(g_cCustomItems_Short[g_iCustomItemCount]), "%s", temp_short);
-	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(g_cCustomItems_Long[g_iCustomItemCount]), "%s", temp_long);
+	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(temp_short), "%s", temp_short);
+	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(temp_long), "%s", temp_long);
 	g_iCustomItems_Price[g_iCustomItemCount] = temp_price;
 	g_iCustomItems_Role[g_iCustomItemCount] = temp_role;
 	
