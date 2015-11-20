@@ -769,19 +769,24 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
 	
-	if(g_iConfig[b_removeHostages])
-		RemoveHostages();
+	RemoveHostagesStuff();
 	
 	ShowOverlayToAll("");
 	resetPlayers();
 	healthStation_cleanUp();
 }
 
-stock void RemoveHostages()
+stock void RemoveHostagesStuff()
 {
 	int entity = -1;
 	while((entity  = FindEntityByClassname(entity, "func_bomb_target")) != -1)
 		AcceptEntityInput(entity, "kill");
+}
+
+stock void RemoveBombStuff(int entity)
+{
+	if(g_iConfig[b_removeBomb])
+		AcceptEntityInput(entity, "Kill");
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -3279,11 +3284,10 @@ public int OnEntityCreated(int entity, const char[] name)
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 			
-			if(g_iConfig[b_removeBomb] && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
-				AcceptEntityInput(entity, "Kill");
+			if(StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
+				RemoveBombStuff(entity);
 			
-			if(g_iConfig[b_removeHostages] && (StrEqual("hostage_entity", g_sRemoveEntityList[i], false) || StrEqual("func_hostage_rescue", g_sRemoveEntityList[i], false) || StrEqual("info_hostage_spawn", g_sRemoveEntityList[i], false)))
-				AcceptEntityInput(entity, "Kill");
+			RemoveHostagesStuff();
 			
 			break;
 		}
