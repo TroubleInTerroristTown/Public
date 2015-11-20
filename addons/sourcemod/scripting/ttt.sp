@@ -107,7 +107,7 @@ enum eConfig
 	i_c4ShakeRadius,
 	Float:f_c4DamageRadius,
 	i_startCredits,
-	bool:b_disableBuyzone
+	bool:b_removeBuyzone
 };
 
 
@@ -266,7 +266,8 @@ char g_sRemoveEntityList[][] = {
 	"func_bomb_target",
 	"hostage_entity",
 	"func_hostage_rescue",
-	"info_hostage_spawn"
+	"info_hostage_spawn",
+	"func_buyzone"
 };
 
 public Plugin myinfo =
@@ -387,7 +388,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_hurt", Event_PlayerHurt);
 	HookEvent("item_pickup", Event_ItemPickup);
-	
+		
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
@@ -489,7 +490,7 @@ public void OnPluginStart()
 	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
 	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
-	g_iConfig[b_disableBuyzone] = AddBool("ttt_disable_buyzone", false, "Disable Buyzones?");
+	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -728,7 +729,7 @@ public void ThinkPost(int entity)
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
 	
-	if(g_iConfig[b_disableBuyzone])
+	if(g_iConfig[b_removeBuyzone])
 		SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
 }
 
@@ -774,24 +775,9 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
 	
-	RemoveHostagesStuff();
-	
 	ShowOverlayToAll("");
 	resetPlayers();
 	healthStation_cleanUp();
-}
-
-stock void RemoveHostagesStuff()
-{
-	int entity = -1;
-	while((entity  = FindEntityByClassname(entity, "func_bomb_target")) != -1)
-		AcceptEntityInput(entity, "kill");
-}
-
-stock void RemoveBombStuff(int entity)
-{
-	if(g_iConfig[b_removeBomb])
-		AcceptEntityInput(entity, "Kill");
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -3289,11 +3275,13 @@ public int OnEntityCreated(int entity, const char[] name)
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 			
-			if(StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
-				RemoveBombStuff(entity);
-			
-			RemoveHostagesStuff();
-			
+			if(g_iConfig[b_removeBomb] && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
+				AcceptEntityInput(entity, "kill");
+			else if(g_iConfig[b_removeBuyzone] && StrEqual("func_buyzone", g_sRemoveEntityList[i], false))
+				AcceptEntityInput(entity, "kill");
+			else if (g_iConfig[b_removeHostages])
+				AcceptEntityInput(entity, "kill");
+
 			break;
 		}
 	}
