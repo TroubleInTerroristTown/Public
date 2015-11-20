@@ -29,7 +29,6 @@ enum eConfig
 	i_shopDNA,
 	i_shopID,
 	i_shopFAKEID,
-	i_shopRadar,
 	i_shopT,
 	i_shopD,
 	i_shopTASER,
@@ -149,7 +148,6 @@ bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
 bool g_bID[MAXPLAYERS + 1] =  { false, ... };
-// bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -212,7 +210,7 @@ enum Ragdolls
 	bool:found
 }
 
-bool g_bReceivingLogs[MAXPLAYERS+1];
+bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hLogsArray;
 
@@ -457,10 +455,9 @@ public void OnPluginStart()
 	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "The price of a '1 Hit Knife' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
-	// g_iConfig[i_shopRadar] = AddInt("ttt_shop_radar", 7000, "The price of a 'Radar' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
-	// g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
-	// g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "The price of the 'USP-S' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "The price of the 'MA41' in the shop. ( 0 = disabled )");
@@ -1135,7 +1132,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		g_b1Knife[client] = false;
 		g_bScan[client] = false;
 		g_bID[client] = false;
-		// g_bRadar[client] = false;
 		g_bJihadBomb[client] = false;
 		
 		if(g_iConfig[b_enableNoBlock])
@@ -2409,12 +2405,6 @@ public Action Command_Shop(int client, int args)
 		
 		if(team != TTT_TEAM_INNOCENT)
 		{
-			/* if(g_iConfig[i_shopRadar] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Buy radar", client, g_iConfig[i_shopRadar]);
-				AddMenuItem(menu, "radar", MenuItem);
-			} */
-			
 			if(g_iConfig[i_shopKEVLAR] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
@@ -2477,7 +2467,6 @@ public Action Command_Shop(int client, int args)
 		}
 		if(team == TTT_TEAM_INNOCENT)
 		{
-/*
 			if(g_iConfig[i_shopT] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
@@ -2489,7 +2478,6 @@ public Action Command_Shop(int client, int args)
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
 			}
-*/
 			
 			if(g_iConfig[i_shopID] > 0)
 			{
@@ -2575,16 +2563,6 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				g_bID[client] = true;
 				subtractCredits(client, g_iConfig[i_shopID]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"radar") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopRadar])
-			{
-				// g_bRadar[client] = true; // TODO
-				subtractCredits(client, g_iConfig[i_shopRadar]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
