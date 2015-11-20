@@ -29,10 +29,8 @@ public void OnAllPluginsLoaded(){
 }
 
 public void TTT_OnItemPurchased(int client, const char[] item){
-    if(TTT_IsValidClient(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0)){
-        CPrintToChatClient(client, "It works! Hooray! Item: %s", item);
-        
-        IgniteEntity(client, 5.0);
+    if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0)){
+        PrintToChat(client, "It works! Hooray! Item: %s", item);
     }
 }
 
