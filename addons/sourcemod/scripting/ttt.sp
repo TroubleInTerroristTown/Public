@@ -106,7 +106,8 @@ enum eConfig
 	bool:b_slayAfterStart,
 	i_c4ShakeRadius,
 	Float:f_c4DamageRadius,
-	i_startCredits
+	i_startCredits,
+	bool:b_disableBuyzone
 };
 
 
@@ -488,6 +489,7 @@ public void OnPluginStart()
 	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
 	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
+	g_iConfig[b_disableBuyzone] = AddBool("ttt_disable_buyzone", false, "Disable Buyzones?");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -725,6 +727,9 @@ public void ThinkPost(int entity)
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
+	
+	if(g_iConfig[b_disableBuyzone])
+		SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
 }
 
 public Action Command_Karma(int client, int args)
@@ -3281,6 +3286,7 @@ public int OnEntityCreated(int entity, const char[] name)
 	{
 		for (int i = 0; i < sizeof(g_sRemoveEntityList); i++)
 		{
+			PrintToServer("%s", g_sRemoveEntityList[i]);
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
 			
