@@ -1803,10 +1803,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
 		return;
 	
-	int assister = GetClientOfUserId(event.GetInt("assister"));
-	if(!TTT_IsClientValid(assister) || assister == client)
-		return;
-	
 	if (g_iConfig[b_showDeathMessage])
 	{
 		if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
