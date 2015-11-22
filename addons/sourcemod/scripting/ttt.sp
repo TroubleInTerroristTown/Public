@@ -474,7 +474,7 @@ public void OnPluginStart()
 	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
 	g_iConfig[b_showDetectiveMenu] = AddBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
 	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
-	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_ttt_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
+	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
 	AddString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
 	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
@@ -2492,9 +2492,12 @@ public Action Command_Shop(int client, int args)
 		}
 		
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++){
-			if(strlen(g_cCustomItems_Short[i]) > 1){
-				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team){
+		for(int i = 0; i < g_iCustomItemCount; i++)
+		{
+			if(strlen(g_cCustomItems_Short[i]) > 1)
+			{
+				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team)
+				{
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
 					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);

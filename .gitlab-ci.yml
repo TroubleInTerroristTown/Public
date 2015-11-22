@@ -1,29 +1,7 @@
 TTT18:
   script:
-    - wget "http://www.sourcemod.net/latest.php?version=1.8&os=linux" -O sourcemod-1.8-linux.tar.gz
-    - tar -xzf sourcemod-1.8-linux.tar.gz
-    - cd addons/sourcemod/scripting
-    - chmod +x spcomp
-    - ./spcomp ttt.sp
-    - ./spcomp crashcatcher.sp
-    - ./spcomp grabbermod.sp
-    - ./spcomp talk_override.sp
-    - ./spcomp hide_radar.sp
-    - ./spcomp show_name.sp
-    - ./spcomp ttt_api_test.sp
-    - ls *.smx
+    - bash ci/build.sh "1.8" "dev" $FTP_HOST $FTP_USER $FTP_PASS 
 
 TTT17:
   script:
-    - wget "http://www.sourcemod.net/latest.php?version=1.7&os=linux" -O sourcemod-1.7-linux.tar.gz
-    - tar -xzf sourcemod-1.7-linux.tar.gz
-    - cd addons/sourcemod/scripting
-    - chmod +x spcomp
-    - ./spcomp ttt.sp
-    - ./spcomp crashcatcher.sp
-    - ./spcomp grabbermod.sp
-    - ./spcomp talk_override.sp
-    - ./spcomp hide_radar.sp
-    - ./spcomp show_name.sp
-    - ./spcomp ttt_api_test.sp
-    - ls *.smx
+    - bash ci/build.sh "1.7" "stable" $FTP_HOST $FTP_USER $FTP_PASS
