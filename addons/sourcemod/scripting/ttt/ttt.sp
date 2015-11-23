@@ -223,6 +223,7 @@ bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 
+Handle g_hOnRoundStart_Pre = null;
 Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnClientGetRole = null;
@@ -282,6 +283,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+    g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
 	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
@@ -833,6 +835,19 @@ public Action Timer_Selection(Handle hTimer)
 	
 	if(g_hTraitores == null) 
 		g_hTraitores = CreateArray(1);
+	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnRoundStart_Pre);
+	Call_Finish(res);
+	
+	if(res >= Plugin_Handled){
+	    Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(-1);
+		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_Finish();
+		
+		return;
+	}
 	
 	int iCount = 0;
 	LoopValidClients(i)
