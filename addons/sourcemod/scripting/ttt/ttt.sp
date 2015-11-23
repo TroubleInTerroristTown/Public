@@ -283,8 +283,8 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
-    g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
+	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
@@ -702,7 +702,7 @@ public void OnMapStart()
 	if (g_iMVPs == -1)
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	
-    
+	
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
 	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
 	
@@ -841,10 +841,10 @@ public Action Timer_Selection(Handle hTimer)
 	Call_Finish(res);
 	
 	if(res >= Plugin_Handled){
-        Call_StartForward(g_hOnRoundStartFailed);
-        Call_PushCell(-1);
-        Call_PushCell(g_iConfig[i_requiredPlayers]);
-        Call_Finish();
+		Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(-1);
+		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_Finish();
 		
 		return;
 	}
@@ -856,7 +856,7 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		
 		if(!IsPlayerAlive(i))
-		    continue;
+			continue;
 		
 		iCount++;
 		PushArrayCell(g_hPlayerArray, i);
@@ -1046,10 +1046,10 @@ stock void TeamInitialize(int client)
 		CS_SetClientClanTag(client, "DETECTIVE");
 		
 		if(g_iConfig[b_forceTeams]){
-		    if(GetClientTeam(client) != CS_TEAM_CT)
-			    CS_SwitchTeam(client, CS_TEAM_CT);
+			if(GetClientTeam(client) != CS_TEAM_CT)
+				CS_SwitchTeam(client, CS_TEAM_CT);
 		}else{
-		    SetEntityModel(client, "models/player/ctm_st6.mdl");
+			SetEntityModel(client, "models/player/ctm_st6.mdl");
 		}
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
@@ -1072,10 +1072,10 @@ stock void TeamInitialize(int client)
 			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
 		if(g_iConfig[b_forceTeams]){
-		    if(GetClientTeam(client) != CS_TEAM_T)
-			    CS_SwitchTeam(client, CS_TEAM_T);
+			if(GetClientTeam(client) != CS_TEAM_T)
+				CS_SwitchTeam(client, CS_TEAM_T);
 		}else{
-		    SetEntityModel(client, "models/player/tm_phoenix.mdl");
+			SetEntityModel(client, "models/player/tm_phoenix.mdl");
 		}
 	}
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
@@ -1086,10 +1086,10 @@ stock void TeamInitialize(int client)
 			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
 		if(g_iConfig[b_forceTeams]){
-		    if(GetClientTeam(client) != CS_TEAM_T)
-			    CS_SwitchTeam(client, CS_TEAM_T);
+			if(GetClientTeam(client) != CS_TEAM_T)
+				CS_SwitchTeam(client, CS_TEAM_T);
 		}else{
-		    SetEntityModel(client, "models/player/tm_phoenix.mdl");
+			SetEntityModel(client, "models/player/tm_phoenix.mdl");
 		}
 	}
 	
@@ -1824,7 +1824,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	
 	if (!TTT_IsClientValid(client))
 		return;
-    
+	
 	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 	if (iRagdoll < 0)
 		return;
@@ -1973,10 +1973,10 @@ stock int CreateIcon(int client) {
 
 public Action Hook_SetTransmitT(int entity, int client) 
 { 
-    if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
-        return Plugin_Handled;
-     
-    return Plugin_Continue; 
+	if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
+		return Plugin_Handled;
+	 
+	return Plugin_Continue; 
 }  
 
 public void OnMapEnd() 
@@ -2072,15 +2072,15 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 
 stock void StripAllWeapons(int client)
 {
-    int iEnt;
-    for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
-    {
+	int iEnt;
+	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
+	{
 		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
 		{
-            RemovePlayerItem(client, iEnt);
-            AcceptEntityInput(iEnt, "Kill");
+			RemovePlayerItem(client, iEnt);
+			AcceptEntityInput(iEnt, "Kill");
 		}
-    }
+	}
 }  
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
@@ -2938,70 +2938,70 @@ stock void setCredits(int client, int credits)
 
 stock void ClearTimer(Handle &timer)
 {
-    if (timer != null)
-    {
-        KillTimer(timer);
-        timer = null;
-    }     
+	if (timer != null)
+	{
+		KillTimer(timer);
+		timer = null;
+	}	 
 } 
 
 stock void Detonate(int client) 
 { 
-    int ExplosionIndex = CreateEntityByName("env_explosion"); 
-    if (ExplosionIndex != -1) 
-    { 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384); 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000); 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600); 
+	int ExplosionIndex = CreateEntityByName("env_explosion"); 
+	if (ExplosionIndex != -1) 
+	{ 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384); 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000); 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600); 
 
-        DispatchSpawn(ExplosionIndex); 
-        ActivateEntity(ExplosionIndex); 
-         
-        float playerEyes[3]; 
-        GetClientEyePosition(client, playerEyes); 
+		DispatchSpawn(ExplosionIndex); 
+		ActivateEntity(ExplosionIndex); 
+		 
+		float playerEyes[3]; 
+		GetClientEyePosition(client, playerEyes); 
 
-        TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR); 
-        SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
-         
-        EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
-         
-         
-        AcceptEntityInput(ExplosionIndex, "Explode"); 
-         
-        AcceptEntityInput(ExplosionIndex, "Kill"); 
-    } 
-    g_bJihadBomb[client] = false;
+		TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR); 
+		SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
+		 
+		EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
+		 
+		 
+		AcceptEntityInput(ExplosionIndex, "Explode"); 
+		 
+		AcceptEntityInput(ExplosionIndex, "Kill"); 
+	} 
+	g_bJihadBomb[client] = false;
 } 
 
 public Action Command_Detonate(int client, int args) 
 { 
-    if (!g_bJihadBomb[client]) 
-    { 
+	if (!g_bJihadBomb[client]) 
+	{ 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You dont have it!", client);
 		return Plugin_Handled; 
-    } 
+	} 
 	
-    if (g_hJihadBomb[client] != null) 
-    { 
+	if (g_hJihadBomb[client] != null) 
+	{ 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your bomb is not armed.", client);
 		return Plugin_Handled; 
-    } 
-     
-    EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-         
-    CreateTimer(2.0, TimerCallback_Detonate, client); 
-    g_bJihadBomb[client] = false;
+	} 
+	 
+	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
+		 
+	CreateTimer(2.0, TimerCallback_Detonate, client); 
+	g_bJihadBomb[client] = false;
 
-    return Plugin_Handled; 
+	return Plugin_Handled; 
 } 
 
 public Action TimerCallback_Detonate(Handle timer, any client) 
 { 
-    if(!client || !IsClientInGame(client) || !IsPlayerAlive(client)) 
-        return Plugin_Handled;
-    
-    Detonate(client); 
-    return Plugin_Handled; 
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client)) 
+		return Plugin_Handled;
+	
+	Detonate(client); 
+	return Plugin_Handled; 
 } 
 
 public Action Command_LAW(int client, const char[] command, int argc)
@@ -3012,7 +3012,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	if(IsPlayerAlive(client) && g_bJihadBomb[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-         
+		 
 		CreateTimer(2.0, TimerCallback_Detonate, client); 
 		g_bJihadBomb[client] = false;
 		
