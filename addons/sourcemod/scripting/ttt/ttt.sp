@@ -840,6 +840,9 @@ public Action Timer_Selection(Handle hTimer)
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
 			continue;
 		
+		if(!IsPlayerAlive(i))
+		    continue;
+		
 		iCount++;
 		PushArrayCell(g_hPlayerArray, i);
 	}
