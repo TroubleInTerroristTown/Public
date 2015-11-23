@@ -757,7 +757,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_bHasC4[i] = false;
 		g_bImmuneRDMManager[i] = false;
 		
-		CS_SetClientClanTag(i, "");
+		CS_SetClientClanTag(i, " ");
 	}
 
 	if(g_hStartTimer != null)
@@ -1113,6 +1113,8 @@ stock void TeamTag(int client)
 		CS_SetClientClanTag(client, "TRAITOR");
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 		CS_SetClientClanTag(client, "INNOCENT");
+	else 
+		CS_SetClientClanTag(client, " ");
 }
 
 stock void ApplyIcons()
@@ -1131,7 +1133,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		if(g_bRoundStarted && g_iConfig[b_slayAfterStart])
 			CreateTimer(0.3, Timer_SlayPlayer, GetClientUserId(client));
 
-		CS_SetClientClanTag(client, "");
+		CS_SetClientClanTag(client, " ");
 		
 		g_iInnoKills[client] = 0;
 		
@@ -3158,7 +3160,7 @@ public Action Command_SetRole(int client, int args)
 		g_iRole[target] = TTT_TEAM_INNOCENT;
 		TeamInitialize(target);
 		ClearIcon(target);
-		CS_SetClientClanTag(target, "");
+		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Innocent", client, target);
 		return Plugin_Handled;
 	}
@@ -3168,7 +3170,7 @@ public Action Command_SetRole(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
-		CS_SetClientClanTag(target, "");
+		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
