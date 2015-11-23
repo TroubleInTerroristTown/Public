@@ -2810,6 +2810,7 @@ stock void ClearIcon(int client)
 		if(g_iRole[client] == TTT_TEAM_TRAITOR) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
+	ShowOverlayToClient(client, " ");
 	g_iIcon[client] = 0;
 	
 }
