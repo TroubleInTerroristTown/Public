@@ -284,7 +284,7 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
-	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+    g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
@@ -841,10 +841,10 @@ public Action Timer_Selection(Handle hTimer)
 	Call_Finish(res);
 	
 	if(res >= Plugin_Handled){
-	    Call_StartForward(g_hOnRoundStartFailed);
-		Call_PushCell(-1);
-		Call_PushCell(g_iConfig[i_requiredPlayers]);
-		Call_Finish();
+        Call_StartForward(g_hOnRoundStartFailed);
+        Call_PushCell(-1);
+        Call_PushCell(g_iConfig[i_requiredPlayers]);
+        Call_Finish();
 		
 		return;
 	}
