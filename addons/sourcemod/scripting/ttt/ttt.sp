@@ -107,7 +107,8 @@ enum eConfig
 	i_c4ShakeRadius,
 	Float:f_c4DamageRadius,
 	i_startCredits,
-	bool:b_removeBuyzone
+	bool:b_removeBuyzone,
+	bool:b_forceTeams
 };
 
 
@@ -476,7 +477,7 @@ public void OnPluginStart()
 	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
 	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
 	AddString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
-	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. 1 = Update, 0 = Don't Update");
+	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Useless is force-teams is off. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
@@ -491,6 +492,7 @@ public void OnPluginStart()
 	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
 	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_forceTeams] = AddBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -1025,8 +1027,12 @@ stock void TeamInitialize(int client)
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
 		
-		if(GetClientTeam(client) != CS_TEAM_CT)
-			CS_SwitchTeam(client, CS_TEAM_CT);
+		if(g_iConfig[b_forceTeams]){
+		    if(GetClientTeam(client) != CS_TEAM_CT)
+			    CS_SwitchTeam(client, CS_TEAM_CT);
+		}else{
+		    SetEntityModel(client, "models/player/ctm_st6.mdl");
+		}
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, "weapon_m4a1_silencer");
@@ -1047,8 +1053,12 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPT] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
-		if(GetClientTeam(client) != CS_TEAM_T)
-			CS_SwitchTeam(client, CS_TEAM_T);
+		if(g_iConfig[b_forceTeams]){
+		    if(GetClientTeam(client) != CS_TEAM_T)
+			    CS_SwitchTeam(client, CS_TEAM_T);
+		}else{
+		    SetEntityModel(client, "models/player/tm_phoenix.mdl");
+		}
 	}
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -1057,11 +1067,15 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPI] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
-		if(GetClientTeam(client) != CS_TEAM_T)
-			CS_SwitchTeam(client, CS_TEAM_T);
+		if(g_iConfig[b_forceTeams]){
+		    if(GetClientTeam(client) != CS_TEAM_T)
+			    CS_SwitchTeam(client, CS_TEAM_T);
+		}else{
+		    SetEntityModel(client, "models/player/tm_phoenix.mdl");
+		}
 	}
 	
-	if(g_iConfig[b_updateClientModel])
+	if(g_iConfig[b_updateClientModel] && !g_iConfig[b_forceTeams])
 		CS_UpdateClientModel(client);
 	
 	Call_StartForward(g_hOnClientGetRole);
