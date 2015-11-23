@@ -383,7 +383,7 @@ public void OnPluginStart()
 	}
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
-	HookEvent("round_start", Event_RoundStartPre, EventHookMode_Pre);
+	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
