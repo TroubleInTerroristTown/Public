@@ -109,6 +109,7 @@ enum eConfig
 	i_startCredits,
 	bool:b_removeBuyzone,
 	bool:b_forceTeams,
+	bool:b_forceModel,
 	String:s_modelCT[PLATFORM_MAX_MATH],
 	String:s_modelT[PLATFORM_MAX_PATH]
 };
