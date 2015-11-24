@@ -1130,8 +1130,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
-		if(g_bRoundStarted && g_iConfig[b_slayAfterStart])
-			CreateTimer(0.3, Timer_SlayPlayer, GetClientUserId(client));
+		if(g_bRoundStarted && g_iConfig[b_slayAfterStart]){
+			g_iRole[client] = TTT_TEAM_UNASSIGNED;
+			CreateTimer(0.1, Timer_SlayPlayer, GetClientUserId(client));
+		}
 
 		CS_SetClientClanTag(client, " ");
 		
