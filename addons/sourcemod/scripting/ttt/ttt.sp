@@ -2846,7 +2846,7 @@ stock void addKarma(int client, int karma, bool message = false)
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "karma earned", client, karma, g_iKarma[client]);	
 	}
 	
 	UpdateKarma(client, g_iKarma[client]);
@@ -2871,7 +2871,7 @@ stock void subtractKarma(int client, int karma, bool message = false)
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "lost karma", client, karma, g_iKarma[client]);	
 	}
 	
 	UpdateKarma(client, g_iKarma[client]);
@@ -2907,7 +2907,7 @@ stock void addCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
-			CPrintToChat(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "credits earned", client, credits, g_iCredits[client]);
 	}
 }
 
@@ -2928,7 +2928,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
-			CPrintToChat(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "lost credits", client, credits, g_iCredits[client]);
 	}
 }
 
