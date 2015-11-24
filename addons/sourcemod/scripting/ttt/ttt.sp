@@ -2060,7 +2060,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	healthStation_cleanUp();
 	
 	if(!g_iConfig[b_forceTeams]){
-	    reason = view_as<CSRoundEndReason>(GetRandomInt(CSRoundEnd_CTWin, CSRoundEnd_TerroristWin));
+	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 	    return Plugin_Changed;
 	}
 	return Plugin_Continue;
