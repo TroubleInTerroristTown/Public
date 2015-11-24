@@ -2057,8 +2057,12 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	else if(reason == CSRoundEnd_CTWin && !bInnoAlive)
 		ShowOverlayToAll("overlays/ttt/detectives_win");
 	
-	
 	healthStation_cleanUp();
+	
+	if(!g_iConfig[b_forceTeams]){
+	    reason = view_as<CSRoundEndReason>(GetRandomInt(CSRoundEnd_CTWin, CSRoundEnd_TerroristWin));
+	    return Plugin_Changed;
+	}
 	return Plugin_Continue;
 }
 
