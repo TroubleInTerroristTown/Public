@@ -315,7 +315,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	RegPluginLibrary("ttt");
 	
-	return APLRes_Success; 
+	return APLRes_Success;
 }
 
 public void OnPluginStart()
@@ -3963,6 +3963,11 @@ stock void CheckTeams()
 				iT++;
 			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				iI++;
+		}else{
+			if(g_iRole[i] == TTT_TEAM_UNASSIGNED){
+				g_bFound[i] = true;
+				CS_SetClientClanTag(i, "UNASSIGNED");
+			}
 		}
 	}
 	
