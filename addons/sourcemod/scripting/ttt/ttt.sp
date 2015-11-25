@@ -697,6 +697,9 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
 	PrecacheDecal("overlays/ttt/detectives_win", true);
 	
+	PrecacheModel(g_iConfig[s_modelCT], true);
+	PrecacheModel(g_iConfig[s_modelT], true);
+	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
