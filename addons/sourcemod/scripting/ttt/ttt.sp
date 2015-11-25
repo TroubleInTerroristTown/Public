@@ -296,6 +296,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
 	
+	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -4147,6 +4148,11 @@ stock void InsertPlayer(int userid)
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
+}
+
+public int Native_IsRoundActive(Handle plugin, int numParams)
+{
+    return g_bRoundStarted;
 }
 
 public int Native_GetClientRole(Handle plugin, int numParams)
