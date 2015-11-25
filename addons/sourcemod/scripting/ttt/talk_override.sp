@@ -35,7 +35,11 @@ public Action Timer_OverrideListener(Handle timer)
 			if(IsFakeClient(j))
 				continue;
 			
-			if(IsPlayerAlive(i) && IsPlayerAlive(j))
+			if(!TTT_IsRoundActive()){
+				SetListenOverride(i, j, Listen_Yes);
+				SetListenOverride(j, i, Listen_Yes);
+			}
+			else if(IsPlayerAlive(i) && IsPlayerAlive(j))
 			{
 				SetListenOverride(i, j, Listen_Yes);
 				SetListenOverride(j, i, Listen_Yes);
