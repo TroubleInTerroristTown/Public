@@ -3,6 +3,6 @@
 - [Dream Community](http://dream-community.de/)
 - [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
 - [AdaM](http://steamcommunity.com/profiles/76561198134328733/)
-- [whocodes](https://whocodes.pw/) / [PGN](https://www.pgn.site)
+- [whocodes](https://whocodes.pw/) / [Phoenix Gaming Network](https://www.pgn.site)
 
-- Authors of TroubleinTerroristTown.com
+- Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
