@@ -315,7 +315,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	RegPluginLibrary("ttt");
 	
-	return APLRes_Success;
+	return APLRes_Success; 
 }
 
 public void OnPluginStart()
