@@ -1093,6 +1093,8 @@ stock void TeamInitialize(int client)
 			if(GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+	}else if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
+	    CS_SetClientClanTag(client, "UNASSIGNED");
 	}
 	
 	if(g_iConfig[b_updateClientModel])
@@ -1125,7 +1127,9 @@ stock void TeamTag(int client)
 		CS_SetClientClanTag(client, "TRAITOR");
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 		CS_SetClientClanTag(client, "INNOCENT");
-	else 
+	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	else
 		CS_SetClientClanTag(client, " ");
 }
 
@@ -1944,6 +1948,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
+	}
+	
+	if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	    g_bFound[client] = true;
 	}
 	
 	Call_StartForward(g_hOnClientDeath);
