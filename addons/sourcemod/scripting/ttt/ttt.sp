@@ -111,7 +111,10 @@ enum eConfig
 	bool:b_forceTeams,
 	bool:b_forceModel,
 	String:s_modelCT[PLATFORM_MAX_PATH],
-	String:s_modelT[PLATFORM_MAX_PATH]
+	String:s_modelT[PLATFORM_MAX_PATH],
+	String:s_defaultPri_D[64],
+	String:s_defaultSec[64],
+	bool:b_endwithD
 };
 
 
@@ -296,6 +299,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
 	
+	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -499,9 +503,13 @@ public void OnPluginStart()
 	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_forceTeams] = AddBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
 	g_iConfig[b_forceModel] = AddBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
+	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	
 	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
+	
+	AddString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
+	AddString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -688,6 +696,9 @@ public void OnMapStart()
  	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vmt");
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
 	PrecacheDecal("overlays/ttt/detectives_win", true);
+	
+	PrecacheModel(g_iConfig[s_modelCT], true);
+	PrecacheModel(g_iConfig[s_modelT], true);
 	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
@@ -919,7 +930,7 @@ public Action Timer_Selection(Handle hTimer)
 			GivePlayerItem(player, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
-			GivePlayerItem(player, "weapon_glock");
+			GivePlayerItem(player, g_iConfig[s_defaultSec]);
 		
 		g_bFound[player] = false;
 		
@@ -1058,7 +1069,7 @@ stock void TeamInitialize(int client)
 		}
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
-			GivePlayerItem(client, "weapon_m4a1_silencer");
+			GivePlayerItem(client, g_iConfig[s_defaultPri_D]);
 			
 		if(g_iConfig[b_taserAllow])
 			GivePlayerItem(client, "weapon_taser");
@@ -1092,6 +1103,8 @@ stock void TeamInitialize(int client)
 			if(GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+	}else if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
+	    CS_SetClientClanTag(client, "UNASSIGNED");
 	}
 	
 	if(g_iConfig[b_updateClientModel])
@@ -1124,7 +1137,9 @@ stock void TeamTag(int client)
 		CS_SetClientClanTag(client, "TRAITOR");
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 		CS_SetClientClanTag(client, "INNOCENT");
-	else 
+	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	else
 		CS_SetClientClanTag(client, " ");
 }
 
@@ -1813,7 +1828,7 @@ public Action Timer_Adjust(Handle timer)
 		
 	if(g_bRoundStarted)
 	{
-		if(g_iInnoAlive == 0 && g_iDetectiveAlive == 0)
+		if(g_iInnoAlive == 0 && ((g_iConfig[b_endwithD]) || (g_iDetectiveAlive == 0)))
 		{
 			g_bRoundStarted = false;
 			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
@@ -1945,6 +1960,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
 	
+	if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	    g_bFound[client] = true;
+	}
+	
 	Call_StartForward(g_hOnClientDeath);
 	Call_PushCell(client);
 	Call_PushCell(iAttacker);
@@ -2065,7 +2085,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		ShowOverlayToAll("overlays/ttt/traitors_win");
 	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
 		ShowOverlayToAll("overlays/ttt/innocents_win");
-	else if(reason == CSRoundEnd_CTWin && !bInnoAlive)
+	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
 		ShowOverlayToAll("overlays/ttt/detectives_win");
 	
 	healthStation_cleanUp();
@@ -3946,6 +3966,11 @@ stock void CheckTeams()
 				iT++;
 			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				iI++;
+		}else{
+			if(g_iRole[i] == TTT_TEAM_UNASSIGNED){
+				g_bFound[i] = true;
+				CS_SetClientClanTag(i, "UNASSIGNED");
+			}
 		}
 	}
 	
@@ -4147,6 +4172,11 @@ stock void InsertPlayer(int userid)
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
+}
+
+public int Native_IsRoundActive(Handle plugin, int numParams)
+{
+    return g_bRoundStarted;
 }
 
 public int Native_GetClientRole(Handle plugin, int numParams)

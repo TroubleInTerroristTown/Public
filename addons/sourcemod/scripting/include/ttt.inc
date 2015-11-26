@@ -59,30 +59,119 @@ forward void TTT_OnClientGetRole(int client, int role);
  * @param attacker          Attacker.
  */
 forward void TTT_OnClientDeath(int victim, int attacker);
+/*
+ * Called when a body is found.
+ *
+ * @param client            The client who identified the body.
+ * @param victim            The client whom the body belongs to.
+ * @param deadPlayer        The name of the victim.
+ */
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
+/*
+ * Called when a body is scanned (by a Detective).
+ *
+ * @param client            The client who scanned the body.
+ * @param victim            The client whom the body belongs to.
+ * @param deadPlayer        The name of the victim.
+ */
 forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
+
+/*
+ * Called when an item is purchased in the menu.
+ *
+ * @param client            The client who purchased the item.
+ * @param itemshort         The short-tag for the item's name.
+ */
 
 forward void TTT_OnItemPurchased(int client, const char[] itemshort);
 
+/*
+ * Checks if the round is active.
+ */
+native bool TTT_IsRoundActive();
+/*
+ * Retrieve a client's role.
+ *
+ * @param client            Client index.
+ */
 native int TTT_GetClientRole(int client);
+/*
+ * Retrieve a client's karma.
+ *
+ * @param client            Client index.
+ */
 native int TTT_GetClientKarma(int client);
+/*
+ * Retrieve a client's credits.
+ *
+ * @param client            Client index.
+ */
 native int TTT_GetClientCredits(int client);
+/*
+ * Set a client's role.
+ *
+ * @param client            Client index.
+ */
 native int TTT_SetClientRole(int client, int role);
+/*
+ * Set a client's karma.
+ *
+ * @param client            Client index.
+ */
 native int TTT_SetClientKarma(int client, int karma);
+/*
+ * Set a client's credits.
+ *
+ * @param client            Client index.
+ */
 native int TTT_SetClientCredits(int client, int credits);
+/*
+ * Determins whether a player's body was found (if dead).
+ *
+ * @param client            Client index.
+ */
 native bool TTT_WasBodyFound(int client);
+/*
+ * Determins whether a player's body was scanned (if dead).
+ *
+ * @param client            Client index.
+ */
 native bool TTT_WasBodyScanned(int client);
 
-
+/*
+ * Registers a custom item in the menu/shop.
+ *
+ * @param itemshort         The short-tag identifier of the item (must be unique).
+ * @param itemlong          The long fancy name for the item.
+ * @param price             The price of the item.
+ * @param role              The optional role to restrict the item to.
+ */
 native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0);
+/*
+ * Retrieve a custom item's price.
+ *
+ * @param item              The short-tag identifier of the item.
+ */
 native int TTT_GetCustomItemPrice(const char[] item);
+/*
+ * Retrieve a custom item's role restriction.
+ *
+ * @param item              The short-tag identifier of the item.
+ */
 native int TTT_GetCustomItemRole(const char[] item);
 
+
+/*
+ * Check if TTT plugin is loaded and running.
+ */
 stock bool TTT_IsLoaded()
 {
 	return LibraryExists("ttt");
 }
 
+/*
+ * Check if a client index is valid.
+ */
 stock bool TTT_IsClientValid(int client) 
 { 
 	if (client > 0 && client <= MaxClients && IsClientInGame(client))
