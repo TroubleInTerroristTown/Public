@@ -2559,12 +2559,9 @@ public Action Command_Shop(int client, int args)
 		}
 		
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++)
-		{
-			if(strlen(g_cCustomItems_Short[i]) > 1)
-			{
-				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team)
-				{
+		for(int i = 0; i < g_iCustomItemCount; i++){
+			if(strlen(g_cCustomItems_Short[i]) > 1){
+				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team)){
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
 					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);
