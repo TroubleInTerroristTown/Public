@@ -1257,18 +1257,18 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		if(g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 		{
-			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, iVictim);
+			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Traitor", iVictim, iVictim);
 			addCredits(iAttacker, g_iConfig[i_creditsTaserHurtTraitor]);
 		}
 		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE) {
-			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", iVictim, iAttacker, iVictim);
+			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Detective", iVictim, iVictim);
 		}
 		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT) {
-			Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", iVictim, iAttacker, iVictim);
+			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt an Innocent", iVictim, iVictim);
 		}
@@ -2559,12 +2559,9 @@ public Action Command_Shop(int client, int args)
 		}
 		
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++)
-		{
-			if(strlen(g_cCustomItems_Short[i]) > 1)
-			{
-				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team)
-				{
+		for(int i = 0; i < g_iCustomItemCount; i++){
+			if(strlen(g_cCustomItems_Short[i]) > 1){
+				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team)){
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
 					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);
