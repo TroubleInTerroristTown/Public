@@ -109,6 +109,7 @@ enum eConfig
 	i_startCredits,
 	bool:b_removeBuyzone,
 	bool:b_forceTeams,
+	bool:b_randomWinner,
 	bool:b_forceModel,
 	String:s_modelCT[PLATFORM_MAX_PATH],
 	String:s_modelT[PLATFORM_MAX_PATH],
@@ -502,6 +503,7 @@ public void OnPluginStart()
 	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
 	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_forceTeams] = AddBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
+	g_iConfig[b_randomWinner] = AddBool("ttt_random_winner", true, "Choose random winner if ttt_force_teams 1. 1 = Yes, 0 = No");
 	g_iConfig[b_forceModel] = AddBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
 	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	
@@ -2087,7 +2089,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	
 	healthStation_cleanUp();
 	
-	if(!g_iConfig[b_forceTeams]){
+	if(!g_iConfig[b_forceTeams] && g_iConfig[b_randomWinner]){
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 	    return Plugin_Changed;
 	}
