@@ -750,9 +750,6 @@ public void ThinkPost(int entity)
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
-	
-	if(g_iConfig[b_removeBuyzone])
-		SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
 }
 
 public Action Command_Karma(int client, int args)
