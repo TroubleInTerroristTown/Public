@@ -833,10 +833,12 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 	}
 	
 	char centerText[512];
-	Format(centerText, sizeof(centerText), "<font size='32' color='00ff00'>%ds</font>", timeLeft);
 	
 	LoopValidClients(iClient)
+	{
+		Format(centerText, sizeof(centerText), "%T", "StartTimer", iClient, timeLeft);
 		PrintHintText(iClient, centerText);
+	}
 	
 	return Plugin_Continue;
 }

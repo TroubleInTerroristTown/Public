@@ -567,5 +567,9 @@
 	{
 		"de"		"Nein, zeigen sie mir die Regeln!"
 	}
-
+	
+	"StartTimer"
+	{
+		"de"		"<font size='32' color='00ff00'>Runde startet in {1} Sekunden!</font>"
+	}
 }
