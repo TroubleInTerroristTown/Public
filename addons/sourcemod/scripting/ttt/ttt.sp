@@ -513,8 +513,11 @@ public void OnPluginStart()
 	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
-	AddString("ttt_log_file", "ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
-	AddString("ttt_error_file", "ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	AddString("ttt_log_file", "logs/ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	AddString("ttt_error_file", "logs/ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	
+	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
+	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
 	
 	AddString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	AddString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
@@ -4392,13 +4395,13 @@ stock int AddInt(const char[] name, int value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = kv.GetNum("value");
 	else
 	{
-		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4415,13 +4418,13 @@ stock bool AddBool(const char[] name, bool value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 
 	if(kv.JumpToKey(name, false))
 		value = view_as<bool>(kv.GetNum("value"));
 	else
 	{
-		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4438,13 +4441,13 @@ stock float AddFloat(const char[] name, float value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = view_as<float>(kv.GetFloat("value"));
 	else
 	{
-		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetFloat("value", value);
 		kv.SetString("description", description);
@@ -4463,13 +4466,13 @@ stock void AddString(const char[] name, const char[] value, const char[] descrip
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		kv.GetString("value", output, size);
 	else
 	{
-		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetString("value", value);
 		kv.SetString("description", description);
