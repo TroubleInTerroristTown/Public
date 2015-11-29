@@ -1373,9 +1373,10 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	ClearIcon(client);
 	
 	ClearTimer(g_hJihadBomb[client]);
-	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
-	{
-		int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+	
+	int iRagdoll = 0;
+	if(g_iRole[client] > TTT_TEAM_UNASSIGNED){
+		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 		if (iRagdoll > 0)
 			AcceptEntityInput(iRagdoll, "Kill");
 		
@@ -1430,24 +1431,20 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
-		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
-		{
-			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
-			{
+		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client]){
+			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR){
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
-			{
+			else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE){
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
-			{
+			else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE){
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
@@ -1460,9 +1457,16 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			if (g_iInnoKills[iAttacker] >= g_iConfig[i_punishInnoKills])
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 		}
+	}else{
+		// Usually if this event is called for unassigned
+		// players, they spawned in late and were slayed by
+		// the plugin. So let's ditch their ragdolls to be sure.
+		int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+		if (iRagdoll > 0)
+			AcceptEntityInput(iRagdoll, "Kill");
 	}
-	if(!dontBroadcast)
-	{	
+	
+	if(!dontBroadcast){	
 		dontBroadcast = true;
 		return Plugin_Changed;
 	}
