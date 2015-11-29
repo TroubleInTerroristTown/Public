@@ -1347,6 +1347,10 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	ClearTimer(g_hJihadBomb[client]);
 	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
+		int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+		if (iRagdoll > 0)
+			AcceptEntityInput(iRagdoll, "Kill");
+		
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
 	
@@ -1358,11 +1362,24 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	
 		int iEntity = CreateEntityByName("prop_ragdoll");
 		DispatchKeyValue(iEntity, "model", playermodel);
-		DispatchSpawn(iEntity);
-	
-		float speed = GetVectorLength(velocity);
-		if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
-		else TeleportEntity(iEntity, origin, angles, velocity); 
+		
+		
+		// Prevent crash. If spawn isn't dispatched successfully,
+		// TeleportEntity() crashes the server. This left some very
+		// odd crash dumps, and usually only happened when 2 players
+		// died inside each other in the same tick.
+		// Thanks to -
+		// 		Phoenix Gaming Network (pgn.site)
+		// 		Prestige Gaming Organization
+		
+		ActivateEntity(iEntity);
+		if(DispatchSpawn(iEntity)){
+			float speed = GetVectorLength(velocity);
+			if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
+			else TeleportEntity(iEntity, origin, angles, velocity); 
+		}else{
+			LogError("Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountId(client));
+		}
 	
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
 	
@@ -1382,6 +1399,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
 	
 		PushArrayArray(g_hRagdollArray, Items[0]);
+		
+		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
 		{
@@ -1855,12 +1874,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	
 	if (!TTT_IsClientValid(client))
 		return;
-	
-	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-	if (iRagdoll < 0)
-		return;
-
-	AcceptEntityInput(iRagdoll, "Kill");
 	
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
