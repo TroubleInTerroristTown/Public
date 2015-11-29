@@ -1403,7 +1403,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
 			else TeleportEntity(iEntity, origin, angles, velocity); 
 		}else{
-			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountId(client));
+			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		}
 	
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
