@@ -113,6 +113,8 @@ enum eConfig
 	bool:b_forceModel,
 	String:s_modelCT[PLATFORM_MAX_PATH],
 	String:s_modelT[PLATFORM_MAX_PATH],
+	String:s_logFile[PLATFORM_MAX_PATH],
+	String:s_errFile[PLATFORM_MAX_PATH],
 	String:s_defaultPri_D[64],
 	String:s_defaultSec[64],
 	bool:b_endwithD
@@ -389,6 +391,7 @@ public void OnPluginStart()
 		Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShopCMDs[i]);
 		RegConsoleCmd(sBuffer, Command_Shop);
 	}
+	RegConsoleCmd("radio3", Command_Shop);
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -510,6 +513,9 @@ public void OnPluginStart()
 	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
+	AddString("ttt_log_file", "ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	AddString("ttt_error_file", "ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	
 	AddString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	AddString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
@@ -535,50 +541,62 @@ public Action Command_Logs(int client, int args)
 	return Plugin_Handled;
 }
 
-stock void ShowLogs(int client)
-{
+stock void ShowLogs(int client){
 	int sizearray = GetArraySize(g_hLogsArray);
-	if(sizearray == 0)
-	{
+	if(sizearray == 0){
 		CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
 		return;
 	}
+	
 	if(g_bReceivingLogs[client]) return;
 	g_bReceivingLogs[client] = true;
-	CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
-	PrintToConsole(client, "--------------------------------------");
-	PrintToConsole(client, "-------------TTT LOGS---------------");
+	
+	if(client == 0){
+		LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+		LogToFileEx(g_iConfig[s_logFile], "-----------START ROUND LOGS-----------");
+	}else{
+		CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
+		PrintToConsole(client, "--------------------------------------");
+		PrintToConsole(client, "---------------TTT LOGS---------------");
+	}
+	
 	char item[512];
 	int index = 5;
 	bool end = false;
-	if(index >= sizearray)
-	{
+	
+	if(index >= sizearray){
 		end = true;
 		index = (sizearray -1);
 	}
 		
-	for(int i = 0; i <= index; i++)
-	{
+	for(int i = 0; i <= index; i++){
 		GetArrayString(g_hLogsArray, i, item, sizeof(item));
-		PrintToConsole(client, item);
+		if(client == 0)
+			LogToFileEx(g_iConfig[s_logFile], item);
+		else
+			PrintToConsole(client, item);
 	}
 	
-	if(end)
-	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+	if(end){
+		if(client == 0){
+			LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+		}else{
+			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+			PrintToConsole(client, "--------------------------------------");
+			PrintToConsole(client, "--------------------------------------");
+		}
+		
 		g_bReceivingLogs[client] = false;
-		PrintToConsole(client, "--------------------------------------");
-		PrintToConsole(client, "--------------------------------------");
 		return;
 	}
+	
 	Handle pack = CreateDataPack();
 	RequestFrame(OnCreate, pack);
 	WritePackCell(pack, client);
 	WritePackCell(pack, index);
 }
 
-public void OnCreate(any pack)
-{
+public void OnCreate(any pack){
 	int client;
 	int index;
 	
@@ -587,30 +605,35 @@ public void OnCreate(any pack)
 	client = ReadPackCell(pack);
 	index = ReadPackCell(pack);
 	
-	if (IsClientInGame(client))
-	{
+	if (IsClientInGame(client) || (client == 0)){
 		int sizearray = GetArraySize(g_hLogsArray);
 		int old = (index + 1);
 		index += 5;
 		bool end = false;
-		if(index >= sizearray)
-		{
+		if(index >= sizearray){
 			end = true;
 			index = (sizearray -1);
 		}
 		char item[512];
 		
-		for(int i = old; i <= index; i++)
-		{
+		for(int i = old; i <= index; i++){
 			GetArrayString(g_hLogsArray, i, item, sizeof(item));
-			PrintToConsole(client, item);
+			if(client == 0)
+				LogToFileEx(g_iConfig[s_logFile], item);
+			else
+				PrintToConsole(client, item);
 		}
-		if(end)
-		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+		
+		if(end){
+			if(client == 0){
+				LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+			}else{
+				CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+				PrintToConsole(client, "--------------------------------------");
+				PrintToConsole(client, "--------------------------------------");
+			}
+			
 			g_bReceivingLogs[client] = false;
-			PrintToConsole(client, "--------------------------------------");
-			PrintToConsole(client, "--------------------------------------");
 			return;
 		}
 		Handle pack2 = CreateDataPack();
@@ -812,6 +835,8 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		ShowLogs(i);
 		TeamTag(i);
 	}
+	
+	ShowLogs(0);
 		
 		
 	if (g_hRoundTimer != null) {
@@ -1378,7 +1403,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
 			else TeleportEntity(iEntity, origin, angles, velocity); 
 		}else{
-			LogError("Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountId(client));
+			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountId(client));
 		}
 	
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
@@ -4067,7 +4092,7 @@ public void Callback_CheckAndCreateTables(Handle owner, Handle hndl, const char[
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(SQLCallback_Create) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(SQLCallback_Create) Query failed: %s", error);
 		return;
 	}
 }
@@ -4076,7 +4101,7 @@ public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any us
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(Callback_Karma) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(Callback_Karma) Query failed: %s", error);
 		return;
 	}
 }
@@ -4084,7 +4109,7 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(Callback_InsertPlayer) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(Callback_InsertPlayer) Query failed: %s", error);
 		return;
 	}
 	else
@@ -4115,7 +4140,7 @@ stock void LoadClientKarma(int userid)
 		
 		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		{
-			LogError("(LoadClientKarma) Auth failed: #%d", client);
+			LogToFileEx(g_iConfig[s_errFile], "(LoadClientKarma) Auth failed: #%d", client);
 			return;
 		}
 		
@@ -4136,7 +4161,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 	
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
 		return;
 	}
 	else
@@ -4149,7 +4174,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			
 			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 			{
-				LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+				LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
 				return;
 			}
 				
@@ -4367,13 +4392,13 @@ stock int AddInt(const char[] name, int value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = kv.GetNum("value");
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4390,13 +4415,13 @@ stock bool AddBool(const char[] name, bool value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
 
 	if(kv.JumpToKey(name, false))
 		value = view_as<bool>(kv.GetNum("value"));
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4413,13 +4438,13 @@ stock float AddFloat(const char[] name, float value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = view_as<float>(kv.GetFloat("value"));
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetFloat("value", value);
 		kv.SetString("description", description);
@@ -4438,13 +4463,13 @@ stock void AddString(const char[] name, const char[] value, const char[] descrip
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		LogToFileEx(g_iConfig[s_errFile], "Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		kv.GetString("value", output, size);
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		LogToFileEx(g_iConfig[s_errFile], "Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetString("value", value);
 		kv.SetString("description", description);
