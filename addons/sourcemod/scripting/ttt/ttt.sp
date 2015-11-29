@@ -1461,7 +1461,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		// Usually if this event is called for unassigned
 		// players, they spawned in late and were slayed by
 		// the plugin. So let's ditch their ragdolls to be sure.
-		int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 		if (iRagdoll > 0)
 			AcceptEntityInput(iRagdoll, "Kill");
 	}
