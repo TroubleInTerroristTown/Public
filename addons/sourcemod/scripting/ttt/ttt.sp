@@ -560,7 +560,11 @@ public Action Command_Logs(int client, int args)
 stock void ShowLogs(int client){
 	int sizearray = GetArraySize(g_hLogsArray);
 	if(sizearray == 0){
-		CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
+		if(client == 0)
+			PrintToServer(g_iConfig[s_pluginTag], "no logs yet");
+		else
+			CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
+		
 		return;
 	}
 	
