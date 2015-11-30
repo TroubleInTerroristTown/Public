@@ -1192,18 +1192,35 @@ stock void ApplyIcons()
 			g_iIcon[i] = CreateIcon(i);
 }
 
+
+// Prevent spawn if round has started
+public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast){
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(g_bRoundStarted && TTT_IsClientValid(client)){
+		CS_SetClientClanTag(client, "UNASSIGNED");
+		
+		return Plugin_Stop;
+	}
+	
+	return Plugin_Continue;
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(TTT_IsClientValid(client))
 	{
-		if(g_bRoundStarted && g_iConfig[b_slayAfterStart]){
-			g_iRole[client] = TTT_TEAM_UNASSIGNED;
-			CreateTimer(0.1, Timer_SlayPlayer, GetClientUserId(client));
+		if(g_bRoundStarted){
+			if(g_iConfig[b_slayAfterStart]){
+				g_iRole[client] = TTT_TEAM_UNASSIGNED;
+				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client));
+				CS_SetClientClanTag(client, "UNASSIGNED");
+			}
+		}else{
+			CS_SetClientClanTag(client, " ");
 		}
-
-		CS_SetClientClanTag(client, " ");
 		
 		g_iInnoKills[client] = 0;
 		
