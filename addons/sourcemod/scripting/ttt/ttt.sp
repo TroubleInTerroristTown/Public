@@ -561,7 +561,7 @@ stock void ShowLogs(int client){
 	int sizearray = GetArraySize(g_hLogsArray);
 	if(sizearray == 0){
 		if(client == 0)
-			PrintToServer(g_iConfig[s_pluginTag], "no logs yet");
+			PrintToServer("No logs yet");
 		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
 		
