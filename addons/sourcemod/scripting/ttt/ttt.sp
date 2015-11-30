@@ -117,7 +117,8 @@ enum eConfig
 	String:s_errFile[PLATFORM_MAX_PATH],
 	String:s_defaultPri_D[64],
 	String:s_defaultSec[64],
-	bool:b_endwithD
+	bool:b_endwithD,
+	bool:b_hideTeams
 };
 
 
@@ -396,6 +397,8 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
+	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
+	HookEvent("player_team", Event_PlayerTeam_Pre, EventHookMode_Pre);
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_changename", Event_ChangeName);
@@ -510,6 +513,8 @@ public void OnPluginStart()
 	g_iConfig[b_forceModel] = AddBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
 	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	
+	g_iConfig[b_hideTeams] = AddBool("ttt_hide_teams", false, "Hide team changes from chat.");
+	
 	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
@@ -537,10 +542,18 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
-	if(!IsPlayerAlive(client) || !g_bRoundStarted)
-		ShowLogs(client);
-	else
-		CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	if(g_bRoundStarted){
+		if((client == 0) || (!IsPlayerAlive(client)))
+			ShowLogs(client);
+		else{
+			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+		}
+	}else{
+		if(client == 0)
+			PrintToServer("No logs yet");
+		else
+			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	}
 	return Plugin_Handled;
 }
 
@@ -608,7 +621,7 @@ public void OnCreate(any pack){
 	client = ReadPackCell(pack);
 	index = ReadPackCell(pack);
 	
-	if (IsClientInGame(client) || (client == 0)){
+	if ((client == 0) || IsClientInGame(client)){
 		int sizearray = GetArraySize(g_hLogsArray);
 		int old = (index + 1);
 		index += 5;
@@ -2141,6 +2154,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	    return Plugin_Changed;
 	}
 	return Plugin_Continue;
+}
+
+public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast){
+	if(g_iConfig[b_hideTeams] && (!event.GetBool("silent"))){
+		event.BroadcastDisabled = true;
+		dontBroadcast = true;
+	}
+
+	return Plugin_Changed;
 }
 
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
