@@ -24,16 +24,12 @@
 
 enum eConfig
 {
-	i_shopKEVLAR,
-	i_shop1KNIFE,
 	i_shopDNA,
 	i_shopID,
 	i_shopFAKEID,
 	i_shopT,
 	i_shopD,
 	i_shopTASER,
-	i_shopUSP,
-	i_shopM4A1,
 	i_shopJIHADBOMB,
 	i_shopC4,
 	i_shopHEALTH,
@@ -156,7 +152,6 @@ bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
 bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
-bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
 bool g_bID[MAXPLAYERS + 1] =  { false, ... };
@@ -470,16 +465,12 @@ public void OnPluginStart()
 	g_iConfig[b_enableNoBlock] = AddBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
 	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
-	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "The price of 'Kevlar' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "The price of a '1 Hit Knife' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "The price of the 'USP-S' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "The price of the 'MA41' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
@@ -1250,7 +1241,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
 		
-		g_b1Knife[client] = false;
 		g_bScan[client] = false;
 		g_bID[client] = false;
 		g_bJihadBomb[client] = false;
@@ -1341,33 +1331,10 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	return Plugin_Continue;
 }
 
-public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
-{
+public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype){
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 	
-	if(IsWorldDamage(iAttacker, damagetype))
-		return Plugin_Continue;
-	
-	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
-		return Plugin_Continue;
-
-	char sWeapon[64];
-	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-	if(g_b1Knife[iAttacker] && (StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
-	{
-		Remove1Knife(iAttacker);
-		damage = float(GetClientHealth(iVictim) + GetClientArmor(iVictim));
-		return Plugin_Changed;
-	}
-	
-	/* if(g_iKarma[iAttacker] > 100)
-		return Plugin_Continue;
-	
-	damage = (damage * (g_iKarma[iAttacker] * 0.01));
-	
-	if(damage < 1.0)
-		damage = 1.0; */
 	
 	return Plugin_Continue;
 }
@@ -2555,14 +2522,6 @@ public Action Command_Shop(int client, int args)
 		Handle menu = CreateMenu(Menu_ShopHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
 		
-		if(team != TTT_TEAM_INNOCENT)
-		{
-			if(g_iConfig[i_shopKEVLAR] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
-				AddMenuItem(menu, "kevlar", MenuItem);
-			}
-		}
 	
 		if(team == TTT_TEAM_TRAITOR)
 		{
@@ -2578,28 +2537,10 @@ public Action Command_Shop(int client, int args)
 				AddMenuItem(menu, "jbomb", MenuItem);
 			}
 			
-			if(g_iConfig[i_shop1KNIFE] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[i_shop1KNIFE]);
-				AddMenuItem(menu, "1knife", MenuItem);
-			}
-			
 			if(g_iConfig[i_shopFAKEID] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
 				AddMenuItem(menu, "fakeID", MenuItem);
-			}
-			
-			if(g_iConfig[i_shopM4A1] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[i_shopM4A1]);
-				AddMenuItem(menu, "m4s", MenuItem);
-			}
-			
-			if(g_iConfig[i_shopUSP] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[i_shopUSP]);
-				AddMenuItem(menu, "usps", MenuItem);
 			}
 			
 		}
@@ -2677,29 +2618,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		char info[32];
 		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
-		if ( strcmp(info,"kevlar") == 0 ) 
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopKEVLAR])
-			{
-				GivePlayerItem( client, "item_assaultsuit");
-				subtractCredits(client, g_iConfig[i_shopKEVLAR]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"1knife") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shop1KNIFE])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				Set1Knife(client);
-				subtractCredits(client, g_iConfig[i_shop1KNIFE]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"scan13") == 0 )
+		if ( strcmp(info,"scan13") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[i_shopDNA])
 			{
@@ -2761,37 +2680,6 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if ( strcmp(info,"usps") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopUSP])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
-					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
-				
-				GivePlayerItem(client, "weapon_usp_silencer");
-				subtractCredits(client, g_iConfig[i_shopUSP]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"m4s") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopM4A1])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				
-				if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
-					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
-				
-				GivePlayerItem(client, "weapon_m4a1_silencer");
-				subtractCredits(client, g_iConfig[i_shopM4A1]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
 		else if ( strcmp(info,"jbomb") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[i_shopJIHADBOMB])
@@ -2835,11 +2723,12 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0)){
 					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i]))){
 						subtractCredits(client, g_iCustomItems_Price[i]);
+						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
 						Call_PushString(g_cCustomItems_Short[i]);
 						Call_Finish();
-					}
+					}else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 				}
 			}
 		}
@@ -2917,30 +2806,6 @@ public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum
 	{
 		CloseHandle(menu);
 	}
-}
-
-stock void Set1Knife(int client)
-{
-	g_b1Knife[client] = true;
-	int iWeapon = GetPlayerWeaponSlot(client, 2);
-	if (iWeapon != INVALID_ENT_REFERENCE) 
-	{
-		RemovePlayerItem(client, iWeapon);
-		AcceptEntityInput(iWeapon, "Kill");
-	} 
-	GivePlayerItem(client, "weapon_knife");
-}
-
-stock void Remove1Knife(int client)
-{
-	g_b1Knife[client] = false;
-	int iWeapon = GetPlayerWeaponSlot(client, 2);
-	if (iWeapon != INVALID_ENT_REFERENCE) 
-	{
-		RemovePlayerItem(client, iWeapon);
-		AcceptEntityInput(iWeapon, "Kill");
-	} 
-	GivePlayerItem(client, "weapon_knife");
 }
 
 stock void ClearIcon(int client)
