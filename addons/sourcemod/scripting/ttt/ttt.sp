@@ -236,6 +236,7 @@ Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyScanned = null;
 Handle g_hOnItemPurchased = null;
+Handle g_hOnCreditsGiven = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -297,6 +298,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
+	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Hook, Param_Cell, Param_Cell);
 	
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
@@ -2877,9 +2879,17 @@ stock void UpdateKarma(int client, int karma)
 		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
 }
 
-stock void addCredits(int client, int credits, bool message = false)
-{
+stock void addCredits(int client, int credits, bool message = false){
 	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
+	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(credits);
+	Call_Finish(res);
+	
+	if(res > Plugin_Changed)
+		return;
 	
 	g_iCredits[client] += credits;
 	
@@ -2897,8 +2907,16 @@ stock void addCredits(int client, int credits, bool message = false)
 	}
 }
 
-stock void subtractCredits(int client, int credits, bool message = false)
-{
+stock void subtractCredits(int client, int credits, bool message = false){
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(credits*(-1));
+	Call_Finish(res);
+	
+	if(res > Plugin_Changed)
+		return;
+
 	g_iCredits[client] -= credits;
 	
 	if(g_iCredits[client] < 0)
