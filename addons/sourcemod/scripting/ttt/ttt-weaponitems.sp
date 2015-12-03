@@ -1,17 +1,11 @@
 #include <sourcemod>
+#include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
 
 #include <ttt>
+#include <ttt-weaponitems>
 #include <config_loader>
-
-#define KEV_ITEM_SHORT "kevlar"
-#define KEV_T_ITEM_SHORT "kevlarT"
-#define KEV_D_ITEM_SHORT "kevlarD"
-
-#define USP_ITEM_SHORT "usps"
-#define M4_ITEM_SHORT "m4a1s"
-#define KF_ITEM_SHORT "1knife"
 
 public Plugin myinfo = {
 	name = "TTT - Items: Base Weapons",
@@ -44,7 +38,7 @@ public void OnPluginStart(){
 	
 	Config_Setup("TTT-BaseWeapons", g_sConfigFile);
 	
-	g_iKev_Type = Config_LoadInt("kevlar_type", 2, "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective, 2 = Traitor Only (Default)");
+	g_iKev_Type = Config_LoadInt("kevlar_type", 1, "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iKev_Price = Config_LoadInt("kevlar_price", 2500, "The amount of credits the kevlar costs. 0 to disable.");
 	Config_LoadString("kevlar_name", "Kevlar", "The name of the Kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
 	
@@ -77,9 +71,6 @@ public void OnAllPluginsLoaded(){
 				TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
 			}
 		}
-	}
-	if(g_iKev_O_Price > 0){
-		TTT_RegisterCustomItem(KEVO_ITEM_SHORT, g_cKev
 	}
 
 	if(g_iKF_Price > 0)
