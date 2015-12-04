@@ -12,6 +12,8 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Trouble in Terrorist Town"
+
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"
@@ -280,7 +282,7 @@ char g_sRemoveEntityList[][] = {
 
 public Plugin myinfo =
 {
-	name = TTT_PLUGIN_NAME,
+	name = PLUGIN_NAME,
 	author = TTT_PLUGIN_AUTHOR,
 	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,

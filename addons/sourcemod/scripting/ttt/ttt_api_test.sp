@@ -5,14 +5,16 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - API Test"
+
 #define PLUGIN_ITEM_SHORT "testitem"
 #define PLUGIN_ITEM_LONG  "Test Item"
 #define PLUGIN_ITEM_PRICE 350
 
 public Plugin myinfo = {
-	name = "TTT API Test + Item Test",
-	author = "Bara, whocodes",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };

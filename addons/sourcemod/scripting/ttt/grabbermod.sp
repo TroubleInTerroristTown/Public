@@ -6,6 +6,7 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
 int g_sprite;
@@ -13,9 +14,9 @@ EngineVersion CurrentVersion;
 	
 public Plugin myinfo =
 {
-	name = "SM Grabber mod",
-	author = "Franc1sco & Bara",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };

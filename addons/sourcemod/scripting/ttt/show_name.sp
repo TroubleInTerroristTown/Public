@@ -6,11 +6,13 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Show Nickname & Spec Menu"
+
 public Plugin myinfo =
 {
-	name = "Show Nickname & Spec Menu",
-	author = "Bara & .#Zipcore",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };

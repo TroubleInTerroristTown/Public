@@ -3,7 +3,6 @@
 #endif
 #define _TTT_weaponitems_included
 
-
 #define KEV_ITEM_SHORT "kevlar"
 #define KEV_T_ITEM_SHORT "kevlarT"
 #define KEV_D_ITEM_SHORT "kevlarD"

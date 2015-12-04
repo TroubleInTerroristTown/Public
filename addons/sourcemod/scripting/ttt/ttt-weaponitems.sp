@@ -1,3 +1,5 @@
+#pragma semicolon 1
+
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
@@ -5,18 +7,20 @@
 
 #include <ttt>
 #include <ttt-weaponitems>
-#include <config_loader>
+// #include <config_loader>
 
-public Plugin myinfo = {
-	name = "TTT - Items: Base Weapons",
-	author = "franc1sco, Bara, whocodes",
-	description = "Weapon items for TTT.",
-	version = "1.0",
-	url = "csgottt.com" 
-};
-
-#pragma semicolon 1
 #pragma newdecls required
+
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Weapons"
+
+public Plugin myinfo =
+{
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
+};
 
 bool g_bHasKnife[MAXPLAYERS+1] = {false, ...};
 

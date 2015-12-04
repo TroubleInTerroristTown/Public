@@ -6,14 +6,14 @@
 
 #pragma newdecls required
 
-#define LoopClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
-if(IsClientInGame(%1))
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Talk Override"
+#define LoopClients(%1) for(int %1=1;%1<=MaxClients;++%1) if(IsClientInGame(%1))
 
 public Plugin myinfo = 
 {
-	name = "Fix DeadTalk",
-	author = "Bara",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
