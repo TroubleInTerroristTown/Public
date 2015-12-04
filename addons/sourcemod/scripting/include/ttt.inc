@@ -86,6 +86,14 @@ forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 forward void TTT_OnItemPurchased(int client, const char[] itemshort);
 
 /*
+ * Called when a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param credits     	 	The amount of credits (negative or positive).
+ */
+forward void TTT_OnCreditsChanged(int client, int &credits);
+
+/*
  * Checks if the round is active.
  */
 native bool TTT_IsRoundActive();
