@@ -35,6 +35,7 @@ public Action Timer_UpdateText(Handle timer)
 			
 			if(!IsPlayerAlive(target))
 				continue;
+			
 			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
 			{
 				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR) 
@@ -90,9 +91,7 @@ stock int TraceClientViewEntity(int client)
 	}
 
 	if(tr != null)
-	{
 		delete(tr);
-	}
 	
 	return -1;
 }

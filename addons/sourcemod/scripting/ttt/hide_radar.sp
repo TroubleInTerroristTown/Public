@@ -32,9 +32,7 @@ public Action RemoveRadar(Handle timer, any userid)
 	int client = GetClientOfUserId(userid);
 	
 	if(client > 0 && IsClientInGame(client) && !IsFakeClient(client))
-	{
 		SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
-	}
 }
 
 public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadcast)

@@ -7,7 +7,6 @@
 #pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Talk Override"
-#define LoopClients(%1) for(int %1=1;%1<=MaxClients;++%1) if(IsClientInGame(%1))
 
 public Plugin myinfo = 
 {
@@ -25,17 +24,18 @@ public void OnPluginStart()
 
 public Action Timer_OverrideListener(Handle timer)
 {
-	LoopClients(i)
+	LoopValidClients(i)
 	{
 		if(IsFakeClient(i))
 			continue;
 		
-		LoopClients(j)
+		LoopValidClients(j)
 		{
 			if(IsFakeClient(j))
 				continue;
 			
-			if(!TTT_IsRoundActive()){
+			if(!TTT_IsRoundActive())
+			{
 				SetListenOverride(i, j, Listen_Yes);
 				SetListenOverride(j, i, Listen_Yes);
 			}

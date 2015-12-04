@@ -537,13 +537,15 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
-	if(g_bRoundStarted){
+	if(g_bRoundStarted)
+	{
 		if((client == 0) || (!IsPlayerAlive(client)))
 			ShowLogs(client);
-		else{
+		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
-		}
-	}else{
+	}
+	else
+	{
 		if(client == 0)
 			PrintToServer("No logs yet");
 		else
@@ -552,9 +554,11 @@ public Action Command_Logs(int client, int args)
 	return Plugin_Handled;
 }
 
-stock void ShowLogs(int client){
+stock void ShowLogs(int client)
+{
 	int sizearray = GetArraySize(g_hLogsArray);
-	if(sizearray == 0){
+	if(sizearray == 0)
+	{
 		if(client == 0)
 			PrintToServer("No logs yet");
 		else
@@ -563,13 +567,17 @@ stock void ShowLogs(int client){
 		return;
 	}
 	
-	if(g_bReceivingLogs[client]) return;
+	if(g_bReceivingLogs[client])
+		return;
 	g_bReceivingLogs[client] = true;
 	
-	if(client == 0){
+	if(client == 0)
+	{
 		LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
 		LogToFileEx(g_iConfig[s_logFile], "-----------START ROUND LOGS-----------");
-	}else{
+	}
+	else
+	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
 		PrintToConsole(client, "--------------------------------------");
 		PrintToConsole(client, "---------------TTT LOGS---------------");
@@ -579,23 +587,28 @@ stock void ShowLogs(int client){
 	int index = 5;
 	bool end = false;
 	
-	if(index >= sizearray){
+	if(index >= sizearray)
+	{
 		end = true;
 		index = (sizearray -1);
 	}
 		
-	for(int i = 0; i <= index; i++){
+	for(int i = 0; i <= index; i++)
+	{
 		GetArrayString(g_hLogsArray, i, item, sizeof(item));
+		
 		if(client == 0)
 			LogToFileEx(g_iConfig[s_logFile], item);
 		else
 			PrintToConsole(client, item);
 	}
 	
-	if(end){
-		if(client == 0){
+	if(end)
+	{
+		if(client == 0)
 			LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
-		}else{
+		else
+		{
 			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
 			PrintToConsole(client, "--------------------------------------");
 			PrintToConsole(client, "--------------------------------------");
@@ -611,7 +624,8 @@ stock void ShowLogs(int client){
 	WritePackCell(pack, index);
 }
 
-public void OnCreate(any pack){
+public void OnCreate(any pack)
+{
 	int client;
 	int index;
 	
@@ -620,18 +634,21 @@ public void OnCreate(any pack){
 	client = ReadPackCell(pack);
 	index = ReadPackCell(pack);
 	
-	if ((client == 0) || IsClientInGame(client)){
+	if ((client == 0) || IsClientInGame(client))
+	{
 		int sizearray = GetArraySize(g_hLogsArray);
 		int old = (index + 1);
 		index += 5;
 		bool end = false;
-		if(index >= sizearray){
+		if(index >= sizearray)
+		{
 			end = true;
 			index = (sizearray -1);
 		}
 		char item[512];
 		
-		for(int i = old; i <= index; i++){
+		for(int i = old; i <= index; i++)
+		{
 			GetArrayString(g_hLogsArray, i, item, sizeof(item));
 			if(client == 0)
 				LogToFileEx(g_iConfig[s_logFile], item);
@@ -639,10 +656,12 @@ public void OnCreate(any pack){
 				PrintToConsole(client, item);
 		}
 		
-		if(end){
-			if(client == 0){
+		if(end)
+		{
+			if(client == 0)
 				LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
-			}else{
+			else
+			{
 				CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
 				PrintToConsole(client, "--------------------------------------");
 				PrintToConsole(client, "--------------------------------------");
@@ -854,7 +873,8 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	ShowLogs(0);
 		
 		
-	if (g_hRoundTimer != null) {
+	if (g_hRoundTimer != null)
+	{
 		CloseHandle(g_hRoundTimer);
 		g_hRoundTimer = null;
 	}
@@ -899,7 +919,8 @@ public Action Timer_Selection(Handle hTimer)
 	Call_StartForward(g_hOnRoundStart_Pre);
 	Call_Finish(res);
 	
-	if(res >= Plugin_Handled){
+	if(res >= Plugin_Handled)
+	{
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(-1);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
@@ -1104,7 +1125,8 @@ stock void TeamInitialize(int client)
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
 		
-		if(g_iConfig[b_forceTeams]){
+		if(g_iConfig[b_forceTeams])
+		{
 			if(GetClientTeam(client) != CS_TEAM_CT)
 				CS_SwitchTeam(client, CS_TEAM_CT);
 		}
@@ -1128,7 +1150,8 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPT] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
-		if(g_iConfig[b_forceTeams]){
+		if(g_iConfig[b_forceTeams])
+		{
 			if(GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
@@ -1140,24 +1163,25 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPI] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
-		if(g_iConfig[b_forceTeams]){
+		if(g_iConfig[b_forceTeams])
+		{
 			if(GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
-	}else if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
-	    CS_SetClientClanTag(client, "UNASSIGNED");
 	}
+	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	    CS_SetClientClanTag(client, "UNASSIGNED");
 	
 	if(g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
-	else if(g_iConfig[b_forceModel]){
-	    switch(g_iRole[client]){
-	        case TTT_TEAM_INNOCENT, TTT_TEAM_TRAITOR:{
+	else if(g_iConfig[b_forceModel])
+	{
+	    switch(g_iRole[client])
+	    {
+	        case TTT_TEAM_INNOCENT, TTT_TEAM_TRAITOR:
 	            SetEntityModel(client, g_iConfig[s_modelT]);
-	        }
-	        case TTT_TEAM_DETECTIVE:{
+	        case TTT_TEAM_DETECTIVE:
 	            SetEntityModel(client, g_iConfig[s_modelCT]);
-	        }
 	    }
 	}
 	
@@ -1193,12 +1217,13 @@ stock void ApplyIcons()
 
 
 // Prevent spawn if round has started
-public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast){
+public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
+{
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(g_bRoundStarted && TTT_IsClientValid(client)){
+	if(g_bRoundStarted && TTT_IsClientValid(client))
+	{
 		CS_SetClientClanTag(client, "UNASSIGNED");
-		
 		return Plugin_Stop;
 	}
 	
@@ -1211,15 +1236,17 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
-		if(g_bRoundStarted){
-			if(g_iConfig[b_slayAfterStart]){
+		if(g_bRoundStarted)
+		{
+			if(g_iConfig[b_slayAfterStart])
+			{
 				g_iRole[client] = TTT_TEAM_UNASSIGNED;
 				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client));
 				CS_SetClientClanTag(client, "UNASSIGNED");
 			}
-		}else{
-			CS_SetClientClanTag(client, " ");
 		}
+		else
+			CS_SetClientClanTag(client, " ");
 		
 		g_iInnoKills[client] = 0;
 		
@@ -1319,12 +1346,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Traitor", iVictim, iVictim);
 			addCredits(iAttacker, g_iConfig[i_creditsTaserHurtTraitor]);
 		}
-		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE) {
+		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
+		{
 			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Detective", iVictim, iVictim);
 		}
-		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT) {
+		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT)
+		{
 			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt an Innocent", iVictim, iVictim);
@@ -1335,11 +1364,10 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	return Plugin_Continue;
 }
 
-public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype){
+public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+{
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
-	
-	
 	return Plugin_Continue;
 }
 
@@ -1380,7 +1408,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	ClearTimer(g_hJihadBomb[client]);
 	
 	int iRagdoll = 0;
-	if(g_iRole[client] > TTT_TEAM_UNASSIGNED){
+	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
+	{
 		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 		if (iRagdoll > 0)
 			AcceptEntityInput(iRagdoll, "Kill");
@@ -1407,13 +1436,16 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		// 		Prestige Gaming Organization
 		
 		ActivateEntity(iEntity);
-		if(DispatchSpawn(iEntity)){
+		if(DispatchSpawn(iEntity))
+		{
 			float speed = GetVectorLength(velocity);
-			if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
-			else TeleportEntity(iEntity, origin, angles, velocity); 
-		}else{
-			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
+			if(speed >= 500)
+				TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
+			else
+				TeleportEntity(iEntity, origin, angles, velocity);
 		}
+		else
+			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 	
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
 	
@@ -1436,33 +1468,40 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
-		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client]){
-			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR){
+		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
+		{
+			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
+			{
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE){
+			else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
+			{
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE){
+			else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
+			{
 				if (g_hRDMTimer[client] != null)
 					KillTimer(g_hRDMTimer[client]);
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)) {
+			else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT))
+			{
 				g_iInnoKills[iAttacker]++;
 			}
 
 			if (g_iInnoKills[iAttacker] >= g_iConfig[i_punishInnoKills])
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 		}
-	}else{
+	}
+	else
+	{
 		// Usually if this event is called for unassigned
 		// players, they spawned in late and were slayed by
 		// the plugin. So let's ditch their ragdolls to be sure.
@@ -1471,7 +1510,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			AcceptEntityInput(iRagdoll, "Kill");
 	}
 	
-	if(!dontBroadcast){	
+	if(!dontBroadcast)
+	{	
 		dontBroadcast = true;
 		return Plugin_Changed;
 	}
@@ -2011,7 +2051,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
 	
-	if(g_iRole[client] == TTT_TEAM_UNASSIGNED){
+	if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	{
 	    CS_SetClientClanTag(client, "UNASSIGNED");
 	    g_bFound[client] = true;
 	}
@@ -2022,7 +2063,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	Call_Finish();
 }
 
-stock int CreateIcon(int client) {
+stock int CreateIcon(int client)
+{
   
 	ClearIcon(client);
 	if(g_iRole[client] < TTT_TEAM_TRAITOR || !g_bRoundStarted)
@@ -2141,15 +2183,18 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	
 	healthStation_cleanUp();
 	
-	if(!g_iConfig[b_forceTeams] && g_iConfig[b_randomWinner]){
+	if(!g_iConfig[b_forceTeams] && g_iConfig[b_randomWinner])
+	{
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 	    return Plugin_Changed;
 	}
 	return Plugin_Continue;
 }
 
-public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast){
-	if(g_iConfig[b_hideTeams] && (!event.GetBool("silent"))){
+public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
+{
+	if(g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
+	{
 		event.BroadcastDisabled = true;
 		dontBroadcast = true;
 	}
@@ -2593,11 +2638,13 @@ public Action Command_Shop(int client, int args)
 		}
 		
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++){
-			if(strlen(g_cCustomItems_Short[i]) > 1){
-				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team)){
+		for(int i = 0; i < g_iCustomItemCount; i++)
+		{
+			if(strlen(g_cCustomItems_Short[i]) > 1)
+			{
+				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team))
+				{
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
-					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);
 				}
 			}
@@ -2699,8 +2746,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if (strcmp(info, "C4") == 0) {
-			if (g_iCredits[client] >= g_iConfig[i_shopC4]) {
+		else if (strcmp(info, "C4") == 0)
+		{
+			if (g_iCredits[client] >= g_iConfig[i_shopC4])
+			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bHasC4[client] = true;
@@ -2710,11 +2759,14 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if (strcmp(info, "HealthStation") == 0) {
-			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH]) {
+		else if (strcmp(info, "HealthStation") == 0)
+		{
+			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH])
+			{
 				if (g_iRole[client] != TTT_TEAM_DETECTIVE)
 					return;
-				if (g_bHasActiveHealthStation[client]) {
+				if (g_bHasActiveHealthStation[client])
+				{
 					CPrintToChat(client, g_iConfig[s_pluginTag], "You already have an active Health Station", client);
 					return;
 				}
@@ -2723,16 +2775,21 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}else{
-			for(int i = 0; i < g_iCustomItemCount; i++){
-				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0)){
-					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i]))){
+			for(int i = 0; i < g_iCustomItemCount; i++)
+			{
+				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0))
+				{
+					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
+					{
 						subtractCredits(client, g_iCustomItems_Price[i]);
 						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
 						Call_PushString(g_cCustomItems_Short[i]);
 						Call_Finish();
-					}else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
+					}
+					else
+						CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 				}
 			}
 		}
@@ -2881,7 +2938,8 @@ stock void UpdateKarma(int client, int karma)
 		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
 }
 
-stock void addCredits(int client, int credits, bool message = false){
+stock void addCredits(int client, int credits, bool message = false)
+{
 	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
 	
 	Action res = Plugin_Continue;
@@ -2909,7 +2967,8 @@ stock void addCredits(int client, int credits, bool message = false){
 	}
 }
 
-stock void subtractCredits(int client, int credits, bool message = false){
+stock void subtractCredits(int client, int credits, bool message = false)
+{
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
@@ -3841,7 +3900,8 @@ public Action healthStationDistanceCheck(Handle timer)
 	return Plugin_Continue;
 }
 
-stock void checkDistanceFromHealthStation(int client) {
+stock void checkDistanceFromHealthStation(int client)
+{
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return;
 	float clientPos[3], stationPos[3]; 
 	int curHealth, newHealth, iEnt;
@@ -3914,9 +3974,8 @@ stock int Math_GetRandomInt(int min, int max)
 {
 	int random = GetURandomInt();
 	
-	if (random == 0) {
+	if (random == 0)
 		random++;
-	}
 
 	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
 }
@@ -3937,8 +3996,11 @@ stock void CheckTeams()
 				iT++;
 			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				iI++;
-		}else{
-			if(g_iRole[i] == TTT_TEAM_UNASSIGNED){
+		}
+		else
+		{
+			if(g_iRole[i] == TTT_TEAM_UNASSIGNED)
+			{
 				g_bFound[i] = true;
 				CS_SetClientClanTag(i, "UNASSIGNED");
 			}
@@ -4273,10 +4335,10 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 	return 0;
 }
 
-public int Native_RegisterCustomItem(Handle plugin, int numParams){
-	if(numParams < 3){
+public int Native_RegisterCustomItem(Handle plugin, int numParams)
+{
+	if(numParams < 3)
 		return false;
-	}
 	
 	char temp_short[16];
 	char temp_long[64];
@@ -4298,11 +4360,13 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams){
 	return true;
 }
 
-public int Native_GetCustomItemPrice(Handle plugin, int numParams){
+public int Native_GetCustomItemPrice(Handle plugin, int numParams)
+{
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	
-	for(int i = 0; i < g_iCustomItemCount; i++){
+	for(int i = 0; i < g_iCustomItemCount; i++)
+	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
 			return g_iCustomItems_Price[i];
 	}
@@ -4310,11 +4374,13 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams){
 	return 0;
 }
 
-public int Native_GetCustomItemRole(Handle plugin, int numParams){
+public int Native_GetCustomItemRole(Handle plugin, int numParams)
+{
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	
-	for(int i = 0; i < g_iCustomItemCount; i++){
+	for(int i = 0; i < g_iCustomItemCount; i++)
+	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
 			return g_iCustomItems_Role[i];
 	}
