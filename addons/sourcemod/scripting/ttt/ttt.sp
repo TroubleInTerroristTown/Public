@@ -323,11 +323,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	if(GetEngineVersion() != Engine_CSGO)
-	{
-		SetFailState("Only CS:GO is supported");
-		return;
-	}
+	TTT_IsGameCSGO();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");

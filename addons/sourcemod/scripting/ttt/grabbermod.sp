@@ -27,6 +27,8 @@ float gDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
 

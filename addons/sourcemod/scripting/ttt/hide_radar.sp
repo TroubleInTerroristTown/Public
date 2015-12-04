@@ -18,6 +18,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_blind", Event_PlayerBlind, EventHookMode_Post);
 }

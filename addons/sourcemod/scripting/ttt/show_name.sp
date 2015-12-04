@@ -19,6 +19,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
 }
 

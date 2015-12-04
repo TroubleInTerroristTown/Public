@@ -19,21 +19,23 @@ public Plugin myinfo = {
 	url = TTT_PLUGIN_URL
 };
 
-public void OnPluginStart(){
+public void OnPluginStart()
+{
+	TTT_IsGameCSGO();
+	
 	HookEvent("weapon_fire", Event_WeaponFire);
 }
 
-
-public void OnAllPluginsLoaded(){
-    if(TTT_IsLoaded()){
-        TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
-    }
+public void OnAllPluginsLoaded()
+{
+	if(TTT_IsLoaded())
+		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
 }
 
-public void TTT_OnItemPurchased(int client, const char[] item){
-    if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0)){
-        PrintToChat(client, "It works! Hooray! Item: %s", item);
-    }
+public void TTT_OnItemPurchased(int client, const char[] item)
+{
+	if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
+		PrintToChat(client, "It works! Hooray! Item: %s", item);
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)

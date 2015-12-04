@@ -39,6 +39,8 @@ char g_cKF_Long[64];
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/weapons.cfg");
 	
 	Config_Setup("TTT-BaseWeapons", g_sConfigFile);

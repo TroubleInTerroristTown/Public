@@ -187,6 +187,15 @@ stock bool TTT_IsClientValid(int client)
 	return false;
 }
 
+stock void TTT_IsGameCSGO()
+{
+	if(GetEngineVersion() != Engine_CSGO)
+	{
+		SetFailState("Only CS:GO Support!");
+		return;
+	}
+}
+
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
