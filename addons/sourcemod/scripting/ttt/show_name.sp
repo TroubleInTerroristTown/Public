@@ -6,17 +6,21 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Show Nickname & Spec Menu"
+
 public Plugin myinfo =
 {
-	name = "Show Nickname & Spec Menu",
-	author = "Bara & .#Zipcore",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
@@ -33,6 +37,7 @@ public Action Timer_UpdateText(Handle timer)
 			
 			if(!IsPlayerAlive(target))
 				continue;
+			
 			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
 			{
 				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR) 
@@ -88,9 +93,7 @@ stock int TraceClientViewEntity(int client)
 	}
 
 	if(tr != null)
-	{
 		delete(tr);
-	}
 	
 	return -1;
 }

@@ -7,6 +7,8 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Crash Catcher"
+
 int FreezeSpeed = 500;
 int RemoveSpeed = 4000;
 
@@ -14,12 +16,17 @@ int FreezeTime = 3;
 
 public Plugin myinfo =
 {
-	name = "Crash Catcher",
-	author = "Franc1sco & Bara",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
+
+public void OnPluginStart()
+{
+	TTT_IsGameCSGO();
+}
 
 #if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
 public void OnEntityCreated(int entity, const char[] classname)

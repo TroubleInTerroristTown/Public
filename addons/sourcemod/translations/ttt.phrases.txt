@@ -625,5 +625,10 @@
 	{
 		"en"		"No, show me the rules!"
 	}
-
+	
+	"StartTimer"
+	{
+		"#format"	"{1:d}"
+		"en"		"<font size='32' color='00ff00'>Round starts in {1} seconds</font>"
+	}
 }

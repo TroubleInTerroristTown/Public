@@ -12,6 +12,8 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Trouble in Terrorist Town"
+
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"
@@ -24,16 +26,12 @@
 
 enum eConfig
 {
-	i_shopKEVLAR,
-	i_shop1KNIFE,
 	i_shopDNA,
 	i_shopID,
 	i_shopFAKEID,
 	i_shopT,
 	i_shopD,
 	i_shopTASER,
-	i_shopUSP,
-	i_shopM4A1,
 	i_shopJIHADBOMB,
 	i_shopC4,
 	i_shopHEALTH,
@@ -107,7 +105,18 @@ enum eConfig
 	i_c4ShakeRadius,
 	Float:f_c4DamageRadius,
 	i_startCredits,
-	bool:b_removeBuyzone
+	bool:b_removeBuyzone,
+	bool:b_forceTeams,
+	bool:b_randomWinner,
+	bool:b_forceModel,
+	String:s_modelCT[PLATFORM_MAX_PATH],
+	String:s_modelT[PLATFORM_MAX_PATH],
+	String:s_logFile[PLATFORM_MAX_PATH],
+	String:s_errFile[PLATFORM_MAX_PATH],
+	String:s_defaultPri_D[64],
+	String:s_defaultSec[64],
+	bool:b_endwithD,
+	bool:b_hideTeams
 };
 
 
@@ -145,7 +154,6 @@ bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
 bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
-bool g_b1Knife[MAXPLAYERS + 1] =  { false, ... };
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
 bool g_bID[MAXPLAYERS + 1] =  { false, ... };
@@ -222,6 +230,7 @@ bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 
+Handle g_hOnRoundStart_Pre = null;
 Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnClientGetRole = null;
@@ -229,6 +238,7 @@ Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyScanned = null;
 Handle g_hOnItemPurchased = null;
+Handle g_hOnCreditsGiven = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
@@ -272,7 +282,7 @@ char g_sRemoveEntityList[][] = {
 
 public Plugin myinfo =
 {
-	name = TTT_PLUGIN_NAME,
+	name = PLUGIN_NAME,
 	author = TTT_PLUGIN_AUTHOR,
 	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
@@ -281,6 +291,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
 	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
@@ -289,7 +300,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
+	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Hook, Param_Cell, Param_Cell);
 	
+	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -310,11 +323,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	if(GetEngineVersion() != Engine_CSGO)
-	{
-		SetFailState("Only CS:GO is supported");
-		return;
-	}
+	TTT_IsGameCSGO();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");
@@ -378,10 +387,13 @@ public void OnPluginStart()
 		Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShopCMDs[i]);
 		RegConsoleCmd(sBuffer, Command_Shop);
 	}
+	RegConsoleCmd("radio3", Command_Shop);
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
-	HookEvent("round_start", Event_RoundStartPre, EventHookMode_Pre);
+	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
+	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
+	HookEvent("player_team", Event_PlayerTeam_Pre, EventHookMode_Pre);
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_changename", Event_ChangeName);
@@ -453,16 +465,12 @@ public void OnPluginStart()
 	g_iConfig[b_enableNoBlock] = AddBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
 	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
-	g_iConfig[i_shopKEVLAR] = AddInt("ttt_shop_kevlar", 2500, "The price of 'Kevlar' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shop1KNIFE] = AddInt("ttt_shop_1knife", 5000, "The price of a '1 Hit Knife' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopUSP] = AddInt("ttt_shop_usp", 3000, "The price of the 'USP-S' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopM4A1] = AddInt("ttt_shop_m4a1", 6000, "The price of the 'MA41' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
@@ -474,9 +482,9 @@ public void OnPluginStart()
 	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
 	g_iConfig[b_showDetectiveMenu] = AddBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
 	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
-	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_ttt_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
+	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
 	AddString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
-	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. 1 = Update, 0 = Don't Update");
+	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
@@ -491,6 +499,24 @@ public void OnPluginStart()
 	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
 	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_forceTeams] = AddBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
+	g_iConfig[b_randomWinner] = AddBool("ttt_random_winner", true, "Choose random winner if ttt_force_teams 1. 1 = Yes, 0 = No");
+	g_iConfig[b_forceModel] = AddBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
+	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
+	
+	g_iConfig[b_hideTeams] = AddBool("ttt_hide_teams", false, "Hide team changes from chat.");
+	
+	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
+	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
+	
+	AddString("ttt_log_file", "logs/ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	AddString("ttt_error_file", "logs/ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	
+	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
+	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
+	
+	AddString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
+	AddString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
 	if(!g_iConfig[b_newConfig])
 	{
@@ -507,10 +533,20 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
-	if(!IsPlayerAlive(client) || !g_bRoundStarted)
-		ShowLogs(client);
+	if(g_bRoundStarted)
+	{
+		if((client == 0) || (!IsPlayerAlive(client)))
+			ShowLogs(client);
+		else
+			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	}
 	else
-		CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	{
+		if(client == 0)
+			PrintToServer("No logs yet");
+		else
+			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	}
 	return Plugin_Handled;
 }
 
@@ -519,17 +555,34 @@ stock void ShowLogs(int client)
 	int sizearray = GetArraySize(g_hLogsArray);
 	if(sizearray == 0)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
+		if(client == 0)
+			PrintToServer("No logs yet");
+		else
+			CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
+		
 		return;
 	}
-	if(g_bReceivingLogs[client]) return;
+	
+	if(g_bReceivingLogs[client])
+		return;
 	g_bReceivingLogs[client] = true;
-	CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
-	PrintToConsole(client, "--------------------------------------");
-	PrintToConsole(client, "-------------TTT LOGS---------------");
+	
+	if(client == 0)
+	{
+		LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+		LogToFileEx(g_iConfig[s_logFile], "-----------START ROUND LOGS-----------");
+	}
+	else
+	{
+		CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
+		PrintToConsole(client, "--------------------------------------");
+		PrintToConsole(client, "---------------TTT LOGS---------------");
+	}
+	
 	char item[512];
 	int index = 5;
 	bool end = false;
+	
 	if(index >= sizearray)
 	{
 		end = true;
@@ -539,17 +592,28 @@ stock void ShowLogs(int client)
 	for(int i = 0; i <= index; i++)
 	{
 		GetArrayString(g_hLogsArray, i, item, sizeof(item));
-		PrintToConsole(client, item);
+		
+		if(client == 0)
+			LogToFileEx(g_iConfig[s_logFile], item);
+		else
+			PrintToConsole(client, item);
 	}
 	
 	if(end)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+		if(client == 0)
+			LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+		else
+		{
+			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+			PrintToConsole(client, "--------------------------------------");
+			PrintToConsole(client, "--------------------------------------");
+		}
+		
 		g_bReceivingLogs[client] = false;
-		PrintToConsole(client, "--------------------------------------");
-		PrintToConsole(client, "--------------------------------------");
 		return;
 	}
+	
 	Handle pack = CreateDataPack();
 	RequestFrame(OnCreate, pack);
 	WritePackCell(pack, client);
@@ -566,7 +630,7 @@ public void OnCreate(any pack)
 	client = ReadPackCell(pack);
 	index = ReadPackCell(pack);
 	
-	if (IsClientInGame(client))
+	if ((client == 0) || IsClientInGame(client))
 	{
 		int sizearray = GetArraySize(g_hLogsArray);
 		int old = (index + 1);
@@ -582,14 +646,24 @@ public void OnCreate(any pack)
 		for(int i = old; i <= index; i++)
 		{
 			GetArrayString(g_hLogsArray, i, item, sizeof(item));
-			PrintToConsole(client, item);
+			if(client == 0)
+				LogToFileEx(g_iConfig[s_logFile], item);
+			else
+				PrintToConsole(client, item);
 		}
+		
 		if(end)
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+			if(client == 0)
+				LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+			else
+			{
+				CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+				PrintToConsole(client, "--------------------------------------");
+				PrintToConsole(client, "--------------------------------------");
+			}
+			
 			g_bReceivingLogs[client] = false;
-			PrintToConsole(client, "--------------------------------------");
-			PrintToConsole(client, "--------------------------------------");
 			return;
 		}
 		Handle pack2 = CreateDataPack();
@@ -678,6 +752,9 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
 	PrecacheDecal("overlays/ttt/detectives_win", true);
 	
+	PrecacheModel(g_iConfig[s_modelCT], true);
+	PrecacheModel(g_iConfig[s_modelT], true);
+	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
@@ -698,7 +775,7 @@ public void OnMapStart()
 	if (g_iMVPs == -1)
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	
-    
+	
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
 	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
 	
@@ -728,9 +805,6 @@ public void ThinkPost(int entity)
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
-	
-	if(g_iConfig[b_removeBuyzone])
-		SetEntProp(entity, Prop_Send, "m_bInBuyZone", 0);
 }
 
 public Action Command_Karma(int client, int args)
@@ -753,7 +827,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_bHasC4[i] = false;
 		g_bImmuneRDMManager[i] = false;
 		
-		CS_SetClientClanTag(i, "");
+		CS_SetClientClanTag(i, " ");
 	}
 
 	if(g_hStartTimer != null)
@@ -791,9 +865,12 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		ShowLogs(i);
 		TeamTag(i);
 	}
+	
+	ShowLogs(0);
 		
 		
-	if (g_hRoundTimer != null) {
+	if (g_hRoundTimer != null)
+	{
 		CloseHandle(g_hRoundTimer);
 		g_hRoundTimer = null;
 	}
@@ -812,10 +889,12 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 	}
 	
 	char centerText[512];
-	Format(centerText, sizeof(centerText), "<font size='32' color='00ff00'>%ds</font>", timeLeft);
 	
 	LoopValidClients(iClient)
+	{
+		Format(centerText, sizeof(centerText), "%T", "StartTimer", iClient, timeLeft);
 		PrintHintText(iClient, centerText);
+	}
 	
 	return Plugin_Continue;
 }
@@ -832,10 +911,27 @@ public Action Timer_Selection(Handle hTimer)
 	if(g_hTraitores == null) 
 		g_hTraitores = CreateArray(1);
 	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnRoundStart_Pre);
+	Call_Finish(res);
+	
+	if(res >= Plugin_Handled)
+	{
+		Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(-1);
+		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_Finish();
+		
+		return;
+	}
+	
 	int iCount = 0;
 	LoopValidClients(i)
 	{
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
+			continue;
+		
+		if(!IsPlayerAlive(i))
 			continue;
 		
 		iCount++;
@@ -892,7 +988,7 @@ public Action Timer_Selection(Handle hTimer)
 			GivePlayerItem(player, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
-			GivePlayerItem(player, "weapon_glock");
+			GivePlayerItem(player, g_iConfig[s_defaultSec]);
 		
 		g_bFound[player] = false;
 		
@@ -1025,11 +1121,14 @@ stock void TeamInitialize(int client)
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
 		
-		if(GetClientTeam(client) != CS_TEAM_CT)
-			CS_SwitchTeam(client, CS_TEAM_CT);
+		if(g_iConfig[b_forceTeams])
+		{
+			if(GetClientTeam(client) != CS_TEAM_CT)
+				CS_SwitchTeam(client, CS_TEAM_CT);
+		}
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
-			GivePlayerItem(client, "weapon_m4a1_silencer");
+			GivePlayerItem(client, g_iConfig[s_defaultPri_D]);
 			
 		if(g_iConfig[b_taserAllow])
 			GivePlayerItem(client, "weapon_taser");
@@ -1047,8 +1146,11 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPT] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
 		
-		if(GetClientTeam(client) != CS_TEAM_T)
-			CS_SwitchTeam(client, CS_TEAM_T);
+		if(g_iConfig[b_forceTeams])
+		{
+			if(GetClientTeam(client) != CS_TEAM_T)
+				CS_SwitchTeam(client, CS_TEAM_T);
+		}
 	}
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -1057,12 +1159,27 @@ stock void TeamInitialize(int client)
 		if(g_iConfig[i_spawnHPI] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
 		
-		if(GetClientTeam(client) != CS_TEAM_T)
-			CS_SwitchTeam(client, CS_TEAM_T);
+		if(g_iConfig[b_forceTeams])
+		{
+			if(GetClientTeam(client) != CS_TEAM_T)
+				CS_SwitchTeam(client, CS_TEAM_T);
+		}
 	}
+	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	    CS_SetClientClanTag(client, "UNASSIGNED");
 	
 	if(g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
+	else if(g_iConfig[b_forceModel])
+	{
+	    switch(g_iRole[client])
+	    {
+	        case TTT_TEAM_INNOCENT, TTT_TEAM_TRAITOR:
+	            SetEntityModel(client, g_iConfig[s_modelT]);
+	        case TTT_TEAM_DETECTIVE:
+	            SetEntityModel(client, g_iConfig[s_modelCT]);
+	    }
+	}
 	
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
@@ -1081,6 +1198,10 @@ stock void TeamTag(int client)
 		CS_SetClientClanTag(client, "TRAITOR");
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 		CS_SetClientClanTag(client, "INNOCENT");
+	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	else
+		CS_SetClientClanTag(client, " ");
 }
 
 stock void ApplyIcons()
@@ -1090,16 +1211,38 @@ stock void ApplyIcons()
 			g_iIcon[i] = CreateIcon(i);
 }
 
+
+// Prevent spawn if round has started
+public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(g_bRoundStarted && TTT_IsClientValid(client))
+	{
+		CS_SetClientClanTag(client, "UNASSIGNED");
+		return Plugin_Stop;
+	}
+	
+	return Plugin_Continue;
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(TTT_IsClientValid(client))
 	{
-		if(g_bRoundStarted && g_iConfig[b_slayAfterStart])
-			CreateTimer(0.3, Timer_SlayPlayer, GetClientUserId(client));
-
-		CS_SetClientClanTag(client, "");
+		if(g_bRoundStarted)
+		{
+			if(g_iConfig[b_slayAfterStart])
+			{
+				g_iRole[client] = TTT_TEAM_UNASSIGNED;
+				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client));
+				CS_SetClientClanTag(client, "UNASSIGNED");
+			}
+		}
+		else
+			CS_SetClientClanTag(client, " ");
 		
 		g_iInnoKills[client] = 0;
 		
@@ -1125,7 +1268,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
 		
-		g_b1Knife[client] = false;
 		g_bScan[client] = false;
 		g_bID[client] = false;
 		g_bJihadBomb[client] = false;
@@ -1195,18 +1337,20 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		if(g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 		{
-			Format(item, sizeof(item), "-> [%N tased %N (Traitor)] - TRAITOR DETECTED", iAttacker, iVictim);
+			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Traitor", iVictim, iVictim);
 			addCredits(iAttacker, g_iConfig[i_creditsTaserHurtTraitor]);
 		}
-		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE) {
-			Format(item, sizeof(item), "-> [%N tased %N (Detective)]", iVictim, iAttacker, iVictim);
+		else if(g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
+		{
+			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Detective", iVictim, iVictim);
 		}
-		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT) {
-			Format(item, sizeof(item), "-> [%N tased %N (Innocent)]", iVictim, iAttacker, iVictim);
+		else if(g_iRole[iVictim] == TTT_TEAM_INNOCENT)
+		{
+			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			PushArrayString(g_hLogsArray, item);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt an Innocent", iVictim, iVictim);
 		}
@@ -1220,30 +1364,6 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
-	
-	if(IsWorldDamage(iAttacker, damagetype))
-		return Plugin_Continue;
-	
-	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
-		return Plugin_Continue;
-
-	char sWeapon[64];
-	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-	if(g_b1Knife[iAttacker] && (StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
-	{
-		Remove1Knife(iAttacker);
-		damage = float(GetClientHealth(iVictim) + GetClientArmor(iVictim));
-		return Plugin_Changed;
-	}
-	
-	/* if(g_iKarma[iAttacker] > 100)
-		return Plugin_Continue;
-	
-	damage = (damage * (g_iKarma[iAttacker] * 0.01));
-	
-	if(damage < 1.0)
-		damage = 1.0; */
-	
 	return Plugin_Continue;
 }
 
@@ -1282,8 +1402,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	ClearIcon(client);
 	
 	ClearTimer(g_hJihadBomb[client]);
+	
+	int iRagdoll = 0;
 	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
+		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+		if (iRagdoll > 0)
+			AcceptEntityInput(iRagdoll, "Kill");
+		
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
 	
@@ -1295,11 +1421,27 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	
 		int iEntity = CreateEntityByName("prop_ragdoll");
 		DispatchKeyValue(iEntity, "model", playermodel);
-		DispatchSpawn(iEntity);
-	
-		float speed = GetVectorLength(velocity);
-		if(speed >= 500) TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
-		else TeleportEntity(iEntity, origin, angles, velocity); 
+		
+		
+		// Prevent crash. If spawn isn't dispatched successfully,
+		// TeleportEntity() crashes the server. This left some very
+		// odd crash dumps, and usually only happened when 2 players
+		// died inside each other in the same tick.
+		// Thanks to -
+		// 		Phoenix Gaming Network (pgn.site)
+		// 		Prestige Gaming Organization
+		
+		ActivateEntity(iEntity);
+		if(DispatchSpawn(iEntity))
+		{
+			float speed = GetVectorLength(velocity);
+			if(speed >= 500)
+				TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
+			else
+				TeleportEntity(iEntity, origin, angles, velocity);
+		}
+		else
+			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 	
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
 	
@@ -1319,6 +1461,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
 	
 		PushArrayArray(g_hRagdollArray, Items[0]);
+		
+		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
 		{
@@ -1343,7 +1487,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)) {
+			else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT))
+			{
 				g_iInnoKills[iAttacker]++;
 			}
 
@@ -1351,6 +1496,16 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 		}
 	}
+	else
+	{
+		// Usually if this event is called for unassigned
+		// players, they spawned in late and were slayed by
+		// the plugin. So let's ditch their ragdolls to be sure.
+		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+		if (iRagdoll > 0)
+			AcceptEntityInput(iRagdoll, "Kill");
+	}
+	
 	if(!dontBroadcast)
 	{	
 		dontBroadcast = true;
@@ -1766,7 +1921,7 @@ public Action Timer_Adjust(Handle timer)
 		
 	if(g_bRoundStarted)
 	{
-		if(g_iInnoAlive == 0 && g_iDetectiveAlive == 0)
+		if(g_iInnoAlive == 0 && ((g_iConfig[b_endwithD]) || (g_iDetectiveAlive == 0)))
 		{
 			g_bRoundStarted = false;
 			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
@@ -1792,19 +1947,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	
 	if (!TTT_IsClientValid(client))
 		return;
-    
-	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-	if (iRagdoll < 0)
-		return;
-
-	AcceptEntityInput(iRagdoll, "Kill");
 	
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
-		return;
-	
-	int assister = GetClientOfUserId(event.GetInt("assister"));
-	if(!TTT_IsClientValid(assister) || assister == client)
 		return;
 	
 	if (g_iConfig[b_showDeathMessage])
@@ -1902,13 +2047,20 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
 	
+	if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+	{
+	    CS_SetClientClanTag(client, "UNASSIGNED");
+	    g_bFound[client] = true;
+	}
+	
 	Call_StartForward(g_hOnClientDeath);
 	Call_PushCell(client);
 	Call_PushCell(iAttacker);
 	Call_Finish();
 }
 
-stock int CreateIcon(int client) {
+stock int CreateIcon(int client)
+{
   
 	ClearIcon(client);
 	if(g_iRole[client] < TTT_TEAM_TRAITOR || !g_bRoundStarted)
@@ -1945,10 +2097,10 @@ stock int CreateIcon(int client) {
 
 public Action Hook_SetTransmitT(int entity, int client) 
 { 
-    if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
-        return Plugin_Handled;
-     
-    return Plugin_Continue; 
+	if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
+		return Plugin_Handled;
+	 
+	return Plugin_Continue; 
 }  
 
 public void OnMapEnd() 
@@ -2022,12 +2174,28 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		ShowOverlayToAll("overlays/ttt/traitors_win");
 	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
 		ShowOverlayToAll("overlays/ttt/innocents_win");
-	else if(reason == CSRoundEnd_CTWin && !bInnoAlive)
+	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
 		ShowOverlayToAll("overlays/ttt/detectives_win");
 	
-	
 	healthStation_cleanUp();
+	
+	if(!g_iConfig[b_forceTeams] && g_iConfig[b_randomWinner])
+	{
+	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
+	    return Plugin_Changed;
+	}
 	return Plugin_Continue;
+}
+
+public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
+{
+	if(g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
+	{
+		event.BroadcastDisabled = true;
+		dontBroadcast = true;
+	}
+
+	return Plugin_Changed;
 }
 
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
@@ -2044,15 +2212,15 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 
 stock void StripAllWeapons(int client)
 {
-    int iEnt;
-    for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
-    {
+	int iEnt;
+	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
+	{
 		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
 		{
-            RemovePlayerItem(client, iEnt);
-            AcceptEntityInput(iEnt, "Kill");
+			RemovePlayerItem(client, iEnt);
+			AcceptEntityInput(iEnt, "Kill");
 		}
-    }
+	}
 }  
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
@@ -2399,14 +2567,6 @@ public Action Command_Shop(int client, int args)
 		Handle menu = CreateMenu(Menu_ShopHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
 		
-		if(team != TTT_TEAM_INNOCENT)
-		{
-			if(g_iConfig[i_shopKEVLAR] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Kevlar", client, g_iConfig[i_shopKEVLAR]);
-				AddMenuItem(menu, "kevlar", MenuItem);
-			}
-		}
 	
 		if(team == TTT_TEAM_TRAITOR)
 		{
@@ -2422,28 +2582,10 @@ public Action Command_Shop(int client, int args)
 				AddMenuItem(menu, "jbomb", MenuItem);
 			}
 			
-			if(g_iConfig[i_shop1KNIFE] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "1 hit kill knife (only good for 1 shot)", client, g_iConfig[i_shop1KNIFE]);
-				AddMenuItem(menu, "1knife", MenuItem);
-			}
-			
 			if(g_iConfig[i_shopFAKEID] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
 				AddMenuItem(menu, "fakeID", MenuItem);
-			}
-			
-			if(g_iConfig[i_shopM4A1] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "M4S", client, g_iConfig[i_shopM4A1]);
-				AddMenuItem(menu, "m4s", MenuItem);
-			}
-			
-			if(g_iConfig[i_shopUSP] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "USPS", client, g_iConfig[i_shopUSP]);
-				AddMenuItem(menu, "usps", MenuItem);
 			}
 			
 		}
@@ -2492,11 +2634,13 @@ public Action Command_Shop(int client, int args)
 		}
 		
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++){
-			if(strlen(g_cCustomItems_Short[i]) > 1){
-				if(g_iCustomItems_Role[client] == 0 || g_iCustomItems_Role[client] == team){
+		for(int i = 0; i < g_iCustomItemCount; i++)
+		{
+			if(strlen(g_cCustomItems_Short[i]) > 1)
+			{
+				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team))
+				{
 					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
-					
 					AddMenuItem(menu, g_cCustomItems_Short[i], display);
 				}
 			}
@@ -2521,29 +2665,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		char info[32];
 		
 		GetMenuItem(menu, itemNum, info, sizeof(info));
-		if ( strcmp(info,"kevlar") == 0 ) 
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopKEVLAR])
-			{
-				GivePlayerItem( client, "item_assaultsuit");
-				subtractCredits(client, g_iConfig[i_shopKEVLAR]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"1knife") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shop1KNIFE])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				Set1Knife(client);
-				subtractCredits(client, g_iConfig[i_shop1KNIFE]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"scan13") == 0 )
+		if ( strcmp(info,"scan13") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[i_shopDNA])
 			{
@@ -2605,37 +2727,6 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if ( strcmp(info,"usps") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopUSP])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
-					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
-				
-				GivePlayerItem(client, "weapon_usp_silencer");
-				subtractCredits(client, g_iConfig[i_shopUSP]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
-		else if ( strcmp(info,"m4s") == 0 )
-		{
-			if(g_iCredits[client] >= g_iConfig[i_shopM4A1])
-			{
-				if (g_iRole[client] != TTT_TEAM_TRAITOR)
-					return;
-				
-				if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
-					SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
-				
-				GivePlayerItem(client, "weapon_m4a1_silencer");
-				subtractCredits(client, g_iConfig[i_shopM4A1]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
-		}
 		else if ( strcmp(info,"jbomb") == 0 )
 		{
 			if(g_iCredits[client] >= g_iConfig[i_shopJIHADBOMB])
@@ -2651,8 +2742,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if (strcmp(info, "C4") == 0) {
-			if (g_iCredits[client] >= g_iConfig[i_shopC4]) {
+		else if (strcmp(info, "C4") == 0)
+		{
+			if (g_iCredits[client] >= g_iConfig[i_shopC4])
+			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
 				g_bHasC4[client] = true;
@@ -2662,11 +2755,14 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if (strcmp(info, "HealthStation") == 0) {
-			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH]) {
+		else if (strcmp(info, "HealthStation") == 0)
+		{
+			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH])
+			{
 				if (g_iRole[client] != TTT_TEAM_DETECTIVE)
 					return;
-				if (g_bHasActiveHealthStation[client]) {
+				if (g_bHasActiveHealthStation[client])
+				{
 					CPrintToChat(client, g_iConfig[s_pluginTag], "You already have an active Health Station", client);
 					return;
 				}
@@ -2675,15 +2771,21 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 			}
 		}else{
-			for(int i = 0; i < g_iCustomItemCount; i++){
-				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0)){
-					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i]))){
+			for(int i = 0; i < g_iCustomItemCount; i++)
+			{
+				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0))
+				{
+					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
+					{
 						subtractCredits(client, g_iCustomItems_Price[i]);
+						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
 						Call_PushString(g_cCustomItems_Short[i]);
 						Call_Finish();
 					}
+					else
+						CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 				}
 			}
 		}
@@ -2763,30 +2865,6 @@ public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum
 	}
 }
 
-stock void Set1Knife(int client)
-{
-	g_b1Knife[client] = true;
-	int iWeapon = GetPlayerWeaponSlot(client, 2);
-	if (iWeapon != INVALID_ENT_REFERENCE) 
-	{
-		RemovePlayerItem(client, iWeapon);
-		AcceptEntityInput(iWeapon, "Kill");
-	} 
-	GivePlayerItem(client, "weapon_knife");
-}
-
-stock void Remove1Knife(int client)
-{
-	g_b1Knife[client] = false;
-	int iWeapon = GetPlayerWeaponSlot(client, 2);
-	if (iWeapon != INVALID_ENT_REFERENCE) 
-	{
-		RemovePlayerItem(client, iWeapon);
-		AcceptEntityInput(iWeapon, "Kill");
-	} 
-	GivePlayerItem(client, "weapon_knife");
-}
-
 stock void ClearIcon(int client)
 {
 	if(g_iIcon[client] > 0 && IsValidEdict(g_iIcon[client]))
@@ -2794,6 +2872,7 @@ stock void ClearIcon(int client)
 		if(g_iRole[client] == TTT_TEAM_TRAITOR) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
+	ShowOverlayToClient(client, " ");
 	g_iIcon[client] = 0;
 	
 }
@@ -2810,7 +2889,7 @@ stock void addKarma(int client, int karma, bool message = false)
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, "%T", "karma earned", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "karma earned", client, karma, g_iKarma[client]);	
 	}
 	
 	UpdateKarma(client, g_iKarma[client]);
@@ -2835,7 +2914,7 @@ stock void subtractKarma(int client, int karma, bool message = false)
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, "%T", "lost karma", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "lost karma", client, karma, g_iKarma[client]);	
 	}
 	
 	UpdateKarma(client, g_iKarma[client]);
@@ -2859,6 +2938,15 @@ stock void addCredits(int client, int credits, bool message = false)
 {
 	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
 	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(credits);
+	Call_Finish(res);
+	
+	if(res > Plugin_Changed)
+		return;
+	
 	g_iCredits[client] += credits;
 	
 	if (g_iConfig[b_showEarnCreditsMessage] && message)
@@ -2871,12 +2959,21 @@ stock void addCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
-			CPrintToChat(client, "%T", "credits earned", client, credits, g_iCredits[client]);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "credits earned", client, credits, g_iCredits[client]);
 	}
 }
 
 stock void subtractCredits(int client, int credits, bool message = false)
 {
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(credits*(-1));
+	Call_Finish(res);
+	
+	if(res > Plugin_Changed)
+		return;
+
 	g_iCredits[client] -= credits;
 	
 	if(g_iCredits[client] < 0)
@@ -2892,7 +2989,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
-			CPrintToChat(client, "%T", "lost credits", client, credits, g_iCredits[client]);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "lost credits", client, credits, g_iCredits[client]);
 	}
 }
 
@@ -2906,70 +3003,70 @@ stock void setCredits(int client, int credits)
 
 stock void ClearTimer(Handle &timer)
 {
-    if (timer != null)
-    {
-        KillTimer(timer);
-        timer = null;
-    }     
+	if (timer != null)
+	{
+		KillTimer(timer);
+		timer = null;
+	}	 
 } 
 
 stock void Detonate(int client) 
 { 
-    int ExplosionIndex = CreateEntityByName("env_explosion"); 
-    if (ExplosionIndex != -1) 
-    { 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384); 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000); 
-        SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600); 
+	int ExplosionIndex = CreateEntityByName("env_explosion"); 
+	if (ExplosionIndex != -1) 
+	{ 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384); 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000); 
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600); 
 
-        DispatchSpawn(ExplosionIndex); 
-        ActivateEntity(ExplosionIndex); 
-         
-        float playerEyes[3]; 
-        GetClientEyePosition(client, playerEyes); 
+		DispatchSpawn(ExplosionIndex); 
+		ActivateEntity(ExplosionIndex); 
+		 
+		float playerEyes[3]; 
+		GetClientEyePosition(client, playerEyes); 
 
-        TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR); 
-        SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
-         
-        EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
-         
-         
-        AcceptEntityInput(ExplosionIndex, "Explode"); 
-         
-        AcceptEntityInput(ExplosionIndex, "Kill"); 
-    } 
-    g_bJihadBomb[client] = false;
+		TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR); 
+		SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
+		 
+		EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
+		 
+		 
+		AcceptEntityInput(ExplosionIndex, "Explode"); 
+		 
+		AcceptEntityInput(ExplosionIndex, "Kill"); 
+	} 
+	g_bJihadBomb[client] = false;
 } 
 
 public Action Command_Detonate(int client, int args) 
 { 
-    if (!g_bJihadBomb[client]) 
-    { 
+	if (!g_bJihadBomb[client]) 
+	{ 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You dont have it!", client);
 		return Plugin_Handled; 
-    } 
+	} 
 	
-    if (g_hJihadBomb[client] != null) 
-    { 
+	if (g_hJihadBomb[client] != null) 
+	{ 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your bomb is not armed.", client);
 		return Plugin_Handled; 
-    } 
-     
-    EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-         
-    CreateTimer(2.0, TimerCallback_Detonate, client); 
-    g_bJihadBomb[client] = false;
+	} 
+	 
+	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
+		 
+	CreateTimer(2.0, TimerCallback_Detonate, client); 
+	g_bJihadBomb[client] = false;
 
-    return Plugin_Handled; 
+	return Plugin_Handled; 
 } 
 
 public Action TimerCallback_Detonate(Handle timer, any client) 
 { 
-    if(!client || !IsClientInGame(client) || !IsPlayerAlive(client)) 
-        return Plugin_Handled;
-    
-    Detonate(client); 
-    return Plugin_Handled; 
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client)) 
+		return Plugin_Handled;
+	
+	Detonate(client); 
+	return Plugin_Handled; 
 } 
 
 public Action Command_LAW(int client, const char[] command, int argc)
@@ -2980,7 +3077,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	if(IsPlayerAlive(client) && g_bJihadBomb[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-         
+		 
 		CreateTimer(2.0, TimerCallback_Detonate, client); 
 		g_bJihadBomb[client] = false;
 		
@@ -3126,7 +3223,7 @@ public Action Command_SetRole(int client, int args)
 		g_iRole[target] = TTT_TEAM_INNOCENT;
 		TeamInitialize(target);
 		ClearIcon(target);
-		CS_SetClientClanTag(target, "");
+		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Innocent", client, target);
 		return Plugin_Handled;
 	}
@@ -3136,7 +3233,7 @@ public Action Command_SetRole(int client, int args)
 		TeamInitialize(target);
 		ClearIcon(target);
 		ApplyIcons();
-		CS_SetClientClanTag(target, "");
+		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
@@ -3799,7 +3896,8 @@ public Action healthStationDistanceCheck(Handle timer)
 	return Plugin_Continue;
 }
 
-stock void checkDistanceFromHealthStation(int client) {
+stock void checkDistanceFromHealthStation(int client)
+{
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return;
 	float clientPos[3], stationPos[3]; 
 	int curHealth, newHealth, iEnt;
@@ -3872,9 +3970,8 @@ stock int Math_GetRandomInt(int min, int max)
 {
 	int random = GetURandomInt();
 	
-	if (random == 0) {
+	if (random == 0)
 		random++;
-	}
 
 	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
 }
@@ -3895,6 +3992,14 @@ stock void CheckTeams()
 				iT++;
 			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 				iI++;
+		}
+		else
+		{
+			if(g_iRole[i] == TTT_TEAM_UNASSIGNED)
+			{
+				g_bFound[i] = true;
+				CS_SetClientClanTag(i, "UNASSIGNED");
+			}
 		}
 	}
 	
@@ -3980,7 +4085,7 @@ public void Callback_CheckAndCreateTables(Handle owner, Handle hndl, const char[
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(SQLCallback_Create) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(SQLCallback_Create) Query failed: %s", error);
 		return;
 	}
 }
@@ -3989,7 +4094,7 @@ public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any us
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(Callback_Karma) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(Callback_Karma) Query failed: %s", error);
 		return;
 	}
 }
@@ -3997,7 +4102,7 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 {
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(Callback_InsertPlayer) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(Callback_InsertPlayer) Query failed: %s", error);
 		return;
 	}
 	else
@@ -4028,7 +4133,7 @@ stock void LoadClientKarma(int userid)
 		
 		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		{
-			LogError("(LoadClientKarma) Auth failed: #%d", client);
+			LogToFileEx(g_iConfig[s_errFile], "(LoadClientKarma) Auth failed: #%d", client);
 			return;
 		}
 		
@@ -4049,7 +4154,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 	
 	if(hndl == null || strlen(error) > 0)
 	{
-		LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
 		return;
 	}
 	else
@@ -4062,7 +4167,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			
 			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 			{
-				LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+				LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
 				return;
 			}
 				
@@ -4096,6 +4201,11 @@ stock void InsertPlayer(int userid)
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
+}
+
+public int Native_IsRoundActive(Handle plugin, int numParams)
+{
+    return g_bRoundStarted;
 }
 
 public int Native_GetClientRole(Handle plugin, int numParams)
@@ -4221,10 +4331,10 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 	return 0;
 }
 
-public int Native_RegisterCustomItem(Handle plugin, int numParams){
-	if(numParams < 3){
+public int Native_RegisterCustomItem(Handle plugin, int numParams)
+{
+	if(numParams < 3)
 		return false;
-	}
 	
 	char temp_short[16];
 	char temp_long[64];
@@ -4246,11 +4356,13 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams){
 	return true;
 }
 
-public int Native_GetCustomItemPrice(Handle plugin, int numParams){
+public int Native_GetCustomItemPrice(Handle plugin, int numParams)
+{
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	
-	for(int i = 0; i < g_iCustomItemCount; i++){
+	for(int i = 0; i < g_iCustomItemCount; i++)
+	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
 			return g_iCustomItems_Price[i];
 	}
@@ -4258,11 +4370,13 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams){
 	return 0;
 }
 
-public int Native_GetCustomItemRole(Handle plugin, int numParams){
+public int Native_GetCustomItemRole(Handle plugin, int numParams)
+{
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	
-	for(int i = 0; i < g_iCustomItemCount; i++){
+	for(int i = 0; i < g_iCustomItemCount; i++)
+	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
 			return g_iCustomItems_Role[i];
 	}
@@ -4275,13 +4389,13 @@ stock int AddInt(const char[] name, int value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = kv.GetNum("value");
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4298,13 +4412,13 @@ stock bool AddBool(const char[] name, bool value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 
 	if(kv.JumpToKey(name, false))
 		value = view_as<bool>(kv.GetNum("value"));
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetNum("value", value);
 		kv.SetString("description", description);
@@ -4321,13 +4435,13 @@ stock float AddFloat(const char[] name, float value, const char[] description)
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		value = view_as<float>(kv.GetFloat("value"));
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetFloat("value", value);
 		kv.SetString("description", description);
@@ -4346,13 +4460,13 @@ stock void AddString(const char[] name, const char[] value, const char[] descrip
 	KeyValues kv = CreateKeyValues("TTT");
 	
 	if(!kv.ImportFromFile(g_sConfigFile))
-		LogError("Can't read ttt.cfg correctly! Return the default value!");
+		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
 	
 	if(kv.JumpToKey(name, false))
 		kv.GetString("value", output, size);
 	else
 	{
-		LogError("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
+		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
 		kv.JumpToKey(name, true);
 		kv.SetString("value", value);
 		kv.SetString("description", description);

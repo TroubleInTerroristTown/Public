@@ -5,17 +5,21 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Hide Radar"
+
 public Plugin myinfo = 
 {
-	name = "Hide Radar",
-	author = "Bara",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_blind", Event_PlayerBlind, EventHookMode_Post);
 }
@@ -30,9 +34,7 @@ public Action RemoveRadar(Handle timer, any userid)
 	int client = GetClientOfUserId(userid);
 	
 	if(client > 0 && IsClientInGame(client) && !IsFakeClient(client))
-	{
 		SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
-	}
 }
 
 public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadcast)

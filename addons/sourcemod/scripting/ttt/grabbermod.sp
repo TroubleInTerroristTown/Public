@@ -6,16 +6,16 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
 int g_sprite;
-EngineVersion CurrentVersion;
 	
 public Plugin myinfo =
 {
-	name = "SM Grabber mod",
-	author = "Franc1sco & Bara",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
@@ -27,14 +27,14 @@ float gDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 
 public void OnPluginStart()
 {
-	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
+	TTT_IsGameCSGO();
 	
-	CurrentVersion = GetEngineVersion();
+	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
 {
-	if(CurrentVersion == Engine_CSGO)
+	if(GetEngineVersion() == Engine_CSGO)
 		g_sprite = PrecacheModel("materials/sprites/laserbeam.vmt");
 	else
 		g_sprite = PrecacheModel("materials/sprites/laser.vmt");
@@ -74,7 +74,6 @@ stock void GrabSomething(int client)
 		
 		if (ent == INVALID_ENT_REFERENCE)
 			return;
-
 			
 		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 		GetClientEyePosition(client, VecPos_Client);
@@ -84,9 +83,7 @@ stock void GrabSomething(int client)
 		GetEdictClassname(ent, edictname, 128);
 
 		if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
-		{
 			return;
-		}
 		else
 		{
 			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
@@ -106,7 +103,6 @@ stock void GrabSomething(int client)
 			if (strncmp("player", edictname, 5, false)!=0)
 			{
 				SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
-
 				PrintHintText(client, "Object ist now Unfreezed");
 			}
 			else
@@ -130,8 +126,6 @@ stock bool ValidGrab(int client)
 	int obj = gObj[client];
 	if (obj != -1 && IsValidEntity(obj) && IsValidEdict(obj))
 		return (true);
-
-
 	return (false);
 }
 
@@ -225,8 +219,8 @@ public Action Adjust(Handle timer)
 	float vecDir[3], vecPos[3], vecPos2[3], vecVel[3];
 	float viewang[3];
 
-	for(int i = 1; i <=MaxClients; ++i)
-		if(IsClientInGame(i) && IsPlayerAlive(i))
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
 		{
 			if (ValidGrab(i))
 			{

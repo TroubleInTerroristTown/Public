@@ -5,33 +5,37 @@
 
 #pragma newdecls required
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - API Test"
+
 #define PLUGIN_ITEM_SHORT "testitem"
 #define PLUGIN_ITEM_LONG  "Test Item"
 #define PLUGIN_ITEM_PRICE 350
 
 public Plugin myinfo = {
-	name = "TTT API Test + Item Test",
-	author = "Bara, whocodes",
-	description = "",
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
-public void OnPluginStart(){
+public void OnPluginStart()
+{
+	TTT_IsGameCSGO();
+	
 	HookEvent("weapon_fire", Event_WeaponFire);
 }
 
-
-public void OnAllPluginsLoaded(){
-    if(TTT_IsLoaded()){
-        TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
-    }
+public void OnAllPluginsLoaded()
+{
+	if(TTT_IsLoaded())
+		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
 }
 
-public void TTT_OnItemPurchased(int client, const char[] item){
-    if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0)){
-        PrintToChat(client, "It works! Hooray! Item: %s", item);
-    }
+public void TTT_OnItemPurchased(int client, const char[] item)
+{
+	if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
+		PrintToChat(client, "It works! Hooray! Item: %s", item);
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
