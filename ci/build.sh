@@ -58,7 +58,11 @@ rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/logs
 rm -r build/addons/sourcemod/scripting
+rm -r build/addons/sourcemod/translations
 rm build/addons/sourcemod/*.txt
+
+# Create clean plugins folder
+mkdir build/addons/sourcemod/translations
 
 # Download und unzip translations files
 wget -q -O translations.zip http://translator.mitchdempsey.com/sourcemod_plugins/158/download/ttt.translations.zip
