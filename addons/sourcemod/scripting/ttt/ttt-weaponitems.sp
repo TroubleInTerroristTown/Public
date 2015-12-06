@@ -7,7 +7,7 @@
 
 #include <ttt>
 #include <ttt-weaponitems>
-// #include <config_loader>
+#include <config_loader>
 
 #pragma newdecls required
 
@@ -170,14 +170,14 @@ public void TTT_OnItemPurchased(int client, const char[] itemshort)
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 					GiveArmor(client);
-			return;
+				return;
 		}
 	}
 }
 
 void GiveArmor(int client)
 {
-	SetEntData(client, FindSendPropOffs("CCSPlayer", "m_bHasHelmet"), true);
+	SetEntData(client, FindSendPropInfo("CCSPlayer", "m_bHasHelmet"), true);
 	SetEntProp(client, Prop_Data, "m_ArmorValue", 100, 1);
 }
 
