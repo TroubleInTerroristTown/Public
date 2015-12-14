@@ -119,7 +119,6 @@ enum eConfig
 	bool:b_hideTeams
 };
 
-
 int g_iCustomItemCount = 0;
 char g_cCustomItems_Long[MAX_CUSTOM_ITEMS][64];
 char g_cCustomItems_Short[MAX_CUSTOM_ITEMS][16];
@@ -809,6 +808,9 @@ public void ThinkPost(int entity)
 
 public Action Command_Karma(int client, int args)
 {
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 	
 	return Plugin_Handled;
@@ -1936,6 +1938,9 @@ public Action Timer_Adjust(Handle timer)
 
 public Action Command_Credits(int client, int args)
 {
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
 	
 	return Plugin_Handled;
@@ -2471,6 +2476,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action Command_ID(int client, int args)
 {
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	if(g_bID[client] && IsPlayerAlive(client))
 	{
 		LoopValidClients(i)
@@ -2560,6 +2568,9 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 
 public Action Command_Shop(int client, int args)
 {
+	if(!TTT_IsClientValid(client))
+		return Plugin_Handled;
+	
 	int team = g_iRole[client];
 	if(team != TTT_TEAM_UNASSIGNED)
 	{
@@ -3040,6 +3051,9 @@ stock void Detonate(int client)
 
 public Action Command_Detonate(int client, int args) 
 { 
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	if (!g_bJihadBomb[client]) 
 	{ 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You dont have it!", client);
@@ -3191,6 +3205,9 @@ public Action Timer_RDMTimer(Handle timer, any userid)
 
 public Action Command_SetRole(int client, int args)
 {
+	if(!TTT_IsClientValid(client))
+		return Plugin_Handled;
+	
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
@@ -3251,6 +3268,9 @@ public Action Command_SetRole(int client, int args)
 
 public Action Command_SetKarma(int client, int args)
 {
+	if(!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setkarma <#userid|name> <karma>");
@@ -3286,6 +3306,9 @@ public Action Command_SetKarma(int client, int args)
 
 public Action Command_SetCredits(int client, int args)
 {
+	if(!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
@@ -3310,7 +3333,7 @@ public Action Command_SetCredits(int client, int args)
 
 public Action Command_Status(int client, int args)
 {
-	if (0 > client || client > MaxClients || !IsClientInGame(client))
+	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
 		
 	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
