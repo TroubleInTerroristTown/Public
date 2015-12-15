@@ -2778,7 +2778,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0))
 				{
-					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
+					if(g_iCredits[client] >= g_iCustomItems_Price[i])
 					{
 						subtractCredits(client, g_iCustomItems_Price[i]);
 						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
