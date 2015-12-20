@@ -1720,6 +1720,9 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				}
 				
 				delete kvRules;
+				delete menu;
+				
+				return 0;
 			}
 		}
 		else
