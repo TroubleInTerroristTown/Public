@@ -206,6 +206,8 @@ int g_iBadNameCount = 0;
 
 Handle g_hDatabase = null;
 
+DataPack g_dPack;
+
 enum Ragdolls
 {
 	ent,
@@ -614,21 +616,20 @@ stock void ShowLogs(int client)
 		return;
 	}
 	
-	Handle pack = CreateDataPack();
-	RequestFrame(OnCreate, pack);
-	WritePackCell(pack, client);
-	WritePackCell(pack, index);
+	g_dPack = new DataPack();
+	RequestFrame(OnCreate, GetClientUserId(client));
+	g_dPack.WriteCell(index);
 }
 
-public void OnCreate(any pack)
+public void OnCreate(any userid)
 {
-	int client;
-	int index;
+	int client = GetClientOfUserId(userid);
+
+	g_dPack.Reset();
+	int index = g_dPack.ReadCell();
 	
-	
-	ResetPack(pack);
-	client = ReadPackCell(pack);
-	index = ReadPackCell(pack);
+	if(g_dPack != null)
+		delete g_dPack;
 	
 	if ((client == 0) || IsClientInGame(client))
 	{
@@ -666,10 +667,11 @@ public void OnCreate(any pack)
 			g_bReceivingLogs[client] = false;
 			return;
 		}
-		Handle pack2 = CreateDataPack();
-		RequestFrame(OnCreate, pack2);
-		WritePackCell(pack2, client);
-		WritePackCell(pack2, index);
+		
+		g_dPack = new DataPack();
+		RequestFrame(OnCreate, g_dPack);
+		g_dPack.WriteCell(client);
+		g_dPack.WriteCell(index);
 	}
 }
 
