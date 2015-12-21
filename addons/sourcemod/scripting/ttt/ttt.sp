@@ -116,7 +116,8 @@ enum eConfig
 	String:s_defaultPri_D[64],
 	String:s_defaultSec[64],
 	bool:b_endwithD,
-	bool:b_hideTeams
+	bool:b_hideTeams,
+	bool:b_publicKarma
 };
 
 int g_iCustomItemCount = 0;
@@ -506,6 +507,8 @@ public void OnPluginStart()
 	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	
 	g_iConfig[b_hideTeams] = AddBool("ttt_hide_teams", false, "Hide team changes from chat.");
+	
+	g_iConfig[b_publicKarma] = AddBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	
 	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -1305,8 +1308,9 @@ public void OnClientPutInServer(int client)
 
 public Action OnPreThink(int client)
 {
-	if(TTT_IsClientValid(client))
-		CS_SetClientContributionScore(client, g_iKarma[client]);
+	if(g_iConfig[b_publicKarma])
+		if(TTT_IsClientValid(client))
+			CS_SetClientContributionScore(client, g_iKarma[client]);
 }
 
 stock void AddStartKarma(int client)
