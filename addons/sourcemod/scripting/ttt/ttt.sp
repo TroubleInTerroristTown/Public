@@ -100,7 +100,6 @@ enum eConfig
 	i_detectiveRatio,
 	bool:b_taserAllow,
 	Float:f_jihadPreparingTime,
-	bool:b_newConfig,
 	bool:b_denyFire,
 	bool:b_slayAfterStart,
 	i_c4ShakeRadius,
@@ -500,7 +499,6 @@ public void OnPluginStart()
 	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
 	g_iConfig[b_taserAllow] = Config_LoadBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
 	g_iConfig[f_jihadPreparingTime] = Config_LoadFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
-	g_iConfig[b_newConfig] = Config_LoadBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
 	g_iConfig[b_denyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
 	g_iConfig[b_slayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
 	g_iConfig[i_c4ShakeRadius] = Config_LoadInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
@@ -532,12 +530,6 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
 	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
-
-	if(!g_iConfig[b_newConfig])
-	{
-		SetFailState("Please use the new config file! Open %s and set \"ttt_new_config\" to 1", g_sConfigFile);
-		return;
-	}
 }
 
 public void OnConfigsExecuted()
