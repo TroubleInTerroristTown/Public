@@ -9,6 +9,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <ttt>
+#include <config_loader>
 
 #pragma newdecls required
 
@@ -117,7 +118,11 @@ enum eConfig
 	String:s_defaultSec[64],
 	bool:b_endwithD,
 	bool:b_hideTeams,
-	bool:b_publicKarma
+	bool:b_publicKarma,
+	bool:b_stripWeapons,
+	bool:b_C4Beam,
+	bool:b_karmaDMG,
+	bool:b_karmaDMG_up
 };
 
 int g_iCustomItemCount = 0;
@@ -190,6 +195,7 @@ int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
 Handle g_hRagdollArray = null;
 
 int g_iBeamSprite = -1;
+int g_iC4BeamSprite = -1;
 int g_iHaloSprite = -1;
 
 bool g_bFound[MAXPLAYERS + 1] = {false, ...};
@@ -300,10 +306,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
-	
+
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Hook, Param_Cell, Param_Cell);
-	
+
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -313,76 +319,76 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
-	
+
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
-	
+
 	RegPluginLibrary("ttt");
-	
+
 	return APLRes_Success;
 }
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");
-	
+
 	if (!SQL_CheckConfig("ttt"))
 	{
 		char error[255];
 		Handle kv = null;
-		
+
 		kv = CreateKeyValues("");
 		KvSetString(kv, "database", "ttt");
-		g_hDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);  
+		g_hDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);
 		delete kv;
-		
+
 		if(g_hDatabase == null)
 		{
 			SetFailState("(OnPluginStart) Database failure: Couldn't find Database entry \"ttt\" and can't use SQlite as default.");
 			return;
 		}
-		
+
 		CheckAndCreateTables("sqlite");
 		SQL_SetCharset(g_hDatabase, "utf8");
 		LoadClients();
 	}
 	else SQL_TConnect(SQLConnect, "ttt");
-	
+
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
-	
+
 	LoadBadNames();
-	
+
 	g_hRagdollArray = CreateArray(102);
 	g_hPlayerArray = CreateArray();
 	g_hLogsArray = CreateArray(512);
-	
+
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	g_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
-	
+
 
 	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
 	CreateTimer(1.0, healthStationDistanceCheck, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
-	
+
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
-	
+
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
 	RegConsoleCmd("sm_credits", Command_Credits);
-	RegConsoleCmd("sm_boom", Command_Detonate); 
-	RegConsoleCmd("sm_jihad_detonate", Command_Detonate); 
+	RegConsoleCmd("sm_boom", Command_Detonate);
+	RegConsoleCmd("sm_jihad_detonate", Command_Detonate);
 	RegConsoleCmd("sm_logs", Command_Logs);
 	RegConsoleCmd("sm_log", Command_Logs);
 	RegConsoleCmd("sm_id", Command_ID);
-	
+
 	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
 	{
 		char sBuffer[64];
@@ -390,21 +396,21 @@ public void OnPluginStart()
 		RegConsoleCmd(sBuffer, Command_Shop);
 	}
 	RegConsoleCmd("radio3", Command_Shop);
-	
+
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeam_Pre, EventHookMode_Pre);
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_changename", Event_ChangeName);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_hurt", Event_PlayerHurt);
 	HookEvent("item_pickup", Event_ItemPickup);
-		
+
 	g_hGraceTime = FindConVar("mp_join_grace_time");
-	
+
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_SayTeam, "say_team");
@@ -413,115 +419,120 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass");
-	
+
 	for(int i= 0; i < sizeof(g_sRadioCMDs); i++)
 	{
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	}
-	
+
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
-	g_iConfig[i_creditsII] = AddInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
-	g_iConfig[i_creditsIT] = AddInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
-	g_iConfig[i_creditsID] = AddInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "The amount of credits an innocent will lose for killing a detective.");
-	g_iConfig[i_creditsTI] = AddInt("ttt_credits_killer_traitor_victim_innocent_add", 600, "The amount of credits a traitor will recieve for killing an innocent.");
-	g_iConfig[i_creditsTT] = AddInt("ttt_credits_killer_traitor_victim_traitor_subtract", 3000, "The amount of credits a traitor will lose for killing a traitor.");
-	g_iConfig[i_creditsTD] = AddInt("ttt_credits_killer_traitor_victim_detective_add", 4200, "The amount of credits a traitor will recieve for killing a detective.");
-	g_iConfig[i_creditsDI] = AddInt("ttt_credits_killer_detective_victim_innocent_subtract", 300, "The amount of credits a detective will lose for killing an innocent.");
-	g_iConfig[i_creditsDT] = AddInt("ttt_credits_killer_detective_victim_traitor_add", 2100, "The amount of credits a detective will recieve for killing a traitor.");
-	g_iConfig[i_creditsDD] = AddInt("ttt_credits_killer_detective_victim_detective_subtract", 300, "The amount of credits a detective will lose for killing a detective.");
-	g_iConfig[i_karmaII] = AddInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
-	g_iConfig[i_karmaIT] = AddInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
-	g_iConfig[i_karmaID] = AddInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
-	g_iConfig[i_karmaTI] = AddInt("ttt_karma_killer_traitor_victim_innocent_add", 2, "The amount of karma a traitor will recieve for killing an innocent.");
-	g_iConfig[i_karmaTT] = AddInt("ttt_karma_killer_traitor_victim_traitor_subtract", 5, "The amount of karma a traitor will lose for killing a traitor.");
-	g_iConfig[i_karmaTD] = AddInt("ttt_karma_killer_traitor_victim_detective_add", 3, "The amount of karma a traitor will recieve for killing a detective.");
-	g_iConfig[i_karmaDI] = AddInt("ttt_karma_killer_detective_victim_innocent_subtract", 3, "The amount of karma a detective will lose for killing an innocent.");
-	g_iConfig[i_karmaDT] = AddInt("ttt_karma_killer_detective_victim_traitor_add", 7, "The amount of karma a detective will recieve for killing a traitor.");
-	g_iConfig[i_karmaDD] = AddInt("ttt_karma_killer_detective_victim_detective_subtract", 7, "The amount of karma a detective will lose for killing a detective.");
-	g_iConfig[i_startKarma] = AddInt("ttt_start_karma", 100, "The amount of karma new players and players who were karma banned will start with.");
-	g_iConfig[i_karmaBan] = AddInt("ttt_with_karma_ban", 75, "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)");
-	g_iConfig[i_karmaBanLength] = AddInt("ttt_with_karma_ban_length", 10080, "The length of a Bad Karma ban. (Default = 1 Week)");
-	g_iConfig[i_maxKarma] = AddInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
-	g_iConfig[i_requiredPlayersD] = AddInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
-	g_iConfig[i_requiredPlayers] = AddInt("ttt_required_player", 3, "The amount of players required to start the game.");
-	g_iConfig[i_traitorloseAliveNonTraitors] = AddInt("ttt_credits_roundend_traitorlose_alive_nontraitors", 4800, "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
-	g_iConfig[i_traitorloseDeadNonTraitors] = AddInt("ttt_credits_roundend_traitorlose_dead_nontraitors", 1200, "The amount of credits an innocent or detective will recieve for winning the round if they died.");
-	g_iConfig[i_traitorwinAliveTraitors] = AddInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "The amount of credits a traitor will recieve for winning the round if they survived.");
-	g_iConfig[i_traitorwinDeadTraitors] = AddInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "The amount of credits a traitor will recieve for winning the round if they died.");
-	g_iConfig[i_creditsFoundBody] = AddInt("ttt_credits_found_body_add", 1200, "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
-	g_iConfig[i_creditsTaserHurtTraitor] = AddInt("ttt_hurt_traitor_with_taser", 2000, "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
-	g_iConfig[b_showDeathMessage] = AddBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showKillMessage] = AddBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showEarnKarmaMessage] = AddBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showEarnCreditsMessage] = AddBool("ttt_show_message_earn_credits", true, "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showLoseKarmaMessage] = AddBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showLoseCreditsMessage] = AddBool("ttt_show_message_lose_credits", true, "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled");
-	g_iConfig[i_messageTypKarma] = AddInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
-	g_iConfig[i_messageTypCredits] = AddInt("ttt_message_typ_credits", 1, "The credit message type. 1 = Hint Text, 2 = Chat Message");
-	g_iConfig[b_blockSuicide] = AddBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_blockGrenadeMessage] = AddBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_blockRadioMessage] = AddBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_allowFlash] = AddBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled");
-	g_iConfig[b_blockLookAtWeapon] = AddBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
-	g_iConfig[b_enableNoBlock] = AddBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_kadRemover] = AddBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
-	AddString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
-	g_iConfig[i_shopDNA] = AddInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopID] = AddInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopFAKEID] = AddInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopT] = AddInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopD] = AddInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopTASER] = AddInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopJIHADBOMB] = AddInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopC4] = AddInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopHEALTH] = AddInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
-	g_iConfig[i_spawnHPT] = AddInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
-	g_iConfig[i_spawnHPD] = AddInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
-	g_iConfig[i_spawnHPI] = AddInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
-	g_iConfig[i_rulesClosePunishment] = AddInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
-	g_iConfig[i_timeToReadDetectiveRules] = AddInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
-	g_iConfig[i_timeToReadRules] = AddInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
-	g_iConfig[b_showDetectiveMenu] = AddBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
-	g_iConfig[b_showRulesMenu] = AddBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
-	g_iConfig[i_punishInnoKills] = AddInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
-	AddString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
-	g_iConfig[b_updateClientModel] = AddBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
-	g_iConfig[b_removeHostages] = AddBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_removeBomb] = AddBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_roleAgain] = AddBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
-	g_iConfig[i_traitorRatio] = AddInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
-	g_iConfig[i_detectiveRatio] = AddInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
-	g_iConfig[b_taserAllow] = AddBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
-	g_iConfig[f_jihadPreparingTime] = AddFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
-	g_iConfig[b_newConfig] = AddBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
-	g_iConfig[b_denyFire] = AddBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
-	g_iConfig[b_slayAfterStart] = AddBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
-	g_iConfig[i_c4ShakeRadius] = AddInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
-	g_iConfig[f_c4DamageRadius] = AddFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
-	g_iConfig[i_startCredits] = AddInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
-	g_iConfig[b_removeBuyzone] = AddBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_forceTeams] = AddBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
-	g_iConfig[b_randomWinner] = AddBool("ttt_random_winner", true, "Choose random winner if ttt_force_teams 1. 1 = Yes, 0 = No");
-	g_iConfig[b_forceModel] = AddBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
-	g_iConfig[b_endwithD] = AddBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
-	
-	g_iConfig[b_hideTeams] = AddBool("ttt_hide_teams", false, "Hide team changes from chat.");
-	
-	g_iConfig[b_publicKarma] = AddBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	
-	AddString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
-	AddString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
-	
-	AddString("ttt_log_file", "logs/ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
-	AddString("ttt_error_file", "logs/ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
-	
+	g_iConfig[i_creditsII] = Config_LoadInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
+	g_iConfig[i_creditsIT] = Config_LoadInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
+	g_iConfig[i_creditsID] = Config_LoadInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "The amount of credits an innocent will lose for killing a detective.");
+	g_iConfig[i_creditsTI] = Config_LoadInt("ttt_credits_killer_traitor_victim_innocent_add", 600, "The amount of credits a traitor will recieve for killing an innocent.");
+	g_iConfig[i_creditsTT] = Config_LoadInt("ttt_credits_killer_traitor_victim_traitor_subtract", 3000, "The amount of credits a traitor will lose for killing a traitor.");
+	g_iConfig[i_creditsTD] = Config_LoadInt("ttt_credits_killer_traitor_victim_detective_add", 4200, "The amount of credits a traitor will recieve for killing a detective.");
+	g_iConfig[i_creditsDI] = Config_LoadInt("ttt_credits_killer_detective_victim_innocent_subtract", 300, "The amount of credits a detective will lose for killing an innocent.");
+	g_iConfig[i_creditsDT] = Config_LoadInt("ttt_credits_killer_detective_victim_traitor_add", 2100, "The amount of credits a detective will recieve for killing a traitor.");
+	g_iConfig[i_creditsDD] = Config_LoadInt("ttt_credits_killer_detective_victim_detective_subtract", 300, "The amount of credits a detective will lose for killing a detective.");
+	g_iConfig[i_karmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
+	g_iConfig[i_karmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
+	g_iConfig[i_karmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
+	g_iConfig[i_karmaTI] = Config_LoadInt("ttt_karma_killer_traitor_victim_innocent_add", 2, "The amount of karma a traitor will recieve for killing an innocent.");
+	g_iConfig[i_karmaTT] = Config_LoadInt("ttt_karma_killer_traitor_victim_traitor_subtract", 5, "The amount of karma a traitor will lose for killing a traitor.");
+	g_iConfig[i_karmaTD] = Config_LoadInt("ttt_karma_killer_traitor_victim_detective_add", 3, "The amount of karma a traitor will recieve for killing a detective.");
+	g_iConfig[i_karmaDI] = Config_LoadInt("ttt_karma_killer_detective_victim_innocent_subtract", 3, "The amount of karma a detective will lose for killing an innocent.");
+	g_iConfig[i_karmaDT] = Config_LoadInt("ttt_karma_killer_detective_victim_traitor_add", 7, "The amount of karma a detective will recieve for killing a traitor.");
+	g_iConfig[i_karmaDD] = Config_LoadInt("ttt_karma_killer_detective_victim_detective_subtract", 7, "The amount of karma a detective will lose for killing a detective.");
+	g_iConfig[i_startKarma] = Config_LoadInt("ttt_start_karma", 100, "The amount of karma new players and players who were karma banned will start with.");
+	g_iConfig[i_karmaBan] = Config_LoadInt("ttt_with_karma_ban", 75, "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)");
+	g_iConfig[i_karmaBanLength] = Config_LoadInt("ttt_with_karma_ban_length", 10080, "The length of a Bad Karma ban. (Default = 1 Week)");
+	g_iConfig[i_maxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
+	g_iConfig[i_requiredPlayersD] = Config_LoadInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
+	g_iConfig[i_requiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
+	g_iConfig[i_traitorloseAliveNonTraitors] = Config_LoadInt("ttt_credits_roundend_traitorlose_alive_nontraitors", 4800, "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
+	g_iConfig[i_traitorloseDeadNonTraitors] = Config_LoadInt("ttt_credits_roundend_traitorlose_dead_nontraitors", 1200, "The amount of credits an innocent or detective will recieve for winning the round if they died.");
+	g_iConfig[i_traitorwinAliveTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "The amount of credits a traitor will recieve for winning the round if they survived.");
+	g_iConfig[i_traitorwinDeadTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "The amount of credits a traitor will recieve for winning the round if they died.");
+	g_iConfig[i_creditsFoundBody] = Config_LoadInt("ttt_credits_found_body_add", 1200, "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
+	g_iConfig[i_creditsTaserHurtTraitor] = Config_LoadInt("ttt_hurt_traitor_with_taser", 2000, "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
+	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showEarnCreditsMessage] = Config_LoadBool("ttt_show_message_earn_credits", true, "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showLoseCreditsMessage] = Config_LoadBool("ttt_show_message_lose_credits", true, "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[i_messageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
+	g_iConfig[i_messageTypCredits] = Config_LoadInt("ttt_message_typ_credits", 1, "The credit message type. 1 = Hint Text, 2 = Chat Message");
+	g_iConfig[b_blockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
+	g_iConfig[b_blockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
+	g_iConfig[b_blockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
+	g_iConfig[b_allowFlash] = Config_LoadBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled");
+	g_iConfig[b_blockLookAtWeapon] = Config_LoadBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
+	g_iConfig[b_enableNoBlock] = Config_LoadBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_kadRemover] = Config_LoadBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
+	g_iConfig[i_shopDNA] = Config_LoadInt("ttt_shop_dna_scanner", 5000, "The price of a 'DNA Scanner' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopID] = Config_LoadInt("ttt_shop_id_card", 500, "The price of an 'ID Card' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopFAKEID] = Config_LoadInt("ttt_shop_fake_id_card", 3000, "The price of a 'Fake ID Card' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopT] = Config_LoadInt("ttt_shop_t", 0, "The price of the 'Traitor Role' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopD] = Config_LoadInt("ttt_shop_d", 0, "The price of the 'Detective Role' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopTASER] = Config_LoadInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopJIHADBOMB] = Config_LoadInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopC4] = Config_LoadInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopHEALTH] = Config_LoadInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
+	g_iConfig[i_spawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
+	g_iConfig[i_spawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
+	g_iConfig[i_spawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
+	g_iConfig[i_rulesClosePunishment] = Config_LoadInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
+	g_iConfig[i_timeToReadDetectiveRules] = Config_LoadInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
+	g_iConfig[i_timeToReadRules] = Config_LoadInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
+	g_iConfig[b_showDetectiveMenu] = Config_LoadBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
+	g_iConfig[b_showRulesMenu] = Config_LoadBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
+	g_iConfig[i_punishInnoKills] = Config_LoadInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
+	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
+	g_iConfig[b_updateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
+	g_iConfig[b_removeHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_removeBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_roleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
+	g_iConfig[i_traitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
+	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
+	g_iConfig[b_taserAllow] = Config_LoadBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
+	g_iConfig[f_jihadPreparingTime] = Config_LoadFloat("ttt_jihad_preparing_time", 60.0, "The amount of ime in seconds until the jihad bomb is ready after buying it.");
+	g_iConfig[b_newConfig] = Config_LoadBool("ttt_new_config", false, "IMPORTANT, Please set this cvar to 1 to use the new config, otherwise you can't run TTT anymore!");
+	g_iConfig[b_denyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
+	g_iConfig[b_slayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
+	g_iConfig[i_c4ShakeRadius] = Config_LoadInt("ttt_c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
+	g_iConfig[f_c4DamageRadius] = Config_LoadFloat("ttt_c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
+	g_iConfig[i_startCredits] = Config_LoadInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
+	g_iConfig[b_removeBuyzone] = Config_LoadBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_forceTeams] = Config_LoadBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
+	g_iConfig[b_randomWinner] = Config_LoadBool("ttt_random_winner", true, "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No");
+	g_iConfig[b_forceModel] = Config_LoadBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
+	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
+
+	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
+
+	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
+	g_iConfig[b_C4Beam] = Config_LoadBool("ttt_c4_beam", true, "Display a beam to Traitors that indicate C4 positions (in light blue)?");
+	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
+	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
+
+	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
+	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
+
+	Config_LoadString("ttt_log_file", "logs/ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+
+	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
+	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
+
+
 	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
 	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
-	
-	AddString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
-	AddString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
-	
+
 	if(!g_iConfig[b_newConfig])
 	{
 		SetFailState("Please use the new config file! Open %s and set \"ttt_new_config\" to 1", g_sConfigFile);
@@ -563,14 +574,14 @@ stock void ShowLogs(int client)
 			PrintToServer("No logs yet");
 		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
-		
+
 		return;
 	}
-	
+
 	if(g_bReceivingLogs[client])
 		return;
 	g_bReceivingLogs[client] = true;
-	
+
 	if(client == 0)
 	{
 		LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
@@ -582,27 +593,27 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "--------------------------------------");
 		PrintToConsole(client, "---------------TTT LOGS---------------");
 	}
-	
+
 	char item[512];
 	int index = 5;
 	bool end = false;
-	
+
 	if(index >= sizearray)
 	{
 		end = true;
 		index = (sizearray -1);
 	}
-		
+
 	for(int i = 0; i <= index; i++)
 	{
 		GetArrayString(g_hLogsArray, i, item, sizeof(item));
-		
+
 		if(client == 0)
 			LogToFileEx(g_iConfig[s_logFile], item);
 		else
 			PrintToConsole(client, item);
 	}
-	
+
 	if(end)
 	{
 		if(client == 0)
@@ -613,11 +624,11 @@ stock void ShowLogs(int client)
 			PrintToConsole(client, "--------------------------------------");
 			PrintToConsole(client, "--------------------------------------");
 		}
-		
+
 		g_bReceivingLogs[client] = false;
 		return;
 	}
-	
+
 	g_dPack = new DataPack();
 	RequestFrame(OnCreate, GetClientUserId(client));
 	g_dPack.WriteCell(index);
@@ -629,10 +640,10 @@ public void OnCreate(any userid)
 
 	g_dPack.Reset();
 	int index = g_dPack.ReadCell();
-	
+
 	if(g_dPack != null)
 		delete g_dPack;
-	
+
 	if ((client == 0) || IsClientInGame(client))
 	{
 		int sizearray = GetArraySize(g_hLogsArray);
@@ -645,7 +656,7 @@ public void OnCreate(any userid)
 			index = (sizearray -1);
 		}
 		char item[512];
-		
+
 		for(int i = old; i <= index; i++)
 		{
 			GetArrayString(g_hLogsArray, i, item, sizeof(item));
@@ -654,7 +665,7 @@ public void OnCreate(any userid)
 			else
 				PrintToConsole(client, item);
 		}
-		
+
 		if(end)
 		{
 			if(client == 0)
@@ -665,11 +676,11 @@ public void OnCreate(any userid)
 				PrintToConsole(client, "--------------------------------------");
 				PrintToConsole(client, "--------------------------------------");
 			}
-			
+
 			g_bReceivingLogs[client] = false;
 			return;
 		}
-		
+
 		g_dPack = new DataPack();
 		RequestFrame(OnCreate, g_dPack);
 		g_dPack.WriteCell(client);
@@ -699,97 +710,98 @@ public void OnMapStart()
 	for(int i; i < g_iBadNameCount; i++)
 		g_sBadNames[i] = "";
 	g_iBadNameCount = 0;
-	
+
 	LoadBadNames();
-	
+
 	g_iBeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
+	g_iC4BeamSprite = PrecacheModel("materials/sprites/hostage_following.vmt");
 	g_iHaloSprite = PrecacheModel("materials/sprites/halo.vtf");
-	
+
 	PrecacheModel("props/cs_office/microwave.mdl", true);
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
-	
-	PrecacheSoundAny(SND_BLIP, true); 
+
+	PrecacheSoundAny(SND_BLIP, true);
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
 	PrecacheSoundAny(SND_BURST, true);
 	PrecacheSoundAny(SND_BEEP, true);
 	PrecacheSoundAny(SND_DISARM, true);
 	PrecacheSoundAny(SND_WARNING, true);
-	
+
 	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
 	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
 
-	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3"); 
+	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
 	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
-	
+
 	ClearArray(g_hLogsArray);
 
 	AddFileToDownloadsTable("materials/sprites/sg_detective_icon.vmt");
 	AddFileToDownloadsTable("materials/sprites/sg_detective_icon.vtf");
 	PrecacheModel("materials/sprites/sg_detective_icon.vmt");
-	
+
 	AddFileToDownloadsTable("materials/sprites/sg_traitor_icon.vmt");
 	AddFileToDownloadsTable("materials/sprites/sg_traitor_icon.vtf");
 	PrecacheModel("materials/sprites/sg_traitor_icon.vmt");
-	
+
 	AddFileToDownloadsTable("materials/overlays/ttt/innocents_win.vmt");
 	AddFileToDownloadsTable("materials/overlays/ttt/innocents_win.vtf");
 	PrecacheDecal("overlays/ttt/innocents_win", true);
-	
+
 	AddFileToDownloadsTable("materials/overlays/ttt/traitors_win.vmt");
 	AddFileToDownloadsTable("materials/overlays/ttt/traitors_win.vtf");
 	PrecacheDecal("overlays/ttt/traitors_win", true);
-	
+
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayDetective.vmt");
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayDetective.vtf");
 	PrecacheDecal("darkness/ttt/overlayDetective", true);
-	
+
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayTraitor.vmt");
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayTraitor.vtf");
 	PrecacheDecal("darkness/ttt/overlayTraitor", true);
-	
+
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayInnocent.vmt");
 	AddFileToDownloadsTable("materials/darkness/ttt/overlayInnocent.vtf");
 	PrecacheDecal("darkness/ttt/overlayInnocent", true);
-	
+
  	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vmt");
 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
 	PrecacheDecal("overlays/ttt/detectives_win", true);
-	
+
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
-	
+
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
-	
+
 	g_iKills = FindSendPropInfo("CCSPlayerResource", "m_iKills");
 	if (g_iKills == -1)
 		SetFailState("CCSPlayerResource \"m_iKills\" offset is invalid");
-	
+
 	g_iDeaths = FindSendPropInfo("CCSPlayerResource", "m_iDeaths");
 	if (g_iDeaths == -1)
 		SetFailState("CCSPlayerResource \"m_iDeaths\"  offset is invalid");
-	
+
 	g_iAssists = FindSendPropInfo("CCSPlayerResource", "m_iAssists");
 	if (g_iAssists == -1)
 		SetFailState("CCSPlayerResource \"m_iAssists\"  offset is invalid");
-	
+
 	g_iMVPs = FindSendPropInfo("CCSPlayerResource", "m_iMVPs");
 	if (g_iMVPs == -1)
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
-	
-	
-	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager"); 
+
+
+	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager");
 	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
-	
+
 	resetPlayers();
 }
 
-public void ThinkPost(int entity) 
+public void ThinkPost(int entity)
 {
 	int isAlive[65];
-	
+
 	GetEntDataArray(entity, g_iAlive, isAlive, 65);
 	LoopValidClients(i)
 	{
@@ -799,11 +811,11 @@ public void ThinkPost(int entity)
 			isAlive[i] = false;
 	}
 	SetEntDataArray(entity, g_iAlive, isAlive, 65);
-	
+
 	if(g_iConfig[b_kadRemover])
 	{
 		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-		
+
 		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
@@ -815,16 +827,16 @@ public Action Command_Karma(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
-	
+
 	return Plugin_Handled;
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
 	ClearArray(g_hRagdollArray);
-	
+
 	g_bInactive = false;
 	LoopValidClients(i)
 	{
@@ -833,7 +845,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_iInnoKills[i] = 0;
 		g_bHasC4[i] = false;
 		g_bImmuneRDMManager[i] = false;
-		
+
 		CS_SetClientClanTag(i, " ");
 	}
 
@@ -842,20 +854,20 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	if(g_hCountdownTimer != null)
 		KillTimer(g_hCountdownTimer);
-	
+
 	float warmupTime = GetConVarFloat(g_hGraceTime) + 5.0;
 	g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _ , TIMER_FLAG_NO_MAPCHANGE);
-	
+
 	g_fRealRoundStart = GetGameTime() + warmupTime;
 	g_hCountdownTimer = CreateTimer(0.5, Timer_SelectionCountdown, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-	
+
 	g_bRoundStarted = false;
-	
-	if (g_hRoundTimer != null) 
+
+	if (g_hRoundTimer != null)
 		CloseHandle(g_hRoundTimer);
-		
+
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
-	
+
 	ShowOverlayToAll("");
 	resetPlayers();
 	healthStation_cleanUp();
@@ -868,14 +880,14 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		g_bFound[i] = true;
 		g_iInnoKills[i] = 0;
 		g_bImmuneRDMManager[i] = false;
-		
+
 		ShowLogs(i);
 		TeamTag(i);
 	}
-	
+
 	ShowLogs(0);
-		
-		
+
+
 	if (g_hRoundTimer != null)
 	{
 		CloseHandle(g_hRoundTimer);
@@ -888,97 +900,97 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 public Action Timer_SelectionCountdown(Handle hTimer)
 {
 	int timeLeft = RoundToFloor(g_fRealRoundStart - GetGameTime());
-	
+
 	if (g_fRealRoundStart <= 0.0 || timeLeft <= 0)
 	{
 		g_hCountdownTimer = null;
 		return Plugin_Stop;
 	}
-	
+
 	char centerText[512];
-	
+
 	LoopValidClients(iClient)
 	{
 		Format(centerText, sizeof(centerText), "%T", "StartTimer", iClient, timeLeft);
 		PrintHintText(iClient, centerText);
 	}
-	
+
 	return Plugin_Continue;
 }
 
 public Action Timer_Selection(Handle hTimer)
 {
 	g_hStartTimer = null;
-	
+
 	ClearArray(g_hPlayerArray);
-	
-	if(g_hDetectives == null) 
+
+	if(g_hDetectives == null)
 		g_hDetectives = CreateArray(1);
-	
-	if(g_hTraitores == null) 
+
+	if(g_hTraitores == null)
 		g_hTraitores = CreateArray(1);
-	
+
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnRoundStart_Pre);
 	Call_Finish(res);
-	
+
 	if(res >= Plugin_Handled)
 	{
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(-1);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
-		
+
 		return;
 	}
-	
+
 	int iCount = 0;
 	LoopValidClients(i)
 	{
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
 			continue;
-		
+
 		if(!IsPlayerAlive(i))
 			continue;
-		
+
 		iCount++;
 		PushArrayCell(g_hPlayerArray, i);
 	}
-		
-	if(iCount < g_iConfig[i_requiredPlayers]) 
+
+	if(iCount < g_iConfig[i_requiredPlayers])
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
 			CPrintToChat(i, g_iConfig[s_pluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
-		
+
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(iCount);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
-		
+
 		return;
 	}
-	
+
 	int iDetectives = RoundToNearest(iCount * float(g_iConfig[i_detectiveRatio])/100.0);
 	if(iDetectives == 0)
 		iDetectives = 1;
-	
+
 	bool needDetective = ( iCount >= g_iConfig[i_requiredPlayersD]);
-	
+
 	/* Not enough players to allow a detective */
 	if(!needDetective)
 		iDetectives = 0;
-		
+
 	int iTraitores = RoundToNearest(iCount * float(g_iConfig[i_traitorRatio])/100.0);
 	if(iTraitores == 0)
 		iTraitores = 1;
-	
+
 	int index;
 	int player;
 	while((index = GetRandomArray(g_hPlayerArray)) != -1)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
-		
+
 		if(iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && !IsPlayerInArray(player, g_hDetectives))
 		{
 			g_iRole[player] = TTT_TEAM_DETECTIVE;
@@ -990,29 +1002,29 @@ public Action Timer_Selection(Handle hTimer)
 			iTraitores--;
 		}
 		else g_iRole[player] = TTT_TEAM_INNOCENT;
-		
+
 		while (GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
 			GivePlayerItem(player, "weapon_knife");
-		
+
 		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(player, g_iConfig[s_defaultSec]);
-		
+
 		g_bFound[player] = false;
-		
+
 		RemoveFromArray(g_hPlayerArray, index);
 	}
-	
+
 	/* Recount roles */
-	
+
 	int iTraitors = 0;
 	int iInnocent = 0;
 	int iDetective = 0;
-	
+
 	LoopValidClients(i)
 	{
 		if (!IsPlayerAlive(i))
 			continue;
-		
+
 		if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			iTraitors++;
 		else if(g_iRole[i] == TTT_TEAM_DETECTIVE)
@@ -1020,7 +1032,7 @@ public Action Timer_Selection(Handle hTimer)
 		else if(g_iRole[i] == TTT_TEAM_INNOCENT)
 			iInnocent++;
 	}
-	
+
 	/* No detective found, but we need one */
 	if(iDetective == 0 && needDetective)
 	{
@@ -1028,15 +1040,15 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			if(g_iRole[i] != TTT_TEAM_INNOCENT && (!g_bConfirmDetectiveRules[i] && g_iConfig[b_showDetectiveMenu]))
 				continue;
-				
+
 			iInnocent--;
 			iDetective++;
-			
+
 			g_iRole[i] = TTT_TEAM_DETECTIVE;
 			break;
 		}
 	}
-	
+
 	/* No triaitor found, but we need one */
 	if(iTraitors == 0)
 	{
@@ -1044,20 +1056,20 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			if(g_iRole[i] != TTT_TEAM_INNOCENT)
 				continue;
-				
+
 			iInnocent--;
 			iTraitors++;
-			
+
 			g_iRole[i] = TTT_TEAM_TRAITOR;
 			break;
 		}
 	}
-	
+
 	/* Remember role, to prevent same role next round for players */
-	
+
 	ClearArray(g_hDetectives);
 	ClearArray(g_hTraitores);
-	
+
 	LoopValidClients(i)
 	{
 		if(g_iConfig[b_roleAgain])
@@ -1072,30 +1084,30 @@ public Action Timer_Selection(Handle hTimer)
 	LoopValidClients(i)
 	{
 		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
-		
+
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
 			CPrintToChat(i, g_iConfig[s_pluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 		else
 			listTraitors(i);
-		
+
 		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
 			continue;
-			
+
 		if(!IsPlayerAlive(i))
 			continue;
-			
+
 		TeamInitialize(i);
 	}
-	
+
 	ClearArray(g_hLogsArray);
 	g_bRoundStarted = true;
-	
+
 	Call_StartForward(g_hOnRoundStart);
 	Call_PushCell(iInnocent);
 	Call_PushCell(iTraitors);
 	Call_PushCell(iDetective);
 	Call_Finish();
-	
+
 	ApplyIcons();
 }
 
@@ -1114,7 +1126,7 @@ stock bool IsPlayerInArray(int player, Handle array)
 		if(player == GetArrayCell(array, i))
 			return true;
 	}
-	
+
 	return false;
 }
 
@@ -1122,12 +1134,12 @@ stock void TeamInitialize(int client)
 {
 	if(!TTT_IsClientValid(client))
 		return;
-	
+
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CS_SetClientClanTag(client, "DETECTIVE");
-		
+
 		if(g_iConfig[b_forceTeams])
 		{
 			if(GetClientTeam(client) != CS_TEAM_CT)
@@ -1136,12 +1148,12 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultPri_D]);
-			
+
 		if(g_iConfig[b_taserAllow])
 			GivePlayerItem(client, "weapon_taser");
-			
+
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is DETECTIVES", client);
-		
+
 		if(g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
 	}
@@ -1149,10 +1161,10 @@ stock void TeamInitialize(int client)
 	{
 		g_iIcon[client] = CreateIcon(client);
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is TRAITORS", client);
-		
+
 		if(g_iConfig[i_spawnHPT] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
-		
+
 		if(g_iConfig[b_forceTeams])
 		{
 			if(GetClientTeam(client) != CS_TEAM_T)
@@ -1162,10 +1174,10 @@ stock void TeamInitialize(int client)
 	else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is INNOCENTS", client);
-		
+
 		if(g_iConfig[i_spawnHPI] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
-		
+
 		if(g_iConfig[b_forceTeams])
 		{
 			if(GetClientTeam(client) != CS_TEAM_T)
@@ -1174,7 +1186,7 @@ stock void TeamInitialize(int client)
 	}
 	else if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
 	    CS_SetClientClanTag(client, "UNASSIGNED");
-	
+
 	if(g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
 	else if(g_iConfig[b_forceModel])
@@ -1187,7 +1199,7 @@ stock void TeamInitialize(int client)
 	            SetEntityModel(client, g_iConfig[s_modelCT]);
 	    }
 	}
-	
+
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
 	Call_PushCell(g_iRole[client]);
@@ -1198,7 +1210,7 @@ stock void TeamTag(int client)
 {
 	if (!IsClientInGame(client) || client < 0 || client > MaxClients)
 		return;
-		
+
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 		CS_SetClientClanTag(client, "DETECTIVE");
 	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -1223,20 +1235,20 @@ stock void ApplyIcons()
 public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if(g_bRoundStarted && TTT_IsClientValid(client))
 	{
 		CS_SetClientClanTag(client, "UNASSIGNED");
 		return Plugin_Stop;
 	}
-	
+
 	return Plugin_Continue;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		if(g_bRoundStarted)
@@ -1250,22 +1262,22 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		}
 		else
 			CS_SetClientClanTag(client, " ");
-		
+
 		g_iInnoKills[client] = 0;
-		
+
 		StripAllWeapons(client);
-		
+
 		ClearTimer(g_hJihadBomb[client]);
 		g_bDetonate[client] = false;
-		
+
 		if(g_bInactive)
 		{
 			int iCount = 0;
-			
+
 			LoopValidClients(i)
 				if(IsPlayerAlive(i))
 					iCount++;
-			
+
 			if(iCount >= 3)
 				ServerCommand("mp_restartgame 2");
 		}
@@ -1274,11 +1286,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
-		
+
 		g_bScan[client] = false;
 		g_bID[client] = false;
 		g_bJihadBomb[client] = false;
-		
+
 		if(g_iConfig[b_enableNoBlock])
 			SetNoBlock(client);
 	}
@@ -1287,7 +1299,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public Action Timer_SlayPlayer(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 		ForcePlayerSuicide(client);
 }
@@ -1295,14 +1307,14 @@ public Action Timer_SlayPlayer(Handle timer, any userid)
 public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
-	
+
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
-	
+
 	SetEntData(client, g_iAccount, 16000);
-		
+
 	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
@@ -1322,9 +1334,9 @@ stock void BanBadPlayerKarma(int client)
 {
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
-	
+
 	setKarma(client, g_iConfig[i_startKarma]);
-	
+
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
 }
 
@@ -1332,13 +1344,13 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
-	
+
 	if(IsWorldDamage(iAttacker, damagetype))
 		return Plugin_Continue;
-	
+
 	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
-	
+
 	char item[512], sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
 	if(StrEqual(sWeapon, "weapon_taser", false))
@@ -1372,6 +1384,12 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 {
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
+
+	if((0 < iAttacker <= MaxClients) && IsClientInGame(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG]){
+		if(g_iConfig[b_karmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[i_startKarma]))
+			damage *= (g_iKarma[iAttacker]/g_iConfig[i_startKarma]);
+	}
+
 	return Plugin_Continue;
 }
 
@@ -1408,29 +1426,29 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	g_iInnoKills[client] = 0;
 	ClearIcon(client);
-	
+
 	ClearTimer(g_hJihadBomb[client]);
-	
+
 	int iRagdoll = 0;
 	if(g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
 		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 		if (iRagdoll > 0)
 			AcceptEntityInput(iRagdoll, "Kill");
-		
+
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
-	
+
 		float origin[3], angles[3], velocity[3];
-	
+
 		GetClientAbsOrigin(client, origin);
 		GetClientAbsAngles(client, angles);
 		GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", velocity);
-	
+
 		int iEntity = CreateEntityByName("prop_ragdoll");
 		DispatchKeyValue(iEntity, "model", playermodel);
-		
-		
+
+
 		// Prevent crash. If spawn isn't dispatched successfully,
 		// TeleportEntity() crashes the server. This left some very
 		// odd crash dumps, and usually only happened when 2 players
@@ -1438,21 +1456,21 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		// Thanks to -
 		// 		Phoenix Gaming Network (pgn.site)
 		// 		Prestige Gaming Organization
-		
+
 		ActivateEntity(iEntity);
 		if(DispatchSpawn(iEntity))
 		{
 			float speed = GetVectorLength(velocity);
 			if(speed >= 500)
-				TeleportEntity(iEntity, origin, angles, NULL_VECTOR); 
+				TeleportEntity(iEntity, origin, angles, NULL_VECTOR);
 			else
 				TeleportEntity(iEntity, origin, angles, velocity);
 		}
 		else
 			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
-	
+
 		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
-	
+
 
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];
@@ -1467,11 +1485,11 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		Format(Items[attackerName], MAX_NAME_LENGTH, name);
 		Items[gameTime] = GetGameTime();
 		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
-	
+
 		PushArrayArray(g_hRagdollArray, Items[0]);
-		
+
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
-		
+
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
 		{
 			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -1513,9 +1531,9 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		if (iRagdoll > 0)
 			AcceptEntityInput(iRagdoll, "Kill");
 	}
-	
+
 	if(!dontBroadcast)
-	{	
+	{
 		dontBroadcast = true;
 		return Plugin_Changed;
 	}
@@ -1527,9 +1545,9 @@ public void OnClientPostAdminCheck(int client)
 	char name[MAX_NAME_LENGTH];
 	GetClientName(client, name, sizeof(name));
 	nameCheck(client, name);
-	
+
 	LoadClientKarma(GetClientUserId(client));
-	
+
 	if(g_iConfig[b_showRulesMenu])
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
 	else if(g_iConfig[b_showDetectiveMenu])
@@ -1539,7 +1557,7 @@ public void OnClientPostAdminCheck(int client)
 public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		ShowRules(client, g_iSite[client]);
@@ -1551,94 +1569,94 @@ stock void ShowRules(int client, int item)
 	char sText[512], sYes[64];
 	Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
 	Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
-	
+
 	Menu menu = new Menu(Menu_ShowWelcomeMenu);
 	menu.SetTitle(sText);
-	
+
 	Handle hFile = OpenFile(g_sRulesFile, "rt");
-	
+
 	if(hFile == null)
 		SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
-		
+
 	KeyValues kvRules = CreateKeyValues("Rules");
-	
+
 	if(!kvRules.ImportFromFile(g_sRulesFile))
 	{
 		SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
 		return;
 	}
-	
+
 	if (!kvRules.GotoFirstSubKey())
 	{
 		SetFailState("Can't read rules/start.cfg correctly! (GotoFirstSubKey)");
 		return;
 	}
-	
+
 	do
 	{
 		char sNumber[4];
 		char sTitle[64];
-		
+
 		kvRules.GetSectionName(sNumber, sizeof(sNumber));
 		kvRules.GetString("title", sTitle, sizeof(sTitle));
 		menu.AddItem(sNumber, sTitle);
 	}
 	while (kvRules.GotoNextKey());
-	
+
 	delete kvRules;
-	
+
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
 	menu.ExitBackButton = false;
 	menu.DisplayAt(client, item, g_iConfig[i_timeToReadRules]);
 }
 
-public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param) 
+public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param)
 {
-	if ( action == MenuAction_Select ) 
+	if ( action == MenuAction_Select )
 	{
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
-		
+
 		if (!StrEqual(sParam, "yes", false))
 		{
 			Handle hFile = OpenFile(g_sRulesFile, "rt");
-			
+
 			if(hFile == null)
 			{
 				SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
 				delete menu;
 				return 0;
 			}
-				
+
 			KeyValues kvRules = CreateKeyValues("Rules");
-			
+
 			if(!kvRules.ImportFromFile(g_sRulesFile))
 			{
 				SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
-				
+
 				delete kvRules;
 				delete menu;
-				
+
 				return 0;
 			}
-			
+
 			if(kvRules.JumpToKey(sParam, false))
 			{
 				char sValue[MAX_MESSAGE_LENGTH];
-				
+
 				kvRules.GetString("text", sValue, sizeof(sValue));
 				if(strlen(sValue) > 0)
 				{
 					CPrintToChat(client, sValue);
 					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
-					
+
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
-					
+
 					delete kvRules;
 					delete menu;
-					
+
 					return 0;
 				}
 
@@ -1646,66 +1664,66 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				if(strlen(sValue) > 0)
 				{
 					FakeClientCommand(client, sValue);
-					
+
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
-					
+
 					delete kvRules;
 					delete menu;
-					
+
 					return 0;
 				}
-				
+
 				kvRules.GetString("command", sValue, sizeof(sValue));
 				if(strlen(sValue) > 0)
 				{
 					ClientCommand(client, sValue);
-					
+
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
-					
+
 					delete kvRules;
 					delete menu;
-					
+
 					return 0;
 				}
-				
+
 				kvRules.GetString("url", sValue, sizeof(sValue));
 				if(strlen(sValue) > 0)
 				{
 					char sURL[512];
 					Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
 					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
-					
+
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
-					
+
 					delete kvRules;
 					delete menu;
-					
+
 					return 0;
 				}
-				
+
 				kvRules.GetString("file", sValue, sizeof(sValue));
 				if(strlen(sValue) > 0)
 				{
 					g_iSite[client] = menu.Selection;
-					
+
 					char sFile[PLATFORM_MAX_PATH + 1];
 					BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
-					
+
 					Handle hRFile = OpenFile(sFile, "rt");
-					
+
 					if(hRFile == null)
 						SetFailState("[TTT] Can't open File: %s", sFile);
-					
+
 					char sLine[64], sTitle[64];
-					
+
 					Menu rMenu = new Menu(Menu_RulesPage);
-					
+
 					kvRules.GetString("title", sTitle, sizeof(sTitle));
 					rMenu.SetTitle(sTitle);
-					
+
 					while(!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
 					{
 						if(strlen(sLine) > 1)
@@ -1713,21 +1731,21 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 							rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
 						}
 					}
-					
+
 					rMenu.ExitButton = false;
 					rMenu.ExitBackButton = true;
 					rMenu.Display(client, g_iConfig[i_timeToReadRules]);
-					
+
 					delete hRFile;
 					delete kvRules;
 					delete menu;
-					
+
 					return 0;
 				}
-				
+
 				delete kvRules;
 				delete menu;
-				
+
 				return 0;
 			}
 		}
@@ -1736,7 +1754,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			g_bKnowRules[client] = true;
 			g_bReadRules[client] = false;
 		}
-		
+
 		if(g_iConfig[b_showDetectiveMenu])
 			AskClientForMicrophone(client);
 	}
@@ -1746,10 +1764,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		{
 			char sFlags[16];
 			AdminFlag aFlags[16];
-			
+
 			Format(sFlags, sizeof(sFlags), g_iConfig[s_kickImmunity]);
 			FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
-			
+
 			if (!TTT_HasFlags(client, aFlags))
 			{
 				char sMessage[128];
@@ -1760,11 +1778,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	}
 	else if (action == MenuAction_End)
 		delete menu;
-	
+
 	return 0;
 }
 
-public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param) 
+public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 {
 	if (action == MenuAction_Cancel)
 		CreateTimer(0.3, Timer_ShowWelcomeMenu, GetClientOfUserId(client));
@@ -1776,7 +1794,7 @@ public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		AskClientForMicrophone(client);
@@ -1789,7 +1807,7 @@ stock void AskClientForMicrophone(int client)
 	Format(sText, sizeof(sText), "%T", "AM Question", client);
 	Format(sYes, sizeof(sYes), "%T", "AM Yes", client);
 	Format(sNo, sizeof(sNo), "%T", "AM No", client);
-	
+
 	Menu menu = new Menu(Menu_AskClientForMicrophone);
 	menu.SetTitle(sText);
 	menu.AddItem("no", sNo);
@@ -1800,13 +1818,13 @@ stock void AskClientForMicrophone(int client)
 }
 
 
-public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client, int param) 
+public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client, int param)
 {
-	if ( action == MenuAction_Select ) 
+	if ( action == MenuAction_Select )
 	{
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
-		
+
 		if (!StrEqual(sParam, "yes", false))
 			g_bConfirmDetectiveRules[client] = false;
 		else
@@ -1816,7 +1834,7 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 		g_bConfirmDetectiveRules[client] = false;
 	else if (action == MenuAction_End)
 		delete menu;
-	
+
 	return 0;
 }
 
@@ -1825,35 +1843,35 @@ public void OnClientDisconnect(int client)
 	if(IsClientInGame(client))
 	{
 		g_bKarma[client] = false;
-		
+
 		ClearTimer(g_hRDMTimer[client]);
 		ClearTimer(g_hRemoveCoolDownTimer[client]);
 		ClearIcon(client);
-		
+
 		ClearTimer(g_hJihadBomb[client]);
-		
+
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
 	/* 	int iSize = GetArraySize(g_hRagdollArray);
-		
+
 		if(iSize == 0) return;
-		
+
 		int Items[Ragdolls];
-				
+
 		for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
 		{
 			GetArrayArray(g_hRagdollArray, i, Items[0]);
-					
+
 			if(client == Items[attacker] || client == Items[victim])
 			{
 				int entity = EntRefToEntIndex(Items[index]);
 				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
-						
+
 				RemoveFromArray(g_hRagdollArray, i);
 				break;
 			}
 		}  */
-		
+
 		ClearTimer(g_hExplosionTimer[client]);
 	}
 }
@@ -1863,22 +1881,22 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if (!IsClientInGame(client)) return;
-		
+
 	char userName[MAX_NAME_LENGTH];
 	event.GetString("newname", userName, sizeof(userName));
 	nameCheck(client, userName);
-	
+
  	int iSize = GetArraySize(g_hRagdollArray);
-	
+
 	if(iSize == 0)
 		return;
-	
+
 	int Items[Ragdolls];
-			
+
 	for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
 	{
 		GetArrayArray(g_hRagdollArray, i, Items[0]);
-				
+
 		if(client == Items[attacker])
 		{
 			Format(Items[attackerName], MAX_NAME_LENGTH, userName);
@@ -1889,7 +1907,7 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 			Format(Items[victimName], MAX_NAME_LENGTH, userName);
 			SetArrayArray(g_hRagdollArray, i, Items[0]);
 		}
-	} 
+	}
 }
 
 public Action Timer_Adjust(Handle timer)
@@ -1897,26 +1915,34 @@ public Action Timer_Adjust(Handle timer)
 	int g_iInnoAlive = 0;
 	int g_iTraitorAlive = 0;
 	int g_iDetectiveAlive = 0;
+	int[] c4clients = new int[MaxClients];
+	int c4index = 0;
+
 	float vec[3];
 	LoopValidClients(i)
 		if(IsPlayerAlive(i))
 		{
 			if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			{
+				if(g_iConfig[b_C4Beam]){
+					c4clients[c4index] = i;
+					c4index++;
+				}
+
 				GetClientAbsOrigin(i, vec);
-		
+
 				vec[2] += 10;
 				g_iTraitorAlive++;
 				int[] clients = new int[MaxClients];
 				int index = 0;
-				
+
 				LoopValidClients(j)
 					if(IsPlayerAlive(j) && j != i && (g_iRole[j] == TTT_TEAM_TRAITOR))
 					{
 						clients[index] = j;
 						index++;
 					}
-				
+
 				TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, {0, 0, 255, 255}, 10, 0);
 				TE_Send(clients, index);
 			}
@@ -1929,7 +1955,24 @@ public Action Timer_Adjust(Handle timer)
 			if(money != 16000)
 				SetEntData(i, g_iAccount, 16000);
 		}
-		
+
+
+	if(g_iConfig[b_C4Beam] && (c4index > 0)){
+		char sModelPath[PLATFORM_MAX_PATH];
+		float origin[3]; int C4;
+		while ((C4 = FindEntityByClassname(C4, "prop_physics")) != -1){
+			GetEntPropString(C4, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
+
+			if(!StrEqual(MDL_C4, sModelPath))
+				continue;
+
+			GetEntPropVector(C4, Prop_Send, "m_vecOrigin", origin);
+
+			TE_SetupBeamRingPoint(origin, 40.0, 50.0, g_iC4BeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, {0, 0, 255, 255}, 10, 0);
+			TE_Send(c4clients, c4index);
+		}
+	}
+
 	if(g_bRoundStarted)
 	{
 		if(g_iInnoAlive == 0 && ((g_iConfig[b_endwithD]) || (g_iDetectiveAlive == 0)))
@@ -1938,7 +1981,7 @@ public Action Timer_Adjust(Handle timer)
 			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
 		}
 		else if(g_iTraitorAlive == 0)
-		{		
+		{
 			g_bRoundStarted = false;
 			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
 		}
@@ -1949,23 +1992,23 @@ public Action Command_Credits(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
-	
+
 	return Plugin_Handled;
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (!TTT_IsClientValid(client))
 		return;
-	
+
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
 		return;
-	
+
 	if (g_iConfig[b_showDeathMessage])
 	{
 		if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
@@ -1975,7 +2018,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		else if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT)
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your killer is an Innocent", client);
 	}
-	
+
 	if(g_iConfig[b_showKillMessage])
 	{
 		if(g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -1985,14 +2028,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		else if(g_iRole[client] == TTT_TEAM_INNOCENT)
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed an Innocent", client);
 	}
-	
+
 	char item[512];
-	
+
 	if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		subtractKarma(iAttacker, g_iConfig[i_karmaII], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsII], true);
 	}
@@ -2000,7 +2043,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		addKarma(iAttacker, g_iConfig[i_karmaIT], true);
 		addCredits(iAttacker, g_iConfig[i_creditsIT], true);
 	}
@@ -2008,7 +2051,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		subtractKarma(iAttacker, g_iConfig[i_karmaID], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsID], true);
 	}
@@ -2016,7 +2059,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		addKarma(iAttacker, g_iConfig[i_karmaTI], true);
 		addCredits(iAttacker, g_iConfig[i_creditsTI], true);
 	}
@@ -2024,7 +2067,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		subtractKarma(iAttacker, g_iConfig[i_karmaTT], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsTT], true);
 	}
@@ -2032,7 +2075,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		addKarma(iAttacker, g_iConfig[i_karmaTD], true);
 		addCredits(iAttacker, g_iConfig[i_creditsTD], true);
 	}
@@ -2040,7 +2083,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		subtractKarma(iAttacker, g_iConfig[i_karmaDI], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsDI], true);
 	}
@@ -2048,7 +2091,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		addKarma(iAttacker, g_iConfig[i_karmaDT], true);
 		addCredits(iAttacker, g_iConfig[i_creditsDT], true);
 	}
@@ -2056,17 +2099,17 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
 		PushArrayString(g_hLogsArray, item);
-		
+
 		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
-	
+
 	if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
 	{
 	    CS_SetClientClanTag(client, "UNASSIGNED");
 	    g_bFound[client] = true;
 	}
-	
+
 	Call_StartForward(g_hOnClientDeath);
 	Call_PushCell(client);
 	Call_PushCell(iAttacker);
@@ -2075,18 +2118,18 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 stock int CreateIcon(int client)
 {
-  
+
 	ClearIcon(client);
 	if(g_iRole[client] < TTT_TEAM_TRAITOR || !g_bRoundStarted)
 		return 0;
-	
+
 	char iTarget[16];
 	Format(iTarget, 16, "client%d", client);
 	DispatchKeyValue(client, "targetname", iTarget);
 
 	float origin[3];
-  
-	GetClientAbsOrigin(client, origin);				
+
+	GetClientAbsOrigin(client, origin);
 	origin[2] = origin[2] + 80.0;
 
 	int Ent = CreateEntityByName("env_sprite");
@@ -2103,38 +2146,38 @@ stock int CreateIcon(int client)
 	TeleportEntity(Ent, origin, NULL_VECTOR, NULL_VECTOR);
 	SetVariantString(iTarget);
 	AcceptEntityInput(Ent, "SetParent", Ent, Ent, 0);
- 
+
 	if(g_iRole[client] == TTT_TEAM_TRAITOR)
-		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT); 
+		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT);
 	return Ent;
 }
 
-public Action Hook_SetTransmitT(int entity, int client) 
-{ 
-	if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) 
-		return Plugin_Handled;
-	 
-	return Plugin_Continue; 
-}  
-
-public void OnMapEnd() 
+public Action Hook_SetTransmitT(int entity, int client)
 {
-	if (g_hRoundTimer != null) 
+	if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client))
+		return Plugin_Handled;
+
+	return Plugin_Continue;
+}
+
+public void OnMapEnd()
+{
+	if (g_hRoundTimer != null)
 	{
 		CloseHandle(g_hRoundTimer);
 		g_hRoundTimer = null;
 	}
-	
+
 	g_hStartTimer = null;
 	g_hCountdownTimer = null;
-	
+
 	resetPlayers();
-	
+
 	LoopValidClients(i)
 		g_bKarma[i] = false;
 }
 
-public Action Timer_OnRoundEnd(Handle timer) 
+public Action Timer_OnRoundEnd(Handle timer)
 {
 	g_hRoundTimer = null;
 	g_bRoundStarted = false;
@@ -2145,13 +2188,13 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
 	if(g_bRoundStarted)
 		return Plugin_Handled;
-	
+
 	LoopValidClients(client)
 		if(IsPlayerAlive(client))
 			ClearIcon(client);
-	
+
 	bool bInnoAlive = false;
-	
+
 	if(reason == CSRoundEnd_CTWin)
 	{
 		LoopValidClients(client)
@@ -2162,7 +2205,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 				{
 					if(g_iRole[client] == TTT_TEAM_INNOCENT)
 						bInnoAlive = true;
-					
+
 					addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
 				}
 				else
@@ -2183,17 +2226,17 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 			}
 		}
 	}
-	
+
 	if(reason == CSRoundEnd_TerroristWin)
 		ShowOverlayToAll("overlays/ttt/traitors_win");
 	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
 		ShowOverlayToAll("overlays/ttt/innocents_win");
 	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
 		ShowOverlayToAll("overlays/ttt/detectives_win");
-	
+
 	healthStation_cleanUp();
-	
-	if(!g_iConfig[b_forceTeams] && g_iConfig[b_randomWinner])
+
+	if(g_iConfig[b_randomWinner])
 	{
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 	    return Plugin_Changed;
@@ -2226,6 +2269,9 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 
 stock void StripAllWeapons(int client)
 {
+	if(!g_iConfig[b_stripWeapons])
+		return;
+
 	int iEnt;
 	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
 	{
@@ -2235,17 +2281,17 @@ stock void StripAllWeapons(int client)
 			AcceptEntityInput(iEnt, "Kill");
 		}
 	}
-}  
+}
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
-{	
+{
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if(!iAttacker)
 		return;
 
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	
+
+
 	int damage = event.GetInt("dmg_health");
 	char item[512];
 	if(g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
@@ -2267,13 +2313,13 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage]", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
-		
+
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Traitor) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
-		
+
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
@@ -2284,7 +2330,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	{
 		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
 		PushArrayString(g_hLogsArray, item);
-		
+
 	}
 	else if(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -2306,7 +2352,7 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	char sItem[32];
 	event.GetString("item", sItem, sizeof(sItem));
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		if(!g_bHasC4[client] && !g_bJihadBomb[client])
@@ -2314,10 +2360,10 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 			int iC4 = GetPlayerWeaponSlot(client, CS_SLOT_C4);
 			if(iC4 != -1)
 			{
-				RemovePlayerItem(client, iC4); 
+				RemovePlayerItem(client, iC4);
 				AcceptEntityInput(iC4, "Kill");
 			}
-			
+
 			return Plugin_Handled;
 		}
 	}
@@ -2328,50 +2374,50 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
 	if(!IsClientInGame(client))
 		return Plugin_Continue;
-	
+
 	if (g_iConfig[b_denyFire] && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
 	{
 		buttons &= ~IN_ATTACK;
 		buttons &= ~IN_ATTACK2;
-		return Plugin_Changed; 
+		return Plugin_Changed;
 	}
-	
+
 	if(buttons & IN_USE)
 	{
 		g_bHoldingProp[client] = true;
-		
+
 		int entidad = GetClientAimTarget(client, false);
 		if(entidad > 0)
 		{
 			float OriginG[3], TargetOriginG[3];
 			GetClientEyePosition(client, TargetOriginG);
 			GetEntPropVector(entidad, Prop_Data, "m_vecOrigin", OriginG);
-			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0) 
+			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0)
 				return Plugin_Continue;
-			
+
 		 	int iSize = GetArraySize(g_hRagdollArray);
 			if(iSize == 0)
 				return Plugin_Continue;
-	
+
 			int Items[Ragdolls];
 			int entity;
-			
+
 			for(int i = 0;i < iSize;i++)
 			{
 				GetArrayArray(g_hRagdollArray, i, Items[0]);
 				entity = EntRefToEntIndex(Items[ent]);
-				
+
 				if(entity == entidad)
 				{
 					MostrarMenu(client, Items[victim], Items[attacker], RoundToNearest(GetGameTime()-Items[gameTime]), Items[weaponused], Items[victimName], Items[attackerName]);
-					
+
 					if(!Items[found] && IsPlayerAlive(client))
 					{
 						Items[found] = true;
 						if(IsClientInGame(Items[victim]))
 							g_bFound[Items[victim]] = true;
-						
-						if(g_iRole[Items[victim]] == TTT_TEAM_INNOCENT) 
+
+						if(g_iRole[Items[victim]] == TTT_TEAM_INNOCENT)
 						{
 							LoopValidClients(j)
 								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, Items[victimName]);
@@ -2383,24 +2429,24 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, Items[victimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
-						else if(g_iRole[Items[victim]] == TTT_TEAM_TRAITOR) 
+						else if(g_iRole[Items[victim]] == TTT_TEAM_TRAITOR)
 						{
 							LoopValidClients(j)
 								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client,Items[victimName]);
 							SetEntityRenderColor(entidad, 255, 0, 0, 255);
 						}
-						
+
 						TeamTag(Items[victim]);
-						
+
 						Call_StartForward(g_hOnBodyFound);
 						Call_PushCell(client);
 						Call_PushCell(Items[victim]);
 						Call_PushString(Items[victimName]);
 						Call_Finish();
-						
+
 						addCredits(client, g_iConfig[i_creditsFoundBody]);
 					}
-					
+
 					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
 					{
 						Call_StartForward(g_hOnBodyScanned);
@@ -2408,7 +2454,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Call_PushCell(Items[victim]);
 						Call_PushString(Items[victimName]);
 						Call_Finish();
-						
+
 						Items[scanned] = true;
 						if(Items[attacker] > 0 && Items[attacker] != Items[victim])
 						{
@@ -2422,14 +2468,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						}
 					}
 					SetArrayArray(g_hRagdollArray, i, Items[0]);
-					
+
 					break;
 				}
-			} 
+			}
 		}
 	}
 	else g_bHoldingProp[client] = false;
-	
+
 	if (buttons & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
 	{
 		int target = GetClientAimTarget(client, false);
@@ -2440,21 +2486,21 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			GetEntPropVector(target, Prop_Data, "m_vecOrigin", targetOrigin);
 			if (GetVectorDistance(clientEyes, targetOrigin) > 100.0)
 				return Plugin_Continue;
-				
+
 			int iEnt;
 			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 			{
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
-				
+
 				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
 					return Plugin_Continue;
-				
+
 				char sModelPath[PLATFORM_MAX_PATH];
 				GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-				
+
 				if(!StrEqual(MDL_C4, sModelPath))
 					return Plugin_Continue;
-					
+
 				if (target == iEnt)
 				{
 					g_iDefusePlayerIndex[client] = planter;
@@ -2463,7 +2509,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
-	
+
 	if (buttons & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client])
 	{
 		g_bHasActiveBomb[client] = true;
@@ -2487,7 +2533,7 @@ public Action Command_ID(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	if(g_bID[client] && IsPlayerAlive(client))
 	{
 		LoopValidClients(i)
@@ -2495,7 +2541,7 @@ public Action Command_ID(int client, int args)
 	}
 	else
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You dont have it!", client);
-	
+
 	return Plugin_Handled;
 
 }
@@ -2504,24 +2550,24 @@ public Action Command_Say(int client, const char[] command, int argc)
 {
 	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
-	
+
 	char sText[MAX_MESSAGE_LENGTH];
 	GetCmdArgString(sText, sizeof(sText));
-	
+
 	StripQuotes(sText);
-	
+
 	if (sText[0] == '@')
 		return Plugin_Continue;
-	
+
 	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
 	{
 		char sBuffer[64];
 		Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
-		
+
 		if (StrEqual(sText, sBuffer, false))
 			return Plugin_Handled;
 	}
-	
+
 	return Plugin_Continue;
 }
 
@@ -2529,47 +2575,47 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 {
 	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 		return Plugin_Continue;
-	
+
 	char sText[MAX_MESSAGE_LENGTH];
 	GetCmdArgString(sText, sizeof(sText));
-	
+
 	StripQuotes(sText);
-	
+
 	if(strlen(sText) < 2)
 		return Plugin_Handled;
-		
+
 	if (sText[0] == '@')
 		return Plugin_Continue;
-		
+
 	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
 	{
 		char sBuffer[64];
 		Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
-		
+
 		if (StrEqual(sText, sBuffer, false))
 			return Plugin_Handled;
 	}
-	
+
 	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		LoopValidClients(i)
-			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i))) 
+			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i)))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "T channel", i, client, sText);
 			}
-			
+
 		return Plugin_Handled;
 	}
 	else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		LoopValidClients(i)
-			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i))) 
+			if(TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i)))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "D channel", i, client, sText);
 			}
-			
+
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
@@ -2579,15 +2625,15 @@ public Action Command_Shop(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
-	
+
 	int team = g_iRole[client];
 	if(team != TTT_TEAM_UNASSIGNED)
 	{
 		char MenuItem[128];
 		Handle menu = CreateMenu(Menu_ShopHandler);
 		SetMenuTitle(menu, "%T", "TTT Shop", client);
-		
-	
+
+
 		if(team == TTT_TEAM_TRAITOR)
 		{
 			if(g_iConfig[i_shopC4] > 0)
@@ -2595,19 +2641,19 @@ public Action Command_Shop(int client, int args)
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[i_shopC4]);
 				AddMenuItem(menu, "C4", MenuItem);
 			}
-			
+
 			if(g_iConfig[i_shopJIHADBOMB] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy jihadbomb", client, g_iConfig[i_shopJIHADBOMB]);
 				AddMenuItem(menu, "jbomb", MenuItem);
 			}
-			
+
 			if(g_iConfig[i_shopFAKEID] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "FAKE ID card (type !id for show your innocence)", client, g_iConfig[i_shopFAKEID]);
 				AddMenuItem(menu, "fakeID", MenuItem);
 			}
-			
+
 		}
 		if(team == TTT_TEAM_DETECTIVE)
 		{
@@ -2616,7 +2662,7 @@ public Action Command_Shop(int client, int args)
 				Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[i_shopHEALTH]);
 				AddMenuItem(menu, "HealthStation", MenuItem);
 			}
-			
+
 			if(g_iConfig[i_shopDNA] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
@@ -2630,20 +2676,20 @@ public Action Command_Shop(int client, int args)
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Traitor", client, g_iConfig[i_shopT]);
 				AddMenuItem(menu, "buyT", MenuItem);
 			}
-			
+
 			if(g_iConfig[i_shopD] > 0 && (g_bConfirmDetectiveRules[client] || !g_iConfig[b_showDetectiveMenu]))
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy rol Detective", client, g_iConfig[i_shopD]);
 				AddMenuItem(menu, "buyD", MenuItem);
 			}
-			
+
 			if(g_iConfig[i_shopID] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[i_shopID]);
 				AddMenuItem(menu, "ID", MenuItem);
 			}
 		}
-		
+
 		if(g_iConfig[b_taserAllow])
 		{
 			if(g_iConfig[i_shopTASER] > 0)
@@ -2652,7 +2698,7 @@ public Action Command_Shop(int client, int args)
 				AddMenuItem(menu, "taser", MenuItem);
 			}
 		}
-		
+
 		char display[128];
 		for(int i = 0; i < g_iCustomItemCount; i++)
 		{
@@ -2665,25 +2711,25 @@ public Action Command_Shop(int client, int args)
 				}
 			}
 		}
-		
+
 		SetMenuExitButton(menu, true);
 		DisplayMenu(menu, client, 15);
-	
+
 	}
 	else
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Please wait till your team is assigned", client);
-	
+
 	return Plugin_Handled;
 
 }
 
-public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum) 
+public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum)
 {
-	if ( action == MenuAction_Select ) 
+	if ( action == MenuAction_Select )
 	{
 		if(!IsPlayerAlive(client)) return;
 		char info[32];
-		
+
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 		if ( strcmp(info,"scan13") == 0 )
 		{
@@ -2810,19 +2856,19 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 		}
 	}
-		
+
 	else if (action == MenuAction_End)
 	{
 		CloseHandle(menu);
 	}
 }
 
-public Action Timer_JihadPreparing(Handle timer, any client) 
-{ 
+public Action Timer_JihadPreparing(Handle timer, any client)
+{
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
-	g_hJihadBomb[client] = null;	
-} 
+	g_hJihadBomb[client] = null;
+}
 
 stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
 {
@@ -2831,25 +2877,25 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 		Format(team, sizeof(team), "%T", "Traitors", client);
 	else if(g_iRole[victima2] == TTT_TEAM_DETECTIVE)
 		Format(team, sizeof(team), "%T", "Detectives", client);
-	else if(g_iRole[victima2] == TTT_TEAM_INNOCENT) 
+	else if(g_iRole[victima2] == TTT_TEAM_INNOCENT)
 		Format(team, sizeof(team), "%T", "Innocents", client);
 
 	Handle menu = CreateMenu(BodyMenuHandler);
 	char Item[128];
-	
+
 	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
-	
+
 	Format(Item, sizeof(Item), "%T", "Victim name", client, victimaname2);
 	AddMenuItem(menu, "", Item);
-	
+
 	Format(Item, sizeof(Item), "%T", "Team victim", client, team);
 	AddMenuItem(menu, "", Item);
-	
+
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(Item, sizeof(Item), "%T", "Elapsed since his death", client, tiempo2);
 		AddMenuItem(menu, "", Item);
-		
+
 		if(atacante2 > 0 && atacante2 != victima2)
 		{
 			Format(Item, sizeof(Item), "%T", "The weapon used has been", client, weapon);
@@ -2861,23 +2907,23 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 			AddMenuItem(menu, "", Item);
 		}
 	}
-	
+
 	if(g_bScan[client])
 	{
 		if(atacante2 > 0 && atacante2 != victima2)
 			Format(Item, sizeof(Item), "%T", "Killer is Player",client, atacantename2);
 		else
 			Format(Item, sizeof(Item), "%T", "Player committed suicide", client);
-		
+
 		AddMenuItem(menu, "", Item);
 	}
-	
+
 	SetMenuExitButton(menu, true);
 	DisplayMenu(menu, client, 15);
-	
+
 }
 
-public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum) 
+public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 {
 	if (action == MenuAction_End)
 	{
@@ -2894,62 +2940,62 @@ stock void ClearIcon(int client)
 	}
 	ShowOverlayToClient(client, " ");
 	g_iIcon[client] = 0;
-	
+
 }
 
 stock void addKarma(int client, int karma, bool message = false)
 {
 	g_iKarma[client] += karma;
-	
+
 	if(g_iKarma[client] > g_iConfig[i_maxKarma])
 		g_iKarma[client] = g_iConfig[i_maxKarma];
-	
+
 	if (g_iConfig[b_showEarnKarmaMessage] && message)
 	{
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, g_iConfig[s_pluginTag], "karma earned", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "karma earned", client, karma, g_iKarma[client]);
 	}
-	
+
 	UpdateKarma(client, g_iKarma[client]);
 }
 
 stock void setKarma(int client, int karma)
 {
 	g_iKarma[client] = karma;
-	
+
 	if(g_iKarma[client] > g_iConfig[i_maxKarma])
 		g_iKarma[client] = g_iConfig[i_maxKarma];
-	
+
 	UpdateKarma(client, g_iKarma[client]);
 }
 
 stock void subtractKarma(int client, int karma, bool message = false)
 {
 	g_iKarma[client] -= karma;
-	
+
 	if (g_iConfig[b_showLoseKarmaMessage] && message)
 	{
 		if(g_iConfig[i_messageTypKarma] == 1)
 	  		PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
 	  	else
-	  		CPrintToChat(client, g_iConfig[s_pluginTag], "lost karma", client, karma, g_iKarma[client]);	
+	  		CPrintToChat(client, g_iConfig[s_pluginTag], "lost karma", client, karma, g_iKarma[client]);
 	}
-	
+
 	UpdateKarma(client, g_iKarma[client]);
 }
 
 stock void UpdateKarma(int client, int karma)
 {
 	char sCommunityID[64];
-		
+
 	if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		return;
-	
+
 	char sQuery[2048];
 	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"%s\";", karma, sCommunityID);
-	
+
 	if(g_hDatabase != null)
 		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
 }
@@ -2957,18 +3003,18 @@ stock void UpdateKarma(int client, int karma)
 stock void addCredits(int client, int credits, bool message = false)
 {
 	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
-	
+
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
 	Call_PushCell(credits);
 	Call_Finish(res);
-	
+
 	if(res > Plugin_Changed)
 		return;
-	
+
 	g_iCredits[client] += credits;
-	
+
 	if (g_iConfig[b_showEarnCreditsMessage] && message)
 	{
 		if(g_iConfig[i_messageTypCredits] == 1)
@@ -2990,15 +3036,15 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	Call_PushCell(client);
 	Call_PushCell(credits*(-1));
 	Call_Finish(res);
-	
+
 	if(res > Plugin_Changed)
 		return;
 
 	g_iCredits[client] -= credits;
-	
+
 	if(g_iCredits[client] < 0)
 		g_iCredits[client] = 0;
-	
+
 	if (g_iConfig[b_showLoseCreditsMessage] && message)
 	{
 		if(g_iConfig[i_messageTypCredits] == 1)
@@ -3016,7 +3062,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 stock void setCredits(int client, int credits)
 {
 	g_iCredits[client] = credits;
-	
+
 	if(g_iCredits[client] < 0)
 		g_iCredits[client] = 0;
 }
@@ -3027,83 +3073,83 @@ stock void ClearTimer(Handle &timer)
 	{
 		KillTimer(timer);
 		timer = null;
-	}	 
-} 
+	}
+}
 
-stock void Detonate(int client) 
-{ 
-	int ExplosionIndex = CreateEntityByName("env_explosion"); 
-	if (ExplosionIndex != -1) 
-	{ 
-		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384); 
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000); 
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600); 
+stock void Detonate(int client)
+{
+	int ExplosionIndex = CreateEntityByName("env_explosion");
+	if (ExplosionIndex != -1)
+	{
+		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600);
 
-		DispatchSpawn(ExplosionIndex); 
-		ActivateEntity(ExplosionIndex); 
-		 
-		float playerEyes[3]; 
-		GetClientEyePosition(client, playerEyes); 
+		DispatchSpawn(ExplosionIndex);
+		ActivateEntity(ExplosionIndex);
 
-		TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR); 
-		SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client); 
-		 
-		EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN); 
-		 
-		 
-		AcceptEntityInput(ExplosionIndex, "Explode"); 
-		 
-		AcceptEntityInput(ExplosionIndex, "Kill"); 
-	} 
+		float playerEyes[3];
+		GetClientEyePosition(client, playerEyes);
+
+		TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR);
+		SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client);
+
+		EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN);
+
+
+		AcceptEntityInput(ExplosionIndex, "Explode");
+
+		AcceptEntityInput(ExplosionIndex, "Kill");
+	}
 	g_bJihadBomb[client] = false;
-} 
+}
 
-public Action Command_Detonate(int client, int args) 
-{ 
+public Action Command_Detonate(int client, int args)
+{
 	if (!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
-	if (!g_bJihadBomb[client]) 
-	{ 
+
+	if (!g_bJihadBomb[client])
+	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You dont have it!", client);
-		return Plugin_Handled; 
-	} 
-	
-	if (g_hJihadBomb[client] != null) 
-	{ 
+		return Plugin_Handled;
+	}
+
+	if (g_hJihadBomb[client] != null)
+	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your bomb is not armed.", client);
-		return Plugin_Handled; 
-	} 
-	 
-	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-		 
-	CreateTimer(2.0, TimerCallback_Detonate, client); 
+		return Plugin_Handled;
+	}
+
+	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
+
+	CreateTimer(2.0, TimerCallback_Detonate, client);
 	g_bJihadBomb[client] = false;
 
-	return Plugin_Handled; 
-} 
+	return Plugin_Handled;
+}
 
-public Action TimerCallback_Detonate(Handle timer, any client) 
-{ 
-	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client)) 
+public Action TimerCallback_Detonate(Handle timer, any client)
+{
+	if(!client || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return Plugin_Handled;
-	
-	Detonate(client); 
-	return Plugin_Handled; 
-} 
+
+	Detonate(client);
+	return Plugin_Handled;
+}
 
 public Action Command_LAW(int client, const char[] command, int argc)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Continue;
-	
+
 	if(IsPlayerAlive(client) && g_bJihadBomb[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
-		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client); 
-		 
-		CreateTimer(2.0, TimerCallback_Detonate, client); 
+		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
+
+		CreateTimer(2.0, TimerCallback_Detonate, client);
 		g_bJihadBomb[client] = false;
-		
+
 		return Plugin_Continue;
 	}
 	else
@@ -3111,33 +3157,33 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		g_bDetonate[client] = true;
 		CreateTimer(2.0, PasarJ, client);
 	}
-	
+
 	if(g_iConfig[b_allowFlash] && IsPlayerAlive(client))
 	{
 		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
-	}		
-	
+	}
+
 	if(g_iConfig[b_blockLookAtWeapon])
 		return Plugin_Handled;
-	
+
 	return Plugin_Continue;
 }
 
-public Action PasarJ(Handle timer, any client) 
-{ 
-	if(!client || !IsClientInGame(client)) 
+public Action PasarJ(Handle timer, any client)
+{
+	if(!client || !IsClientInGame(client))
 		return Plugin_Handled;
-	
+
 	g_bDetonate[client] = false;
-	return Plugin_Handled; 
-} 
+	return Plugin_Handled;
+}
 
 stock void manageRDM(int client)
 {
 	if (!IsClientInGame(client))
 		return;
-		
+
 	int iAttacker = g_iRDMAttacker[client];
 	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
 	{
@@ -3146,12 +3192,12 @@ stock void manageRDM(int client)
 	}
 	char sAttackerName[MAX_NAME_LENGTH];
 	GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
-	
+
 	char display[256], sForgive[64], sPunish[64];
 	Format(display, sizeof(display), "%T", "You were RDM'd", client, sAttackerName);
 	Format(sForgive, sizeof(sForgive), "%T", "Forgive", client);
 	Format(sPunish, sizeof(sPunish), "%T", "Punish", client);
-	
+
 	Handle menuHandle = CreateMenu(manageRDMHandle);
 	SetMenuTitle(menuHandle, display);
 	AddMenuItem(menuHandle, "Forgive", sForgive);
@@ -3163,11 +3209,11 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 {
 	if (1 > client || client > MaxClients || !IsClientInGame(client))
 		return;
-		
+
 	int iAttacker = g_iRDMAttacker[client];
 	if (1 > iAttacker || iAttacker > MaxClients || !IsClientInGame(iAttacker))
 		return;
-		
+
 	switch (action)
 	{
 		case MenuAction_Select:
@@ -3216,7 +3262,7 @@ public Action Command_SetRole(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
-	
+
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
@@ -3228,7 +3274,7 @@ public Action Command_SetRole(int client, int args)
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
 	int target = FindTarget(client, arg1);
-	
+
 	if (target == -1)
 		return Plugin_Handled;
 
@@ -3237,7 +3283,7 @@ public Action Command_SetRole(int client, int args)
 		ReplyToCommand(client, "[SM] This command can only be used to alive players!");
 		return Plugin_Handled;
 	}
-	
+
 	int role = StringToInt(arg2);
 	if (role < 1 || role > 3)
 	{
@@ -3279,27 +3325,27 @@ public Action Command_SetKarma(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setkarma <#userid|name> <karma>");
 
 		return Plugin_Handled;
 	}
-	
+
 	char arg1[32];
 	char arg2[32];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
-	
+
 	int target = FindTarget(client, arg1);
-	
+
 	if (target == -1)
 	{
 		ReplyToCommand(client, "[SM] Invalid target.");
 		return Plugin_Handled;
 	}
-		
+
 	if(g_bKarma[client])
 	{
 		ReplyToCommand(client, "[SM] Player data not loaded yet.");
@@ -3307,9 +3353,9 @@ public Action Command_SetKarma(int client, int args)
 	}
 
 	int karma = StringToInt(arg2);
-	
+
 	setKarma(client, karma);
-	
+
 	return Plugin_Continue;
 }
 
@@ -3317,7 +3363,7 @@ public Action Command_SetCredits(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
@@ -3329,14 +3375,14 @@ public Action Command_SetCredits(int client, int args)
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
 	int target = FindTarget(client, arg1);
-	
+
 	if (target == -1)
 		return Plugin_Handled;
 
 	int credits = StringToInt(arg2);
-	
+
 	setCredits(client, credits);
-	
+
 	return Plugin_Continue;
 }
 
@@ -3344,16 +3390,16 @@ public Action Command_Status(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
-		
+
 	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Unassigned", client); 
+		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Unassigned", client);
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Innocent", client);
 	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Detective", client);
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Traitor", client);
-	
+
 	return Plugin_Handled;
 }
 
@@ -3365,21 +3411,21 @@ public Action Timer_5(Handle timer)
 			continue;
 
 		g_iIcon[i] = CreateIcon(i);
-		
+
 		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
 			ShowOverlayToClient(i, "darkness/ttt/overlayDetective");
 		else if (g_iRole[i] == TTT_TEAM_TRAITOR)
 			ShowOverlayToClient(i, "darkness/ttt/overlayTraitor");
 		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
 			ShowOverlayToClient(i, "darkness/ttt/overlayInnocent");
-		
+
 		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
 			g_iHealthStationCharges[i]++;
-			
+
 		if(g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
 	}
-	
+
 	if(g_bRoundStarted)
 		CheckTeams();
 }
@@ -3403,7 +3449,7 @@ public int OnEntityCreated(int entity, const char[] name)
 		{
 			if (!StrEqual(name, g_sRemoveEntityList[i]))
 				continue;
-			
+
 			if(g_iConfig[b_removeBomb] && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
 				AcceptEntityInput(entity, "kill");
 			else if(g_iConfig[b_removeBuyzone] && StrEqual("func_buyzone", g_sRemoveEntityList[i], false))
@@ -3420,16 +3466,16 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 {
 	if (activator < 1 || activator > MaxClients || !IsClientInGame(activator))
 		return Plugin_Continue;
-		
+
 	if (g_bInactive)
 		return Plugin_Handled;
-		
+
 	else
 	{
 		if (g_iRole[activator] == TTT_TEAM_INNOCENT || g_iRole[activator] == TTT_TEAM_DETECTIVE || g_iRole[activator] == TTT_TEAM_UNASSIGNED)
 		{
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
-			
+
 			LoopValidClients(i)
 				CPrintToChat(i, g_iConfig[s_pluginTag], "Triggered Falling Building", i, activator);
 		}
@@ -3444,10 +3490,10 @@ public Action explodeC4(Handle timer, Handle pack)
 	ResetPack(pack);
 	clientUserId = ReadPackCell(pack);
 	bombEnt = ReadPackCell(pack);
-	
+
 	if(!IsValidEntity(bombEnt))
 		return Plugin_Stop;
-	
+
 	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
 	GetEntPropVector(bombEnt, Prop_Send, "m_vecOrigin", explosionOrigin);
@@ -3467,10 +3513,10 @@ public Action explodeC4(Handle timer, Handle pack)
 	{
 		char sShakeRadius[8];
 		IntToString(g_iConfig[i_c4ShakeRadius], sShakeRadius, sizeof(sShakeRadius));
-		
-		DispatchKeyValue(shakeIndex, "amplitude", "4"); 
-		DispatchKeyValue(shakeIndex, "duration", "1"); 
-		DispatchKeyValue(shakeIndex, "frequency", "2.5"); 
+
+		DispatchKeyValue(shakeIndex, "amplitude", "4");
+		DispatchKeyValue(shakeIndex, "duration", "1");
+		DispatchKeyValue(shakeIndex, "frequency", "2.5");
 		DispatchKeyValue(shakeIndex, "radius", sShakeRadius);
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
@@ -3491,15 +3537,15 @@ public Action explodeC4(Handle timer, Handle pack)
 		AcceptEntityInput(particleIndex, "Start");
 		AcceptEntityInput(shakeIndex, "StartShake");
 		AcceptEntityInput(explosionIndex, "Kill");
-		
+
 		LoopValidClients(i)
 		{
 			if (!IsPlayerAlive(i))
 				continue;
-				
+
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
-			
+
 			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_iConfig[f_c4DamageRadius])
 			{
 				Handle killEvent = CreateEvent("player_death", true);
@@ -3509,10 +3555,10 @@ public Action explodeC4(Handle timer, Handle pack)
 				ForcePlayerSuicide(i);
 			}
 		}
-		
+
 		for (int i = 1; i <= 2; i++)
 			EmitAmbientSoundAny(SND_BURST, explosionOrigin, _, SNDLEVEL_RAIDSIREN);
-			
+
 		CreateTimer(2.0, UnImmune, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 	return Plugin_Continue;
@@ -3535,11 +3581,11 @@ public Action bombBeep(Handle timer, Handle pack)
 	beeps = ReadPackCell(pack);
 	if (!IsValidEntity(bombEnt))
 		return Plugin_Stop;
-		
+
 	int owner = GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity");
 	if (!TTT_IsClientValid(owner))
 		return Plugin_Stop;
-		
+
 	float bombPos[3];
 	GetEntPropVector(bombEnt, Prop_Data, "m_vecOrigin", bombPos);
 	bool stopBeeping = false;
@@ -3550,7 +3596,7 @@ public Action bombBeep(Handle timer, Handle pack)
 		stopBeeping = false;
 	}
 	else stopBeeping = true;
-	
+
 	if (stopBeeping)
 		return Plugin_Stop;
 
@@ -3566,10 +3612,10 @@ stock void showPlantMenu(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
-	
+
 	char sTitle[128];
 	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
-	
+
 	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
 	Format(s10, sizeof(s10), "%T", "Seconds", client, 10);
 	Format(s20, sizeof(s20), "%T", "Seconds", client, 20);
@@ -3577,7 +3623,7 @@ stock void showPlantMenu(int client)
 	Format(s40, sizeof(s40), "%T", "Seconds", client, 40);
 	Format(s50, sizeof(s50), "%T", "Seconds", client, 50);
 	Format(s60, sizeof(s60), "%T", "Seconds", client, 60);
-	
+
 	Handle menuHandle = CreateMenu(plantBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
 	AddMenuItem(menuHandle, "10", s10);
@@ -3594,16 +3640,16 @@ stock void showDefuseMenu(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
-	
+
 	char sTitle[128];
 	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
-	
+
 	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
 	Format(sWire1, sizeof(sWire1), "%T", "C4 Wire", client, 1);
 	Format(sWire2, sizeof(sWire2), "%T", "C4 Wire", client, 2);
 	Format(sWire3, sizeof(sWire3), "%T", "C4 Wire", client, 3);
 	Format(sWire4, sizeof(sWire4), "%T", "C4 Wire", client, 4);
-	
+
 	Handle menuHandle= CreateMenu(defuseBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
 	AddMenuItem(menuHandle, "1", sWire1);
@@ -3618,7 +3664,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
-		
+
 	switch (action)
 	{
 		case MenuAction_Select:
@@ -3657,21 +3703,21 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
-	
+
 	switch (action)
 	{
 		case MenuAction_Select:
 		{
 			char info[100];
-			int planter = g_iDefusePlayerIndex[client];	
+			int planter = g_iDefusePlayerIndex[client];
 			g_iDefusePlayerIndex[client] = -1;
-			
+
 			if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
 			{
 				g_iDefusePlayerIndex[client] = -1;
 				return;
 			}
-			
+
 			int wire;
 			int correctWire;
 			int planterBombIndex = findBomb(planter);
@@ -3713,28 +3759,28 @@ stock float plantBomb(int client, float time)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
 		return;
-		
+
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Alive to Plant", client);
 		return;
 	}
-	
+
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Will Explode In", client, time);
-	
+
 	bool bombFound;
 	int bombEnt;
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
 	{
 		if (GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity") != client)
 			continue;
-			
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(bombEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if(!StrEqual(MDL_C4, sModelPath))
 			continue;
-		
+
 		Handle explosionPack;
 		Handle beepPack;
 		if (g_hExplosionTimer[client] != null)
@@ -3748,34 +3794,34 @@ stock float plantBomb(int client, float time)
 		g_bHasActiveBomb[client] = true;
 		bombFound = true;
 	}
-	
+
 	if(!bombFound)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Bomb Was Not Found", client);
-	
+
 	g_iWire[client] = Math_GetRandomInt(1, 4);
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Wire Is", client, g_iWire[client]);
 }
 
 stock int findBombPlanter(int &bomb)
-{	
+{
 	int iEnt;
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
 		int iPlanter = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-		
+
 		if (iPlanter <= 0)
 			continue;
-			
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if(!StrEqual(MDL_C4, sModelPath))
 			continue;
-		
+
 		bomb = iEnt;
 		return iPlanter;
 	}
-	
+
 	return -1;
 }
 
@@ -3783,19 +3829,19 @@ stock int findBomb(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
 		return -1;
-		
+
 	int iEnt;
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
 		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
 			continue;
-			
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if(!StrEqual(MDL_C4, sModelPath))
 			continue;
-		
+
 		return iEnt;
 	}
 	return -1;
@@ -3808,13 +3854,13 @@ stock void removeBomb(int client)
 	{
 		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
 			continue;
-			
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if(!StrEqual(MDL_C4, sModelPath))
 			continue;
-		
+
 		AcceptEntityInput(iEnt, "Kill");
 	}
 }
@@ -3832,10 +3878,10 @@ stock void listTraitors(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
 		return;
-	
+
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your Traitor Partners", client);
 	int iCount = 0;
-	
+
 	LoopValidClients(i)
 	{
 		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != TTT_TEAM_TRAITOR)
@@ -3843,7 +3889,7 @@ stock void listTraitors(int client)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Traitor List", client, i);
 		iCount++;
 	}
-	
+
 	if(iCount == 0)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "No Traitor Partners", client);
 }
@@ -3862,7 +3908,7 @@ stock void healthStation_cleanUp()
 		g_iHealthStationCharges[i] = 0;
 		g_bHasActiveHealthStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
-		
+
 		ClearTimer(g_hRemoveCoolDownTimer[i]);
 	}
 }
@@ -3879,7 +3925,7 @@ stock void spawnHealthStation(int client)
 {
 	if (!IsPlayerAlive(client))
 		return;
-		
+
 	int healthStationIndex = CreateEntityByName("prop_physics_multiplayer");
 	if (healthStationIndex != -1)
 	{
@@ -3901,13 +3947,13 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 {
 	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || iAttacker < 1 || iAttacker > MaxClients || !IsClientInGame(iAttacker))
 		return Plugin_Continue;
-	
+
 	int owner = GetEntProp(stationIndex, Prop_Send, "m_hOwnerEntity");
 	if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
 		return Plugin_Continue;
-		
+
 	g_iHealthStationHealth[owner]--;
-	
+
 	if (g_iHealthStationHealth[owner] <= 0)
 	{
 		AcceptEntityInput(stationIndex, "Kill");
@@ -3922,7 +3968,7 @@ public Action healthStationDistanceCheck(Handle timer)
 	{
 		if (!IsPlayerAlive(i))
 			continue;
-		
+
 		checkDistanceFromHealthStation(i);
 	}
 	return Plugin_Continue;
@@ -3931,7 +3977,7 @@ public Action healthStationDistanceCheck(Handle timer)
 stock void checkDistanceFromHealthStation(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return;
-	float clientPos[3], stationPos[3]; 
+	float clientPos[3], stationPos[3];
 	int curHealth, newHealth, iEnt;
 	char sModelName[PLATFORM_MAX_PATH];
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics_multiplayer")) != -1)
@@ -3939,24 +3985,24 @@ stock void checkDistanceFromHealthStation(int client)
 		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
 		if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
 			continue;
-		
+
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 
 		if (StrContains(sModelName, "microwave") == -1)
 			continue;
-		
+
 		GetClientEyePosition(client, clientPos);
 		GetEntPropVector(iEnt, Prop_Send, "m_vecOrigin", stationPos);
-		
+
 		if (GetVectorDistance(clientPos, stationPos) > 200.0)
 			continue;
-		
+
 		if (g_bOnHealingCoolDown[client]) continue;
 		curHealth = GetClientHealth(client);
-		
+
 		if (curHealth >= 125)
 			continue;
-		
+
 		if (g_iHealthStationCharges[owner] > 0)
 		{
 			newHealth = (curHealth + 15);
@@ -4001,7 +4047,7 @@ public Action Command_KarmaReset(int client, int args)
 stock int Math_GetRandomInt(int min, int max)
 {
 	int random = GetURandomInt();
-	
+
 	if (random == 0)
 		random++;
 
@@ -4013,7 +4059,7 @@ stock void CheckTeams()
 	int iT = 0;
 	int iD = 0;
 	int iI = 0;
-	
+
 	LoopValidClients(i)
 	{
 		if(IsPlayerAlive(i))
@@ -4034,7 +4080,7 @@ stock void CheckTeams()
 			}
 		}
 	}
-	
+
 	if(iD == 0 && iI == 0)
 	{
 		g_bRoundStarted = false;
@@ -4056,14 +4102,14 @@ stock void LoadBadNames()
 {
 	char sFile[PLATFORM_MAX_PATH + 1];
 	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/badnames.ini");
-	
+
 	Handle hFile = OpenFile(sFile, "rt");
-	
+
 	if(hFile == null)
 		SetFailState("[TTT] Can't open File: %s", sFile);
-	
+
 	char sLine[MAX_NAME_LENGTH];
-	
+
 	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)))
 	{
 		if(strlen(sLine) > 1)
@@ -4072,7 +4118,7 @@ stock void LoadBadNames()
 			g_iBadNameCount++;
 		}
 	}
-	
+
 	delete hFile;
 }
 
@@ -4083,10 +4129,10 @@ public void SQLConnect(Handle owner, Handle hndl, const char[] error, any data)
 		SetFailState("(SQLConnect) Connection to database failed!: %s", error);
 		return;
 	}
-	
+
 	char sDriver[16];
 	SQL_GetDriverIdent(owner, sDriver, sizeof(sDriver));
-	
+
 	if (!StrEqual(sDriver, "mysql", false) && !StrEqual(sDriver, "sqlite", false))
 	{
 		SetFailState("(SQLConnect) Only mysql/sqlite support!");
@@ -4094,11 +4140,11 @@ public void SQLConnect(Handle owner, Handle hndl, const char[] error, any data)
 	}
 
 	g_hDatabase = CloneHandle(hndl);
-	
+
 	CheckAndCreateTables(sDriver);
 
 	SQL_SetCharset(g_hDatabase, "utf8");
-	
+
 	LoadClients();
 }
 
@@ -4140,7 +4186,7 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 	else
 	{
 		int client = GetClientOfUserId(userid);
-		
+
 		if(TTT_IsClientValid(client))
 			g_bKarma[client] = true;
 	}
@@ -4158,20 +4204,20 @@ stock void LoadClients()
 stock void LoadClientKarma(int userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		char sCommunityID[64];
-		
+
 		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		{
 			LogToFileEx(g_iConfig[s_errFile], "(LoadClientKarma) Auth failed: #%d", client);
 			return;
 		}
-		
+
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\"", sCommunityID);
-		
+
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, SQL_OnClientPostAdminCheck, sQuery, userid);
 	}
@@ -4180,10 +4226,10 @@ stock void LoadClientKarma(int userid)
 public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(!client || !TTT_IsClientValid(client) || IsFakeClient(client))
 		return;
-	
+
 	if(hndl == null || strlen(error) > 0)
 	{
 		LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
@@ -4196,17 +4242,17 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 		else
 		{
 			char sCommunityID[64];
-			
+
 			if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 			{
 				LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
 				return;
 			}
-				
+
 			int karma = SQL_FetchInt(hndl, 0);
-				
+
 			g_bKarma[client] = true;
-			
+
 			if (karma == 0)
 				setKarma(client, g_iConfig[i_startKarma]);
 			else setKarma(client, karma);
@@ -4217,19 +4263,19 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 stock void InsertPlayer(int userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		g_iKarma[client] = g_iConfig[i_startKarma];
-		
+
 		char sCommunityID[64];
-			
+
 		if(!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 			return;
-		
+
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d)", sCommunityID, g_iKarma[client]);
-		
+
 		if(g_hDatabase != null)
 			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
 	}
@@ -4243,7 +4289,7 @@ public int Native_IsRoundActive(Handle plugin, int numParams)
 public int Native_GetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if(TTT_IsClientValid(client))
 		return g_iRole[client];
 	return 0;
@@ -4252,7 +4298,7 @@ public int Native_GetClientRole(Handle plugin, int numParams)
 public int Native_GetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if(TTT_IsClientValid(client) && g_bKarma[client])
 		return g_iKarma[client];
 	return 0;
@@ -4261,7 +4307,7 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 public int Native_GetClientCredits(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if(TTT_IsClientValid(client))
 		return g_iCredits[client];
 	return 0;
@@ -4271,7 +4317,7 @@ public int Native_SetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int role = GetNativeCell(2);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		g_iRole[client] = role;
@@ -4289,7 +4335,7 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int karma = GetNativeCell(2);
-	
+
 	if(TTT_IsClientValid(client) && g_bKarma[client])
 	{
 		setKarma(client, karma);
@@ -4302,7 +4348,7 @@ public int Native_SetClientCredits(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int credits = GetNativeCell(2);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		setCredits(client, credits);
@@ -4314,20 +4360,20 @@ public int Native_SetClientCredits(Handle plugin, int numParams)
 public int Native_WasBodyFound(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		int iSize = GetArraySize(g_hRagdollArray);
-		
+
 		if(iSize == 0)
 			return false;
-		
+
 		int Items[Ragdolls];
-		
+
 		for(int i = 0; i < iSize; i++)
 		{
 			GetArrayArray(g_hRagdollArray, i, Items[0]);
-			
+
 			if(Items[victim] == client)
 			{
 				return Items[found];
@@ -4340,20 +4386,20 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 public int Native_WasBodyScanned(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if(TTT_IsClientValid(client))
 	{
 		int iSize = GetArraySize(g_hRagdollArray);
-		
+
 		if(iSize == 0)
 			return false;
-		
+
 		int Items[Ragdolls];
-		
+
 		for(int i = 0; i < iSize; i++)
 		{
 			GetArrayArray(g_hRagdollArray, i, Items[0]);
-			
+
 			if(Items[victim] == client)
 			{
 				return Items[scanned];
@@ -4367,23 +4413,23 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 {
 	if(numParams < 3)
 		return false;
-	
+
 	char temp_short[16];
 	char temp_long[64];
 	GetNativeString(1, temp_short, sizeof(temp_short));
 	GetNativeString(2, temp_long, sizeof(temp_long));
-	
+
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
-	
+
 	if((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 		return false;
-		
+
 	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(temp_short), "%s", temp_short);
 	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(temp_long), "%s", temp_long);
 	g_iCustomItems_Price[g_iCustomItemCount] = temp_price;
 	g_iCustomItems_Role[g_iCustomItemCount] = temp_role;
-	
+
 	g_iCustomItemCount++;
 	return true;
 }
@@ -4392,7 +4438,7 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams)
 {
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
-	
+
 	for(int i = 0; i < g_iCustomItemCount; i++)
 	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
@@ -4406,7 +4452,7 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 {
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
-	
+
 	for(int i = 0; i < g_iCustomItemCount; i++)
 	{
 		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
@@ -4414,97 +4460,4 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 	}
 
 	return -1;
-}
-
-stock int AddInt(const char[] name, int value, const char[] description)
-{
-	KeyValues kv = CreateKeyValues("TTT");
-	
-	if(!kv.ImportFromFile(g_sConfigFile))
-		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
-	
-	if(kv.JumpToKey(name, false))
-		value = kv.GetNum("value");
-	else
-	{
-		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
-		kv.JumpToKey(name, true);
-		kv.SetNum("value", value);
-		kv.SetString("description", description);
-		kv.Rewind();
-		kv.ExportToFile(g_sConfigFile);
-	}
-	
-	delete kv;
-	return value;
-}
-
-stock bool AddBool(const char[] name, bool value, const char[] description)
-{
-	KeyValues kv = CreateKeyValues("TTT");
-	
-	if(!kv.ImportFromFile(g_sConfigFile))
-		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
-
-	if(kv.JumpToKey(name, false))
-		value = view_as<bool>(kv.GetNum("value"));
-	else
-	{
-		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
-		kv.JumpToKey(name, true);
-		kv.SetNum("value", value);
-		kv.SetString("description", description);
-		kv.Rewind();
-		kv.ExportToFile(g_sConfigFile);
-	}
-
-	delete kv;
-	return value;
-}
-
-stock float AddFloat(const char[] name, float value, const char[] description)
-{
-	KeyValues kv = CreateKeyValues("TTT");
-	
-	if(!kv.ImportFromFile(g_sConfigFile))
-		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
-	
-	if(kv.JumpToKey(name, false))
-		value = view_as<float>(kv.GetFloat("value"));
-	else
-	{
-		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
-		kv.JumpToKey(name, true);
-		kv.SetFloat("value", value);
-		kv.SetString("description", description);
-		kv.Rewind();
-		kv.ExportToFile(g_sConfigFile);
-	}
-	
-	delete kv;
-	return value;
-}
-
-stock void AddString(const char[] name, const char[] value, const char[] description, char[] output, int size)
-{
-	strcopy(output, size, value);
-	
-	KeyValues kv = CreateKeyValues("TTT");
-	
-	if(!kv.ImportFromFile(g_sConfigFile))
-		PrintToServer("Can't read ttt.cfg correctly! Return the default value!");
-	
-	if(kv.JumpToKey(name, false))
-		kv.GetString("value", output, size);
-	else
-	{
-		PrintToServer("Can't find cvar %s! Adding default value to %s", name, g_sConfigFile);
-		kv.JumpToKey(name, true);
-		kv.SetString("value", value);
-		kv.SetString("description", description);
-		kv.Rewind();
-		kv.ExportToFile(g_sConfigFile);
-	}
-	
-	delete kv;
 }
