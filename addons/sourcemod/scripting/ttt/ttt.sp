@@ -122,7 +122,9 @@ enum eConfig
 	bool:b_C4Beam,
 	bool:b_karmaDMG,
 	bool:b_karmaDMG_up,
-	Float:f_roundDelay
+	Float:f_roundDelay,
+	bool:b_nextRoundAlert,
+	bool:b_endroundDMG
 };
 
 int g_iCustomItemCount = 0;
@@ -139,6 +141,7 @@ char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
+bool g_bRoundEnded = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -521,6 +524,8 @@ public void OnPluginStart()
 	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
 	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
 	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
+	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
+	g_iConfig[b_endroundDMG] = Config_LoadBool("ttt_end_round_dm", false, "Enable this to disable damage prevention between round end and warmup.");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -834,6 +839,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	ClearArray(g_hRagdollArray);
 
 	g_bInactive = false;
+	g_bRoundEnded = false;
 	LoopValidClients(i)
 	{
 		g_iRole[i] = TTT_TEAM_UNASSIGNED;
@@ -1338,6 +1344,9 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
+	if(g_bRoundEnded && g_iConfig[b_endroundDMG])
+		return Plugin_Continue;
+
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 
@@ -1378,6 +1387,9 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
+	if(g_bRoundEnded && g_iConfig[b_endroundDMG])
+		return Plugin_Continue;
+
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 
@@ -1386,7 +1398,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 			damage *= (g_iKarma[iAttacker]/g_iConfig[i_startKarma]);
 	}
 
-	return Plugin_Continue;
+	return Plugin_Changed;
 }
 
 stock bool IsWorldDamage(int iAttacker, int damagetype)
@@ -4098,11 +4110,13 @@ stock void CheckTeams()
 	if(iD == 0 && iI == 0)
 	{
 		g_bRoundStarted = false;
+		g_bRoundEnded = true;
 		CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
 	}
 	else if(iT == 0)
 	{
 		g_bRoundStarted = false;
+		g_bRoundEnded = true;
 		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
 	}
 }
