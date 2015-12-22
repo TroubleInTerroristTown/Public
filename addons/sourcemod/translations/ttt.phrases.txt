@@ -1,7 +1,7 @@
 // Exported from SourceMod Translator
 // Date: 2015-11-13 18:50:19 UTC
 // Language: English (en)
-// 
+//
 // To view other translations for this plugin, please visit:
 // http://translator.mitchdempsey.com/sourcemod_plugins/158
 //
@@ -625,10 +625,16 @@
 	{
 		"en"		"No, show me the rules!"
 	}
-	
+
 	"StartTimer"
 	{
 		"#format"	"{1:d}"
 		"en"		"<font size='32' color='00ff00'>Round starts in {1} seconds</font>"
+	}
+
+	"next round in"
+	{
+		"#format" "{1:.0f}"
+		"en"	  "Next round will start in {1} seconds!"
 	}
 }

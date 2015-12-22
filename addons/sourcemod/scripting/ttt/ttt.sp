@@ -121,7 +121,8 @@ enum eConfig
 	bool:b_stripWeapons,
 	bool:b_C4Beam,
 	bool:b_karmaDMG,
-	bool:b_karmaDMG_up
+	bool:b_karmaDMG_up,
+	Float:f_roundDelay
 };
 
 int g_iCustomItemCount = 0;
@@ -519,6 +520,7 @@ public void OnPluginStart()
 	g_iConfig[b_C4Beam] = Config_LoadBool("ttt_c4_beam", true, "Display a beam to Traitors that indicate C4 positions (in light blue)?");
 	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
 	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
+	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -2231,11 +2233,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	healthStation_cleanUp();
 
 	if(g_iConfig[b_randomWinner])
-	{
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
-	    return Plugin_Changed;
-	}
-	return Plugin_Continue;
+
+	if(g_iConfig[f_roundDelay] > 0.0)
+		delay = g_iConfig[f_roundDelay];
+
+	if(g_iConfig[b_nextRoundAlert])
+		CPrintToChatAll(g_iConfig[s_pluginTag], "next round in", delay);
+
+	return Plugin_Changed;
 }
 
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
