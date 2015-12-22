@@ -993,12 +993,12 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
 
-		if(iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && !IsPlayerInArray(player, g_hDetectives))
+		if(iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && (g_iConfig[b_roleAgain] || !IsPlayerInArray(player, g_hDetectives)))
 		{
 			g_iRole[player] = TTT_TEAM_DETECTIVE;
 			iDetectives--;
 		}
-		else if(iTraitores > 0 && !IsPlayerInArray(player, g_hTraitores))
+		else if(iTraitores > 0 && (g_iConfig[b_roleAgain] || !IsPlayerInArray(player, g_hTraitores)))
 		{
 			g_iRole[player] = TTT_TEAM_TRAITOR;
 			iTraitores--;
@@ -1068,20 +1068,17 @@ public Action Timer_Selection(Handle hTimer)
 	}
 
 	/* Remember role, to prevent same role next round for players */
-
 	ClearArray(g_hDetectives);
 	ClearArray(g_hTraitores);
 
 	LoopValidClients(i)
-	{
-		if(g_iConfig[b_roleAgain])
+		if(!g_iConfig[b_roleAgain])
 		{
 			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
 				PushArrayCell(g_hDetectives, i);
 			else if(g_iRole[i] == TTT_TEAM_TRAITOR)
 				PushArrayCell(g_hTraitores, i);
 		}
-	}
 
 	LoopValidClients(i)
 	{
