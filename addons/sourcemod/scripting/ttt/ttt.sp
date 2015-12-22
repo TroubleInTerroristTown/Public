@@ -245,6 +245,7 @@ Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyScanned = null;
 Handle g_hOnItemPurchased = null;
+Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 
 char g_sShopCMDs[][] = {
@@ -307,7 +308,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
-	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Hook, Param_Cell, Param_Cell);
+	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
@@ -2995,17 +2997,19 @@ stock void UpdateKarma(int client, int karma)
 stock void addCredits(int client, int credits, bool message = false)
 {
 	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
+	int newcredits = g_iCredits[client] + credits;
 
 	Action res = Plugin_Continue;
-	Call_StartForward(g_hOnCreditsGiven);
+	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
-	Call_PushCell(credits);
+	Call_PushCell(g_iCredits[client]);
+	Call_PushCell(newcredits);
 	Call_Finish(res);
 
 	if(res > Plugin_Changed)
 		return;
 
-	g_iCredits[client] += credits;
+	g_iCredits[client] = newcredits;
 
 	if (g_iConfig[b_showEarnCreditsMessage] && message)
 	{
@@ -3019,20 +3023,28 @@ stock void addCredits(int client, int credits, bool message = false)
 		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "credits earned", client, credits, g_iCredits[client]);
 	}
+
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(g_iCredits[client]);
+	Call_Finish();
 }
 
 stock void subtractCredits(int client, int credits, bool message = false)
 {
+	int newcredits = g_iCredits[client] - credits;
+
 	Action res = Plugin_Continue;
-	Call_StartForward(g_hOnCreditsGiven);
+	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
-	Call_PushCell(credits*(-1));
+	Call_PushCell(g_iCredits[client]);
+	Call_PushCell(newcredits);
 	Call_Finish(res);
 
 	if(res > Plugin_Changed)
 		return;
 
-	g_iCredits[client] -= credits;
+	g_iCredits[client] = newcredits;
 
 	if(g_iCredits[client] < 0)
 		g_iCredits[client] = 0;
@@ -3049,10 +3061,14 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "lost credits", client, credits, g_iCredits[client]);
 	}
+
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(g_iCredits[client]);
+	Call_Finish();
 }
 
-stock void setCredits(int client, int credits)
-{
+stock void setCredits(int client, int credits, bool message = false){
 	g_iCredits[client] = credits;
 
 	if(g_iCredits[client] < 0)

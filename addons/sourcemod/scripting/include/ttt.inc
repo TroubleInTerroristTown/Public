@@ -18,7 +18,7 @@
 
 #define MAX_CUSTOM_ITEMS 32
 
-/* 
+/*
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
  * You could slay players here to force them to sit out.
@@ -47,7 +47,7 @@ forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detect
 
 /*
  * Called when a client's role is assigned.
- * 
+ *
  * @param client            Client index.
  * @param role              Role.
  */
@@ -86,10 +86,19 @@ forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 forward void TTT_OnItemPurchased(int client, const char[] itemshort);
 
 /*
- * Called when a players credits are modified.
+ * Called before a players credits are modified.
  *
  * @param client            Client index.
- * @param credits     	 	The amount of credits (negative or positive).
+ * @param oldcredits        The old amount of credits.
+ * @param newcredits     	 The new amount of credits.
+ */
+forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
+
+/*
+ * Called after a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param credits     	    The new amount of credits.
  */
 forward void TTT_OnCreditsChanged(int client, int &credits);
 
@@ -180,8 +189,8 @@ stock bool TTT_IsLoaded()
 /*
  * Check if a client index is valid.
  */
-stock bool TTT_IsClientValid(int client) 
-{ 
+stock bool TTT_IsClientValid(int client)
+{
 	if (client > 0 && client <= MaxClients && IsClientInGame(client))
 		return true;
 	return false;
@@ -199,13 +208,13 @@ stock void TTT_IsGameCSGO()
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
-	
+
 	if(iFlags & ADMFLAG_ROOT)
 		return true;
-	
+
 	for(new i = 0; i < sizeof(flags); i++)
 		if(iFlags & FlagToBit(flags[i]))
 			return true;
-	
+
 	return false;
 }
