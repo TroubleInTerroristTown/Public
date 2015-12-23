@@ -1392,12 +1392,16 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
 	if((0 < iAttacker <= MaxClients) && IsClientInGame(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG]){
 		if(g_iConfig[b_karmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[i_startKarma]))
+		{
 			damage *= (g_iKarma[iAttacker]/g_iConfig[i_startKarma]);
+			return Plugin_Changed;
+		}
 	}
 
-	return Plugin_Changed;
+	return Plugin_Continue;
 }
 
+// TODO: Move to ttt.inc
 stock bool IsWorldDamage(int iAttacker, int damagetype)
 {
 	if(damagetype == DMG_FALL
