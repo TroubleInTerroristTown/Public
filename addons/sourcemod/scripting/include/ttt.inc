@@ -77,13 +77,15 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
 forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 
 /*
- * Called when an item is purchased in the menu.
+ * Called when an item is purchased in the menu. Return Plugin_Stop
+ * to prevent us subtracting credits and informing the player that
+ * the item was purchased.
  *
  * @param client            The client who purchased the item.
  * @param itemshort         The short-tag for the item's name.
  */
 
-forward void TTT_OnItemPurchased(int client, const char[] itemshort);
+forward Action TTT_OnItemPurchased(int client, const char[] itemshort);
 
 /*
  * Called before a players credits are modified.

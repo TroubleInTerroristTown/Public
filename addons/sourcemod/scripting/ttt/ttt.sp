@@ -311,7 +311,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
@@ -2856,12 +2856,16 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 				{
 					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
 					{
-						subtractCredits(client, g_iCustomItems_Price[i]);
-						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+						Action res = Plugin_Continue;
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
 						Call_PushString(g_cCustomItems_Short[i]);
-						Call_Finish();
+						Call_Finish(res);
+
+						if(res < Plugin_Stop){
+							subtractCredits(client, g_iCustomItems_Price[i]);
+							CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+						}
 					}
 					else
 						CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
