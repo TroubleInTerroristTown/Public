@@ -21,7 +21,6 @@
 #define SND_BURST "training/firewerks_burst_02.wav"
 #define SND_BEEP "weapons/c4/c4_beep1.wav"
 #define SND_DISARM "weapons/c4/c4_disarm.wav"
-#define SND_WARNING "resource/warning.wav"
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
 
@@ -35,7 +34,6 @@ enum eConfig
 	i_shopTASER,
 	i_shopJIHADBOMB,
 	i_shopC4,
-	i_shopHEALTH,
 	i_requiredPlayersD,
 	i_requiredPlayers,
 	i_startKarma,
@@ -155,12 +153,6 @@ Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 int g_iWire[MAXPLAYERS + 1] =  { -1, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
-
-int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
-int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
-bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
-bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
-Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
@@ -311,7 +303,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Ignore, Param_Cell, Param_String);
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
@@ -377,7 +369,6 @@ public void OnPluginStart()
 
 
 	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
-	CreateTimer(1.0, healthStationDistanceCheck, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
@@ -486,7 +477,6 @@ public void OnPluginStart()
 	g_iConfig[i_shopTASER] = Config_LoadInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopJIHADBOMB] = Config_LoadInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopC4] = Config_LoadInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
-	g_iConfig[i_shopHEALTH] = Config_LoadInt("ttt_shop_health_station", 3000, "The price of a 'Health Station' in the shop. ( 0 = disabled )");
 	g_iConfig[i_spawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
 	g_iConfig[i_spawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
 	g_iConfig[i_spawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
@@ -727,7 +717,6 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_BURST, true);
 	PrecacheSoundAny(SND_BEEP, true);
 	PrecacheSoundAny(SND_DISARM, true);
-	PrecacheSoundAny(SND_WARNING, true);
 
 	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
 	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
@@ -872,7 +861,6 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	ShowOverlayToAll("");
 	resetPlayers();
-	healthStation_cleanUp();
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -896,7 +884,6 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		g_hRoundTimer = null;
 	}
 	resetPlayers();
-	healthStation_cleanUp();
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)
@@ -1854,7 +1841,6 @@ public void OnClientDisconnect(int client)
 		g_bKarma[client] = false;
 
 		ClearTimer(g_hRDMTimer[client]);
-		ClearTimer(g_hRemoveCoolDownTimer[client]);
 		ClearIcon(client);
 
 		ClearTimer(g_hJihadBomb[client]);
@@ -2242,8 +2228,6 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		ShowOverlayToAll("overlays/ttt/innocents_win");
 	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
 		ShowOverlayToAll("overlays/ttt/detectives_win");
-
-	healthStation_cleanUp();
 
 	if(g_iConfig[b_randomWinner])
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
@@ -2670,12 +2654,6 @@ public Action Command_Shop(int client, int args)
 		}
 		if(team == TTT_TEAM_DETECTIVE)
 		{
-			if(g_iConfig[i_shopHEALTH] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Health Station", client, g_iConfig[i_shopHEALTH]);
-				AddMenuItem(menu, "HealthStation", MenuItem);
-			}
-
 			if(g_iConfig[i_shopDNA] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
@@ -2834,34 +2812,24 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
-		else if (strcmp(info, "HealthStation") == 0)
+		else
 		{
-			if (g_iCredits[client] >= g_iConfig[i_shopHEALTH])
-			{
-				if (g_iRole[client] != TTT_TEAM_DETECTIVE)
-					return;
-				if (g_bHasActiveHealthStation[client])
-				{
-					CPrintToChat(client, g_iConfig[s_pluginTag], "You already have an active Health Station", client);
-					return;
-				}
-				spawnHealthStation(client);
-				subtractCredits(client, g_iConfig[i_shopHEALTH]);
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
-			}
-		}else{
 			for(int i = 0; i < g_iCustomItemCount; i++)
 			{
 				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0))
 				{
 					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
 					{
-						subtractCredits(client, g_iCustomItems_Price[i]);
-						CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+						Action res = Plugin_Continue;
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
 						Call_PushString(g_cCustomItems_Short[i]);
-						Call_Finish();
+						Call_Finish(res);
+
+						if(res < Plugin_Stop){
+							subtractCredits(client, g_iCustomItems_Price[i]);
+							CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+						}
 					}
 					else
 						CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
@@ -3446,9 +3414,6 @@ public Action Timer_5(Handle timer)
 		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
 			ShowOverlayToClient(i, "darkness/ttt/overlayInnocent");
 
-		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
-			g_iHealthStationCharges[i]++;
-
 		if(g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
 	}
@@ -3926,131 +3891,6 @@ stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 	for(int i; i < g_iBadNameCount; i++)
 		if (StrContains(g_sBadNames[i], name, false) != -1)
 			KickClient(client, "%T", "Kick Bad Name", client, g_sBadNames[i]);
-}
-
-stock void healthStation_cleanUp()
-{
-	LoopValidClients(i)
-	{
-		g_iHealthStationCharges[i] = 0;
-		g_bHasActiveHealthStation[i] = false;
-		g_bOnHealingCoolDown[i] = false;
-
-		ClearTimer(g_hRemoveCoolDownTimer[i]);
-	}
-}
-
-public Action removeCoolDown(Handle timer, any userid)
-{
-	int client = GetClientOfUserId(userid);
-	g_bOnHealingCoolDown[client] = false;
-	g_hRemoveCoolDownTimer[client] = null;
-	return Plugin_Stop;
-}
-
-stock void spawnHealthStation(int client)
-{
-	if (!IsPlayerAlive(client))
-		return;
-
-	int healthStationIndex = CreateEntityByName("prop_physics_multiplayer");
-	if (healthStationIndex != -1)
-	{
-		float clientPos[3];
-		GetClientAbsOrigin(client, clientPos);
-		SetEntProp(healthStationIndex, Prop_Send, "m_hOwnerEntity", client);
-		DispatchKeyValue(healthStationIndex, "model", "models/props/cs_office/microwave.mdl");
-		DispatchSpawn(healthStationIndex);
-		SDKHook(healthStationIndex, SDKHook_OnTakeDamage, OnTakeDamageHealthStation);
-		TeleportEntity(healthStationIndex, clientPos, NULL_VECTOR, NULL_VECTOR);
-		g_iHealthStationHealth[client] = 10;
-		g_bHasActiveHealthStation[client] = true;
-		g_iHealthStationCharges[client] = 10;
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Health Station Deployed", client);
-	}
-}
-
-public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &inflictor, float &damage, int &damagetype)
-{
-	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || iAttacker < 1 || iAttacker > MaxClients || !IsClientInGame(iAttacker))
-		return Plugin_Continue;
-
-	int owner = GetEntProp(stationIndex, Prop_Send, "m_hOwnerEntity");
-	if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
-		return Plugin_Continue;
-
-	g_iHealthStationHealth[owner]--;
-
-	if (g_iHealthStationHealth[owner] <= 0)
-	{
-		AcceptEntityInput(stationIndex, "Kill");
-		g_bHasActiveHealthStation[owner] = false;
-	}
-	return Plugin_Continue;
-}
-
-public Action healthStationDistanceCheck(Handle timer)
-{
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(i))
-			continue;
-
-		checkDistanceFromHealthStation(i);
-	}
-	return Plugin_Continue;
-}
-
-stock void checkDistanceFromHealthStation(int client)
-{
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client)) return;
-	float clientPos[3], stationPos[3];
-	int curHealth, newHealth, iEnt;
-	char sModelName[PLATFORM_MAX_PATH];
-	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics_multiplayer")) != -1)
-	{
-		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-		if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
-			continue;
-
-		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
-
-		if (StrContains(sModelName, "microwave") == -1)
-			continue;
-
-		GetClientEyePosition(client, clientPos);
-		GetEntPropVector(iEnt, Prop_Send, "m_vecOrigin", stationPos);
-
-		if (GetVectorDistance(clientPos, stationPos) > 200.0)
-			continue;
-
-		if (g_bOnHealingCoolDown[client]) continue;
-		curHealth = GetClientHealth(client);
-
-		if (curHealth >= 125)
-			continue;
-
-		if (g_iHealthStationCharges[owner] > 0)
-		{
-			newHealth = (curHealth + 15);
-			if (newHealth >= 125)
-				SetEntityHealth(client, 125);
-			else
-				SetEntityHealth(client, newHealth);
-
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Healing From", client, owner);
-			EmitSoundToClientAny(client, SND_WARNING);
-			g_iHealthStationCharges[owner]--;
-			g_bOnHealingCoolDown[client] = true;
-			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
-		}
-		else
-		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Health Station Out Of Charges", client);
-			g_bOnHealingCoolDown[client] = true;
-			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
-		}
-	}
 }
 
 public void OnWeaponPostSwitch(int client, int weapon)
