@@ -30,6 +30,11 @@ int g_iKev_Type;
 int g_iKev_Price;
 int g_iUSP_Price;
 int g_iM4_Price;
+
+int g_iAWP_Price;
+int g_iAWP_Min_Shots;
+int g_iAWP_Max_Shots;
+
 int g_iKF_Price;
 
 int g_iKev_Max;
@@ -41,6 +46,7 @@ int g_iKevs[MAXPLAYERS+1];
 char g_cKev_Long[64];
 char g_cUSP_Long[64];
 char g_cM4_Long[64];
+char g_cAWP_Long[64];
 char g_cKF_Long[64];
 
 public void OnPluginStart()
@@ -62,6 +68,11 @@ public void OnPluginStart()
 
 	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
+	
+	g_iAWP_Price = Config_LoadInt("awp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
+	g_iAWP_Min_Shots = Config_LoadInt("awp_min_shots", 1, "The min. amount of shots of traitor awp.");
+	g_iAWP_Max_Shots = Config_LoadInt("awp_max_shots", 3, "The max. amount of shots of traitor awp.");
+	Config_LoadString("awp_name", "AWP", "The name of the AWP in the shop menu.", g_cAWP_Long, sizeof(g_cAWP_Long));
 
 	g_iKF_Price = Config_LoadInt("1knife_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	g_iKnife_Max = Config_LoadInt("1knife_max", 5, "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
@@ -94,6 +105,8 @@ public void OnAllPluginsLoaded()
 		TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR);
 	if(g_iM4_Price > 0)
 		TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR);
+	if(g_iAWP_Price > 0)
+		TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR);
 	if(g_iUSP_Price > 0)
 		TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR);
 }
@@ -150,6 +163,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 
 			GivePlayerItem(client, "weapon_m4a1_silencer");
+		}
+		if(strcmp(itemshort, AWP_ITEM_SHORT, false) == 0)
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
+			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+
+			int iAWP = GivePlayerItem(client, "weapon_awp");
+			EquipPlayerWeapon(client, iAWP);
+			SetEntProp(iAWP, Prop_Data, "m_iPrimaryReserveAmmoCount", GetRandomInt(g_iAWP_Min_Shots, g_iAWP_Max_Shots));
+			SetEntProp(iAWP, Prop_Data, "m_iSecondaryReserveAmmoCount", 0);
 		}
 		else if(strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
 		{

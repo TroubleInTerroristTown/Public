@@ -9,4 +9,5 @@
 
 #define USP_ITEM_SHORT "usps"
 #define M4_ITEM_SHORT "m4a1s"
+#define AWP_ITEM_SHORT "awp"
 #define KF_ITEM_SHORT "1knife"
