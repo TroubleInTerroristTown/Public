@@ -1778,7 +1778,8 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		}
 	}
 	else if (action == MenuAction_End)
-		delete menu;
+		if(menu != null)
+			delete menu;
 
 	return 0;
 }
