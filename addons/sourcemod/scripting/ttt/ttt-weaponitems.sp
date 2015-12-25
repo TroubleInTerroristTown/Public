@@ -8,6 +8,7 @@
 #include <ttt>
 #include <ttt-weaponitems>
 #include <config_loader>
+#include <multicolors>
 
 #pragma newdecls required
 
@@ -145,17 +146,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		if(strcmp(itemshort, USP_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-					return;
+					return Plugin_Stop;
 
 			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
 
 			GivePlayerItem(client, "weapon_usp_silencer");
-
-			return;
 		}
-
-		if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
+		else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 				return Plugin_Stop;
@@ -181,7 +179,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 				return Plugin_Stop;
 
-			if(g_iKnives[i] > g_iKnife_Max > 0){
+			if(g_iKnives[client] > g_iKnife_Max > 0){
 				CPrintToChat(client, "%t", "You reached limit", g_iKnife_Max);
 				return Plugin_Stop;
 			}
@@ -192,7 +190,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		 || (strcmp(itemshort, KEV_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEV_D_ITEM_SHORT, false) == 0))
 		 {
-				if(g_iKevs[i] > g_iKev_Max > 0){
+				if(g_iKevs[client] > g_iKev_Max > 0){
 					CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
 					return Plugin_Stop;
 				}

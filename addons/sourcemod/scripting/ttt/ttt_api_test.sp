@@ -22,7 +22,7 @@ public Plugin myinfo = {
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	HookEvent("weapon_fire", Event_WeaponFire);
 }
 
@@ -32,16 +32,18 @@ public void OnAllPluginsLoaded()
 		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
 }
 
-public void TTT_OnItemPurchased(int client, const char[] item)
+public Action TTT_OnItemPurchased(int client, const char[] item)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
 		PrintToChat(client, "It works! Hooray! Item: %s", item);
+
+	return Plugin_Continue;
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if(TTT_IsClientValid(client))
 		PrintToChat(client, "Player: %N, Karma %d, Credits: %d", client, TTT_GetClientKarma(client), TTT_GetClientCredits(client));
 }
