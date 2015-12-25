@@ -135,6 +135,7 @@ int g_iConfig[eConfig];
 
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
+char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -422,7 +423,11 @@ public void OnPluginStart()
 	}
 
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
+	
+	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
 
+	Config_Setup("TTT", g_sCFile);
+	
 	g_iConfig[i_creditsII] = Config_LoadInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
 	g_iConfig[i_creditsIT] = Config_LoadInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
 	g_iConfig[i_creditsID] = Config_LoadInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "The amount of credits an innocent will lose for killing a detective.");
