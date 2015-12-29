@@ -35,6 +35,7 @@ char g_cConfigFile[PLATFORM_MAX_PATH];
 
 public void OnPluginStart(){
 	TTT_IsGameCSGO();
+	LoadTranslations("ttt.phrases");
 
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/stations.cfg");
 	Config_Setup("TTT-Stations", g_cConfigFile);
