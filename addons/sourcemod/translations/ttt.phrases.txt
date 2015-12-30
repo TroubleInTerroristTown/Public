@@ -638,6 +638,11 @@
 		"en"	  "Next round will start in {1} seconds!"
 	}
 
+	"Hurt Station Deployed"
+	{
+		"en"	"Hurt station has been deployed! It will damage any near-by players!"
+	}
+
 	"You reached limit"
 	{
 		"#format" "{1:i}"

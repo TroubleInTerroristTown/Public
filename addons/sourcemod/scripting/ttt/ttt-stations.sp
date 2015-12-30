@@ -33,6 +33,8 @@ char g_cHurt[64];
 char g_cHealth[64];
 char g_cConfigFile[PLATFORM_MAX_PATH];
 
+char g_sPluginTag;
+
 public void OnPluginStart(){
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
@@ -54,6 +56,8 @@ public void OnPluginStart(){
 
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHealth, sizeof(g_cHealth));
+
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 
 	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
@@ -80,7 +84,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort){
 		bool health = (strcmp(itemshort, HEALTH_ITEM_SHORT, false) == 0);
 		if(hurt || health){
 			if(g_bHasActiveHealthStation[client]){
-				CPrintToChat(client, "%t", "You already have an active Health Station", client);
+				CPrintToChat(client, g_sPluginTag, "You already have an active Health Station", client);
 				return Plugin_Stop;
 			}
 
@@ -205,7 +209,7 @@ void checkDistanceFromHealthStation(int client){
 				SetEntityHealth(client, newHealth);
 
 			if(!hurt)
-				CPrintToChat(client, "%t", "Healing From", client, owner);
+				CPrintToChat(client, g_sPluginTag, "Healing From", client, owner);
 
 			EmitSoundToClientAny(client, SND_WARNING);
 			g_iHealthStationCharges[owner]--;
@@ -215,7 +219,7 @@ void checkDistanceFromHealthStation(int client){
 		else
 		{
 			if(!hurt){
-				CPrintToChat(client, "%t", "Health Station Out Of Charges", client);
+				CPrintToChat(client, g_sPluginTag, "Health Station Out Of Charges", client);
 				g_bOnHealingCoolDown[client] = true;
 				g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			}
@@ -240,7 +244,7 @@ void spawnHealthStation(int client){
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;
 		g_iHealthStationCharges[client] = ((TTT_GetClientRole(client) == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
-		CPrintToChat(client, "%t", ((TTT_GetClientRole(client) == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
+		CPrintToChat(client, g_sPluginTag, ((TTT_GetClientRole(client) == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
 	}
 }
 
