@@ -1,4 +1,3 @@
-
 public int Native_IsRoundActive(Handle plugin, int numParams)
 {
     return g_bRoundStarted;

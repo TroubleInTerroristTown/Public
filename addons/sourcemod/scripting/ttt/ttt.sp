@@ -1330,141 +1330,137 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
 
-		if (!StrEqual(sParam, "yes", false))
-		{
-			Handle hFile = OpenFile(g_sRulesFile, "rt");
-
-			if(hFile == null)
-			{
-				SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
-				delete menu;
-				return 0;
-			}
-
-			KeyValues kvRules = CreateKeyValues("Rules");
-
-			if(!kvRules.ImportFromFile(g_sRulesFile))
-			{
-				SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
-
-				delete kvRules;
-				delete menu;
-
-				return 0;
-			}
-
-			if(kvRules.JumpToKey(sParam, false))
-			{
-				char sValue[MAX_MESSAGE_LENGTH];
-
-				kvRules.GetString("text", sValue, sizeof(sValue));
-				if(strlen(sValue) > 0)
-				{
-					CPrintToChat(client, sValue);
-					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
-
-					g_bKnowRules[client] = false;
-					g_bReadRules[client] = true;
-
-					delete kvRules;
-					delete menu;
-
-					return 0;
-				}
-
-				kvRules.GetString("fakecommand", sValue, sizeof(sValue));
-				if(strlen(sValue) > 0)
-				{
-					FakeClientCommand(client, sValue);
-
-					g_bKnowRules[client] = false;
-					g_bReadRules[client] = true;
-
-					delete kvRules;
-					delete menu;
-
-					return 0;
-				}
-
-				kvRules.GetString("command", sValue, sizeof(sValue));
-				if(strlen(sValue) > 0)
-				{
-					ClientCommand(client, sValue);
-
-					g_bKnowRules[client] = false;
-					g_bReadRules[client] = true;
-
-					delete kvRules;
-					delete menu;
-
-					return 0;
-				}
-
-				kvRules.GetString("url", sValue, sizeof(sValue));
-				if(strlen(sValue) > 0)
-				{
-					char sURL[512];
-					Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
-					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
-
-					g_bKnowRules[client] = false;
-					g_bReadRules[client] = true;
-
-					delete kvRules;
-					delete menu;
-
-					return 0;
-				}
-
-				kvRules.GetString("file", sValue, sizeof(sValue));
-				if(strlen(sValue) > 0)
-				{
-					g_iSite[client] = menu.Selection;
-
-					char sFile[PLATFORM_MAX_PATH + 1];
-					BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
-
-					Handle hRFile = OpenFile(sFile, "rt");
-
-					if(hRFile == null)
-						SetFailState("[TTT] Can't open File: %s", sFile);
-
-					char sLine[64], sTitle[64];
-
-					Menu rMenu = new Menu(Menu_RulesPage);
-
-					kvRules.GetString("title", sTitle, sizeof(sTitle));
-					rMenu.SetTitle(sTitle);
-
-					while(!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
-					{
-						if(strlen(sLine) > 1)
-						{
-							rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
-						}
-					}
-
-					rMenu.ExitButton = false;
-					rMenu.ExitBackButton = true;
-					rMenu.Display(client, g_iConfig[i_timeToReadRules]);
-
-					delete hRFile;
-					delete kvRules;
-					delete menu;
-
-					return 0;
-				}
-
-				delete kvRules;
-				delete menu;
-
-				return 0;
-			}
+		if (StrEqual(sParam, "yes", false)){
+			delete menu;
+			return 0;
 		}
-		else
+
+		Handle hFile = OpenFile(g_sRulesFile, "rt");
+
+		if(hFile == null){
+			SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+			delete menu;
+			return 0;
+		}
+
+		KeyValues kvRules = CreateKeyValues("Rules");
+
+		if(!kvRules.ImportFromFile(g_sRulesFile))
 		{
-			g_bKnowRules[client] = true;
-			g_bReadRules[client] = false;
+			SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+
+			delete kvRules;
+			delete menu;
+
+			return 0;
+		}
+
+		if(kvRules.JumpToKey(sParam, false))
+		{
+			char sValue[MAX_MESSAGE_LENGTH];
+
+			kvRules.GetString("text", sValue, sizeof(sValue));
+			if(strlen(sValue) > 0)
+			{
+				CPrintToChat(client, sValue);
+				CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+
+				g_bKnowRules[client] = false;
+				g_bReadRules[client] = true;
+
+				delete kvRules;
+				delete menu;
+
+				return 0;
+			}
+
+			kvRules.GetString("fakecommand", sValue, sizeof(sValue));
+			if(strlen(sValue) > 0)
+			{
+				FakeClientCommand(client, sValue);
+
+				g_bKnowRules[client] = false;
+				g_bReadRules[client] = true;
+
+				delete kvRules;
+				delete menu;
+
+				return 0;
+			}
+
+			kvRules.GetString("command", sValue, sizeof(sValue));
+			if(strlen(sValue) > 0)
+			{
+				ClientCommand(client, sValue);
+
+				g_bKnowRules[client] = false;
+				g_bReadRules[client] = true;
+
+				delete kvRules;
+				delete menu;
+
+				return 0;
+			}
+
+			kvRules.GetString("url", sValue, sizeof(sValue));
+			if(strlen(sValue) > 0)
+			{
+				char sURL[512];
+				Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
+				ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
+
+				g_bKnowRules[client] = false;
+				g_bReadRules[client] = true;
+
+				delete kvRules;
+				delete menu;
+
+				return 0;
+			}
+
+			kvRules.GetString("file", sValue, sizeof(sValue));
+			if(strlen(sValue) > 0)
+			{
+				g_iSite[client] = menu.Selection;
+
+				char sFile[PLATFORM_MAX_PATH + 1];
+				BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
+
+				Handle hRFile = OpenFile(sFile, "rt");
+
+				if(hRFile == null)
+					SetFailState("[TTT] Can't open File: %s", sFile);
+
+				char sLine[64], sTitle[64];
+
+				Menu rMenu = new Menu(Menu_RulesPage);
+
+				kvRules.GetString("title", sTitle, sizeof(sTitle));
+				rMenu.SetTitle(sTitle);
+
+				while(!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
+				{
+					if(strlen(sLine) > 1)
+					{
+						rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
+					}
+				}
+
+				rMenu.ExitButton = false;
+				rMenu.ExitBackButton = true;
+				rMenu.Display(client, g_iConfig[i_timeToReadRules]);
+
+				delete hRFile;
+				delete kvRules;
+				delete menu;
+
+				return 0;
+			}
+
+			delete kvRules;
+			delete menu;
+
+			return 0;
 		}
 
 		if(g_iConfig[b_showDetectiveMenu])
