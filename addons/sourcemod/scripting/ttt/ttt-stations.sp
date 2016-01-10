@@ -199,7 +199,7 @@ void checkDistanceFromHealthStation(int client){
 
 		if ((!hurt) && (curHealth >= 125)) continue;
 
-		if (g_iHealthStationCharges[owner] > 0)
+		if (g_iHealthStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))
 		{
 			newHealth = (hurt ? (curHealth - g_iHurtDamage) : (curHealth + g_iHealthHeal));
 			if (newHealth >= 125)
