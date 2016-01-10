@@ -33,7 +33,7 @@ char g_cHurt[64];
 char g_cHealth[64];
 char g_cConfigFile[PLATFORM_MAX_PATH];
 
-char g_sPluginTag;
+char g_sPluginTag[64];
 
 public void OnPluginStart(){
 	TTT_IsGameCSGO();
