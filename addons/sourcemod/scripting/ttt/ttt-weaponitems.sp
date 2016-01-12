@@ -69,7 +69,7 @@ public void OnPluginStart()
 
 	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
-	
+
 	g_iAWP_Price = Config_LoadInt("awp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	g_iAWP_Min_Shots = Config_LoadInt("awp_min_shots", 1, "The min. amount of shots of traitor awp.");
 	g_iAWP_Max_Shots = Config_LoadInt("awp_max_shots", 3, "The max. amount of shots of traitor awp.");
@@ -170,9 +170,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 
 			int iAWP = GivePlayerItem(client, "weapon_awp");
-			EquipPlayerWeapon(client, iAWP);
-			SetEntProp(iAWP, Prop_Data, "m_iPrimaryReserveAmmoCount", GetRandomInt(g_iAWP_Min_Shots, g_iAWP_Max_Shots));
-			SetEntProp(iAWP, Prop_Data, "m_iSecondaryReserveAmmoCount", 0);
+
+			if(iAWP != -1){
+				EquipPlayerWeapon(client, iAWP);
+				SetEntProp(iAWP, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
+				SetEntProp(iAWP, Prop_Send, "m_iClip1", GetRandomInt(g_iAWP_Min_Shots, g_iAWP_Max_Shots));
+			}else{
+				TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_iAWP_Price);
+			}
 		}
 		else if(strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
 		{
