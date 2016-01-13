@@ -336,21 +336,20 @@ stock void ShowLogs(int client)
 		g_bReceivingLogs[client] = false;
 		return;
 	}
-
-	g_dPack = new DataPack();
-	RequestFrame(OnCreate, GetClientUserId(client));
-	g_dPack.WriteCell(index);
+	
+	DataPack slPack = new DataPack();
+	RequestFrame(OnCreate, slPack);
+	slPack.WriteCell(GetClientUserId(client));
+	slPack.WriteCell(index);
 }
 
-public void OnCreate(any userid)
+public void OnCreate(any pack)
 {
+	ResetPack(pack);
+	int userid = ReadPackCell(pack);
+	int index = ReadPackCell(pack);
+	
 	int client = GetClientOfUserId(userid);
-
-	g_dPack.Reset();
-	int index = g_dPack.ReadCell();
-
-	if(g_dPack != null)
-		delete g_dPack;
 
 	if ((client == 0) || IsClientInGame(client))
 	{
@@ -389,10 +388,10 @@ public void OnCreate(any userid)
 			return;
 		}
 
-		g_dPack = new DataPack();
-		RequestFrame(OnCreate, g_dPack);
-		g_dPack.WriteCell(client);
-		g_dPack.WriteCell(index);
+		DataPack slPack = new DataPack();
+		RequestFrame(OnCreate, slPack);
+		slPack.WriteCell(GetClientUserId(client));
+		slPack.WriteCell(index);
 	}
 }
 

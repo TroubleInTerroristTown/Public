@@ -194,8 +194,6 @@ int g_iBadNameCount = 0;
 
 Handle g_hDatabase = null;
 
-DataPack g_dPack;
-
 enum Ragdolls
 {
 	ent,
