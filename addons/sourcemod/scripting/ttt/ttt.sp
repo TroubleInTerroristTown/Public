@@ -652,10 +652,13 @@ public Action Timer_Selection(Handle hTimer)
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) >= CS_TEAM_CT)
 			continue;
 
 		if(!IsPlayerAlive(i))
+			continue;
+			
+		if(IsFakeClient(i))
 			continue;
 
 		iCount++;
@@ -729,6 +732,9 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		if (!IsPlayerAlive(i))
 			continue;
+		
+		if (IsFakeClient(i))
+			continue;
 
 		if(g_iRole[i] == TTT_TEAM_TRAITOR)
 			iTraitors++;
@@ -792,10 +798,13 @@ public Action Timer_Selection(Handle hTimer)
 		else
 			listTraitors(i);
 
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR)
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) >= CS_TEAM_CT)
 			continue;
 
 		if(!IsPlayerAlive(i))
+			continue;
+		
+		if(IsFakeClient(i))
 			continue;
 
 		TeamInitialize(i);
