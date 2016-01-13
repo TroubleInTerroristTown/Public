@@ -336,7 +336,7 @@ stock void ShowLogs(int client)
 		g_bReceivingLogs[client] = false;
 		return;
 	}
-	
+
 	DataPack slPack = new DataPack();
 	RequestFrame(OnCreate, slPack);
 	slPack.WriteCell(GetClientUserId(client));
@@ -348,7 +348,7 @@ public void OnCreate(any pack)
 	ResetPack(pack);
 	int userid = ReadPackCell(pack);
 	int index = ReadPackCell(pack);
-	
+
 	int client = GetClientOfUserId(userid);
 
 	if ((client == 0) || IsClientInGame(client))
@@ -652,12 +652,12 @@ public Action Timer_Selection(Handle hTimer)
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) >= CS_TEAM_CT)
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) > CS_TEAM_CT)
 			continue;
 
 		if(!IsPlayerAlive(i))
 			continue;
-			
+
 		if(IsFakeClient(i))
 			continue;
 
@@ -732,7 +732,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		if (!IsPlayerAlive(i))
 			continue;
-		
+
 		if (IsFakeClient(i))
 			continue;
 
@@ -798,12 +798,12 @@ public Action Timer_Selection(Handle hTimer)
 		else
 			listTraitors(i);
 
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) >= CS_TEAM_CT)
+		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) > CS_TEAM_CT)
 			continue;
 
 		if(!IsPlayerAlive(i))
 			continue;
-		
+
 		if(IsFakeClient(i))
 			continue;
 
