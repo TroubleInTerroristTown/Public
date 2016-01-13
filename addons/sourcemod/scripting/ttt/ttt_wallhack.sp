@@ -235,10 +235,9 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 	if(!g_bOwnRadar[client] || !g_bHasRadar[client])
 		return Plugin_Handled;
 		
-	int target = -1;
 	LoopValidClients(i)
 	{
-		if(IsFakeClient(i)
+		if(IsFakeClient(i))
 			continue;
 		
 		if(!IsPlayerAlive(i))
@@ -254,7 +253,14 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		{
 			PrintToChat(client, "Spieler: %N", i);
 			PrintToChat(client, "Called OnSetTransmit_GlowSkin! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
-			return Plugin_Continue;
+			
+			if(g_bOwnRadar[client] && g_bHasRadar[client])
+				return Plugin_Continue;
+			else
+			{
+				if((TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE) || (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(i) == TTT_TEAM_TRAITOR))
+					return Plugin_Continue;
+			}
 		}
 	}
 	
