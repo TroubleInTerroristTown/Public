@@ -1371,7 +1371,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			if(strlen(sValue) > 0)
 			{
 				CPrintToChat(client, sValue);
-				CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+				ShowRules(client, 0);
 
 				g_bKnowRules[client] = false;
 				g_bReadRules[client] = true;
@@ -1501,8 +1501,8 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
 public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 {
-	if (action == MenuAction_Cancel || action == MenuAction_Select)
-		CreateTimer(0.3, Timer_ShowWelcomeMenu, GetClientOfUserId(client));
+	if (action == MenuAction_Cancel || action == MenuAction_Select || param == MenuCancel_ExitBack)
+		ShowRules(client, 0);
 	else if (action == MenuAction_End)
 		delete menu;
 	return 0;
@@ -2628,9 +2628,7 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum)
 {
 	if (action == MenuAction_End)
-	{
-		CloseHandle(menu);
-	}
+		delete menu;
 }
 
 stock void ClearIcon(int client)
