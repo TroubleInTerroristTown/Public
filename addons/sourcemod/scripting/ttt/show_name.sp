@@ -18,6 +18,7 @@ public Plugin myinfo =
 };
 
 bool Karma = true;
+bool Health = false;
 char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 public void OnPluginStart()
@@ -28,6 +29,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT", g_sCFile);
 	Karma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	Health = Config_LoadBool("ttt_show_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
 	Config_Done();
 
 	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
@@ -40,27 +42,27 @@ public Action Timer_UpdateText(Handle timer)
 		if (IsPlayerAlive(i))
 		{
 			int target = TraceClientViewEntity(i);
-			
+
 			if(!TTT_IsClientValid(target))
 				continue;
-			
+
 			if(!IsPlayerAlive(target))
 				continue;
-			
+
 			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
 			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR) 
+				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
 					PrintHintText(i, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) 
+				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT) 
+				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
 					PrintHintText(i, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
 			}
-			else 
+			else
 			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE) 
+				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else 
+				else
 					PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
 			}
 		}
@@ -68,19 +70,19 @@ public Action Timer_UpdateText(Handle timer)
 		{
 			int iMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
 			int iTarget = GetEntPropEnt(i, Prop_Send, "m_hObserverTarget");
-			
+
 			if (!TTT_IsClientValid(iTarget))
 				continue;
-			
+
 			if(!IsPlayerAlive(iTarget))
 				continue;
-			
+
 			if(iMode == 4 || iMode == 5)
 				PrintHintText(i, "Player: \"%N\"\nKarma: %d", iTarget, TTT_GetClientKarma(iTarget));
 		}
 	}
-	
-	return Plugin_Continue; 
+
+	return Plugin_Continue;
 }
 
 stock int TraceClientViewEntity(int client)
@@ -103,11 +105,11 @@ stock int TraceClientViewEntity(int client)
 
 	if(tr != null)
 		delete(tr);
-	
+
 	return -1;
 }
 
 public bool TRDontHitSelf(int entity, int mask, int data)
 {
-	return (1 <= entity <= MaxClients && entity != data); 
+	return (1 <= entity <= MaxClients && entity != data);
 }
