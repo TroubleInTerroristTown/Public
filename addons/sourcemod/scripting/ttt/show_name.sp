@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <config_loader>
 
 #pragma newdecls required
 
@@ -29,7 +30,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT", g_sCFile);
 	Karma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	Health = Config_LoadBool("ttt_show_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
+	Health = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
 	Config_Done();
 
 	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
