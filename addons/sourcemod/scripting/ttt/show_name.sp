@@ -17,10 +17,19 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
+bool Karma = true;
+char g_sCFile[PLATFORM_MAX_PATH + 1];
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
+	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
+
+	Config_Setup("TTT", g_sCFile);
+	Karma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	Config_Done();
+
 	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
