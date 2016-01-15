@@ -226,6 +226,7 @@ public void OnPluginStart()
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
 
 	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
 	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
 	g_iConfig[b_C4Beam] = Config_LoadBool("ttt_c4_beam", true, "Display a beam to Traitors that indicate C4 positions (in light blue)?");
 	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
@@ -791,6 +792,11 @@ public Action Timer_Selection(Handle hTimer)
 
 	LoopValidClients(i)
 	{
+		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
+			CS_SetClientContributionScore(i, g_iKarma[i]);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", i);
+		}
+
 		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
 
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
@@ -1861,7 +1867,7 @@ stock int CreateIcon(int client)
 	DispatchSpawn(Ent);
 	TeleportEntity(Ent, origin, NULL_VECTOR, NULL_VECTOR);
 	SetVariantString(iTarget);
-	AcceptEntityInput(Ent, "SetParent", Ent, Ent, 0);
+	AcceptEntityInput(Ent, "SetParent", Ent, Ent);
 
 	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT);
@@ -1905,9 +1911,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	if(g_bRoundStarted)
 		return Plugin_Handled;
 
-	LoopValidClients(client)
+	LoopValidClients(client){
 		if(IsPlayerAlive(client))
 			ClearIcon(client);
+
+		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
+			CS_SetClientContributionScore(client, g_iKarma[client]);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", client);
+		}
+	}
 
 	bool bInnoAlive = false;
 
@@ -3774,6 +3786,8 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			if (karma == 0)
 				setKarma(client, g_iConfig[i_startKarma]);
 			else setKarma(client, karma);
+
+			CS_SetClientContributionScore(client, karma);
 		}
 	}
 }

@@ -648,4 +648,9 @@
 		"#format" "{1:i}"
 		"en"		"You can only buy {1} of these per round!"
 	}
+
+	"All karma has been updated"
+	{
+		"en"		"KARMA HAS BEEN UPDATED!"
+	}
 }
