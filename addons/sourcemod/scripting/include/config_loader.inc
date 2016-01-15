@@ -3,9 +3,9 @@
 #endif
 #define _cfloader_included
 
-char __g_sConfigFile[PLATFORM_MAX_PATH];
-char __g_sConfigName[128];
-KeyValues __g_kConfigKV = view_as<KeyValues>(INVALID_HANDLE);
+static char __g_sConfigFile[PLATFORM_MAX_PATH];
+static char __g_sConfigName[128];
+static KeyValues __g_kConfigKV = view_as<KeyValues>(INVALID_HANDLE);
 
 stock bool Config_Setup(const char[] name, const char[] file){
 	if(Config_IsValid())
@@ -129,8 +129,8 @@ stock void Config_Reset(){
 	FormatEx(__g_sConfigFile, PLATFORM_MAX_PATH, "");
 	FormatEx(__g_sConfigName, sizeof(__g_sConfigName), "");
 
-	if(__g_kConfigKV != INVALID_HANDLE){
+	if(__g_kConfigKV != (view_as<KeyValues>(INVALID_HANDLE))){
 		CloseHandle(view_as<Handle>(__g_kConfigKV));
-		__g_kConfigKV = INVALID_HANDLE;
+		__g_kConfigKV = view_as<KeyValues>(INVALID_HANDLE);
 	}
 }
