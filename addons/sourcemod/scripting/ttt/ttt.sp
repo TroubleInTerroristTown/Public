@@ -574,7 +574,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	if (g_hRoundTimer != null)
 		CloseHandle(g_hRoundTimer);
 
-	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
+	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0), Timer_OnRoundEnd);
 
 	ShowOverlayToAll("");
 	resetPlayers();
