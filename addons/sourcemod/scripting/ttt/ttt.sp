@@ -226,6 +226,7 @@ public void OnPluginStart()
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
 
 	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
 	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
 	g_iConfig[b_C4Beam] = Config_LoadBool("ttt_c4_beam", true, "Display a beam to Traitors that indicate C4 positions (in light blue)?");
 	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
@@ -243,6 +244,7 @@ public void OnPluginStart()
 	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 
+	Config_Done();
 
 	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
 	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
@@ -573,7 +575,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	if (g_hRoundTimer != null)
 		CloseHandle(g_hRoundTimer);
 
-	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_roundtime")) * 60.0, Timer_OnRoundEnd);
+	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0), Timer_OnRoundEnd);
 
 	ShowOverlayToAll("");
 	resetPlayers();
@@ -791,6 +793,11 @@ public Action Timer_Selection(Handle hTimer)
 
 	LoopValidClients(i)
 	{
+		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
+			CS_SetClientContributionScore(i, g_iKarma[i]);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", i);
+		}
+
 		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
 
 		if(g_iRole[i] != TTT_TEAM_TRAITOR)
@@ -1861,7 +1868,7 @@ stock int CreateIcon(int client)
 	DispatchSpawn(Ent);
 	TeleportEntity(Ent, origin, NULL_VECTOR, NULL_VECTOR);
 	SetVariantString(iTarget);
-	AcceptEntityInput(Ent, "SetParent", Ent, Ent, 0);
+	AcceptEntityInput(Ent, "SetParent", Ent, Ent);
 
 	if(g_iRole[client] == TTT_TEAM_TRAITOR)
 		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT);
@@ -1905,9 +1912,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	if(g_bRoundStarted)
 		return Plugin_Handled;
 
-	LoopValidClients(client)
+	LoopValidClients(client){
 		if(IsPlayerAlive(client))
 			ClearIcon(client);
+
+		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
+			CS_SetClientContributionScore(client, g_iKarma[client]);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", client);
+		}
+	}
 
 	bool bInnoAlive = false;
 
@@ -3774,6 +3787,8 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			if (karma == 0)
 				setKarma(client, g_iConfig[i_startKarma]);
 			else setKarma(client, karma);
+
+			CS_SetClientContributionScore(client, karma);
 		}
 	}
 }

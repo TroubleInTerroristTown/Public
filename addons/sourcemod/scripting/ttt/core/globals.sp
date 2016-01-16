@@ -101,6 +101,7 @@ enum eConfig
 	bool:b_endwithD,
 	bool:b_hideTeams,
 	bool:b_publicKarma,
+	bool:b_karmaRound,
 	bool:b_stripWeapons,
 	bool:b_C4Beam,
 	bool:b_karmaDMG,
