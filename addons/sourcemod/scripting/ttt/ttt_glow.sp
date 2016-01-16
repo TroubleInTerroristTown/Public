@@ -39,13 +39,13 @@ public Action Timer_SetupGlow(Handle timer, any data)
 
 void SetupGlowSkin(int client)
 {
-	CPS_RemoveSkin(client);
-	
 	if(!TTT_IsRoundActive())
 		return;
 	
 	char sModel[PLATFORM_MAX_PATH];
 	GetClientModel(client, sModel, sizeof(sModel));
+	
+	CPS_RemoveSkin(client);
 	CPS_SetSkin(client, sModel, CPS_RENDER);
 		
 	int iSkin = CPS_GetSkin(client);
