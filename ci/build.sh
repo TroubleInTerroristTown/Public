@@ -36,6 +36,9 @@ do
   mv $file addons/sourcemod/plugins
 done
 
+# Remove api test plugin
+rm addons/sourcemod/plugins/ttt_api_test.smx
+
 # Remove build folder if exists
 if [ -d "build" ]; then
   rm -r build
