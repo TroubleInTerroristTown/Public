@@ -179,6 +179,20 @@ native int TTT_GetCustomItemPrice(const char[] item);
  */
 native int TTT_GetCustomItemRole(const char[] item);
 
+/*
+ * Determines if a player is dead and has had their body found.
+ *
+ * @param client              The client index to lookup.
+ */
+native bool TTT_GetFoundStatus(int client);
+
+/*
+ * Set whether a player appears dead and body found.
+ *
+ * @param client             The client index to change.
+ * @param found             True if found & dead, false else.
+ */
+native void TTT_SetFoundStatus(int client, bool found);
 
 /*
  * Check if TTT plugin is loaded and running.

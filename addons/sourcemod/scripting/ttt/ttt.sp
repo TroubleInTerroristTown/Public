@@ -49,6 +49,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
+	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
+	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
@@ -512,12 +514,8 @@ public void ThinkPost(int entity)
 
 	GetEntDataArray(entity, g_iAlive, isAlive, 65);
 	LoopValidClients(i)
-	{
-		if(IsPlayerAlive(i) || !g_bFound[i])
-			isAlive[i] = true;
-		else
-			isAlive[i] = false;
-	}
+		isAlive[i] = (!g_bFound[i]);
+
 	SetEntDataArray(entity, g_iAlive, isAlive, 65);
 
 	if(g_iConfig[b_kadRemover])

@@ -178,3 +178,15 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 
 	return -1;
 }
+
+public int Native_GetFoundStatus(Handle plugin, int numParams)
+{
+    return g_bFound[GetNativeCell(1)];
+}
+
+public int Native_SetFoundStatus(Handle plugin, int numParams)
+{
+    g_bFound[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
+
+    return;
+}
