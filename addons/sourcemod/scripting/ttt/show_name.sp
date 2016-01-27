@@ -33,16 +33,16 @@ public void OnPluginStart()
 	Health = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
 	Config_Done();
 
-	CreateTimer(0.1, Timer_UpdateText, _, TIMER_REPEAT);
+	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
 {
-	LoopValidClients(i)
+	LoopValidClients(client)
 	{
-		if (IsPlayerAlive(i))
+		if (IsPlayerAlive(client))
 		{
-			int target = TraceClientViewEntity(i);
+			int target = TraceClientViewEntity(client);
 
 			if(!TTT_IsClientValid(target))
 				continue;
@@ -50,27 +50,27 @@ public Action Timer_UpdateText(Handle timer)
 			if(!IsPlayerAlive(target))
 				continue;
 
-			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
 				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
-					PrintHintText(i, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
+					PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
 				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
+					PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
 				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
-					PrintHintText(i, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
+					PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
 			}
 			else
 			{
 				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-					PrintHintText(i, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
+					PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
 				else
-					PrintHintText(i, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
+					PrintHintText(client, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
 			}
 		}
 		else
 		{
-			int iMode = GetEntProp(i, Prop_Send, "m_iObserverMode");
-			int iTarget = GetEntPropEnt(i, Prop_Send, "m_hObserverTarget");
+			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
+			int iTarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 
 			if (!TTT_IsClientValid(iTarget))
 				continue;
@@ -79,7 +79,7 @@ public Action Timer_UpdateText(Handle timer)
 				continue;
 
 			if(iMode == 4 || iMode == 5)
-				PrintHintText(i, "Player: \"%N\"\nKarma: %d", iTarget, TTT_GetClientKarma(iTarget));
+				PrintHintText(client, "Player: \"%N\"\nKarma: %d", iTarget, TTT_GetClientKarma(iTarget));
 		}
 	}
 
