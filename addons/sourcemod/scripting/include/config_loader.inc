@@ -37,7 +37,7 @@ stock int Config_LoadInt(const char[] name, int value, const char[] description)
 
 	if(__g_kConfigKV.JumpToKey(name, false)){
 		value = __g_kConfigKV.GetNum("value");
-        __g_kConfigKV.Rewind();
+		__g_kConfigKV.Rewind();
 	}else{
 		LogMessage("[CONFIG LOADER] Can't find setting '%s' in %s! Adding default value (%d).", name, __g_sConfigFile, value);
 
@@ -59,7 +59,7 @@ stock bool Config_LoadBool(const char[] name, bool value, const char[] descripti
 
 	if(__g_kConfigKV.JumpToKey(name, false)){
 		value = view_as<bool>(__g_kConfigKV.GetNum("value"));
-        __g_kConfigKV.Rewind();
+		__g_kConfigKV.Rewind();
 	}else{
 		LogMessage("[CONFIG LOADER] Can't find setting '%s' in %s! Adding default value (%s).", name, __g_sConfigFile, (value ? "true" : "false"));
 
@@ -81,7 +81,7 @@ stock float Config_LoadFloat(const char[] name, float value, const char[] descri
 
 	if(__g_kConfigKV.JumpToKey(name, false)){
 		value = __g_kConfigKV.GetFloat("value");
-        __g_kConfigKV.Rewind();
+		__g_kConfigKV.Rewind();
 	}else{
 		LogMessage("[CONFIG LOADER] Can't find setting '%s' in %s! Adding default value (%f).", name, __g_sConfigFile, value);
 
@@ -103,7 +103,7 @@ stock void Config_LoadString(const char[] name, const char[] value, const char[]
 
 	if(__g_kConfigKV.JumpToKey(name, false)){
 		__g_kConfigKV.GetString("value", output, size);
-        __g_kConfigKV.Rewind();
+		__g_kConfigKV.Rewind();
 	}else{
 		strcopy(output, size, value);
 		LogMessage("[CONFIG LOADER] Can't find setting '%s' in %s! Adding default value (%s).", name, __g_sConfigFile, value);
