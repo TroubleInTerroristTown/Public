@@ -237,6 +237,16 @@ public void OnPluginStart()
 	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
 	g_iConfig[b_endroundDMG] = Config_LoadBool("ttt_end_round_dm", false, "Enable this to disable damage prevention between round end and warmup.");
 
+	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_iConfig[s_overlayDWin], sizeof(g_iConfig[s_overlayDWin]));
+	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_iConfig[s_overlayTWin], sizeof(g_iConfig[s_overlayTWin]));
+	Config_LoadString("ttt_overlay_inno_win", "overlays/ttt/innocents_win", "The overlay to display when innocent win.", g_iConfig[s_overlayIWin], sizeof(g_iConfig[s_overlayIWin]));
+
+
+	Config_LoadString("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.", g_iConfig[s_overlayDCorner], sizeof(g_iConfig[s_overlayDCorner]));
+	Config_LoadString("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.", g_iConfig[s_overlayTCorner], sizeof(g_iConfig[s_overlayTCorner]));
+	Config_LoadString("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for detectives during the round.", g_iConfig[s_overlayICorner], sizeof(g_iConfig[s_overlayICorner]));
+
+
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 
@@ -454,32 +464,67 @@ public void OnMapStart()
 	AddFileToDownloadsTable("materials/sprites/sg_traitor_icon.vtf");
 	PrecacheModel("materials/sprites/sg_traitor_icon.vmt");
 
-	AddFileToDownloadsTable("materials/overlays/ttt/innocents_win.vmt");
-	AddFileToDownloadsTable("materials/overlays/ttt/innocents_win.vtf");
-	PrecacheDecal("overlays/ttt/innocents_win", true);
+	char buffer[PLATFORM_MAX_PATH];
 
-	AddFileToDownloadsTable("materials/overlays/ttt/traitors_win.vmt");
-	AddFileToDownloadsTable("materials/overlays/ttt/traitors_win.vtf");
-	PrecacheDecal("overlays/ttt/traitors_win", true);
+	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayTWin]);
+	AddFileToDownloadsTable(buffer);
 
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayDetective.vmt");
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayDetective.vtf");
-	PrecacheDecal("darkness/ttt/overlayDetective", true);
+	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayTWin]);
+	AddFileToDownloadsTable(buffer);
 
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayTraitor.vmt");
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayTraitor.vtf");
-	PrecacheDecal("darkness/ttt/overlayTraitor", true);
+	PrecacheDecal(g_iConfig[s_overlayTWin], true);
 
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayInnocent.vmt");
-	AddFileToDownloadsTable("materials/darkness/ttt/overlayInnocent.vtf");
-	PrecacheDecal("darkness/ttt/overlayInnocent", true);
 
- 	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vmt");
-	AddFileToDownloadsTable("materials/overlays/ttt/detectives_win.vtf");
-	PrecacheDecal("overlays/ttt/detectives_win", true);
+	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayIWin]);
+	AddFileToDownloadsTable(buffer);
+
+	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayIWin]);
+	AddFileToDownloadsTable(buffer);
+
+	PrecacheDecal(g_iConfig[s_overlayIWin], true);
+
+
+	if(g_iConfig[b_endwithD]){
+		Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayDWin]);
+		AddFileToDownloadsTable(buffer);
+
+		Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayDWin]);
+		AddFileToDownloadsTable(buffer);
+
+		PrecacheDecal(g_iConfig[s_overlayDWin], true);
+	}
+
+
+	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayDCorner]);
+	AddFileToDownloadsTable(buffer);
+
+	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayDCorner]);
+	AddFileToDownloadsTable(buffer);
+
+	PrecacheDecal(g_iConfig[s_overlayDCorner], true);
+
+
+	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayTCorner]);
+	AddFileToDownloadsTable(buffer);
+
+	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayTCorner]);
+	AddFileToDownloadsTable(buffer);
+
+	PrecacheDecal(g_iConfig[s_overlayTCorner], true);
+
+
+	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayICorner]);
+	AddFileToDownloadsTable(buffer);
+
+	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayICorner]);
+	AddFileToDownloadsTable(buffer);
+
+	PrecacheDecal(g_iConfig[s_overlayICorner], true);
+
 
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
+
 
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
@@ -792,7 +837,7 @@ public Action Timer_Selection(Handle hTimer)
 	LoopValidClients(i)
 	{
 		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
-			CS_SetClientContributionScore(i, g_iKarma[i]);
+			g_iKarmaStart[i] = g_iKarma[i];
 			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", i);
 		}
 
@@ -1034,11 +1079,13 @@ public void OnClientPutInServer(int client)
 	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
-public Action OnPreThink(int client)
-{
-	if(g_iConfig[b_publicKarma])
-		if(TTT_IsClientValid(client))
+public Action OnPreThink(int client){
+	if(TTT_IsClientValid(client))
+		if(g_iConfig[b_publicKarma]){
 			CS_SetClientContributionScore(client, g_iKarma[client]);
+		}else if(g_iConfig[b_karmaRound]){
+			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
+		}
 }
 
 stock void AddStartKarma(int client)
@@ -1915,7 +1962,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 			ClearIcon(client);
 
 		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
-			CS_SetClientContributionScore(client, g_iKarma[client]);
+			g_iKarmaStart[client] = g_iKarma[client];
 			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma score updated", client);
 		}
 	}
@@ -1955,11 +2002,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	}
 
 	if(reason == CSRoundEnd_TerroristWin)
-		ShowOverlayToAll("overlays/ttt/traitors_win");
+		ShowOverlayToAll(g_iConfig[s_overlayTWin]);
 	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
-		ShowOverlayToAll("overlays/ttt/innocents_win");
+		ShowOverlayToAll(g_iConfig[s_overlayIWin]);
 	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
-		ShowOverlayToAll("overlays/ttt/detectives_win");
+		ShowOverlayToAll(g_iConfig[s_overlayDWin]);
 
 	if(g_iConfig[b_randomWinner])
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
@@ -3138,11 +3185,11 @@ public Action Timer_5(Handle timer)
 		g_iIcon[i] = CreateIcon(i);
 
 		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
-			ShowOverlayToClient(i, "darkness/ttt/overlayDetective");
+			ShowOverlayToClient(i, g_iConfig[s_overlayDCorner]);
 		else if (g_iRole[i] == TTT_TEAM_TRAITOR)
-			ShowOverlayToClient(i, "darkness/ttt/overlayTraitor");
+			ShowOverlayToClient(i, g_iConfig[s_overlayTCorner]);
 		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
-			ShowOverlayToClient(i, "darkness/ttt/overlayInnocent");
+			ShowOverlayToClient(i, g_iConfig[s_overlayICorner]);
 
 		if(g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);

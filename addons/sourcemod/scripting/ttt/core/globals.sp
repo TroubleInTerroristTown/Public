@@ -94,6 +94,12 @@ enum eConfig
 	bool:b_forceModel,
 	String:s_modelCT[PLATFORM_MAX_PATH],
 	String:s_modelT[PLATFORM_MAX_PATH],
+	String:s_overlayTWin[PLATFORM_MAX_PATH],
+	String:s_overlayDWin[PLATFORM_MAX_PATH],
+	String:s_overlayIWin[PLATFORM_MAX_PATH],
+	String:s_overlayTCorner[PLATFORM_MAX_PATH],
+	String:s_overlayDCorner[PLATFORM_MAX_PATH],
+	String:s_overlayICorner[PLATFORM_MAX_PATH],
 	String:s_logFile[PLATFORM_MAX_PATH],
 	String:s_errFile[PLATFORM_MAX_PATH],
 	String:s_defaultPri_D[64],
@@ -174,6 +180,7 @@ int g_iCollisionGroup = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
+int g_iKarmaStart[MAXPLAYERS + 1] = { 0, ...};
 
 Handle g_hRagdollArray = null;
 
