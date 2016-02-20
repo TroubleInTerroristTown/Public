@@ -879,10 +879,12 @@ public Action Timer_Selection(Handle hTimer)
 
 stock int GetRandomArray(Handle array)
 {
-	int size = GetArraySize(array);
-	if(size == 0)
-		return -1;
-	return Math_GetRandomInt(0, size-1);
+	int client = Client_GetRandom(CLIENTFILTER_INGAME);
+	
+	if(!IsPlayerInArray(client, array))
+		GetRandomArray(array);
+	
+	return client;
 }
 
 stock bool IsPlayerInArray(int player, Handle array)
@@ -3763,6 +3765,46 @@ stock int Math_GetRandomInt(int min, int max)
 		random++;
 
 	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
+}
+
+stock int Client_GetRandom(int flags = CLIENTFILTER_INGAME)
+{
+	int[] clients = new int[MaxClients];
+	
+	int num = Client_Get(clients, flags);
+
+	if (num == 0) {
+		return -1;
+	}
+	else if (num == 1) {
+		return clients[0];
+	}
+
+	int random = Math_GetRandomInt(0, num-1);
+
+	return clients[random];
+}
+
+stock int Client_Get(int[] clients, int flags=CLIENTFILTER_INGAME)
+{
+	int x = 0;
+	for (int client = 1; client <= MaxClients; client++) {
+
+		if (!Client_MatchesFilter(client, flags)) {
+			continue;
+		}
+
+		clients[x++] = client;
+	}
+
+	return x;
+}
+
+stock bool Client_MatchesFilter(int client, int flags)
+{
+	if (flags >= CLIENTFILTER_INGAME)
+		return IsClientInGame(client);
+	return false;
 }
 
 void CheckTeams()
