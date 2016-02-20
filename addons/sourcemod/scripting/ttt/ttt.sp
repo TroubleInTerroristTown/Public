@@ -3713,9 +3713,6 @@ stock void resetPlayers()
 
 stock void listTraitors(int client)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client))
-		return;
-
 	CPrintToChat(client, g_iConfig[s_pluginTag], "Your Traitor Partners", client);
 	int iCount = 0;
 
