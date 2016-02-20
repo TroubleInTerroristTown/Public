@@ -597,6 +597,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_iRole[i] = TTT_TEAM_UNASSIGNED;
 		g_bFound[i] = true;
 		g_iInnoKills[i] = 0;
+		g_iTraitorKills[i] = 0;
+		g_iDetectiveKills[i] = 0;
 		g_bHasC4[i] = false;
 		g_bImmuneRDMManager[i] = false;
 
@@ -632,6 +634,8 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	{
 		g_bFound[i] = true;
 		g_iInnoKills[i] = 0;
+		g_iTraitorKills[i] = 0;
+		g_iDetectiveKills[i] = 0;
 		g_bImmuneRDMManager[i] = false;
 
 		ShowLogs(i);
@@ -1032,6 +1036,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			CS_SetClientClanTag(client, " ");
 
 		g_iInnoKills[client] = 0;
+		g_iTraitorKills[client] = 0;
+		g_iDetectiveKills[client] = 0;
 
 		StripAllWeapons(client);
 
@@ -1208,6 +1214,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	g_iInnoKills[client] = 0;
+	g_iTraitorKills[client] = 0;
+	g_iDetectiveKills[client] = 0;
 	ClearIcon(client);
 
 	ClearTimer(g_hJihadBomb[client]);
