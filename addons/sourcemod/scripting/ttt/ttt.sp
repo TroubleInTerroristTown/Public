@@ -204,7 +204,9 @@ public void OnPluginStart()
 	g_iConfig[i_timeToReadRules] = Config_LoadInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
 	g_iConfig[b_showDetectiveMenu] = Config_LoadBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
 	g_iConfig[b_showRulesMenu] = Config_LoadBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
-	g_iConfig[i_punishInnoKills] = Config_LoadInt("ttt_punish_inno_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent before being punished for RDM.");
+	g_iConfig[i_punishInnoKills] = Config_LoadInt("ttt_punish_innocent_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent/detective before being punished for RDM.");
+	g_iConfig[i_punishTraitorKills] = Config_LoadInt("ttt_punish_traitor_for_rdm_kils", 1, "The amount of times an traitor will be allowed to kill another traitor before being punished for RDM.");
+	g_iConfig[i_punishDetectiveKills] = Config_LoadInt("ttt_punish_detective_for_rdm_kils", 5, "The amount of times an detective will be allowed to kill another innocent/detective before being punished for RDM.");
 	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
 	g_iConfig[b_updateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
@@ -1294,12 +1296,27 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
 				g_iRDMAttacker[client] = iAttacker;
 			}
-			else if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT))
+			
+			if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE))
 			{
 				g_iInnoKills[iAttacker]++;
 			}
+			else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
+			{
+				g_iTraitorKills[iAttacker]++;
+			}
+			else if ((g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
+			{
+				g_iDetectiveKills[iAttacker]++;
+			}
 
 			if (g_iInnoKills[iAttacker] >= g_iConfig[i_punishInnoKills])
+				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
+			
+			if (g_iTraitorKills[iAttacker] >= g_iConfig[i_punishTraitorKills])
+				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
+			
+			if (g_iDetectiveKills[iAttacker] >= g_iConfig[i_punishDetectiveKills])
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 		}
 	}

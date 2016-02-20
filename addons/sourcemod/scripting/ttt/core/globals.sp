@@ -71,6 +71,8 @@ enum eConfig
 	bool:b_kadRemover,
 	i_rulesClosePunishment,
 	i_punishInnoKills,
+	i_punishTraitorKills,
+	i_punishDetectiveKills,
 	i_timeToReadRules,
 	i_timeToReadDetectiveRules,
 	bool:b_showRulesMenu,
@@ -156,6 +158,8 @@ Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
+int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
+int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
 Handle g_hGraceTime = null;
 
