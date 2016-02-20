@@ -161,6 +161,8 @@ int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
+bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
+
 Handle g_hGraceTime = null;
 
 Handle g_hStartTimer = null;

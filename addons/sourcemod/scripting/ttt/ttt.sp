@@ -928,6 +928,8 @@ stock void TeamInitialize(int client)
 
 		if(g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
+		
+		g_bTaser[client] = false;
 	}
 	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -2495,6 +2497,15 @@ public Action Command_Shop(int client, int args)
 		}
 		if(team == TTT_TEAM_DETECTIVE)
 		{
+			if(g_iConfig[b_taserAllow] && !g_bTaser[client])
+			{
+				if(g_iConfig[i_shopTASER] > 0)
+				{
+					Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
+					AddMenuItem(menu, "taser", MenuItem);
+				}
+			}
+			
 			if(g_iConfig[i_shopDNA] > 0)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "DNA scanner (scan a dead body and show who the killer is)", client, g_iConfig[i_shopDNA]);
@@ -2519,15 +2530,6 @@ public Action Command_Shop(int client, int args)
 			{
 				Format(MenuItem, sizeof(MenuItem),"%T", "ID card (type !id for show your innocence)", client, g_iConfig[i_shopID]);
 				AddMenuItem(menu, "ID", MenuItem);
-			}
-		}
-
-		if(g_iConfig[b_taserAllow])
-		{
-			if(g_iConfig[i_shopTASER] > 0)
-			{
-				Format(MenuItem, sizeof(MenuItem),"%T", "Taser", client, g_iConfig[i_shopTASER]);
-				AddMenuItem(menu, "taser", MenuItem);
 			}
 		}
 
@@ -2617,11 +2619,12 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else if ( strcmp(info,"taser") == 0 )
 		{
-			if(g_iCredits[client] >= g_iConfig[i_shopTASER] && g_iConfig[b_taserAllow])
+			if(g_iCredits[client] >= g_iConfig[i_shopTASER] && g_iConfig[b_taserAllow] && !g_bTaser[client])
 			{
 				GivePlayerItem(client, "weapon_taser");
 				subtractCredits(client, g_iConfig[i_shopTASER]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+				g_bTaser[client] = true;
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
