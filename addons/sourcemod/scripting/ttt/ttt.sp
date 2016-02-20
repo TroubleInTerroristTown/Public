@@ -838,9 +838,10 @@ public Action Timer_Selection(Handle hTimer)
 
 	LoopValidClients(i)
 	{
-		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
+		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
+		{
 			g_iKarmaStart[i] = g_iKarma[i];
-			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma score updated", i);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma has been updated", i);
 		}
 
 		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
