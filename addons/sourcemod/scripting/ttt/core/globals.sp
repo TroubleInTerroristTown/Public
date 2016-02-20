@@ -171,6 +171,7 @@ Handle g_hTraitores = null;
 int g_iIcon[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bRoundStarted = false;
+bool g_bCheckPlayers = false;
 
 Handle g_hRoundTimer = null;
 

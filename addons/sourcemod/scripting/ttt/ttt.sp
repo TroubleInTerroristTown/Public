@@ -715,6 +715,8 @@ public Action Timer_Selection(Handle hTimer)
 		g_bInactive = true;
 		LoopValidClients(i)
 			CPrintToChat(i, g_iConfig[s_pluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
+		
+		g_bCheckPlayers = true;
 
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(iCount);
@@ -725,6 +727,7 @@ public Action Timer_Selection(Handle hTimer)
 	}
 	
 	g_bRoundStarted = true;
+	g_bCheckPlayers = false;
 
 	int iDetectives = RoundToNearest(iCount * float(g_iConfig[i_detectiveRatio])/100.0);
 	if(iDetectives == 0)
@@ -3239,7 +3242,7 @@ public Action Timer_5(Handle timer)
 
 	if(g_bRoundStarted)
 		CheckTeams();
-	else if(iCount < g_iConfig[i_requiredPlayers])
+	else if(g_bCheckPlayers)
 		CheckPlayers();
 }
 
@@ -3258,7 +3261,10 @@ void CheckPlayers()
 	}
 
 	if(iCount >= g_iConfig[i_requiredPlayers])
+	{
+		g_bCheckPlayers = false;
 		CS_TerminateRound(3.0, CSRoundEnd_Draw);
+	}
 }
 
 #if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
