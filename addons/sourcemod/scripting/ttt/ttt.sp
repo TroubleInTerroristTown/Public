@@ -697,7 +697,7 @@ public Action Timer_Selection(Handle hTimer)
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) > CS_TEAM_CT)
+		if(GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 			continue;
 
 		if(!IsPlayerAlive(i))
@@ -851,7 +851,7 @@ public Action Timer_Selection(Handle hTimer)
 		else
 			listTraitors(i);
 
-		if(GetClientTeam(i) <= CS_TEAM_SPECTATOR || GetClientTeam(i) > CS_TEAM_CT)
+		if(GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 			continue;
 
 		if(!IsPlayerAlive(i))
@@ -3203,6 +3203,26 @@ public Action Timer_5(Handle timer)
 
 	if(g_bRoundStarted)
 		CheckTeams();
+	else
+		CheckPlayers();
+}
+
+void CheckPlayers()
+{
+	int iCount = 0;
+	LoopValidClients(i)
+	{
+		if(GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
+			continue;
+
+		if(IsFakeClient(i))
+			continue;
+
+		iCount++;
+	}
+
+	if(iCount >= g_iConfig[i_requiredPlayers])
+		CS_TerminateRound(3.0, CSRoundEnd_Draw);
 }
 
 #if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
