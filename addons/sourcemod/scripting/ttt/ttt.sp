@@ -723,6 +723,8 @@ public Action Timer_Selection(Handle hTimer)
 
 		return;
 	}
+	
+	g_bRoundStarted = true;
 
 	int iDetectives = RoundToNearest(iCount * float(g_iConfig[i_detectiveRatio])/100.0);
 	if(iDetectives == 0)
@@ -861,7 +863,6 @@ public Action Timer_Selection(Handle hTimer)
 	}
 
 	ClearArray(g_hLogsArray);
-	g_bRoundStarted = true;
 
 	Call_StartForward(g_hOnRoundStart);
 	Call_PushCell(iInnocent);
@@ -969,7 +970,7 @@ stock void TeamInitialize(int client)
 
 stock void TeamTag(int client)
 {
-	if (!IsClientInGame(client) || client < 0 || client > MaxClients)
+	if (!TTT_IsClientValid(client))
 		return;
 
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
@@ -1079,13 +1080,15 @@ public void OnClientPutInServer(int client)
 	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
-public Action OnPreThink(int client){
+public Action OnPreThink(int client)
+{
 	if(TTT_IsClientValid(client))
-		if(g_iConfig[b_publicKarma]){
+	{
+		if(g_iConfig[b_publicKarma])
 			CS_SetClientContributionScore(client, g_iKarma[client]);
-		}else if(g_iConfig[b_karmaRound]){
+		else if(g_iConfig[b_karmaRound])
 			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
-		}
+	}
 }
 
 stock void AddStartKarma(int client)
@@ -1154,8 +1157,10 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if(!g_bRoundStarted)
 		return Plugin_Handled;
 
-	if((0 < iAttacker <= MaxClients) && IsClientInGame(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG]){
-		if(g_iConfig[b_karmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[i_startKarma])){
+	if(TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG])
+	{
+		if(g_iConfig[b_karmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[i_startKarma]))
+		{
 			damage *= FloatDiv(float(g_iKarma[iAttacker]), float(g_iConfig[i_startKarma]));
 			return Plugin_Changed;
 		}
