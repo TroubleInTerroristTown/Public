@@ -1528,7 +1528,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	}
 	else if(action == MenuAction_Cancel)
 	{
-		if(TTT_IsClientValid(client) && g_iConfig[i_rulesClosePunishment] == 0)
+		if(TTT_IsClientValid(client) && !IsFakeClient(client) && g_iConfig[i_rulesClosePunishment] == 0)
 		{
 			char sFlags[16];
 			AdminFlag aFlags[16];
