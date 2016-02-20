@@ -1998,7 +1998,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 		if((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]){
 			g_iKarmaStart[client] = g_iKarma[client];
-			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma score updated", client);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma has been updated", client);
 		}
 	}
 
