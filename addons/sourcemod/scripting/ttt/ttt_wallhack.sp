@@ -90,9 +90,7 @@ void SetupGlowSkin(int client)
 	
 	char sModel[PLATFORM_MAX_PATH];
 	GetClientModel(client, sModel, sizeof(sModel));
-	CPS_SetSkin(client, sModel, CPS_RENDER);
-		
-	int iSkin = CPS_GetSkin(client);
+	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
 	
 	if(iSkin == -1)
 		return;
@@ -111,6 +109,8 @@ void SetupGlow(int client, int iSkin)
 		return;
 	
 	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
 	
 	int iRed = 255;
 	int iGreen = 255;
