@@ -3175,23 +3175,37 @@ public Action Command_SetKarma(int client, int args)
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
 
-	int target = FindTarget(client, arg1);
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
 
-	if (target == -1)
+	if ((target_count = ProcessTargetString(arg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
 	{
-		ReplyToCommand(client, "[SM] Invalid target.");
+		ReplyToTargetError(client, target_count);
 		return Plugin_Handled;
 	}
 
-	if(g_bKarma[client])
+	for (int i = 0; i < target_count; i++)
 	{
-		ReplyToCommand(client, "[SM] Player data not loaded yet.");
-		return Plugin_Handled;
+		int target = target_list[i];
+
+		if (target == -1)
+		{
+			ReplyToCommand(client, "[SM] Invalid target.");
+			return Plugin_Handled;
+		}
+	
+		if(g_bKarma[client])
+		{
+			ReplyToCommand(client, "[SM] Player data not loaded yet.");
+			return Plugin_Handled;
+		}
+	
+		int karma = StringToInt(arg2);
+	
+		setKarma(client, karma);
 	}
-
-	int karma = StringToInt(arg2);
-
-	setKarma(client, karma);
 
 	return Plugin_Continue;
 }
@@ -3211,14 +3225,29 @@ public Action Command_SetCredits(int client, int args)
 	char arg2[32];
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
-	int target = FindTarget(client, arg1);
+	
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
 
-	if (target == -1)
+	if ((target_count = ProcessTargetString(arg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
 		return Plugin_Handled;
+	}
 
-	int credits = StringToInt(arg2);
+	for (int i = 0; i < target_count; i++)
+	{
+		int target = target_list[i];
 
-	setCredits(client, credits);
+		if (target == -1)
+			return Plugin_Handled;
+	
+		int credits = StringToInt(arg2);
+	
+		setCredits(client, credits);
+	}
 
 	return Plugin_Continue;
 }
