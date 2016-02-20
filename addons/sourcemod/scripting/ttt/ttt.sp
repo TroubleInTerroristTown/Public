@@ -355,7 +355,10 @@ stock void ShowLogs(int client)
 
 	DataPack slPack = new DataPack();
 	RequestFrame(OnCreate, slPack);
-	slPack.WriteCell(GetClientUserId(client));
+	if(TTT_IsClientValid(client))
+		slPack.WriteCell(GetClientUserId(client));
+	else
+		slPack.WriteCell(0);
 	slPack.WriteCell(index);
 }
 
@@ -364,8 +367,12 @@ public void OnCreate(any pack)
 	ResetPack(pack);
 	int userid = ReadPackCell(pack);
 	int index = ReadPackCell(pack);
-
-	int client = GetClientOfUserId(userid);
+	int client;
+	
+	if(userid == 0)
+		client = userid;
+	else
+		client = GetClientOfUserId(userid);
 
 	if ((client == 0) || IsClientInGame(client))
 	{
