@@ -3209,8 +3209,18 @@ public Action Command_Status(int client, int args)
 
 public Action Timer_5(Handle timer)
 {
+	int iCount = 0;
+
 	LoopValidClients(i)
 	{
+		if(GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
+			continue;
+
+		if(IsFakeClient(i))
+			continue;
+
+		iCount++;
+		
 		if (!IsPlayerAlive(i))
 			continue;
 
@@ -3229,7 +3239,7 @@ public Action Timer_5(Handle timer)
 
 	if(g_bRoundStarted)
 		CheckTeams();
-	else
+	else if(iCount < g_iConfig[i_requiredPlayers])
 		CheckPlayers();
 }
 
