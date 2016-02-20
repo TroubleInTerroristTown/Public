@@ -1912,6 +1912,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	    CS_SetClientClanTag(client, "UNASSIGNED");
 	    g_bFound[client] = true;
 	}
+	
+	CheckTeams();
 
 	Call_StartForward(g_hOnClientDeath);
 	Call_PushCell(client);
@@ -3763,7 +3765,7 @@ stock int Math_GetRandomInt(int min, int max)
 	return RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
 }
 
-stock void CheckTeams()
+void CheckTeams()
 {
 	int iT = 0;
 	int iD = 0;
@@ -3774,7 +3776,10 @@ stock void CheckTeams()
 		if(IsPlayerAlive(i))
 		{
 			if(g_iRole[i] == TTT_TEAM_DETECTIVE)
+			{
+				CS_SetClientClanTag(i, "DETECTIVE");
 				iD++;
+			}
 			else if(g_iRole[i] == TTT_TEAM_TRAITOR)
 				iT++;
 			else if(g_iRole[i] == TTT_TEAM_INNOCENT)
