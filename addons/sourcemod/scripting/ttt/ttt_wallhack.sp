@@ -68,13 +68,11 @@ public void OnPluginStart()
 
 void StartGlowTimer()
 {
-	PrintToServer("Called StartGlowTimer");
 	CreateTimer(1.5, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
 {
-	PrintToServer("Called Timer_SetGlow");
 	LoopValidClients(client)
 		if (IsPlayerAlive(client) && g_bHasRadar[client])
 			SetupGlowSkin(client);
@@ -85,7 +83,6 @@ public Action Timer_SetupGlow(Handle timer, any data)
 
 void SetupGlowSkin(int client)
 {
-	PrintToChat(client, "Called SetupGlowSkin");
 	CPS_RemoveSkin(client);
 	
 	if(!TTT_IsRoundActive())
@@ -100,8 +97,6 @@ void SetupGlowSkin(int client)
 	if(iSkin == -1)
 		return;
 		
-	PrintToChat(client, "Called SetupGlowSkin");
-	
 	SetupGlow(client, iSkin);
 		
 	SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
@@ -167,8 +162,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			g_bHasRadar[client] = true;
 			g_bOwnRadar[client] = true;
 			
-			PrintToChat(client, "Called TTT_OnItemPurchased! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
-			
 			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
 			else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
@@ -180,17 +173,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 
 public Action Timer_WHActive(Handle timer, any userid)
 {
-	PrintToServer("Called Timer_WHActive!");
 	int client = GetClientOfUserId(userid);
 	
 	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && g_bHasRadar[client])
 	{
-		PrintToChat(client, "Called Timer_WHActive! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
-		
 		g_bHasRadar[client] = false;
 		g_hTimer[client] = null;
-		
-		PrintToChat(client, "Called Timer_WHActive! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
 		
 		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			g_hTimer[client] = CreateTimer(g_fTraitorCooldown, Timer_WHCooldown, GetClientUserId(client));
@@ -203,15 +191,12 @@ public Action Timer_WHActive(Handle timer, any userid)
 
 public Action Timer_WHCooldown(Handle timer, any userid)
 {
-	PrintToServer("Called Timer_WHCooldown!");
 	int client = GetClientOfUserId(userid);
 	
 	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && !g_bHasRadar[client])
 	{
-		PrintToChat(client, "Called Timer_WHCooldown! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
 		g_bHasRadar[client] = true;
 		g_hTimer[client] = null;
-		PrintToChat(client, "Called Timer_WHCooldown! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
 		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
 		else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
@@ -251,9 +236,6 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 			
 		if(TTT_IsClientValid(i))
 		{
-			PrintToChat(client, "Spieler: %N", i);
-			PrintToChat(client, "Called OnSetTransmit_GlowSkin! Own: %d Has: %d", g_bOwnRadar[client], g_bHasRadar[client]);
-			
 			if(g_bOwnRadar[client] && g_bHasRadar[client])
 				return Plugin_Continue;
 			else
