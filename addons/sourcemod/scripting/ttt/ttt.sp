@@ -1403,9 +1403,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
 		Handle hFile = OpenFile(g_sRulesFile, "rt");
 
-		if(hFile == null){
+		if(hFile == null)
+		{
 			SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
-			delete menu;
+			if(menu != null)
+				delete menu;
 			return 0;
 		}
 
@@ -1415,8 +1417,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		{
 			SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
 
-			delete kvRules;
-			delete menu;
+			if(kvRules != null)
+				delete kvRules;
+			
+			if(menu != null)
+				delete menu;
 
 			return 0;
 		}
@@ -1434,8 +1439,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				g_bKnowRules[client] = false;
 				g_bReadRules[client] = true;
 
-				delete kvRules;
-				delete menu;
+				if(kvRules != null)
+					delete kvRules;
+				
+				if(menu != null)
+					delete menu;
 
 				return 0;
 			}
@@ -1448,8 +1456,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				g_bKnowRules[client] = false;
 				g_bReadRules[client] = true;
 
-				delete kvRules;
-				delete menu;
+				if(kvRules != null)
+					delete kvRules;
+				
+				if(menu != null)
+					delete menu;
 
 				return 0;
 			}
@@ -1462,8 +1473,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				g_bKnowRules[client] = false;
 				g_bReadRules[client] = true;
 
-				delete kvRules;
-				delete menu;
+				if(kvRules != null)
+					delete kvRules;
+				
+				if(menu != null)
+					delete menu;
 
 				return 0;
 			}
@@ -1478,8 +1492,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				g_bKnowRules[client] = false;
 				g_bReadRules[client] = true;
 
-				delete kvRules;
-				delete menu;
+				if(kvRules != null)
+					delete kvRules;
+				
+				if(menu != null)
+					delete menu;
 
 				return 0;
 			}
@@ -1516,15 +1533,23 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				rMenu.ExitBackButton = true;
 				rMenu.Display(client, g_iConfig[i_timeToReadRules]);
 
-				delete hRFile;
-				delete kvRules;
-				delete menu;
+				if(hRFile != null)
+					delete hRFile;
+				
+				if(kvRules != null)
+					delete kvRules;
+				
+				if(menu != null)
+					delete menu;
 
 				return 0;
 			}
 
-			delete kvRules;
-			delete menu;
+			if(kvRules != null)
+				delete kvRules;
+			
+			if(menu != null)
+				delete menu;
 
 			return 0;
 		}
@@ -1562,7 +1587,8 @@ public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 	if (action == MenuAction_Cancel || action == MenuAction_Select || param == MenuCancel_ExitBack)
 		ShowRules(client, 0);
 	else if (action == MenuAction_End)
-		delete menu;
+		if(menu != null)
+			delete menu;
 	return 0;
 }
 
