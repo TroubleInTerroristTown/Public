@@ -141,6 +141,14 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 
 	if((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 		return false;
+	
+	for (int i = 0; i < g_iCustomItemCount; i++)
+	{
+		if(StrEqual(g_cCustomItems_Short[i], temp_short, false))
+		{
+			return false;
+		}
+	}
 
 	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(temp_short), "%s", temp_short);
 	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(temp_long), "%s", temp_long);
