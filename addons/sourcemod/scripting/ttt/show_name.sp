@@ -18,8 +18,8 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-bool Karma = true;
-bool Health = false;
+bool g_bKarma = true;
+bool g_bHealth = false;
 char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 public void OnPluginStart()
@@ -29,8 +29,8 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
 
 	Config_Setup("TTT", g_sCFile);
-	Karma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	Health = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
+	g_bKarma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_bHealth = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
 	Config_Done();
 
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
