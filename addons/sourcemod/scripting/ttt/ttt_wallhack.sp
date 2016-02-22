@@ -64,6 +64,20 @@ public void OnPluginStart()
 	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack");
 	
 	StartGlowTimer();
+	
+	HookEvent("player_death", Event_PlayerReset);
+	HookEvent("player_spawn", Event_PlayerReset);
+}
+
+public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(TTT_IsClientValid(client))
+	{
+		g_bHasRadar[client] = false;
+		g_bOwnRadar[client] = false;
+	}
 }
 
 void StartGlowTimer()
