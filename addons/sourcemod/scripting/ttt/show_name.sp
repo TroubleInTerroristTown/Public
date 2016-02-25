@@ -19,7 +19,7 @@ public Plugin myinfo =
 };
 
 bool g_bKarma = true;
-bool g_bHealth = false;
+//bool g_bHealth = false;
 char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 public void OnPluginStart()
@@ -30,7 +30,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT", g_sCFile);
 	g_bKarma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	g_bHealth = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
+	//g_bHealth = Config_LoadBool("ttt_display_health", false, "If show_name.smx is running, should we display a word-based health measurement on the HUD?");
 	Config_Done();
 
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
@@ -52,12 +52,21 @@ public Action Timer_UpdateText(Handle timer)
 
 			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
-					PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-					PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
-					PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
+				if(g_bKarma){
+					if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+						PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
+					else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+						PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
+					else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+						PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
+				}else{
+					if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+						PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>", target); //red color
+					else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+						PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>", target); //blue color
+					else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+						PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>", target); //green color
+				}
 			}
 			else
 			{
