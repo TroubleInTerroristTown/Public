@@ -2204,11 +2204,17 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	{
 		if(!g_bHasC4[client] && !g_bJihadBomb[client])
 		{
-			int iC4 = GetPlayerWeaponSlot(client, CS_SLOT_C4);
-			if(iC4 != -1)
+			int iEntity = -1;
+			while ((iEntity = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
 			{
-				RemovePlayerItem(client, iC4);
-				AcceptEntityInput(iC4, "Kill");
+				char sWeapon[128];  
+				GetEdictClassname(iEntity, sWeapon, sizeof(sWeapon));
+				
+				if(StrEqual(sWeapon, "weapon_c4", false))
+				{
+					RemovePlayerItem(client, iEntity);
+					AcceptEntityInput(iEntity, "Kill");
+				}
 			}
 
 			return Plugin_Handled;
