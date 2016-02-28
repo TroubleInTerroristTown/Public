@@ -8,7 +8,6 @@
 #define SND_DISARM "weapons/c4/c4_disarm.wav"
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
-#define CLIENTFILTER_INGAME	( 1	<< 7 )
 
 enum eConfig
 {

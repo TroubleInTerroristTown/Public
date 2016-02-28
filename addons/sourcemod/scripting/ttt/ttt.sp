@@ -10,6 +10,7 @@
 #include <emitsoundany>
 #include <ttt>
 #include <config_loader>
+#include <smlib>
 
 #pragma newdecls required
 
@@ -2207,20 +2208,17 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	{
 		if(!g_bHasC4[client] && !g_bJihadBomb[client])
 		{
-			int iEntity = -1;
-			while ((iEntity = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
+			LOOP_CLIENTWEAPONS(client, weapon, index)
 			{
 				char sWeapon[128];  
-				GetEdictClassname(iEntity, sWeapon, sizeof(sWeapon));
+				GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
 				
 				if(StrContains(sWeapon, "weapon_c4", false) != -1)
 				{
-					RemovePlayerItem(client, iEntity);
-					AcceptEntityInput(iEntity, "Kill");
+					RemovePlayerItem(client, weapon);
+					AcceptEntityInput(weapon, "Kill");
 				}
 			}
-
-			return Plugin_Handled;
 		}
 	}
 	return Plugin_Continue;
@@ -3825,25 +3823,6 @@ public Action Command_KarmaReset(int client, int args)
 	LoopValidClients(i)
 		setKarma(g_iKarma[i], 100);
 	return Plugin_Handled;
-}
-
-// Thanks SMLib ( https://github.com/bcserv/smlib/blob/master/scripting/include/smlib/math.inc#L149 )
-stock int Math_GetRandomInt(int min, int max)
-{
-	int random;
-	
-	for (int i = 0; i <= 5; i++)
-		random = GetURandomInt();
-
-	if (random == 0)
-		random++;
-	
-	int index;
-	for (int i = 0; i <= 5; i++)
-		index = RoundToCeil(float(random) / (float(2147483647) / float(max - min + 1))) + min - 1;
-	
-	return index;
-	
 }
 
 void CheckTeams()
