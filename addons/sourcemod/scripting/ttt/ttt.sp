@@ -2213,7 +2213,7 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 				char sWeapon[128];  
 				GetEdictClassname(iEntity, sWeapon, sizeof(sWeapon));
 				
-				if(StrEqual(sWeapon, "weapon_c4", false))
+				if(StrContains(sWeapon, "weapon_c4", false) != -1)
 				{
 					RemovePlayerItem(client, iEntity);
 					AcceptEntityInput(iEntity, "Kill");
