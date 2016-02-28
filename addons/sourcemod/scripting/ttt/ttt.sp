@@ -362,13 +362,15 @@ stock void ShowLogs(int client)
 	slPack.WriteCell(index);
 }
 
-public void OnCreate(any pack)
+public void OnCreate(any data)
 {
-	ResetPack(pack);
-	int userid = ReadPackCell(pack);
-	int index = ReadPackCell(pack);
-	int client;
+	DataPack pack = view_as<DataPack>(data);
+	pack.Reset();
 	
+	int userid = pack.ReadCell();
+	int index = pack.ReadCell();
+	
+	int client;
 	if(userid == 0)
 		client = userid;
 	else
@@ -2086,7 +2088,8 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		delay = g_iConfig[f_roundDelay];
 
 	if(g_iConfig[b_nextRoundAlert])
-		CPrintToChatAll(g_iConfig[s_pluginTag], "next round in", delay);
+		LoopValidClients(client)
+			CPrintToChat(client, g_iConfig[s_pluginTag], "next round in", client, delay);
 
 	return Plugin_Changed;
 }
