@@ -997,7 +997,7 @@ stock Client_GetWeaponsOffset(client)
 	static offset = -1;
 
 	if (offset == -1) {
-		offset = FindDataMapOffs(client, "m_hMyWeapons");
+		offset = FindDataMapInfo(client, "m_hMyWeapons");
 	}
 	
 	return offset;
