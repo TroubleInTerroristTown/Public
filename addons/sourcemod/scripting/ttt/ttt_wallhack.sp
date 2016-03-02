@@ -82,7 +82,7 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 
 void StartGlowTimer()
 {
-	CreateTimer(1.5, Timer_SetupGlow, _, TIMER_REPEAT);
+	CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
