@@ -3210,7 +3210,7 @@ public Action Command_SetKarma(int client, int args)
 			return Plugin_Handled;
 		}
 	
-		if(g_bKarma[client])
+		if(g_bKarma[target])
 		{
 			ReplyToCommand(client, "[SM] Player data not loaded yet.");
 			return Plugin_Handled;
@@ -3218,7 +3218,7 @@ public Action Command_SetKarma(int client, int args)
 	
 		int karma = StringToInt(arg2);
 	
-		setKarma(client, karma);
+		setKarma(target, karma);
 	}
 
 	return Plugin_Continue;
@@ -3260,7 +3260,7 @@ public Action Command_SetCredits(int client, int args)
 	
 		int credits = StringToInt(arg2);
 	
-		setCredits(client, credits);
+		setCredits(target, credits);
 	}
 
 	return Plugin_Continue;
