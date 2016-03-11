@@ -116,7 +116,8 @@ enum eConfig
 	bool:b_karmaDMG_up,
 	Float:f_roundDelay,
 	bool:b_nextRoundAlert,
-	bool:b_endroundDMG
+	bool:b_endroundDMG,
+	bool:bResetCreditsEachRound
 };
 
 // TODO: Move this to (adt) array

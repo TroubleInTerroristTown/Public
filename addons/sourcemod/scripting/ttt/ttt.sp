@@ -229,6 +229,7 @@ public void OnPluginStart()
 	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
+	g_iConfig[bResetCreditsEachRound] = Config_LoadBool("ttt_credits_reset_each_round", false, "Reset credits for all players each round?. 0 = Disabled (default). 1 = Enabled.");
 
 	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
@@ -1019,6 +1020,14 @@ stock void ApplyIcons()
 public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(TTT_IsClientValid(client))
+	{
+		if(g_iConfig[bResetCreditsEachRound])
+		{
+			g_iCredits[client] = 0;
+		}
+	}
 
 	if(g_bRoundStarted && TTT_IsClientValid(client))
 	{
