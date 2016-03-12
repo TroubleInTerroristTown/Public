@@ -2920,7 +2920,8 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	Call_Finish();
 }
 
-stock void setCredits(int client, int credits, bool message = false){
+stock void setCredits(int client, int credits)
+{
 	g_iCredits[client] = credits;
 
 	if(g_iCredits[client] < 0)
@@ -3238,16 +3239,18 @@ public Action Command_SetCredits(int client, int args)
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
 
-	if (args < 2 || args > 3)
+	if (args != 2)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
 
 		return Plugin_Handled;
 	}
 	char arg1[32];
-	char arg2[32];
 	GetCmdArg(1, arg1, sizeof(arg1));
+	
+	char arg2[32];
 	GetCmdArg(2, arg2, sizeof(arg2));
+	int credits = StringToInt(arg2);
 	
 	char target_name[MAX_TARGET_LENGTH];
 	int target_list[MAXPLAYERS];
@@ -3262,14 +3265,10 @@ public Action Command_SetCredits(int client, int args)
 
 	for (int i = 0; i < target_count; i++)
 	{
-		int target = target_list[i];
-
-		if (target == -1)
+		if (!TTT_IsClientValid(target_list[i]))
 			return Plugin_Handled;
-	
-		int credits = StringToInt(arg2);
-	
-		setCredits(target, credits);
+		
+		setCredits(target_list[i], credits);
 	}
 
 	return Plugin_Continue;
