@@ -19,17 +19,11 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	StartGlowTimer();
-}
-
-void StartGlowTimer()
-{
 	CreateTimer(1.5, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
 {
-
 	LoopValidClients(client)
 		if (IsPlayerAlive(client))
 			SetupGlowSkin(client)

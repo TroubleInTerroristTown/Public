@@ -63,7 +63,7 @@ public void OnPluginStart()
 	g_fTraitorActive = Config_LoadFloat("wh_traitor_active", 3.0, "Active time for Traitor-Wallhack");
 	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack");
 	
-	StartGlowTimer();
+	CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
 	
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("player_spawn", Event_PlayerReset);
@@ -78,11 +78,6 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 		g_bHasRadar[client] = false;
 		g_bOwnRadar[client] = false;
 	}
-}
-
-void StartGlowTimer()
-{
-	CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
@@ -109,9 +104,8 @@ void SetupGlowSkin(int client)
 	if(iSkin == -1)
 		return;
 		
-	SetupGlow(client, iSkin);
-		
-	SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+		SetupGlow(client, iSkin);
 		
 }
 
