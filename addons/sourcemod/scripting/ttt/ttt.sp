@@ -1984,10 +1984,13 @@ stock int CreateIcon(int client)
 	origin[2] = origin[2] + 80.0;
 
 	int Ent = CreateEntityByName("env_sprite");
-	if(!Ent) return -1;
+	if(!Ent)
+		return -1;
 
-	if(g_iRole[client] == TTT_TEAM_DETECTIVE) DispatchKeyValue(Ent, "model", "sprites/sg_detective_icon.vmt");
-	else if(g_iRole[client] == TTT_TEAM_TRAITOR) DispatchKeyValue(Ent, "model", "sprites/sg_traitor_icon.vmt");
+	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+		DispatchKeyValue(Ent, "model", "sprites/sg_detective_icon.vmt");
+	else if(g_iRole[client] == TTT_TEAM_TRAITOR)
+		DispatchKeyValue(Ent, "model", "sprites/sg_traitor_icon.vmt");
 	DispatchKeyValue(Ent, "classname", "env_sprite");
 	DispatchKeyValue(Ent, "spawnflags", "1");
 	DispatchKeyValue(Ent, "scale", "0.08");
