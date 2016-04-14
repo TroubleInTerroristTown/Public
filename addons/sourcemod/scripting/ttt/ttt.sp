@@ -136,7 +136,12 @@ public void OnPluginStart()
 	{
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	}
+	
+	SetupConfig();
+}
 
+void SetupConfig()
+{
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 
 	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
