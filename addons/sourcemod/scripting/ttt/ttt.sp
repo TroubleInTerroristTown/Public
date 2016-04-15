@@ -56,7 +56,13 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
-
+	
+	CreateNative("TTT_OverrideConfigInt", Native_OverrideConfigInt);
+	CreateNative("TTT_OverrideConfigBool", Native_OverrideConfigBool);
+	CreateNative("TTT_OverrideConfigFloat", Native_OverrideConfigFloat);
+	
+	CreateNative("TTT_ReloadConfig", Native_ReloadConfig);
+	
 	RegPluginLibrary("ttt");
 
 	return APLRes_Success;

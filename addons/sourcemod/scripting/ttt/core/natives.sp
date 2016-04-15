@@ -198,3 +198,31 @@ public int Native_SetFoundStatus(Handle plugin, int numParams)
 
     return;
 }
+
+public int Native_OverrideConfigInt(Handle plugin, int numParams)
+{
+    g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
+    
+    return;
+}
+
+public int Native_OverrideConfigBool(Handle plugin, int numParams)
+{
+    g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
+    
+    return;
+}
+
+public int Native_OverrideConfigFloat(Handle plugin, int numParams)
+{
+    g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
+    
+    return;
+}
+
+public int Native_ReloadConfig(Handle plugin, int numParams)
+{
+	SetupConfig();
+	
+	return;
+}
