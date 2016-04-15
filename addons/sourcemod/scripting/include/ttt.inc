@@ -330,6 +330,14 @@ native void TTT_OverrideConfigBool(int configIndex, bool value);
 native void TTT_OverrideConfigFloat(int configIndex, float value);
 
 /*
+ * Overrides a config setting.
+ *
+ * @param configIndex       The config index to change. Use eConfig for this.
+ * @param buffer            String to set.
+ */
+native void TTT_OverrideConfigString(int configIndex, char[] buffer);
+
+/*
  * Reloads the config.
  */
 native void TTT_ReloadConfig();

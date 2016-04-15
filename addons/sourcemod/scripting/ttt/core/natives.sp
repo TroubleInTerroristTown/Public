@@ -220,6 +220,16 @@ public int Native_OverrideConfigFloat(Handle plugin, int numParams)
     return;
 }
 
+public int Native_OverrideConfigString(Handle plugin, int numParams)
+{
+    int size = GetNativeCell(3);
+    char[] buffer = new char[size];
+    GetNativeString(2, buffer, size);
+    strcopy(view_as<char>(g_iConfig[GetNativeCell(1)]), size, buffer);
+    
+    return;
+}
+
 public int Native_ReloadConfig(Handle plugin, int numParams)
 {
 	SetupConfig();
