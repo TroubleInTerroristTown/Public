@@ -252,6 +252,8 @@ void SetupConfig()
 	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
 	g_iConfig[b_endroundDMG] = Config_LoadBool("ttt_end_round_dm", false, "Enable this to disable damage prevention between round end and warmup.");
+	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
 
 	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_iConfig[s_overlayDWin], sizeof(g_iConfig[s_overlayDWin]));
 	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_iConfig[s_overlayTWin], sizeof(g_iConfig[s_overlayTWin]));
@@ -3059,6 +3061,9 @@ stock void manageRDM(int client)
 {
 	if (!IsClientInGame(client))
 		return;
+	
+	if(g_iConfig[b_ignoreRDMMenu])
+		return;
 
 	int iAttacker = g_iRDMAttacker[client];
 	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
@@ -3877,6 +3882,9 @@ void CheckTeams()
 			}
 		}
 	}
+	
+	if(g_iConfig[b_ignoreDeaths])
+		return;
 
 	if(iD == 0 && iI == 0)
 	{

@@ -126,7 +126,9 @@ enum eConfig
 	Float:f_roundDelay,
 	bool:b_nextRoundAlert,
 	bool:b_endroundDMG,
-	bool:bResetCreditsEachRound
+	bool:bResetCreditsEachRound,
+	bool:b_ignoreDeaths,
+	bool:b_ignoreRDMMenu
 };
 
 /*
