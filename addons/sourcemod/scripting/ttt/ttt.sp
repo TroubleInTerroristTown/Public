@@ -511,7 +511,8 @@ public void OnMapStart()
 	PrecacheDecal(g_iConfig[s_overlayIWin], true);
 
 
-	if(g_iConfig[b_endwithD]){
+	if(g_iConfig[b_endwithD])
+	{
 		Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayDWin]);
 		AddFileToDownloadsTable(buffer);
 
@@ -1444,7 +1445,8 @@ stock void ShowRules(int client, int item)
 	}
 	while (kvRules.GotoNextKey());
 
-	delete kvRules;
+	if(kvRules != null)
+		delete kvRules;
 
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
@@ -1459,8 +1461,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
 
-		if (StrEqual(sParam, "yes", false)){
-			delete menu;
+		if (StrEqual(sParam, "yes", false))
+		{
+			if(menu != null)
+				delete menu;
 			return 0;
 		}
 
