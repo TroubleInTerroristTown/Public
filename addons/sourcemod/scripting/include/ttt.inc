@@ -75,7 +75,7 @@ enum eConfig
 	bool:b_blockGrenadeMessage,
 	bool:b_blockRadioMessage,
 	bool:b_enableNoBlock,
-	String:s_pluginTag[MAX_MESSAGE_LENGTH],
+	String:s_pluginTag[250],
 	bool:b_kadRemover,
 	i_rulesClosePunishment,
 	i_punishInnoKills,
