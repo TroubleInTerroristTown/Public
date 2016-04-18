@@ -69,6 +69,15 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerReset);
 }
 
+public void OnAllPluginsLoaded()
+{
+	if(g_iTraitorPrice > 0)
+		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR);
+	
+	if(g_iDetectivePrice > 0)
+		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE);
+}
+
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
@@ -80,7 +89,64 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action Timer_SetupGlow(Handle timer, any data)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+{
+	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	{
+		if(StrEqual(itemshort, SHORT_NAME, false))
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+					return Plugin_Stop;
+			
+			g_bHasRadar[client] = true;
+			g_bOwnRadar[client] = true;
+			
+			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
+			else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+				g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
+		}
+	}
+	return Plugin_Continue;
+}
+
+public Action Timer_WHActive(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && g_bHasRadar[client])
+	{
+		g_bHasRadar[client] = false;
+		g_hTimer[client] = null;
+		
+		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			g_hTimer[client] = CreateTimer(g_fTraitorCooldown, Timer_WHCooldown, GetClientUserId(client));
+		else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+			g_hTimer[client] = CreateTimer(g_fDetectiveCooldown, Timer_WHCooldown, GetClientUserId(client));
+	}
+	
+	return Plugin_Stop;
+}
+
+public Action Timer_WHCooldown(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && !g_bHasRadar[client])
+	{
+		g_bHasRadar[client] = true;
+		g_hTimer[client] = null;
+		
+		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
+		else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+			g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
+	}
+	
+	return Plugin_Stop;
+}
+
+public Action Timer_SetupGlow(Handle timer)
 {
 	LoopValidClients(client)
 		if (IsPlayerAlive(client) && g_bHasRadar[client])
@@ -149,71 +215,6 @@ void SetupGlow(int client, int iSkin)
 	SetEntData(iSkin, iOffset + 3, 255, _, true);
 }
 
-public void OnAllPluginsLoaded()
-{
-	if(g_iTraitorPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR);
-	
-	if(g_iDetectivePrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE);
-}
-
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
-{
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
-	{
-		if(strcmp(itemshort, SHORT_NAME, false) == 0)
-		{
-			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
-					return Plugin_Stop;
-			
-			g_bHasRadar[client] = true;
-			g_bOwnRadar[client] = true;
-			
-			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
-			else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-				g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
-		}
-	}
-	return Plugin_Continue;
-}
-
-public Action Timer_WHActive(Handle timer, any userid)
-{
-	int client = GetClientOfUserId(userid);
-	
-	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && g_bHasRadar[client])
-	{
-		g_bHasRadar[client] = false;
-		g_hTimer[client] = null;
-		
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-			g_hTimer[client] = CreateTimer(g_fTraitorCooldown, Timer_WHCooldown, GetClientUserId(client));
-		else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-			g_hTimer[client] = CreateTimer(g_fDetectiveCooldown, Timer_WHCooldown, GetClientUserId(client));
-	}
-	
-	return Plugin_Stop;
-}
-
-public Action Timer_WHCooldown(Handle timer, any userid)
-{
-	int client = GetClientOfUserId(userid);
-	
-	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && !g_bHasRadar[client])
-	{
-		g_bHasRadar[client] = true;
-		g_hTimer[client] = null;
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-			g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
-		else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-			g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
-	}
-	
-	return Plugin_Stop;
-}
-
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
 	if(IsFakeClient(client))
@@ -241,7 +242,7 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 			
 		if(EntRefToEntIndex(CPS_GetSkin(i)) != iSkin)
 			continue;
-			
+		
 		if(TTT_IsClientValid(i))
 		{
 			if(g_bOwnRadar[client] && g_bHasRadar[client])
