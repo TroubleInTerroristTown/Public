@@ -1,7 +1,0 @@
-TTT18:
-  script:
-    - bash ci/build.sh "1.8" "dev" $FTP_HOST $FTP_USER $FTP_PASS 
-
-TTT17:
-  script:
-    - bash ci/build.sh "1.7" "dev" $FTP_HOST $FTP_USER $FTP_PASS
