@@ -370,22 +370,26 @@ stock void ShowLogs(int client)
 		return;
 	}
 
-	DataPack slPack = new DataPack();
+	Handle slPack = CreateDataPack();
 	RequestFrame(OnCreate, slPack);
 	if(TTT_IsClientValid(client))
-		slPack.WriteCell(GetClientUserId(client));
+		WritePackCell(slPack, GetClientUserId(client));
 	else
-		slPack.WriteCell(0);
-	slPack.WriteCell(index);
+		WritePackCell(slPack, 0);
+	WritePackCell(slPack, index);
 }
 
 public void OnCreate(any data)
 {
-	DataPack pack = view_as<DataPack>(data);
-	pack.Reset();
+	Handle pack = CreateDataPack();
+	CloneHandle(data, pack);
+	ResetPack(pack);
 	
-	int userid = pack.ReadCell();
-	int index = pack.ReadCell();
+	int userid = ReadPackCell(pack);
+	int index = ReadPackCell(pack);
+	
+	if(pack != null)
+		delete pack;
 	
 	int client;
 	if(userid == 0)
@@ -430,10 +434,13 @@ public void OnCreate(any data)
 			return;
 		}
 
-		DataPack slPack = new DataPack();
+		Handle slPack = CreateDataPack();
 		RequestFrame(OnCreate, slPack);
-		slPack.WriteCell(GetClientUserId(client));
-		slPack.WriteCell(index);
+		if(TTT_IsClientValid(client))
+			WritePackCell(slPack, GetClientUserId(client));
+		else
+			WritePackCell(slPack, 0);
+		WritePackCell(slPack, index);
 	}
 }
 

@@ -198,7 +198,6 @@ forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
  * @param client            The client who purchased the item.
  * @param itemshort         The short-tag for the item's name.
  */
-
 forward Action TTT_OnItemPurchased(int client, const char[] itemshort);
 
 /*
