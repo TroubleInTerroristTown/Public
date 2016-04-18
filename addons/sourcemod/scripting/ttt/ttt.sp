@@ -371,12 +371,12 @@ stock void ShowLogs(int client)
 	}
 
 	Handle slPack = CreateDataPack();
-	RequestFrame(OnCreate, slPack);
 	if(TTT_IsClientValid(client))
 		WritePackCell(slPack, GetClientUserId(client));
 	else
 		WritePackCell(slPack, 0);
 	WritePackCell(slPack, index);
+	RequestFrame(OnCreate, slPack);
 }
 
 public void OnCreate(any data)
@@ -435,12 +435,12 @@ public void OnCreate(any data)
 		}
 
 		Handle slPack = CreateDataPack();
-		RequestFrame(OnCreate, slPack);
 		if(TTT_IsClientValid(client))
 			WritePackCell(slPack, GetClientUserId(client));
 		else
 			WritePackCell(slPack, 0);
 		WritePackCell(slPack, index);
+		RequestFrame(OnCreate, slPack);
 	}
 }
 
