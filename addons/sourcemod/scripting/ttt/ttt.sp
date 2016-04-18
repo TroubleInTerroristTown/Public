@@ -254,6 +254,7 @@ void SetupConfig()
 	g_iConfig[b_endroundDMG] = Config_LoadBool("ttt_end_round_dm", false, "Enable this to disable damage prevention between round end and warmup.");
 	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
 
 	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_iConfig[s_overlayDWin], sizeof(g_iConfig[s_overlayDWin]));
 	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_iConfig[s_overlayTWin], sizeof(g_iConfig[s_overlayTWin]));
@@ -2026,7 +2027,7 @@ stock int CreateIcon(int client)
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if (entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client))
+	if ((entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_iConfig[b_deadPlayersCanSeeOtherRules] && !IsPlayerAlive(client))
 		return Plugin_Handled;
 
 	return Plugin_Continue;

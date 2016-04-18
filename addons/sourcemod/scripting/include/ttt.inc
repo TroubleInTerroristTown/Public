@@ -128,7 +128,8 @@ enum eConfig
 	bool:b_endroundDMG,
 	bool:bResetCreditsEachRound,
 	bool:b_ignoreDeaths,
-	bool:b_ignoreRDMMenu
+	bool:b_ignoreRDMMenu,
+	bool:b_deadPlayersCanSeeOtherRules
 };
 
 /*
