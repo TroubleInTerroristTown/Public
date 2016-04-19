@@ -381,16 +381,13 @@ stock void ShowLogs(int client)
 
 public void OnCreate(any data)
 {
-	Handle pack = CreateDataPack();
-	CloneHandle(data, pack);
-	ResetPack(pack);
+	ResetPack(data);
 	
-	int userid = ReadPackCell(pack);
-	int index = ReadPackCell(pack);
+	int userid = ReadPackCell(data);
+	int index = ReadPackCell(data);
 	
-	if(pack != null)
-		delete pack;
-	
+	if(data != INVALID_HANDLE)
+		CloseHandle(data);	
 	int client;
 	if(userid == 0)
 		client = userid;
@@ -2034,7 +2031,7 @@ stock int CreateIcon(int client)
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if ((entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_iConfig[b_deadPlayersCanSeeOtherRules] && !IsPlayerAlive(client))
+	if ((entity != client && g_iRole[client] != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_iConfig[b_deadPlayersCanSeeOtherRules] && (!IsPlayerAlive(client) || GetClientTeam(client < CS_TEAM_CT)))
 		return Plugin_Handled;
 
 	return Plugin_Continue;
