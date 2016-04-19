@@ -67,15 +67,15 @@ public void OnPluginStart()
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	Config_LoadString("usp_name", "USP-S", "The name of the USP-S in the shop menu.", g_cUSP_Long, sizeof(g_cUSP_Long));
 
-	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
+	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the M4A1-S costs. 0 to disable.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
 
-	g_iAWP_Price = Config_LoadInt("awp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
+	g_iAWP_Price = Config_LoadInt("awp_price", 3000, "The amount of credits the AWP costs. 0 to disable.");
 	g_iAWP_Min_Shots = Config_LoadInt("awp_min_shots", 1, "The min. amount of shots of traitor awp.");
 	g_iAWP_Max_Shots = Config_LoadInt("awp_max_shots", 3, "The max. amount of shots of traitor awp.");
 	Config_LoadString("awp_name", "AWP", "The name of the AWP in the shop menu.", g_cAWP_Long, sizeof(g_cAWP_Long));
 
-	g_iKF_Price = Config_LoadInt("1knife_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
+	g_iKF_Price = Config_LoadInt("1knife_price", 3000, "The amount of credits the One-Hit Knife costs. 0 to disable.");
 	g_iKnife_Max = Config_LoadInt("1knife_max", 5, "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
 	Config_LoadString("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.", g_cKF_Long, sizeof(g_cKF_Long));
 
