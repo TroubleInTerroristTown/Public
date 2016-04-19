@@ -13,6 +13,18 @@
 
 #define SND_WARNING "resource/warning.wav"
 
+#pragma newdecls required
+
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Health/Hurt Stations"
+
+public Plugin myinfo =
+{
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
+};
 
 int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
 int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
