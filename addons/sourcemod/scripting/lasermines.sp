@@ -8,7 +8,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <lasermines>
-#include <csgocolors>
+#include <multicolors>
 /*
 	------------------------------------------------
 */
