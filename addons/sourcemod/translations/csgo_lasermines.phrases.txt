@@ -2,13 +2,13 @@
 {
 	"Welcome Message 1"
 	{
-		"en"		"[{green}Lasermines{DEFAULT}] {lightgreen}Type {green}!lm {lightgreen}in chat to plant the laser mines"
-		"ru"		"[{green}Lasermines{DEFAULT}] {lightgreen} Для установки лазерной мины напишите в чат {green}!lm"
+		"en"		"[{green}Lasermines{default}] {lightgreen}Type {green}!lm {lightgreen}in chat to plant the laser mines"
+		"ru"		"[{green}Lasermines{default}] {lightgreen} Для установки лазерной мины напишите в чат {green}!lm"
 	}
 	"Welcome Message 2"
 	{
-		"en"		"[{green}Lasermines{DEFAULT}] {lightgreen}Type {green}!lm {lightgreen}in chat to plant or {green}!bm {lightgreen}to buy the laser mines"
-		"ru"		"[{green}Lasermines{DEFAULT}] {lightgreen}Напишите {green}!lm {lightgreen}в чат, чтобы установить лазерные мины или {green}!bm{lightgreen} для их покупки"
+		"en"		"[{green}Lasermines{default}] {lightgreen}Type {green}!lm {lightgreen}in chat to plant or {green}!bm {lightgreen}to buy the laser mines"
+		"ru"		"[{green}Lasermines{default}] {lightgreen}Напишите {green}!lm {lightgreen}в чат, чтобы установить лазерные мины или {green}!bm{lightgreen} для их покупки"
 	}
 	"Can't plant, while dead"
 	{
