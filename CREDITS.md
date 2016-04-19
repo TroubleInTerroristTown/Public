@@ -4,5 +4,6 @@
 - [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
 - [AdaM](http://steamcommunity.com/profiles/76561198134328733/)
 - [whocodes](https://whocodes.pw/) / [Phoenix Gaming Network](https://www.pgn.site)
+- [Grey83](https://forums.alliedmods.net/member.php?u=256713) for Laser Mines ( https://forums.alliedmods.net/showthread.php?p=2276217 )
 
 - Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
