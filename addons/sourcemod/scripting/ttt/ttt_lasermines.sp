@@ -12,8 +12,8 @@
 
 #pragma newdecls required
 
-#define SHORT_NAME "wh"
-#define LONG_NAME "Wallhack"
+#define SHORT_NAME "lm"
+#define LONG_NAME "Lasermines"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Lasermines"
 
@@ -37,7 +37,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT-Lasermines", g_sConfigFile);
 	
-	g_iTraitorPrice = Config_LoadInt("lm_traitor_price", 9000, "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
+	g_iTraitorPrice = Config_LoadInt("lm_traitor_price", 9000, "The amount of credits for a lasermine costs. 0 to disable.");
 }
 
 public void OnAllPluginsLoaded()
