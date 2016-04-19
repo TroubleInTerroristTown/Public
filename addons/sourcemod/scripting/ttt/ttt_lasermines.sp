@@ -18,6 +18,7 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Lasermines"
 
 int g_iTraitorPrice = 0;
+
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo =

@@ -77,7 +77,8 @@ stock void GrabSomething(int client)
 			
 		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 		GetClientEyePosition(client, VecPos_Client);
-		if(GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0) return;
+		if(GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+			return;
 		
 		char edictname[128];
 		GetEdictClassname(ent, edictname, 128);
