@@ -1884,7 +1884,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if(!TTT_IsClientValid(iAttacker) || iAttacker == client)
 		return;
 
-	if (g_iConfig[b_showDeathMessage])
+	if (g_iConfig[b_showDeathMessage] && !g_iConfig[b_deadPlayersCanSeeOtherRules])
 	{
 		if(g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your killer is a Traitor", client);
