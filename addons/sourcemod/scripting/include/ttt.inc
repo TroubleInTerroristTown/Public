@@ -8,7 +8,7 @@
 #define TTT_PLUGIN_NAME "TTT"
 #define TTT_PLUGIN_AUTHOR "Bara, .#Zipcore, Darkness & whocodes"
 #define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
-#define TTT_PLUGIN_VERSION "2.1.1" // X.X.0 - master; X.X.1 - stable
+#define TTT_PLUGIN_VERSION "2.1.2"
 #define TTT_PLUGIN_URL "git.tf/TTT/Plugin"
 
 #define TTT_TEAM_UNASSIGNED 0
@@ -16,7 +16,7 @@
 #define TTT_TEAM_TRAITOR 2
 #define TTT_TEAM_DETECTIVE 3
 
-#define MAX_CUSTOM_ITEMS 32
+#define MAX_CUSTOM_ITEMS 64
 
 enum eConfig
 {
