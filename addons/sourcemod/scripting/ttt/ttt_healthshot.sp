@@ -54,6 +54,21 @@ public void OnPluginStart()
 	g_iTCount = Config_LoadInt("hs_traitor_count", 1, "The amount of usages for healthshots per round as traitor. 0 to disable.");
 	g_iDCount = Config_LoadInt("hs_detective_count", 1, "The amount of usages for healthshots per round as detective. 0 to disable.");
 	g_iICount = Config_LoadInt("hs_innocent_count", 1, "The amount of usages for healthshots per round as innocent. 0 to disable.");
+	
+	HookEvent("player_spawn", Event_PlayerSpawn);
+}
+
+public void OnClientDisconnect(int client)
+{
+	ResetHealthshot(client);
+}
+
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(TTT_IsClientValid(client))
+		ResetHealthshot(client);
 }
 
 public void OnAllPluginsLoaded()
@@ -72,22 +87,31 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 	{
 		if(StrEqual(itemshort, SHORT_NAME, false))
 		{
-			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			int role = TTT_GetClientRole(client);
+			
+			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 				return Plugin_Stop;
-			else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
 				return Plugin_Stop;
-			else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
+			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
 				return Plugin_Stop;
 				
 			GivePlayerItem(client, "weapon_healthshot");
 			
-			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			if(role == TTT_TEAM_TRAITOR)
 				g_iTPCount[client]++;
-			else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+			else if(role == TTT_TEAM_DETECTIVE)
 				g_iDPCount[client]++;
-			else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+			else if(role == TTT_TEAM_INNOCENT)
 				g_iIPCount[client]++;
 		}
 	}
 	return Plugin_Continue;
+}
+
+void ResetHealthshot(int client)
+{
+	g_iTPCount[client] = 0;
+	g_iDPCount[client] = 0;
+	g_iIPCount[client] = 0;
 }
