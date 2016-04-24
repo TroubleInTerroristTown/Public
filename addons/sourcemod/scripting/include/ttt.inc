@@ -404,19 +404,3 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 		if(!IsFakeClient(i))
 			ShowOverlayToClient(i, overlaypath);
 }
-
-stock void StripAllWeapons(int client)
-{
-	if(!g_iConfig[b_stripWeapons])
-		return;
-
-	int iEnt;
-	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
-	{
-		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
-		{
-			RemovePlayerItem(client, iEnt);
-			AcceptEntityInput(iEnt, "Kill");
-		}
-	}
-}
