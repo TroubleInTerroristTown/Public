@@ -29,12 +29,20 @@ fi
 
 # Create clean plugins folder
 mkdir addons/sourcemod/plugins
+mkdir addons/sourcemod/plugins/ttt
+
+# Move all binary files to plugins folder
+for file in ttt*.smx
+do
+  mv $file addons/sourcemod/plugins/ttt
+done
 
 # Move all binary files to plugins folder
 for file in *.smx
 do
   mv $file addons/sourcemod/plugins
 done
+
 
 # Remove api test plugin
 rm addons/sourcemod/plugins/ttt_api_test.smx
