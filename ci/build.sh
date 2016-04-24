@@ -16,6 +16,13 @@ tar -xzf sourcemod.tar.gz
 echo "Give compiler rights for compile"
 chmod +x addons/sourcemod/scripting/spcomp
 
+echo "Set plugin version"
+for file in addons/sourcemod/scripting/include/ttt.inc
+do
+  sed -i "s/<ID>/$COUNT/g" $file > output.txt
+  rm output.txt
+done
+
 echo "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
@@ -48,7 +55,7 @@ do
 done
 
 echo "Remove api test plugin"
-rm addons/sourcemod/plugins/ttt_api_test.smx
+rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
 
 echo "Remove build folder if exists"
 if [ -d "build" ]; then
@@ -66,7 +73,7 @@ rm -r build/addons/metamod
 rm -r build/addons/sourcemod/bin
 rm -r build/addons/sourcemod/configs/geoip
 rm -r build/addons/sourcemod/configs/sql-init-scripts
-rm build/addons/sourcemod/configs/*
+rm build/addons/sourcemod/configs/* 2> /dev/null
 rm -r build/addons/sourcemod/data
 rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
