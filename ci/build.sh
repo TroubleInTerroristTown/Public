@@ -16,7 +16,7 @@ tar -xzf sourcemod.tar.gz
 echo "Give compiler rights for compile"
 chmod +x addons/sourcemod/scripting/spcomp
 
-echo "Set plugin version"
+echo "Set plugins version"
 for file in addons/sourcemod/scripting/include/ttt.inc
 do
   sed -i "s/<ID>/$COUNT/g" $file > output.txt
