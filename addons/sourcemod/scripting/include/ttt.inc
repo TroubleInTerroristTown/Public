@@ -135,6 +135,11 @@ enum eConfig
 };
 
 /*
+ * Called every 5 seconds
+ */
+forward void TTT_OnUpdate();
+
+/*
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
  * You could slay players here to force them to sit out.
@@ -385,4 +390,33 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 			return true;
 
 	return false;
+}
+
+
+stock void ShowOverlayToClient(int client, const char[] overlaypath)
+{
+	ClientCommand(client, "r_screenoverlay \"%s\"", overlaypath);
+}
+
+stock void ShowOverlayToAll(const char[] overlaypath)
+{
+	LoopValidClients(i)
+		if(!IsFakeClient(i))
+			ShowOverlayToClient(i, overlaypath);
+}
+
+stock void StripAllWeapons(int client)
+{
+	if(!g_iConfig[b_stripWeapons])
+		return;
+
+	int iEnt;
+	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
+	{
+		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
+		{
+			RemovePlayerItem(client, iEnt);
+			AcceptEntityInput(iEnt, "Kill");
+		}
+	}
 }

@@ -64,8 +64,6 @@ Handle g_hPlayerArray = null;
 Handle g_hDetectives = null;
 Handle g_hTraitores = null;
 
-int g_iIcon[MAXPLAYERS + 1] =  { 0, ... };
-
 bool g_bRoundStarted = false;
 bool g_bCheckPlayers = false;
 
@@ -133,6 +131,7 @@ Handle g_hOnBodyScanned = null;
 Handle g_hOnItemPurchased = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
+Handle g_hOnUpdate = null;
 
 char g_sShopCMDs[][] = {
 	"menu",
