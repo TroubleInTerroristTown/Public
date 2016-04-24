@@ -948,6 +948,8 @@ stock void TeamInitialize(int client)
 
 		if(g_iConfig[b_taserAllow])
 			GivePlayerItem(client, "weapon_taser");
+		
+		RemoveC4(client);
 
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is DETECTIVES", client);
 
@@ -1245,6 +1247,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	g_iTraitorKills[client] = 0;
 	g_iDetectiveKills[client] = 0;
 
+	g_bJihadBomb[client] = false;
 	ClearTimer(g_hJihadBomb[client]);
 
 	int iRagdoll = 0;
@@ -2147,22 +2150,7 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if(TTT_IsClientValid(client))
-	{
-		if(!g_bHasC4[client] && !g_bJihadBomb[client])
-		{
-			LOOP_CLIENTWEAPONS(client, weapon, index)
-			{
-				char sWeapon[128];  
-				GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
-				
-				if(StrContains(sWeapon, "weapon_c4", false) != -1)
-				{
-					RemovePlayerItem(client, weapon);
-					AcceptEntityInput(weapon, "Kill");
-				}
-			}
-		}
-	}
+		RemoveC4(client);
 	return Plugin_Continue;
 }
 
@@ -3932,6 +3920,24 @@ stock void StripAllWeapons(int client)
 		{
 			RemovePlayerItem(client, iEnt);
 			AcceptEntityInput(iEnt, "Kill");
+		}
+	}
+}
+
+stock void RemoveC4(int client)
+{
+	if(!g_bHasC4[client] && !g_bJihadBomb[client])
+	{
+		LOOP_CLIENTWEAPONS(client, weapon, index)
+		{
+			char sWeapon[128];  
+			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
+			
+			if(StrContains(sWeapon, "weapon_c4", false) != -1)
+			{
+				RemovePlayerItem(client, weapon);
+				AcceptEntityInput(weapon, "Kill");
+			}
 		}
 	}
 }
