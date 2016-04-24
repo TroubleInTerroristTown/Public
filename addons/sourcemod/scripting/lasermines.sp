@@ -9,6 +9,7 @@
 #include <sdkhooks>
 #include <lasermines>
 #include <multicolors>
+#include <ttt>
 /*
 	------------------------------------------------
 */
@@ -46,12 +47,9 @@ new Handle:h_enable, bool:b_enable,
 	Handle:h_color_t, String:s_color_t[16],
 	Handle:h_color_ct, String:s_color_ct[16],
 	Handle:h_activate_time, Float:f_activate_time,
-	Handle:h_use_buy_mode, bool:b_use_buy_mode,
-	Handle:h_should_buy_zone, bool:b_should_buy_zone,
 	Handle:h_allow_pickup, bool:b_allow_pickup,
 	Handle:h_allow_friendly_pickup, bool:b_allow_friendly_pickup,
 	Handle:h_allow_enemy_pickup, bool:b_allow_enemy_pickup,
-	Handle:h_price, i_price,
 	Handle:h_wpn_dmg, String:s_wpn_dmg[16],
 	Handle:h_lm_hs, bool:b_lm_hs;
 
@@ -65,8 +63,6 @@ new Handle:h_fwdOnPlantLasermine,
 	Handle:h_fwdOnLaserminePlanted,
 	Handle:h_fwdOnPreHitByLasermine,
 	Handle:h_fwdOnPostHitByLasermine,
-	Handle:h_fwdOnPreBuyLasermine,
-	Handle:h_fwdOnPostBuyLasermine,
 	Handle:h_fwdOnPrePickupLasermine,
 	Handle:h_fwdOnPostPickupLasermine;
 
@@ -77,11 +73,7 @@ new Handle:h_fwdOnPlantLasermine,
 new i_clients_amount[MAXPLAYERS+1],
 	i_clients_myamount[MAXPLAYERS+1],
 	i_clients_maxlimit[MAXPLAYERS+1],
-	b_used_by_native[MAXPLAYERS+1],
-	i_buy_limit[MAXPLAYERS+1];
-
-new gInBuyZone = -1;
-new gAccount = -1;
+	b_used_by_native[MAXPLAYERS+1];
 
 /*
 		P L U G I N    I N F O
@@ -123,9 +115,6 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 	h_fwdOnPreHitByLasermine = CreateGlobalForward("OnPreHitByLasermine", ET_Hook, Param_Cell, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef);
 	h_fwdOnPostHitByLasermine = CreateGlobalForward("OnPostHitByLasermine", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
 	
-	h_fwdOnPreBuyLasermine = CreateGlobalForward("OnPreBuyLasermine", ET_Hook, Param_Cell, Param_CellByRef, Param_CellByRef);
-	h_fwdOnPostBuyLasermine = CreateGlobalForward("OnPostBuyLasermine", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	
 	h_fwdOnPrePickupLasermine = CreateGlobalForward("OnPrePickupLasermine", ET_Event, Param_Cell, Param_Cell, Param_Cell);
 	h_fwdOnPostPickupLasermine = CreateGlobalForward("OnPostPickupLasermine", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	
@@ -155,9 +144,6 @@ public OnPluginStart()
 	h_explode_radius = CreateConVar("sm_lasermines_explode_radius", "300", "The radius of the explosion", FCVAR_PLUGIN, true, 1.0, true, 100000.0);
 	h_health = CreateConVar("sm_lasermines_health", "300", "The laser mines health. 0 = never breaked", FCVAR_PLUGIN, true, 0.0, true, 100000.0);
 	h_activate_time = CreateConVar("sm_lasermines_activatetime", "2", "The delay of laser mines' activation", FCVAR_PLUGIN, true, 0.0, true, 10.0);
-	h_use_buy_mode = CreateConVar("sm_lasermines_buymode", "0", "Enables buy mode. In this mode you will have to buy mines", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	h_should_buy_zone = CreateConVar("sm_lasermines_buyzone", "1", "Whether a player have to stay in buy zone to buy mines", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	h_price = CreateConVar("sm_lasermines_price", "500", "The price of the laser mines", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0);
 	h_color_t = CreateConVar("sm_lasermines_color_t", "255 127 0", "Terrorist's color. Set by RGB", FCVAR_PLUGIN);
 	h_color_ct = CreateConVar("sm_lasermines_color_ct", "0 127 255", "Counter-Terrorist's color. Set by RGB", FCVAR_PLUGIN);
 	h_allow_pickup = CreateConVar("sm_lasermines_allow_pickup", "1", "Allow players to pickup their planted lasermines", FCVAR_PLUGIN);
@@ -178,9 +164,6 @@ public OnPluginStart()
 	i_explode_radius = GetConVarInt(h_explode_radius);
 	i_health = GetConVarInt(h_health);
 	f_activate_time = GetConVarFloat(h_activate_time);
-	b_use_buy_mode = GetConVarBool(h_use_buy_mode);
-	b_should_buy_zone = GetConVarBool(h_should_buy_zone);
-	i_price = GetConVarInt(h_price);
 	b_allow_pickup = GetConVarBool(h_allow_pickup);
 	b_allow_friendly_pickup = GetConVarBool(h_allow_friendly_pickup);
 	b_allow_enemy_pickup = GetConVarBool(h_allow_enemy_pickup);
@@ -202,9 +185,6 @@ public OnPluginStart()
 	HookConVarChange(h_explode_radius, OnConVarChanged);
 	HookConVarChange(h_health, OnConVarChanged);
 	HookConVarChange(h_activate_time, OnConVarChanged);
-	HookConVarChange(h_use_buy_mode, OnConVarChanged);
-	HookConVarChange(h_should_buy_zone, OnConVarChanged);
-	HookConVarChange(h_price, OnConVarChanged);
 	HookConVarChange(h_color_t, OnConVarChanged);
 	HookConVarChange(h_color_ct, OnConVarChanged);
 	HookConVarChange(h_allow_pickup, OnConVarChanged);
@@ -216,8 +196,6 @@ public OnPluginStart()
 	HookConVarChange(h_friendlyfire, OnConVarChanged);
 	
 	// Hooks event changes
-	HookEvent("player_spawn", OnPlayerSpawn);
-//	HookEvent("player_death", OnPlayerDeath);
 	HookEvent("player_death", OnPlayerDeath_Pre, EventHookMode_Pre);
 	HookEvent("round_start", RoundStart);
 	
@@ -226,21 +204,11 @@ public OnPluginStart()
 	RegConsoleCmd("sm_blm", Command_PlantMine, "Plant a laser mine");
 	RegConsoleCmd("sm_lm", Command_PlantMine, "Plant a laser mine");
 	
-	RegConsoleCmd("sm_buylm", Command_BuyMines, "Buy laser mines");
-	RegConsoleCmd("sm_blm", Command_BuyMines, "Buy laser mines");
-	RegConsoleCmd("sm_bm", Command_BuyMines, "Buy laser mines");
-	
 	// Hooks entity env_beam ouput events
 	HookEntityOutput("env_beam", "OnTouchedByEntity", OnTouchedByEntity);
 	
 	// Loads the translation
 	LoadTranslations("csgo_lasermines.phrases");
-	
-	// Finds offsets
-	if ((gInBuyZone = FindSendPropOffs("CCSPlayer", "m_bInBuyZone")) == -1)
-		SetFailState("Could not find offset \"m_bInBuyZone\"");
-	if ((gAccount = FindSendPropOffs("CCSPlayer", "m_iAccount")) == -1)
-		SetFailState("Could not find offset \"m_iAccount\"");
 	
 	AutoExecConfig(true, "plugin.csgo_lasermines");
 	
@@ -297,18 +265,6 @@ public OnConVarChanged(Handle:convar, const String:oldValue[], const String:newV
 	else if (convar == h_activate_time)
 	{
 		f_activate_time = StringToFloat(newValue);
-	}
-	else if (convar == h_use_buy_mode)
-	{
-		b_use_buy_mode = bool:StringToInt(newValue);
-	}
-	else if (convar == h_should_buy_zone)
-	{
-		b_should_buy_zone = bool:StringToInt(newValue);
-	}
-	else if (convar == h_price)
-	{
-		i_price = StringToInt(newValue);
 	}
 	else if (convar == h_color_t)
 	{
@@ -384,8 +340,7 @@ public RoundStart(Handle:event, const String:name[], bool:dontBroadcast)
 {
 	if(b_enable && b_message)
 	{
-  		if(b_use_buy_mode) CPrintToChatAll("%t", "Welcome Message 2");
- 		else CPrintToChatAll("%t", "Welcome Message 1");
+  		CPrintToChatAll("%t", "Welcome Message 1");
 	}
 }
 /*
@@ -407,7 +362,6 @@ public OnClientConnected(client)
 */
 public OnClientDisconnect(client)
 {
-	i_buy_limit[client] = 0;
 	for (new index = MaxClients+1; index <= 2048; index++)
 	{
 		if (GetClientByLasermine(index) == client)
@@ -469,26 +423,16 @@ public OnTouchedByEntity(const String:output[], caller, activator, Float:delay)
 		}
 	}
 	
+	if(TTT_GetClientRole(dummy_caller) == TTT_TEAM_TRAITOR)
+	{
+		return;
+	}
+	
 	// Make custom damage to the client
 	SDKHooks_TakeDamage(activator, dummy_caller, dummy_owner, float(damage), DMG_ENERGYBEAM);
 	
 	Forward_OnPostHit(activator, dummy_owner, dummy_caller, dummy_lasermine, damage);
 }
-
-public OnPlayerSpawn(Handle:event, const String:name[], bool:dontBroadcast)
-{
-	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-	if (!b_use_buy_mode)
-	{
-		i_clients_amount[client] = i_clients_myamount[client];
-	}
-}
-
-//public OnPlayerDeath(Handle:event, const String:name[], bool:dontBroadcast)
-//{
-//	new client = GetClientOfUserId(GetEventInt(event, "userid"));
-//	OnClientDisconnect(client);
-//}
 
 public Action:OnPlayerDeath_Pre(Handle:event, const String:name[], bool:dontBroadcast)
 {
@@ -512,109 +456,9 @@ public Action:OnPlayerDeath_Pre(Handle:event, const String:name[], bool:dontBroa
 /*
 	------------------------------------------------
 */
-public Action:Command_BuyMines(client, argc)
-{
-	// client = 0	or	disabled	or	buy mode disabled	or	unlimited amount	or	client is not in game
-	if (!client || !b_enable || !b_use_buy_mode || i_clients_myamount[client] == -1 || !IsClientInGame(client))
-	{
-		return Plugin_Continue;	// Stop trigger the command
-	}
-	// client is dead
-	if (!IsPlayerAlive(client))
-	{
-		PrintHintText(client, "%t", "Can't buy, while dead");
-		return Plugin_Handled;	// Stop trigger the command
-	}
-	// client is spectator
-	if (GetClientTeam(client) <= 1)
-	{
-		PrintHintText(client, "%t", "Can't use, while spec");
-		return Plugin_Handled;	// Stop trigger the command
-	}
-	// If  buy zone mode is enabled and player is out of buy zone range
-	if (b_should_buy_zone && !bool:GetEntData(client, gInBuyZone, 1))
-	{
-		PrintHintText(client, "%t", "Out of buy zone");
-		return Plugin_Handled;	// Stop trigger the command
-	}
-	
-	new amount = 1;
-	if (argc)
-	{
-		decl String:txt[6];
-		GetCmdArg(1, txt, sizeof(txt));
-		amount = StringToInt(txt);
-		if (bool:i_clients_maxlimit[client])
-		{
-			if (amount > i_clients_maxlimit[client])
-			{
-				amount = i_clients_maxlimit[client];
-			}
-			else if (amount < 1)
-			{
-				amount = 1;
-			}
-		}
-	}
-	
-	decl dummy_amount, cost, boughtamount;
-	dummy_amount = amount;
-	cost = i_price;
-	boughtamount = 0;
-	new Action:result = Forward_OnPreBuy(client, dummy_amount, cost);
-	
-	switch (result)
-	{
-		case Plugin_Handled, Plugin_Stop :
-		{
-			return result;
-		}
-		case Plugin_Continue :
-		{
-			dummy_amount = amount;
-			cost = i_price;
-		}
-	}
-	
-	new money = GetEntData(client, gAccount);
-	do
-	{
-		if (bool:i_clients_maxlimit[client] && (i_clients_amount[client] >= i_clients_maxlimit[client]) || (i_buy_limit[client] >= i_clients_maxlimit[client]))
-		{
-			PrintHintText(client, "%t", "Can't buy, max amount", i_clients_maxlimit[client]);
-			return Plugin_Handled;
-		}
-		
-		money -= cost;
-		
-		if (money < 0)
-		{
-			PrintHintText(client, "%t", "Can't buy, not enough money", i_clients_amount[client]);
-			EmitSoundToClient(client, SND_CANTBUY);
-			return Plugin_Handled;
-		}
-		SetEntData(client, gAccount, money);
-		i_clients_amount[client]++;
-		i_buy_limit[client]++;
-		boughtamount++;
-	} while (--dummy_amount);
-	
-	if (boughtamount)
-	{
-		PrintHintText(client, "%t", "Mines", i_clients_amount[client]);
-		EmitSoundToClient(client, SND_BUYMINE);
-		Forward_OnPostBuy(client, boughtamount, boughtamount*cost);
-	}
-	
-	return Plugin_Handled;
-}
-
-/*
-	------------------------------------------------
-*/
 public Action:Command_PlantMine(client, argc)
 {
-	if (!client || !b_enable || !IsClientInGame(client))
+	if (!client || !b_enable || !IsClientInGame(client) || TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Continue;
 	}
@@ -1302,29 +1146,6 @@ Forward_OnPostHit(victim, attacker, beam, lasermine, damage)
 	Call_PushCell(beam);
 	Call_PushCell(lasermine);
 	Call_PushCell(damage);
-	Call_Finish();
-}
-
-Action:Forward_OnPreBuy(client, &amount, &price)
-{
-	decl Action:result;
-	result = Plugin_Continue;
-	
-	Call_StartForward(h_fwdOnPreBuyLasermine);
-	Call_PushCell(client);
-	Call_PushCellRef(amount);
-	Call_PushCellRef(price);
-	Call_Finish(result);
-	
-	return result;
-}
-
-Forward_OnPostBuy(client, amount, sum)
-{
-	Call_StartForward(h_fwdOnPostBuyLasermine);
-	Call_PushCell(client);
-	Call_PushCell(amount);
-	Call_PushCell(sum);
 	Call_Finish();
 }
 

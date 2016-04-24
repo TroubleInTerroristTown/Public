@@ -103,27 +103,6 @@ native GetBeamByLasermine(entity);
 native GetLasermineByBeam(entity);
 
 /**
- * Called when the player is about to buy a laser mine
- *
- * @param client 	Client index of the player who is buying a laser mine
- * @param amount 	The amount of laser mines a player is going to buy. Set by reference
- * @param price 	The laser mine price. Set by reference
- * @return 		Plugin_Changed to apply new values, Plugin_Contninue to allow buy as is and >= Plugin_Handled to block the operation
- */
-forward Action:OnPreBuyLasermine(client, &amount, &price);
-
-
-/**
- * Called when a player has bought a laser mine
- *
- * @param victim 	Client index of the player who has bought
- * @param amount 	The amount of laser mines have been bought
- * @param amount 	The sum of money the player cost
- * @noreturn
- */
-forward OnPostBuyLasermine(client, amount, sum);
-
-/**
  * Called when the player is about to plant a laser mine
  *
  * @param client 			Client index of the player
