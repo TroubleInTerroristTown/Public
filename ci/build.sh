@@ -22,11 +22,9 @@ do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
-echo "Compile other plugins"
-for file in addons/sourcemod/scripting/*.sp
-do
-  addons/sourcemod/scripting/spcomp -E -v0 $file
-done
+echo "Compile lasermine plugin"
+addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/lasermines.sp
+
 
 echo "Remove plugins folder if exists"
 if [ -d "addons/sourcemod/plugins" ]; then

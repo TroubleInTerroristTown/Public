@@ -132,25 +132,25 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
 public OnPluginStart()
 {
 	// Creates console variable version
-	CreateConVar("csgo_lasermines_version", PLUGIN_VERSION, "The version of the plugin", FCVAR_PLUGIN|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
+	CreateConVar("csgo_lasermines_version", PLUGIN_VERSION, "The version of the plugin", 0|FCVAR_REPLICATED|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	
 	// Creates console variables
-	h_enable = CreateConVar("sm_lasermines_enable", "1", "Enables/Disables the plugin", FCVAR_PLUGIN|FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	h_message = CreateConVar("sm_lasermines_welcome_message", "1", "Show Plugin Message at the beginning of each round.", FCVAR_PLUGIN, true, 0.0, true, 1.0);
-	h_amount = CreateConVar("sm_lasermines_amount", "3", "The amount to give laser mines to a player each spawn (if buy mode is disabled, -1 = Infinity)", FCVAR_PLUGIN, true, -1.0);
-	h_maxamount = CreateConVar("sm_lasermines_maxamount", "3", "The maximum amount of laser mines a player can carry. (0-Unlimited)", FCVAR_PLUGIN, true, 0.0);
-	h_damage = CreateConVar("sm_lasermines_damage", "500", "The damage to deal to a player by the laser", FCVAR_PLUGIN, true, 1.0, true, 100000.0);
-	h_explode_damage = CreateConVar("sm_lasermines_explode_damage", "300", "The damage to deal to a player when a laser mine breaks", FCVAR_PLUGIN, true, 0.0, true, 100000.0);
-	h_explode_radius = CreateConVar("sm_lasermines_explode_radius", "300", "The radius of the explosion", FCVAR_PLUGIN, true, 1.0, true, 100000.0);
-	h_health = CreateConVar("sm_lasermines_health", "300", "The laser mines health. 0 = never breaked", FCVAR_PLUGIN, true, 0.0, true, 100000.0);
-	h_activate_time = CreateConVar("sm_lasermines_activatetime", "2", "The delay of laser mines' activation", FCVAR_PLUGIN, true, 0.0, true, 10.0);
-	h_color_t = CreateConVar("sm_lasermines_color_t", "255 127 0", "Terrorist's color. Set by RGB", FCVAR_PLUGIN);
-	h_color_ct = CreateConVar("sm_lasermines_color_ct", "0 127 255", "Counter-Terrorist's color. Set by RGB", FCVAR_PLUGIN);
-	h_allow_pickup = CreateConVar("sm_lasermines_allow_pickup", "1", "Allow players to pickup their planted lasermines", FCVAR_PLUGIN);
-	h_allow_friendly_pickup = CreateConVar("sm_lasermines_allow_friendly_pickup", "0", "Allow players to pickup allies planted lasermines", FCVAR_PLUGIN);
-	h_allow_enemy_pickup = CreateConVar("sm_lasermines_allow_enemy_pickup", "0", "Allow players to pickup enemys planted lasermines", FCVAR_PLUGIN);
-	h_wpn_dmg = CreateConVar("sm_lasermines_wpn", "taser", "Enemy has died from this weapon", FCVAR_PLUGIN);
-	h_lm_hs = CreateConVar("sm_lasermines_hs", "1", "Headshot On/Off", FCVAR_PLUGIN, true, 0.0, true, 1.0);
+	h_enable = CreateConVar("sm_lasermines_enable", "1", "Enables/Disables the plugin", 0|FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	h_message = CreateConVar("sm_lasermines_welcome_message", "1", "Show Plugin Message at the beginning of each round.", 0, true, 0.0, true, 1.0);
+	h_amount = CreateConVar("sm_lasermines_amount", "3", "The amount to give laser mines to a player each spawn (if buy mode is disabled, -1 = Infinity)", 0, true, -1.0);
+	h_maxamount = CreateConVar("sm_lasermines_maxamount", "3", "The maximum amount of laser mines a player can carry. (0-Unlimited)", 0, true, 0.0);
+	h_damage = CreateConVar("sm_lasermines_damage", "500", "The damage to deal to a player by the laser", 0, true, 1.0, true, 100000.0);
+	h_explode_damage = CreateConVar("sm_lasermines_explode_damage", "300", "The damage to deal to a player when a laser mine breaks", 0, true, 0.0, true, 100000.0);
+	h_explode_radius = CreateConVar("sm_lasermines_explode_radius", "300", "The radius of the explosion", 0, true, 1.0, true, 100000.0);
+	h_health = CreateConVar("sm_lasermines_health", "300", "The laser mines health. 0 = never breaked", 0, true, 0.0, true, 100000.0);
+	h_activate_time = CreateConVar("sm_lasermines_activatetime", "2", "The delay of laser mines' activation", 0, true, 0.0, true, 10.0);
+	h_color_t = CreateConVar("sm_lasermines_color_t", "255 127 0", "Terrorist's color. Set by RGB", 0);
+	h_color_ct = CreateConVar("sm_lasermines_color_ct", "0 127 255", "Counter-Terrorist's color. Set by RGB", 0);
+	h_allow_pickup = CreateConVar("sm_lasermines_allow_pickup", "1", "Allow players to pickup their planted lasermines", 0);
+	h_allow_friendly_pickup = CreateConVar("sm_lasermines_allow_friendly_pickup", "0", "Allow players to pickup allies planted lasermines", 0);
+	h_allow_enemy_pickup = CreateConVar("sm_lasermines_allow_enemy_pickup", "0", "Allow players to pickup enemys planted lasermines", 0);
+	h_wpn_dmg = CreateConVar("sm_lasermines_wpn", "taser", "Enemy has died from this weapon", 0);
+	h_lm_hs = CreateConVar("sm_lasermines_hs", "1", "Headshot On/Off", 0, true, 0.0, true, 1.0);
 	
 	h_friendlyfire = FindConVar("mp_friendlyfire");
 	
