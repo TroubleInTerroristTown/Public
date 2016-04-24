@@ -129,7 +129,9 @@ enum eConfig
 	bool:bResetCreditsEachRound,
 	bool:b_ignoreDeaths,
 	bool:b_ignoreRDMMenu,
-	bool:b_deadPlayersCanSeeOtherRules
+	bool:b_deadPlayersCanSeeOtherRules,
+	bool:b_sortItems,
+	i_sortItemsOrder
 };
 
 /*

@@ -154,6 +154,16 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(temp_long), "%s", temp_long);
 	g_iCustomItems_Price[g_iCustomItemCount] = temp_price;
 	g_iCustomItems_Role[g_iCustomItemCount] = temp_role;
+	
+	if(g_iConfig[b_sortItems])
+	{
+		if(g_iConfig[i_sortItemsOrder] == 0)
+			SortIntegers(g_iCustomItems_Price, MAX_CUSTOM_ITEMS, Sort_Ascending);
+		else if(g_iConfig[i_sortItemsOrder] == 1)
+			SortIntegers(g_iCustomItems_Price, MAX_CUSTOM_ITEMS, Sort_Descending);
+		else
+			SortIntegers(g_iCustomItems_Price, MAX_CUSTOM_ITEMS, Sort_Random);
+	}
 
 	g_iCustomItemCount++;
 	return true;
