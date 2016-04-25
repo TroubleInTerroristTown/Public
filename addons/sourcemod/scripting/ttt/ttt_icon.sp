@@ -119,7 +119,7 @@ stock int CreateIcon(int client, int role)
 	ClearIcon(client);
 	
 	if(role < TTT_TEAM_TRAITOR)
-		return 0;
+		return -1;
 
 	char iTarget[16];
 	Format(iTarget, 16, "client%d", client);
