@@ -78,8 +78,7 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		
 		TeleportEntity(client, fPos, NULL_VECTOR, NULL_VECTOR);
 		
-		if(IsValidEdict(entity))
-			RemoveEdict(entity);
+		AcceptEntityInput(entity, "kill");
 		
 		g_iEntity[client] = 0;
 		
