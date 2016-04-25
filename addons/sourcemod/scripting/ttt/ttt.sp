@@ -2483,14 +2483,16 @@ public Action Command_Shop(int client, int args)
 		}
 
 		char display[128];
-		for(int i = 0; i < g_iCustomItemCount; i++)
+		int temp_item[Item];
+		for(int i = 0; i < g_aCustomItems.Length; i++)
 		{
-			if(strlen(g_cCustomItems_Short[i]) > 1)
+			g_aCustomItems.GetArray(i, temp_item[0]);
+			if(strlen(temp_item[Short]) > 1)
 			{
-				if((g_iCustomItems_Role[i] == 0) || (g_iCustomItems_Role[i] == team))
+				if((temp_item[Role] == 0) || (temp_item[Role] == team))
 				{
-					Format(display, sizeof(display), "%s - %d", g_cCustomItems_Long[i], g_iCustomItems_Price[i]);
-					AddMenuItem(menu, g_cCustomItems_Short[i], display);
+					Format(display, sizeof(display), "%s - %d", temp_item[Long], temp_item[Price]);
+					AddMenuItem(menu, temp_item[Short], display);
 				}
 			}
 		}
@@ -2607,20 +2609,22 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		}
 		else
 		{
-			for(int i = 0; i < g_iCustomItemCount; i++)
+			int temp_item[Item];
+			for(int i = 0; i < g_aCustomItems.Length; i++)
 			{
-				if((strlen(g_cCustomItems_Short[i]) > 0) && (strcmp(info, g_cCustomItems_Short[i]) == 0))
+				g_aCustomItems.GetArray(i, temp_item[0]);
+				if((strlen(temp_item[Short]) > 0) && (strcmp(info, temp_item[Short]) == 0))
 				{
-					if((g_iCredits[client] >= g_iCustomItems_Price[i]) && ((g_iCustomItems_Role[i] == 0) || (g_iRole[client] == g_iCustomItems_Role[i])))
+					if((g_iCredits[client] >= temp_item[Price]) && ((temp_item[Role] == 0) || (g_iRole[client] == temp_item[Role])))
 					{
 						Action res = Plugin_Continue;
 						Call_StartForward(g_hOnItemPurchased);
 						Call_PushCell(client);
-						Call_PushString(g_cCustomItems_Short[i]);
+						Call_PushString(temp_item[Short]);
 						Call_Finish(res);
 
 						if(res < Plugin_Stop){
-							subtractCredits(client, g_iCustomItems_Price[i]);
+							subtractCredits(client, temp_item[Price]);
 							CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 						}
 					}
@@ -2655,41 +2659,41 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 		Format(team, sizeof(team), "%T", "Innocents", client);
 
 	Handle menu = CreateMenu(BodyMenuHandler);
-	char Item[128];
+	char Items[128];
 
 	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
 
-	Format(Item, sizeof(Item), "%T", "Victim name", client, victimaname2);
-	AddMenuItem(menu, "", Item);
+	Format(Items, sizeof(Items), "%T", "Victim name", client, victimaname2);
+	AddMenuItem(menu, "", Items);
 
-	Format(Item, sizeof(Item), "%T", "Team victim", client, team);
-	AddMenuItem(menu, "", Item);
+	Format(Items, sizeof(Items), "%T", "Team victim", client, team);
+	AddMenuItem(menu, "", Items);
 
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(Item, sizeof(Item), "%T", "Elapsed since his death", client, tiempo2);
-		AddMenuItem(menu, "", Item);
+		Format(Items, sizeof(Items), "%T", "Elapsed since his death", client, tiempo2);
+		AddMenuItem(menu, "", Items);
 
 		if(atacante2 > 0 && atacante2 != victima2)
 		{
-			Format(Item, sizeof(Item), "%T", "The weapon used has been", client, weapon);
-			AddMenuItem(menu, "", Item);
+			Format(Items, sizeof(Items), "%T", "The weapon used has been", client, weapon);
+			AddMenuItem(menu, "", Items);
 		}
 		else
 		{
-			Format(Item, sizeof(Item), "%T", "The weapon used has been: himself (suicide)", client);
-			AddMenuItem(menu, "", Item);
+			Format(Items, sizeof(Items), "%T", "The weapon used has been: himself (suicide)", client);
+			AddMenuItem(menu, "", Items);
 		}
 	}
 
 	if(g_bScan[client])
 	{
 		if(atacante2 > 0 && atacante2 != victima2)
-			Format(Item, sizeof(Item), "%T", "Killer is Player",client, atacantename2);
+			Format(Items, sizeof(Items), "%T", "Killer is Player",client, atacantename2);
 		else
-			Format(Item, sizeof(Item), "%T", "Player committed suicide", client);
+			Format(Items, sizeof(Items), "%T", "Player committed suicide", client);
 
-		AddMenuItem(menu, "", Item);
+		AddMenuItem(menu, "", Items);
 	}
 
 	SetMenuExitButton(menu, true);

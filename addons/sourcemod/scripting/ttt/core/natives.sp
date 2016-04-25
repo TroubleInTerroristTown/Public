@@ -136,24 +136,26 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
-
+	
+	int temp_item[Item];
+	
 	if((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 		return false;
 	
-	for (int i = 0; i < g_iCustomItemCount; i++)
+	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
-		if(StrEqual(g_cCustomItems_Short[i], temp_short, false))
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if(StrEqual(temp_item[Short], temp_short, false))
 		{
 			return false;
 		}
 	}
 
-	Format(g_cCustomItems_Short[g_iCustomItemCount], sizeof(temp_short), "%s", temp_short);
-	Format(g_cCustomItems_Long[g_iCustomItemCount], sizeof(temp_long), "%s", temp_long);
-	g_iCustomItems_Price[g_iCustomItemCount] = temp_price;
-	g_iCustomItems_Role[g_iCustomItemCount] = temp_role;
-
-	g_iCustomItemCount++;
+	Format(temp_item[Short], sizeof(temp_short), "%s", temp_short);
+	Format(temp_item[Long], sizeof(temp_long), "%s", temp_long);
+	temp_item[Price] = temp_price;
+	temp_item[Role] = temp_role;
+	g_aCustomItems.PushArray(temp_item[0]);
 	return true;
 }
 
@@ -161,11 +163,14 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams)
 {
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
-
-	for(int i = 0; i < g_iCustomItemCount; i++)
+	
+	int temp_item[Item];
+	
+	for(int i = 0; i < g_aCustomItems.Length; i++)
 	{
-		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
-			return g_iCustomItems_Price[i];
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if(strcmp(temp_short, temp_item[Short], false) == 0)
+			return temp_item[Price];
 	}
 
 	return 0;
@@ -175,14 +180,16 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 {
 	char temp_short[32];
 	GetNativeString(1, temp_short, sizeof(temp_short));
-
-	for(int i = 0; i < g_iCustomItemCount; i++)
+	
+	int temp_item[Item];
+	
+	for(int i = 0; i < g_aCustomItems.Length; i++)
 	{
-		if(strcmp(temp_short, g_cCustomItems_Short[i], false) == 0)
-			return g_iCustomItems_Role[i];
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if(strcmp(temp_short, temp_item[Short], false) == 0)
+			return temp_item[Role];
 	}
-
-	return -1;
+	return 0;
 }
 
 public int Native_GetFoundStatus(Handle plugin, int numParams)

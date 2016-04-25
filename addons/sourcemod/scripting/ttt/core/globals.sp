@@ -9,12 +9,7 @@
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
 
-// TODO: Move this to (adt) array
-int g_iCustomItemCount = 0;
-char g_cCustomItems_Long[MAX_CUSTOM_ITEMS][64];
-char g_cCustomItems_Short[MAX_CUSTOM_ITEMS][16];
-int g_iCustomItems_Price[MAX_CUSTOM_ITEMS] = { 0, ... };
-int g_iCustomItems_Role[MAX_CUSTOM_ITEMS] = { 0, ... };
+ArrayList g_aCustomItems;
 
 int g_iConfig[eConfig];
 
@@ -108,6 +103,14 @@ enum Ragdolls
 	Float:gameTime,
 	String:weaponused[32],
 	bool:found
+}
+
+enum Item
+{
+	String:Long[64],
+	String:Short[16],
+	Price,
+	Role
 }
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
