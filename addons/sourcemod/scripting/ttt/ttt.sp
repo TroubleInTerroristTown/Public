@@ -260,6 +260,7 @@ void SetupConfig()
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_sortItems] = Config_LoadBool("ttt_sort_items_price", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
 	g_iConfig[i_sortItemsOrder] = Config_LoadInt("ttt_sort_items_price_order", 0, "Sort price (ttt_sort_items_price must be 1): 0 - Low to High, 1 - High to Low or 2 - Random");
+	g_iConfig[i_taserDamage] = Config_LoadInt("ttt_taser_damage", 0, "How damage makes a taser? (0 - disabled)");
 
 	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_iConfig[s_overlayDWin], sizeof(g_iConfig[s_overlayDWin]));
 	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_iConfig[s_overlayTWin], sizeof(g_iConfig[s_overlayTWin]));
@@ -1186,7 +1187,13 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt an Innocent", iVictim, iVictim);
 		}
 
-		return Plugin_Handled;
+		if(g_iConfig[i_taserDamage] == 0)
+			return Plugin_Handled;
+		else if(g_iConfig[i_taserDamage] > 0)
+		{
+			damage = view_as<float>(g_iConfig[i_taserDamage]);
+			return Plugin_Changed;
+		}
 	}
 	return Plugin_Continue;
 }
