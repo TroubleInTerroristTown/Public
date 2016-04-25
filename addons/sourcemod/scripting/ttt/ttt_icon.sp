@@ -11,7 +11,7 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Icons"
 
-int g_iIcon[MAXPLAYERS + 1] =  { 0, ... };
+int g_iIcon[MAXPLAYERS + 1] =  { -1, ... };
 
 bool g_bSeeRoles = false;
 
@@ -119,7 +119,7 @@ stock int CreateIcon(int client, int role)
 	ClearIcon(client);
 	
 	if(role < TTT_TEAM_TRAITOR)
-		return 0;
+		return -1;
 
 	char iTarget[16];
 	Format(iTarget, 16, "client%d", client);
@@ -178,7 +178,7 @@ stock void ClearIcon(int client)
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
 	ShowOverlayToClient(client, " ");
-	g_iIcon[client] = 0;
+	g_iIcon[client] = -1;
 
 }
 
