@@ -52,7 +52,7 @@ public void OnPluginStart()
 	g_iDCount = Config_LoadInt("dt_detective_count", 1, "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("decoy_firing", Event_DecoyFiring);
+	HookEvent("decoy_started", Event_DecoyStarted, EventHookMode_Pre);
 }
 
 public void OnClientDisconnect(int client)
@@ -60,7 +60,7 @@ public void OnClientDisconnect(int client)
 	ResetDecoyCount(client);
 }
 
-public Action Event_DecoyFiring(Event event, const char[] name, bool dontBroadcast)
+public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
@@ -82,6 +82,8 @@ public Action Event_DecoyFiring(Event event, const char[] name, bool dontBroadca
 			RemoveEdict(entity);
 		
 		g_iEntity[client] = 0;
+		
+		return Plugin_Handled;
 	}
 	return Plugin_Continue;
 }
