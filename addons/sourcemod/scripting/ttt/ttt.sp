@@ -89,6 +89,7 @@ public void OnPluginStart()
 	g_hRagdollArray = CreateArray(102);
 	g_hPlayerArray = CreateArray();
 	g_hLogsArray = CreateArray(512);
+	g_aCustomItems = new ArrayList(82);
 
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	g_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
