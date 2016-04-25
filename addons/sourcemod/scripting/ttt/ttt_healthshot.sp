@@ -11,6 +11,8 @@
 #pragma newdecls required
 
 #define SHORT_NAME "hs"
+#define SHORT_NAME_D "hs_d"
+#define SHORT_NAME_T "hs_t"
 #define LONG_NAME "Healthshot"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Healthshot"
@@ -74,9 +76,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public void OnAllPluginsLoaded()
 {
 	if(g_iTPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
 	if(g_iDPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
+		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
 	if(g_iIPrice > 0)
 		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
 }
@@ -85,7 +87,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false))
+		if(StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
