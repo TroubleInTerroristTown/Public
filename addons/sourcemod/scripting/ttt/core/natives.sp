@@ -156,7 +156,43 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Price] = temp_price;
 	temp_item[Role] = temp_role;
 	g_aCustomItems.PushArray(temp_item[0]);
+	
 	return true;
+}
+
+//TODO Improve sort algorithm (currently it's a bubble sort)
+public void Sort(int sort)
+{
+	int temp_item[Item];
+	int temp_item2[Item];
+	if (!sort)
+	{
+		for (int i = 1; i < g_aCustomItems.Length; i++)
+		{
+			for (int j = 0; j < (g_aCustomItems.Length - i); j++)
+			{
+				g_aCustomItems.GetArray(j, temp_item[0]);
+				g_aCustomItems.GetArray(j + 1, temp_item2[0]);
+				if (temp_item[Price] > temp_item2[Price])
+				{
+					g_aCustomItems.SwapAt(j, j + 1);
+				}
+			}
+		}
+	} else {
+		for (int i = 1; i < g_aCustomItems.Length; i++)
+		{
+			for (int j = 0; j < (g_aCustomItems.Length - i); j++)
+			{
+				g_aCustomItems.GetArray(j, temp_item[0]);
+				g_aCustomItems.GetArray(j + 1, temp_item2[0]);
+				if (temp_item[Price] < temp_item2[Price])
+				{
+					g_aCustomItems.SwapAt(j, j + 1);
+				}
+			}
+		}
+	}
 }
 
 public int Native_GetCustomItemPrice(Handle plugin, int numParams)
