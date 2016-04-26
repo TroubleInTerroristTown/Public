@@ -157,6 +157,9 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Role] = temp_role;
 	g_aCustomItems.PushArray(temp_item[0]);
 	
+	if(g_iConfig[b_sortItems])
+		Sort(g_iConfig[i_sortItemsOrder]);
+	
 	return true;
 }
 
