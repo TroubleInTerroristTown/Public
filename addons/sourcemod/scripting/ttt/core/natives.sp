@@ -158,13 +158,13 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	g_aCustomItems.PushArray(temp_item[0]);
 	
 	if(g_iConfig[b_sortItems])
-		Sort(g_iConfig[i_sortItemsOrder]);
+		Sort(g_iConfig[b_sortItemsOrder]);
 	
 	return true;
 }
 
 //TODO Improve sort algorithm (currently it's a bubble sort)
-public void Sort(int sort)
+public void Sort(bool sort)
 {
 	int temp_item[Item];
 	int temp_item2[Item];

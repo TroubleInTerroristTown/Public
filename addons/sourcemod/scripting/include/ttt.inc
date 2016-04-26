@@ -131,7 +131,7 @@ enum eConfig
 	bool:b_ignoreRDMMenu,
 	bool:b_deadPlayersCanSeeOtherRules,
  	bool:b_sortItems,
- 	i_sortItemsOrder,
+ 	bool:b_sortItemsOrder,
 	i_taserDamage
 };
 
