@@ -24,7 +24,7 @@ int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDCount = 0;
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
-int g_iEntity[MAXPLAYERS + 1] =  { 0, ... };
+int g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
@@ -68,8 +68,10 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 	{
 		int entity = event.GetInt("entityid");
 		
-		if(g_iEntity[client] != entity)
+		if(!g_bHasTeleporter[client])
 			return Plugin_Continue;
+		
+
 		
 		float fPos[3];
 		fPos[0] = event.GetFloat("x");
@@ -80,7 +82,7 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		
 		AcceptEntityInput(entity, "kill");
 		
-		g_iEntity[client] = 0;
+		g_bHasTeleporter[client] = false;
 		
 		return Plugin_Handled;
 	}
@@ -115,8 +117,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
 				return Plugin_Stop;
-				
-			g_iEntity[client] = GivePlayerItem(client, "weapon_decoy");
+			
+			GivePlayerItem(client, "weapon_decoy");
+			
+			g_bHasTeleporter[client] = true;
 			
 			if(role == TTT_TEAM_TRAITOR)
 				g_iTPCount[client]++;
@@ -132,5 +136,5 @@ void ResetDecoyCount(int client)
 	g_iTPCount[client] = 0;
 	g_iDPCount[client] = 0;
 	
-	g_iEntity[client] = 0;
+	g_bHasTeleporter[client] = false;
 }
