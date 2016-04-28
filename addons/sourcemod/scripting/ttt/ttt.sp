@@ -1555,7 +1555,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			if(strlen(sValue) > 0)
 			{
 				char sURL[512];
-				Format(sURL, sizeof(sURL), "http://claninspired.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
+				Format(sURL, sizeof(sURL), "http://cola-team.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
 				ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
 
 				g_bKnowRules[client] = false;
