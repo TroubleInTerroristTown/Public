@@ -343,11 +343,23 @@
 		"#format"	"{1:N},{2:s}"
 		"en"		"{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
 	}
+	
+	"Found Fake"
+	{
+		"#format"	"{1:N},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}has found a fake body!"
+	}
 
 	"Buy c4"
 	{
 		"#format"	"{1:d}"
 		"en"		"Buy C4 - {1}"
+	}
+	
+	"Buy fake body"
+	{
+		"#format"	"{1:d}"
+		"en"		"Buy Fake Body - {1}"
 	}
 
 	"Buy jihadbomb"

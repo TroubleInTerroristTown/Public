@@ -214,6 +214,7 @@ void SetupConfig()
 	g_iConfig[i_shopTASER] = Config_LoadInt("ttt_shop_taser", 3000, "The price of the 'Taser/Zeus' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopJIHADBOMB] = Config_LoadInt("ttt_shop_jihad_bomb", 6000, "The price of the 'Jihad Bomb' in the shop. ( 0 = disabled )");
 	g_iConfig[i_shopC4] = Config_LoadInt("ttt_shop_c4", 10000, "The price of 'C4' in the shop. ( 0 = disabled )");
+	g_iConfig[i_shopFakeR] = Config_LoadInt("ttt_shop_fake_body", 10000, "The price of 'Fake Body' in the shop. ( 0 = disabled )");
 	g_iConfig[i_spawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
 	g_iConfig[i_spawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
 	g_iConfig[i_spawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
@@ -1236,18 +1237,18 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];
 		GetClientName(client, name, sizeof(name));
-		int Items[Ragdolls];
-		Items[ent] = EntIndexToEntRef(iEntity);
-		Items[victim] = client;
-		Format(Items[victimName], MAX_NAME_LENGTH, name);
-		Items[scanned] = false;
+		int iRagdollC[Ragdolls];
+		iRagdollC[ent] = EntIndexToEntRef(iEntity);
+		iRagdollC[victim] = client;
+		Format(iRagdollC[victimName], MAX_NAME_LENGTH, name);
+		iRagdollC[scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
-		Items[attacker] = iAttacker;
-		Format(Items[attackerName], MAX_NAME_LENGTH, name);
-		Items[gameTime] = GetGameTime();
-		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
+		iRagdollC[attacker] = iAttacker;
+		Format(iRagdollC[attackerName], MAX_NAME_LENGTH, name);
+		iRagdollC[gameTime] = GetGameTime();
+		event.GetString("weapon", iRagdollC[weaponused], sizeof(iRagdollC[weaponused]));
 
-		PushArrayArray(g_hRagdollArray, Items[0]);
+		PushArrayArray(g_hRagdollArray, iRagdollC[0]);
 
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 
@@ -1655,15 +1656,15 @@ public void OnClientDisconnect(int client)
 
 		if(iSize == 0) return;
 
-		int Items[Ragdolls];
+		int iRagdollC[Ragdolls];
 
 		for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 
-			if(client == Items[attacker] || client == Items[victim])
+			if(client == iRagdollC[attacker] || client == iRagdollC[victim])
 			{
-				int entity = EntRefToEntIndex(Items[index]);
+				int entity = EntRefToEntIndex(iRagdollC[index]);
 				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
 
 				RemoveFromArray(g_hRagdollArray, i);
@@ -1690,21 +1691,21 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	if(iSize == 0)
 		return;
 
-	int Items[Ragdolls];
+	int iRagdollC[Ragdolls];
 
 	for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
 	{
-		GetArrayArray(g_hRagdollArray, i, Items[0]);
+		GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 
-		if(client == Items[attacker])
+		if(client == iRagdollC[attacker])
 		{
-			Format(Items[attackerName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, Items[0]);
+			Format(iRagdollC[attackerName], MAX_NAME_LENGTH, userName);
+			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
-		else if(client == Items[victim])
+		else if(client == iRagdollC[victim])
 		{
-			Format(Items[victimName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, Items[0]);
+			Format(iRagdollC[victimName], MAX_NAME_LENGTH, userName);
+			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
 	}
 }
@@ -2145,12 +2146,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		g_bHoldingProp[client] = true;
 
-		int entidad = GetClientAimTarget(client, false);
-		if(entidad > 0)
+		int iAimEntity = GetClientAimTarget(client, false);
+		if(iAimEntity > 0)
 		{
 			float OriginG[3], TargetOriginG[3];
 			GetClientEyePosition(client, TargetOriginG);
-			GetEntPropVector(entidad, Prop_Data, "m_vecOrigin", OriginG);
+			GetEntPropVector(iAimEntity, Prop_Data, "m_vecOrigin", OriginG);
 			if(GetVectorDistance(TargetOriginG,OriginG, false) > 90.0)
 				return Plugin_Continue;
 
@@ -2158,67 +2159,70 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			if(iSize == 0)
 				return Plugin_Continue;
 
-			int Items[Ragdolls];
+			int iRagdollC[Ragdolls];
 			int entity;
 
 			for(int i = 0;i < iSize;i++)
 			{
-				GetArrayArray(g_hRagdollArray, i, Items[0]);
-				entity = EntRefToEntIndex(Items[ent]);
+				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+				entity = EntRefToEntIndex(iRagdollC[ent]);
+				
+				char sName[32];
+				GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
 
-				if(entity == entidad)
+				if(entity == iAimEntity && !StrEqual(sName, "Fake!", false))
 				{
-					MostrarMenu(client, Items[victim], Items[attacker], RoundToNearest(GetGameTime()-Items[gameTime]), Items[weaponused], Items[victimName], Items[attackerName]);
+					InspectBody(client, iRagdollC[victim], iRagdollC[attacker], RoundToNearest(GetGameTime()-iRagdollC[gameTime]), iRagdollC[weaponused], iRagdollC[victimName], iRagdollC[attackerName]);
 
-					if(!Items[found] && IsPlayerAlive(client))
+					if(!iRagdollC[found] && IsPlayerAlive(client))
 					{
-						Items[found] = true;
-						if(IsClientInGame(Items[victim]))
-							g_bFound[Items[victim]] = true;
+						iRagdollC[found] = true;
+						if(IsClientInGame(iRagdollC[victim]))
+							g_bFound[iRagdollC[victim]] = true;
 
-						if(g_iRole[Items[victim]] == TTT_TEAM_INNOCENT)
+						if(g_iRole[iRagdollC[victim]] == TTT_TEAM_INNOCENT)
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, Items[victimName]);
-							SetEntityRenderColor(entidad, 0, 255, 0, 255);
+								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[victimName]);
+							SetEntityRenderColor(iAimEntity, 0, 255, 0, 255);
 						}
-						else if(g_iRole[Items[victim]] == TTT_TEAM_DETECTIVE)
+						else if(g_iRole[iRagdollC[victim]] == TTT_TEAM_DETECTIVE)
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, Items[victimName]);
-							SetEntityRenderColor(entidad, 0, 0, 255, 255);
+								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[victimName]);
+							SetEntityRenderColor(iAimEntity, 0, 0, 255, 255);
 						}
-						else if(g_iRole[Items[victim]] == TTT_TEAM_TRAITOR)
+						else if(g_iRole[iRagdollC[victim]] == TTT_TEAM_TRAITOR)
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client,Items[victimName]);
-							SetEntityRenderColor(entidad, 255, 0, 0, 255);
+								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client,iRagdollC[victimName]);
+							SetEntityRenderColor(iAimEntity, 255, 0, 0, 255);
 						}
 
-						TeamTag(Items[victim]);
+						TeamTag(iRagdollC[victim]);
 
 						Call_StartForward(g_hOnBodyFound);
 						Call_PushCell(client);
-						Call_PushCell(Items[victim]);
-						Call_PushString(Items[victimName]);
+						Call_PushCell(iRagdollC[victim]);
+						Call_PushString(iRagdollC[victimName]);
 						Call_Finish();
 
 						addCredits(client, g_iConfig[i_creditsFoundBody]);
 					}
 
-					if(g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
+					if(g_bScan[client] && !iRagdollC[scanned] && IsPlayerAlive(client))
 					{
 						Call_StartForward(g_hOnBodyScanned);
 						Call_PushCell(client);
-						Call_PushCell(Items[victim]);
-						Call_PushString(Items[victimName]);
+						Call_PushCell(iRagdollC[victim]);
+						Call_PushString(iRagdollC[victimName]);
 						Call_Finish();
 
-						Items[scanned] = true;
-						if(Items[attacker] > 0 && Items[attacker] != Items[victim])
+						iRagdollC[scanned] = true;
+						if(iRagdollC[attacker] > 0 && iRagdollC[attacker] != iRagdollC[victim])
 						{
 							LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
+								CPrintToChat(j, g_iConfig[s_pluginTag], "Detective scan found body", j, client, iRagdollC[attackerName], iRagdollC[weaponused]);
 						}
 						else
 						{
@@ -2226,9 +2230,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 								CPrintToChat(j, g_iConfig[s_pluginTag], "Detective scan found body suicide", j, client);
 						}
 					}
-					SetArrayArray(g_hRagdollArray, i, Items[0]);
+					SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 
 					break;
+				}
+				else if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && StrEqual(sName, "Fake!", false))
+				{
+					LoopValidClients(j)
+						CPrintToChat(j, g_iConfig[s_pluginTag], "Found Fake", j, client);
+					AcceptEntityInput(entity, "Kill");
 				}
 			}
 		}
@@ -2400,6 +2410,12 @@ public Action Command_Shop(int client, int args)
 				Format(MenuItem, sizeof(MenuItem),"%T", "Buy c4", client, g_iConfig[i_shopC4]);
 				AddMenuItem(menu, "C4", MenuItem);
 			}
+			
+			if(g_iConfig[i_shopFakeR] > 0)
+			{
+				Format(MenuItem, sizeof(MenuItem),"%T", "Buy fake body", client, g_iConfig[i_shopFakeR]);
+				AddMenuItem(menu, "FakeBody", MenuItem);
+			}
 
 			if(g_iConfig[i_shopJIHADBOMB] > 0)
 			{
@@ -2555,8 +2571,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
+				
 				g_bJihadBomb[client] = true;
 				ClearTimer(g_hJihadBomb[client]);
+				
 				g_hJihadBomb[client] = CreateTimer(g_iConfig[f_jihadPreparingTime], Timer_JihadPreparing, client);
 				subtractCredits(client, g_iConfig[i_shopJIHADBOMB]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
@@ -2570,10 +2588,25 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 			{
 				if (g_iRole[client] != TTT_TEAM_TRAITOR)
 					return;
+				
 				g_bHasC4[client] = true;
+				
 				subtractCredits(client, g_iConfig[i_shopC4]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
 				CPrintToChat(client, g_iConfig[s_pluginTag], "Right click to plant the C4", client);
+			}
+			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
+		}
+		else if (strcmp(info, "FakeBody") == 0)
+		{
+			if (g_iCredits[client] >= g_iConfig[i_shopFakeR])
+			{
+				if (g_iRole[client] != TTT_TEAM_TRAITOR)
+					return;
+				
+				subtractCredits(client, g_iConfig[i_shopFakeR]);
+				CPrintToChat(client, g_iConfig[s_pluginTag], "Item bought! Your REAL money is", client, g_iCredits[client]);
+				SpawnFakeBody(client);
 			}
 			else CPrintToChat(client, g_iConfig[s_pluginTag], "You don't have enough money", client);
 		}
@@ -2618,7 +2651,7 @@ public Action Timer_JihadPreparing(Handle timer, any client)
 	g_hJihadBomb[client] = null;
 }
 
-stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
+stock void InspectBody(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
 {
 	char team[32];
 	if(g_iRole[victima2] == TTT_TEAM_TRAITOR)
@@ -2629,41 +2662,41 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 		Format(team, sizeof(team), "%T", "Innocents", client);
 
 	Handle menu = CreateMenu(BodyMenuHandler);
-	char Items[128];
+	char iRagdollC[128];
 
 	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
 
-	Format(Items, sizeof(Items), "%T", "Victim name", client, victimaname2);
-	AddMenuItem(menu, "", Items);
+	Format(iRagdollC, sizeof(iRagdollC), "%T", "Victim name", client, victimaname2);
+	AddMenuItem(menu, "", iRagdollC);
 
-	Format(Items, sizeof(Items), "%T", "Team victim", client, team);
-	AddMenuItem(menu, "", Items);
+	Format(iRagdollC, sizeof(iRagdollC), "%T", "Team victim", client, team);
+	AddMenuItem(menu, "", iRagdollC);
 
 	if(g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(Items, sizeof(Items), "%T", "Elapsed since his death", client, tiempo2);
-		AddMenuItem(menu, "", Items);
+		Format(iRagdollC, sizeof(iRagdollC), "%T", "Elapsed since his death", client, tiempo2);
+		AddMenuItem(menu, "", iRagdollC);
 
 		if(atacante2 > 0 && atacante2 != victima2)
 		{
-			Format(Items, sizeof(Items), "%T", "The weapon used has been", client, weapon);
-			AddMenuItem(menu, "", Items);
+			Format(iRagdollC, sizeof(iRagdollC), "%T", "The weapon used has been", client, weapon);
+			AddMenuItem(menu, "", iRagdollC);
 		}
 		else
 		{
-			Format(Items, sizeof(Items), "%T", "The weapon used has been: himself (suicide)", client);
-			AddMenuItem(menu, "", Items);
+			Format(iRagdollC, sizeof(iRagdollC), "%T", "The weapon used has been: himself (suicide)", client);
+			AddMenuItem(menu, "", iRagdollC);
 		}
 	}
 
 	if(g_bScan[client])
 	{
 		if(atacante2 > 0 && atacante2 != victima2)
-			Format(Items, sizeof(Items), "%T", "Killer is Player",client, atacantename2);
+			Format(iRagdollC, sizeof(iRagdollC), "%T", "Killer is Player",client, atacantename2);
 		else
-			Format(Items, sizeof(Items), "%T", "Player committed suicide", client);
+			Format(iRagdollC, sizeof(iRagdollC), "%T", "Player committed suicide", client);
 
-		AddMenuItem(menu, "", Items);
+		AddMenuItem(menu, "", iRagdollC);
 	}
 
 	SetMenuExitButton(menu, true);
@@ -3908,4 +3941,39 @@ stock void RemoveC4(int client)
 			}
 		}
 	}
+}
+
+stock bool SpawnFakeBody(int client)
+{
+	char sModel[256];
+	float pos[3];
+	char sName[32];
+	
+	GetClientModel(client, sModel, sizeof(sModel));
+	GetClientEyePosition(client, pos);
+	Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
+	
+	int iEntity = CreateEntityByName("prop_ragdoll");
+	DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
+	DispatchKeyValue(iEntity, "targetname", sName);
+	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
+	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
+	
+	if(DispatchSpawn(iEntity))
+	{
+		pos[2] -= 16.0;
+		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+	}
+	
+	int iRagdollC[Ragdolls];
+	iRagdollC[ent] = EntIndexToEntRef(iEntity);
+	iRagdollC[victim] = 0;
+	Format(iRagdollC[victimName], MAX_NAME_LENGTH, "Fake!");
+	iRagdollC[scanned] = false;
+	iRagdollC[attacker] = 0;
+	Format(iRagdollC[attackerName], MAX_NAME_LENGTH, "Fake!");
+	iRagdollC[gameTime] = 0.0;
+	Format(iRagdollC[weaponused], MAX_NAME_LENGTH, "Fake!");
+
+	PushArrayArray(g_hRagdollArray, iRagdollC[0]);
 }
