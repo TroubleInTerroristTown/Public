@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <ttt>
+#include <ttt_shop>
 
 #pragma newdecls required
 

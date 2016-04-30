@@ -5,6 +5,7 @@
 #include <multicolors>
 #include <emitsoundany>
 
+#include <ttt_shop>
 #include <ttt>
 #include <config_loader>
 
