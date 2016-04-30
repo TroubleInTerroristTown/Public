@@ -8,8 +8,6 @@ LATEST=ttt-latest-$2-$1-$BRANCH.zip
 HOST=$3
 USER=$4
 PASS=$5
-BRANCHTEST="$(git rev-parse --abbrev-ref HEAD)"
-echo $BRANCHTEST
 
 echo "Download und extract sourcemod"
 wget -q "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz

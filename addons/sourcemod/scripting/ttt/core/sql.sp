@@ -44,7 +44,8 @@ public void SQLConnect(Handle owner, Handle hndl, const char[] error, any data)
 
 	CheckAndCreateTables(sDriver);
 
-	SQL_SetCharset(g_hDatabase, "utf8");
+	SQL_SetCharset(g_hDatabase, "utf8mb4");
+	SQL_TQuery(g_hDatabase, SQLCallback_OnSetNames, "SET NAMES 'utf8mb4';");
 
 	LoadClients();
 }
@@ -53,11 +54,20 @@ stock void CheckAndCreateTables(const char[] driver)
 {
 	char sQuery[256];
 	if (StrEqual(driver, "mysql", false))
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB;");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4;");
 	else if (StrEqual(driver, "sqlite", false))
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`))");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`)) DEFAULT CHARSET=utf8mb4;");
 
 	SQL_TQuery(g_hDatabase, Callback_CheckAndCreateTables, sQuery);
+}
+
+public int SQLCallback_OnSetNames(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if(hndl == null || strlen(error) > 0)
+	{
+		LogToFileEx(g_iConfig[s_errFile], "(SQLCallback_OnSetNames) Query failed: %s", error);
+		return;
+	}
 }
 
 public void Callback_CheckAndCreateTables(Handle owner, Handle hndl, const char[] error, any userid)
