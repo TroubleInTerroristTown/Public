@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <ttt>
+#include <ttt-sql>
 
 #pragma newdecls required
 
@@ -75,11 +76,17 @@ public void TTT_OnClientDeath(int victim, int attacker)
 public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
 {
 	PrintToServer("TTT_OnBodyFound was called!");
-	PrintToServer("(TTT_OnClientDeath) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+	PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
 }
 
 public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
 {
 	PrintToServer("TTT_OnBodyScanned was called!");
-	PrintToServer("(TTT_OnClientDeath) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+	PrintToServer("(TTT_OnBodyScanned) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+}
+
+public void TTT_OnSQLConnect(Database db)
+{
+	PrintToServer("TTT_OnSQLConnect was called!");
+	PrintToServer("(TTT_OnSQLConnect) db: %d", db);
 }

@@ -10,6 +10,7 @@
 #include <emitsoundany>
 #include <ttt>
 #include <ttt-icon>
+#include <ttt-sql>
 #include <config_loader>
 #include <smlib>
 
@@ -79,8 +80,6 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");
-
-	SQL_Start();
 
 	LoadTranslations("ttt.phrases");
 	LoadTranslations("common.phrases");
@@ -2731,7 +2730,7 @@ stock void UpdateKarma(int client, int karma)
 	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"%s\";", karma, sCommunityID);
 
 	if(g_hDatabase != null)
-		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
+		TTT_Query("Callback_Karma", sQuery);
 }
 
 stock void addCredits(int client, int credits, bool message = false)
