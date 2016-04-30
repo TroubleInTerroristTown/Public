@@ -127,6 +127,7 @@ int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 Handle g_hOnRoundStart_Pre = null;
 Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
+Handle g_hOnRoundEnd = null;
 Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;

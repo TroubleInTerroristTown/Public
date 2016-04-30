@@ -168,6 +168,13 @@ forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
 forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
 
 /*
+ * Called when the actual TTT round ended.
+ *
+ * @param winner         	The Winning Team.
+ */
+forward void TTT_OnRoundEnd(int winner);
+
+/*
  * Called when a client's role is assigned.
  *
  * @param client            Client index.
