@@ -124,6 +124,16 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 	return 0;
 }
 
+public int Native_LogString(Handle plugin, int numParams)
+{
+	char message[512];
+	GetNativeString(1, message, sizeof(message));
+	
+	PushArrayString(g_hLogsArray, message);
+	
+	return 0;
+}
+
 public int Native_GetFoundStatus(Handle plugin, int numParams)
 {
 	return g_bFound[GetNativeCell(1)];

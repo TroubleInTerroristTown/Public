@@ -56,6 +56,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
 	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
+	CreateNative("TTT_LogString", Native_LogString);
 	
 	CreateNative("TTT_OverrideConfigInt", Native_OverrideConfigInt);
 	CreateNative("TTT_OverrideConfigBool", Native_OverrideConfigBool);
@@ -170,7 +171,6 @@ void SetupConfig()
 	g_iConfig[i_traitorwinAliveTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "The amount of credits a traitor will recieve for winning the round if they survived.");
 	g_iConfig[i_traitorwinDeadTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "The amount of credits a traitor will recieve for winning the round if they died.");
 	g_iConfig[i_creditsFoundBody] = Config_LoadInt("ttt_credits_found_body_add", 1200, "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
-	g_iConfig[i_creditsTaserHurtTraitor] = Config_LoadInt("ttt_hurt_traitor_with_taser", 2000, "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
 	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
@@ -205,7 +205,6 @@ void SetupConfig()
 	g_iConfig[b_roleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
 	g_iConfig[i_traitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
 	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
-	g_iConfig[b_taserAllow] = Config_LoadBool("ttt_taser_allow", true, "Should the Taser/Zeus be allowed. 1 = Allow, 0 = Don't Allow");
 	g_iConfig[b_denyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
 	g_iConfig[b_slayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
 	g_iConfig[i_startCredits] = Config_LoadInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
@@ -229,8 +228,7 @@ void SetupConfig()
 	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[i_taserDamage] = Config_LoadInt("ttt_taser_damage", 0, "How much damage makes a taser? (0 - disabled)");
-	
+
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
@@ -837,15 +835,11 @@ stock void TeamInitialize(int client)
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultPri_D]);
 		
-		if (g_iConfig[b_taserAllow])
-			GivePlayerItem(client, "weapon_taser");
-		
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is DETECTIVES", client);
 		
 		if (g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
-		
-		g_bTaser[client] = false;
+			
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -997,7 +991,6 @@ public void OnClientPutInServer(int client)
 	g_bImmuneRDMManager[client] = false;
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
-	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
@@ -1032,55 +1025,6 @@ stock void BanBadPlayerKarma(int client)
 	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
 }
 
-public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
-{
-	if (g_bRoundEnded && g_iConfig[b_endroundDMG])
-		return Plugin_Continue;
-	
-	if (!g_bRoundStarted)
-		return Plugin_Handled;
-	
-	if (IsWorldDamage(iAttacker, damagetype))
-		return Plugin_Continue;
-	
-	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
-		return Plugin_Continue;
-	
-	char item[512], sWeapon[64];
-	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-	if (StrEqual(sWeapon, "weapon_taser", false))
-	{
-		if (g_iRole[iVictim] == TTT_TEAM_TRAITOR)
-		{
-			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
-			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Traitor", iVictim, iVictim);
-			addCredits(iAttacker, g_iConfig[i_creditsTaserHurtTraitor]);
-		}
-		else if (g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
-		{
-			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
-			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt a Detective", iVictim, iVictim);
-		}
-		else if (g_iRole[iVictim] == TTT_TEAM_INNOCENT)
-		{
-			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
-			PushArrayString(g_hLogsArray, item);
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You hurt an Innocent", iVictim, iVictim);
-		}
-		
-		if (g_iConfig[i_taserDamage] == 0)
-			return Plugin_Handled;
-		else if (g_iConfig[i_taserDamage] > 0)
-		{
-			damage = view_as<float>(g_iConfig[i_taserDamage]);
-			return Plugin_Changed;
-		}
-	}
-	return Plugin_Continue;
-}
-
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
 	if (g_bRoundEnded && g_iConfig[b_endroundDMG])
@@ -1099,35 +1043,6 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	}
 	
 	return Plugin_Continue;
-}
-
-// TODO: Move to ttt.inc
-stock bool IsWorldDamage(int iAttacker, int damagetype)
-{
-	if (damagetype == DMG_FALL
-		 || damagetype == DMG_GENERIC
-		 || damagetype == DMG_CRUSH
-		 || damagetype == DMG_SLASH
-		 || damagetype == DMG_BURN
-		 || damagetype == DMG_VEHICLE
-		 || damagetype == DMG_FALL
-		 || damagetype == DMG_BLAST
-		 || damagetype == DMG_SHOCK
-		 || damagetype == DMG_SONIC
-		 || damagetype == DMG_ENERGYBEAM
-		 || damagetype == DMG_DROWN
-		 || damagetype == DMG_PARALYZE
-		 || damagetype == DMG_NERVEGAS
-		 || damagetype == DMG_POISON
-		 || damagetype == DMG_ACID
-		 || damagetype == DMG_AIRBOAT
-		 || damagetype == DMG_PLASMA
-		 || damagetype == DMG_RADIATION
-		 || damagetype == DMG_SLOWBURN
-		 || iAttacker == 0
-		)
-	return true;
-	return false;
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)

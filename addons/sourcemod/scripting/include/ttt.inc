@@ -20,14 +20,6 @@
 
 enum eConfig
 {
-	i_shopDNA, 
-	i_shopID, 
-	i_shopFAKEID, 
-	i_shopT, 
-	i_shopD, 
-	i_shopTASER, 
-	i_shopJIHADBOMB, 
-	i_shopC4, 
 	i_requiredPlayersD, 
 	i_requiredPlayers, 
 	i_startKarma, 
@@ -56,7 +48,6 @@ enum eConfig
 	i_creditsDT, 
 	i_creditsDD, 
 	i_creditsFoundBody, 
-	i_creditsTaserHurtTraitor, 
 	i_traitorloseAliveNonTraitors, 
 	i_traitorloseDeadNonTraitors, 
 	i_traitorwinAliveTraitors, 
@@ -87,17 +78,12 @@ enum eConfig
 	bool:b_showDetectiveMenu, 
 	String:s_kickImmunity[16], 
 	bool:b_updateClientModel, 
-	bool:b_removeHostages, 
-	bool:b_removeBomb, 
+	bool:b_removeHostages,
 	bool:b_roleAgain, 
-	i_traitorRatio, 
-	i_detectiveRatio, 
-	bool:b_taserAllow, 
-	Float:f_jihadPreparingTime, 
-	bool:b_denyFire, 
-	bool:b_slayAfterStart, 
-	i_c4ShakeRadius, 
-	Float:f_c4DamageRadius, 
+	i_traitorRatio,
+	i_detectiveRatio,
+	bool:b_denyFire,
+	bool:b_slayAfterStart,
 	i_startCredits, 
 	bool:b_removeBuyzone, 
 	bool:b_forceTeams, 
@@ -105,12 +91,6 @@ enum eConfig
 	bool:b_forceModel, 
 	String:s_modelCT[PLATFORM_MAX_PATH], 
 	String:s_modelT[PLATFORM_MAX_PATH], 
-	String:s_overlayTWin[PLATFORM_MAX_PATH], 
-	String:s_overlayDWin[PLATFORM_MAX_PATH], 
-	String:s_overlayIWin[PLATFORM_MAX_PATH], 
-	String:s_overlayTCorner[PLATFORM_MAX_PATH], 
-	String:s_overlayDCorner[PLATFORM_MAX_PATH], 
-	String:s_overlayICorner[PLATFORM_MAX_PATH], 
 	String:s_logFile[PLATFORM_MAX_PATH], 
 	String:s_errFile[PLATFORM_MAX_PATH], 
 	String:s_defaultPri_D[64], 
@@ -119,8 +99,7 @@ enum eConfig
 	bool:b_hideTeams, 
 	bool:b_publicKarma, 
 	bool:b_karmaRound, 
-	bool:b_stripWeapons, 
-	bool:b_C4Beam, 
+	bool:b_stripWeapons,
 	bool:b_karmaDMG, 
 	bool:b_karmaDMG_up, 
 	Float:f_roundDelay, 
@@ -130,9 +109,6 @@ enum eConfig
 	bool:b_ignoreDeaths, 
 	bool:b_ignoreRDMMenu, 
 	bool:b_deadPlayersCanSeeOtherRules, 
-	bool:b_sortItems, 
-	bool:b_sortItemsOrder, 
-	i_taserDamage
 };
 
 /*
@@ -291,6 +267,13 @@ native bool TTT_GetFoundStatus(int client);
 native void TTT_SetFoundStatus(int client, bool found);
 
 /*
+ * Log a String to the ingame Log.
+ *
+ * @param string            The message that should get logged.
+ */
+native void TTT_LogString(const char[] string);
+
+/*
  * Overrides a config setting.
  *
  * @param configIndex       The config index to change. Use eConfig for this.
@@ -378,4 +361,32 @@ stock void ShowOverlayToAll(const char[] overlaypath)
 	LoopValidClients(i)
 	if (!IsFakeClient(i))
 		ShowOverlayToClient(i, overlaypath);
+}
+
+stock bool IsWorldDamage(int iAttacker, int damagetype)
+{
+	if (damagetype == DMG_FALL
+		 || damagetype == DMG_GENERIC
+		 || damagetype == DMG_CRUSH
+		 || damagetype == DMG_SLASH
+		 || damagetype == DMG_BURN
+		 || damagetype == DMG_VEHICLE
+		 || damagetype == DMG_FALL
+		 || damagetype == DMG_BLAST
+		 || damagetype == DMG_SHOCK
+		 || damagetype == DMG_SONIC
+		 || damagetype == DMG_ENERGYBEAM
+		 || damagetype == DMG_DROWN
+		 || damagetype == DMG_PARALYZE
+		 || damagetype == DMG_NERVEGAS
+		 || damagetype == DMG_POISON
+		 || damagetype == DMG_ACID
+		 || damagetype == DMG_AIRBOAT
+		 || damagetype == DMG_PLASMA
+		 || damagetype == DMG_RADIATION
+		 || damagetype == DMG_SLOWBURN
+		 || iAttacker == 0
+		)
+	return true;
+	return false;
 }
