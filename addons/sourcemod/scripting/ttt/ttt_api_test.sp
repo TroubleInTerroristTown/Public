@@ -3,6 +3,7 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt-sql>
+#include <ttt_shop>
 
 #pragma newdecls required
 

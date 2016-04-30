@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <cstrike>
 
+#include <ttt_shop>
 #include <ttt>
 #include <config_loader>
 #include <CustomPlayerSkins>

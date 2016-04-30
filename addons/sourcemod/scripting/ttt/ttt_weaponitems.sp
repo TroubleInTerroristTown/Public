@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <cstrike>
 
+#include <ttt_shop>
 #include <ttt>
 #include <ttt-weaponitems>
 #include <config_loader>
