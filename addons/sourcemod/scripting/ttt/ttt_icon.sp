@@ -163,8 +163,9 @@ stock int CreateIcon(int client, int role)
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if ((entity != client && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_bSeeRoles && (!IsPlayerAlive(client) || GetClientTeam(client < CS_TEAM_CT)))
-		return Plugin_Handled;
+	if(TTT_IsClientValid(entity) && TTT_IsClientValid(client))
+		if ((entity != client && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_bSeeRoles && (!IsPlayerAlive(client) || GetClientTeam(client < CS_TEAM_CT)))
+			return Plugin_Handled;
 
 	return Plugin_Continue;
 }
