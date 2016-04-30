@@ -2167,10 +2167,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 				entity = EntRefToEntIndex(iRagdollC[ent]);
 				
-				char sName[32];
-				GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
-
-				if(entity == iAimEntity && !StrEqual(sName, "Fake!", false))
+				if(entity == iAimEntity && !StrEqual(iRagdollC[weaponused], "Fake!", false))
 				{
 					InspectBody(client, iRagdollC[victim], iRagdollC[attacker], RoundToNearest(GetGameTime()-iRagdollC[gameTime]), iRagdollC[weaponused], iRagdollC[victimName], iRagdollC[attackerName]);
 
@@ -2234,7 +2231,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 					break;
 				}
-				else if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && StrEqual(sName, "Fake!", false))
+				else if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && StrEqual(iRagdollC[weaponused], "Fake!", false))
 				{
 					LoopValidClients(j)
 						CPrintToChat(j, g_iConfig[s_pluginTag], "Found Fake", j, client);
