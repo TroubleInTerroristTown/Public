@@ -1,5 +1,5 @@
 #if defined _TTT_included
- #endinput
+#endinput
 #endif
 #define _TTT_included
 
@@ -20,118 +20,118 @@
 
 enum eConfig
 {
-	i_shopDNA,
-	i_shopID,
-	i_shopFAKEID,
-	i_shopT,
-	i_shopD,
-	i_shopTASER,
-	i_shopJIHADBOMB,
-	i_shopC4,
-	i_requiredPlayersD,
-	i_requiredPlayers,
-	i_startKarma,
-	i_karmaBan,
-	i_karmaBanLength,
-	i_maxKarma,
-	i_spawnHPT,
-	i_spawnHPD,
-	i_spawnHPI,
-	i_karmaII,
-	i_karmaIT,
-	i_karmaID,
-	i_karmaTI,
-	i_karmaTT,
-	i_karmaTD,
-	i_karmaDI,
-	i_karmaDT,
-	i_karmaDD,
-	i_creditsII,
-	i_creditsIT,
-	i_creditsID,
-	i_creditsTI,
-	i_creditsTT,
-	i_creditsTD,
-	i_creditsDI,
-	i_creditsDT,
-	i_creditsDD,
-	i_creditsFoundBody,
-	i_creditsTaserHurtTraitor,
-	i_traitorloseAliveNonTraitors,
-	i_traitorloseDeadNonTraitors,
-	i_traitorwinAliveTraitors,
-	i_traitorwinDeadTraitors,
-	bool:b_showDeathMessage,
-	bool:b_showKillMessage,
-	bool:b_showEarnKarmaMessage,
-	bool:b_showEarnCreditsMessage,
-	bool:b_showLoseKarmaMessage,
-	bool:b_showLoseCreditsMessage,
-	i_messageTypKarma,
-	i_messageTypCredits,
-	bool:b_blockSuicide,
-	bool:b_allowFlash,
-	bool:b_blockLookAtWeapon,
-	bool:b_blockGrenadeMessage,
-	bool:b_blockRadioMessage,
-	bool:b_enableNoBlock,
-	String:s_pluginTag[250],
-	bool:b_kadRemover,
-	i_rulesClosePunishment,
-	i_punishInnoKills,
-	i_punishTraitorKills,
-	i_punishDetectiveKills,
-	i_timeToReadRules,
-	i_timeToReadDetectiveRules,
-	bool:b_showRulesMenu,
-	bool:b_showDetectiveMenu,
-	String:s_kickImmunity[16],
-	bool:b_updateClientModel,
-	bool:b_removeHostages,
-	bool:b_removeBomb,
-	bool:b_roleAgain,
-	i_traitorRatio,
-	i_detectiveRatio,
-	bool:b_taserAllow,
-	Float:f_jihadPreparingTime,
-	bool:b_denyFire,
-	bool:b_slayAfterStart,
-	i_c4ShakeRadius,
-	Float:f_c4DamageRadius,
-	i_startCredits,
-	bool:b_removeBuyzone,
-	bool:b_forceTeams,
-	bool:b_randomWinner,
-	bool:b_forceModel,
-	String:s_modelCT[PLATFORM_MAX_PATH],
-	String:s_modelT[PLATFORM_MAX_PATH],
-	String:s_overlayTWin[PLATFORM_MAX_PATH],
-	String:s_overlayDWin[PLATFORM_MAX_PATH],
-	String:s_overlayIWin[PLATFORM_MAX_PATH],
-	String:s_overlayTCorner[PLATFORM_MAX_PATH],
-	String:s_overlayDCorner[PLATFORM_MAX_PATH],
-	String:s_overlayICorner[PLATFORM_MAX_PATH],
-	String:s_logFile[PLATFORM_MAX_PATH],
-	String:s_errFile[PLATFORM_MAX_PATH],
-	String:s_defaultPri_D[64],
-	String:s_defaultSec[64],
-	bool:b_endwithD,
-	bool:b_hideTeams,
-	bool:b_publicKarma,
-	bool:b_karmaRound,
-	bool:b_stripWeapons,
-	bool:b_C4Beam,
-	bool:b_karmaDMG,
-	bool:b_karmaDMG_up,
-	Float:f_roundDelay,
-	bool:b_nextRoundAlert,
-	bool:b_endroundDMG,
-	bool:bResetCreditsEachRound,
-	bool:b_ignoreDeaths,
-	bool:b_ignoreRDMMenu,
-	bool:b_deadPlayersCanSeeOtherRules,
- 	bool:b_sortItems,
- 	bool:b_sortItemsOrder,
+	i_shopDNA, 
+	i_shopID, 
+	i_shopFAKEID, 
+	i_shopT, 
+	i_shopD, 
+	i_shopTASER, 
+	i_shopJIHADBOMB, 
+	i_shopC4, 
+	i_requiredPlayersD, 
+	i_requiredPlayers, 
+	i_startKarma, 
+	i_karmaBan, 
+	i_karmaBanLength, 
+	i_maxKarma, 
+	i_spawnHPT, 
+	i_spawnHPD, 
+	i_spawnHPI, 
+	i_karmaII, 
+	i_karmaIT, 
+	i_karmaID, 
+	i_karmaTI, 
+	i_karmaTT, 
+	i_karmaTD, 
+	i_karmaDI, 
+	i_karmaDT, 
+	i_karmaDD, 
+	i_creditsII, 
+	i_creditsIT, 
+	i_creditsID, 
+	i_creditsTI, 
+	i_creditsTT, 
+	i_creditsTD, 
+	i_creditsDI, 
+	i_creditsDT, 
+	i_creditsDD, 
+	i_creditsFoundBody, 
+	i_creditsTaserHurtTraitor, 
+	i_traitorloseAliveNonTraitors, 
+	i_traitorloseDeadNonTraitors, 
+	i_traitorwinAliveTraitors, 
+	i_traitorwinDeadTraitors, 
+	bool:b_showDeathMessage, 
+	bool:b_showKillMessage, 
+	bool:b_showEarnKarmaMessage, 
+	bool:b_showEarnCreditsMessage, 
+	bool:b_showLoseKarmaMessage, 
+	bool:b_showLoseCreditsMessage, 
+	i_messageTypKarma, 
+	i_messageTypCredits, 
+	bool:b_blockSuicide, 
+	bool:b_allowFlash, 
+	bool:b_blockLookAtWeapon, 
+	bool:b_blockGrenadeMessage, 
+	bool:b_blockRadioMessage, 
+	bool:b_enableNoBlock, 
+	String:s_pluginTag[250], 
+	bool:b_kadRemover, 
+	i_rulesClosePunishment, 
+	i_punishInnoKills, 
+	i_punishTraitorKills, 
+	i_punishDetectiveKills, 
+	i_timeToReadRules, 
+	i_timeToReadDetectiveRules, 
+	bool:b_showRulesMenu, 
+	bool:b_showDetectiveMenu, 
+	String:s_kickImmunity[16], 
+	bool:b_updateClientModel, 
+	bool:b_removeHostages, 
+	bool:b_removeBomb, 
+	bool:b_roleAgain, 
+	i_traitorRatio, 
+	i_detectiveRatio, 
+	bool:b_taserAllow, 
+	Float:f_jihadPreparingTime, 
+	bool:b_denyFire, 
+	bool:b_slayAfterStart, 
+	i_c4ShakeRadius, 
+	Float:f_c4DamageRadius, 
+	i_startCredits, 
+	bool:b_removeBuyzone, 
+	bool:b_forceTeams, 
+	bool:b_randomWinner, 
+	bool:b_forceModel, 
+	String:s_modelCT[PLATFORM_MAX_PATH], 
+	String:s_modelT[PLATFORM_MAX_PATH], 
+	String:s_overlayTWin[PLATFORM_MAX_PATH], 
+	String:s_overlayDWin[PLATFORM_MAX_PATH], 
+	String:s_overlayIWin[PLATFORM_MAX_PATH], 
+	String:s_overlayTCorner[PLATFORM_MAX_PATH], 
+	String:s_overlayDCorner[PLATFORM_MAX_PATH], 
+	String:s_overlayICorner[PLATFORM_MAX_PATH], 
+	String:s_logFile[PLATFORM_MAX_PATH], 
+	String:s_errFile[PLATFORM_MAX_PATH], 
+	String:s_defaultPri_D[64], 
+	String:s_defaultSec[64], 
+	bool:b_endwithD, 
+	bool:b_hideTeams, 
+	bool:b_publicKarma, 
+	bool:b_karmaRound, 
+	bool:b_stripWeapons, 
+	bool:b_C4Beam, 
+	bool:b_karmaDMG, 
+	bool:b_karmaDMG_up, 
+	Float:f_roundDelay, 
+	bool:b_nextRoundAlert, 
+	bool:b_endroundDMG, 
+	bool:bResetCreditsEachRound, 
+	bool:b_ignoreDeaths, 
+	bool:b_ignoreRDMMenu, 
+	bool:b_deadPlayersCanSeeOtherRules, 
+	bool:b_sortItems, 
+	bool:b_sortItemsOrder, 
 	i_taserDamage
 };
 
@@ -206,16 +206,6 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
 forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
 
 /*
- * Called when an item is purchased in the menu. Return Plugin_Stop
- * to prevent us subtracting credits and informing the player that
- * the item was purchased.
- *
- * @param client            The client who purchased the item.
- * @param itemshort         The short-tag for the item's name.
- */
-forward Action TTT_OnItemPurchased(int client, const char[] itemshort);
-
-/*
  * Called before a players credits are modified.
  *
  * @param client            Client index.
@@ -284,28 +274,6 @@ native bool TTT_WasBodyFound(int client);
  * @param client            Client index.
  */
 native bool TTT_WasBodyScanned(int client);
-
-/*
- * Registers a custom item in the menu/shop.
- *
- * @param itemshort         The short-tag identifier of the item (must be unique).
- * @param itemlong          The long fancy name for the item.
- * @param price             The price of the item.
- * @param role              The optional role to restrict the item to.
- */
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0);
-/*
- * Retrieve a custom item's price.
- *
- * @param item              The short-tag identifier of the item.
- */
-native int TTT_GetCustomItemPrice(const char[] item);
-/*
- * Retrieve a custom item's role restriction.
- *
- * @param item              The short-tag identifier of the item.
- */
-native int TTT_GetCustomItemRole(const char[] item);
 
 /*
  * Determines if a player is dead and has had their body found.
@@ -379,7 +347,7 @@ stock bool TTT_IsClientValid(int client)
 
 stock void TTT_IsGameCSGO()
 {
-	if(GetEngineVersion() != Engine_CSGO)
+	if (GetEngineVersion() != Engine_CSGO)
 	{
 		SetFailState("Only CS:GO Support!");
 		return;
@@ -389,17 +357,16 @@ stock void TTT_IsGameCSGO()
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
-
-	if(iFlags & ADMFLAG_ROOT)
+	
+	if (iFlags & ADMFLAG_ROOT)
 		return true;
-
-	for(new i = 0; i < sizeof(flags); i++)
-		if(iFlags & FlagToBit(flags[i]))
-			return true;
-
+	
+	for (new i = 0; i < sizeof(flags); i++)
+	if (iFlags & FlagToBit(flags[i]))
+		return true;
+	
 	return false;
 }
-
 
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
 {
@@ -409,6 +376,6 @@ stock void ShowOverlayToClient(int client, const char[] overlaypath)
 stock void ShowOverlayToAll(const char[] overlaypath)
 {
 	LoopValidClients(i)
-		if(!IsFakeClient(i))
-			ShowOverlayToClient(i, overlaypath);
+	if (!IsFakeClient(i))
+		ShowOverlayToClient(i, overlaypath);
 }

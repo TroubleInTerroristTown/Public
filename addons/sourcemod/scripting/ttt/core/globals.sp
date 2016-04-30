@@ -4,12 +4,6 @@
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
-#define SND_BEEP "weapons/c4/c4_beep1.wav"
-#define SND_DISARM "weapons/c4/c4_disarm.wav"
-
-#define MDL_C4 "models/weapons/w_c4_planted.mdl"
-
-ArrayList g_aCustomItems;
 
 int g_iConfig[eConfig];
 
@@ -19,7 +13,6 @@ char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
-bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 bool g_bRoundEnded = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
@@ -30,15 +23,9 @@ bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAccount;
 
-Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
-bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
-int g_iWire[MAXPLAYERS + 1] =  { -1, ... };
-int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
+
 
 bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
-bool g_bJihadBomb[MAXPLAYERS + 1] =  { false, ... };
-bool g_bID[MAXPLAYERS + 1] =  { false, ... };
-Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
@@ -70,16 +57,15 @@ int g_iCollisionGroup = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
-int g_iKarmaStart[MAXPLAYERS + 1] = { 0, ...};
+int g_iKarmaStart[MAXPLAYERS + 1] =  { 0, ... };
 
 Handle g_hRagdollArray = null;
 
 int g_iBeamSprite = -1;
-int g_iC4BeamSprite = -1;
 int g_iHaloSprite = -1;
 
-bool g_bFound[MAXPLAYERS + 1] = {false, ...};
-bool g_bDetonate[MAXPLAYERS + 1] = {false, ...};
+bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
+bool g_bDetonate[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAlive = -1;
 int g_iKills = -1;
@@ -94,23 +80,15 @@ Handle g_hDatabase = null;
 
 enum Ragdolls
 {
-	ent,
-	victim,
-	attacker,
-	String:victimName[MAX_NAME_LENGTH],
-	String:attackerName[MAX_NAME_LENGTH],
-	bool:scanned,
-	Float:gameTime,
-	String:weaponused[32],
+	ent, 
+	victim, 
+	attacker, 
+	String:victimName[MAX_NAME_LENGTH], 
+	String:attackerName[MAX_NAME_LENGTH], 
+	bool:scanned, 
+	Float:gameTime, 
+	String:weaponused[32], 
 	bool:found
-}
-
-enum Item
-{
-	String:Long[64],
-	String:Short[16],
-	Price,
-	Role
 }
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
@@ -132,47 +110,41 @@ Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyScanned = null;
-Handle g_hOnItemPurchased = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnUpdate = null;
 
-char g_sShopCMDs[][] = {
-	"menu",
-	"shop"
-};
-
-char g_sRadioCMDs[][] = {
-	"coverme",
-	"takepoint",
-	"holdpos",
-	"regroup",
-	"followme",
-	"takingfire",
-	"go",
-	"fallback",
-	"sticktog",
-	"getinpos",
-	"stormfront",
-	"report",
-	"roger",
-	"enemyspot",
-	"needbackup",
-	"sectorclear",
-	"inposition",
-	"reportingin",
-	"getout",
-	"negative",
-	"enemydown",
-	"compliment",
-	"thanks",
+char g_sRadioCMDs[][] =  {
+	"coverme", 
+	"takepoint", 
+	"holdpos", 
+	"regroup", 
+	"followme", 
+	"takingfire", 
+	"go", 
+	"fallback", 
+	"sticktog", 
+	"getinpos", 
+	"stormfront", 
+	"report", 
+	"roger", 
+	"enemyspot", 
+	"needbackup", 
+	"sectorclear", 
+	"inposition", 
+	"reportingin", 
+	"getout", 
+	"negative", 
+	"enemydown", 
+	"compliment", 
+	"thanks", 
 	"cheer"
 };
 
-char g_sRemoveEntityList[][] = {
-	"func_bomb_target",
-	"hostage_entity",
-	"func_hostage_rescue",
-	"info_hostage_spawn",
+char g_sRemoveEntityList[][] =  {
+	"func_bomb_target", 
+	"hostage_entity", 
+	"func_hostage_rescue", 
+	"info_hostage_spawn", 
 	"func_buyzone"
 };
