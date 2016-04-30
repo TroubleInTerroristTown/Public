@@ -33,6 +33,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
 	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
@@ -263,16 +264,6 @@ void SetupConfig()
  	g_iConfig[b_sortItemsOrder] = Config_LoadBool("ttt_sort_items_price_order", true, "Sort price (ttt_sort_items_price must be 1): false - Low to High, true - High to Low");
 	g_iConfig[i_taserDamage] = Config_LoadInt("ttt_taser_damage", 0, "How much damage makes a taser? (0 - disabled)");
 
-	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_iConfig[s_overlayDWin], sizeof(g_iConfig[s_overlayDWin]));
-	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_iConfig[s_overlayTWin], sizeof(g_iConfig[s_overlayTWin]));
-	Config_LoadString("ttt_overlay_inno_win", "overlays/ttt/innocents_win", "The overlay to display when innocent win.", g_iConfig[s_overlayIWin], sizeof(g_iConfig[s_overlayIWin]));
-
-
-	Config_LoadString("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.", g_iConfig[s_overlayDCorner], sizeof(g_iConfig[s_overlayDCorner]));
-	Config_LoadString("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.", g_iConfig[s_overlayTCorner], sizeof(g_iConfig[s_overlayTCorner]));
-	Config_LoadString("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for detectives during the round.", g_iConfig[s_overlayICorner], sizeof(g_iConfig[s_overlayICorner]));
-
-
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 
@@ -495,64 +486,6 @@ public void OnMapStart()
 
 	ClearArray(g_hLogsArray);
 
-	char buffer[PLATFORM_MAX_PATH];
-
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayTWin]);
-	AddFileToDownloadsTable(buffer);
-
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayTWin]);
-	AddFileToDownloadsTable(buffer);
-
-	PrecacheDecal(g_iConfig[s_overlayTWin], true);
-
-
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayIWin]);
-	AddFileToDownloadsTable(buffer);
-
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayIWin]);
-	AddFileToDownloadsTable(buffer);
-
-	PrecacheDecal(g_iConfig[s_overlayIWin], true);
-
-
-	if(g_iConfig[b_endwithD])
-	{
-		Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayDWin]);
-		AddFileToDownloadsTable(buffer);
-
-		Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayDWin]);
-		AddFileToDownloadsTable(buffer);
-
-		PrecacheDecal(g_iConfig[s_overlayDWin], true);
-	}
-
-
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayDCorner]);
-	AddFileToDownloadsTable(buffer);
-
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayDCorner]);
-	AddFileToDownloadsTable(buffer);
-
-	PrecacheDecal(g_iConfig[s_overlayDCorner], true);
-
-
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayTCorner]);
-	AddFileToDownloadsTable(buffer);
-
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayTCorner]);
-	AddFileToDownloadsTable(buffer);
-
-	PrecacheDecal(g_iConfig[s_overlayTCorner], true);
-
-
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_iConfig[s_overlayICorner]);
-	AddFileToDownloadsTable(buffer);
-
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_iConfig[s_overlayICorner]);
-	AddFileToDownloadsTable(buffer);
-
-	PrecacheDecal(g_iConfig[s_overlayICorner], true);
-
 
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
@@ -654,7 +587,6 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0), Timer_OnRoundEnd);
 
-	ShowOverlayToAll("");
 	resetPlayers();
 }
 
@@ -2023,46 +1955,81 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	}
 
 	bool bInnoAlive = false;
+	bool bDeteAlive = false;
+	
+	int WinningTeam = TTT_TEAM_UNASSIGNED;
 
-	if(reason == CSRoundEnd_CTWin)
+	LoopValidClients(client)
 	{
-		LoopValidClients(client)
+		if(IsPlayerAlive(client))
 		{
-			if(g_iRole[client] != TTT_TEAM_TRAITOR && g_iRole[client] != TTT_TEAM_UNASSIGNED)
+			if(g_iRole[client] == TTT_TEAM_INNOCENT)
+				bInnoAlive = true;
+			else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+				bDeteAlive = true;
+		}
+	}
+	
+	if(bInnoAlive)
+	{
+		WinningTeam = TTT_TEAM_INNOCENT;
+	}
+	else if(!bInnoAlive && bDeteAlive)
+	{
+		if(g_iConfig[b_endwithD])
+		{
+			WinningTeam = TTT_TEAM_DETECTIVE;
+		}else{
+			WinningTeam = TTT_TEAM_INNOCENT;
+		}
+	}
+	else
+	{
+		WinningTeam = TTT_TEAM_TRAITOR;
+	}
+
+	LoopValidClients(client)
+	{
+		switch(WinningTeam)
+		{
+			case TTT_TEAM_DETECTIVE:
 			{
-				if(IsPlayerAlive(client))
+				if(g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
 				{
-					if(g_iRole[client] == TTT_TEAM_INNOCENT)
-						bInnoAlive = true;
-
-					addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
+					if(IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
 				}
-				else
-					addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
+						
 			}
-		}
-	}
-	else if(reason == CSRoundEnd_TerroristWin)
-	{
-		LoopValidClients(client)
-		{
-			if(g_iRole[client] == TTT_TEAM_TRAITOR)
+			case TTT_TEAM_INNOCENT:
 			{
-				if(IsPlayerAlive(client))
-					addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
-				else
-					addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
+				if(g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
+				{
+					if(IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
+				}
+			}
+			case TTT_TEAM_TRAITOR:
+			{
+				if(g_iRole[client] == TTT_TEAM_TRAITOR)
+				{
+					if(IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
+				}
 			}
 		}
 	}
 
-	if(reason == CSRoundEnd_TerroristWin)
-		ShowOverlayToAll(g_iConfig[s_overlayTWin]);
-	else if(reason == CSRoundEnd_CTWin && bInnoAlive)
-		ShowOverlayToAll(g_iConfig[s_overlayIWin]);
-	else if(reason == CSRoundEnd_CTWin && (!bInnoAlive) && (!g_iConfig[b_endwithD]))
-		ShowOverlayToAll(g_iConfig[s_overlayDWin]);
-
+	Call_StartForward(g_hOnRoundEnd);
+	Call_PushCell(WinningTeam);
+	Call_Finish();
+	
 	if(g_iConfig[b_randomWinner])
 	    reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 
@@ -3212,8 +3179,6 @@ public Action Command_Status(int client, int args)
 
 public Action Timer_5(Handle timer)
 {
-	int iCount = 0;
-
 	LoopValidClients(i)
 	{
 		if(GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
@@ -3221,18 +3186,9 @@ public Action Timer_5(Handle timer)
 
 		if(IsFakeClient(i))
 			continue;
-
-		iCount++;
 		
 		if (!IsPlayerAlive(i))
 			continue;
-
-		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
-			ShowOverlayToClient(i, g_iConfig[s_overlayDCorner]);
-		else if (g_iRole[i] == TTT_TEAM_TRAITOR)
-			ShowOverlayToClient(i, g_iConfig[s_overlayTCorner]);
-		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
-			ShowOverlayToClient(i, g_iConfig[s_overlayICorner]);
 
 		if(g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
