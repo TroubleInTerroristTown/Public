@@ -202,7 +202,7 @@ void SetupConfig()
 	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
 	g_iConfig[b_updateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_removeBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[b_removeBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_roleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
 	g_iConfig[i_traitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
 	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
@@ -435,16 +435,8 @@ public void OnMapStart()
 	
 	PrecacheModel("props/cs_office/microwave.mdl", true);
 	
-	PrecacheSoundAny(SND_BLIP, true);
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
-	PrecacheSoundAny(SND_BURST, true);
-	
-	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
-	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
-	
-	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
-	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 	
 	ClearArray(g_hLogsArray);
 	

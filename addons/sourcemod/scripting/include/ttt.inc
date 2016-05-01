@@ -78,13 +78,13 @@ enum eConfig
 	bool:b_showDetectiveMenu, 
 	String:s_kickImmunity[16], 
 	bool:b_updateClientModel, 
-	bool:b_removeHostages,
-	bool:b_removeBomb,
+	bool:b_removeHostages, 
+	bool:b_removeBomb, 
 	bool:b_roleAgain, 
-	i_traitorRatio,
-	i_detectiveRatio,
-	bool:b_denyFire,
-	bool:b_slayAfterStart,
+	i_traitorRatio, 
+	i_detectiveRatio, 
+	bool:b_denyFire, 
+	bool:b_slayAfterStart, 
 	i_startCredits, 
 	bool:b_removeBuyzone, 
 	bool:b_forceTeams, 
@@ -100,7 +100,7 @@ enum eConfig
 	bool:b_hideTeams, 
 	bool:b_publicKarma, 
 	bool:b_karmaRound, 
-	bool:b_stripWeapons,
+	bool:b_stripWeapons, 
 	bool:b_karmaDMG, 
 	bool:b_karmaDMG_up, 
 	Float:f_roundDelay, 
@@ -399,4 +399,4 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		)
 	return true;
 	return false;
-}
+} 
