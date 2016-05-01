@@ -29,7 +29,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_Query", Native_Query);
 	CreateNative("TTT_GetSQLConnection", Native_GetSQLConnection);
 	
-	g_hOnConnect = CreateGlobalForward("TTT_OnSQLConnect", ET_Ignore);
+	g_hOnConnect = CreateGlobalForward("TTT_OnSQLConnect", ET_Ignore, Param_Cell);
 	
 	return APLRes_Success;
 }
