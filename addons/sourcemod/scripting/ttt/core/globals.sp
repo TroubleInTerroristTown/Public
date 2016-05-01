@@ -23,7 +23,6 @@ bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAccount;
 
-bool g_bScan[MAXPLAYERS + 1] =  { false, ... };
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
@@ -61,7 +60,7 @@ int g_iBeamSprite = -1;
 int g_iHaloSprite = -1;
 
 bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
-bool g_bDetonate[MAXPLAYERS + 1] =  { false, ... };
+bool g_bIsChecking[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAlive = -1;
 int g_iKills = -1;
@@ -105,7 +104,7 @@ Handle g_hOnRoundEnd = null;
 Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
-Handle g_hOnBodyScanned = null;
+Handle g_hOnBodyChecked = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnUpdate = null;

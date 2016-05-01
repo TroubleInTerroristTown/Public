@@ -30,6 +30,26 @@ public int Native_GetClientCredits(Handle plugin, int numParams)
 	return 0;
 }
 
+public int Native_GetClientRagdoll(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	int Body[Ragdolls];
+	if (TTT_IsClientValid(client))
+	{
+		for (int i = 0; i < GetArraySize(g_hRagdollArray); i++)
+		{
+			GetArrayArray(g_hRagdollArray, i, Body[0], sizeof(Body));
+			if(Body[victim] == client)
+			{
+				SetNativeArray(2, Body[0], sizeof(Body));
+			}
+			return 1;
+		}
+	}
+	return 0;
+}
+
 public int Native_SetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);

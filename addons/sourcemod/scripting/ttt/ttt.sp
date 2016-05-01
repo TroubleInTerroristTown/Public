@@ -38,7 +38,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
-	g_hOnBodyScanned = CreateGlobalForward("TTT_OnBodyScanned", ET_Ignore, Param_Cell, Param_Cell, Param_String);
+	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
@@ -49,6 +49,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
+	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
@@ -970,8 +971,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
-		
-		g_bScan[client] = false;
 		
 		if (g_iConfig[b_enableNoBlock])
 			SetNoBlock(client);
@@ -1984,7 +1983,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			{
 				GetArrayArray(g_hRagdollArray, i, Items[0]);
 				entity = EntRefToEntIndex(Items[ent]);
-				
 				if (entity == entidad)
 				{
 					MostrarMenu(client, Items[victim], Items[attacker], RoundToNearest(GetGameTime() - Items[gameTime]), Items[weaponused], Items[victimName], Items[attackerName]);
@@ -2024,35 +2022,25 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						
 						addCredits(client, g_iConfig[i_creditsFoundBody]);
 					}
-					
-					if (g_bScan[client] && !Items[scanned] && IsPlayerAlive(client))
-					{
-						Call_StartForward(g_hOnBodyScanned);
-						Call_PushCell(client);
-						Call_PushCell(Items[victim]);
-						Call_PushString(Items[victimName]);
-						Call_Finish();
-						
-						Items[scanned] = true;
-						if (Items[attacker] > 0 && Items[attacker] != Items[victim])
-						{
-							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
-						}
-						else
-						{
-							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Detective scan found body suicide", j, client);
-						}
-					}
 					SetArrayArray(g_hRagdollArray, i, Items[0]);
-					
 					break;
 				}
 			}
+			if (IsPlayerAlive(client) && !g_bIsChecking[client])
+			{
+				Call_StartForward(g_hOnBodyChecked);
+				Call_PushCell(client);
+				Call_PushCell(Items[victim]);
+				Call_PushString(Items[victimName]);
+				Call_Finish();
+				g_bIsChecking[client] = true;
+			}
 		}
 	}
-	else g_bHoldingProp[client] = false;
+	else{ 
+		g_bHoldingProp[client] = false;
+		g_bIsChecking[client] = false;
+	}
 	
 	return Plugin_Continue;
 }
@@ -2150,16 +2138,6 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 			Format(Items, sizeof(Items), "%T", "The weapon used has been: himself (suicide)", client);
 			AddMenuItem(menu, "", Items);
 		}
-	}
-	
-	if (g_bScan[client])
-	{
-		if (atacante2 > 0 && atacante2 != victima2)
-			Format(Items, sizeof(Items), "%T", "Killer is Player", client, atacantename2);
-		else
-			Format(Items, sizeof(Items), "%T", "Player committed suicide", client);
-		
-		AddMenuItem(menu, "", Items);
 	}
 	
 	SetMenuExitButton(menu, true);
@@ -2338,15 +2316,6 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	return Plugin_Continue;
 }
 
-public Action PasarJ(Handle timer, any client)
-{
-	if (!client || !IsClientInGame(client))
-		return Plugin_Handled;
-	
-	g_bDetonate[client] = false;
-	return Plugin_Handled;
-}
-
 stock void manageRDM(int client)
 {
 	if (!IsClientInGame(client))
@@ -2477,7 +2446,7 @@ public Action Command_SetRole(int client, int args)
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_DETECTIVE && (g_bConfirmDetectiveRules[target] || !g_iConfig[b_showDetectiveMenu]))
+	else if (role == TTT_TEAM_DETECTIVE)
 	{
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);

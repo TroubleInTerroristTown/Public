@@ -79,6 +79,7 @@ enum eConfig
 	String:s_kickImmunity[16], 
 	bool:b_updateClientModel, 
 	bool:b_removeHostages,
+	bool:b_removeBomb,
 	bool:b_roleAgain, 
 	i_traitorRatio,
 	i_detectiveRatio,
@@ -179,7 +180,7 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  * @param victim            The client whom the body belongs to.
  * @param deadPlayer        The name of the victim.
  */
-forward void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer);
+forward void TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer);
 
 /*
  * Called before a players credits are modified.
@@ -220,6 +221,15 @@ native int TTT_GetClientKarma(int client);
  * @param client            Client index.
  */
 native int TTT_GetClientCredits(int client);
+
+/*
+ * Retrieve the killer name.
+ *
+ * @param client            The victims index.
+ * @param radgoll           The array to save the ragoll infos.
+ */
+native int TTT_GetClientRagdoll(int victim, int[] ragdoll);
+
 /*
  * Set a client's role.
  *
