@@ -1,0 +1,16 @@
+"Phrases"
+{
+	"ID: Need to be Alive"
+	{
+		"en"		"You need to be alive to use this command."
+	}
+	"ID: Need to buy ID"
+	{
+		"en"		"You dont have a ID. Buy one in the Shop."
+	}
+	"ID: Shows ID"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} is Innocent"
+	}
+}
