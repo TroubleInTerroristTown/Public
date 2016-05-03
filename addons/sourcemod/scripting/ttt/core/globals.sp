@@ -73,18 +73,6 @@ int g_iBadNameCount = 0;
 
 Handle g_hDatabase = null;
 
-enum Ragdolls
-{
-	ent, 
-	victim, 
-	attacker, 
-	String:victimName[MAX_NAME_LENGTH], 
-	String:attackerName[MAX_NAME_LENGTH], 
-	bool:scanned, 
-	Float:gameTime, 
-	String:weaponused[32], 
-	bool:found
-}
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 

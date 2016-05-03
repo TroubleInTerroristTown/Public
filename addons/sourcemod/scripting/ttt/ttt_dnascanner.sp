@@ -22,19 +22,6 @@ bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
-enum Ragdolls
-{
-	ent, 
-	victim, 
-	attacker, 
-	String:victimName[MAX_NAME_LENGTH], 
-	String:attackerName[MAX_NAME_LENGTH], 
-	bool:scanned, 
-	Float:gameTime, 
-	String:weaponused[32], 
-	bool:found
-}
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -102,19 +89,20 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 	return Plugin_Continue;
 }
 
-public void TTT_OnBodyChecked(int client, int Victim, const char[] deadPlayer)
+public Action TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer)
 {
 	if(!TTT_IsClientValid(client))
-		return;
+		return Plugin_Continue;
 	
 	if(TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE || g_bHasScanner[client] == false)
-		return;
-	int Items[Ragdolls];
-	TTT_GetClientRagdoll(Victim, Items[0]);
-	if (Items[attacker] > 0 && Items[attacker] != Items[victim])
+		return Plugin_Continue;
+	
+	int iRagdollC[Ragdolls];
+	TTT_GetClientRagdoll(victim, iRagdollC[0]);
+	if (iRagdollC[Attacker] > 0 && iRagdollC[Attacker] != iRagdollC[Victim])
 	{
 		LoopValidClients(j)
-			CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, Items[attackerName], Items[weaponused]);
+			CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
 	}
 	else
 	{
@@ -123,4 +111,5 @@ public void TTT_OnBodyChecked(int client, int Victim, const char[] deadPlayer)
 	}
 	TTT_SetFoundStatus(client, true);
 	
+	return Plugin_Continue;
 }

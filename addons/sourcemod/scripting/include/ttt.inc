@@ -114,15 +114,15 @@ enum eConfig
 
 enum Ragdolls
 {
-	ent, 
-	victim, 
-	attacker, 
-	String:victimName[MAX_NAME_LENGTH], 
-	String:attackerName[MAX_NAME_LENGTH], 
-	bool:scanned, 
-	Float:gameTime, 
-	String:weaponused[32], 
-	bool:found
+	Ent, 
+	Victim, 
+	Attacker, 
+	String:VictimName[MAX_NAME_LENGTH], 
+	String:AttackerName[MAX_NAME_LENGTH], 
+	bool:Scanned, 
+	Float:GameTime, 
+	String:Weaponused[32], 
+	bool:Found
 }
 
 /*
@@ -193,7 +193,7 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  * @param victim            The client whom the body belongs to.
  * @param deadPlayer        The name of the victim.
  */
-forward void TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer);
+forward Action TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer);
 
 /*
  * Called before a players credits are modified.

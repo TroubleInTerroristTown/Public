@@ -1090,15 +1090,15 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		char name[MAX_NAME_LENGTH];
 		GetClientName(client, name, sizeof(name));
 		int iRagdollC[Ragdolls];
-		iRagdollC[ent] = EntIndexToEntRef(iEntity);
-		iRagdollC[victim] = client;
-		Format(iRagdollC[victimName], MAX_NAME_LENGTH, name);
-		iRagdollC[scanned] = false;
+		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
+		iRagdollC[Victim] = client;
+		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, name);
+		iRagdollC[Scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
-		iRagdollC[attacker] = iAttacker;
-		Format(iRagdollC[attackerName], MAX_NAME_LENGTH, name);
-		iRagdollC[gameTime] = GetGameTime();
-		event.GetString("weapon", iRagdollC[weaponused], sizeof(iRagdollC[weaponused]));
+		iRagdollC[Attacker] = iAttacker;
+		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, name);
+		iRagdollC[GameTime] = GetGameTime();
+		event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
 		
 		PushArrayArray(g_hRagdollArray, iRagdollC[0]);
 		
@@ -1513,7 +1513,7 @@ public void OnClientDisconnect(int client)
 		{
 			GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 
-			if(client == iRagdollC[attacker] || client == iRagdollC[victim])
+			if(client == iRagdollC[Attacker] || client == iRagdollC[Victim])
 			{
 				int entity = EntRefToEntIndex(iRagdollC[index]);
 				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
@@ -1546,14 +1546,14 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	{
 		GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		
-		if (client == iRagdollC[attacker])
+		if (client == iRagdollC[Attacker])
 		{
-			Format(iRagdollC[attackerName], MAX_NAME_LENGTH, userName);
+			Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, userName);
 			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
-		else if (client == iRagdollC[victim])
+		else if (client == iRagdollC[Victim])
 		{
-			Format(iRagdollC[victimName], MAX_NAME_LENGTH, userName);
+			Format(iRagdollC[VictimName], MAX_NAME_LENGTH, userName);
 			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
 	}
@@ -1977,8 +1977,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnBodyChecked);
 				Call_PushCell(client);
-				Call_PushCell(iRagdollC[victim]);
-				Call_PushString(iRagdollC[victimName]);
+				Call_PushCell(iRagdollC[Victim]);
+				Call_PushString(iRagdollC[VictimName]);
 				Call_Finish(res);
 				if(res == Plugin_Stop)
 					return Plugin_Continue;
@@ -1987,42 +1987,42 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			for (int i = 0; i < iSize; i++)
 			{
 				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
-				entity = EntRefToEntIndex(iRagdollC[ent]);
+				entity = EntRefToEntIndex(iRagdollC[Ent]);
 				if (entity == entidad)
 				{
-					InspectBody(client, iRagdollC[victim], iRagdollC[attacker], RoundToNearest(GetGameTime() - iRagdollC[gameTime]), iRagdollC[weaponused], iRagdollC[victimName], iRagdollC[attackerName]);
+					InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 					
-					if (!iRagdollC[found] && IsPlayerAlive(client))
+					if (!iRagdollC[Found] && IsPlayerAlive(client))
 					{
-						iRagdollC[found] = true;
-						if (IsClientInGame(iRagdollC[victim]))
-							g_bFound[iRagdollC[victim]] = true;
+						iRagdollC[Found] = true;
+						if (IsClientInGame(iRagdollC[Victim]))
+							g_bFound[iRagdollC[Victim]] = true;
 						
-						if (g_iRole[iRagdollC[victim]] == TTT_TEAM_INNOCENT)
+						if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
 							SetEntityRenderColor(entidad, 0, 255, 0, 255);
 						}
-						else if (g_iRole[iRagdollC[victim]] == TTT_TEAM_DETECTIVE)
+						else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_DETECTIVE)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
-						else if (g_iRole[iRagdollC[victim]] == TTT_TEAM_TRAITOR)
+						else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_TRAITOR)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
 							SetEntityRenderColor(entidad, 255, 0, 0, 255);
 						}
 						
-						TeamTag(iRagdollC[victim]);
+						TeamTag(iRagdollC[Victim]);
 						
 						Call_StartForward(g_hOnBodyFound);
 						Call_PushCell(client);
-						Call_PushCell(iRagdollC[victim]);
-						Call_PushString(iRagdollC[victimName]);
+						Call_PushCell(iRagdollC[Victim]);
+						Call_PushString(iRagdollC[VictimName]);
 						Call_Finish();
 						
 						addCredits(client, g_iConfig[i_creditsFoundBody]);
