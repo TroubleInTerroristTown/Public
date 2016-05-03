@@ -6,7 +6,7 @@
 #define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(TTT_IsClientValid(%1))
 
 #define TTT_PLUGIN_NAME "TTT"
-#define TTT_PLUGIN_AUTHOR "Bara, .#Zipcore, Darkness & whocodes"
+#define TTT_PLUGIN_AUTHOR "Bara, .#Zipcore, Darkness, whocodes & good_live"
 #define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
 #define TTT_PLUGIN_VERSION "2.1.<ID>"
 #define TTT_PLUGIN_URL "git.tf/TTT/Plugin"
@@ -111,6 +111,19 @@ enum eConfig
 	bool:b_ignoreRDMMenu, 
 	bool:b_deadPlayersCanSeeOtherRules, 
 };
+
+enum Ragdolls
+{
+	ent, 
+	victim, 
+	attacker, 
+	String:victimName[MAX_NAME_LENGTH], 
+	String:attackerName[MAX_NAME_LENGTH], 
+	bool:scanned, 
+	Float:gameTime, 
+	String:weaponused[32], 
+	bool:found
+}
 
 /*
  * Called every 5 seconds
@@ -399,4 +412,4 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		)
 	return true;
 	return false;
-} 
+}
