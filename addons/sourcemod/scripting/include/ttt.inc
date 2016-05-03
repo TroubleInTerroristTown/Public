@@ -190,10 +190,9 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  * Called when a body is scanned (by a Detective).
  *
  * @param client            The client who scanned the body.
- * @param victim            The client whom the body belongs to.
- * @param deadPlayer        The name of the victim.
+ * @param ragdoll            The Array with Ragdoll informations (by refrence).
  */
-forward Action TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer);
+forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
 /*
  * Called before a players credits are modified.
