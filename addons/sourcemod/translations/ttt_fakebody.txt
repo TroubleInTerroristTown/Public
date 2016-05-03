@@ -1,0 +1,8 @@
+"Phrases"
+{
+ 	"Found Fake"
+ 	{
+ 		"#format"	"{1:N},{2:s}"
+ 		"en"		"{orchid}{1} {lightgreen}has found a fake body!"
+ 	}
+}

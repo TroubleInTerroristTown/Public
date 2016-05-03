@@ -1972,24 +1972,23 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			int iRagdollC[Ragdolls];
 			int entity;
 			
-			if (IsPlayerAlive(client) && !g_bIsChecking[client])
-			{
-				g_bIsChecking[client] = true;
-				Action res = Plugin_Continue;
-				Call_StartForward(g_hOnBodyChecked);
-				Call_PushCell(client);
-				Call_PushArray(iRagdollC[0], sizeof(iRagdollC));
-				Call_Finish(res);
-				if(res == Plugin_Stop)
-					return Plugin_Continue;
-			}
-			
 			for (int i = 0; i < iSize; i++)
 			{
 				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 				entity = EntRefToEntIndex(iRagdollC[Ent]);
 				if (entity == entidad)
 				{
+					if (IsPlayerAlive(client) && !g_bIsChecking[client])
+					{
+						g_bIsChecking[client] = true;
+						Action res = Plugin_Continue;
+						Call_StartForward(g_hOnBodyChecked);
+						Call_PushCell(client);
+						Call_PushArray(iRagdollC[0], sizeof(iRagdollC));
+						Call_Finish(res);
+						if(res == Plugin_Stop)
+							return Plugin_Continue;
+					}
 					InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 					
 					if (!iRagdollC[Found] && IsPlayerAlive(client))
