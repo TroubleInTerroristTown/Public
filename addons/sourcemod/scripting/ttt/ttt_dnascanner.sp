@@ -89,7 +89,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 	return Plugin_Continue;
 }
 
-public Action TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer)
+public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Continue;
@@ -97,8 +97,6 @@ public Action TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer)
 	if(TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE || g_bHasScanner[client] == false)
 		return Plugin_Continue;
 	
-	int iRagdollC[Ragdolls];
-	TTT_GetClientRagdoll(victim, iRagdollC[0]);
 	if (iRagdollC[Attacker] > 0 && iRagdollC[Attacker] != iRagdollC[Victim])
 	{
 		LoopValidClients(j)
