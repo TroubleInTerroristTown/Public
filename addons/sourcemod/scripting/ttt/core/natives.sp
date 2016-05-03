@@ -40,13 +40,21 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 		for (int i = 0; i < GetArraySize(g_hRagdollArray); i++)
 		{
 			GetArrayArray(g_hRagdollArray, i, Body[0], sizeof(Body));
-			if(Body[victim] == client)
+			if(Body[Victim] == client)
 			{
 				SetNativeArray(2, Body[0], sizeof(Body));
 			}
 			return 1;
 		}
 	}
+	return 0;
+}
+
+public int Native_SetRagdoll(Handle plugin, int numParams)
+{
+	int Body[Ragdolls];
+	GetNativeArray(1, Body[0], sizeof(Body));
+	PushArrayArray(g_hRagdollArray, Body[0]);
 	return 0;
 }
 
@@ -109,9 +117,9 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 		{
 			GetArrayArray(g_hRagdollArray, i, Items[0]);
 			
-			if (Items[victim] == client)
+			if (Items[Victim] == client)
 			{
-				return Items[found];
+				return Items[Found];
 			}
 		}
 	}
@@ -135,9 +143,9 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		{
 			GetArrayArray(g_hRagdollArray, i, Items[0]);
 			
-			if (Items[victim] == client)
+			if (Items[Victim] == client)
 			{
-				return Items[scanned];
+				return Items[Scanned];
 			}
 		}
 	}

@@ -50,6 +50,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
+	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);

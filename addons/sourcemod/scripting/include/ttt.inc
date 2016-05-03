@@ -236,12 +236,19 @@ native int TTT_GetClientKarma(int client);
 native int TTT_GetClientCredits(int client);
 
 /*
- * Retrieve the killer name.
+ * Retrieve the Radgoll Info.
  *
  * @param client            The victims index.
  * @param radgoll           The array to save the ragoll infos.
  */
 native int TTT_GetClientRagdoll(int victim, int[] ragdoll);
+
+/*
+ * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
+ *
+ * @param radgoll           The array to save as Ragdoll.
+ */
+native int TTT_SetRagdoll(int[] ragdoll);
 
 /*
  * Set a client's role.
