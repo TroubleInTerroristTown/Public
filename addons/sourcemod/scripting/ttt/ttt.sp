@@ -1089,18 +1089,18 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];
 		GetClientName(client, name, sizeof(name));
-		int Items[Ragdolls];
-		Items[ent] = EntIndexToEntRef(iEntity);
-		Items[victim] = client;
-		Format(Items[victimName], MAX_NAME_LENGTH, name);
-		Items[scanned] = false;
+		int iRagdollC[Ragdolls];
+		iRagdollC[ent] = EntIndexToEntRef(iEntity);
+		iRagdollC[victim] = client;
+		Format(iRagdollC[victimName], MAX_NAME_LENGTH, name);
+		iRagdollC[scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
-		Items[attacker] = iAttacker;
-		Format(Items[attackerName], MAX_NAME_LENGTH, name);
-		Items[gameTime] = GetGameTime();
-		event.GetString("weapon", Items[weaponused], sizeof(Items[weaponused]));
+		iRagdollC[attacker] = iAttacker;
+		Format(iRagdollC[attackerName], MAX_NAME_LENGTH, name);
+		iRagdollC[gameTime] = GetGameTime();
+		event.GetString("weapon", iRagdollC[weaponused], sizeof(iRagdollC[weaponused]));
 		
-		PushArrayArray(g_hRagdollArray, Items[0]);
+		PushArrayArray(g_hRagdollArray, iRagdollC[0]);
 		
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
@@ -1507,15 +1507,15 @@ public void OnClientDisconnect(int client)
 
 		if(iSize == 0) return;
 
-		int Items[Ragdolls];
+		int iRagdollC[Ragdolls];
 
 		for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 
-			if(client == Items[attacker] || client == Items[victim])
+			if(client == iRagdollC[attacker] || client == iRagdollC[victim])
 			{
-				int entity = EntRefToEntIndex(Items[index]);
+				int entity = EntRefToEntIndex(iRagdollC[index]);
 				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
 
 				RemoveFromArray(g_hRagdollArray, i);
@@ -1540,21 +1540,21 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	if (iSize == 0)
 		return;
 	
-	int Items[Ragdolls];
+	int iRagdollC[Ragdolls];
 	
 	for (int i = 0; i < GetArraySize(g_hRagdollArray); i++)
 	{
-		GetArrayArray(g_hRagdollArray, i, Items[0]);
+		GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		
-		if (client == Items[attacker])
+		if (client == iRagdollC[attacker])
 		{
-			Format(Items[attackerName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, Items[0]);
+			Format(iRagdollC[attackerName], MAX_NAME_LENGTH, userName);
+			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
-		else if (client == Items[victim])
+		else if (client == iRagdollC[victim])
 		{
-			Format(Items[victimName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, Items[0]);
+			Format(iRagdollC[victimName], MAX_NAME_LENGTH, userName);
+			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 		}
 	}
 }
@@ -1968,53 +1968,53 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			if (iSize == 0)
 				return Plugin_Continue;
 			
-			int Items[Ragdolls];
+			int iRagdollC[Ragdolls];
 			int entity;
 			
 			for (int i = 0; i < iSize; i++)
 			{
-				GetArrayArray(g_hRagdollArray, i, Items[0]);
-				entity = EntRefToEntIndex(Items[ent]);
+				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+				entity = EntRefToEntIndex(iRagdollC[ent]);
 				if (entity == entidad)
 				{
-					MostrarMenu(client, Items[victim], Items[attacker], RoundToNearest(GetGameTime() - Items[gameTime]), Items[weaponused], Items[victimName], Items[attackerName]);
+					InspectBody(client, iRagdollC[victim], iRagdollC[attacker], RoundToNearest(GetGameTime() - iRagdollC[gameTime]), iRagdollC[weaponused], iRagdollC[victimName], iRagdollC[attackerName]);
 					
-					if (!Items[found] && IsPlayerAlive(client))
+					if (!iRagdollC[found] && IsPlayerAlive(client))
 					{
-						Items[found] = true;
-						if (IsClientInGame(Items[victim]))
-							g_bFound[Items[victim]] = true;
+						iRagdollC[found] = true;
+						if (IsClientInGame(iRagdollC[victim]))
+							g_bFound[iRagdollC[victim]] = true;
 						
-						if (g_iRole[Items[victim]] == TTT_TEAM_INNOCENT)
+						if (g_iRole[iRagdollC[victim]] == TTT_TEAM_INNOCENT)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, Items[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[victimName]);
 							SetEntityRenderColor(entidad, 0, 255, 0, 255);
 						}
-						else if (g_iRole[Items[victim]] == TTT_TEAM_DETECTIVE)
+						else if (g_iRole[iRagdollC[victim]] == TTT_TEAM_DETECTIVE)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, Items[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[victimName]);
 							SetEntityRenderColor(entidad, 0, 0, 255, 255);
 						}
-						else if (g_iRole[Items[victim]] == TTT_TEAM_TRAITOR)
+						else if (g_iRole[iRagdollC[victim]] == TTT_TEAM_TRAITOR)
 						{
 							LoopValidClients(j)
-							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, Items[victimName]);
+							CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[victimName]);
 							SetEntityRenderColor(entidad, 255, 0, 0, 255);
 						}
 						
-						TeamTag(Items[victim]);
+						TeamTag(iRagdollC[victim]);
 						
 						Call_StartForward(g_hOnBodyFound);
 						Call_PushCell(client);
-						Call_PushCell(Items[victim]);
-						Call_PushString(Items[victimName]);
+						Call_PushCell(iRagdollC[victim]);
+						Call_PushString(iRagdollC[victimName]);
 						Call_Finish();
 						
 						addCredits(client, g_iConfig[i_creditsFoundBody]);
 					}
-					SetArrayArray(g_hRagdollArray, i, Items[0]);
+					SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 					break;
 				}
 			}
@@ -2022,8 +2022,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			{
 				Call_StartForward(g_hOnBodyChecked);
 				Call_PushCell(client);
-				Call_PushCell(Items[victim]);
-				Call_PushString(Items[victimName]);
+				Call_PushCell(iRagdollC[victim]);
+				Call_PushString(iRagdollC[victimName]);
 				Call_Finish();
 				g_bIsChecking[client] = true;
 			}
@@ -2094,7 +2094,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	return Plugin_Handled;
 }
 
-stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
+stock void InspectBody(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
 {
 	char team[32];
 	if (g_iRole[victima2] == TTT_TEAM_TRAITOR)
@@ -2105,30 +2105,30 @@ stock void MostrarMenu(int client, int victima2, int atacante2, int tiempo2, con
 		Format(team, sizeof(team), "%T", "Innocents", client);
 	
 	Handle menu = CreateMenu(BodyMenuHandler);
-	char Items[128];
+	char sBuffer[128];
 	
 	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
 	
-	Format(Items, sizeof(Items), "%T", "Victim name", client, victimaname2);
-	AddMenuItem(menu, "", Items);
+	Format(sBuffer, sizeof(sBuffer), "%T", "Victim name", client, victimaname2);
+	AddMenuItem(menu, "", sBuffer);
 	
-	Format(Items, sizeof(Items), "%T", "Team victim", client, team);
-	AddMenuItem(menu, "", Items);
+	Format(sBuffer, sizeof(sBuffer), "%T", "Team victim", client, team);
+	AddMenuItem(menu, "", sBuffer);
 	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(Items, sizeof(Items), "%T", "Elapsed since his death", client, tiempo2);
-		AddMenuItem(menu, "", Items);
+		Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, tiempo2);
+		AddMenuItem(menu, "", sBuffer);
 		
 		if (atacante2 > 0 && atacante2 != victima2)
 		{
-			Format(Items, sizeof(Items), "%T", "The weapon used has been", client, weapon);
-			AddMenuItem(menu, "", Items);
+			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been", client, weapon);
+			AddMenuItem(menu, "", sBuffer);
 		}
 		else
 		{
-			Format(Items, sizeof(Items), "%T", "The weapon used has been: himself (suicide)", client);
-			AddMenuItem(menu, "", Items);
+			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been: himself (suicide)", client);
+			AddMenuItem(menu, "", sBuffer);
 		}
 	}
 	
