@@ -1978,7 +1978,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnBodyChecked);
 				Call_PushCell(client);
-				Call_PushArray(iRagdollC[0], sizeof(iRagdollC);
+				Call_PushArray(iRagdollC[0], sizeof(iRagdollC));
 				Call_Finish(res);
 				if(res == Plugin_Stop)
 					return Plugin_Continue;
