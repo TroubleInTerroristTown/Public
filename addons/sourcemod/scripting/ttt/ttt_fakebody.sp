@@ -144,7 +144,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC) {
 			return Plugin_Stop;
 		
 		LoopValidClients(j)
- 						CPrintToChat(j, g_iConfig[s_pluginTag], "Found Fake", j, client);
+ 		    CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
 		AcceptEntityInput(iRagdollC[Ent], "Kill");
 		return Plugin_Stop;
 	}
