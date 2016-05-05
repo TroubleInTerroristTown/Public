@@ -38,7 +38,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	
-	LoadTranslations("ttt_fakebody.phrases");
+	LoadTranslations("ttt.phrases");
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
