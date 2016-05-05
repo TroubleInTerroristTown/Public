@@ -16,7 +16,7 @@
 #define SHORT_NAME "wh"
 #define LONG_NAME "Wallhack"
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Glow & " ... LONG_NAME
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
 
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
@@ -64,7 +64,7 @@ public void OnPluginStart()
 	g_fTraitorActive = Config_LoadFloat("wh_traitor_active", 3.0, "Active time for Traitor-Wallhack (time in seconds)");
 	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack (time in seconds)");
 	
-	CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
+	CreateTimer(1.0, Timer_SetupGlow, _, TIMER_REPEAT);
 	
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("player_spawn", Event_PlayerReset);
@@ -150,7 +150,7 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 public Action Timer_SetupGlow(Handle timer)
 {
 	LoopValidClients(client)
-		if (IsPlayerAlive(client) && g_bHasRadar[client])
+		if (IsPlayerAlive(client) /* && g_bHasRadar[client] */)
 			SetupGlowSkin(client);
 	
 	return Plugin_Continue;
