@@ -171,6 +171,7 @@ forward void TTT_OnRoundEnd(int winner);
  * @param role              Role.
  */
 forward void TTT_OnClientGetRole(int client, int role);
+
 /*
  * Called when a client dies.
  *
@@ -178,6 +179,7 @@ forward void TTT_OnClientGetRole(int client, int role);
  * @param attacker          Attacker.
  */
 forward void TTT_OnClientDeath(int victim, int attacker);
+
 /*
  * Called when a body is found.
  *
@@ -186,6 +188,7 @@ forward void TTT_OnClientDeath(int victim, int attacker);
  * @param deadPlayer        The name of the victim.
  */
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
+
 /*
  * Called when a body is scanned (by a Detective).
  *
@@ -215,12 +218,14 @@ forward void TTT_OnCreditsChanged(int client, int &credits);
  * Checks if the round is active.
  */
 native bool TTT_IsRoundActive();
+
 /*
  * Retrieve a client's role.
  *
  * @param client            Client index.
  */
 native int TTT_GetClientRole(int client);
+
 /*
  * Retrieve a client's karma.
  *
@@ -255,24 +260,42 @@ native int TTT_SetRagdoll(int[] ragdoll);
  * @param client            Client index.
  */
 native int TTT_SetClientRole(int client, int role);
+
 /*
  * Set a client's karma.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientKarma(int client, int karma);
+
 /*
  * Set a client's credits.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientCredits(int client, int credits);
+
+/*
+ * Add a client's karma (currentKarma+karma).
+ *
+ * @param client            Client index.
+ */
+native int TTT_AddClientKarma(int client, int karma);
+
+/*
+ * Add a client's credits (currentCredits+credits).
+ *
+ * @param client            Client index.
+ */
+native int TTT_AddClientCredits(int client, int credits);
+
 /*
  * Determins whether a player's body was found (if dead).
  *
  * @param client            Client index.
  */
 native bool TTT_WasBodyFound(int client);
+
 /*
  * Determins whether a player's body was scanned (if dead).
  *

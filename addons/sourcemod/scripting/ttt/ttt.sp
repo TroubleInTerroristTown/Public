@@ -54,6 +54,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
+	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
+	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
@@ -291,6 +293,7 @@ stock void ShowLogs(int client)
 	
 	if (g_bReceivingLogs[client])
 		return;
+	
 	g_bReceivingLogs[client] = true;
 	
 	if (client == 0)
