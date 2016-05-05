@@ -1093,7 +1093,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		else
 			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		
-		SetEntData(iEntity, g_iCollisionGroup, 2, 4, true);
+		SetNoBlock(iEntity);
 		
 		
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
