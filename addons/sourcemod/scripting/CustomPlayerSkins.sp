@@ -41,7 +41,7 @@ public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max) 
 
 public OnPluginStart() {
 	CreateConVar("sm_custom_player_skins_version", PLUGIN_VERSION, "Custom Player Skins Version", \
-											FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+											0|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	HookEvent("player_death", Event_Death);
 
 	EVGame = GetEngineVersion();

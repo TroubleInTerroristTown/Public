@@ -28,7 +28,7 @@ bool g_bEnable;
 
 public void OnPluginStart()
 {
-	CreateConVar("no_weapon_fix_version", PLUGIN_VERSION, "No Weapon Fix Version", FCVAR_DONTRECORD|FCVAR_PLUGIN|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
+	CreateConVar("no_weapon_fix_version", PLUGIN_VERSION, "No Weapon Fix Version", FCVAR_DONTRECORD|0|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 	
 	cvEnable = CreateConVar("no_weapon_fix_enable", "1", "Set to 0 to disable this plugin.");
 	g_bEnable = GetConVarBool(cvEnable);
