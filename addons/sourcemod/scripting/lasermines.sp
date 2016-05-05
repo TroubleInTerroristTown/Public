@@ -208,7 +208,7 @@ public OnPluginStart()
 	HookEntityOutput("env_beam", "OnTouchedByEntity", OnTouchedByEntity);
 	
 	// Loads the translation
-	LoadTranslations("csgo_lasermines.phrases");
+	LoadTranslations("ttt.phrases");
 	
 	AutoExecConfig(true, "plugin.csgo_lasermines");
 	
