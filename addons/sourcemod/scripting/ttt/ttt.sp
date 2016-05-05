@@ -2507,6 +2507,8 @@ public Action Command_SetKarma(int client, int args)
 		int karma = StringToInt(arg2);
 		
 		setKarma(target, karma);
+		
+		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target_list[i], credits, "Karma");
 	}
 	
 	return Plugin_Continue;
@@ -2547,6 +2549,8 @@ public Action Command_SetCredits(int client, int args)
 			return Plugin_Handled;
 		
 		setCredits(target_list[i], credits);
+		
+		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target_list[i], credits, "Credits");
 	}
 	
 	return Plugin_Continue;
