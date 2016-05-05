@@ -68,8 +68,8 @@ fi
 echo "Create clean build folder"
 mkdir build
 
-echo "Move addons, materials and sound folder"
-mv addons materials sound build/
+echo "Move addons, materials, models and sound folder"
+mv addons materials models sound build/
 
 echo "Remove sourcemod folders"
 rm -r build/addons/metamod
