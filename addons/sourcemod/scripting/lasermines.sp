@@ -21,7 +21,7 @@
 #define PLUGIN_VERSION "1.5.1"
 
 #define MDL_LASER "materials/sprites/purplelaser1.vmt"
-#define MDL_MINE "models/lasermine/lasermine.mdl"
+#define MDL_MINE "models/tripmine/tripmine.mdl"
 
 #define SND_MINEPUT "npc/roller/blade_cut.wav"
 #define SND_MINEACT "npc/roller/mine/rmine_blades_in2.wav"
@@ -315,7 +315,7 @@ LookupClients()
 */
 public OnMapStart()
 {
-	PrecacheModel(MDL_MINE, true);
+	PrecacheModel(MDL_MINE);
 	PrecacheModel(MDL_LASER, true);
 
 	PrecacheSound(SND_MINEPUT, true);
@@ -323,14 +323,13 @@ public OnMapStart()
 	PrecacheSound(SND_BUYMINE, true);
 	PrecacheSound(SND_CANTBUY, true);
 
-	AddFileToDownloadsTable( "models/lasermine/lasermine.dx80.vtx" );
-	AddFileToDownloadsTable( "models/lasermine/lasermine.dx90.vtx" );
-	AddFileToDownloadsTable( "models/lasermine/lasermine.mdl" );
-	AddFileToDownloadsTable( "models/lasermine/lasermine.phy" );
-	AddFileToDownloadsTable( "models/lasermine/lasermine.vvd" );
+	AddFileToDownloadsTable( "models/tripmine/tripmine.dx90.vtx" );
+	AddFileToDownloadsTable( "models/tripmine/tripmine.mdl" );
+	AddFileToDownloadsTable( "models/tripmine/tripmine.phy" );
+	AddFileToDownloadsTable( "models/tripmine/tripmine.vvd" );
 
-	AddFileToDownloadsTable( "materials/models/lasermine/lasermine.vmt" );
-	AddFileToDownloadsTable( "materials/models/lasermine/lasermine.vtf" );
+	AddFileToDownloadsTable( "materials/models/tripmine/minetexture.vmt" );
+	AddFileToDownloadsTable( "materials/models/tripmine/minetexture.vtf" );
 }
 /*
 	------------------------------------------------
