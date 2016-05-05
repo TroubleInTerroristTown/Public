@@ -150,7 +150,7 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 public Action Timer_SetupGlow(Handle timer)
 {
 	LoopValidClients(client)
-		if (IsPlayerAlive(client) /* && g_bHasRadar[client] */)
+		if (IsPlayerAlive(client))
 			SetupGlowSkin(client);
 	
 	return Plugin_Continue;
@@ -248,11 +248,6 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		{
 			if(g_bOwnRadar[client] && g_bHasRadar[client])
 				return Plugin_Continue;
-			else
-			{
-				if((TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE) || (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(i) == TTT_TEAM_TRAITOR))
-					return Plugin_Continue;
-			}
 		}
 	}
 	
