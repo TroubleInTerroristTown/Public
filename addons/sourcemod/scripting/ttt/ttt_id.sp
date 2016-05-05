@@ -65,13 +65,13 @@ public Action Command_ID(int client, int args)
 	
 	if(!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "ID: Need to be Alive");
+		CPrintToChat(client, g_sPluginTag, "ID: Need to be Alive", client);
 		return Plugin_Handled;
 	}
 	
 	if(!g_bHasID[client])
 	{
-		CPrintToChat(client, g_sPluginTag, "ID: Need to buy ID");
+		CPrintToChat(client, g_sPluginTag, "ID: Need to buy ID", client);
 		return Plugin_Handled;
 	}
 	
@@ -116,6 +116,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			
 			if(role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_UNASSIGNED || g_bHasID[client])
 				return Plugin_Stop;
+			
+			CPrintToChat(client, g_sPluginTag, "ID card (type !id for show your innocence)", client);
 			
 			g_bHasID[client] = true;
 		}
