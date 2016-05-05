@@ -64,6 +64,8 @@ public void OnPluginStart()
 	g_fTraitorActive = Config_LoadFloat("wh_traitor_active", 3.0, "Active time for Traitor-Wallhack (time in seconds)");
 	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack (time in seconds)");
 	
+	Config_Done();
+	
 	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
 	
 	HookEvent("player_death", Event_PlayerReset);

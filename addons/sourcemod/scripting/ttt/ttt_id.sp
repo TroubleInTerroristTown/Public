@@ -43,6 +43,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	Config_Done();
 	
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/id.cfg");
@@ -50,6 +51,7 @@ public void OnPluginStart()
 	
 	g_iTPrice = Config_LoadInt("id_traitor_price", 1000, "The amount of credits for fake ID costs as traitor. 0 to disable.");
 	g_iIPrice = Config_LoadInt("id_innocent_price", 1000, "The amount of credits for ID costs as innocent. 0 to disable.");
+	Config_Done();
 
 	RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
 	

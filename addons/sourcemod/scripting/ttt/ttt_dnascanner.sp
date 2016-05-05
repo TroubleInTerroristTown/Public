@@ -41,11 +41,15 @@ public void OnPluginStart()
 	Config_Setup("TTT", g_sConfigFile);
 	
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	
+	Config_Done();
 
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/dnascanner.cfg");
 	Config_Setup("TTT-Scanner", g_sConfigFile);
 	
 	g_iPrice = Config_LoadInt("dna_price", 9000, "The amount of credits a dna scanner costs as detective. 0 to disable.");
+	
+	Config_Done();
 }
 
 public void OnClientDisconnect(int client)

@@ -33,6 +33,8 @@ public void OnPluginStart()
 	
 	g_bEnableTVoice = Config_LoadBool("tor_traitor_voice_chat", true, "Enable traitor voice chat (command for players: sm_tvoice)?");
 	
+	Config_Done();
+	
 	RegConsoleCmd("sm_tvoice", Command_TVoice);
 	
 	CreateTimer(1.0, Timer_OverrideListener, _, TIMER_REPEAT);

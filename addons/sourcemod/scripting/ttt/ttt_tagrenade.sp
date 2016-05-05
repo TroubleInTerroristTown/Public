@@ -52,6 +52,8 @@ public void OnPluginStart()
 	g_fTagrenadeTime = Config_LoadFloat("tag_tagrenade_time", 3.5, "How long a player is tagged for in seconds.");
 	g_bShowPlayersBehindWalls = Config_LoadBool("tag_players_behind_walls", true, "Tag players behind a wall?");
 	
+	Config_Done();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
 	

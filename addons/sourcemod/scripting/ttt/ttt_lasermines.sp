@@ -40,6 +40,7 @@ public void OnPluginStart()
 	Config_Setup("TTT-Lasermines", g_sConfigFile);
 	
 	g_iTraitorPrice = Config_LoadInt("lm_traitor_price", 9000, "The amount of credits for a lasermine costs. 0 to disable.");
+	Config_Done();
 }
 
 public void OnAllPluginsLoaded()

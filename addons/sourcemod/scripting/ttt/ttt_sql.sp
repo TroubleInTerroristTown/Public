@@ -53,6 +53,7 @@ public void OnPluginStart()
 	
 	g_cRetries = Config_LoadInt("sql_max_retries", 3, "The amount of retries after first failed connection (1 (first connect) + X retries = 4 connections tries by default)");
 	Config_LoadString("sql_database_entry_name", "ttt", "The name of the entry in your databases.cfg", g_sEntry, sizeof(g_sEntry));
+	Config_Done();
 	
 	g_iRetries = 0;
 	

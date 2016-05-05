@@ -58,6 +58,8 @@ public void OnPluginStart()
 	g_iDCount = Config_LoadInt("hs_detective_count", 1, "The amount of usages for healthshots per round as detective. 0 to disable.");
 	g_iICount = Config_LoadInt("hs_innocent_count", 1, "The amount of usages for healthshots per round as innocent. 0 to disable.");
 	
+	Config_Done();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 

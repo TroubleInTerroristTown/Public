@@ -56,6 +56,8 @@ public void OnPluginStart()
 	
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 	
+	Config_Done();
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/taser.cfg");
 	Config_Setup("TTT-Taser", g_sConfigFile);
 	
@@ -68,6 +70,8 @@ public void OnPluginStart()
 	g_iDamage = Config_LoadInt("ta_damage", 0, "The amount of damage a taser deals");
 	
 	g_bOnSpawn = Config_LoadBool("ta_give_taser_spawn", true, "Give the Detective a taser when he spawns?");
+	
+	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

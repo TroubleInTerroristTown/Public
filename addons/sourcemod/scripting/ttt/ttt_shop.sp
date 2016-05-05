@@ -66,11 +66,13 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	Config_Done();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/shop.cfg");
 	Config_Setup("Shop", g_sConfigFile);
 	g_bSortItems = Config_LoadBool("ttt_sort_items_price", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
 	g_bSortItemsOrder = Config_LoadBool("ttt_sort_items_price_order", true, "Sort price (ttt_sort_items_price must be 1): false - Low to High, true - High to Low");
+	Config_Done();
 	
 	LoadTranslations("ttt.phrases");
 }

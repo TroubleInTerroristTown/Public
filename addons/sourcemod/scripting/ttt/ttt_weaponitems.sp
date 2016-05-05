@@ -79,6 +79,8 @@ public void OnPluginStart()
 	g_iKF_Price = Config_LoadInt("1knife_price", 3000, "The amount of credits the One-Hit Knife costs. 0 to disable.");
 	g_iKnife_Max = Config_LoadInt("1knife_max", 5, "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
 	Config_LoadString("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.", g_cKF_Long, sizeof(g_cKF_Long));
+	
+	Config_Done();
 
 	LoadTranslations("ttt.phrases");
 }

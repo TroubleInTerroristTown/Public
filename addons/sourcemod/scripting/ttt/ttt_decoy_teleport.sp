@@ -52,6 +52,8 @@ public void OnPluginStart()
 	g_iTCount = Config_LoadInt("dt_traitor_count", 1, "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
 	g_iDCount = Config_LoadInt("dt_detective_count", 1, "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
 	
+	Config_Done();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("decoy_started", Event_DecoyStarted, EventHookMode_Pre);
 }

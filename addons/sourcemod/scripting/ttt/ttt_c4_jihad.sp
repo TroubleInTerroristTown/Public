@@ -75,6 +75,8 @@ public void OnPluginStart()
 	
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 	
+	Config_Done();
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/c4_jihad.cfg");
 	Config_Setup("TTT-Bomb", g_sConfigFile);
 	
@@ -88,6 +90,8 @@ public void OnPluginStart()
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	
+	Config_Done();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	
