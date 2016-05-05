@@ -90,4 +90,12 @@ public void TTT_OnSQLConnect(Database db)
 {
 	PrintToServer("TTT_OnSQLConnect was called!");
 	PrintToServer("(TTT_OnSQLConnect) db: %d", db);
+	
+	int iDB = TTT_GetSQLConnection();
+	PrintToServer("(TTT_OnSQLConnect) iDB: %d", iDB);
+	
+	if(iDB == view_as<int>(db))
+	{
+		PrintToServer("(TTT_OnSQLConnect) db and iDB are equal!", db);
+	}
 }
