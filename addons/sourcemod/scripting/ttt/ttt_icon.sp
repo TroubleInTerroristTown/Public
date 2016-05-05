@@ -164,20 +164,37 @@ stock int CreateIcon(int client, int role)
 public Action Hook_SetTransmitT(int entity, int client)
 {
 	if(TTT_IsClientValid(entity) && TTT_IsClientValid(client))
-		if ((entity != client && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && IsPlayerAlive(client)) || g_bSeeRoles && (!IsPlayerAlive(client) || GetClientTeam(client < CS_TEAM_CT)))
+	{
+		// Don't show T-Icon for itself
+		if (entity == client)
 			return Plugin_Handled;
-
+		
+		// Allow to show rules if g_bSeeRoles true
+		if(g_bSeeRoles && !IsPlayerAlive(client))
+			return Plugin_Continue;
+		
+		// Don't show T-Icon for death players or as death player
+		if(!IsPlayerAlive(client) || !IsPlayerAlive(entity))
+			return Plugin_Handled;
+		
+		// Show T-Icon only for other traitors
+		if(TTT_GetClientRole(entity) != TTT_TEAM_TRAITOR)
+			return Plugin_Handled;
+	}	
 	return Plugin_Continue;
 }
 
 stock void ClearIcon(int client)
 {
 	int role = TTT_GetClientRole(client);
+	
 	if(role > 0 && IsValidEdict(g_iIcon[client]))
 	{
-		if(role == TTT_TEAM_TRAITOR) SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
+		if(role == TTT_TEAM_TRAITOR)
+			SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
+	
 	ShowOverlayToClient(client, " ");
 	g_iIcon[client] = -1;
 
