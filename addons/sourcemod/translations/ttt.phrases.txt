@@ -665,4 +665,9 @@
 	{
 		"en"		"KARMA HAS BEEN UPDATED!"
 	}
+	
+	"ID: Buy Message"
+	{
+		"en"		"Type !id to show your innocence."
+	}
 }
