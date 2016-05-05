@@ -19,7 +19,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	CreateTimer(1.5, Timer_SetupGlow, _, TIMER_REPEAT);
+	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
