@@ -116,9 +116,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			{
+				CPrintToChat(iAttacker, g_sPluginTag, "TaserMax", g_iDCount);
 				return Plugin_Stop;
+			}
 			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
+			{
+				CPrintToChat(iAttacker, g_sPluginTag, "TaserMax", g_iICount);
 				return Plugin_Stop;
+			}
 				
 			GivePlayerItem(client, "weapon_taser");
 			

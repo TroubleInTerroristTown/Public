@@ -313,6 +313,12 @@
 		"#format"	"{1:d}"
 		"en"		"Buy Taser (team detector) - {1}"
 	}
+	
+	"TaserMax"
+	{
+		"#format"	"{1:d}"
+		"en"		"You've reached the limit for tasers! (Usage(s) per round: {1})"
+	}
 
 	"USPS"
 	{
