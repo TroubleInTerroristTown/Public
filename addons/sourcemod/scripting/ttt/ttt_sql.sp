@@ -84,7 +84,6 @@ void SQL_Start()
 		kv = CreateKeyValues("");
 		KvSetString(kv, "database", g_sEntry);
 		g_dDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);
-		Call_OnSQLConnect();
 		delete kv;
 
 		if(g_dDatabase == null)
@@ -93,6 +92,8 @@ void SQL_Start()
 			CreateTimer(5.0, Timer_Retry);
 			return;
 		}
+		else
+			Call_OnSQLConnect();
 
 		CheckAndCreateTables("sqlite");
 	}
@@ -144,18 +145,21 @@ void CheckAndCreateTables(const char[] driver)
 	if (StrEqual(driver, "mysql", false))
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 	else if (StrEqual(driver, "sqlite", false))
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`)) DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`));");
 
 	TTT_Query("Callback_CheckAndCreateTables", sQuery);
 	
-	SetCharsetAndCollate();
+	SetCharsetAndCollate(driver);
 }
 
-void SetCharsetAndCollate()
+void SetCharsetAndCollate(const char[] driver)
 {
-	g_dDatabase.SetCharset("utf8mb4");
-	TTT_Query("SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
-	TTT_Query("SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+	if(StrEqual(driver, "mysql", false))
+	{
+		g_dDatabase.SetCharset("utf8mb4");
+		TTT_Query("SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
+		TTT_Query("SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+	}
 }
 
 public int Native_Query(Handle plugin, int numParams)
