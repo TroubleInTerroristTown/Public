@@ -233,13 +233,18 @@ void SetupConfig()
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
-	Config_LoadString("ttt_log_file", "logs/ttt/ttt.log", "The default file to log TTT data to (including end of round).", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
-	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error.log", "The default file to log TTT errors/bugs to.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	Config_LoadString("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\".", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\".", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
 	
 	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
 	Config_Done();
+	
+	char sDate[12];
+	FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
+	ReplaceString(g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), "<DATE>", sDate, true);
+	ReplaceString(g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), "<DATE>", sDate, true);
 	
 	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
 	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
@@ -484,19 +489,9 @@ public void ThinkPost(int entity)
 	
 	GetEntDataArray(entity, g_iAlive, isAlive, 65);
 	LoopValidClients(i)
-	isAlive[i] = (!g_bFound[i]);
+		isAlive[i] = (!g_bFound[i]);
 	
 	SetEntDataArray(entity, g_iAlive, isAlive, 65);
-	
-	if (g_iConfig[b_kadRemover])
-	{
-		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-		
-		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
-	}
 }
 
 public Action Command_Karma(int client, int args)
@@ -1047,9 +1042,20 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	
 	g_iInnoKills[client] = 0;
 	g_iTraitorKills[client] = 0;
 	g_iDetectiveKills[client] = 0;
+	
+	if (g_iConfig[b_kadRemover])
+	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
+		SetEntDataArray(client, g_iKills, iZero, MaxClients + 1);
+		SetEntDataArray(client, g_iDeaths, iZero, MaxClients + 1);
+		SetEntDataArray(client, g_iAssists, iZero, MaxClients + 1);
+		SetEntDataArray(client, g_iMVPs, iZero, MaxClients + 1);
+	}
 	
 	int iRagdoll = 0;
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
