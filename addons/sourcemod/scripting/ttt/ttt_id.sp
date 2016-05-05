@@ -80,7 +80,7 @@ public Action Command_ID(int client, int args)
 		return Plugin_Handled;
 	
 	LoopValidClients(i)
-		CPrintToChat(client, g_sPluginTag, "ID: Shows ID", sName);
+		CPrintToChat(i, g_sPluginTag, "ID: Shows ID", i, sName);
 	
 	return Plugin_Handled;
 }
