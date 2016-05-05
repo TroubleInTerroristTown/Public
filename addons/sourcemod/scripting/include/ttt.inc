@@ -6,7 +6,7 @@
 #define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(TTT_IsClientValid(%1))
 
 #define TTT_PLUGIN_NAME "TTT"
-#define TTT_PLUGIN_AUTHOR "Bara, .#Zipcore, Darkness & whocodes"
+#define TTT_PLUGIN_AUTHOR "Bara, .#Zipcore, Darkness, whocodes & good_live"
 #define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
 #define TTT_PLUGIN_VERSION "2.1.<ID>"
 #define TTT_PLUGIN_URL "git.tf/TTT/Plugin"
@@ -78,13 +78,13 @@ enum eConfig
 	bool:b_showDetectiveMenu, 
 	String:s_kickImmunity[16], 
 	bool:b_updateClientModel, 
-	bool:b_removeHostages,
-	bool:b_removeBomb,
+	bool:b_removeHostages, 
+	bool:b_removeBomb, 
 	bool:b_roleAgain, 
-	i_traitorRatio,
-	i_detectiveRatio,
-	bool:b_denyFire,
-	bool:b_slayAfterStart,
+	i_traitorRatio, 
+	i_detectiveRatio, 
+	bool:b_denyFire, 
+	bool:b_slayAfterStart, 
 	i_startCredits, 
 	bool:b_removeBuyzone, 
 	bool:b_forceTeams, 
@@ -100,7 +100,7 @@ enum eConfig
 	bool:b_hideTeams, 
 	bool:b_publicKarma, 
 	bool:b_karmaRound, 
-	bool:b_stripWeapons,
+	bool:b_stripWeapons, 
 	bool:b_karmaDMG, 
 	bool:b_karmaDMG_up, 
 	Float:f_roundDelay, 
@@ -111,6 +111,19 @@ enum eConfig
 	bool:b_ignoreRDMMenu, 
 	bool:b_deadPlayersCanSeeOtherRules, 
 };
+
+enum Ragdolls
+{
+	Ent, 
+	Victim, 
+	Attacker, 
+	String:VictimName[MAX_NAME_LENGTH], 
+	String:AttackerName[MAX_NAME_LENGTH], 
+	bool:Scanned, 
+	Float:GameTime, 
+	String:Weaponused[32], 
+	bool:Found
+}
 
 /*
  * Called every 5 seconds
@@ -177,10 +190,9 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  * Called when a body is scanned (by a Detective).
  *
  * @param client            The client who scanned the body.
- * @param victim            The client whom the body belongs to.
- * @param deadPlayer        The name of the victim.
+ * @param ragdoll            The Array with Ragdoll informations (by refrence).
  */
-forward void TTT_OnBodyChecked(int client, int victim, const char[] deadPlayer);
+forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
 /*
  * Called before a players credits are modified.
@@ -223,12 +235,19 @@ native int TTT_GetClientKarma(int client);
 native int TTT_GetClientCredits(int client);
 
 /*
- * Retrieve the killer name.
+ * Retrieve the Radgoll Info.
  *
  * @param client            The victims index.
  * @param radgoll           The array to save the ragoll infos.
  */
 native int TTT_GetClientRagdoll(int victim, int[] ragdoll);
+
+/*
+ * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
+ *
+ * @param radgoll           The array to save as Ragdoll.
+ */
+native int TTT_SetRagdoll(int[] ragdoll);
 
 /*
  * Set a client's role.

@@ -130,8 +130,8 @@ stock int CreateIcon(int client, int role)
 	GetClientAbsOrigin(client, origin);
 	origin[2] = origin[2] + 80.0;
 
-	int Ent = CreateEntityByName("env_sprite");
-	if(!Ent)
+	int ent = CreateEntityByName("env_sprite");
+	if(!ent)
 		return -1;
 	
 	char sBuffer[PLATFORM_MAX_PATH];
@@ -139,26 +139,26 @@ stock int CreateIcon(int client, int role)
 	if(role == TTT_TEAM_DETECTIVE)
 	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
-		DispatchKeyValue(Ent, "model", sBuffer);
+		DispatchKeyValue(ent, "model", sBuffer);
 	}
 	else if(role == TTT_TEAM_TRAITOR)
 	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
-		DispatchKeyValue(Ent, "model", sBuffer);
+		DispatchKeyValue(ent, "model", sBuffer);
 	}
-	DispatchKeyValue(Ent, "classname", "env_sprite");
-	DispatchKeyValue(Ent, "spawnflags", "1");
-	DispatchKeyValue(Ent, "scale", "0.08");
-	DispatchKeyValue(Ent, "rendermode", "1");
-	DispatchKeyValue(Ent, "rendercolor", "255 255 255");
-	DispatchSpawn(Ent);
-	TeleportEntity(Ent, origin, NULL_VECTOR, NULL_VECTOR);
+	DispatchKeyValue(ent, "classname", "env_sprite");
+	DispatchKeyValue(ent, "spawnflags", "1");
+	DispatchKeyValue(ent, "scale", "0.08");
+	DispatchKeyValue(ent, "rendermode", "1");
+	DispatchKeyValue(ent, "rendercolor", "255 255 255");
+	DispatchSpawn(ent);
+	TeleportEntity(ent, origin, NULL_VECTOR, NULL_VECTOR);
 	SetVariantString(iTarget);
-	AcceptEntityInput(Ent, "SetParent", Ent, Ent);
+	AcceptEntityInput(ent, "SetParent", ent, ent);
 
 	if(role == TTT_TEAM_TRAITOR)
-		SDKHook(Ent, SDKHook_SetTransmit, Hook_SetTransmitT);
-	return Ent;
+		SDKHook(ent, SDKHook_SetTransmit, Hook_SetTransmitT);
+	return ent;
 }
 
 public Action Hook_SetTransmitT(int entity, int client)
