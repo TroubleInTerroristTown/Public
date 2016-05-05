@@ -30,8 +30,10 @@ do
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
-echo "Compile lasermine plugin"
+echo "Compile 3rd-party-plugins"
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/lasermines.sp
+addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
+addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
 
 
 echo "Remove plugins folder if exists"
