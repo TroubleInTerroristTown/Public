@@ -169,12 +169,14 @@ public Action Hook_SetTransmitT(int entity, int client)
 		if (entity == client)
 			return Plugin_Handled;
 		
-		// Allow to show rules if g_bSeeRoles true
+		// Allow to show rules if g_bSeeRoles true, otherwise don't show the T-Icon
 		if(g_bSeeRoles && !IsPlayerAlive(client))
 			return Plugin_Continue;
+		else if(!g_bSeeRoles)
+			return Plugin_Handled;
 		
-		// Don't show T-Icon for death players or as death player
-		if(!IsPlayerAlive(client) || !IsPlayerAlive(entity))
+		// Don't show T-Icon of death players
+		if(!IsPlayerAlive(entity))
 			return Plugin_Handled;
 		
 		// Show T-Icon only for other traitors
