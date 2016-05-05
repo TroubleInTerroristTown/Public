@@ -40,7 +40,7 @@ mp_radar_showall 0
 
 mp_free_armor 0
 
-mp_ignore_win_conditions 1
+mp_ignore_round_win_conditions 1
 
 sv_allow_votes 0
 
