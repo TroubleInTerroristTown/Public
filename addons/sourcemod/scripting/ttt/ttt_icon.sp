@@ -176,7 +176,7 @@ public Action Hook_SetTransmitT(int entity, int client)
 		// Don't show T-Icon of death players
 		if(!IsPlayerAlive(entity))
 			return Plugin_Handled;
-		PrintToChat(client, "Client is %N and entity is %N");
+		PrintToChat(client, "Client is %N (Role: %d) and entity is %N (Role: %d", client, TTT_GetClientRole(client), entity, TTT_GetClientRole(entity));
 		// Show T-Icon only for other traitors
 		if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR || TTT_GetClientRole(entity) != TTT_TEAM_TRAITOR)
 			return Plugin_Handled;
