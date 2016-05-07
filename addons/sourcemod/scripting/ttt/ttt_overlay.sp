@@ -133,6 +133,9 @@ public void TTT_OnRoundEnd(int winner)
 		if(winner == TTT_TEAM_DETECTIVE)
 			winner = TTT_TEAM_INNOCENT;
 	
+	if(!TTT_IsRoundActive())
+		return;
+	
 	char sBuffer[PLATFORM_MAX_PATH];
 	if(winner == TTT_TEAM_DETECTIVE)
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayDWin);
