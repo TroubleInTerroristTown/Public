@@ -51,7 +51,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT-SQL", g_sConfigFile);
 	
-	g_cRetries = Config_LoadInt("sql_max_retries", 3, "The amount of retries after first failed connection (1 (first connect) + X retries = 4 connections tries by default)");
+	g_cRetries = Config_LoadInt("sql_max_retries", 3, "The amount of retries after first failed connection");
 	Config_LoadString("sql_database_entry_name", "ttt", "The name of the entry in your databases.cfg", g_sEntry, sizeof(g_sEntry));
 	Config_Done();
 	
@@ -70,7 +70,7 @@ void SQL_Start()
 	
 	if(g_iRetries > g_cRetries)
 	{
-		LogError("Can't connect to a database after %d retries!", g_iRetries);
+		LogError("Can't connect to a database after %d retries!", g_iRetries-1);
 		return;
 	}
 	
