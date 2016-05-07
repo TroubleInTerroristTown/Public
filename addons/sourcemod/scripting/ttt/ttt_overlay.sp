@@ -61,55 +61,55 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-	char buffer[PLATFORM_MAX_PATH];
+	char sBuffer[PLATFORM_MAX_PATH];
 	
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_sDetectiveIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sDetectiveIcon);
+	AddFileToDownloadsTable(sBuffer);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_sDetectiveIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sDetectiveIcon);
+	AddFileToDownloadsTable(sBuffer);
 
 	PrecacheDecal(g_sDetectiveIcon, true);
 	
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_sTraitorIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sTraitorIcon);
+	AddFileToDownloadsTable(sBuffer);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_sTraitorIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sTraitorIcon);
+	AddFileToDownloadsTable(sBuffer);
 
 	PrecacheDecal(g_sTraitorIcon, true);
 	
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_sInnocentIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sInnocentIcon);
+	AddFileToDownloadsTable(sBuffer);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_sInnocentIcon);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sInnocentIcon);
+	AddFileToDownloadsTable(sBuffer);
 
 	PrecacheDecal(g_sInnocentIcon, true);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_soverlayTWin);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayTWin);
+	AddFileToDownloadsTable(sBuffer);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_soverlayTWin);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayTWin);
+	AddFileToDownloadsTable(sBuffer);
 
 	PrecacheDecal(g_soverlayTWin, true);
 	
-	Format(buffer, sizeof(buffer), "materials/%s.vmt", g_soverlayIWin);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayIWin);
+	AddFileToDownloadsTable(sBuffer);
 
-	Format(buffer, sizeof(buffer), "materials/%s.vtf", g_soverlayIWin);
-	AddFileToDownloadsTable(buffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayIWin);
+	AddFileToDownloadsTable(sBuffer);
 
 	PrecacheDecal(g_soverlayIWin, true);
 
 	if(g_bEndwithD)
 	{
-		Format(buffer, sizeof(buffer), "materials/%s.vmt", g_soverlayDWin);
-		AddFileToDownloadsTable(buffer);
+		Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayDWin);
+		AddFileToDownloadsTable(sBuffer);
 
-		Format(buffer, sizeof(buffer), "materials/%s.vtf", g_soverlayDWin);
-		AddFileToDownloadsTable(buffer);
+		Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayDWin);
+		AddFileToDownloadsTable(sBuffer);
 
 		PrecacheDecal(g_soverlayDWin, true);
 	}
@@ -133,18 +133,16 @@ public void TTT_OnRoundEnd(int winner)
 		if(winner == TTT_TEAM_DETECTIVE)
 			winner = TTT_TEAM_INNOCENT;
 	
+	char sBuffer[PLATFORM_MAX_PATH];
+	if(winner == TTT_TEAM_DETECTIVE)
+		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayDWin);
+	else if(winner == TTT_TEAM_TRAITOR)
+		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayTWin);
+	else if(winner == TTT_TEAM_INNOCENT)
+		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayIWin);
+	
 	LoopValidClients(client)
-	{
-		switch(winner)
-		{
-			case TTT_TEAM_DETECTIVE:
-				ShowOverlayToClient(client,  g_soverlayDWin);
-			case TTT_TEAM_INNOCENT:
-				ShowOverlayToClient(client,  g_soverlayIWin);
-			case TTT_TEAM_TRAITOR:
-				ShowOverlayToClient(client,  g_soverlayTWin);
-		}
-	}
+		ShowOverlayToClient(client,  sBuffer);
 }
 
 public Action Delay_Timer(Handle timer, any data)
@@ -173,16 +171,16 @@ public void AssignOverlay(int client, int role)
 		if(!IsPlayerAlive(client))
 			ShowOverlayToClient(client, "");
 		
-		switch(role)
-		{
-			case TTT_TEAM_TRAITOR:
-				ShowOverlayToClient(client, g_sTraitorIcon);
-			case TTT_TEAM_DETECTIVE:
-				ShowOverlayToClient(client, g_sDetectiveIcon);
-			case TTT_TEAM_INNOCENT:
-				ShowOverlayToClient(client, g_sInnocentIcon);
-			default:
-				ShowOverlayToClient(client, "");
-		}
+		char sBuffer[PLATFORM_MAX_PATH];
+		if(role == TTT_TEAM_DETECTIVE)
+			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
+		else if(role == TTT_TEAM_TRAITOR)
+			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
+		else if(role == TTT_TEAM_INNOCENT)
+			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sInnocentIcon);
+		else
+			Format(sBuffer, sizeof(sBuffer), "");
+		
+		ShowOverlayToClient(client, sBuffer);
 	}
 }

@@ -139,15 +139,11 @@ stock int CreateIcon(int client, int role)
 	char sBuffer[PLATFORM_MAX_PATH];
 	
 	if(role == TTT_TEAM_DETECTIVE)
-	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
-		DispatchKeyValue(ent, "model", sBuffer);
-	}
 	else if(role == TTT_TEAM_TRAITOR)
-	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
-		DispatchKeyValue(ent, "model", sBuffer);
-	}
+	
+	DispatchKeyValue(ent, "model", sBuffer);
 	DispatchKeyValue(ent, "classname", "env_sprite");
 	DispatchKeyValue(ent, "spawnflags", "1");
 	DispatchKeyValue(ent, "scale", "0.08");
