@@ -9,7 +9,6 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <ttt>
-#include <ttt-icon>
 #include <ttt-sql>
 #include <config_loader>
 #include <smlib>
@@ -492,6 +491,16 @@ public void ThinkPost(int entity)
 	LoopValidClients(i)
 		isAlive[i] = (!g_bFound[i]);
 	
+	if (g_iConfig[b_kadRemover])
+	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
+		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
+	}
+	
 	SetEntDataArray(entity, g_iAlive, isAlive, 65);
 }
 
@@ -880,8 +889,6 @@ stock void TeamInitialize(int client)
 		}
 	}
 	
-	TTT_SetIcon(client, g_iRole[client]);
-	
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
 	Call_PushCell(g_iRole[client]);
@@ -1048,16 +1055,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	g_iTraitorKills[client] = 0;
 	g_iDetectiveKills[client] = 0;
 	
-	if (g_iConfig[b_kadRemover])
-	{
-		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-		
-		SetEntDataArray(client, g_iKills, iZero, MaxClients + 1);
-		SetEntDataArray(client, g_iDeaths, iZero, MaxClients + 1);
-		SetEntDataArray(client, g_iAssists, iZero, MaxClients + 1);
-		SetEntDataArray(client, g_iMVPs, iZero, MaxClients + 1);
-	}
-	
 	int iRagdoll = 0;
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
@@ -1077,7 +1074,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		int iEntity = CreateEntityByName("prop_ragdoll");
 		DispatchKeyValue(iEntity, "model", playermodel);
 		
-		
 		// Prevent crash. If spawn isn't dispatched successfully,
 		// TeleportEntity() crashes the server. This left some very
 		// odd crash dumps, and usually only happened when 2 players
@@ -1085,7 +1081,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		// Thanks to -
 		// 		Phoenix Gaming Network (pgn.site)
 		// 		Prestige Gaming Organization
-		
 		ActivateEntity(iEntity);
 		if (DispatchSpawn(iEntity))
 		{
@@ -1098,8 +1093,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		else
 			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		
-		SetNoBlock(iEntity);
-		
+		SetEntData(client, g_iCollisionGroup, 2, 4, true);
 		
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];
