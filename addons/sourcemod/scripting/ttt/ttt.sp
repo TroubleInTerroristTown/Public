@@ -2218,7 +2218,7 @@ stock void UpdateKarma(int client, int karma)
 	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"%s\";", karma, sCommunityID);
 
 	if(g_hDatabase != null)
-		TTT_Query("Callback_Karma", sQuery);
+		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
 }
 
 stock void addCredits(int client, int credits, bool message = false)
