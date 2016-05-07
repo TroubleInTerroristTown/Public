@@ -129,21 +129,20 @@ public void TTT_OnRoundEnd(int winner)
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
 	
-	LoopValidClients(client){
+	if(!g_bEndwithD)
+		if(winner == TTT_TEAM_DETECTIVE)
+			winner = TTT_TEAM_INNOCENT;
+	
+	LoopValidClients(client)
+	{
 		switch(winner)
 		{
 			case TTT_TEAM_DETECTIVE:
-			{
 				ShowOverlayToClient(client,  g_soverlayDWin);
-			}
 			case TTT_TEAM_INNOCENT:
-			{
 				ShowOverlayToClient(client,  g_soverlayIWin);
-			}
 			case TTT_TEAM_TRAITOR:
-			{
 				ShowOverlayToClient(client,  g_soverlayTWin);
-			}
 		}
 	}
 }
@@ -155,8 +154,7 @@ public Action Delay_Timer(Handle timer, any data)
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if(IsPlayerAlive(client))
-		AssignOverlay(client);
+	AssignOverlay(client, role);
 }
 
 public void TTT_OnUpdate()
@@ -165,32 +163,26 @@ public void TTT_OnUpdate()
 		return;
 	
 	LoopValidClients(i)
-		if(IsPlayerAlive(i))
-			AssignOverlay(i);
+		AssignOverlay(i, TTT_GetClientRole(i));
 }
 
-public void AssignOverlay(int client)
+public void AssignOverlay(int client, int role)
 {
 	if(TTT_IsClientValid(client))
 	{
-		switch(TTT_GetClientRole(client))
+		if(!IsPlayerAlive(client))
+			ShowOverlayToClient(client, "");
+		
+		switch(role)
 		{
 			case TTT_TEAM_TRAITOR:
-			{
-				ShowOverlayToClient(client,  g_sTraitorIcon);
-			}
+				ShowOverlayToClient(client, g_sTraitorIcon);
 			case TTT_TEAM_DETECTIVE:
-			{
 				ShowOverlayToClient(client, g_sDetectiveIcon);
-			}
 			case TTT_TEAM_INNOCENT:
-			{
 				ShowOverlayToClient(client, g_sInnocentIcon);
-			}
 			default:
-			{
 				ShowOverlayToClient(client, "");
-			}
 		}
 	}
 }
