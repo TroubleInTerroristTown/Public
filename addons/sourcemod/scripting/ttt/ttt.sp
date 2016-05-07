@@ -138,6 +138,11 @@ public void OnPluginStart()
 	SetupConfig();
 }
 
+public void TTT_OnSQLConnect(Database db)
+{
+	g_hDatabase = db;
+}
+
 void SetupConfig()
 {
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
