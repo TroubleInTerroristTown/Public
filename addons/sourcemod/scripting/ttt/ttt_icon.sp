@@ -161,27 +161,13 @@ stock int CreateIcon(int client, int role)
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if(TTT_IsClientValid(entity) && TTT_IsClientValid(client))
+	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		// Don't show T-Icon for itself
-		if (entity == client)
-			return Plugin_Handled;
-		
-		// Allow to show rules if g_bSeeRoles true, otherwise don't show the T-Icon
-		if(g_bSeeRoles && !IsPlayerAlive(client))
-			return Plugin_Continue;
-		else if(!g_bSeeRoles)
-			return Plugin_Handled;
-		
-		// Don't show T-Icon of death players
-		if(!IsPlayerAlive(entity))
-			return Plugin_Handled;
-		PrintToChat(client, "Client is %N (Role: %d) and entity is %N (Role: %d", client, TTT_GetClientRole(client), entity, TTT_GetClientRole(entity));
 		// Show T-Icon only for other traitors
-		if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR || TTT_GetClientRole(entity) != TTT_TEAM_TRAITOR)
-			return Plugin_Handled;
+		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			return Plugin_Continue;
 	}	
-	return Plugin_Continue;
+	return Plugin_Handled;
 }
 
 stock void ClearIcon(int client)
