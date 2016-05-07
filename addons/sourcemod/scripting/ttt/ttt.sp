@@ -1170,12 +1170,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			AcceptEntityInput(iRagdoll, "Kill");
 	}
 	
-	if (!dontBroadcast)
-	{
-		dontBroadcast = true;
-		return Plugin_Changed;
-	}
-	return Plugin_Continue;
+	dontBroadcast = true;
+	return Plugin_Changed;
 }
 
 public void OnClientPostAdminCheck(int client)
