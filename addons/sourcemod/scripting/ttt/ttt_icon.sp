@@ -182,7 +182,7 @@ public Action Hook_SetTransmitT(int entity, int client)
 			return Plugin_Handled;
 		
 		// Show T-Icon only for other traitors
-		if(TTT_GetClientRole(entity) != TTT_TEAM_TRAITOR)
+		if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR || TTT_GetClientRole(entity) != TTT_TEAM_TRAITOR)
 			return Plugin_Handled;
 	}	
 	return Plugin_Continue;
