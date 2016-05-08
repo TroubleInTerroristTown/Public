@@ -1073,6 +1073,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		
 		int iEntity = CreateEntityByName("prop_ragdoll");
 		DispatchKeyValue(iEntity, "model", playermodel);
+		SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
+		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 		
 		// Prevent crash. If spawn isn't dispatched successfully,
 		// TeleportEntity() crashes the server. This left some very
@@ -1093,7 +1095,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		else
 			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		
-		SetNoBlock(iEntity);
+		Entity_SetCollisionGroup(iEntity, COLLISION_GROUP_DEBRIS_TRIGGER);
 		
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];

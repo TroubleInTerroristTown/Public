@@ -4,7 +4,7 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-
+#include <smlib>
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
@@ -118,13 +118,16 @@ stock bool SpawnFakeBody(int client)
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
 	DispatchKeyValue(iEntity, "targetname", sName);
-	SetNoBlock(iEntity);
+	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
+	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 	
 	if (DispatchSpawn(iEntity))
 	{
 		pos[2] -= 16.0;
 		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 	}
+	
+	Entity_SetCollisionGroup(iEntity, COLLISION_GROUP_DEBRIS_TRIGGER);
 	
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
