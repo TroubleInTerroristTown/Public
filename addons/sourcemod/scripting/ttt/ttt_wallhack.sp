@@ -18,10 +18,6 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
 
-int g_iColorInnocent[3] =  {0, 255, 0};
-int g_iColorTraitor[3] =  {255, 0, 0};
-int g_iColorDetective[3] =  {0, 0, 255};
-
 int g_iTraitorPrice;
 int g_iDetectivePrice;
 
@@ -31,8 +27,8 @@ float g_fDetectiveCooldown;
 float g_fTraitorActive;
 float g_fDetectiveActive;
 
-bool g_bOwnRadar[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasRadar[MAXPLAYERS + 1] =  { false, ... };
+bool g_bOwnWH[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHasWH[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH];
 
@@ -46,6 +42,13 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	CreateNative("TTT_Wallhack", Native_Wallhack);
+	RegPluginLibrary("ttt_wallhack");
+	return APLRes_Success;
+}
 
 public void OnPluginStart()
 {
@@ -66,8 +69,6 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
-	
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("player_spawn", Event_PlayerReset);
 }
@@ -87,8 +88,8 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
-		g_bHasRadar[client] = false;
-		g_bOwnRadar[client] = false;
+		g_bHasWH[client] = false;
+		g_bOwnWH[client] = false;
 	}
 }
 
@@ -101,8 +102,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
 					return Plugin_Stop;
 			
-			g_bHasRadar[client] = true;
-			g_bOwnRadar[client] = true;
+			g_bHasWH[client] = true;
+			g_bOwnWH[client] = true;
 			
 			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
@@ -117,9 +118,9 @@ public Action Timer_WHActive(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && g_bHasRadar[client])
+	if(TTT_IsClientValid(client) && g_bOwnWH[client] && g_bHasWH[client])
 	{
-		g_bHasRadar[client] = false;
+		g_bHasWH[client] = false;
 		g_hTimer[client] = null;
 		
 		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
@@ -135,9 +136,9 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(TTT_IsClientValid(client) && g_bOwnRadar[client] && !g_bHasRadar[client])
+	if(TTT_IsClientValid(client) && g_bOwnWH[client] && !g_bHasWH[client])
 	{
-		g_bHasRadar[client] = true;
+		g_bHasWH[client] = true;
 		g_hTimer[client] = null;
 		
 		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
@@ -149,109 +150,12 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action Timer_SetupGlow(Handle timer)
+public int Native_Wallhack(Handle plugin, int numParams)
 {
-	LoopValidClients(client)
-		if (IsPlayerAlive(client))
-			SetupGlowSkin(client);
+	int target = GetNativeCell(1);
 	
-	return Plugin_Continue;
+	if(g_bOwnWH[target] && g_bHasWH[target])
+		return true;
+	return false;
 }
 
-
-void SetupGlowSkin(int client)
-{
-	CPS_RemoveSkin(client);
-	
-	if(!TTT_IsRoundActive())
-		return;
-	
-	char sModel[PLATFORM_MAX_PATH];
-	GetClientModel(client, sModel, sizeof(sModel));
-	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
-	
-	if(iSkin == -1)
-		return;
-		
-	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-		SetupGlow(client, iSkin);
-		
-}
-
-void SetupGlow(int client, int iSkin)
-{
-	int iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow");
-	
-	if (iOffset == -1)
-		return;
-	
-	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
-	int iRed = 255;
-	int iGreen = 255;
-	int iBlue = 255;
-	
-	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-	{
-		iRed = g_iColorDetective[0];
-		iGreen = g_iColorDetective[1];
-		iBlue = g_iColorDetective[2];
-	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		iRed = g_iColorTraitor[0];
-		iGreen = g_iColorTraitor[1];
-		iBlue = g_iColorTraitor[2];
-	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-	{
-		iRed = g_iColorInnocent[0];
-		iGreen = g_iColorInnocent[1];
-		iBlue = g_iColorInnocent[2];
-	}
-	
-	SetEntData(iSkin, iOffset, iRed, _, true);
-	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
-	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
-	SetEntData(iSkin, iOffset + 3, 255, _, true);
-}
-
-public Action OnSetTransmit_GlowSkin(int iSkin, int client)
-{
-	if(IsFakeClient(client))
-		return Plugin_Handled;
-		
-	if(!IsPlayerAlive(client))
-		return Plugin_Handled;
-	
-	if(!TTT_IsRoundActive())
-		return Plugin_Handled;
-	
-	if(!g_bOwnRadar[client] || !g_bHasRadar[client])
-		return Plugin_Handled;
-		
-	LoopValidClients(i)
-	{
-		if(IsFakeClient(i))
-			continue;
-		
-		if(!IsPlayerAlive(i))
-			continue;
-		
-		if(!CPS_HasSkin(i))
-			continue;
-			
-		if(EntRefToEntIndex(CPS_GetSkin(i)) != iSkin)
-			continue;
-		
-		if(TTT_IsClientValid(i))
-		{
-			if(g_bOwnRadar[client] && g_bHasRadar[client])
-				return Plugin_Continue;
-		}
-	}
-	
-	return Plugin_Handled;
-}

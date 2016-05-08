@@ -5,6 +5,7 @@
 
 #undef REQUIRE_PLUGIN
 #tryinclude <ttt_tagrenade>
+#tryinclude <ttt_wallhack>
 
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
@@ -13,6 +14,7 @@ int g_iColorDetective[3] =  {0, 0, 255};
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
 bool g_bTAGrenade = false;
+bool g_bWallhack = false;
 
 public Plugin myinfo =
 {
@@ -32,18 +34,27 @@ public void OnAllPluginsLoaded()
 {
 	if(LibraryExists("ttt_tagrenade"))
 		g_bTAGrenade = true;
+	
+	if(LibraryExists("ttt_wallhack"))
+		g_bWallhack = true;
 }
 
 public void OnLibraryAdded(const char[] library)
 {
 	if(StrEqual(library, "ttt_tagrenade", false))
 		g_bTAGrenade = true;
+	
+	if(StrEqual(library, "ttt_wallhack", false))
+		g_bWallhack = true;
 }
 
 public void OnLibraryRemoved(const char[] library)
 {
 	if(StrEqual(library, "ttt_tagrenade", false))
-		g_bTAGrenade = false;
+		g_bTAGrenade = true;
+	
+	if(StrEqual(library, "ttt_wallhack", false))
+		g_bWallhack = true;
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
@@ -141,6 +152,9 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		return Plugin_Handled;
 	
 	if (g_bTAGrenade && TTT_TAGrenade(target))
+		return Plugin_Continue;
+	
+	if (g_bWallhack && TTT_Wallhack(client))
 		return Plugin_Continue;
 	
 	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
