@@ -166,7 +166,7 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 		// Visible?
 		if(g_bShowPlayersBehindWalls)
 		{
-			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_SOLID, RayType_EndPoint, OnTraceForTagrenade, entity);
+			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);
 			if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
 				g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;
 			CloseHandle(trace);
