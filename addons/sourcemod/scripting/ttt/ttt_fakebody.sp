@@ -114,7 +114,7 @@ stock bool SpawnFakeBody(int client)
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
 	DispatchKeyValue(iEntity, "targetname", sName);
-	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
+	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 0);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
 	
 	if (DispatchSpawn(iEntity))
