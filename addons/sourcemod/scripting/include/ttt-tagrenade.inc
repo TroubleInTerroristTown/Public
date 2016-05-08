@@ -19,6 +19,6 @@ public SharedPlugin __pl_TTT_TAGrenade =
 #if !defined REQUIRE_PLUGIN
 public __pl_TTT_TAGrenade_SetNTVOptional()
 {
-	MarkNativeAsOptional("");
+	MarkNativeAsOptional("TTT_TAGrenade");
 }
 #endif
