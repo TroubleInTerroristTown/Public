@@ -25,6 +25,8 @@ int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
+int g_iCollisionGroup = -1;
+
 public Plugin myinfo = 
 {
 	name = PLUGIN_NAME, 
@@ -57,6 +59,8 @@ public void OnPluginStart()
 	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	
+	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 }
 
 public void OnClientDisconnect(int client)
@@ -114,8 +118,7 @@ stock bool SpawnFakeBody(int client)
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
 	DispatchKeyValue(iEntity, "targetname", sName);
-	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 0);
-	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
+	SetNoBlock(iEntity);
 	
 	if (DispatchSpawn(iEntity))
 	{
@@ -154,3 +157,8 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC) {
 	}
 	return Plugin_Continue;
 } 
+
+stock void SetNoBlock(int client)
+{
+	SetEntData(client, g_iCollisionGroup, 2, 4, true);
+}
