@@ -67,41 +67,46 @@ public void OnMapStart()
 	AddFileToDownloadsTable(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sDetectiveIcon);
-	AddFileToDownloadsTable(sBuffer);
-
-	PrecacheDecal(g_sDetectiveIcon, true);
+	AddFileToDownloadsTable(g_sDetectiveIcon);
+	
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sDetectiveIcon);
+	PrecacheDecal(sBuffer, true);
 	
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sTraitorIcon);
 	AddFileToDownloadsTable(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sTraitorIcon);
 	AddFileToDownloadsTable(sBuffer);
-
-	PrecacheDecal(g_sTraitorIcon, true);
+	
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sTraitorIcon);
+	PrecacheDecal(sBuffer, true);
 	
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sInnocentIcon);
 	AddFileToDownloadsTable(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sInnocentIcon);
 	AddFileToDownloadsTable(sBuffer);
-
-	PrecacheDecal(g_sInnocentIcon, true);
+	
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sInnocentIcon);
+	PrecacheDecal(sBuffer, true);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayTWin);
 	AddFileToDownloadsTable(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayTWin);
 	AddFileToDownloadsTable(sBuffer);
-
-	PrecacheDecal(g_soverlayTWin, true);
+	
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayTWin);
+	PrecacheDecal(sBuffer, true);
 	
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayIWin);
 	AddFileToDownloadsTable(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayIWin);
 	AddFileToDownloadsTable(sBuffer);
-
-	PrecacheDecal(g_soverlayIWin, true);
+	
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayIWin);
+	PrecacheDecal(sBuffer, true);
 
 	if(g_bEndwithD)
 	{
@@ -110,7 +115,8 @@ public void OnMapStart()
 
 		Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayDWin);
 		AddFileToDownloadsTable(sBuffer);
-
+		
+		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayDWin);
 		PrecacheDecal(g_soverlayDWin, true);
 	}
 
@@ -133,19 +139,20 @@ public void TTT_OnRoundEnd(int winner)
 		if(winner == TTT_TEAM_DETECTIVE)
 			winner = TTT_TEAM_INNOCENT;
 	
-	if(!TTT_IsRoundActive())
-		return;
-	
-	char sBuffer[PLATFORM_MAX_PATH];
-	if(winner == TTT_TEAM_DETECTIVE)
-		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayDWin);
-	else if(winner == TTT_TEAM_TRAITOR)
-		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayTWin);
-	else if(winner == TTT_TEAM_INNOCENT)
-		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_soverlayIWin);
-	
 	LoopValidClients(client)
-		ShowOverlayToClient(client,  sBuffer);
+	{
+		char sBuffer[PLATFORM_MAX_PATH];
+		
+		if(winner == TTT_TEAM_DETECTIVE)
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayDWin);
+		else if(winner == TTT_TEAM_TRAITOR)
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayTWin);
+		else if(winner == TTT_TEAM_INNOCENT)
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayIWin);
+		
+		ShowOverlayToClient(client, sBuffer);
+	}
+		
 }
 
 public Action Delay_Timer(Handle timer, any data)
@@ -175,12 +182,13 @@ public void AssignOverlay(int client, int role)
 			ShowOverlayToClient(client, "");
 		
 		char sBuffer[PLATFORM_MAX_PATH];
+
 		if(role == TTT_TEAM_DETECTIVE)
-			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sDetectiveIcon);
 		else if(role == TTT_TEAM_TRAITOR)
-			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sTraitorIcon);
 		else if(role == TTT_TEAM_INNOCENT)
-			Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sInnocentIcon);
+			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sInnocentIcon);
 		else
 			Format(sBuffer, sizeof(sBuffer), "");
 		
