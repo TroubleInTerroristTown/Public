@@ -3,10 +3,16 @@
 #include <ttt>
 #include <CustomPlayerSkins>
 
+#undef REQUIRE_PLUGIN
+#tryinclude <ttt_tagrenade>
+
+int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
 int g_iColorDetective[3] =  {0, 0, 255};
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
+
+bool g_bTAGrenade = false;
 
 public Plugin myinfo =
 {
@@ -20,6 +26,24 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
+}
+
+public void OnAllPluginsLoaded()
+{
+	if(LibraryExists("ttt_tagrenade"))
+		g_bTAGrenade = true;
+}
+
+public void OnLibraryAdded(const char[] library)
+{
+	if(StrEqual(library, "ttt_tagrenade", false))
+		g_bTAGrenade = true;
+}
+
+public void OnLibraryRemoved(const char[] library)
+{
+	if(StrEqual(library, "ttt_tagrenade", false))
+		g_bTAGrenade = false;
 }
 
 public Action Timer_SetupGlow(Handle timer, any data)
@@ -74,6 +98,12 @@ void SetupGlow(int client, int iSkin)
 		iGreen = g_iColorTraitor[1];
 		iBlue = g_iColorTraitor[2];
 	}
+	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
+		iRed = g_iColorInnocent[0];
+		iGreen = g_iColorInnocent[1];
+		iBlue = g_iColorInnocent[2];
+	}
 	
 	SetEntData(iSkin, iOffset, iRed, _, true);
 	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
@@ -109,6 +139,9 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 	
 	if(target == -1)
 		return Plugin_Handled;
+	
+	if (g_bTAGrenade && TTT_TAGrenade(target))
+		return Plugin_Continue;
 	
 	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 		return Plugin_Continue;

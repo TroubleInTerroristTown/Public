@@ -10,10 +10,6 @@
 #define LONG_NAME "TA-Grenade"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
-int g_iColorInnocent[3] =  {0, 255, 0};
-int g_iColorTraitor[3] =  {255, 0, 0};
-int g_iColorDetective[3] =  {0, 0, 255};
-
 int g_iTPrice = 0;
 int g_iTCount = 0;
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -38,6 +34,13 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	CreateNative("TTT_TAGrenade", Native_TAGrenade);
+	RegPluginLibrary("ttt_tagrenade");
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
@@ -56,8 +59,6 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
-	
-	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
 public void OnClientDisconnect(int client)
@@ -183,107 +184,6 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 	return true;
 }
 
-public Action Timer_SetupGlow(Handle timer, any data)
-{
-	LoopValidClients(client)
-		if (IsPlayerAlive(client))
-			SetupGlowSkin(client)
-	
-	return Plugin_Continue;
-}
-
-void SetupGlowSkin(int client)
-{
-	if(!TTT_IsRoundActive())
-		return;
-	
-	char sModel[PLATFORM_MAX_PATH];
-	GetClientModel(client, sModel, sizeof(sModel));
-	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
-	
-	if(iSkin == -1)
-		return;
-		
-	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-		SetupGlow(client, iSkin);
-}
-
-void SetupGlow(int client, int iSkin)
-{
-	int iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow");
-	
-	if (iOffset == -1)
-		return;
-	
-	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
-	int iRed = 255;
-	int iGreen = 255;
-	int iBlue = 255;
-	
-	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-	{
-		iRed = g_iColorDetective[0];
-		iGreen = g_iColorDetective[1];
-		iBlue = g_iColorDetective[2];
-	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		iRed = g_iColorTraitor[0];
-		iGreen = g_iColorTraitor[1];
-		iBlue = g_iColorTraitor[2];
-	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-	{
-		iRed = g_iColorInnocent[0];
-		iGreen = g_iColorInnocent[1];
-		iBlue = g_iColorInnocent[2];
-	}
-	
-	SetEntData(iSkin, iOffset, iRed, _, true);
-	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
-	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
-	SetEntData(iSkin, iOffset + 3, 255, _, true);
-}
-
-public Action OnSetTransmit_GlowSkin(int iSkin, int client)
-{
-	if(IsFakeClient(client))
-		return Plugin_Handled;
-		
-	if(!IsPlayerAlive(client))
-		return Plugin_Handled;
-	
-	if(!TTT_IsRoundActive())
-		return Plugin_Handled;
-		
-	int target = -1;
-	LoopValidClients(i)
-	{
-		if(!IsPlayerAlive(i))
-			continue;
-		
-		if(!CPS_HasSkin(i))
-			continue;
-			
-		if(EntRefToEntIndex(CPS_GetSkin(i)) != iSkin)
-			continue;
-			
-		target = i;
-	}
-	
-	if(target == -1)
-		return Plugin_Handled;
-	
-	// Target is tagged
-	if(GetGameTime() < GetPlayerTagEndTime(target))
-		return Plugin_Continue;
-	
-	return Plugin_Handled;
-}
-
 float GetPlayerTagEndTime(int client)
 {
 	return g_fTaggingEndTime[client];
@@ -294,4 +194,13 @@ void ResetTAG(int client)
 	g_iTPCount[client] = 0;
 	g_fTaggingEndTime[client] = 0.0
 	g_bPlayerIsTagged[client] = false;
+}
+
+public int Native_TAGrenade(Handle plugin, int numParams)
+{
+	int target = GetNativeCell(1);
+	
+	if(GetGameTime() < GetPlayerTagEndTime(target))
+		return true;
+	return false;
 }
