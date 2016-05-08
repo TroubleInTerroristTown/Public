@@ -4,8 +4,8 @@
 #include <CustomPlayerSkins>
 
 #undef REQUIRE_PLUGIN
-#tryinclude <ttt_tagrenade>
-#tryinclude <ttt_wallhack>
+#tryinclude <ttt-tagrenade>
+#tryinclude <ttt-wallhack>
 
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
