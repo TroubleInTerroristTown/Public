@@ -1172,7 +1172,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			AcceptEntityInput(iRagdoll, "Kill");
 	}
 	
-	dontBroadcast = true;
+	event.BroadcastDisabled = true;
+		
 	return Plugin_Changed;
 }
 
