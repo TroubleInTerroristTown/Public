@@ -135,10 +135,6 @@ public void TTT_OnRoundEnd(int winner)
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
 	
-	if(!g_bEndwithD)
-		if(winner == TTT_TEAM_DETECTIVE)
-			winner = TTT_TEAM_INNOCENT;
-	
 	LoopValidClients(client)
 	{
 		char sBuffer[PLATFORM_MAX_PATH];
