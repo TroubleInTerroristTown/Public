@@ -95,6 +95,8 @@ public void OnPluginStart()
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	
+	HookEvent("player_spawn", Event_PlayerSpawn);
+	
 	LoadTranslations("ttt.phrases");
 }
 
