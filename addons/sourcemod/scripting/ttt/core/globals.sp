@@ -131,3 +131,5 @@ char g_sRemoveEntityList[][] =  {
 	"info_hostage_spawn", 
 	"func_buyzone"
 };
+
+bool g_bRoundEnding = false;

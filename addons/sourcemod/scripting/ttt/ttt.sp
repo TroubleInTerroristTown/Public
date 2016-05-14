@@ -267,18 +267,18 @@ public Action Command_Logs(int client, int args)
 {
 	if (g_bRoundStarted)
 	{
-		if ((client == 0) || (!IsPlayerAlive(client)))
+		if (client == 0)
 			ShowLogs(client);
 		else
 			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+		return Plugin_Handled;
 	}
+	
+	if (client == 0)
+		PrintToServer("No logs yet");
 	else
-	{
-		if (client == 0)
-			PrintToServer("No logs yet");
-		else
-			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
-	}
+		CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	
 	return Plugin_Handled;
 }
 
@@ -599,6 +599,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
 public Action Timer_Selection(Handle hTimer)
 {
+	g_bRoundEnding = false;
 	g_hStartTimer = null;
 	
 	ClearArray(g_hPlayerArray);
@@ -1753,6 +1754,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 public void OnMapEnd()
 {
+	g_bRoundEnding = false;
 	if (g_hRoundTimer != null)
 	{
 		CloseHandle(g_hRoundTimer);
@@ -1871,6 +1873,8 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	if (g_iConfig[b_nextRoundAlert])
 		LoopValidClients(client)
 	CPrintToChat(client, g_iConfig[s_pluginTag], "next round in", client, delay);
+
+	g_bRoundEnding = true;
 	
 	return Plugin_Changed;
 }
