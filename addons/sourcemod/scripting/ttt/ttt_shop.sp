@@ -93,6 +93,12 @@ public Action Command_Shop(int client, int args)
 	if (!TTT_IsClientValid(client))
 		return Plugin_Handled;
 	
+	if(!IsPlayerAlive(client))
+	{
+		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		return Plugin_Handled;
+	}
+	
 	int team = TTT_GetClientRole(client);
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
@@ -131,8 +137,11 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 {
 	if (action == MenuAction_Select)
 	{
-		if (!IsPlayerAlive(client))
+		if(!IsPlayerAlive(client))
+		{
+			CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
 			return;
+		}
 			
 		char info[32];
 		GetMenuItem(menu, itemNum, info, sizeof(info));	

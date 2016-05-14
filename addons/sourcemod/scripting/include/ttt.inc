@@ -405,7 +405,10 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
 {
+	int iFlags = GetCommandFlags("r_screenoverlay");
+	SetCommandFlags("r_screenoverlay", iFlags &~ FCVAR_CHEAT);
 	ClientCommand(client, "r_screenoverlay \"%s\"", overlaypath);
+	SetCommandFlags("r_screenoverlay", iFlags);
 }
 
 stock void ShowOverlayToAll(const char[] overlaypath)
