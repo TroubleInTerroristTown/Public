@@ -744,5 +744,10 @@
 	{
 		"en"		"Type !id to show your innocence."
 	}
+	
+	"YouAreDead"
+	{
+		"en"		"You can't use this as dead player"		
+	}
 
 }
