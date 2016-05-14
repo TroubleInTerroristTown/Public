@@ -90,8 +90,6 @@ public void OnPluginStart()
 	g_hLogsArray = CreateArray(512);
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
-	g_iAccount = FindSendPropInfo("CCSPlayer", "m_iAccount");
-	
 	
 	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
@@ -265,6 +263,12 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
+	if(g_bRoundEnding)
+	{
+		ShowLogs(client);
+		return Plugin_Handled;
+	}
+	
 	if (g_bRoundStarted)
 	{
 		if (client == 0)
@@ -997,8 +1001,6 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PreThink, OnPreThink);
 	
-	SetEntData(client, g_iAccount, 16000);
-	
 	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
@@ -1601,10 +1603,6 @@ public Action Timer_Adjust(Handle timer)
 			g_iInnoAlive++;
 		else if (g_iRole[i] == TTT_TEAM_DETECTIVE)
 			g_iDetectiveAlive++;
-		
-		int money = GetEntData(i, g_iAccount);
-		if (money != 16000)
-			SetEntData(i, g_iAccount, 16000);
 	}
 	
 	if (g_bRoundStarted)

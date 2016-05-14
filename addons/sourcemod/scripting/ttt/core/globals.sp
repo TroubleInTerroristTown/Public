@@ -21,8 +21,6 @@ bool g_bImmuneRDMManager[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHoldingProp[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
-int g_iAccount;
-
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
