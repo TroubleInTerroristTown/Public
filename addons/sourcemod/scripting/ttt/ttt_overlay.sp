@@ -135,20 +135,19 @@ public void TTT_OnRoundEnd(int winner)
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
 	
+	char sBuffer[PLATFORM_MAX_PATH];
+		
+	if(winner == TTT_TEAM_DETECTIVE)
+		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayDWin);
+	else if(winner == TTT_TEAM_TRAITOR)
+		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayTWin);
+	else if(winner == TTT_TEAM_INNOCENT)
+		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayIWin);
+	
+	PrintToChatAll(sBuffer);
+	
 	LoopValidClients(client)
-	{
-		char sBuffer[PLATFORM_MAX_PATH];
-		
-		if(winner == TTT_TEAM_DETECTIVE)
-			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayDWin);
-		else if(winner == TTT_TEAM_TRAITOR)
-			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayTWin);
-		else if(winner == TTT_TEAM_INNOCENT)
-			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayIWin);
-		
 		ShowOverlayToClient(client, sBuffer);
-	}
-		
 }
 
 public Action Delay_Timer(Handle timer, any data)
@@ -187,7 +186,7 @@ public void AssignOverlay(int client, int role)
 			Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_sInnocentIcon);
 		else
 			Format(sBuffer, sizeof(sBuffer), "");
-		
+			
 		ShowOverlayToClient(client, sBuffer);
 	}
 }
