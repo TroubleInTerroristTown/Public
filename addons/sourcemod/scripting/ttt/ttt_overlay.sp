@@ -137,17 +137,17 @@ public void TTT_OnRoundEnd(int winner)
 	
 	char sBuffer[PLATFORM_MAX_PATH];
 		
-	if(winner == TTT_TEAM_DETECTIVE)
+	if(winner == TTT_TEAM_DETECTIVE && g_bEndwithD)
 		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayDWin);
 	else if(winner == TTT_TEAM_TRAITOR)
 		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayTWin);
-	else if(winner == TTT_TEAM_INNOCENT)
+	else if(winner == TTT_TEAM_INNOCENT || !g_bEndwithD)
 		Format(sBuffer, sizeof(sBuffer), "%s.vtf", g_soverlayIWin);
 	
 	PrintToChatAll(sBuffer);
 	
-	LoopValidClients(client)
-		ShowOverlayToClient(client, sBuffer);
+	LoopValidClients(i)
+		ShowOverlayToClient(i, sBuffer);
 }
 
 public Action Delay_Timer(Handle timer, any data)
