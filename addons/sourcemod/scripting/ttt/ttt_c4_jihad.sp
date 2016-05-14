@@ -155,7 +155,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			
 			
 			ClearTimer(g_hJihadBomb[client]);
-			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, client);
+			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client));
 			g_bHasJ[client] = true;
 			
 			CPrintToChat(client, g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
@@ -164,11 +164,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 	return Plugin_Continue;
 }
 
-public Action Timer_JihadPreparing(Handle timer, any client)
+public Action Timer_JihadPreparing(Handle timer, any userid)
 {
+	int client = GetClientOfUserId(userid);
+	
+	if(!IsPlayerAlive(client))
+		return Plugin_Stop;
+	
 	CPrintToChat(client, g_sPluginTag, "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
 	g_hJihadBomb[client] = null;
+	return Plugin_Stop;
 }
 
 public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
