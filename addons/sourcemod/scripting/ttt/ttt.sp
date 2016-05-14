@@ -1656,11 +1656,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	if (g_iConfig[b_showKillMessage])
 	{
 		if (g_iRole[client] == TTT_TEAM_TRAITOR)
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Traitor", client);
+			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Traitor", iAttacker);
 		else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Detective", client);
+			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Detective", iAttacker);
 		else if (g_iRole[client] == TTT_TEAM_INNOCENT)
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed an Innocent", client);
+			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed an Innocent", iAttacker);
 	}
 	
 	char item[512];
