@@ -133,7 +133,7 @@ public Action Timer_1(Handle timer)
 {
 	LoopValidClients(i)
 	{
-		if (!IsPlayerAlive(i))
+		if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
 			continue;
 
 		checkDistanceFromHealthStation(i);
@@ -237,7 +237,10 @@ void checkDistanceFromHealthStation(int client)
 			continue;
 		
 		curHealth = GetClientHealth(client);
-
+		
+		if(hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			continue;
+		
 		if ((!hurt) && (curHealth >= 125))
 			continue;
 
