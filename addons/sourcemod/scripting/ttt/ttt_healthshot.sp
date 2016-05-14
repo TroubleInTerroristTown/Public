@@ -95,11 +95,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
-				return Plugin_Stop;
+				return Plugin_Stop; //TODO: Add message
 			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
-				return Plugin_Stop;
+				return Plugin_Stop; //TODO: Add message
 			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
-				return Plugin_Stop;
+				return Plugin_Stop; //TODO: Add message
 				
 			GivePlayerItem(client, "weapon_healthshot");
 			
