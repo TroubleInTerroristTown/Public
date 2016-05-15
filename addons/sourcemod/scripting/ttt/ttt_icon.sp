@@ -181,7 +181,6 @@ stock void ClearIcon(int client)
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
 	
-	ShowOverlayToClient(client, " ");
 	g_iIcon[client] = -1;
 
 }
