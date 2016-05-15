@@ -96,6 +96,7 @@ public void OnPluginStart()
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_death", Event_PlayerDeath);
 	
 	LoadTranslations("ttt.phrases");
 }
@@ -113,12 +114,26 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		ResetGlobals(client);
 }
 
+public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (TTT_IsClientValid(client))
+		ResetJihad(client);
+}
+
 public void OnAllPluginsLoaded()
 {
 	if (g_iPrice_C4 > 0)
 		TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
 	if (g_iPrice_J > 0)
 		TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR);
+}
+
+public void ResetJihad(int client)
+{
+	g_bHasJ[client] = false;
+	g_bDetonate[client] = false;
+	ClearTimer(g_hJihadBomb[client]);
 }
 
 public void ResetGlobals(int client)
