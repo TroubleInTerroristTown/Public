@@ -112,7 +112,8 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		LoopValidClients(j)
 			CPrintToChat(j, g_sPluginTag, "Detective scan found body suicide", j, client);
 	}
-	TTT_SetFoundStatus(client, true);
+	
+	iRagdollC[Scanned] = true;
 	
 	return Plugin_Continue;
 }
