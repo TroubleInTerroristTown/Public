@@ -1994,8 +1994,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Call_Finish(res);
 						if(res == Plugin_Stop)
 							return Plugin_Continue;
-							
-						InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
+						
+						if(!StrEqual(iRagdollC[Weaponused], "Fake!", false))
+							InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 						
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
