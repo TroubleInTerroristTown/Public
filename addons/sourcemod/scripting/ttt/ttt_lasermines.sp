@@ -47,7 +47,7 @@ public void OnPluginStart()
 
 	Config_Setup("TTT-Lasermines", g_sConfigFile);
 	
-	Config_LoadString("lm_name", "Fakebody", "The name of the Lasermin in the Shop", g_sLongName, sizeof(g_sLongName));
+	Config_LoadString("lm_name", "Lasermine", "The name of the Lasermine in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iTCount = Config_LoadInt("lm_traitor_count", 1, "The amount of usages for lasermines per round as traitor. 0 to disable.");
 	g_iTraitorPrice = Config_LoadInt("lm_traitor_price", 9000, "The amount of credits for a lasermine costs. 0 to disable.");
 	Config_Done();
