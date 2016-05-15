@@ -263,33 +263,20 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
-	if(g_bRoundEnding)
+	if(g_bRoundEnding || g_bRoundStarted && client == 0)
 	{
 		ShowLogs(client);
-		return Plugin_Handled;
+		return Plugin_Continue;
 	}
 	
-	if (g_bRoundStarted)
-	{
-		if (client == 0)
-			ShowLogs(client);
-		else
-			CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
-		return Plugin_Handled;
-	}
-	
-	if (client == 0)
-		PrintToServer("No logs yet");
-	else
-		CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
-	
+	CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
 	return Plugin_Handled;
 }
 
 stock void ShowLogs(int client)
 {
-	int sizearray = GetArraySize(g_hLogsArray);
-	if (sizearray == 0)
+	int iSize = GetArraySize(g_hLogsArray);
+	if (iSize == 0)
 	{
 		if (client == 0)
 			PrintToServer("No logs yet");
@@ -320,10 +307,10 @@ stock void ShowLogs(int client)
 	int index = 5;
 	bool end = false;
 	
-	if (index >= sizearray)
+	if (index >= iSize)
 	{
 		end = true;
-		index = (sizearray - 1);
+		index = (iSize - 1);
 	}
 	
 	for (int i = 0; i <= index; i++)
