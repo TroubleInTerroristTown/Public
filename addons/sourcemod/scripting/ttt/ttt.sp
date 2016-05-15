@@ -676,6 +676,7 @@ public Action Timer_Selection(Handle hTimer)
 	
 	int index;
 	int player;
+	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
 	while ((index = GetRandomArray(g_hPlayerArray)) != -1)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
