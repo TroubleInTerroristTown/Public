@@ -8,13 +8,13 @@
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
+#include <multicolors>
 
 #pragma newdecls required
 
 #define SHORT_NAME "hs"
 #define SHORT_NAME_D "hs_d"
 #define SHORT_NAME_T "hs_t"
-#define LONG_NAME "Healthshot"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Healthshot"
 
@@ -32,6 +32,8 @@ int g_iICount = 0;
 int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sLongName[64];
 
 public Plugin myinfo =
 {
@@ -46,9 +48,17 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	Config_Setup("TTT", g_sConfigFile);
+	
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	
+	Config_Done();
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/healthshot.cfg");
 
 	Config_Setup("TTT-Healthshot", g_sConfigFile);
+	Config_LoadString("hs_name", "Healthshot", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
 	
 	g_iTPrice = Config_LoadInt("hs_traitor_price", 9000, "The amount of credits for healthshot costs as traitor. 0 to disable.");
 	g_iDPrice = Config_LoadInt("hs_detective_price", 9000, "The amount of credits for healthshot costs as detective. 0 to disable.");
@@ -79,11 +89,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public void OnAllPluginsLoaded()
 {
 	if(g_iTPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR);
 	if(g_iDPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
+		TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE);
 	if(g_iIPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
+		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
@@ -95,12 +105,20 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
-				return Plugin_Stop; //TODO: Add message
+			{
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
+				return Plugin_Stop;
+			}
 			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
-				return Plugin_Stop; //TODO: Add message
+			{
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iDCount);
+				return Plugin_Stop;
+			}
 			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
-				return Plugin_Stop; //TODO: Add message
-				
+			{
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iICount);
+				return Plugin_Stop;
+			}	
 			GivePlayerItem(client, "weapon_healthshot");
 			
 			if(role == TTT_TEAM_TRAITOR)

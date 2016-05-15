@@ -11,9 +11,8 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Dna Scanner"
 #define SHORT_NAME "dna"
-#define LONG_NAME "DNA - Scanner"
 
 int g_iPrice = 0;
 
@@ -21,6 +20,7 @@ bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sLongName[64];
 
 public Plugin myinfo =
 {
@@ -47,6 +47,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/dnascanner.cfg");
 	Config_Setup("TTT-Scanner", g_sConfigFile);
 	
+	Config_LoadString("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("dna_price", 9000, "The amount of credits a dna scanner costs as detective. 0 to disable.");
 	
 	Config_Done();
@@ -68,7 +69,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public void OnAllPluginsLoaded()
 {
 	if(g_iPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iPrice, TTT_TEAM_DETECTIVE);
+		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE);
 }
 
 void ResetScanner(int client)

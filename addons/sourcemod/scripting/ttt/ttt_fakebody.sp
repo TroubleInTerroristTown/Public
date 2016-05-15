@@ -13,7 +13,6 @@
 #pragma newdecls required
 
 #define SHORT_NAME "fb"
-#define LONG_NAME "Fakebody"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Fake Body"
 
@@ -27,6 +26,7 @@ int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sLongName[64];
 
 int g_iCollisionGroup = -1;
 
@@ -53,7 +53,9 @@ public void OnPluginStart()
 	Config_Done();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/fakebody.cfg");
-	Config_Setup("TTT-Taser", g_sConfigFile);
+	Config_Setup("TTT-Fakebody", g_sConfigFile);
+	
+	Config_LoadString("fb_name", "Fakebody", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
 	
 	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
 	
@@ -85,7 +87,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public void OnAllPluginsLoaded()
 {
 	if (g_iPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iPrice, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
@@ -95,7 +97,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			if (g_iPCount[client] >= g_iCount)
+			{
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iCount);
 				return Plugin_Stop;
+			}
 			
 			if (!SpawnFakeBody(client))
 				return Plugin_Stop;
