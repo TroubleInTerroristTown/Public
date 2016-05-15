@@ -128,9 +128,7 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "joinclass");
 	
 	for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
-	{
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
-	}
 	
 	SetupConfig();
 }
@@ -234,6 +232,8 @@ void SetupConfig()
 	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
+	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -2084,7 +2084,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		LoopValidClients(i)
-		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || !IsPlayerAlive(i)))
+		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[tChatToDead] && !IsPlayerAlive(i)))
 		{
 			EmitSoundToClient(i, SND_TCHAT);
 			CPrintToChat(i, "%T", "T channel", i, client, sText);
@@ -2095,7 +2095,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		LoopValidClients(i)
-		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || !IsPlayerAlive(i)))
+		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[dChatToDead] && !IsPlayerAlive(i)))
 		{
 			EmitSoundToClient(i, SND_TCHAT);
 			CPrintToChat(i, "%T", "D channel", i, client, sText);
@@ -2106,14 +2106,14 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	return Plugin_Handled;
 }
 
-stock void InspectBody(int client, int victima2, int atacante2, int tiempo2, const char[] weapon, const char[] victimaname2, const char[] atacantename2)
+stock void InspectBody(int client, int victim, int attacker, int time, const char[] weapon, const char[] victimName, const char[] attackerName)
 {
 	char team[32];
-	if (g_iRole[victima2] == TTT_TEAM_TRAITOR)
+	if (g_iRole[victim] == TTT_TEAM_TRAITOR)
 		Format(team, sizeof(team), "%T", "Traitors", client);
-	else if (g_iRole[victima2] == TTT_TEAM_DETECTIVE)
+	else if (g_iRole[victim] == TTT_TEAM_DETECTIVE)
 		Format(team, sizeof(team), "%T", "Detectives", client);
-	else if (g_iRole[victima2] == TTT_TEAM_INNOCENT)
+	else if (g_iRole[victim] == TTT_TEAM_INNOCENT)
 		Format(team, sizeof(team), "%T", "Innocents", client);
 	
 	Handle menu = CreateMenu(BodyMenuHandler);
@@ -2121,7 +2121,7 @@ stock void InspectBody(int client, int victima2, int atacante2, int tiempo2, con
 	
 	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
 	
-	Format(sBuffer, sizeof(sBuffer), "%T", "Victim name", client, victimaname2);
+	Format(sBuffer, sizeof(sBuffer), "%T", "Victim name", client, victimName);
 	AddMenuItem(menu, "", sBuffer);
 	
 	Format(sBuffer, sizeof(sBuffer), "%T", "Team victim", client, team);
@@ -2129,10 +2129,10 @@ stock void InspectBody(int client, int victima2, int atacante2, int tiempo2, con
 	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, tiempo2);
+		Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, time);
 		AddMenuItem(menu, "", sBuffer);
 		
-		if (atacante2 > 0 && atacante2 != victima2)
+		if (attacker > 0 && attacker != victim)
 		{
 			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been", client, weapon);
 			AddMenuItem(menu, "", sBuffer);

@@ -113,7 +113,9 @@ enum eConfig
 	String:s_RoundStartedFontSize,
 	String:s_RoundStartedFontColor,
 	String:s_RoundStartFontSize,
-	String:s_RoundStartFontColor
+	String:s_RoundStartFontColor,
+	bool:tChatToDead,
+	bool:dChatToDead
 };
 
 enum Ragdolls
