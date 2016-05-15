@@ -2007,19 +2007,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(entidad, 0, 255, 0, 255);
 							}
 							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(entidad, 0, 0, 255, 255);
 							}
 							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
-								CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(entidad, 255, 0, 0, 255);
 							}
 							

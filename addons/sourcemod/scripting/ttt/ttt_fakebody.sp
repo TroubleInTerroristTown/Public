@@ -19,6 +19,9 @@
 
 int g_iPrice = 0;
 
+bool g_bShowFakeMessage = false;
+bool g_bDeleteFakeBodyAfterFound = false;
+
 int g_iCount = 0;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -55,6 +58,9 @@ public void OnPluginStart()
 	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
 	
 	g_iCount = Config_LoadInt("fb_count", 1, "The amount of usages for fake bodys per round as traitor. 0 to disable.");
+	
+	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
+	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
 	
 	Config_Done();
 	
@@ -131,8 +137,8 @@ stock bool SpawnFakeBody(int client)
 	
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-	iRagdollC[Victim] = 0;
-	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "Fake!");
+	iRagdollC[Victim] = client;
+	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
 	iRagdollC[Scanned] = false;
 	iRagdollC[Attacker] = 0;
 	Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
@@ -144,7 +150,8 @@ stock bool SpawnFakeBody(int client)
 	return true;
 }
 
-public Action TTT_OnBodyChecked(int client, int[] iRagdollC) {
+public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
+{
 	if (!TTT_IsClientValid(client))
 		return Plugin_Continue;
 	
@@ -154,8 +161,19 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC) {
 			return Plugin_Stop;
 		
 		LoopValidClients(j)
- 		    CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
-		AcceptEntityInput(iRagdollC[Ent], "Kill");
+		{
+			if(!g_bShowFakeMessage)
+				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
+			else
+				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+		}
+		
+		if(g_bDeleteFakeBodyAfterFound)
+			AcceptEntityInput(iRagdollC[Ent], "Kill");
+		
+		if(!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
+			SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
+		
 		return Plugin_Stop;
 	}
 	return Plugin_Continue;
