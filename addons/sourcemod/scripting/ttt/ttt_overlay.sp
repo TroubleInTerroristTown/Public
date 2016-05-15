@@ -135,11 +135,11 @@ public void TTT_OnRoundEnd(int winner)
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
 	
-	if(winner == view_as<int>(CSRoundEnd_TerroristWin))
+	if(winner == TTT_TEAM_TRAITOR)
 		ShowOverlayToAll(g_soverlayTWin);
-	else if(winner == view_as<int>(CSRoundEnd_CTWin) && !g_bEndwithD)
+	else if(winner == TTT_TEAM_INNOCENT && !g_bEndwithD)
 		ShowOverlayToAll(g_soverlayIWin);
-	else if(winner == view_as<int>(CSRoundEnd_CTWin) && g_bEndwithD)
+	else if(winner == TTT_TEAM_DETECTIVE && g_bEndwithD)
 		ShowOverlayToAll(g_soverlayDWin);
 }
 
