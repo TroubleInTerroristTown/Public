@@ -137,7 +137,7 @@ stock bool SpawnFakeBody(int client)
 	
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-	iRagdollC[Victim] = client;
+	iRagdollC[Victim] = 0;
 	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
 	iRagdollC[Scanned] = false;
 	iRagdollC[Attacker] = 0;
@@ -155,7 +155,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	if (!TTT_IsClientValid(client))
 		return Plugin_Continue;
 	
-	if(StrEqual(iRagdollC[VictimName], "Fake!", false))
+	if(StrEqual(iRagdollC[Weaponused], "Fake!", false))
 	{
 		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			return Plugin_Stop;
