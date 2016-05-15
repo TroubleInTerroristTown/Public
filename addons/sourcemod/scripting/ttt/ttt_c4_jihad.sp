@@ -15,9 +15,7 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - C4 & Jihad"
 #define SHORT_NAME_C4 "c4"
-#define LONG_NAME_C4 "C4"
 #define SHORT_NAME_J "jihad"
-#define LONG_NAME_J "JIHAD Bomb"
 
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
@@ -49,6 +47,8 @@ Handle g_hJihadBomb[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sLongName_C4[64];
+char g_sLongName_J[64];
 
 float g_fJihadPreparingTime = 60.0;
 
@@ -80,15 +80,15 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/c4_jihad.cfg");
 	Config_Setup("TTT-Bomb", g_sConfigFile);
 	
+	Config_LoadString("c4_name", "C4", "The name of the C4 in the Shop", g_sLongName_C4, sizeof(g_sLongName_C4));
 	g_iPrice_C4 = Config_LoadInt("c4_price", 9000, "The amount of credits a c4 costs as traitor. 0 to disable.");
 	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
 	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
 	g_fC4DamageRadius = Config_LoadFloat("c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	
+	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
-	
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
-	
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	
 	Config_Done();
@@ -96,6 +96,7 @@ public void OnPluginStart()
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_death", Event_PlayerDeath);
 	
 	LoadTranslations("ttt.phrases");
 }
@@ -113,12 +114,26 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		ResetGlobals(client);
 }
 
+public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if (TTT_IsClientValid(client))
+		ResetJihad(client);
+}
+
 public void OnAllPluginsLoaded()
 {
 	if (g_iPrice_C4 > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_C4, LONG_NAME_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
 	if (g_iPrice_J > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_J, LONG_NAME_J, g_iPrice_J, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR);
+}
+
+public void ResetJihad(int client)
+{
+	g_bHasJ[client] = false;
+	g_bDetonate[client] = false;
+	ClearTimer(g_hJihadBomb[client]);
 }
 
 public void ResetGlobals(int client)
@@ -141,8 +156,13 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if (role != TTT_TEAM_TRAITOR || g_iPCount_C4[client] >= g_iCount_C4 || g_bHasC4[client])
+			if (role != TTT_TEAM_TRAITOR || g_bHasC4[client])
 				return Plugin_Stop;
+			if(g_iPCount_C4[client] >= g_iCount_C4)
+			{			
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName_C4, g_iCount_C4);
+				return Plugin_Stop;
+			}
 			
 			g_bHasC4[client] = true;
 			g_iPCount_C4[client]++;
