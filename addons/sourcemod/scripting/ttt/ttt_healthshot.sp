@@ -58,7 +58,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/healthshot.cfg");
 
 	Config_Setup("TTT-Healthshot", g_sConfigFile);
-	Config_LoadString("hs_name", "Healthshot", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
+	Config_LoadString("hs_name", "Healthshot", "The name of the Healtshot in the Shop", g_sLongName, sizeof(g_sLongName));
 	
 	g_iTPrice = Config_LoadInt("hs_traitor_price", 9000, "The amount of credits for healthshot costs as traitor. 0 to disable.");
 	g_iDPrice = Config_LoadInt("hs_detective_price", 9000, "The amount of credits for healthshot costs as detective. 0 to disable.");
