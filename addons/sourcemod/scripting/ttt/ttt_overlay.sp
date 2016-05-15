@@ -157,8 +157,7 @@ public Action Delay_Timer(Handle timer, any data)
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if(role >= TTT_TEAM_INNOCENT)
-		AssignOverlay(client, role);
+	AssignOverlay(client, role);
 }
 
 public void TTT_OnUpdate()
@@ -167,13 +166,13 @@ public void TTT_OnUpdate()
 		return;
 	
 	LoopValidClients(i)
-		if(TTT_IsClientValid(i) && TTT_GetClientRole(i) >= TTT_TEAM_INNOCENT)
+		if(TTT_IsClientValid(i))
 			AssignOverlay(i, TTT_GetClientRole(i));
 }
 
 public void AssignOverlay(int client, int role)
 {
-	if(!IsPlayerAlive(client))
+	if(!IsPlayerAlive(client) || TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
 		ShowOverlayToClient(client, "");
 	
 	char sBuffer[PLATFORM_MAX_PATH];
