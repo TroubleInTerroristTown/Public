@@ -162,7 +162,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		
 		LoopValidClients(j)
 		{
-			if(!g_bShowFakeMessage)
+			if(g_bShowFakeMessage)
 				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
 			else
 				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
