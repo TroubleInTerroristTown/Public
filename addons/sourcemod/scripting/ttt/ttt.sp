@@ -244,6 +244,11 @@ void SetupConfig()
 	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
+	Config_LoadString("ttt_round_started_font_size", "32", "Font size of the text if round started", g_iConfig[s_RoundStartedFontSize], sizeof(g_iConfig[s_RoundStartedFontSize]));
+	Config_LoadString("ttt_round_started_font_color", "44FF22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[s_RoundStartedFontColor], sizeof(g_iConfig[s_RoundStartedFontColor]));
+	Config_LoadString("ttt_round_start_font_size", "32", "Font size of the text while the countdown runs", g_iConfig[s_RoundStartFontSize], sizeof(g_iConfig[s_RoundStartFontSize]));
+	Config_LoadString("ttt_round_start_font_color", "FFA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
+	
 	Config_Done();
 	
 	char sDate[12];
@@ -570,19 +575,24 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 public Action Timer_SelectionCountdown(Handle hTimer)
 {
 	int timeLeft = RoundToFloor(g_fRealRoundStart - GetGameTime());
+	char centerText[512];
 	
 	if (g_fRealRoundStart <= 0.0 || timeLeft <= 0)
 	{
+		if(timeLeft == 0)
+		{
+			LoopValidClients(i)
+				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_iConfig[s_RoundStartedFontSize], g_iConfig[s_RoundStartedFontColor]);
+		}
+		
 		g_hCountdownTimer = null;
 		return Plugin_Stop;
 	}
 	
-	char centerText[512];
-	
-	LoopValidClients(iClient)
+	LoopValidClients(i)
 	{
-		Format(centerText, sizeof(centerText), "%T", "StartTimer", iClient, timeLeft);
-		PrintHintText(iClient, centerText);
+		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_iConfig[s_RoundStartFontSize], g_iConfig[s_RoundStartFontColor], timeLeft);
+		PrintHintText(i, centerText);
 	}
 	
 	return Plugin_Continue;

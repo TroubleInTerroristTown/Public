@@ -109,7 +109,11 @@ enum eConfig
 	bool:bResetCreditsEachRound, 
 	bool:b_ignoreDeaths, 
 	bool:b_ignoreRDMMenu, 
-	bool:b_deadPlayersCanSeeOtherRules, 
+	bool:b_deadPlayersCanSeeOtherRules,
+	String:s_RoundStartedFontSize,
+	String:s_RoundStartedFontColor,
+	String:s_RoundStartFontSize,
+	String:s_RoundStartFontColor
 };
 
 enum Ragdolls
