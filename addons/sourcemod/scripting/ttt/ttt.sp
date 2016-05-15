@@ -811,7 +811,7 @@ stock int GetRandomArray(Handle array)
 	int size = GetArraySize(array);
 	if (size == 0)
 		return -1;
-	return Math_GetRandomInt(0, size - 1);
+	return GetRandomInt(0, size - 1);
 }
 
 stock bool IsPlayerInArray(int player, Handle array)
