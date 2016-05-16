@@ -28,14 +28,13 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/talk_override.cfg");
-
 	Config_Setup("TTT-TalkOverride", g_sConfigFile);
-	
 	g_bEnableTVoice = Config_LoadBool("tor_traitor_voice_chat", true, "Enable traitor voice chat (command for players: sm_tvoice)?");
-	
 	Config_Done();
 	
 	RegConsoleCmd("sm_tvoice", Command_TVoice);
+	
+	HookEvent("player_death", Event_PlayerDeath);
 	
 	CreateTimer(1.0, Timer_OverrideListener, _, TIMER_REPEAT);
 }
@@ -61,6 +60,29 @@ public Action Command_TVoice(int client, int args)
 	return Plugin_Continue;
 }
 
+public void OnClientPostAdminCheck(int client)
+{
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
+			SetListenOverride(i, client, Listen_No);
+}
+
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+	int victim = GetClientOfUserId(event.GetInt("userid"));
+	
+	LoopValidClients(i)
+		if(IsPlayerAlive(i))
+			SetListenOverride(i, victim, Listen_No);
+}
+
+public void TTT_OnClientGetRole(int client, int role)
+{
+	LoopValidClients(i)
+		if(role == TTT_TEAM_TRAITOR && g_bTVoice[client])
+			SetListenOverride(i, client, Listen_Yes);
+}
+
 public Action Timer_OverrideListener(Handle timer)
 {
 	LoopValidClients(i)
@@ -73,28 +95,28 @@ public Action Timer_OverrideListener(Handle timer)
 			if(IsFakeClient(j))
 				continue;
 			
-			if(g_bEnableTVoice)
-			{
-				if(TTT_GetClientRole(j) == TTT_TEAM_TRAITOR && g_bTVoice[j])
-				{
-					if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-						SetListenOverride(i, j, Listen_Yes);
-					else
-						SetListenOverride(i, j, Listen_No);
-				}
-				continue;
-			}
-			
 			if(!TTT_IsRoundActive())
 				SetListenOverride(i, j, Listen_Yes);
+				
 			else if(IsPlayerAlive(i) && TTT_GetClientRole(j) == TTT_TEAM_UNASSIGNED)
 				SetListenOverride(i, j, Listen_No);
+				
 			else if(IsPlayerAlive(i) && !IsPlayerAlive(j))
 				SetListenOverride(i, j, Listen_No);
+				
 			else if(!IsPlayerAlive(i) && IsPlayerAlive(j))
 				SetListenOverride(i, j, Listen_Yes);
+				
 			else if(IsPlayerAlive(i) && IsPlayerAlive(j))
 				SetListenOverride(i, j, Listen_Yes);
+			
+			if(g_bEnableTVoice && TTT_GetClientRole(j) == TTT_TEAM_TRAITOR && g_bTVoice[j])
+			{
+				if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+					SetListenOverride(i, j, Listen_Yes);
+				else
+					SetListenOverride(i, j, Listen_No);
+			}
 		}
 	}
 }
