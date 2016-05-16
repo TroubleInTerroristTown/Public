@@ -45,6 +45,8 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	
+	LoadTranslations("ttt.phrases");
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/tagrenade.cfg");
 
 	Config_Setup("TTT-TAGrenade", g_sConfigFile);
