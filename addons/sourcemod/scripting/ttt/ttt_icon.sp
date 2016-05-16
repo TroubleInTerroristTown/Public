@@ -13,7 +13,7 @@
 
 int g_iIcon[MAXPLAYERS + 1] =  { -1, ... };
 
-//bool g_bSeeRoles = false;
+bool g_bSeeRoles = false;
 
 char g_sTraitorIcon[PLATFORM_MAX_PATH] = "";
 char g_sDetectiveIcon[PLATFORM_MAX_PATH] = "";
@@ -39,10 +39,10 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	
-	/*BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	g_bSeeRoles = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
-	Config_Done();*/
+	Config_Done();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/icon.cfg");
 	Config_Setup("TTT-Icons", g_sConfigFile);
@@ -163,8 +163,12 @@ public Action Hook_SetTransmitT(int entity, int client)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		// Show T-Icon only for other traitors
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		// Show T-Icon to dead players if g_bSeeRoles true
+		if(g_bSeeRoles && !IsPlayerAlive(client))
+			return Plugin_Continue;
+		
+		// Show T-Icon only for other living traitors
+		if(IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			return Plugin_Continue;
 	}	
 	return Plugin_Handled;
