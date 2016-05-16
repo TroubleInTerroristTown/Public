@@ -141,7 +141,7 @@ stock bool SpawnFakeBody(int client)
 	
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-	iRagdollC[Victim] = 0;
+	iRagdollC[Victim] = client;
 	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
 	iRagdollC[Scanned] = false;
 	iRagdollC[Attacker] = 0;

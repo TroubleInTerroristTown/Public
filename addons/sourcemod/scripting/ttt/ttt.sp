@@ -1966,12 +1966,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		g_bHoldingProp[client] = true;
 		
-		int entidad = GetClientAimTarget(client, false);
-		if (entidad > 0)
+		int iEntity = GetClientAimTarget(client, false);
+		if (iEntity > 0)
 		{
 			float OriginG[3], TargetOriginG[3];
 			GetClientEyePosition(client, TargetOriginG);
-			GetEntPropVector(entidad, Prop_Data, "m_vecOrigin", OriginG);
+			GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", OriginG);
 			if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
 				return Plugin_Continue;
 			
@@ -1986,7 +1986,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			{
 				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
 				entity = EntRefToEntIndex(iRagdollC[Ent]);
-				if (entity == entidad)
+				if (entity == iEntity)
 				{
 					if (IsPlayerAlive(client) && !g_bIsChecking[client])
 					{
@@ -2013,22 +2013,23 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
-								SetEntityRenderColor(entidad, 0, 255, 0, 255);
+								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 							}
 							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
-								SetEntityRenderColor(entidad, 0, 0, 255, 255);
+								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 							}
 							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
-								SetEntityRenderColor(entidad, 255, 0, 0, 255);
+								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 							}
 							
-							TeamTag(iRagdollC[Victim]);
+							if(!StrEqual(iRagdollC[Weaponused], "Fake!", false))
+								TeamTag(iRagdollC[Victim]);
 							
 							Call_StartForward(g_hOnBodyFound);
 							Call_PushCell(client);
