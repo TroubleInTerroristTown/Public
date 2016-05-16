@@ -244,10 +244,10 @@ void SetupConfig()
 	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
-	Config_LoadString("ttt_round_started_font_size", "32", "Font size of the text if round started", g_iConfig[s_RoundStartedFontSize], sizeof(g_iConfig[s_RoundStartedFontSize]));
-	Config_LoadString("ttt_round_started_font_color", "44FF22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[s_RoundStartedFontColor], sizeof(g_iConfig[s_RoundStartedFontColor]));
-	Config_LoadString("ttt_round_start_font_size", "32", "Font size of the text while the countdown runs", g_iConfig[s_RoundStartFontSize], sizeof(g_iConfig[s_RoundStartFontSize]));
-	Config_LoadString("ttt_round_start_font_color", "FFA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
+	g_iConfig[i_RoundStartedFontSize] = Config_LoadInt("ttt_round_started_font_size", 32, "Font size of the text if round started");
+	Config_LoadString("ttt_round_started_font_color", "44ff22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[s_RoundStartedFontColor], sizeof(g_iConfig[s_RoundStartedFontColor]));
+	g_iConfig[i_RoundStartFontSize] = Config_LoadInt("ttt_round_start_font_size", 24, "Font size of the text while the countdown runs");
+	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
 	
 	Config_Done();
 	
@@ -582,7 +582,10 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 		if(timeLeft == 0)
 		{
 			LoopValidClients(i)
-				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_iConfig[s_RoundStartedFontSize], g_iConfig[s_RoundStartedFontColor]);
+			{
+				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_iConfig[i_RoundStartedFontSize], g_iConfig[s_RoundStartedFontColor]);
+				PrintHintText(i, centerText);
+			}
 		}
 		
 		g_hCountdownTimer = null;
@@ -591,7 +594,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 	
 	LoopValidClients(i)
 	{
-		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_iConfig[s_RoundStartFontSize], g_iConfig[s_RoundStartFontColor], timeLeft);
+		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_iConfig[i_RoundStartFontSize], g_iConfig[s_RoundStartFontColor], timeLeft);
 		PrintHintText(i, centerText);
 	}
 	

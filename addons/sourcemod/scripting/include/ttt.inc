@@ -110,10 +110,10 @@ enum eConfig
 	bool:b_ignoreDeaths, 
 	bool:b_ignoreRDMMenu, 
 	bool:b_deadPlayersCanSeeOtherRules,
-	String:s_RoundStartedFontSize,
-	String:s_RoundStartedFontColor,
-	String:s_RoundStartFontSize,
-	String:s_RoundStartFontColor,
+	i_RoundStartedFontSize,
+	String:s_RoundStartedFontColor[12],
+	i_RoundStartFontSize,
+	String:s_RoundStartFontColor[12],
 	bool:tChatToDead,
 	bool:dChatToDead
 };
