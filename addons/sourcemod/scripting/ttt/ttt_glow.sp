@@ -2,6 +2,7 @@
 #include <sdkhooks>
 #include <ttt>
 #include <CustomPlayerSkins>
+#include <config_loader>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <ttt-tagrenade>
@@ -13,8 +14,13 @@ int g_iColorDetective[3] =  {0, 0, 255};
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
+bool g_bDGlow = false;
+bool g_bTGlow = false;
+
 bool g_bTAGrenade = false;
 bool g_bWallhack = false;
+
+char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo =
 {
@@ -27,6 +33,17 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	TTT_IsGameCSGO();
+	
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/glow.cfg");
+
+	Config_Setup("TTT-Glow", g_sConfigFile);
+	
+	g_bDGlow = Config_LoadBool("glow_detective_enable", true, "Detectives see the glows of other detectives. 0 to disable.");
+	g_bTGlow = Config_LoadBool("glow_traitor_enable", true, "Traitors see the glows of other traitors. 0 to disable.");
+	
+	Config_Done();
+	
 	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
 }
 
@@ -153,10 +170,10 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		if (g_bWallhack && TTT_Wallhack(client))
 			return Plugin_Continue;
 		
-		if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if(g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
 		
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if(g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
 	}
 	
