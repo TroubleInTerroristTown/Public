@@ -20,9 +20,11 @@ int g_iPrice = 0;
 
 bool g_bShowFakeMessage = false;
 bool g_bDeleteFakeBodyAfterFound = false;
+bool g_bAllowProofByTraitors = false;
 
 int g_iCount = 0;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -60,6 +62,8 @@ public void OnPluginStart()
 	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
 	
 	g_iCount = Config_LoadInt("fb_count", 1, "The amount of usages for fake bodys per round as traitor. 0 to disable.");
+	
+	g_bAllowProofByTraitors = Config_LoadBool("fb_allow_proof_by_all", true, "Allow fake body scan for traitors players?");
 	
 	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
 	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
@@ -148,6 +152,7 @@ stock bool SpawnFakeBody(int client)
 	Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
 	iRagdollC[GameTime] = 0.0;
 	Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
+	g_bFound[client] = false;
 	
 	TTT_SetRagdoll(iRagdollC[0]);
 	
@@ -161,16 +166,21 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	
 	if(StrEqual(iRagdollC[Weaponused], "Fake!", false))
 	{
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-			return Plugin_Stop;
+		if(!g_bAllowProofByTraitors)
+			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
 		
 		LoopValidClients(j)
 		{
-			if(g_bShowFakeMessage)
+			if(g_bShowFakeMessage && !g_bFound[iRagdollC[Victim]])
 				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
-			else
+			else if(!g_bShowFakeMessage && !g_bFound[iRagdollC[Victim]])
 				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+			else if(g_bFound[iRagdollC[Victim]])
+				return Plugin_Stop;
 		}
+		
+		g_bFound[iRagdollC[Victim]] = true;
 		
 		if(g_bDeleteFakeBodyAfterFound)
 			AcceptEntityInput(iRagdollC[Ent], "Kill");

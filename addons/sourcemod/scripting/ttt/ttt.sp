@@ -1999,8 +1999,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						if(res == Plugin_Stop)
 							return Plugin_Continue;
 						
-						if(!StrEqual(iRagdollC[Weaponused], "Fake!", false))
-							InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
+						InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 						
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
@@ -2028,8 +2027,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 							}
 							
-							if(!StrEqual(iRagdollC[Weaponused], "Fake!", false))
-								TeamTag(iRagdollC[Victim]);
+							TeamTag(iRagdollC[Victim]);
 							
 							Call_StartForward(g_hOnBodyFound);
 							Call_PushCell(client);
