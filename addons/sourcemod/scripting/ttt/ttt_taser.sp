@@ -105,10 +105,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iDPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
-	if(g_iIPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
+	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)

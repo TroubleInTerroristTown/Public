@@ -92,27 +92,20 @@ public void OnClientPutInServer(int client)
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iKev_Price > 0)
+	if(g_iKev_Type == 0)
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_UNASSIGNED);
+	if(g_iKev_Type == 1)
 	{
-		if(g_iKev_Type == 0)
-			TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_UNASSIGNED);
-		if(g_iKev_Type == 1)
-		{
-			TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
-			TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_DETECTIVE);
-		}
-		if(g_iKev_Type == 2)
-			TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_DETECTIVE);
 	}
+	if(g_iKev_Type == 2)
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
 
-	if(g_iKF_Price > 0)
-		TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR);
-	if(g_iM4_Price > 0)
-		TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR);
-	if(g_iAWP_Price > 0)
-		TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR);
-	if(g_iUSP_Price > 0)
-		TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR);
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)

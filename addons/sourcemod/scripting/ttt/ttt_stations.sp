@@ -89,11 +89,8 @@ public void OnMapStart()
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iHealthPrice > 0)
-		TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, g_cHealth, g_iHealthPrice, TTT_TEAM_DETECTIVE);
-
-	if(g_iHurtPrice > 0)
-		TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, g_cHealth, g_iHealthPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)

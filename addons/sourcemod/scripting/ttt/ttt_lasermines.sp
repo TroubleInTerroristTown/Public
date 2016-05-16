@@ -55,8 +55,7 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iTraitorPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)

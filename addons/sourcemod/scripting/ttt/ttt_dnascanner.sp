@@ -68,8 +68,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE);
 }
 
 void ResetScanner(int client)

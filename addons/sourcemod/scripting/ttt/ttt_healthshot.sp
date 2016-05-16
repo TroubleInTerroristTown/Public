@@ -88,12 +88,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iTPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR);
-	if(g_iDPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE);
-	if(g_iIPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT);
+	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)

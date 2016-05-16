@@ -75,11 +75,8 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iTraitorPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR);
-	
-	if(g_iDetectivePrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)

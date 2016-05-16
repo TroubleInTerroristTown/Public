@@ -76,8 +76,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	if(g_iTPrice > 0)
-		TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)

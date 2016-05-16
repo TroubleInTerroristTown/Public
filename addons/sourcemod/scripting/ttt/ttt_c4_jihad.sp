@@ -123,10 +123,8 @@ public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	if (g_iPrice_C4 > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
-	if (g_iPrice_J > 0)
-		TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR);
 }
 
 public void ResetJihad(int client)
