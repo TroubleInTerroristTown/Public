@@ -1184,6 +1184,9 @@ public void OnClientPostAdminCheck(int client)
 	GetClientName(client, name, sizeof(name));
 	nameCheck(client, name);
 	
+	g_iRole[client] = TTT_TEAM_UNASSIGNED;
+	CS_SetClientClanTag(client, "UNASSIGNED");
+	
 	LoadClientKarma(GetClientUserId(client));
 	
 	if (g_iConfig[b_showRulesMenu])
