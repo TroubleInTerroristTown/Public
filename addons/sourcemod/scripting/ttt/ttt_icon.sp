@@ -161,7 +161,7 @@ stock int CreateIcon(int client, int role)
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if(TTT_IsClientValid(client))
 	{
 		// Show T-Icon to dead players if g_bSeeRoles true
 		if(g_bSeeRoles && !IsPlayerAlive(client))
