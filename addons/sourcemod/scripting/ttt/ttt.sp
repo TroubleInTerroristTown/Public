@@ -679,7 +679,12 @@ public Action Timer_Selection(Handle hTimer)
 	
 	int index;
 	int player;
+	
+	// We do this 3 times cuz the random stream sucks
 	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
+	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
+	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
+	
 	while ((index = GetRandomArray(g_hPlayerArray)) != -1)
 	{
 		player = GetArrayCell(g_hPlayerArray, index);
@@ -741,6 +746,11 @@ public Action Timer_Selection(Handle hTimer)
 			iDetective++;
 			
 			g_iRole[i] = TTT_TEAM_DETECTIVE;
+			
+			char sBuffer[256];
+			Format(sBuffer, sizeof(sBuffer), "%N was forced to be detective.", i);
+			PushArrayString(g_hLogsArray, sBuffer);
+			
 			break;
 		}
 	}
@@ -757,6 +767,11 @@ public Action Timer_Selection(Handle hTimer)
 			iTraitors++;
 			
 			g_iRole[i] = TTT_TEAM_TRAITOR;
+			
+			char sBuffer[256];
+			Format(sBuffer, sizeof(sBuffer), "%N was forced to be traitor.", i);
+			PushArrayString(g_hLogsArray, sBuffer);
+			
 			break;
 		}
 	}
@@ -766,7 +781,6 @@ public Action Timer_Selection(Handle hTimer)
 	ClearArray(g_hTraitores);
 	
 	LoopValidClients(i)
-	if (!g_iConfig[b_roleAgain])
 	{
 		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
 			PushArrayCell(g_hDetectives, i);
