@@ -45,7 +45,7 @@ public Action Command_TVoice(int client, int args)
 	if(client < 1)
 		return Plugin_Handled;
 	
-	if(!TTT_IsRoundActive() && !IsPlayerAlive(client))
+	if(!TTT_IsRoundActive() || !IsPlayerAlive(client))
 		return Plugin_Handled;
 	
 	if(g_bTVoice[client])
@@ -87,6 +87,8 @@ public Action Timer_OverrideListener(Handle timer)
 			
 			if(!TTT_IsRoundActive())
 				SetListenOverride(i, j, Listen_Yes);
+			else if(IsPlayerAlive(i) && TTT_GetClientRole(j) == TTT_TEAM_UNASSIGNED)
+				SetListenOverride(i, j, Listen_No);
 			else if(IsPlayerAlive(i) && !IsPlayerAlive(j))
 				SetListenOverride(i, j, Listen_No);
 			else if(!IsPlayerAlive(i) && IsPlayerAlive(j))
