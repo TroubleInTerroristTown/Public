@@ -628,13 +628,13 @@
 
 	"RoundStartCenter"
 	{
-		"#format"	"{1:s},{2:s},{3:d}"
+		"#format"	"{1:d},{2:s},{3:d}"
 		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} seconds</font>"
 	}
 	
 	"RoundStartedCenter"
 	{
-		"#format"	"{1:s},{2:s}"
+		"#format"	"{1:d},{2:s}"
 		"en"		"<font size='{1}' color='#{2}'><bold>GO GO GO !!!</bold></font>"
 	}
 
