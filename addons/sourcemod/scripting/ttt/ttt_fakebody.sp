@@ -24,7 +24,6 @@ bool g_bAllowProofByTraitors = false;
 
 int g_iCount = 0;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
-bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -152,7 +151,7 @@ stock bool SpawnFakeBody(int client)
 	Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
 	iRagdollC[GameTime] = 0.0;
 	Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
-	g_bFound[client] = false;
+	iRagdollC[Found] = false;
 	
 	TTT_SetRagdoll(iRagdollC[0]);
 	
@@ -172,15 +171,15 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		
 		LoopValidClients(j)
 		{
-			if(g_bShowFakeMessage && !g_bFound[iRagdollC[Victim]])
+			if(g_bShowFakeMessage && !iRagdollC[Found])
 				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
-			else if(!g_bShowFakeMessage && !g_bFound[iRagdollC[Victim]])
+			else if(!g_bShowFakeMessage && !iRagdollC[Found])
 				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
-			else if(g_bFound[iRagdollC[Victim]])
+			else if(iRagdollC[Found])
 				return Plugin_Stop;
 		}
 		
-		g_bFound[iRagdollC[Victim]] = true;
+		iRagdollC[Found] = true;
 		
 		if(g_bDeleteFakeBodyAfterFound)
 			AcceptEntityInput(iRagdollC[Ent], "Kill");
