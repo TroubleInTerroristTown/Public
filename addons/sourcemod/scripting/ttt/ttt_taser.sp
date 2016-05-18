@@ -13,6 +13,7 @@
 #pragma newdecls required
 
 #define SHORT_NAME "taser"
+#define SHORT_NAME_T "taser_t"
 #define SHORT_NAME_D "taser_d"
 #define LONG_NAME "Taser"
 
@@ -20,12 +21,16 @@
 
 int g_iDPrice = 0;
 int g_iIPrice = 0;
+int g_iTPrice = 0;
 
 int g_iDCount = 0;
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iICount = 0;
 int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
+
+int g_iTCount = 0;
+int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iDamage = 0;
 int g_iCreditsTaserHurtTraitor;
@@ -63,9 +68,11 @@ public void OnPluginStart()
 	
 	g_iDPrice = Config_LoadInt("ta_detective_price", 9000, "The amount of credits a taser costs as detective. 0 to disable.");
 	g_iIPrice = Config_LoadInt("ta_innocent_price", 9000, "The amount of credits a taser costs as innocent. 0 to disable.");
+	g_iTPrice = Config_LoadInt("ta_traitor_price", 0, "The amount of credits a taser costs as traitor. 0 to disable.");
 	
 	g_iDCount = Config_LoadInt("ta_detective_count", 1, "The amount of usages for tasers per round as detective. 0 to disable.");
 	g_iICount = Config_LoadInt("ta_innocent_count", 1, "The amount of usages for tasers per round as innocent. 0 to disable.");
+	g_iTCount = Config_LoadInt("ta_traitor_count", 1, "The amount of usages for tasers per round as traitor. 0 to disable.");
 	
 	g_iDamage = Config_LoadInt("ta_damage", 0, "The amount of damage a taser deals");
 	
@@ -107,13 +114,14 @@ public void OnAllPluginsLoaded()
 {
 	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
 	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
+	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false))
+		if(StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
@@ -127,6 +135,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iICount);
 				return Plugin_Stop;
 			}
+			else if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			{
+				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iTCount);
+				return Plugin_Stop;
+			}
 				
 			GivePlayerItem(client, "weapon_taser");
 			
@@ -134,6 +147,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				g_iDPCount[client]++;
 			else if(role == TTT_TEAM_INNOCENT)
 				g_iIPCount[client]++;
+			else if(role == TTT_TEAM_TRAITOR)
+				g_iTPCount[client]++;
 		}
 	}
 	return Plugin_Continue;
