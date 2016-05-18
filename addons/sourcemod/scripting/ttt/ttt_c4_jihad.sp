@@ -53,7 +53,10 @@ char g_sLongName_J[64];
 float g_fJihadPreparingTime = 60.0;
 
 float g_fC4DamageRadius = 275.0;
+float g_fJihadDamangeRadius = 600.0;
 
+float g_fC4Magnitude = 850.0;
+float g_fJihadMagnitude = 1000.0;
 
 public Plugin myinfo = 
 {
@@ -90,6 +93,10 @@ public void OnPluginStart()
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_fJihadDamangeRadius = Config_LoadFloat("jihad_damage_radius", 600.0, "The damage radius of the Jihad explosion.");
+	
+	g_fC4Magnitude = Config_LoadFloat("c4_magnitude", 850.0, "The amount of damage done by the explosion. For C4");
+	g_fJihadMagnitude = Config_LoadFloat("jihad_magnitude", 1000.0, "The amount of damage done by the explosion. For Jihad");
 	
 	Config_Done();
 	
@@ -233,8 +240,8 @@ stock void Detonate(int client)
 	if (ExplosionIndex != -1)
 	{
 		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", 1000);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", 600);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_fJihadMagnitude);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_fJihadDamangeRadius);
 		
 		DispatchSpawn(ExplosionIndex);
 		ActivateEntity(ExplosionIndex);
@@ -357,7 +364,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
 		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", 850);
-		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", 850);
+		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_fC4Magnitude);
 		SetEntPropEnt(explosionIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchSpawn(particleIndex);
 		DispatchSpawn(explosionIndex);
