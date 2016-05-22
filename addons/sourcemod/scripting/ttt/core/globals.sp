@@ -9,7 +9,6 @@ int g_iConfig[eConfig];
 
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
-char g_sCFile[PLATFORM_MAX_PATH + 1];
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
