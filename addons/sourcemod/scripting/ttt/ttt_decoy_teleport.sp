@@ -89,7 +89,8 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		if(!g_bHasTeleporter[client])
 			return Plugin_Continue;
 		
-
+		float fOldPos[3];
+		GetClientAbsOrigin(client, fOldPos);
 		
 		float fPos[3];
 		fPos[0] = event.GetFloat("x");
@@ -97,6 +98,13 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		fPos[2] = event.GetFloat("z");
 		
 		TeleportEntity(client, fPos, NULL_VECTOR, NULL_VECTOR);
+		
+		if(StuckClient(client))
+		{
+			TeleportEntity(client, fOldPos, NULL_VECTOR, NULL_VECTOR);
+			CPrintToChat(client, g_sPluginTag, "DT: Invalid Position", client);
+		}
+			
 		
 		AcceptEntityInput(entity, "kill");
 		
@@ -159,4 +167,26 @@ void ResetDecoyCount(int client)
 	g_iDPCount[client] = 0;
 	
 	g_bHasTeleporter[client] = false;
+}
+
+bool StuckClient(int client)
+{
+	float vOrigin[3];
+	float vMins[3];
+	float vMaxs[3];
+
+	GetClientAbsOrigin(client, vOrigin);
+	GetEntPropVector(client, Prop_Send, "m_vecMins", vMins);
+	GetEntPropVector(client, Prop_Send, "m_vecMaxs", vMaxs);
+	
+	TR_TraceHullFilter(vOrigin, vOrigin, vMins, vMaxs, MASK_ALL, OnlyPlayers, client);
+
+	return TR_DidHit();
+}
+
+public bool OnlyPlayers(int entity, int contentsMask, any data)
+{
+	if(entity != data && entity > 0 && entity <= MaxClients) 
+    	return true;
+	return false;
 }

@@ -767,4 +767,9 @@
 		"#format"	"{1:s}, {2:d}"
 		"en"		"You've reached the limit of {1}'s {orchid}({2})"
 	}
+	
+	"DT: Invalid Position"
+	{
+		"en"		"Decoy Position was incorrect. (Stuck problem)"
+	}
 }
