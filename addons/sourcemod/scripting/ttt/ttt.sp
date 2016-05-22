@@ -142,9 +142,7 @@ void SetupConfig()
 {
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD);
 	
-	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
-	
-	Config_Setup("TTT", g_sCFile);
+	Config_Setup("TTT", g_sConfigFile);
 	
 	g_iConfig[i_creditsII] = Config_LoadInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
 	g_iConfig[i_creditsIT] = Config_LoadInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
@@ -1250,13 +1248,13 @@ stock void ShowRules(int client, int item)
 	
 	if (!kvRules.ImportFromFile(g_sRulesFile))
 	{
-		SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+		SetFailState("Can't read %s correctly! (ImportFromFile)", g_sRulesFile);
 		return;
 	}
 	
 	if (!kvRules.GotoFirstSubKey())
 	{
-		SetFailState("Can't read rules/start.cfg correctly! (GotoFirstSubKey)");
+		SetFailState("Can't read %s correctly! (GotoFirstSubKey)", g_sRulesFile);
 		return;
 	}
 	
@@ -1280,179 +1278,141 @@ stock void ShowRules(int client, int item)
 	menu.DisplayAt(client, item, g_iConfig[i_timeToReadRules]);
 }
 
-public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param)
+public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param) 
 {
 	if (action == MenuAction_Select)
 	{
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
-		
-		if (StrEqual(sParam, "yes", false))
+		PrintToChat(client, sParam);
+		if (!StrEqual(sParam, "yes", false))
 		{
-			if (menu != null)
-				delete menu;
-			return 0;
-		}
-		
-		Handle hFile = OpenFile(g_sRulesFile, "rt");
-		
-		if (hFile == null)
-		{
-			SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
-			if (menu != null)
-				delete menu;
-			return 0;
-		}
-		
-		KeyValues kvRules = CreateKeyValues("Rules");
-		
-		if (!kvRules.ImportFromFile(g_sRulesFile))
-		{
-			SetFailState("Can't read rules/start.cfg correctly! (ImportFromFile)");
+			Handle hFile = OpenFile(g_sRulesFile, "rt");
 			
-			if (kvRules != null)
+			if(hFile == null)
+			{
+				SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
+				return 0;
+			}
+			
+			KeyValues kvRules = CreateKeyValues("Rules");
+			
+			if(!kvRules.ImportFromFile(g_sRulesFile))
+			{
+				SetFailState("Can't read %s correctly! (ImportFromFile)", g_sRulesFile);
 				delete kvRules;
-			
-			if (menu != null)
-				delete menu;
-			
-			return 0;
-		}
-		
-		if (kvRules.JumpToKey(sParam, false))
-		{
-			char sValue[MAX_MESSAGE_LENGTH];
-			
-			kvRules.GetString("text", sValue, sizeof(sValue));
-			if (strlen(sValue) > 0)
-			{
-				CPrintToChat(client, sValue);
-				ShowRules(client, 0);
-				
-				g_bKnowRules[client] = false;
-				g_bReadRules[client] = true;
-				
-				if (kvRules != null)
-					delete kvRules;
-				
-				if (menu != null)
-					delete menu;
-				
 				return 0;
 			}
 			
-			kvRules.GetString("fakecommand", sValue, sizeof(sValue));
-			if (strlen(sValue) > 0)
-			{
-				FakeClientCommand(client, sValue);
-				
-				g_bKnowRules[client] = false;
-				g_bReadRules[client] = true;
-				
-				if (kvRules != null)
-					delete kvRules;
-				
-				if (menu != null)
-					delete menu;
-				
-				return 0;
-			}
 			
-			kvRules.GetString("command", sValue, sizeof(sValue));
-			if (strlen(sValue) > 0)
+			if(kvRules.JumpToKey(sParam, false))
 			{
-				ClientCommand(client, sValue);
+				char sValue[MAX_MESSAGE_LENGTH];
 				
-				g_bKnowRules[client] = false;
-				g_bReadRules[client] = true;
-				
-				if (kvRules != null)
-					delete kvRules;
-				
-				if (menu != null)
-					delete menu;
-				
-				return 0;
-			}
-			
-			kvRules.GetString("url", sValue, sizeof(sValue));
-			if (strlen(sValue) > 0)
-			{
-				char sURL[512];
-				Format(sURL, sizeof(sURL), "http://cola-team.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
-				ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
-				
-				g_bKnowRules[client] = false;
-				g_bReadRules[client] = true;
-				
-				if (kvRules != null)
-					delete kvRules;
-				
-				if (menu != null)
-					delete menu;
-				
-				return 0;
-			}
-			
-			kvRules.GetString("file", sValue, sizeof(sValue));
-			if (strlen(sValue) > 0)
-			{
-				g_iSite[client] = menu.Selection;
-				
-				char sFile[PLATFORM_MAX_PATH + 1];
-				BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
-				
-				Handle hRFile = OpenFile(sFile, "rt");
-				
-				if (hRFile == null)
-					SetFailState("[TTT] Can't open File: %s", sFile);
-				
-				char sLine[64], sTitle[64];
-				
-				Menu rMenu = new Menu(Menu_RulesPage);
-				
-				kvRules.GetString("title", sTitle, sizeof(sTitle));
-				rMenu.SetTitle(sTitle);
-				
-				while (!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
+				kvRules.GetString("text", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
 				{
-					if (strlen(sLine) > 1)
-					{
-						rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
-					}
+					CPrintToChat(client, sValue);
+					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					return 0;
 				}
 				
-				rMenu.ExitButton = false;
-				rMenu.ExitBackButton = true;
-				rMenu.Display(client, g_iConfig[i_timeToReadRules]);
-				
-				if (hRFile != null)
-					delete hRFile;
-				
-				if (kvRules != null)
+				kvRules.GetString("fakecommand", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					FakeClientCommand(client, sValue);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
 					delete kvRules;
+					return 0;
+				}
 				
-				if (menu != null)
-					delete menu;
+				kvRules.GetString("command", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					ClientCommand(client, sValue);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					return 0;
+				}
+				
+				kvRules.GetString("url", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					char sURL[512];
+					Format(sURL, sizeof(sURL), "http://cola-team.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
+					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
+					
+					g_bKnowRules[client] = false;
+					g_bReadRules[client] = true;
+					
+					delete kvRules;
+					return 0;
+				}
+				
+				kvRules.GetString("file", sValue, sizeof(sValue));
+				if(strlen(sValue) > 0)
+				{
+					g_iSite[client] = menu.Selection;
+					
+					char sFile[PLATFORM_MAX_PATH + 1];
+					BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
+					
+					Handle hRFile = OpenFile(sFile, "rt");
+					
+					if(hRFile == null)
+					SetFailState("[TTT] Can't open File: %s", sFile);
+					
+					char sLine[64], sTitle[64];
+					
+					Menu rMenu = new Menu(Menu_RulesPage);
+					
+					kvRules.GetString("title", sTitle, sizeof(sTitle));
+					rMenu.SetTitle(sTitle);
+					
+					while(!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
+					{
+						if(strlen(sLine) > 1)
+							rMenu.AddItem("", sLine, ITEMDRAW_DISABLED);
+					}
+					
+					rMenu.ExitButton = false;
+					rMenu.ExitBackButton = true;
+					rMenu.Display(client, g_iConfig[i_timeToReadRules]);
+					
+					delete hRFile;
+					delete kvRules;
+					
+					return 0;
+				}
+				
+				delete kvRules;
 				
 				return 0;
 			}
-			
-			if (kvRules != null)
-				delete kvRules;
-			
-			if (menu != null)
-				delete menu;
-			
-			return 0;
 		}
-		
-		if (g_iConfig[b_showDetectiveMenu])
+		else
+		{
+			g_bKnowRules[client] = true;
+			g_bReadRules[client] = false;
+		}
+	
+		if(g_iConfig[b_showDetectiveMenu])
 			AskClientForMicrophone(client);
 	}
-	else if (action == MenuAction_Cancel)
+	else if(action == MenuAction_Cancel)
 	{
-		if (TTT_IsClientValid(client) && !IsFakeClient(client) && g_iConfig[i_rulesClosePunishment] == 0)
+		if(TTT_IsClientValid(client) && g_iConfig[i_rulesClosePunishment] == 0)
 		{
 			char sFlags[16];
 			AdminFlag aFlags[16];
@@ -1469,11 +1429,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		}
 	}
 	else if (action == MenuAction_End)
-		if (menu != null)
 		delete menu;
 	
 	return 0;
-}
+}  
 
 public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 {
