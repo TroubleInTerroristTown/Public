@@ -234,6 +234,7 @@ void SetupConfig()
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
 	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
+	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -434,7 +435,7 @@ public Action Command_RadioCMDs(int client, const char[] command, int args)
 public void OnMapStart()
 {
 	for (int i; i < g_iBadNameCount; i++)
-	g_sBadNames[i] = "";
+		g_sBadNames[i] = "";
 	g_iBadNameCount = 0;
 	
 	LoadBadNames();
@@ -448,7 +449,6 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
 	
 	ClearArray(g_hLogsArray);
-	
 	
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
@@ -560,6 +560,10 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		
 		ShowLogs(i);
 		TeamTag(i);
+		
+		if(g_iConfig[bTranfserArmor])
+			if(IsPlayerAlive(i))
+				g_iArmor[i] = GetEntProp(i, Prop_Send, "m_ArmorValue");
 	}
 	
 	ShowLogs(0);
@@ -997,6 +1001,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		
 		if (g_iConfig[b_enableNoBlock])
 			SetNoBlock(client);
+			
+		if(g_iConfig[bTranfserArmor] && g_iArmor[client] > 0)
+		{
+			SetEntProp(client, Prop_Send, "m_ArmorValue", g_iArmor[client]);
+			g_iArmor[client] = 0;
+		}
 	}
 }
 
@@ -1528,6 +1538,9 @@ public void OnClientDisconnect(int client)
 	{
 		g_bKarma[client] = false;
 		
+		if(g_iConfig[bTranfserArmor])
+			g_iArmor[client] = 0;
+		
 		ClearTimer(g_hRDMTimer[client]);
 		
 		g_bReceivingLogs[client] = false;
@@ -1781,7 +1794,11 @@ public void OnMapEnd()
 	g_hCountdownTimer = null;
 	
 	LoopValidClients(i)
-	g_bKarma[i] = false;
+	{
+		if(g_iConfig[bTranfserArmor])
+			g_iArmor[i] = 0;
+		g_bKarma[i] = false;
+	}
 }
 
 public Action Timer_OnRoundEnd(Handle timer)

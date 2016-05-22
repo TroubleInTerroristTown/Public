@@ -115,7 +115,8 @@ enum eConfig
 	i_RoundStartFontSize,
 	String:s_RoundStartFontColor[12],
 	bool:tChatToDead,
-	bool:dChatToDead
+	bool:dChatToDead,
+	bool:bTranfserArmor
 };
 
 enum Ragdolls

@@ -51,6 +51,7 @@ int g_iCollisionGroup = -1;
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
 int g_iKarmaStart[MAXPLAYERS + 1] =  { 0, ... };
+int g_iArmor[MAXPLAYERS + 1] =  { 0, ... };
 
 Handle g_hRagdollArray = null;
 
