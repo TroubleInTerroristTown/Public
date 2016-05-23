@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2016-05-08 13:44:33 UTC
+// Date: 2016-05-22 13:30:39 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -626,16 +626,10 @@
 		"en"		"No, show me the rules!"
 	}
 
-	"RoundStartCenter"
+	"StartTimer"
 	{
-		"#format"	"{1:d},{2:s},{3:d}"
-		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} seconds</font>"
-	}
-	
-	"RoundStartedCenter"
-	{
-		"#format"	"{1:d},{2:s}"
-		"en"		"<font size='{1}' color='#{2}'><bold>GO GO GO !!!</bold></font>"
+		"#format"	"{1:d}"
+		"en"		"<font size='32' color='00ff00'>Round starts in {1} seconds</font>"
 	}
 
 	"next round in"
@@ -750,26 +744,33 @@
 	{
 		"en"		"Type !id to show your innocence."
 	}
-	
+
+	"RoundStartCenter"
+	{
+		"#format"	"{1:d},{2:s},{3:d}"
+		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} seconds</font>"
+	}
+
+	"RoundStartedCenter"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"<font size='{1}' color='#{2}'><bold>GO GO GO !!!</bold></font>"
+	}
+
 	"YouAreDead"
 	{
-		"en"		"You can't use this as dead player"		
-	}
-	
-	"Bought All"
-	{
-		"#format"	"{1:s}, {2:d}"
-		"en"		"You've reached the limit of {1}'s {orchid}({2})"
+		"en"		"You can't use this as dead player"
 	}
 
 	"Bought All"
 	{
-		"#format"	"{1:s}, {2:d}"
+		"#format"	"{1:s},{2:d}"
 		"en"		"You've reached the limit of {1}'s {orchid}({2})"
 	}
-	
+
 	"DT: Invalid Position"
 	{
 		"en"		"Decoy Position was incorrect. (Stuck problem)"
 	}
+
 }
