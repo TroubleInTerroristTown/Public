@@ -27,6 +27,8 @@ int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
 
+int g_iRefund = 0;
+
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 char g_sLongName[64];
@@ -66,6 +68,7 @@ public void OnPluginStart()
 	g_iTCount = Config_LoadInt("dt_traitor_count", 1, "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
 	g_iDCount = Config_LoadInt("dt_detective_count", 1, "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
 	
+	g_iRefund = Config_LoadInt("dt_refund", 0, "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Money back, 2 = New decoy");
 	
 	Config_Done();
 	
@@ -99,16 +102,30 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		
 		TeleportEntity(client, fPos, NULL_VECTOR, NULL_VECTOR);
 		
-		if(StuckClient(client))
+		bool stuck = StuckClient(client);
+		
+		if(stuck)
 		{
 			TeleportEntity(client, fOldPos, NULL_VECTOR, NULL_VECTOR);
 			CPrintToChat(client, g_sPluginTag, "DT: Invalid Position", client);
 		}
-			
 		
 		AcceptEntityInput(entity, "kill");
 		
-		g_bHasTeleporter[client] = false;
+		if(stuck && g_iRefund == 1)
+		{
+			int role = TTT_GetClientRole(client);
+			if(role == TTT_TEAM_TRAITOR)
+				TTT_AddClientCredits(client, g_iDPrice);
+			else if(role == TTT_TEAM_DETECTIVE)
+				TTT_AddClientCredits(client, g_iTPrice);
+			
+			g_bHasTeleporter[client] = false;
+		}
+		else if(stuck && g_iRefund == 2)
+			GivePlayerItem(client, "weapon_decoy");
+		else
+			g_bHasTeleporter[client] = false;
 		
 		return Plugin_Handled;
 	}
