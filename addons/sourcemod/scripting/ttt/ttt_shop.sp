@@ -30,7 +30,6 @@ char g_sPluginTag[128];
 char g_sConfigFile[PLATFORM_MAX_PATH];
 
 bool g_bSortItems = false;
-bool g_bSortItemsOrder = false;
 
 Handle g_hOnItemPurchased = null;
 
@@ -44,7 +43,8 @@ enum Item
 	String:Long[64], 
 	String:Short[16], 
 	Price, 
-	Role
+	Role,
+	Sort
 }
 
 public void OnPluginStart()
@@ -58,7 +58,7 @@ public void OnPluginStart()
 		RegConsoleCmd(sBuffer, Command_Shop);
 	}
 	
-	g_aCustomItems = new ArrayList(82);
+	g_aCustomItems = new ArrayList(83);
 	
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
@@ -70,8 +70,7 @@ public void OnPluginStart()
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/shop.cfg");
 	Config_Setup("Shop", g_sConfigFile);
-	g_bSortItems = Config_LoadBool("ttt_sort_items_price", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
-	g_bSortItemsOrder = Config_LoadBool("ttt_sort_items_price_order", true, "Sort price (ttt_sort_items_price must be 1): false - Low to High, true - High to Low");
+	g_bSortItems = Config_LoadBool("ttt_sort_items", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
 	Config_Done();
 	
 	LoadTranslations("ttt.phrases");
@@ -235,42 +234,29 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Role] = temp_role;
 	g_aCustomItems.PushArray(temp_item[0]);
 	
-	if (g_bSortItems)
-		Sort(g_bSortItemsOrder);
+	if(g_bSortItems)
+	{
+		Sorting();
+	}
 	
 	return true;
 }
 
 //TODO Improve sort algorithm (currently it's a bubble sort)
-public void Sort(bool sort)
+public void Sorting()
 {
 	int temp_item[Item];
 	int temp_item2[Item];
-	if (!sort)
+
+	for (int i = 1; i < g_aCustomItems.Length; i++)
 	{
-		for (int i = 1; i < g_aCustomItems.Length; i++)
+		for (int j = 0; j < (g_aCustomItems.Length - i); j++)
 		{
-			for (int j = 0; j < (g_aCustomItems.Length - i); j++)
+			g_aCustomItems.GetArray(j, temp_item[0]);
+			g_aCustomItems.GetArray(j + 1, temp_item2[0]);
+			if (temp_item[Sort] < temp_item2[Sort])
 			{
-				g_aCustomItems.GetArray(j, temp_item[0]);
-				g_aCustomItems.GetArray(j + 1, temp_item2[0]);
-				if (temp_item[Price] > temp_item2[Price])
-				{
-					g_aCustomItems.SwapAt(j, j + 1);
-				}
-			}
-		}
-	} else {
-		for (int i = 1; i < g_aCustomItems.Length; i++)
-		{
-			for (int j = 0; j < (g_aCustomItems.Length - i); j++)
-			{
-				g_aCustomItems.GetArray(j, temp_item[0]);
-				g_aCustomItems.GetArray(j + 1, temp_item2[0]);
-				if (temp_item[Price] < temp_item2[Price])
-				{
-					g_aCustomItems.SwapAt(j, j + 1);
-				}
+				g_aCustomItems.SwapAt(j, j + 1);
 			}
 		}
 	}

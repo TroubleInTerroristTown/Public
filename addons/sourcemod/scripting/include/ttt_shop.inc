@@ -23,8 +23,9 @@ forward Action TTT_OnItemPurchased(int client, const char[] itemshort);
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
  * @param role              The optional role to restrict the item to.
+ * @param sort				The priority in Sorting. Buy menu is sorted from high to low.
  */
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0);
+native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
 /*
  * Retrieve a custom item's price.
  *
