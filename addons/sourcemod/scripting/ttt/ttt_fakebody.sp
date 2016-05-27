@@ -187,7 +187,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		if(!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
 			SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
 		
-		return Plugin_Stop;
+		return Plugin_Changed;
 	}
 	return Plugin_Continue;
 } 

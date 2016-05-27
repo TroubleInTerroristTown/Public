@@ -37,7 +37,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
-	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Hook, Param_Cell, Param_Array);
+	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
 
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
@@ -1994,10 +1994,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Action res = Plugin_Continue;
 						Call_StartForward(g_hOnBodyChecked);
 						Call_PushCell(client);
-						Call_PushArray(iRagdollC[0], sizeof(iRagdollC));
+						Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
 						Call_Finish(res);
 						if(res == Plugin_Stop)
 							return Plugin_Continue;
+						else if(res == Plugin_Changed)
+						{
+							SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+							return Plugin_Continue;
+						}
 						
 						InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 						
