@@ -203,7 +203,7 @@ public Action Command_Say(int client, const char[] command, int argc)
 
 public int Native_RegisterCustomItem(Handle plugin, int numParams)
 {
-	if (numParams < 3)
+	if (numParams < 4)
 		return false;
 	
 	char temp_short[16];
@@ -213,6 +213,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
+	int temp_sort = GetNativeCell(5);
 	
 	int temp_item[Item];
 	
@@ -232,6 +233,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	Format(temp_item[Long], sizeof(temp_long), "%s", temp_long);
 	temp_item[Price] = temp_price;
 	temp_item[Role] = temp_role;
+	temp_item[Sort] = temp_sort;
 	g_aCustomItems.PushArray(temp_item[0]);
 	
 	if(g_bSortItems)
