@@ -27,6 +27,7 @@
 
 
 int g_iPrice_C4 = 0;
+int g_iPrio_C4 = 0;
 int g_iCount_C4 = 0;
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iC4ShakeRadius = 0;
@@ -34,6 +35,7 @@ int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
 int g_iWire[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iPrice_J = 0;
+int g_iPrio_J = 0;
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasJ[MAXPLAYERS + 1] =  { false, ... };
@@ -85,12 +87,14 @@ public void OnPluginStart()
 	
 	Config_LoadString("c4_name", "C4", "The name of the C4 in the Shop", g_sLongName_C4, sizeof(g_sLongName_C4));
 	g_iPrice_C4 = Config_LoadInt("c4_price", 9000, "The amount of credits a c4 costs as traitor. 0 to disable.");
+	g_iPrio_C4 = Config_LoadInt("c4_sort_prio", 0, "The sorting priority of the C4 in the shop menu.");
 	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
 	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
 	g_fC4DamageRadius = Config_LoadFloat("c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
 	
 	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
+	g_iPrio_J = Config_LoadInt("jihad_sort_prio", 0, "The sorting priority of the Jihad in the shop menu.");
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_fJihadDamangeRadius = Config_LoadFloat("jihad_damage_radius", 600.0, "The damage radius of the Jihad explosion.");
@@ -130,8 +134,8 @@ public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR, g_iPrio_C4);
+	TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR, g_iPrio_J);
 }
 
 public void ResetJihad(int client)
