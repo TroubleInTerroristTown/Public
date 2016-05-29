@@ -23,6 +23,10 @@ int g_iDPrice = 0;
 int g_iIPrice = 0;
 int g_iTPrice = 0;
 
+int g_iDPrio = 0;
+int g_iIPrio = 0;
+int g_iTPrio = 0;
+
 int g_iDCount = 0;
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -70,6 +74,10 @@ public void OnPluginStart()
 	g_iIPrice = Config_LoadInt("ta_innocent_price", 9000, "The amount of credits a taser costs as innocent. 0 to disable.");
 	g_iTPrice = Config_LoadInt("ta_traitor_price", 0, "The amount of credits a taser costs as traitor. 0 to disable.");
 	
+	g_iDPrio = Config_LoadInt("ta_detective_sort_prio", 0, "The sorting priority of the taser (Detective) in the shop menu.");
+	g_iIPrio = Config_LoadInt("ta_innocent_sort_prio", 0, "The sorting priority of the taser (Innocent) in the shop menu.");
+	g_iTPrio = Config_LoadInt("ta_traitor_sort_prio", 0, "The sorting priority of the taser (Traitor) in the shop menu.");
+	
 	g_iDCount = Config_LoadInt("ta_detective_count", 1, "The amount of usages for tasers per round as detective. 0 to disable.");
 	g_iICount = Config_LoadInt("ta_innocent_count", 1, "The amount of usages for tasers per round as innocent. 0 to disable.");
 	g_iTCount = Config_LoadInt("ta_traitor_count", 1, "The amount of usages for tasers per round as traitor. 0 to disable.");
@@ -112,9 +120,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE);
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT);
-	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
