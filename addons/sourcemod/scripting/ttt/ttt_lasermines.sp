@@ -18,6 +18,7 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Lasermines"
 
 int g_iTraitorPrice = 0;
+int g_iTPrio = 0;
 int g_iTCount = 0;
 int g_iPCount[MAXPLAYERS + 1];
 
@@ -51,13 +52,14 @@ public void OnPluginStart()
 	
 	Config_LoadString("lm_name", "Lasermine", "The name of the Lasermine in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iTCount = Config_LoadInt("lm_traitor_count", 1, "The amount of usages for lasermines per round as traitor. 0 to disable.");
+	g_iTPrio = Config_LoadInt("lm_traitor_sort_prio", 0, "The sorting priority of the lasermines (Traitor) in the shop menu.");
 	g_iTraitorPrice = Config_LoadInt("lm_traitor_price", 9000, "The amount of credits for a lasermine costs. 0 to disable.");
 	Config_Done();
 }
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
