@@ -62,6 +62,8 @@ float g_fC4KillRadius = 275.0;
 float g_fJihadDamangeRadius = 600.0;
 float g_fJihadMagnitude = 1000.0;
 
+bool g_bC4Glow = true;
+
 public Plugin myinfo = 
 {
 	name = PLUGIN_NAME, 
@@ -105,6 +107,7 @@ public void OnPluginStart()
 	g_fJihadMagnitude = Config_LoadFloat("jihad_magnitude", 1000.0, "The amount of damage done by the explosion. For Jihad");
 	
 	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
+	g_bC4Glow = Config_LoadBool("c4_glow", true, "Enable the glow effect for c4");
 	
 	Config_Done();
 	
@@ -433,8 +436,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
 				showPlantMenu(client);
 				
-				if (SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-					SetupGlow(bombEnt);
+				if(g_bC4Glow)
+					if(SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+						SetupGlow(bombEnt);
 			}
 		}
 	}

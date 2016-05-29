@@ -44,6 +44,8 @@ int g_iHurtCharges;
 float g_fHurtDistance;
 float g_fHealthDistance;
 
+bool g_bHurtStationGlow = true;
+
 char g_cHurt[64];
 char g_cHealth[64];
 char g_cConfigFile[PLATFORM_MAX_PATH];
@@ -54,6 +56,11 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
+	
+	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/config.cfg");
+	Config_Setup("TTT", g_cConfigFile);
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	Config_Done();
 
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/stations.cfg");
 	Config_Setup("TTT-Stations", g_cConfigFile);
@@ -71,12 +78,11 @@ public void OnPluginStart()
 
 	g_fHealthDistance = Config_LoadFloat("health_station_distance", 200.0, "The distance that the health station should reach.");
 	g_fHurtDistance = Config_LoadFloat("hurt_station_distance", 200.0, "The distance that the hurt station should reach.");
+	
+	g_bHurtStationGlow = Config_LoadBool("hurt_station_glow", true, "Enable the glow effect for hurt stations");
 
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
-	
-	// TODO: Read from config.cfg
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 	
 	Config_Done();
 
@@ -297,7 +303,7 @@ void spawnHealthStation(int client)
 		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
 		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
 		
-		if(role == TTT_TEAM_TRAITOR)
+		if(g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
 		{
 			if (SDKHookEx(healthStationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 					SetupGlow(healthStationIndex);
