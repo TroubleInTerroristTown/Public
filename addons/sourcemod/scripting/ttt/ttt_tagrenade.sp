@@ -5,9 +5,9 @@
 #include <ttt>
 #include <config_loader>
 #include <CustomPlayerSkins>
+#include <multicolors>
 
 #define SHORT_NAME "tag"
-#define LONG_NAME "TA-Grenade"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
 int g_iTPrice = 0;
@@ -25,6 +25,8 @@ float g_fTagrenadeTime = 0.0;
 bool g_bShowPlayersBehindWalls = false;
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sLongName[64];
 
 public Plugin myinfo =
 {
@@ -48,10 +50,15 @@ public void OnPluginStart()
 	
 	LoadTranslations("ttt.phrases");
 	
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	Config_Setup("TTT", g_sConfigFile);
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	Config_Done();
+	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/tagrenade.cfg");
-
 	Config_Setup("TTT-TAGrenade", g_sConfigFile);
 	
+	Config_LoadString("tag_name", "TA-Grenade", "The name of the TA-Grenade in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iTPrice = Config_LoadInt("tag_traitor_price", 9000, "The amount of credits for tagrenade costs as traitor. 0 to disable.");
 	g_iTCount = Config_LoadInt("tag_traitor_count", 1, "The amount of usages for tagrenade per round as innocent. 0 to disable.");
 	g_iTPrio = Config_LoadInt("tag_traitor_sort_prio", 0, "The sorting priority of the tagrenade (Traitor) in the shop menu.");
@@ -80,7 +87,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
@@ -92,7 +99,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
-				return Plugin_Stop; // TODO: Add message
+			{
+				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
+				return Plugin_Stop;
+			}
 				
 			GivePlayerItem(client, "weapon_tagrenade");
 			
