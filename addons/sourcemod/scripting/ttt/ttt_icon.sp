@@ -80,8 +80,7 @@ public void OnClientDisconnect(int client)
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
 	LoopValidClients(client)
-		if(IsPlayerAlive(client))
-			ClearIcon(client);
+		ClearIcon(client);
 }
 
 public void TTT_OnUpdate()
@@ -105,8 +104,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroa
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_GetClientRole(client) > TTT_TEAM_UNASSIGNED)
-		ClearIcon(client);
+	ClearIcon(client);
 }
 
 stock void ApplyIcons()
@@ -178,7 +176,7 @@ stock void ClearIcon(int client)
 {
 	int role = TTT_GetClientRole(client);
 	
-	if(role > 0 && IsValidEdict(g_iIcon[client]))
+	if(IsValidEdict(g_iIcon[client]))
 	{
 		if(role == TTT_TEAM_TRAITOR)
 			SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);

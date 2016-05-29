@@ -165,7 +165,9 @@ public void TTT_OnUpdate()
 
 public void AssignOverlay(int client, int role)
 {
-	if(!IsPlayerAlive(client) || TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+	if(TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+		ShowOverlayToClient(client, " ");
+	if(!IsPlayerAlive(client))
 		ShowOverlayToClient(client, " ");
 	
 	if (role == TTT_TEAM_DETECTIVE)
