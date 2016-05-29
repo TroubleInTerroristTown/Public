@@ -124,7 +124,7 @@ public void OnMapStart()
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
-	ShowOverlayToAll("");
+	ShowOverlayToAll(" ");
 }
 
 public void TTT_OnRoundEnd(int winner)
@@ -166,7 +166,7 @@ public void TTT_OnUpdate()
 public void AssignOverlay(int client, int role)
 {
 	if(!IsPlayerAlive(client) || TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
-		ShowOverlayToClient(client, "");
+		ShowOverlayToClient(client, " ");
 	
 	if (role == TTT_TEAM_DETECTIVE)
 		ShowOverlayToClient(client, g_sDetectiveIcon);

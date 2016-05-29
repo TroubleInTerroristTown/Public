@@ -54,10 +54,11 @@ char g_sLongName_J[64];
 
 float g_fJihadPreparingTime = 60.0;
 
-float g_fC4DamageRadius = 275.0;
-float g_fJihadDamangeRadius = 600.0;
-
+float g_fC4DamageRadius = 850.0;
 float g_fC4Magnitude = 850.0;
+float g_fC4KillRadius = 275.0;
+
+float g_fJihadDamangeRadius = 600.0;
 float g_fJihadMagnitude = 1000.0;
 
 public Plugin myinfo = 
@@ -90,7 +91,7 @@ public void OnPluginStart()
 	g_iPrio_C4 = Config_LoadInt("c4_sort_prio", 0, "The sorting priority of the C4 in the shop menu.");
 	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
 	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
-	g_fC4DamageRadius = Config_LoadFloat("c4_damage_radius", 275.0, "The damage radius of the C4 explosion.");
+	g_fC4DamageRadius = Config_LoadFloat("c4_damage_radius", 850.0, "The damage radius of the C4 explosion.");
 	
 	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
@@ -101,6 +102,8 @@ public void OnPluginStart()
 	
 	g_fC4Magnitude = Config_LoadFloat("c4_magnitude", 850.0, "The amount of damage done by the explosion. For C4");
 	g_fJihadMagnitude = Config_LoadFloat("jihad_magnitude", 1000.0, "The amount of damage done by the explosion. For Jihad");
+	
+	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
 	
 	Config_Done();
 	
@@ -367,7 +370,7 @@ public Action explodeC4(Handle timer, Handle pack)
 		DispatchKeyValue(shakeIndex, "radius", sShakeRadius);
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", 850);
+		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", g_fC4DamageRadius);
 		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_fC4Magnitude);
 		SetEntPropEnt(explosionIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchSpawn(particleIndex);
@@ -393,7 +396,7 @@ public Action explodeC4(Handle timer, Handle pack)
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
 			
-			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_fC4DamageRadius)
+			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_fC4KillRadius)
 			{
 				Handle killEvent = CreateEvent("player_death", true);
 				SetEventInt(killEvent, "userid", GetClientUserId(i));
