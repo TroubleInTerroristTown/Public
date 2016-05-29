@@ -22,6 +22,9 @@
 int g_iTPrice = 0;
 int g_iIPrice = 0;
 
+int g_iTPrio = 0;
+int g_iIPrio = 0;
+
 bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
@@ -51,6 +54,10 @@ public void OnPluginStart()
 	
 	g_iTPrice = Config_LoadInt("id_traitor_price", 1000, "The amount of credits for fake ID costs as traitor. 0 to disable.");
 	g_iIPrice = Config_LoadInt("id_innocent_price", 1000, "The amount of credits for ID costs as innocent. 0 to disable.");
+	
+	g_iTPrio = Config_LoadInt("id_traitor_sort_prio", 0, "The sorting priority of the fake ID in the shop menu.");
+	g_iIPrio = Config_LoadInt("id_innocent_sort_prio", 0, "The sorting priority of the ID in the shop menu.");
+	
 	Config_Done();
 
 	RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
@@ -102,8 +109,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME_T, g_iTPrice, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(SHORT_NAME_I, LONG_NAME_I, g_iIPrice, TTT_TEAM_INNOCENT);
+	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME_T, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_I, LONG_NAME_I, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
