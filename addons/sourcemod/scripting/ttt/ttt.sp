@@ -461,7 +461,7 @@ public void OnMapStart()
 	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
-		SetFailState("CCSPlayerResource.m_bAlive offset is invalid");
+		SetFailState("CCSPlayerResource \"m_bAlive\" offset is invalid");
 	
 	g_iKills = FindSendPropInfo("CCSPlayerResource", "m_iKills");
 	if (g_iKills == -1)
@@ -1026,6 +1026,7 @@ public Action Timer_SlayPlayer(Handle timer, any userid)
 public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
+	g_bFound[client] = true;
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
@@ -1503,6 +1504,7 @@ public void OnClientDisconnect(int client)
 	if (IsClientInGame(client))
 	{
 		g_bKarma[client] = false;
+		g_bFound[client] = true;
 		
 		if(g_iConfig[bTranfserArmor])
 			g_iArmor[client] = 0;
