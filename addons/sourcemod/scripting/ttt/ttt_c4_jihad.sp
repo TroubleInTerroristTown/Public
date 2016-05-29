@@ -25,8 +25,6 @@
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
 
-
-
 int g_iPrice_C4 = 0;
 int g_iPrio_C4 = 0;
 int g_iCount_C4 = 0;
@@ -62,7 +60,7 @@ float g_fC4KillRadius = 275.0;
 float g_fJihadDamangeRadius = 600.0;
 float g_fJihadMagnitude = 1000.0;
 
-bool g_bC4Glow = true;
+// bool g_bC4Glow = true;
 
 public Plugin myinfo = 
 {
@@ -107,7 +105,7 @@ public void OnPluginStart()
 	g_fJihadMagnitude = Config_LoadFloat("jihad_magnitude", 1000.0, "The amount of damage done by the explosion. For Jihad");
 	
 	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
-	g_bC4Glow = Config_LoadBool("c4_glow", true, "Enable the glow effect for c4");
+	// g_bC4Glow = Config_LoadBool("c4_glow", true, "Enable the glow effect for c4");
 	
 	Config_Done();
 	
@@ -436,9 +434,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
 				showPlantMenu(client);
 				
-				if(g_bC4Glow)
+				/* if(g_bC4Glow)
 					if(SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-						SetupGlow(bombEnt);
+						SetupGlow(bombEnt); */
 			}
 		}
 	}
@@ -479,7 +477,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return Plugin_Continue;
 }
 
-void SetupGlow(int entity)
+/* void SetupGlow(int entity)
 {
 	int iOffset;
 	
@@ -514,7 +512,7 @@ public Action OnSetTransmit_GlowSkin(int entity, int client)
 		return Plugin_Continue;
 	
 	return Plugin_Handled;
-}
+} */
 
 stock void showPlantMenu(int client)
 {
@@ -804,7 +802,7 @@ stock void removeBomb(int client)
 		if (!StrEqual(MDL_C4, sModelPath))
 			continue;
 		
-		SDKUnhook(iEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+		// SDKUnhook(iEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		
 		AcceptEntityInput(iEnt, "Kill");
 	}

@@ -44,7 +44,7 @@ int g_iHurtCharges;
 float g_fHurtDistance;
 float g_fHealthDistance;
 
-bool g_bHurtStationGlow = true;
+// bool g_bHurtStationGlow = true;
 
 char g_cHurt[64];
 char g_cHealth[64];
@@ -79,7 +79,7 @@ public void OnPluginStart()
 	g_fHealthDistance = Config_LoadFloat("health_station_distance", 200.0, "The distance that the health station should reach.");
 	g_fHurtDistance = Config_LoadFloat("hurt_station_distance", 200.0, "The distance that the hurt station should reach.");
 	
-	g_bHurtStationGlow = Config_LoadBool("hurt_station_glow", true, "Enable the glow effect for hurt stations");
+	// g_bHurtStationGlow = Config_LoadBool("hurt_station_glow", true, "Enable the glow effect for hurt stations");
 
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
@@ -204,7 +204,7 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 	if (g_iHealthStationHealth[owner] <= 0)
 	{
 		AcceptEntityInput(stationIndex, "Kill");
-		SDKUnhook(stationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+		// SDKUnhook(stationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		g_bHasActiveHealthStation[owner] = false;
 	}
 	return Plugin_Continue;
@@ -303,15 +303,15 @@ void spawnHealthStation(int client)
 		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
 		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
 		
-		if(g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
+		/* if(g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
 		{
 			if (SDKHookEx(healthStationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 					SetupGlow(healthStationIndex);
-		}
+		} */
 	}
 }
 
-void SetupGlow(int entity)
+/* void SetupGlow(int entity)
 {
 	int iOffset;
 	
@@ -346,7 +346,7 @@ public Action OnSetTransmit_GlowSkin(int entity, int client)
 		return Plugin_Continue;
 	
 	return Plugin_Handled;
-}
+} */
 
 void healthStation_cleanUp()
 {
