@@ -15,6 +15,7 @@
 #define SHORT_NAME "dna"
 
 int g_iPrice = 0;
+int g_iPrio = 0;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
@@ -49,6 +50,7 @@ public void OnPluginStart()
 	
 	Config_LoadString("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("dna_price", 9000, "The amount of credits a dna scanner costs as detective. 0 to disable.");
+	g_iPrio = Config_LoadInt("dna_sort_prio", 0, "The sorting priority of the dna scanner in the shop menu.");
 	
 	Config_Done();
 }
@@ -68,7 +70,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE, g_iPrio);
 }
 
 void ResetScanner(int client)
