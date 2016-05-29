@@ -22,6 +22,10 @@ int g_iTPrice = 0;
 int g_iDPrice = 0;
 int g_iIPrice = 0;
 
+int g_iTPrio = 0;
+int g_iDPrio = 0;
+int g_iIPrio = 0;
+
 int g_iTCount = 0;
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -70,6 +74,10 @@ public void OnPluginStart()
 	g_iDCount = Config_LoadInt("hs_detective_count", 1, "The amount of usages for healthshots per round as detective. 0 to disable.");
 	g_iICount = Config_LoadInt("hs_innocent_count", 1, "The amount of usages for healthshots per round as innocent. 0 to disable.");
 	
+	g_iTPrio = Config_LoadInt("hs_traitor_sort_prio", 0, "The sorting priority of the healthshots (Traitor) in the shop menu.");
+	g_iDPrio = Config_LoadInt("hs_detective_sort_prio", 0, "The sorting priority of the healthshots (Detective) in the shop menu.");
+	g_iIPrio = Config_LoadInt("hs_innocent_sort_prio", 0, "The sorting priority of the healthshots (Innocent) in the shop menu.");
+	
 	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -90,9 +98,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE);
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT);
+	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
