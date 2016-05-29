@@ -34,9 +34,11 @@ bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
 int g_iHealthPrice;
+int g_iHealthPrio = 0;
 int g_iHealthHeal;
 int g_iHealthCharges;
 int g_iHurtPrice;
+int g_iHurtPrio = 0;
 int g_iHurtDamage;
 int g_iHurtCharges;
 float g_fHurtDistance;
@@ -57,7 +59,9 @@ public void OnPluginStart()
 	Config_Setup("TTT-Stations", g_cConfigFile);
 	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for traitors. 0 to disable.");
 	g_iHurtPrice = Config_LoadInt("hurt_station_price", 0, "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
-
+	
+	g_iHealthPrio = Config_LoadInt("health_sort_prio", 0, "The sorting priority of the Health Station in the shop menu.");
+	g_iHurtPrio = Config_LoadInt("hurt_sort_prio", 0, "The sorting priority of the Hurt Station in the shop menu.");
 
 	g_iHealthHeal = Config_LoadInt("health_station_heal", 15, "The amount of health the health station should heal each second.");
 	g_iHurtDamage = Config_LoadInt("hurt_station_damage", 25, "The damage the hurt station should do each second.");
@@ -89,8 +93,8 @@ public void OnMapStart()
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, g_cHealth, g_iHealthPrice, TTT_TEAM_DETECTIVE);
-	TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, g_cHealth, g_iHealthPrice, TTT_TEAM_DETECTIVE, g_iHealthPrio);
+	TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR, g_iHurtPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
