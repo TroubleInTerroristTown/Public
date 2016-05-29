@@ -19,6 +19,9 @@
 int g_iTPrice = 0;
 int g_iDPrice = 0;
 
+int g_iTPrio = 0;
+int g_iDPrio = 0;
+
 int g_iTCount = 0;
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -64,6 +67,9 @@ public void OnPluginStart()
 	
 	g_iTPrice = Config_LoadInt("dt_traitor_price", 9000, "The amount of credits for decoy teleporter costs as traitor. 0 to disable.");
 	g_iDPrice = Config_LoadInt("dt_detective_price", 9000, "The amount of credits for decoy teleporter costs as detective. 0 to disable.");
+	
+	g_iTPrio = Config_LoadInt("dt_traitor_sort_prio", 0, "The sorting priority of the decoy teleporter (Traitor) in the shop menu.");
+	g_iDPrio = Config_LoadInt("dt_detective_sort_prio", 0, "The sorting priority of the decoy teleporter (Detective) in the shop menu.");
 	
 	g_iTCount = Config_LoadInt("dt_traitor_count", 1, "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
 	g_iDCount = Config_LoadInt("dt_detective_count", 1, "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
@@ -142,8 +148,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
