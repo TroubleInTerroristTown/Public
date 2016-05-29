@@ -141,17 +141,23 @@ void SetupGlow(int client, int iSkin)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
-	if(IsFakeClient(client))
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
+	if(client == 0 || IsFakeClient(client))
 		return Plugin_Handled;
 		
 	if(!IsPlayerAlive(client))
 		return Plugin_Handled;
 	
-	if(!TTT_IsRoundActive())
-		return Plugin_Handled;
-		
 	LoopValidClients(target)
 	{
+		if(client == 0 || IsFakeClient(target))
+			continue;
+		
+		if(target == -1)
+			continue;
+		
 		if(!IsPlayerAlive(target))
 			continue;
 		
@@ -161,19 +167,16 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		if(EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
 			continue;
 			
-		if(target == -1)
-			continue;
+		if(g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+			return Plugin_Continue;
+		
+		if(g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+			return Plugin_Continue;
 		
 		if (g_bTAGrenade && TTT_TAGrenade(target))
 			return Plugin_Continue;
 		
 		if (g_bWallhack && TTT_Wallhack(client))
-			return Plugin_Continue;
-		
-		if(g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
-			return Plugin_Continue;
-		
-		if(g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
 	}
 	
