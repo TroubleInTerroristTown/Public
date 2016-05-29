@@ -21,6 +21,9 @@
 int g_iTraitorPrice;
 int g_iDetectivePrice;
 
+int g_iTraitor_Prio;
+int g_iDetective_Prio;
+
 float g_fTraitorCooldown;
 float g_fDetectiveCooldown;
 
@@ -67,6 +70,9 @@ public void OnPluginStart()
 	g_fTraitorActive = Config_LoadFloat("wh_traitor_active", 3.0, "Active time for Traitor-Wallhack (time in seconds)");
 	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack (time in seconds)");
 	
+	g_iTraitor_Prio = Config_LoadInt("wh_traitor_sort_prio", 0, "The sorting priority of the Traitor - Wallhack in the shop menu.");
+	g_iDetective_Prio = Config_LoadInt("wh_detective_sort_prio", 0, "The sorting priority of the Detective - Wallhack in the shop menu.");
+	
 	Config_Done();
 	
 	HookEvent("player_death", Event_PlayerReset);
@@ -75,8 +81,8 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
