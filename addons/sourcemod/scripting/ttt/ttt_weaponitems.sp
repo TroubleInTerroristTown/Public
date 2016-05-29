@@ -42,6 +42,12 @@ int g_iKF_Price;
 int g_iKev_Max;
 int g_iKnife_Max;
 
+int g_iKnife_Prio;
+int g_iKev_Prio;
+int g_iUSP_Prio;
+int g_iM4_Prio;
+int g_iAWP_Prio;
+
 int g_iKnives[MAXPLAYERS+1];
 int g_iKevs[MAXPLAYERS+1];
 
@@ -62,22 +68,27 @@ public void OnPluginStart()
 	g_iKev_Type = Config_LoadInt("kevlar_type", 1, "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iKev_Price = Config_LoadInt("kevlar_price", 2500, "The amount of credits the kevlar costs. 0 to disable.");
 	g_iKev_Max = Config_LoadInt("kevlar_max", 5, "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
+	g_iKev_Prio = Config_LoadInt("kevlar_sort_prio", 0, "The sorting priority of the kevlar in the shop menu.");
 	Config_LoadString("kevlar_name", "Kevlar", "The name of the Kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
 
 
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
+	g_iUSP_Prio = Config_LoadInt("usp_sort_prio", 0, "The sorting priority of the USP-S in the shop menu.");
 	Config_LoadString("usp_name", "USP-S", "The name of the USP-S in the shop menu.", g_cUSP_Long, sizeof(g_cUSP_Long));
 
 	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the M4A1-S costs. 0 to disable.");
+	g_iM4_Prio = Config_LoadInt("m4a1_sort_prio", 0, "The sorting priority of the M4A1-S in the shop menu.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
 
 	g_iAWP_Price = Config_LoadInt("awp_price", 3000, "The amount of credits the AWP costs. 0 to disable.");
 	g_iAWP_Min_Shots = Config_LoadInt("awp_min_shots", 1, "The min. amount of shots of traitor awp.");
 	g_iAWP_Max_Shots = Config_LoadInt("awp_max_shots", 3, "The max. amount of shots of traitor awp.");
+	g_iAWP_Prio = Config_LoadInt("awp_sort_prio", 0, "The sorting priority of the AWP in the shop menu.");
 	Config_LoadString("awp_name", "AWP", "The name of the AWP in the shop menu.", g_cAWP_Long, sizeof(g_cAWP_Long));
 
 	g_iKF_Price = Config_LoadInt("1knife_price", 3000, "The amount of credits the One-Hit Knife costs. 0 to disable.");
 	g_iKnife_Max = Config_LoadInt("1knife_max", 5, "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
+	g_iKnife_Prio = Config_LoadInt("1knife_sort_prio", 0, "The sorting priority of the One-Hit Knife in the shop menu.");
 	Config_LoadString("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.", g_cKF_Long, sizeof(g_cKF_Long));
 	
 	Config_Done();
@@ -93,19 +104,19 @@ public void OnClientPutInServer(int client)
 public void OnAllPluginsLoaded()
 {
 	if(g_iKev_Type == 0)
-		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_UNASSIGNED);
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_UNASSIGNED, g_iKev_Prio);
 	if(g_iKev_Type == 1)
 	{
-		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
-		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_DETECTIVE);
+		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
+		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_DETECTIVE, g_iKev_Prio);
 	}
 	if(g_iKev_Type == 2)
-		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR);
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
 
-	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR);
-	TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR, g_iKnife_Prio);
+	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR, g_iM4_Prio);
+	TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR, g_iAWP_Prio);
+	TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR, g_iUSP_Prio);
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
