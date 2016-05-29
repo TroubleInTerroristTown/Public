@@ -44,7 +44,10 @@ public Action Command_TVoice(int client, int args)
 	if(client < 1)
 		return Plugin_Handled;
 	
-	if(!TTT_IsRoundActive() || !IsPlayerAlive(client))
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
+	if(!IsPlayerAlive(client))
 		return Plugin_Handled;
 	
 	if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
