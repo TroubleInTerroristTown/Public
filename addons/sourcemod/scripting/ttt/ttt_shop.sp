@@ -71,6 +71,9 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/shop.cfg");
 	Config_Setup("Shop", g_sConfigFile);
 	g_bSortItems = Config_LoadBool("ttt_sort_items", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
+	// Doesn't exist anymore
+	Config_Remove("ttt_sort_items_price");
+	Config_Remove("ttt_sort_items_price_order");
 	Config_Done();
 	
 	LoadTranslations("ttt.phrases");
