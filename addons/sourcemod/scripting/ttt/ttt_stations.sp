@@ -198,6 +198,7 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 	if (g_iHealthStationHealth[owner] <= 0)
 	{
 		AcceptEntityInput(stationIndex, "Kill");
+		SDKUnhook(stationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		g_bHasActiveHealthStation[owner] = false;
 	}
 	return Plugin_Continue;
@@ -283,6 +284,7 @@ void spawnHealthStation(int client)
 	int healthStationIndex = CreateEntityByName("prop_physics_multiplayer");
 	if (healthStationIndex != -1)
 	{
+		int role = TTT_GetClientRole(client);
 		float clientPos[3];
 		GetClientAbsOrigin(client, clientPos);
 		SetEntProp(healthStationIndex, Prop_Send, "m_hOwnerEntity", client);
@@ -292,9 +294,52 @@ void spawnHealthStation(int client)
 		TeleportEntity(healthStationIndex, clientPos, NULL_VECTOR, NULL_VECTOR);
 		g_iHealthStationHealth[client] = 10;
 		g_bHasActiveHealthStation[client] = true;
-		g_iHealthStationCharges[client] = ((TTT_GetClientRole(client) == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
-		CPrintToChat(client, g_sPluginTag, ((TTT_GetClientRole(client) == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
+		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
+		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
+		
+		if(role == TTT_TEAM_TRAITOR)
+		{
+			if (SDKHookEx(healthStationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+					SetupGlow(healthStationIndex);
+		}
 	}
+}
+
+void SetupGlow(int entity)
+{
+	int iOffset;
+	
+	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
+		return;
+	
+	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(entity, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+	
+	SetEntData(entity, iOffset, 255, _, true);
+	SetEntData(entity, iOffset + 1, 0, _, true);
+	SetEntData(entity, iOffset + 2, 0, _, true);
+	SetEntData(entity, iOffset + 3, 255, _, true);
+}
+
+public Action OnSetTransmit_GlowSkin(int entity, int client)
+{
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
+	if(client == 0 || IsFakeClient(client))
+		return Plugin_Handled;
+		
+	if(!IsPlayerAlive(client))
+		return Plugin_Handled;
+	
+	if(!IsValidEntity(entity))
+		return Plugin_Handled;
+	
+	if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		return Plugin_Continue;
+	
+	return Plugin_Handled;
 }
 
 void healthStation_cleanUp()

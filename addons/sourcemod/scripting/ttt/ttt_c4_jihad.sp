@@ -10,6 +10,7 @@
 #include <multicolors>
 #include <smlib>
 #include <emitsoundany>
+#include <sdkhooks>
 
 #pragma newdecls required
 
@@ -179,7 +180,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			g_bHasC4[client] = true;
 			g_iPCount_C4[client]++;
 			CPrintToChat(client, g_sPluginTag, "Right click to plant the C4", client);
-		} else if (StrEqual(itemshort, SHORT_NAME_J, false)) {
+		}
+		else if (StrEqual(itemshort, SHORT_NAME_J, false))
+		{
 			int role = TTT_GetClientRole(client);
 			
 			if (role != TTT_TEAM_TRAITOR || g_bHasJ[client])
@@ -425,9 +428,14 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			SetEntProp(bombEnt, Prop_Data, "m_CollisionGroup", 1);
 			SetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity", client);
 			DispatchKeyValue(bombEnt, "model", MDL_C4);
-			DispatchSpawn(bombEnt);
-			TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
-			showPlantMenu(client);
+			if(DispatchSpawn(bombEnt))
+			{
+				TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
+				showPlantMenu(client);
+				
+				if (SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+					SetupGlow(bombEnt);
+			}
 		}
 	}
 	if (buttons & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
@@ -465,6 +473,43 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 
 	return Plugin_Continue;
+}
+
+void SetupGlow(int entity)
+{
+	int iOffset;
+	
+	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
+		return;
+	
+	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(entity, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+	
+	SetEntData(entity, iOffset, 255, _, true);
+	SetEntData(entity, iOffset + 1, 0, _, true);
+	SetEntData(entity, iOffset + 2, 0, _, true);
+	SetEntData(entity, iOffset + 3, 255, _, true);
+}
+
+public Action OnSetTransmit_GlowSkin(int entity, int client)
+{
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
+	if(client == 0 || IsFakeClient(client))
+		return Plugin_Handled;
+		
+	if(!IsPlayerAlive(client))
+		return Plugin_Handled;
+	
+	if(!IsValidEntity(entity))
+		return Plugin_Handled;
+	
+	if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		return Plugin_Continue;
+	
+	return Plugin_Handled;
 }
 
 stock void showPlantMenu(int client)
@@ -754,6 +799,8 @@ stock void removeBomb(int client)
 		
 		if (!StrEqual(MDL_C4, sModelPath))
 			continue;
+		
+		SDKUnhook(iEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		
 		AcceptEntityInput(iEnt, "Kill");
 	}
