@@ -12,6 +12,7 @@
 
 int g_iTPrice = 0;
 int g_iTCount = 0;
+int g_iTPrio = 0;
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bPlayerIsTagged[MAXPLAYERS + 1] = { false, ... };
@@ -53,6 +54,7 @@ public void OnPluginStart()
 	
 	g_iTPrice = Config_LoadInt("tag_traitor_price", 9000, "The amount of credits for tagrenade costs as traitor. 0 to disable.");
 	g_iTCount = Config_LoadInt("tag_traitor_count", 1, "The amount of usages for tagrenade per round as innocent. 0 to disable.");
+	g_iTPrio = Config_LoadInt("tag_traitor_sort_prio", 0, "The sorting priority of the tagrenade (Traitor) in the shop menu.");
 	g_fTagrenadeRange = Config_LoadFloat("tag_tagrenade_distance", 1000.0, "Sets the proximity in which the tactical grenade will tag an opponent.");
 	g_fTagrenadeTime = Config_LoadFloat("tag_tagrenade_time", 3.5, "How long a player is tagged for in seconds.");
 	g_bShowPlayersBehindWalls = Config_LoadBool("tag_players_behind_walls", true, "Tag players behind a wall?");
@@ -78,7 +80,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR);
+	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
