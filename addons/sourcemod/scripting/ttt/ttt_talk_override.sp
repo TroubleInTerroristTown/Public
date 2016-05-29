@@ -47,6 +47,9 @@ public Action Command_TVoice(int client, int args)
 	if(!TTT_IsRoundActive() || !IsPlayerAlive(client))
 		return Plugin_Handled;
 	
+	if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+		return Plugin_Handled;
+	
 	if(g_bTVoice[client])
 	{
 		PrintToChat(client, "Traitor Voice Chat: Disabled!");
