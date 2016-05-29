@@ -116,6 +116,18 @@ stock void Config_LoadString(const char[] name, const char[] value, const char[]
 	}
 }
 
+stock void Config_Remove(const char[] name){
+	if(!Config_IsValid()){
+		LogError("[CONFIG LOADER] No valid config loaded!");
+		return;
+	}
+	
+	if(__g_kConfigKV.JumpToKey(name, false)){
+		__g_kConfigKV.DeleteThis();
+		__g_kConfigKV.Rewind();
+		__g_kConfigKV.ExportToFile(__g_sConfigFile);
+	}
+}
 
 stock bool Config_IsValid(){
 	return (__g_kConfigKV != INVALID_HANDLE);
