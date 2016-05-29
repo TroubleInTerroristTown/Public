@@ -3,14 +3,24 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <config_loader>
 
 #pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
-int g_sprite;
-	
+bool g_bColored = true;
+
+int g_iSprite = -1;
+
+int g_iObject[MAXPLAYERS + 1] =  { 0, ... };
+
+float g_fDistance[MAXPLAYERS + 1] =  { 0.0, ... };
+float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
+
+char g_cConfigFile[PLATFORM_MAX_PATH];
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -20,24 +30,21 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-
-int gObj[MAXPLAYERS + 1] =  { 0, ... };
-float gDistance[MAXPLAYERS + 1] =  { 0.0, ... };
-
-
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+	
+	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
+	Config_Setup("TTT", g_cConfigFile);
+	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
+	Config_Done();
 	
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
 {
-	if(GetEngineVersion() == Engine_CSGO)
-		g_sprite = PrecacheModel("materials/sprites/laserbeam.vmt");
-	else
-		g_sprite = PrecacheModel("materials/sprites/laser.vmt");
+	g_iSprite = PrecacheModel("materials/sprites/laserbeam.vmt");
 }
 
 stock void Command_Grab(int client)
@@ -50,13 +57,14 @@ stock void Command_UnGrab(int client)
 	if (ValidGrab(client))
 	{
 		char edictname[128];
-		GetEdictClassname(gObj[client], edictname, 128);
+		GetEdictClassname(g_iObject[client], edictname, 128);
 		
 		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
-			SetEntPropEnt(gObj[client], Prop_Data, "m_hPhysicsAttacker", 0);
+			SetEntPropEnt(g_iObject[client], Prop_Data, "m_hPhysicsAttacker", 0);
 	}
 	
-	gObj[client] = -1;
+	g_iObject[client] = -1;
+	g_fTime[client] = 0.0;
 }
 
 stock void GrabSomething(int client)
@@ -113,9 +121,9 @@ stock void GrabSomething(int client)
 			}
 		}
 
-		gObj[client] = EntIndexToEntRef(ent);
+		g_iObject[client] = EntIndexToEntRef(ent);
 
-		gDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
+		g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
 		float position[3];
 		TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
@@ -124,7 +132,7 @@ stock void GrabSomething(int client)
 
 stock bool ValidGrab(int client)
 {
-	int obj = gObj[client];
+	int obj = g_iObject[client];
 	if (obj != -1 && IsValidEntity(obj) && IsValidEdict(obj))
 		return (true);
 	return (false);
@@ -138,7 +146,7 @@ stock int GetObject(int client, bool hitSelf=true)
 	{
 		if (ValidGrab(client))
 		{
-			ent = EntRefToEntIndex(gObj[client]);
+			ent = EntRefToEntIndex(g_iObject[client]);
 			return (ent);
 		}
 
@@ -217,7 +225,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 public Action Adjust(Handle timer)
 {	
 	
-	float vecDir[3], vecPos[3], vecPos2[3], vecVel[3];
+	float vecDir[3];
+	float vecPos[3];
+	float vecPos2[3];
+	float vecVel[3];
 	float viewang[3];
 
 	LoopValidClients(i)
@@ -231,31 +242,48 @@ public Action Adjust(Handle timer)
 				GetClientEyePosition(i, vecPos);
 				
 				int color[4];
-				color[0] = 255; 
-				color[1] = 0;
-				color[2] = 0;
-				color[3] = 255;
-				vecPos2 = vecPos;
+				
+				if(g_bColored)
+				{
+					if(g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
+					{
+						color[0] = GetRandomInt(0, 255); 
+						color[1] = GetRandomInt(0, 255); 
+						color[2] = GetRandomInt(0, 255); 
+						color[3] = 255;
+					}
+				}
+				else
+				{
+					color[0] = 255; 
+					color[1] = 0; 
+					color[2] = 0;
+					color[3] = 255;
+				}
+				
 				// update object
-				vecPos[0]+=vecDir[0]*gDistance[i];
-				vecPos[1]+=vecDir[1]*gDistance[i];
-				vecPos[2]+=vecDir[2]*gDistance[i];
+				vecPos2 = vecPos;
+				vecPos[0] += vecDir[0] * g_fDistance[i];
+				vecPos[1] += vecDir[1] * g_fDistance[i];
+				vecPos[2] += vecDir[2] * g_fDistance[i];
 			
-				GetEntPropVector(gObj[i], Prop_Send, "m_vecOrigin", vecDir);
+				GetEntPropVector(g_iObject[i], Prop_Send, "m_vecOrigin", vecDir);
 				
-				
-				TE_SetupBeamPoints(vecPos2, vecDir, g_sprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
+				TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
 				TE_SendToAll();
+				
+				g_fTime[i] = GetGameTime() + 1.0;
 			
 				SubtractVectors(vecPos, vecDir, vecVel);
 				ScaleVector(vecVel, 10.0);
 			
-				TeleportEntity(gObj[i], NULL_VECTOR, NULL_VECTOR, vecVel);
+				TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
 			}
 		}
 }
 
 public void OnClientDisconnect(int client)
 {
-	gObj[client] = -1;
+	g_iObject[client] = -1;
+	g_fTime[client] = 0.0;
 }
