@@ -53,12 +53,12 @@ char g_sLongName_J[64];
 
 float g_fJihadPreparingTime = 60.0;
 
-float g_fC4DamageRadius = 850.0;
-float g_fC4Magnitude = 850.0;
+int g_iC4DamageRadius = 850;
+int g_iC4Magnitude = 850;
 float g_fC4KillRadius = 275.0;
 
-float g_fJihadDamangeRadius = 600.0;
-float g_fJihadMagnitude = 1000.0;
+int g_iJihadDamageRadius = 600;
+int g_iJihadMagnitude = 1000;
 
 // bool g_bC4Glow = true;
 
@@ -92,17 +92,17 @@ public void OnPluginStart()
 	g_iPrio_C4 = Config_LoadInt("c4_sort_prio", 0, "The sorting priority of the C4 in the shop menu.");
 	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
 	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
-	g_fC4DamageRadius = Config_LoadFloat("c4_damage_radius", 850.0, "The damage radius of the C4 explosion.");
+	g_iC4DamageRadius = Config_LoadInt("c4_damage_radius", 850, "The damage radius of the C4 explosion.");
 	
 	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
 	g_iPrio_J = Config_LoadInt("jihad_sort_prio", 0, "The sorting priority of the Jihad in the shop menu.");
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_fJihadDamangeRadius = Config_LoadFloat("jihad_damage_radius", 600.0, "The damage radius of the Jihad explosion.");
+	g_iJihadDamageRadius = Config_LoadInt("jihad_damage_radius", 600, "The damage radius of the Jihad explosion.");
 	
-	g_fC4Magnitude = Config_LoadFloat("c4_magnitude", 850.0, "The amount of damage done by the explosion. For C4");
-	g_fJihadMagnitude = Config_LoadFloat("jihad_magnitude", 1000.0, "The amount of damage done by the explosion. For Jihad");
+	g_iC4Magnitude = Config_LoadInt("c4_magnitude", 850, "The amount of damage done by the explosion. For C4");
+	g_iJihadMagnitude = Config_LoadInt("jihad_magnitude", 1000, "The amount of damage done by the explosion. For Jihad");
 	
 	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
 	// g_bC4Glow = Config_LoadBool("c4_glow", true, "Enable the glow effect for c4");
@@ -251,8 +251,8 @@ stock void Detonate(int client)
 	if (ExplosionIndex != -1)
 	{
 		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_fJihadMagnitude);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_fJihadDamangeRadius);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_iJihadMagnitude);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_iJihadDamageRadius);
 		
 		DispatchSpawn(ExplosionIndex);
 		ActivateEntity(ExplosionIndex);
@@ -374,8 +374,8 @@ public Action explodeC4(Handle timer, Handle pack)
 		DispatchKeyValue(shakeIndex, "radius", sShakeRadius);
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", g_fC4DamageRadius);
-		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_fC4Magnitude);
+		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", g_iC4DamageRadius);
+		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_iC4Magnitude);
 		SetEntPropEnt(explosionIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchSpawn(particleIndex);
 		DispatchSpawn(explosionIndex);
