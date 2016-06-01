@@ -252,7 +252,13 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if(g_bHasKnife[iAttacker])
 	{
 		char sWeapon[64];
+		char sGrenade[64];
+		
+		GetEdictClassname(inflictor, sGrenade, sizeof(sGrenade));
 		GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
+		
+		if (g_bHasKnife[iAttacker] && StrContains(sGrenade, "_projectile", false) != -1)
+			return Plugin_Handled;
 
 		if((StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
 		{
