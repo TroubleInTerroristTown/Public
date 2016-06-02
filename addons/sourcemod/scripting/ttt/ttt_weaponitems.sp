@@ -241,7 +241,7 @@ void ResetKnifes()
 	}
 }
 
-public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType, int &iWeapon, float fDamageForce[3], float fDamagePosition[3])
 {
 	if(!TTT_IsRoundActive())
 		return Plugin_Continue;
@@ -252,18 +252,13 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if(g_bHasKnife[iAttacker])
 	{
 		char sWeapon[64];
-		char sGrenade[64];
 		
-		GetEdictClassname(inflictor, sGrenade, sizeof(sGrenade));
-		GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-		
-		if (g_bHasKnife[iAttacker] && StrContains(sGrenade, "_projectile", false) != -1)
-			return Plugin_Handled;
+		GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon));
 
 		if((StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))
 		{
 			g_bHasKnife[iAttacker] = false;
-			damage = float(GetClientHealth(iVictim) + GetClientArmor(iVictim));
+			fDamage = float(GetClientHealth(iVictim) + GetClientArmor(iVictim));
 			return Plugin_Changed;
 		}
 	}
