@@ -2,9 +2,8 @@
 
 COUNT="$(git rev-list --count HEAD)"
 HASH="$(git log --pretty=format:%h -n 1)"
-BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-FILE=ttt-$2-$1-$COUNT-$HASH-$BRANCH.zip
-LATEST=ttt-latest-$2-$1-$BRANCH.zip
+FILE=ttt-$2-$1-$COUNT-$HASH.zip
+LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
 PASS=$5

@@ -1,3 +1,7 @@
+TTT19:
+  script:
+    - bash ci/build.sh "1.9" "dev" $FTP_HOST $FTP_USER $FTP_PASS 
+
 TTT18:
   script:
     - bash ci/build.sh "1.8" "dev" $FTP_HOST $FTP_USER $FTP_PASS 
