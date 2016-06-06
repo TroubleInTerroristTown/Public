@@ -117,7 +117,8 @@ enum eConfig
 	String:s_RoundStartFontColor[12],
 	bool:tChatToDead,
 	bool:dChatToDead,
-	bool:bTranfserArmor
+	bool:bTranfserArmor,
+	bool:bShowTraitors
 };
 
 enum Ragdolls

@@ -248,6 +248,7 @@ void SetupConfig()
 	Config_LoadString("ttt_round_started_font_color", "44ff22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[s_RoundStartedFontColor], sizeof(g_iConfig[s_RoundStartedFontColor]));
 	g_iConfig[i_RoundStartFontSize] = Config_LoadInt("ttt_round_start_font_size", 24, "Font size of the text while the countdown runs");
 	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
+	g_iConfig[bShowTraitors] = Config_LoadBool("ttt_show_traitor_names", true, "Show traitor partners on team selection?");
 	
 	Config_Done();
 	
@@ -810,7 +811,10 @@ public Action Timer_Selection(Handle hTimer)
 		if (g_iRole[i] != TTT_TEAM_TRAITOR)
 			CPrintToChat(i, g_iConfig[s_pluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 		else
-			listTraitors(i);
+		{
+			if(g_iConfig[bShowTraitors])
+				listTraitors(i);
+		}
 		
 		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 			continue;
