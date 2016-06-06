@@ -53,6 +53,8 @@ public void OnPluginStart()
 	g_iPrio = Config_LoadInt("dna_sort_prio", 0, "The sorting priority of the dna scanner in the shop menu.");
 	
 	Config_Done();
+	
+	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
 public void OnClientDisconnect(int client)
