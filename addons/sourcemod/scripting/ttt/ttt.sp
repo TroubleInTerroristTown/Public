@@ -1212,7 +1212,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	
 	event.BroadcastDisabled = true;
 		
-	return Plugin_Changed;
 }
 
 public void OnClientPostAdminCheck(int client)
