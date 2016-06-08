@@ -138,7 +138,9 @@ void ResetIceK(int client)
 	g_bIceKnife[client] = false;
 	SetEntityMoveType(client, MOVETYPE_WALK);
 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
-	SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+	
+	if(g_iOldColors[client][3] > 0)
+		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -203,7 +205,8 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 	{
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
-		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+		if(g_iOldColors[client][3] > 0)
+			SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
 		g_bFreezed[client] = false;
 	}
 	return Plugin_Stop;
