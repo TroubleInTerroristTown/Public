@@ -17,9 +17,6 @@ int g_iColorDetective[3] =  {0, 0, 255};
 bool g_bDGlow = false;
 bool g_bTGlow = false;
 
-bool g_bTAGrenade = false;
-bool g_bWallhack = false;
-
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo =
@@ -44,43 +41,22 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	CreateTimer(0.4, Timer_SetupGlow, _, TIMER_REPEAT);
+	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
 }
 
-public void OnAllPluginsLoaded()
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	if(LibraryExists("ttt_tagrenade"))
-		g_bTAGrenade = true;
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(LibraryExists("ttt_wallhack"))
-		g_bWallhack = true;
+	if(TTT_IsClientValid(client))
+	{
+		UnhookGlow(client);
+	}
 }
 
-public void OnLibraryAdded(const char[] library)
+public void TTT_OnClientGetRole(int client, int role)
 {
-	if(StrEqual(library, "ttt_tagrenade", false))
-		g_bTAGrenade = true;
-	
-	if(StrEqual(library, "ttt_wallhack", false))
-		g_bWallhack = true;
-}
-
-public void OnLibraryRemoved(const char[] library)
-{
-	if(StrEqual(library, "ttt_tagrenade", false))
-		g_bTAGrenade = true;
-	
-	if(StrEqual(library, "ttt_wallhack", false))
-		g_bWallhack = true;
-}
-
-public Action Timer_SetupGlow(Handle timer, any data)
-{
-	LoopValidClients(client)
-		if (IsPlayerAlive(client))
-			SetupGlowSkin(client)
-	
-	return Plugin_Continue;
+	SetupGlowSkin(client);
 }
 
 void SetupGlowSkin(int client)
@@ -141,21 +117,18 @@ void SetupGlow(int client, int iSkin)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
-	if(!TTT_IsRoundActive())
-		return Plugin_Handled;
-	
-	if(client == 0 || IsFakeClient(client))
-		return Plugin_Handled;
-		
 	if(!IsPlayerAlive(client))
+	{
+		UnhookGlow(client);
 		return Plugin_Handled;
+	}
 	
 	LoopValidClients(target)
 	{
-		if(client == 0 || IsFakeClient(target))
+		if(target < 1)
 			continue;
-		
-		if(target == -1)
+			
+		if(IsFakeClient(target))
 			continue;
 		
 		if(!IsPlayerAlive(target))
@@ -172,13 +145,12 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		
 		if(g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
-		
-		if (g_bTAGrenade && TTT_TAGrenade(target))
-			return Plugin_Continue;
-		
-		if (g_bWallhack && TTT_Wallhack(client))
-			return Plugin_Continue;
 	}
 	
 	return Plugin_Handled;
+}
+
+void UnhookGlow(int client)
+{
+	SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 }
