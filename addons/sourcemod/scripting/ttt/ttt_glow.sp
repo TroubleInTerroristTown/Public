@@ -41,17 +41,16 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
+	HookEvent("player_spawn", Event_Reset, EventHookMode_Post);
+	HookEvent("player_death", Event_Reset, EventHookMode_Post);
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public Action Event_Reset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(TTT_IsClientValid(client))
-	{
 		UnhookGlow(client);
-	}
 }
 
 public void TTT_OnClientGetRole(int client, int role)
