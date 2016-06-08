@@ -91,7 +91,7 @@ public void OnPluginStart()
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
-	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
+	CreateTimer(1.0, Timer_Adjust, _, TIMER_REPEAT); // Maybe every second is enough
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
@@ -1581,31 +1581,35 @@ public Action Timer_Adjust(Handle timer)
 	
 	float vec[3];
 	LoopValidClients(i)
-	if (IsPlayerAlive(i))
 	{
-		if (g_iRole[i] == TTT_TEAM_TRAITOR)
+		if (IsPlayerAlive(i))
 		{
-			GetClientAbsOrigin(i, vec);
-			
-			vec[2] += 10;
-			g_iTraitorAlive++;
-			int[] clients = new int[MaxClients];
-			int index = 0;
-			
-			LoopValidClients(j)
-			if (IsPlayerAlive(j) && j != i && (g_iRole[j] == TTT_TEAM_TRAITOR))
+			if (g_iRole[i] == TTT_TEAM_TRAITOR)
 			{
-				clients[index] = j;
-				index++;
+				GetClientAbsOrigin(i, vec);
+				
+				vec[2] += 10;
+				g_iTraitorAlive++;
+				int[] clients = new int[MaxClients];
+				int index = 0;
+				
+				LoopValidClients(j)
+				{
+					if (IsPlayerAlive(j) && j != i && (g_iRole[j] == TTT_TEAM_TRAITOR))
+					{
+						clients[index] = j;
+						index++;
+					}
+				}
+				
+				TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
+				TE_Send(clients, index);
 			}
-			
-			TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
-			TE_Send(clients, index);
+			else if (g_iRole[i] == TTT_TEAM_INNOCENT)
+				g_iInnoAlive++;
+			else if (g_iRole[i] == TTT_TEAM_DETECTIVE)
+				g_iDetectiveAlive++;
 		}
-		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
-			g_iInnoAlive++;
-		else if (g_iRole[i] == TTT_TEAM_DETECTIVE)
-			g_iDetectiveAlive++;
 	}
 	
 	if (g_bRoundStarted)
