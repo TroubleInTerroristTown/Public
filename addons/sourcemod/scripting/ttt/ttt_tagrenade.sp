@@ -288,6 +288,9 @@ void ResetTAG(int client)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
 	if(!IsPlayerAlive(client))
 	{
 		UnhookGlow(client);

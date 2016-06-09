@@ -41,7 +41,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
 }
 
-public Action Event_Reset(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
@@ -112,6 +112,9 @@ void SetupGlow(int client, int iSkin)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
 	if(!IsPlayerAlive(client))
 	{
 		UnhookGlow(client);
