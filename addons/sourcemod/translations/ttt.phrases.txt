@@ -772,5 +772,31 @@
 	{
 		"en"		"Decoy Position was incorrect. (Stuck problem)"
 	}
+	
+	"SpecMenu: Title"
+	{
+		"en"		"Spec Menu"
+	}
+	
+	"SpecMenu: Player"
+	{
+		"#format"	"{1:N}"
+		"en"		"Player: {1}"
+	}
+	
+	"SpecMenu: Next"
+	{
+		"en"		"Next player"
+	}
+	
+	"SpecMenu: Prev"
+	{
+		"en"		"Prev player"
+	}
+	
+	"SpecMenu: Mute"
+	{
+		"en"		"Mute this player"
+	}
 
 }
