@@ -1296,7 +1296,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	{
 		char sParam[32];
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
-		PrintToChat(client, sParam);
+		
 		if (!StrEqual(sParam, "yes", false))
 		{
 			Handle hFile = OpenFile(g_sRulesFile, "rt");
