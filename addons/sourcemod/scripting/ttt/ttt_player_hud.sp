@@ -7,7 +7,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Show Nickname & Spec Menu"
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Show Nickname"
 
 public Plugin myinfo =
 {

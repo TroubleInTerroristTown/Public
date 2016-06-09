@@ -18,6 +18,10 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
 
+int g_iColorInnocent[3] =  {0, 255, 0};
+int g_iColorTraitor[3] =  {255, 0, 0};
+int g_iColorDetective[3] =  {0, 0, 255};
+
 int g_iTraitorPrice;
 int g_iDetectivePrice;
 
@@ -46,13 +50,6 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	CreateNative("TTT_Wallhack", Native_Wallhack);
-	RegPluginLibrary("ttt_wallhack");
-	return APLRes_Success;
-}
-
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
@@ -75,8 +72,8 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_death", Event_PlayerReset);
-	HookEvent("player_spawn", Event_PlayerReset);
+	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
+	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
 }
 
 public void OnAllPluginsLoaded()
@@ -91,9 +88,71 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 	{
+		UnhookGlow(client);
 		g_bHasWH[client] = false;
 		g_bOwnWH[client] = false;
 	}
+}
+
+public void TTT_OnClientGetRole(int client, int role)
+{
+	SetupGlowSkin(client);
+}
+
+void SetupGlowSkin(int client)
+{
+	if(!TTT_IsRoundActive())
+		return;
+	
+	char sModel[PLATFORM_MAX_PATH];
+	GetClientModel(client, sModel, sizeof(sModel));
+	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
+	
+	if(iSkin == -1)
+		return;
+		
+	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+		SetupGlow(client, iSkin);
+}
+
+void SetupGlow(int client, int iSkin)
+{
+	int iOffset;
+	
+	if (!iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+		return;
+	
+	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+	
+	int iRed = 255;
+	int iGreen = 255;
+	int iBlue = 255;
+	
+	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
+		iRed = g_iColorDetective[0];
+		iGreen = g_iColorDetective[1];
+		iBlue = g_iColorDetective[2];
+	}
+	else if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
+		iRed = g_iColorTraitor[0];
+		iGreen = g_iColorTraitor[1];
+		iBlue = g_iColorTraitor[2];
+	}
+	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
+		iRed = g_iColorInnocent[0];
+		iGreen = g_iColorInnocent[1];
+		iBlue = g_iColorInnocent[2];
+	}
+	
+	SetEntData(iSkin, iOffset, iRed, _, true);
+	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
+	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
+	SetEntData(iSkin, iOffset + 3, 255, _, true);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
@@ -153,12 +212,47 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public int Native_Wallhack(Handle plugin, int numParams)
+public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
-	int target = GetNativeCell(1);
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
 	
-	if(g_bOwnWH[target] && g_bHasWH[target])
-		return true;
-	return false;
+	if(!IsPlayerAlive(client))
+	{
+		UnhookGlow(client);
+		return Plugin_Handled;
+	}
+	
+	if(g_bOwnWH[client])
+		return Plugin_Handled;
+	
+	if(g_bHasWH[client])
+		return Plugin_Handled;
+	
+	LoopValidClients(target)
+	{
+		if(target < 1)
+			continue;
+			
+		if(IsFakeClient(target))
+			continue;
+		
+		if(!IsPlayerAlive(target))
+			continue;
+		
+		if(!CPS_HasSkin(target))
+			continue;
+			
+		if(EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
+			continue;
+			
+		return Plugin_Continue;
+	}
+	
+	return Plugin_Handled;
 }
 
+void UnhookGlow(int client)
+{
+	SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+}

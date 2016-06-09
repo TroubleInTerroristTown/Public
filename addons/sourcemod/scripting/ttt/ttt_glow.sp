@@ -4,10 +4,6 @@
 #include <CustomPlayerSkins>
 #include <config_loader>
 
-#undef REQUIRE_PLUGIN
-#tryinclude <ttt-tagrenade>
-#tryinclude <ttt-wallhack>
-
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
 int g_iColorDetective[3] =  {0, 0, 255};
@@ -41,11 +37,11 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_Reset, EventHookMode_Post);
-	HookEvent("player_death", Event_Reset, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
+	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
 }
 
-public Action Event_Reset(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
@@ -116,6 +112,9 @@ void SetupGlow(int client, int iSkin)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
+	if(!TTT_IsRoundActive())
+		return Plugin_Handled;
+	
 	if(!IsPlayerAlive(client))
 	{
 		UnhookGlow(client);

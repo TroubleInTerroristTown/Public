@@ -30,7 +30,6 @@ do
 done
 
 echo "Compile 3rd-party-plugins"
-addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/lasermines.sp
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
 
@@ -67,8 +66,8 @@ fi
 echo "Create clean build folder"
 mkdir build
 
-echo "Move addons, materials, models and sound folder"
-mv addons materials models sound build/
+echo "Move addons, materials and sound folder"
+mv addons materials sound build/
 
 echo "Remove sourcemod folders"
 rm -r build/addons/metamod
@@ -98,7 +97,7 @@ echo "Go to build folder"
 cd build
 
 echo "Compress directories and files"
-zip -9rq $FILE addons materials models sound
+zip -9rq $FILE addons materials sound
 
 echo "Upload file"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
