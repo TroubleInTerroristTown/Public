@@ -292,10 +292,7 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		return Plugin_Handled;
 	
 	if(!IsPlayerAlive(client))
-	{
-		UnhookGlow(client);
 		return Plugin_Handled;
-	}
 	
 	if(!g_bSeePlayers[client])
 		return Plugin_Handled;
