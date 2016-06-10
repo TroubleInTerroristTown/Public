@@ -72,8 +72,9 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
-	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerReset);
+	HookEvent("player_death", Event_PlayerReset);
+	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
 public void OnAllPluginsLoaded()
@@ -82,15 +83,30 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 }
 
+public Action Timer_UpdateGlow(Handle timer)
+{
+	LoopValidClients(i)
+	{
+		if(TTT_IsClientValid(i))
+		{
+			if(IsPlayerAlive(i))
+				SetupGlowSkin(i);
+			else
+				UnhookGlow(i);
+		}
+	}
+}
+
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if(TTT_IsClientValid(client))
 	{
-		UnhookGlow(client);
 		g_bHasWH[client] = false;
 		g_bOwnWH[client] = false;
+		
+		UnhookGlow(client);
 	}
 }
 

@@ -69,11 +69,26 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
+	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
 public void OnClientDisconnect(int client)
 {
 	ResetTAG(client);
+}
+
+public Action Timer_UpdateGlow(Handle timer)
+{
+	LoopValidClients(i)
+	{
+		if(TTT_IsClientValid(i))
+		{
+			if(IsPlayerAlive(i))
+				SetupGlowSkin(i);
+			else
+				UnhookGlow(i);
+		}
+	}
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)

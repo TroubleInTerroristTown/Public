@@ -39,6 +39,8 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
 	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
+	
+	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
@@ -47,6 +49,20 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 		UnhookGlow(client);
+}
+
+public Action Timer_UpdateGlow(Handle timer)
+{
+	LoopValidClients(i)
+	{
+		if(TTT_IsClientValid(i))
+		{
+			if(IsPlayerAlive(i))
+				SetupGlowSkin(i);
+			else
+				UnhookGlow(i);
+		}
+	}
 }
 
 public void TTT_OnClientGetRole(int client, int role)
