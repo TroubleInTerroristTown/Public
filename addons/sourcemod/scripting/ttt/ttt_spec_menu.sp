@@ -47,8 +47,8 @@ public void OnPluginStart()
 	
 	LoadTranslations("ttt.phrases");
 	
-	RegConsoleCmd("sm_spec", Command_SpecMenu);
 	RegConsoleCmd("sm_specmenu", Command_SpecMenu);
+	RegConsoleCmd("sm_spm", Command_SpecMenu);
 	
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
 }
