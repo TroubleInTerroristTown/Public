@@ -99,6 +99,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 
 public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 {
+	if(iRagdollC[Scanned])
+		return Plugin_Continue;
+	
 	if(!TTT_IsClientValid(client))
 		return Plugin_Continue;
 	
@@ -118,5 +121,5 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	
 	iRagdollC[Scanned] = true;
 	
-	return Plugin_Continue;
+	return Plugin_Changed;
 }
