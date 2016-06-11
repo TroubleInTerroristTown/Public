@@ -83,20 +83,20 @@ public void OnPluginStart()
 	Config_Setup("TTT-BaseWeapons", g_sConfigFile);
 
 	g_iKev_Type = Config_LoadInt("kevlar_type", 1, "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
-	g_iKev_Price = Config_LoadInt("kevlar_price", 2500, "The amount of credits the kevlar costs. 0 to disable.");
+	g_iKev_Price = Config_LoadInt("kevlar_price", 3000, "The amount of credits the kevlar costs. 0 to disable.");
 	g_iKev_Max = Config_LoadInt("kevlar_max", 5, "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
 	g_iKev_Prio = Config_LoadInt("kevlar_sort_prio", 0, "The sorting priority of the kevlar in the shop menu.");
 	Config_LoadString("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
 	
 	g_iHeavy_Type = Config_LoadInt("heavy_type", 1, "Type of heavy configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iHeavy_Armor = Config_LoadInt("heavy_armor", 100, "The amount of armor the heavy has. 100 is default.");
-	g_iHeavy_Price = Config_LoadInt("heavy_price", 2500, "The amount of credits the heavy costs. 0 to disable.");
+	g_iHeavy_Price = Config_LoadInt("heavy_price", 10000, "The amount of credits the heavy costs. 0 to disable.");
 	g_iHeavy_Max = Config_LoadInt("heavy_max", 5, "The max amount of times a player can purchase heavy in one round. 0 for unlimited.");
 	g_iHeavy_Prio = Config_LoadInt("heavy_sort_prio", 0, "The sorting priority of the heavy in the shop menu.");
 	Config_LoadString("heavy_name", "Heavy", "The name of the heavy in the shop menu.", g_cHeavy_Long, sizeof(g_cHeavy_Long));
 	
 	g_iHelm_Type = Config_LoadInt("helm_type", 1, "Type of helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
-	g_iHelm_Price = Config_LoadInt("helm_price", 2500, "The amount of credits the helm costs. 0 to disable.");
+	g_iHelm_Price = Config_LoadInt("helm_price", 2000, "The amount of credits the helm costs. 0 to disable.");
 	g_iHelm_Max = Config_LoadInt("helm_max", 5, "The max amount of times a player can purchase helm in one round. 0 for unlimited.");
 	g_iHelm_Prio = Config_LoadInt("helm_sort_prio", 0, "The sorting priority of the helm in the shop menu.");
 	Config_LoadString("helm_name", "Helm", "The name of the helm in the shop menu.", g_cHelm_Long, sizeof(g_cHelm_Long));
