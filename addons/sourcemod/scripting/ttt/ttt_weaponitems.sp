@@ -15,6 +15,8 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Weapons"
 
+#define HEAVY_MODEL "models/player/custom_player/legacy/tm_phoenix_heavy.mdl"
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -30,6 +32,11 @@ char g_sConfigFile[PLATFORM_MAX_PATH];
 
 int g_iKev_Type;
 int g_iKev_Price;
+int g_iHeavy_Type;
+int g_iHeavy_Armor;
+int g_iHeavy_Price;
+int g_iHelm_Type;
+int g_iHelm_Price;
 int g_iUSP_Price;
 int g_iM4_Price;
 
@@ -40,18 +47,28 @@ int g_iAWP_Max_Shots;
 int g_iKF_Price;
 
 int g_iKev_Max;
-int g_iKnife_Max;
-
-int g_iKnife_Prio;
+int g_iHeavy_Max;
 int g_iKev_Prio;
+int g_iHeavy_Prio;
+
+int g_iHelm_Max;
+int g_iHelm_Prio;
+
+int g_iKnife_Max;
+int g_iKnife_Prio;
+
 int g_iUSP_Prio;
 int g_iM4_Prio;
 int g_iAWP_Prio;
 
 int g_iKnives[MAXPLAYERS+1];
 int g_iKevs[MAXPLAYERS+1];
+int g_iHeavy[MAXPLAYERS+1];
+int g_iHelms[MAXPLAYERS+1];
 
 char g_cKev_Long[64];
+char g_cHeavy_Long[64];
+char g_cHelm_Long[64];
 char g_cUSP_Long[64];
 char g_cM4_Long[64];
 char g_cAWP_Long[64];
@@ -69,7 +86,20 @@ public void OnPluginStart()
 	g_iKev_Price = Config_LoadInt("kevlar_price", 2500, "The amount of credits the kevlar costs. 0 to disable.");
 	g_iKev_Max = Config_LoadInt("kevlar_max", 5, "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
 	g_iKev_Prio = Config_LoadInt("kevlar_sort_prio", 0, "The sorting priority of the kevlar in the shop menu.");
-	Config_LoadString("kevlar_name", "Kevlar", "The name of the Kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
+	Config_LoadString("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
+	
+	g_iHeavy_Type = Config_LoadInt("heavy_type", 1, "Type of heavy configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+	g_iHeavy_Armor = Config_LoadInt("heavy_armor", 100, "The amount of armor the heavy has. 100 is default.");
+	g_iHeavy_Price = Config_LoadInt("heavy_price", 2500, "The amount of credits the heavy costs. 0 to disable.");
+	g_iHeavy_Max = Config_LoadInt("heavy_max", 5, "The max amount of times a player can purchase heavy in one round. 0 for unlimited.");
+	g_iHeavy_Prio = Config_LoadInt("heavy_sort_prio", 0, "The sorting priority of the heavy in the shop menu.");
+	Config_LoadString("heavy_name", "Heavy", "The name of the heavy in the shop menu.", g_cHeavy_Long, sizeof(g_cHeavy_Long));
+	
+	g_iHelm_Type = Config_LoadInt("helm_type", 1, "Type of helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+	g_iHelm_Price = Config_LoadInt("helm_price", 2500, "The amount of credits the helm costs. 0 to disable.");
+	g_iHelm_Max = Config_LoadInt("helm_max", 5, "The max amount of times a player can purchase helm in one round. 0 for unlimited.");
+	g_iHelm_Prio = Config_LoadInt("helm_sort_prio", 0, "The sorting priority of the helm in the shop menu.");
+	Config_LoadString("helm_name", "Helm", "The name of the helm in the shop menu.", g_cHelm_Long, sizeof(g_cHelm_Long));
 
 
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
@@ -96,6 +126,11 @@ public void OnPluginStart()
 	LoadTranslations("ttt.phrases");
 }
 
+public void OnMapStart()
+{
+	PrecacheModel(HEAVY_MODEL, true);
+}
+
 public void OnClientPutInServer(int client)
 {
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
@@ -112,6 +147,31 @@ public void OnAllPluginsLoaded()
 	}
 	if(g_iKev_Type == 2)
 		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
+	
+	
+	
+	if(g_iHeavy_Type == 0)
+		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_UNASSIGNED, g_iHeavy_Prio);
+	if(g_iHeavy_Type == 1)
+	{
+		TTT_RegisterCustomItem(HEAVY_T_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_TRAITOR, g_iHeavy_Prio);
+		TTT_RegisterCustomItem(HEAVY_D_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_DETECTIVE, g_iHeavy_Prio);
+	}
+	if(g_iHeavy_Type == 2)
+		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHelm_Long, g_iHeavy_Price, TTT_TEAM_TRAITOR, g_iHeavy_Prio);
+	
+	
+	
+	
+	if(g_iHelm_Type == 0)
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_UNASSIGNED, g_iHelm_Prio);
+	if(g_iHelm_Type == 1)
+	{
+		TTT_RegisterCustomItem(HELM_T_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
+		TTT_RegisterCustomItem(HELM_D_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_DETECTIVE, g_iHelm_Prio);
+	}
+	if(g_iHelm_Type == 2)
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
 
 	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR, g_iKnife_Prio);
 	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR, g_iM4_Prio);
@@ -198,7 +258,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 
 			g_bHasKnife[client] = true;
 			g_iKnives[client]++;
-		}else if(	(strcmp(itemshort, KEV_ITEM_SHORT, false) == 0)
+		}
+		else if(	(strcmp(itemshort, KEV_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEV_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEV_D_ITEM_SHORT, false) == 0))
 		 {
@@ -220,6 +281,50 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 					GiveArmor(client);
 		}
+		else if(	(strcmp(itemshort, HELM_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, HELM_T_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, HELM_D_ITEM_SHORT, false) == 0))
+		 {
+				if(g_iHelms[client] > g_iHelm_Max > 0){
+					CPrintToChat(client, "%t", "You reached limit", g_iHelm_Max);
+					return Plugin_Stop;
+				}
+
+				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+				{
+					if(g_iHelm_Type == 0)
+						GiveHelm(client);
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+				{
+					if(g_iHelm_Type == 0 || g_iHelm_Type == 1)
+						GiveHelm(client);
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+					GiveArmor(client);
+		}
+		else if(	(strcmp(itemshort, HEAVY_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, HEAVY_T_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, HEAVY_D_ITEM_SHORT, false) == 0))
+		 {
+				if(g_iHeavy[client] > g_iHeavy_Max > 0){
+					CPrintToChat(client, "%t", "You reached limit", g_iHeavy_Max);
+					return Plugin_Stop;
+				}
+
+				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+				{
+					if(g_iHeavy_Type == 0)
+						GiveHeavy(client);
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+				{
+					if(g_iHeavy_Type == 0 || g_iHeavy_Type == 1)
+						GiveHeavy(client);
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+					GiveHeavy(client);
+		}
 	}
 
 	return Plugin_Continue;
@@ -228,8 +333,24 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 void GiveArmor(int client)
 {
 	g_iKevs[client]++;
-	SetEntData(client, FindSendPropInfo("CCSPlayer", "m_bHasHelmet"), true);
 	SetEntProp(client, Prop_Data, "m_ArmorValue", 100, 1);
+}
+
+void GiveHeavy(int client)
+{
+	g_iHeavy[client]++;
+	SetEntityModel(client, HEAVY_MODEL);
+	GivePlayerItem(client, "item_assaultsuit");
+	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
+	
+	if(g_iHeavy_Armor > 100)
+		SetEntProp(client, Prop_Data, "m_ArmorValue", g_iHeavy_Armor, 1);
+}
+
+void GiveHelm(int client)
+{
+	g_iHelms[client]++;
+	SetEntData(client, FindSendPropInfo("CCSPlayer", "m_bHasHelmet"), true);
 }
 
 void ResetKnifes()
@@ -238,6 +359,8 @@ void ResetKnifes()
 		g_bHasKnife[i] = false;
 		g_iKnives[i] = 0;
 		g_iKevs[i] = 0;
+		g_iHeavy[i] = 0;
+		g_iHelms[i] = 0;
 	}
 }
 
