@@ -37,8 +37,8 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
-	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerReset);
+	HookEvent("player_death", Event_PlayerReset);
 	
 	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
@@ -134,6 +134,12 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 	if(!IsPlayerAlive(client))
 		return Plugin_Handled;
 	
+	if(!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+		return Plugin_Handled;
+	
+	if(!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		return Plugin_Handled;
+	
 	LoopValidClients(target)
 	{
 		if(target < 1)
@@ -151,10 +157,10 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		if(EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
 			continue;
 			
-		if(g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
 		
-		if(g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 			return Plugin_Continue;
 	}
 	

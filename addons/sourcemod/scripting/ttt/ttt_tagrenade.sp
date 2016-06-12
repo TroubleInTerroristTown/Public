@@ -66,8 +66,8 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_PlayerReset, EventHookMode_Post);
-	HookEvent("player_death", Event_PlayerReset, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerReset);
+	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
 	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
