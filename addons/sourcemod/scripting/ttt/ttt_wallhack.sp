@@ -74,6 +74,7 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
+	
 	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
@@ -236,17 +237,14 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 	if(!IsPlayerAlive(client))
 		return Plugin_Handled;
 	
-	if(g_bOwnWH[client])
-		return Plugin_Handled;
-	
-	if(g_bHasWH[client])
+	if(!g_bOwnWH[client] ||!g_bHasWH[client])
 		return Plugin_Handled;
 	
 	LoopValidClients(target)
 	{
 		if(target < 1)
 			continue;
-			
+		
 		if(IsFakeClient(target))
 			continue;
 		
@@ -255,11 +253,12 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		
 		if(!CPS_HasSkin(target))
 			continue;
-			
+		
 		if(EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
 			continue;
-			
-		return Plugin_Continue;
+		
+		if(g_bHasWH[client] && g_bOwnWH[client])
+			return Plugin_Continue;
 	}
 	
 	return Plugin_Handled;
