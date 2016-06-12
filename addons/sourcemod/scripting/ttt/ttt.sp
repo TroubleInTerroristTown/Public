@@ -1034,12 +1034,12 @@ public void OnClientPutInServer(int client)
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
-	SDKHook(client, SDKHook_PreThink, OnPreThink);
+	SDKHook(client, SDKHook_PostThink, OnPostThink);
 	
 	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
-public Action OnPreThink(int client)
+public Action OnPostThink(int client)
 {
 	if (TTT_IsClientValid(client))
 	{
@@ -1048,11 +1048,6 @@ public Action OnPreThink(int client)
 		else if (g_iConfig[b_karmaRound])
 			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
 	}
-}
-
-stock void AddStartKarma(int client)
-{
-	setKarma(client, g_iConfig[i_startKarma]);
 }
 
 stock void BanBadPlayerKarma(int client)
