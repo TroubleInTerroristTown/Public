@@ -338,5 +338,8 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 
 void UnhookGlow(int client)
 {
+	char sModel[PLATFORM_MAX_PATH];
+	GetClientModel(client, sModel, sizeof(sModel));
+	SetEntProp(CPS_SetSkin(client, sModel, CPS_RENDER), Prop_Send, "m_bShouldGlow", false, true);
 	SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 }
