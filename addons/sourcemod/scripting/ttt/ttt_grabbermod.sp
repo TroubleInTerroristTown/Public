@@ -11,6 +11,7 @@
 #define GRAB_DISTANCE 150.0
 
 bool g_bColored = true;
+bool g_bBlockJump = true;
 
 int g_iSprite = -1;
 
@@ -37,6 +38,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
+	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
 	Config_Done();
 	
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
@@ -89,7 +91,7 @@ stock void GrabSomething(int client)
 			return;
 		
 		char edictname[128];
-		GetEdictClassname(ent, edictname, 128);
+		GetEdictClassname(ent, edictname, sizeof(edictname));
 
 		if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
 			return;
@@ -109,7 +111,7 @@ stock void GrabSomething(int client)
 
 		if (GetEntityMoveType(ent) == MOVETYPE_NONE)
 		{
-			if (strncmp("player", edictname, 5, false)!=0)
+			if (strncmp("player", edictname, 5, false) != 0)
 			{
 				SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
 				PrintHintText(client, "Object ist now Unfreezed");
@@ -211,7 +213,36 @@ stock int ReplacePhysicsEntity(int ent)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
 {
-	if(!IsClientInGame(client)) return;
+	if(!IsClientInGame(client))
+		return Plugin_Continue;
+	
+	if(buttons & IN_JUMP)
+	{
+		if(g_bBlockJump)
+		{
+			int iEnt = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
+			
+			if(iEnt > 0)
+			{
+				char sName[128];
+				GetEdictClassname(iEnt, sName, sizeof(sName));
+				
+				if (StrContains(sName, "prop_", false) == -1 || StrContains(sName, "door", false) != -1)
+					return Plugin_Continue;
+				else
+				{
+					if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
+					{
+						if (IsValidEdict(iEnt) && IsValidEntity(iEnt)) 
+						{
+							buttons &= ~IN_JUMP;
+							return Plugin_Changed;
+						}
+					}
+				}
+			}
+		}
+	}
 	
 	if(buttons & IN_USE)
 	{
@@ -220,6 +251,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	}
 	else if(ValidGrab(client))
 		Command_UnGrab(client);
+	
+	return Plugin_Continue;
 }
 
 public Action Adjust(Handle timer)
