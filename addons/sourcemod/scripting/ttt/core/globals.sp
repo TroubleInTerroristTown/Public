@@ -95,6 +95,8 @@ Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnUpdate = null;
 
+bool g_bSourcebans = false;
+
 char g_sRadioCMDs[][] =  {
 	"coverme", 
 	"takepoint", 

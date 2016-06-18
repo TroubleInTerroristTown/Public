@@ -13,6 +13,9 @@
 #include <config_loader>
 #include <smlib>
 
+#undef REQUIRE_PLUGIN
+#tryinclude <sourcebans>
+
 #pragma newdecls required
 
 #include "core/globals.sp"
@@ -131,6 +134,24 @@ public void OnPluginStart()
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	
 	SetupConfig();
+}
+
+public void OnAllPluginsLoaded()
+{
+	if(LibraryExists("sourcebans"))
+		g_bSourcebans = true;
+}
+
+public void OnLibraryAdded(const char[] library)
+{
+	if(StrEqual(library, "sourcebans", false))
+		g_bSourcebans = true;
+}
+
+public void OnLibraryRemoved(const char[] library)
+{
+	if(StrEqual(library, "sourcebans", false))
+		g_bSourcebans = false;
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -1057,7 +1078,10 @@ stock void BanBadPlayerKarma(int client)
 	
 	setKarma(client, g_iConfig[i_startKarma]);
 	
-	ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
+	if(g_bSourcebans)
+		SBBanPlayer(0, client, g_iConfig[i_karmaBanLength], sReason);
+	else
+		ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
 }
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
