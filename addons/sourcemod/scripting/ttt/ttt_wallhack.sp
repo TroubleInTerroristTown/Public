@@ -281,6 +281,9 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 
 void UnhookGlow(int client)
 {
+	if(client < 1)
+		return;
+	
 	char sModel[PLATFORM_MAX_PATH];
 	GetClientModel(client, sModel, sizeof(sModel));
 	SetEntProp(CPS_SetSkin(client, sModel, CPS_RENDER), Prop_Send, "m_bShouldGlow", false, true);
