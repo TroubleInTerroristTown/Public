@@ -1895,6 +1895,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	
 	LoopValidClients(client)
 	{
+		ClearTimer(g_hCreditsTimer[client]);
 		switch (WinningTeam)
 		{
 			case TTT_TEAM_DETECTIVE:
