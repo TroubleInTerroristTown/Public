@@ -78,6 +78,7 @@ enum eConfig
 	bool:b_showDetectiveMenu, 
 	String:s_kickImmunity[16],
 	String:s_logsAccess[16],
+	bool:bLogsDeadOnly,
 	bool:b_updateClientModel, 
 	bool:b_removeHostages, 
 	bool:b_removeBomb, 
