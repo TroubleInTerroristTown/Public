@@ -119,7 +119,12 @@ enum eConfig
 	bool:tChatToDead,
 	bool:dChatToDead,
 	bool:bTranfserArmor,
-	bool:bShowTraitors
+	bool:bShowTraitors,
+	bool:bCreditsTimer,
+	bool:bCreditsMessage,
+	Float:fCreditsInterval,
+	iCreditsMin,
+	iCreditsMax
 };
 
 enum Ragdolls

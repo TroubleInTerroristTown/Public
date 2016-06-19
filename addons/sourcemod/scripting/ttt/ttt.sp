@@ -256,6 +256,12 @@ void SetupConfig()
 	g_iConfig[tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
 	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
+	
+	g_iConfig[bCreditsTimer] = Config_LoadBool("ttt_credits_timer", true, "Players earn every minute (configurable) credits");
+	g_iConfig[bCreditsMessage] = Config_LoadBool("ttt_credits_show_message", true, "Show a message when player earn credits (bCreditsTimer must be true)");
+	g_iConfig[fCreditsInterval] = Config_LoadFloat("ttt_credits_interval", 60.0, "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)");
+	g_iConfig[iCreditsMin] = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
+	g_iConfig[iCreditsMax] = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -952,10 +958,35 @@ stock void TeamInitialize(int client)
 		}
 	}
 	
+	if(g_iConfig[bCreditsTimer])
+		if(g_iConfig[fCreditsInterval] > 60.0)
+			g_hCreditsTimer[client] = CreateTimer(g_iConfig[fCreditsInterval], Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
 	Call_PushCell(g_iRole[client]);
 	Call_Finish();
+}
+
+public Action Timer_CreditsTimer(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if(TTT_IsClientValid(client))
+	{
+		if(IsPlayerAlive(client))
+		{
+			int iCredits = GetRandomInt(g_iConfig[iCreditsMin], g_iConfig[iCreditsMax]);
+			addCredits(client, iCredits, g_iConfig[bCreditsMessage]);
+		}
+		else
+		{
+			g_hCreditsTimer[client] = null;
+			return Plugin_Stop;
+		}
+	}
+	
+	return Plugin_Stop;
 }
 
 stock void TeamTag(int client)
@@ -1120,6 +1151,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	g_iInnoKills[client] = 0;
 	g_iTraitorKills[client] = 0;
 	g_iDetectiveKills[client] = 0;
+	ClearTimer(g_hCreditsTimer[client]);
 	
 	int iRagdoll = 0;
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
@@ -1542,6 +1574,7 @@ public void OnClientDisconnect(int client)
 			g_iArmor[client] = 0;
 		
 		ClearTimer(g_hRDMTimer[client]);
+		ClearTimer(g_hCreditsTimer[client]);
 		
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
@@ -1802,6 +1835,7 @@ public void OnMapEnd()
 		if(g_iConfig[bTranfserArmor])
 			g_iArmor[i] = 0;
 		g_bKarma[i] = false;
+		ClearTimer(g_hCreditsTimer[i]);
 	}
 }
 
