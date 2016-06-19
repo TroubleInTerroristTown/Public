@@ -262,6 +262,7 @@ void SetupConfig()
 	g_iConfig[fCreditsInterval] = Config_LoadFloat("ttt_credits_interval", 60.0, "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)");
 	g_iConfig[iCreditsMin] = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
 	g_iConfig[iCreditsMax] = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
+	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -685,7 +686,12 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		
 		if (!IsPlayerAlive(i))
-			continue;
+		{
+			if(g_iConfig[bRespawnDeadPlayers])
+				CS_RespawnPlayer(i);
+			else
+				continue;
+		}
 		
 		if (IsFakeClient(i))
 			continue;

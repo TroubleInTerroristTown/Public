@@ -126,7 +126,8 @@ enum eConfig
 	bool:bCreditsMessage,
 	Float:fCreditsInterval,
 	iCreditsMin,
-	iCreditsMax
+	iCreditsMax,
+	bool:bRespawnDeadPlayers
 };
 
 enum Ragdolls
