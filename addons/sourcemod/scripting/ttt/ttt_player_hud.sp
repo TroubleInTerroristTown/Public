@@ -35,11 +35,6 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sCFile);
-	Config_Remove("ttt_public_karma");
-	Config_Done();
-
 	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/hud.cfg");
 	Config_Setup("TTT - HUD", g_sCFile);
 	Config_LoadString("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective", g_sTextD, sizeof(g_sTextD));
