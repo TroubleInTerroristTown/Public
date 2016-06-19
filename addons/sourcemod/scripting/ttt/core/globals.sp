@@ -26,6 +26,8 @@ int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
+int g_iTeamSelectTime = 0;
+
 Handle g_hGraceTime = null;
 
 Handle g_hStartTimer = null;
