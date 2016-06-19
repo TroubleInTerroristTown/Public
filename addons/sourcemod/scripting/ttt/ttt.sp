@@ -88,9 +88,9 @@ public void OnPluginStart()
 	
 	LoadBadNames();
 	
-	g_hRagdollArray = CreateArray(102);
-	g_hPlayerArray = CreateArray();
-	g_hLogsArray = CreateArray(512);
+	g_aRagdoll = new ArrayList(102);
+	g_aPlayer = new ArrayList();
+	g_aLogs = new ArrayList(512);
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
@@ -323,7 +323,7 @@ public Action Command_Logs(int client, int args)
 
 stock void ShowLogs(int client)
 {
-	int iSize = GetArraySize(g_hLogsArray);
+	int iSize = g_aLogs.Length;
 	if (iSize == 0)
 	{
 		if (client == 0)
@@ -363,7 +363,7 @@ stock void ShowLogs(int client)
 	
 	for (int i = 0; i <= index; i++)
 	{
-		GetArrayString(g_hLogsArray, i, iItem, sizeof(iItem));
+		g_aLogs.GetString(i, iItem, sizeof(iItem));
 		
 		if (client == 0)
 			LogToFileEx(g_iConfig[s_logFile], iItem);
@@ -412,7 +412,7 @@ public void OnCreate(any data)
 	
 	if ((client == 0) || IsClientInGame(client))
 	{
-		int sizearray = GetArraySize(g_hLogsArray);
+		int sizearray = g_aLogs.Length;
 		int old = (index + 1);
 		index += 5;
 		bool end = false;
@@ -425,7 +425,7 @@ public void OnCreate(any data)
 		
 		for (int i = old; i <= index; i++)
 		{
-			GetArrayString(g_hLogsArray, i, iItem, sizeof(iItem));
+			g_aLogs.GetString(i, iItem, sizeof(iItem));
 			if (client == 0)
 				LogToFileEx(g_iConfig[s_logFile], iItem);
 			else
@@ -490,7 +490,8 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
 	
-	ClearArray(g_hLogsArray);
+	if(g_aLogs != null)
+		g_aLogs.Clear();
 	
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
@@ -554,7 +555,8 @@ public Action Command_Karma(int client, int args)
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
-	ClearArray(g_hRagdollArray);
+	if(g_aRagdoll != null)
+		g_aRagdoll.Clear();
 	
 	g_bInactive = false;
 	g_bRoundEnded = false;
@@ -610,6 +612,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	
 	ShowLogs(0);
 	
+	g_iTeamSelectTime = 0;
 	
 	if (g_hRoundTimer != null)
 	{
@@ -652,7 +655,8 @@ public Action Timer_Selection(Handle hTimer)
 	g_bRoundEnding = false;
 	g_hStartTimer = null;
 	
-	ClearArray(g_hPlayerArray);
+	if(g_aPlayer != null)
+		g_aPlayer.Clear();
 	
 	if (g_hDetectives == null)
 		g_hDetectives = CreateArray(1);
@@ -687,7 +691,7 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		
 		iCount++;
-		PushArrayCell(g_hPlayerArray, i);
+		g_aPlayer.Push(i);
 	}
 	
 	if (iCount < g_iConfig[i_requiredPlayers])
@@ -727,13 +731,13 @@ public Action Timer_Selection(Handle hTimer)
 	int player;
 	
 	// We do this 3 times cuz the random stream sucks
-	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
-	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
-	SortADTArray(g_hPlayerArray, Sort_Random, Sort_Integer);
+	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
+	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
+	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
 	
-	while ((index = GetRandomArray(g_hPlayerArray)) != -1)
+	while ((index = GetRandomArray(g_aPlayer)) != -1)
 	{
-		player = GetArrayCell(g_hPlayerArray, index);
+		player = g_aPlayer.Get(index);
 		
 		if (iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && (g_iConfig[b_roleAgain] || !IsPlayerInArray(player, g_hDetectives)))
 		{
@@ -755,7 +759,7 @@ public Action Timer_Selection(Handle hTimer)
 		
 		g_bFound[player] = false;
 		
-		RemoveFromArray(g_hPlayerArray, index);
+		g_aPlayer.Erase(index);
 	}
 	
 	/* Recount roles */
@@ -795,7 +799,7 @@ public Action Timer_Selection(Handle hTimer)
 			
 			char sBuffer[256];
 			Format(sBuffer, sizeof(sBuffer), "%N was forced to be detective.", i);
-			PushArrayString(g_hLogsArray, sBuffer);
+			g_aLogs.PushString(sBuffer);
 			
 			break;
 		}
@@ -816,7 +820,7 @@ public Action Timer_Selection(Handle hTimer)
 			
 			char sBuffer[256];
 			Format(sBuffer, sizeof(sBuffer), "%N was forced to be traitor.", i);
-			PushArrayString(g_hLogsArray, sBuffer);
+			g_aLogs.PushString(sBuffer);
 			
 			break;
 		}
@@ -864,7 +868,8 @@ public Action Timer_Selection(Handle hTimer)
 		TeamInitialize(i);
 	}
 	
-	ClearArray(g_hLogsArray);
+	if(g_aLogs != null)
+		g_aLogs.Clear();
 	
 	g_iTeamSelectTime = GetTime();
 	
@@ -1211,7 +1216,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		iRagdollC[GameTime] = GetGameTime();
 		event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
 		
-		PushArrayArray(g_hRagdollArray, iRagdollC[0]);
+		g_aRagdoll.PushArray(iRagdollC[0]);
 		
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 		
@@ -1580,22 +1585,22 @@ public void OnClientDisconnect(int client)
 		
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
-		/* 	int iSize = GetArraySize(g_hRagdollArray);
+		/* 	int iSize = g_aRagdoll.Length;
 
 		if(iSize == 0) return;
 
 		int iRagdollC[Ragdolls];
 
-		for(int i = 0;i < GetArraySize(g_hRagdollArray);i++)
+		for(int i = 0;i < g_aRagdoll.Length;i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+			g_aRagdoll.GetArray(iRagdollC[0]);
 
 			if(client == iRagdollC[Attacker] || client == iRagdollC[Victim])
 			{
 				int entity = EntRefToEntIndex(iRagdollC[index]);
 				if(entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
 
-				RemoveFromArray(g_hRagdollArray, i);
+				g_aRagdoll.Erase(i);
 				break;
 			}
 		}  */
@@ -1612,26 +1617,26 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	event.GetString("newname", userName, sizeof(userName));
 	nameCheck(client, userName);
 	
-	int iSize = GetArraySize(g_hRagdollArray);
+	int iSize = g_aRagdoll.Length;
 	
 	if (iSize == 0)
 		return;
 	
 	int iRagdollC[Ragdolls];
 	
-	for (int i = 0; i < GetArraySize(g_hRagdollArray); i++)
+	for (int i = 0; i < g_aRagdoll.Length; i++)
 	{
-		GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+		g_aRagdoll.GetArray(i, iRagdollC[0]);
 		
 		if (client == iRagdollC[Attacker])
 		{
 			Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+			g_aRagdoll.SetArray(i, iRagdollC[0]);
 		}
 		else if (client == iRagdollC[Victim])
 		{
 			Format(iRagdollC[VictimName], MAX_NAME_LENGTH, userName);
-			SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+			g_aRagdoll.SetArray(i, iRagdollC[0]);
 		}
 	}
 }
@@ -2056,7 +2061,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
 				return Plugin_Continue;
 			
-			int iSize = GetArraySize(g_hRagdollArray);
+			int iSize = g_aRagdoll.Length;
 			if (iSize == 0)
 				return Plugin_Continue;
 			
@@ -2065,7 +2070,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			
 			for (int i = 0; i < iSize; i++)
 			{
-				GetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+				g_aRagdoll.GetArray(i, iRagdollC[0]);
 				entity = EntRefToEntIndex(iRagdollC[Ent]);
 				if (entity == iEntity)
 				{
@@ -2081,7 +2086,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							return Plugin_Continue;
 						else if(res == Plugin_Changed)
 						{
-							SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+							g_aRagdoll.SetArray(i, iRagdollC[0]);
 							return Plugin_Continue;
 						}
 						
@@ -2123,7 +2128,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							
 							addCredits(client, g_iConfig[i_creditsFoundBody]);
 						}
-						SetArrayArray(g_hRagdollArray, i, iRagdollC[0]);
+						g_aRagdoll.SetArray(i, iRagdollC[0]);
 						break;
 					}
 				}
@@ -2385,12 +2390,15 @@ stock void setCredits(int client, int credits)
 
 stock void addArrayTime(char[] message)
 {
-	int iTime = GetTime() - g_iTeamSelectTime;
-	int iMin = ((iTime / 60) % 60);
-	int iSec = (iTime % 60);
-	
-	Format(message, TTT_ITEM_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
-	PushArrayString(g_hLogsArray, message);
+	if(g_iTeamSelectTime > 0)
+	{
+		int iTime = GetTime() - g_iTeamSelectTime;
+		int iMin = ((iTime / 60) % 60);
+		int iSec = (iTime % 60);
+		
+		Format(message, TTT_ITEM_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
+	}
+	g_aLogs.PushString(message);
 }
 
 stock void ClearTimer(Handle &timer)

@@ -35,8 +35,6 @@ Handle g_hStartTimer = null;
 float g_fRealRoundStart;
 Handle g_hCountdownTimer = null;
 
-Handle g_hPlayerArray = null;
-
 Handle g_hDetectives = null;
 Handle g_hTraitores = null;
 
@@ -53,8 +51,6 @@ bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
 int g_iKarmaStart[MAXPLAYERS + 1] =  { 0, ... };
 int g_iArmor[MAXPLAYERS + 1] =  { 0, ... };
-
-Handle g_hRagdollArray = null;
 
 int g_iBeamSprite = -1;
 int g_iHaloSprite = -1;
@@ -76,7 +72,9 @@ Handle g_hDatabase = null;
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 
-Handle g_hLogsArray;
+ArrayList g_aLogs = null;
+ArrayList g_aRagdoll = null;
+ArrayList g_aPlayer = null;
 
 bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };

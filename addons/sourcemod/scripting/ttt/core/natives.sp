@@ -37,9 +37,9 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 	int Body[Ragdolls];
 	if (TTT_IsClientValid(client))
 	{
-		for (int i = 0; i < GetArraySize(g_hRagdollArray); i++)
+		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, Body[0], sizeof(Body));
+			g_aRagdoll.GetArray(i, Body[0], sizeof(Body));
 			if(Body[Victim] == client)
 			{
 				SetNativeArray(2, Body[0], sizeof(Body));
@@ -54,7 +54,7 @@ public int Native_SetRagdoll(Handle plugin, int numParams)
 {
 	int Body[Ragdolls];
 	GetNativeArray(1, Body[0], sizeof(Body));
-	PushArrayArray(g_hRagdollArray, Body[0]);
+	g_aRagdoll.PushArray(Body[0]);
 	return 0;
 }
 
@@ -132,7 +132,7 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 	
 	if (TTT_IsClientValid(client))
 	{
-		int iSize = GetArraySize(g_hRagdollArray);
+		int iSize = g_aRagdoll.Length;
 		
 		if (iSize == 0)
 			return false;
@@ -141,7 +141,7 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 		
 		for (int i = 0; i < iSize; i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			g_aRagdoll.GetArray(i, Items[0]);
 			
 			if (Items[Victim] == client)
 			{
@@ -158,7 +158,7 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 	
 	if (TTT_IsClientValid(client))
 	{
-		int iSize = GetArraySize(g_hRagdollArray);
+		int iSize = g_aRagdoll.Length;
 		
 		if (iSize == 0)
 			return false;
@@ -167,7 +167,7 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		
 		for (int i = 0; i < iSize; i++)
 		{
-			GetArrayArray(g_hRagdollArray, i, Items[0]);
+			g_aRagdoll.GetArray(i, Items[0]);
 			
 			if (Items[Victim] == client)
 			{
@@ -183,7 +183,7 @@ public int Native_LogString(Handle plugin, int numParams)
 	char message[512];
 	GetNativeString(1, message, sizeof(message));
 	
-	PushArrayString(g_hLogsArray, message);
+	g_aLogs.PushString(message);
 	
 	return 0;
 }
