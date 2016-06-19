@@ -351,7 +351,7 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "---------------TTT LOGS---------------");
 	}
 	
-	char item[512];
+	char iItem[TTT_ITEM_SIZE];
 	int index = 5;
 	bool end = false;
 	
@@ -363,12 +363,12 @@ stock void ShowLogs(int client)
 	
 	for (int i = 0; i <= index; i++)
 	{
-		GetArrayString(g_hLogsArray, i, item, sizeof(item));
+		GetArrayString(g_hLogsArray, i, iItem, sizeof(iItem));
 		
 		if (client == 0)
-			LogToFileEx(g_iConfig[s_logFile], item);
+			LogToFileEx(g_iConfig[s_logFile], iItem);
 		else
-			PrintToConsole(client, item);
+			PrintToConsole(client, iItem);
 	}
 	
 	if (end)
@@ -421,15 +421,15 @@ public void OnCreate(any data)
 			end = true;
 			index = (sizearray - 1);
 		}
-		char item[512];
+		char iItem[TTT_ITEM_SIZE];
 		
 		for (int i = old; i <= index; i++)
 		{
-			GetArrayString(g_hLogsArray, i, item, sizeof(item));
+			GetArrayString(g_hLogsArray, i, iItem, sizeof(iItem));
 			if (client == 0)
-				LogToFileEx(g_iConfig[s_logFile], item);
+				LogToFileEx(g_iConfig[s_logFile], iItem);
 			else
-				PrintToConsole(client, item);
+				PrintToConsole(client, iItem);
 		}
 		
 		if (end)
@@ -1302,7 +1302,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 	}
 }
 
-stock void ShowRules(int client, int item)
+stock void ShowRules(int client, int iItem)
 {
 	char sText[512], sYes[64];
 	Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
@@ -1347,7 +1347,7 @@ stock void ShowRules(int client, int item)
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
 	menu.ExitBackButton = false;
-	menu.DisplayAt(client, item, g_iConfig[i_timeToReadRules]);
+	menu.DisplayAt(client, iItem, g_iConfig[i_timeToReadRules]);
 }
 
 public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param) 
@@ -1729,76 +1729,78 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed an Innocent", iAttacker);
 	}
 	
-	char item[512];
+	char iItem[TTT_ITEM_SIZE];
+	char sWeapon[32];
+	event.GetString("weapon", sWeapon, sizeof(sWeapon));
 	
 	if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Innocent) with %s] - BAD ACTION", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaII], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsII], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Traitor)]", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Traitor) with %s]", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaIT], true);
 		addCredits(iAttacker, g_iConfig[i_creditsIT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) killed %N (Detective)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Detective) with %s] - BAD ACTION", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaID], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsID], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Innocent)]", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Innocent) with %s]", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaTI], true);
 		addCredits(iAttacker, g_iConfig[i_creditsTI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Traitor)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Traitor) with %s] - BAD ACTION", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaTT], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsTT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) killed %N (Detective)]", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Detective) with %s]", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaTD], true);
 		addCredits(iAttacker, g_iConfig[i_creditsTD], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Innocent)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Innocent) with %s] - BAD ACTION", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaDI], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsDI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Traitor)]", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Traitor) with %s]", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaDT], true);
 		addCredits(iAttacker, g_iConfig[i_creditsDT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) killed %N (Detective)] - BAD ACTION", iAttacker, client);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Detective) with %s] - BAD ACTION", iAttacker, client, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
 		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
@@ -1972,54 +1974,58 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	
 	
 	int damage = event.GetInt("dmg_health");
-	char item[512];
+	
+	char iItem[TTT_ITEM_SIZE];
+	char sWeapon[32];
+	event.GetString("weapon", sWeapon, sizeof(sWeapon));
+	
 	if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) damaged %N (Innocent) for %i damage with %s] - BAD ACTION", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) damaged %N (Traitor) for %i damage with %s]", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Innocent) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Innocent) damaged %N (Detective) for %i damage with %s] - BAD ACTION", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Innocent) for %i damage]", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) damaged %N (Innocent) for %i damage with %s]", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Traitor) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) damaged %N (Traitor) for %i damage with %s] - BAD ACTION", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Traitor) damaged %N (Detective) for %i damage]", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Traitor) damaged %N (Detective) for %i damage with %s]", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Innocent) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) damaged %N (Innocent) for %i damage with %s] - BAD ACTION", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 		
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Traitor) for %i damage]", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) damaged %N (Traitor) for %i damage with %s]", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		Format(item, sizeof(item), "-> [%N (Detective) damaged %N (Detective) for %i damage] - BAD ACTION", iAttacker, client, damage);
-		PushArrayString(g_hLogsArray, item);
+		Format(iItem, sizeof(iItem), "-> [%N (Detective) damaged %N (Detective) for %i damage with %s] - BAD ACTION", iAttacker, client, damage, sWeapon);
+		PushArrayString(g_hLogsArray, iItem);
 	}
 }
 

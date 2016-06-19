@@ -18,6 +18,8 @@
 
 #define MAX_CUSTOM_ITEMS 64
 
+#define TTT_ITEM_SIZE 512
+
 enum eConfig
 {
 	i_requiredPlayersD, 
