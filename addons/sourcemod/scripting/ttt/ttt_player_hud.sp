@@ -28,7 +28,10 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
 
 	Config_Setup("TTT", g_sCFile);
-	g_bKarma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	
+	// Doesn't exist anymore
+	Config_Remove("ttt_public_karma");
+	
 	Config_Done();
 
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
