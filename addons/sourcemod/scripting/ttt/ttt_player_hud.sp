@@ -65,7 +65,7 @@ public Action Timer_UpdateText(Handle timer)
 				g_iTarget[client] = iTarget;
 				
 				if(!TTT_IsClientValid(iTarget))
-				continue;
+					continue;
 				
 				char sName[32];
 				char sPlayerName[64];
