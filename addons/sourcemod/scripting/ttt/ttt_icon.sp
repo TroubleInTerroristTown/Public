@@ -13,6 +13,7 @@
 
 int g_iIcon[MAXPLAYERS + 1] =  { -1, ... };
 
+char g_sAdminImmunity[16];
 bool g_bSeeRoles = false;
 
 char g_sTraitorIcon[PLATFORM_MAX_PATH] = "";
@@ -48,6 +49,7 @@ public void OnPluginStart()
 	Config_Setup("TTT-Icons", g_sConfigFile);
 	Config_LoadString("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file", g_sTraitorIcon, sizeof(g_sTraitorIcon));
 	Config_LoadString("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file", g_sDetectiveIcon, sizeof(g_sDetectiveIcon));
+	Config_LoadString("ttt_icon_dead_admin", "bz", "Show traitor icon for dead admins? (Nothing to disable it)", g_sAdminImmunity, sizeof(g_sAdminImmunity));
 	Config_Done();
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
@@ -162,8 +164,25 @@ public Action Hook_SetTransmitT(int entity, int client)
 	if(TTT_IsClientValid(client))
 	{
 		// Show T-Icon to dead players if g_bSeeRoles true
-		if(g_bSeeRoles && !IsPlayerAlive(client))
-			return Plugin_Continue;
+		if(!IsPlayerAlive(client))
+		{
+			if(g_bSeeRoles)
+				return Plugin_Continue;
+			else
+			{
+				if(strlen(g_sAdminImmunity) > 1)
+				{
+					char sFlags[16];
+					AdminFlag aFlags[16];
+					
+					Format(sFlags, sizeof(sFlags), g_sAdminImmunity);
+					FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
+					
+					if(TTT_HasFlags(client, aFlags))
+						return Plugin_Continue;
+				}
+			}
+		}
 		
 		// Show T-Icon only for other living traitors
 		if(IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
