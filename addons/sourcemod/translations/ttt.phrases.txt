@@ -261,7 +261,8 @@
 
 	"TTT Shop"
 	{
-		"en"		"TTT Shop"
+		"#format"	"{1:d}"
+		"en"		"TTT Shop\nYour Credits: {1}"
 	}
 
 	"credits earned"

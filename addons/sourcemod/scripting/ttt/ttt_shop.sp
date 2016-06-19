@@ -105,7 +105,7 @@ public Action Command_Shop(int client, int args)
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
 		Handle menu = CreateMenu(Menu_ShopHandler);
-		SetMenuTitle(menu, "%T", "TTT Shop", client);
+		SetMenuTitle(menu, "%T", "TTT Shop", client, TTT_GetClientCredits(client));
 		
 		char display[128];
 		int temp_item[Item];
