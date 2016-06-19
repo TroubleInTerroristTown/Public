@@ -984,7 +984,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 	{
 		if (g_iConfig[bResetCreditsEachRound])
 		{
-			g_iCredits[client] = 0;
+			g_iCredits[client] = g_iConfig[i_startCredits];
 		}
 	}
 	
