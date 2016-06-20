@@ -123,11 +123,17 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Call_PushCell(client);
 	Call_PushCell(target);
 	Call_PushStringEx(sName, iNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iNameLength);
 	Call_PushStringEx(sPlayerName, iPlayerNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerNameLength);
 	Call_PushStringEx(sHealth, iHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iHealthLength);
 	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerHealthLength);
 	Call_PushStringEx(sKarma, iKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iKarmaLength);
 	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerKarmaLength);
 	Call_Finish(res);
 
 	if (res >= Plugin_Handled)
