@@ -23,12 +23,12 @@ char g_sTextI[512];
 char g_sTextT[512];
 char g_sCFile[PLATFORM_MAX_PATH + 1];
 
-int g_iTarget[MAXPLAYERS + 1] = {-1, ...};
+int g_iTarget[MAXPLAYERS + 1] = {0, ...};
 Handle g_hOnHudSend_Pre = null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event);
+	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
 }
 
 public void OnPluginStart()
@@ -37,9 +37,9 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/hud.cfg");
 	Config_Setup("TTT - HUD", g_sCFile);
-	Config_LoadString("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective", g_sTextD, sizeof(g_sTextD));
-	Config_LoadString("hud_display_innocent", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent", g_sTextI, sizeof(g_sTextI));
-	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor", g_sTextT, sizeof(g_sTextT));
+	Config_LoadString("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextD, sizeof(g_sTextD));
+	Config_LoadString("hud_display_innocent", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextI, sizeof(g_sTextI));
+	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextT, sizeof(g_sTextT));
 	Config_Done();
 	
 	LoadTranslations("ttt.phrases");
@@ -49,12 +49,12 @@ public void OnPluginStart()
 
 public Action Timer_UpdateText(Handle timer)
 {
+	
 	LoopValidClients(client)
 	{
 		if (IsPlayerAlive(client))
 		{
 			int iTarget = TraceClientViewEntity(client);
-			
 			if(iTarget != g_iTarget[client])
 			{	
 				g_iTarget[client] = iTarget;
@@ -70,9 +70,8 @@ public Action Timer_UpdateText(Handle timer)
 				char sPlayerKarma[32];
 				char sHintText[512];
 
-				PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText));
-				
-				PrintHintText(client, sHintText);
+				if(PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
+					PrintHintText(client, sHintText);
 			}
 		}
 	}
@@ -135,16 +134,16 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK);
 	Call_PushCell(iPlayerKarmaLength);
 	Call_Finish(res);
-
 	if (res >= Plugin_Handled)
 		return false;
 	
-	ReplaceString(sHintText, iHintTextLength, "{Name}", sName);
-	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName);
-	ReplaceString(sHintText, iHintTextLength, "{Health}", sHealth);
-	ReplaceString(sHintText, iHintTextLength, "{PlayerHealth}", sPlayerHealth);
-	ReplaceString(sHintText, iHintTextLength, "{Karma}", sKarma);
-	ReplaceString(sHintText, iHintTextLength, "{PlayerKarma}", sPlayerKarma);
+	ReplaceString(sHintText, iHintTextLength, "{Name}", sName, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName, false);
+	ReplaceString(sHintText, iHintTextLength, "{Health}", sHealth, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerHealth}", sPlayerHealth, false);
+	ReplaceString(sHintText, iHintTextLength, "{Karma}", sKarma, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerKarma}", sPlayerKarma, false);
+
 	return true;
 }
 
