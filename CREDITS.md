@@ -8,5 +8,6 @@
 - [Purixi](https://forums.alliedmods.net/member.php?u=261590) for decoy teleporter ( https://forums.alliedmods.net/showthread.php?p=2317390 )
 - [Painlessgaming](https://painlessgaming.eu/)
 - [AlliedGamers](http://allied-gamers.com)
+- [PrestigeGaming](https://www.prestige-gaming.org/)
 
 - Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
