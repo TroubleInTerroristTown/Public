@@ -1052,7 +1052,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			if (g_iConfig[b_slayAfterStart])
 			{
 				g_iRole[client] = TTT_TEAM_UNASSIGNED;
-				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client)); // TODO: RequestFrame
+				RequestFrame(Frame_SlapPlayer, GetClientUserId(client));
 				CS_SetClientClanTag(client, "UNASSIGNED");
 			}
 		}
@@ -1093,7 +1093,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action Timer_SlayPlayer(Handle timer, any userid)
+public void Frame_SlapPlayer(any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
