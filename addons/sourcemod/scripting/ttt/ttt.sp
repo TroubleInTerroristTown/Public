@@ -543,6 +543,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	{
 		g_iRole[i] = TTT_TEAM_UNASSIGNED;
 		g_bFound[i] = true;
+		IsAliveCheck();
 		g_iInnoKills[i] = 0;
 		g_iTraitorKills[i] = 0;
 		g_iDetectiveKills[i] = 0;
@@ -576,6 +577,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	LoopValidClients(i)
 	{
 		g_bFound[i] = true;
+		IsAliveCheck();
 		g_iInnoKills[i] = 0;
 		g_iTraitorKills[i] = 0;
 		g_iDetectiveKills[i] = 0;
@@ -742,6 +744,7 @@ public Action Timer_Selection(Handle hTimer)
 			GivePlayerItem(player, g_iConfig[s_defaultSec]);
 		
 		g_bFound[player] = false;
+		IsAliveCheck();
 		
 		g_aPlayer.Erase(index);
 	}
@@ -1083,6 +1086,7 @@ public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
 	g_bFound[client] = true;
+	IsAliveCheck();
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
@@ -1572,6 +1576,7 @@ public void OnClientDisconnect(int client)
 	{
 		g_bKarma[client] = false;
 		g_bFound[client] = true;
+		IsAliveCheck();
 		
 		if(g_iConfig[bTranfserArmor])
 			g_iArmor[client] = 0;
@@ -1815,6 +1820,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		CS_SetClientClanTag(client, "UNASSIGNED");
 		g_bFound[client] = true;
+		IsAliveCheck();
 	}
 	
 	CheckTeams();
@@ -2096,6 +2102,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							
 							if (IsClientInGame(iRagdollC[Victim]))
 								g_bFound[iRagdollC[Victim]] = true;
+								IsAliveCheck();
 							
 							if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
 							{
@@ -2852,6 +2859,7 @@ void CheckTeams()
 			if (g_iRole[i] == TTT_TEAM_UNASSIGNED)
 			{
 				g_bFound[i] = true;
+				IsAliveCheck();
 				CS_SetClientClanTag(i, "UNASSIGNED");
 			}
 		}
