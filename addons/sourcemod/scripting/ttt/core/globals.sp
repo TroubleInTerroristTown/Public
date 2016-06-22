@@ -134,3 +134,4 @@ char g_sRemoveEntityList[][] =  {
 
 bool g_bRoundEnding = false;
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
+int g_iPlayerManager = 0;

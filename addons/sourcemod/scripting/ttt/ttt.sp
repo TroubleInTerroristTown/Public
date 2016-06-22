@@ -519,29 +519,7 @@ public void OnMapStart()
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	
 	
-	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager");
-	SDKHook(iPlayerManagerPost, SDKHook_PostThinkPost, PostThinkPost);
-}
-
-public void PostThinkPost(int entity)
-{
-	int isAlive[65];
-	
-	GetEntDataArray(entity, g_iAlive, isAlive, 65);
-	LoopValidClients(i)
-		isAlive[i] = (!g_bFound[i]);
-	
-	if (g_iConfig[b_kadRemover])
-	{
-		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-		
-		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
-		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
-	}
-	
-	SetEntDataArray(entity, g_iAlive, isAlive, 65);
+	g_iPlayerManager = FindEntityByClassname(0, "cs_player_manager");
 }
 
 public Action Command_Karma(int client, int args)
@@ -1159,6 +1137,8 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
+	ResetPlayerStats();
+	
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	g_iInnoKills[client] = 0;
@@ -1695,6 +1675,8 @@ public Action Timer_Adjust(Handle timer)
 				g_iDetectiveAlive++;
 		}
 	}
+	
+	IsAliveCheck();
 	
 	if (g_bRoundStarted)
 	{
@@ -3027,3 +3009,27 @@ stock void StripAllWeapons(int client)
 		}
 	}
 }
+
+stock void ResetPlayerStats()
+{
+	if (g_iConfig[b_kadRemover])
+	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
+		SetEntDataArray(g_iPlayerManager, g_iKills, iZero, MaxClients + 1);
+		SetEntDataArray(g_iPlayerManager, g_iDeaths, iZero, MaxClients + 1);
+		SetEntDataArray(g_iPlayerManager, g_iAssists, iZero, MaxClients + 1);
+		SetEntDataArray(g_iPlayerManager, g_iMVPs, iZero, MaxClients + 1);
+	}
+}
+
+stock void IsAliveCheck()
+{
+	bool bAlive[MAXPLAYERS+1];
+	
+	GetEntDataArray(g_iPlayerManager, g_iAlive, bAlive, MAXPLAYERS+1);
+	LoopValidClients(i)
+		bAlive[i] = (!g_bFound[i]);
+	SetEntDataArray(g_iPlayerManager, g_iAlive, bAlive, MAXPLAYERS+1);
+}
+
