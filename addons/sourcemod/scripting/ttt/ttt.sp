@@ -1305,6 +1305,16 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
+public void Frame_ShowWelcomeMenu(any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if (TTT_IsClientValid(client))
+	{
+		ShowRules(client, g_iSite[client]);
+	}
+}
+
 public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
@@ -1398,7 +1408,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				if(strlen(sValue) > 0)
 				{
 					CPrintToChat(client, sValue);
-					CreateTimer(0.1, Timer_ShowWelcomeMenu, GetClientUserId(client));
+					RequestFrame(Frame_ShowWelcomeMenu, GetClientUserId(client));
 					
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
