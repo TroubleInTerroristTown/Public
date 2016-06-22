@@ -520,10 +520,10 @@ public void OnMapStart()
 	
 	
 	int iPlayerManagerPost = FindEntityByClassname(0, "cs_player_manager");
-	SDKHook(iPlayerManagerPost, SDKHook_ThinkPost, ThinkPost);
+	SDKHook(iPlayerManagerPost, SDKHook_PostThinkPost, PostThinkPost);
 }
 
-public void ThinkPost(int entity)
+public void PostThinkPost(int entity)
 {
 	int isAlive[65];
 	
@@ -1052,7 +1052,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			if (g_iConfig[b_slayAfterStart])
 			{
 				g_iRole[client] = TTT_TEAM_UNASSIGNED;
-				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client));
+				CreateTimer(0.0, Timer_SlayPlayer, GetClientUserId(client)); // TODO: RequestFrame
 				CS_SetClientClanTag(client, "UNASSIGNED");
 			}
 		}
