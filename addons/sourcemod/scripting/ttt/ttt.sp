@@ -1090,20 +1090,8 @@ public void OnClientPutInServer(int client)
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
-	SDKHook(client, SDKHook_PostThink, OnPostThink);
 	
 	g_iCredits[client] = g_iConfig[i_startCredits];
-}
-
-public Action OnPostThink(int client)
-{
-	if (TTT_IsClientValid(client))
-	{
-		if (g_iConfig[b_publicKarma])
-			CS_SetClientContributionScore(client, g_iKarma[client]);
-		else if (g_iConfig[b_karmaRound])
-			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
-	}
 }
 
 stock void BanBadPlayerKarma(int client)
@@ -1651,6 +1639,11 @@ public Action Timer_Adjust(Handle timer)
 	float vec[3];
 	LoopValidClients(i)
 	{
+		if (g_iConfig[b_publicKarma])
+			CS_SetClientContributionScore(client, g_iKarma[client]);
+		else if (g_iConfig[b_karmaRound])
+			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
+		
 		if (IsPlayerAlive(i))
 		{
 			if (g_iRole[i] == TTT_TEAM_TRAITOR)
