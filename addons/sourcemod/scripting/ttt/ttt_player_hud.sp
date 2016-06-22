@@ -7,7 +7,7 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Show Nickname"
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Hud"
 
 public Plugin myinfo =
 {
@@ -18,82 +18,133 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-bool g_bKarma = true;
+char g_sTextD[512];
+char g_sTextI[512];
+char g_sTextT[512];
 char g_sCFile[PLATFORM_MAX_PATH + 1];
+
+int g_iTarget[MAXPLAYERS + 1] = {0, ...};
+Handle g_hOnHudSend_Pre = null;
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
+}
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/config.cfg");
-
-	Config_Setup("TTT", g_sCFile);
-	g_bKarma = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/hud.cfg");
+	Config_Setup("TTT - HUD", g_sCFile);
+	Config_LoadString("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextD, sizeof(g_sTextD));
+	Config_LoadString("hud_display_innocent", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextI, sizeof(g_sTextI));
+	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextT, sizeof(g_sTextT));
 	Config_Done();
-
+	
+	LoadTranslations("ttt.phrases");
+	
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
 {
+	
 	LoopValidClients(client)
 	{
 		if (IsPlayerAlive(client))
 		{
-			int target = TraceClientViewEntity(client);
+			int iTarget = TraceClientViewEntity(client);
+			if(iTarget != g_iTarget[client])
+			{	
+				g_iTarget[client] = iTarget;
+				
+				if(!TTT_IsClientValid(iTarget))
+					continue;
+				
+				char sName[32];
+				char sPlayerName[64];
+				char sHealth[32];
+				char sPlayerHealth[64];
+				char sKarma[32];
+				char sPlayerKarma[32];
+				char sHintText[512];
 
-			if(!TTT_IsClientValid(target))
-				continue;
-
-			if(!IsPlayerAlive(target))
-				continue;
-
-			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-			{
-				if(g_bKarma)
-				{
-					if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
-						PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //red color
-					else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-						PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-					else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
-						PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //green color
-				}
-				else
-				{
-					if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
-						PrintHintText(client, "Player: <font color='#ff0000'>\"%N\"</font>", target); //red color
-					else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-						PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>", target); //blue color
-					else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
-						PrintHintText(client, "Player: <font color='#008000'>\"%N\"</font>", target); //green color
-				}
+				if(PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
+					PrintHintText(client, sHintText);
 			}
-			else
-			{
-				if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
-					PrintHintText(client, "Player: <font color='#0000ff'>\"%N\"</font>\nKarma: %d", target, TTT_GetClientKarma(target)); //blue color
-				else
-					PrintHintText(client, "Player: \"%N\"\nKarma: %d", target, TTT_GetClientKarma(target)); //default
-			}
-		}
-		else
-		{
-			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
-			int iTarget = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-
-			if (!TTT_IsClientValid(iTarget))
-				continue;
-
-			if(!IsPlayerAlive(iTarget))
-				continue;
-
-			if(iMode == 4 || iMode == 5)
-				PrintHintText(client, "Player: \"%N\"\nKarma: %d", iTarget, TTT_GetClientKarma(iTarget));
 		}
 	}
 
 	return Plugin_Continue;
+}
+
+public bool PrepareText(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength, char[] sHintText, int iHintTextLength)
+{
+	Format(sName, iNameLength, "%T", "Hud Name", client);
+	Format(sHealth, iHealthLength, "%T", "Hud Health", client);
+	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(client));
+	Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
+	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(client));
+	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
+		strcopy(sHintText, iHintTextLength, g_sTextT);
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-T", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-D", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-I", client, target);
+	}
+	else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
+		strcopy(sHintText, iHintTextLength, g_sTextD);
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-T", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-D", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-I", client, target);
+	}
+	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
+		strcopy(sHintText, iHintTextLength, g_sTextI);
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-T", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-D", client, target);
+		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-I", client, target);
+	}
+	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnHudSend_Pre);
+	Call_PushCell(client);
+	Call_PushCell(target);
+	Call_PushStringEx(sName, iNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iNameLength);
+	Call_PushStringEx(sPlayerName, iPlayerNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerNameLength);
+	Call_PushStringEx(sHealth, iHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iHealthLength);
+	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerHealthLength);
+	Call_PushStringEx(sKarma, iKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iKarmaLength);
+	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushCell(iPlayerKarmaLength);
+	Call_Finish(res);
+	if (res >= Plugin_Handled)
+		return false;
+	
+	ReplaceString(sHintText, iHintTextLength, "{Name}", sName, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName, false);
+	ReplaceString(sHintText, iHintTextLength, "{Health}", sHealth, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerHealth}", sPlayerHealth, false);
+	ReplaceString(sHintText, iHintTextLength, "{Karma}", sKarma, false);
+	ReplaceString(sHintText, iHintTextLength, "{PlayerKarma}", sPlayerKarma, false);
+
+	return true;
 }
 
 stock int TraceClientViewEntity(int client)

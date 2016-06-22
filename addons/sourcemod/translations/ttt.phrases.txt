@@ -799,5 +799,71 @@
 	{
 		"en"		"Mute this player"
 	}
-
+	"Hud Name"
+	{
+		"en"		"Name"
+	}
+	"Hud Health"
+	{
+		"en"		"Health"
+	}
+	"Hud PlayerHealth"
+	{
+		"#format"	"{1:d}"
+		"en"		"{1}"
+	}
+	"Hud Karma"
+	{
+		"en"		"Karma"
+	}
+	"Hud PlayerKarma"
+	{
+		"#format"	"{1:d}"
+		"en"		"{1}"
+	}
+	"Hud PlayerName T-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+	"Hud PlayerName T-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+	"Hud PlayerName T-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#008000'>\"{1}\"</font>"
+	}
+	"Hud PlayerName D-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+	"Hud PlayerName D-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+	"Hud PlayerName D-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+	"Hud PlayerName I-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+	"Hud PlayerName I-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+	"Hud PlayerName I-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
 }
