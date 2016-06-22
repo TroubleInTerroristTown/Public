@@ -1640,9 +1640,9 @@ public Action Timer_Adjust(Handle timer)
 	LoopValidClients(i)
 	{
 		if (g_iConfig[b_publicKarma])
-			CS_SetClientContributionScore(client, g_iKarma[client]);
+			CS_SetClientContributionScore(i, g_iKarma[i]);
 		else if (g_iConfig[b_karmaRound])
-			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
+			CS_SetClientContributionScore(i, g_iKarmaStart[i]);
 		
 		if (IsPlayerAlive(i))
 		{
@@ -2094,8 +2094,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							iRagdollC[Found] = true;
 							
 							if (IsClientInGame(iRagdollC[Victim]))
+							{
 								g_bFound[iRagdollC[Victim]] = true;
 								IsAliveCheck();
+							}
 							
 							if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
 							{
