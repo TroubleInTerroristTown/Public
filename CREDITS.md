@@ -6,5 +6,6 @@
 - [whocodes](https://whocodes.pw/) / [Phoenix Gaming Network](https://www.pgn.site)
 - [Grey83](https://forums.alliedmods.net/member.php?u=256713) for Laser Mines ( https://forums.alliedmods.net/showthread.php?p=2276217 )
 - [Purixi](https://forums.alliedmods.net/member.php?u=261590) for decoy teleporter ( https://forums.alliedmods.net/showthread.php?p=2317390 )
+- [Painlessgaming](https://painlessgaming.eu/)
 
 - Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
