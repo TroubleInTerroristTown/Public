@@ -1,10 +1,5 @@
 language: c
 
-branches:
-  only:
-    - master
-    - stable
-
 env:
     - VERSION=1.7
     - VERSION=1.8
@@ -16,4 +11,4 @@ before_install:
 
 
 script:
-    - bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS
+    - $(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS; else echo bash ci/test.sh $VERSION "dev"; fi)
