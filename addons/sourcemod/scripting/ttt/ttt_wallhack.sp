@@ -108,13 +108,10 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 {
 	LoopValidClients(client)
 	{
-		if(TTT_IsClientValid(client))
-		{
-			g_bHasWH[client] = false;
-			g_bOwnWH[client] = false;
-			
-			UnhookGlow(client);
-		}
+		g_bHasWH[client] = false;
+		g_bOwnWH[client] = false;
+		
+		UnhookGlow(client);
 	}
 }
 

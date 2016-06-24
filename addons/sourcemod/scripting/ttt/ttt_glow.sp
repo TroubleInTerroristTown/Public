@@ -54,8 +54,7 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 {
 	LoopValidClients(client)
 	{
-		if(TTT_IsClientValid(client))
-			UnhookGlow(client);
+		UnhookGlow(client);
 	}
 }
 
