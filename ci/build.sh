@@ -33,7 +33,6 @@ echo "Compile 3rd-party-plugins"
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
 
-
 echo "Remove plugins folder if exists"
 if [ -d "addons/sourcemod/plugins" ]; then
   rm -r addons/sourcemod/plugins

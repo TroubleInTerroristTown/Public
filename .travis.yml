@@ -1,5 +1,10 @@
 language: c
 
+branches:
+  only:
+    - master
+    - stable
+
 env:
     - VERSION=1.7
     - VERSION=1.8
