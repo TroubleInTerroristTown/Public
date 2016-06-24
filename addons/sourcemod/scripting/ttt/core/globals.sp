@@ -93,7 +93,9 @@ Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
-Handle g_hOnUpdate = null;
+Handle g_hOnUpdate5 = null;
+Handle g_hOnUpdate3 = null;
+Handle g_hOnUpdate1 = null;
 
 bool g_bSourcebans = false;
 

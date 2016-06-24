@@ -45,7 +45,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 	
-	g_hOnUpdate = CreateGlobalForward("TTT_OnUpdate", ET_Ignore);
+	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
+	g_hOnUpdate3 = CreateGlobalForward("TTT_OnUpdate3", ET_Ignore, Param_Cell);
+	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
 	
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
@@ -94,7 +96,8 @@ public void OnPluginStart()
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
-	CreateTimer(1.0, Timer_Adjust, _, TIMER_REPEAT); // Maybe every second is enough
+	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT); // Maybe every second is enough
+	CreateTimer(3.0, Timer_3, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
@@ -1630,7 +1633,7 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action Timer_Adjust(Handle timer)
+public Action Timer_1(Handle timer)
 {
 	int g_iInnoAlive = 0;
 	int g_iTraitorAlive = 0;
@@ -1639,6 +1642,10 @@ public Action Timer_Adjust(Handle timer)
 	float vec[3];
 	LoopValidClients(i)
 	{
+		Call_StartForward(g_hOnUpdate1);
+		Call_PushCell(i);
+		Call_Finish();
+		
 		if (g_iConfig[b_publicKarma])
 			CS_SetClientContributionScore(i, g_iKarma[i]);
 		else if (g_iConfig[b_karmaRound])
@@ -2680,10 +2687,24 @@ public Action Command_Status(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action Timer_3(Handle timer)
+{
+	LoopValidClients(i)
+	{
+		Call_StartForward(g_hOnUpdate3);
+		Call_PushCell(i);
+		Call_Finish();
+	}
+}
+
 public Action Timer_5(Handle timer)
 {
 	LoopValidClients(i)
 	{
+		Call_StartForward(g_hOnUpdate5);
+		Call_PushCell(i);
+		Call_Finish();
+		
 		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 			continue;
 		
@@ -2702,7 +2723,7 @@ public Action Timer_5(Handle timer)
 	else if (g_bCheckPlayers)
 		CheckPlayers();
 	
-	Call_StartForward(g_hOnUpdate);
+	Call_StartForward(g_hOnUpdate5);
 	Call_Finish();
 }
 

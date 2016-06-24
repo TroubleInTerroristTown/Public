@@ -145,8 +145,24 @@ enum Ragdolls
 
 /*
  * Called every 5 seconds
+ *
+ * @param client            Client index.
  */
-forward void TTT_OnUpdate();
+forward void TTT_OnUpdate5(int client);
+
+/*
+ * Called every 3 seconds
+ *
+ * @param client            Client index.
+ */
+forward void TTT_OnUpdate3(int client);
+
+/*
+ * Called every second
+ *
+ * @param client            Client index.
+ */
+forward void TTT_OnUpdate1(int client);
 
 /*
  * Called before players roles are picked/assigned.
