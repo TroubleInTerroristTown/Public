@@ -1,6 +1,7 @@
 #!/bin/bash
 
-COUNT="$(git rev-list --count HEAD)"
+BRANCH=$6
+COUNT="$(git rev-list --count $BRANCH)"
 HASH="$(git log --pretty=format:%h -n 1)"
 FILE=ttt-$2-$1-$COUNT-$HASH.zip
 LATEST=ttt-latest-$2-$1.zip
