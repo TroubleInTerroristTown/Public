@@ -58,7 +58,7 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public void TTT_OnUpdate3(int client)
+public void TTT_OnUpdate3(int i)
 {
 	if(IsPlayerAlive(i))
 		SetupGlowSkin(i);

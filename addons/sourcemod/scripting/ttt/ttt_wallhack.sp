@@ -83,7 +83,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 }
 
-public void TTT_OnUpdate3(int client)
+public void TTT_OnUpdate3(int i)
 {
 	if(IsPlayerAlive(i))
 		SetupGlowSkin(i);

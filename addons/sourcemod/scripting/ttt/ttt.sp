@@ -1054,11 +1054,15 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			int iCount = 0;
 			
 			LoopValidClients(i)
+			{
 				if (IsPlayerAlive(i) && (GetClientTeam(i) > CS_TEAM_SPECTATOR))
+				{
 					iCount++;
+				}
+			}
 				
-				if (iCount >= 3)
-					ServerCommand("mp_restartgame 2");
+			if (iCount >= 3)
+				ServerCommand("mp_restartgame 2");
 		}
 		else
 		{

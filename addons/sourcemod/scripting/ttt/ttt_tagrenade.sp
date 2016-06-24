@@ -77,7 +77,7 @@ public void OnClientDisconnect(int client)
 	ResetTAG(client);
 }
 
-public void TTT_OnUpdate3(int client)
+public void TTT_OnUpdate3(int i)
 {
 	if(IsPlayerAlive(i))
 		SetupGlowSkin(i);

@@ -87,10 +87,10 @@ public void TTT_OnClientGetRole(int client, int role)
 			SetListenOverride(i, client, Listen_Yes);
 }
 
-public void Timer_OnUpdate1(int client)
+public void Timer_OnUpdate1(int i)
 {
 	if(IsFakeClient(i))
-		continue;
+		return;
 	
 	LoopValidClients(j)
 	{

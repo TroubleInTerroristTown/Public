@@ -133,18 +133,18 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	healthStation_cleanUp();
 }
 
-public void TTT_OnUpdate1(int client)
+public void TTT_OnUpdate1(int i)
 {
 	if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
-		continue;
+		return;
 
 	checkDistanceFromHealthStation(i);
 }
 
-public void TTT_OnUpdate5(int client)
+public void TTT_OnUpdate5(int i)
 {
 	if (!IsPlayerAlive(i))
-		continue;
+		return;
 
 	if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
 		g_iHealthStationCharges[i]++;
