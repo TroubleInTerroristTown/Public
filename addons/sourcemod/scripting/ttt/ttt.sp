@@ -687,7 +687,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
-		CPrintToChat(i, g_iConfig[s_pluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
+			CPrintToChat(i, g_iConfig[s_pluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
 		
 		g_bCheckPlayers = true;
 		
@@ -1054,11 +1054,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			int iCount = 0;
 			
 			LoopValidClients(i)
-			if (IsPlayerAlive(i) && (GetClientTeam(i) > CS_TEAM_SPECTATOR))
-				iCount++;
-			
-			if (iCount >= 3)
-				ServerCommand("mp_restartgame 2");
+				if (IsPlayerAlive(i) && (GetClientTeam(i) > CS_TEAM_SPECTATOR))
+					iCount++;
+				
+				if (iCount >= 3)
+					ServerCommand("mp_restartgame 2");
 		}
 		else
 		{
@@ -1957,7 +1957,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	
 	if (g_iConfig[b_nextRoundAlert])
 		LoopValidClients(client)
-	CPrintToChat(client, g_iConfig[s_pluginTag], "next round in", client, delay);
+			CPrintToChat(client, g_iConfig[s_pluginTag], "next round in", client, delay);
 
 	g_bRoundEnding = true;
 	
@@ -2185,22 +2185,22 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		LoopValidClients(i)
-		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[tChatToDead] && !IsPlayerAlive(i)))
-		{
-			EmitSoundToClient(i, SND_TCHAT);
-			CPrintToChat(i, "%T", "T channel", i, client, sText);
-		}
+			if (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[tChatToDead] && !IsPlayerAlive(i))
+			{
+				EmitSoundToClient(i, SND_TCHAT);
+				CPrintToChat(i, "%T", "T channel", i, client, sText);
+			}
 		
 		return Plugin_Handled;
 	}
 	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		LoopValidClients(i)
-		if (TTT_IsClientValid(i) && (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[dChatToDead] && !IsPlayerAlive(i)))
-		{
-			EmitSoundToClient(i, SND_TCHAT);
-			CPrintToChat(i, "%T", "D channel", i, client, sText);
-		}
+			if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[dChatToDead] && !IsPlayerAlive(i))
+			{
+				EmitSoundToClient(i, SND_TCHAT);
+				CPrintToChat(i, "%T", "D channel", i, client, sText);
+			}
 		
 		return Plugin_Handled;
 	}
@@ -2487,7 +2487,7 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 			if (StrEqual(info, "Punish", false))
 			{
 				LoopValidClients(i)
-				CPrintToChat(i, g_iConfig[s_pluginTag], "Choose Punish", i, client, iAttacker);
+					CPrintToChat(i, g_iConfig[s_pluginTag], "Choose Punish", i, client, iAttacker);
 				ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
 				g_iRDMAttacker[client] = -1;
 			}
@@ -2795,7 +2795,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 			ServerCommand("sm_slay #%i 2", GetClientUserId(activator));
 			
 			LoopValidClients(i)
-			CPrintToChat(i, g_iConfig[s_pluginTag], "Triggered Falling Building", i, activator);
+				CPrintToChat(i, g_iConfig[s_pluginTag], "Triggered Falling Building", i, activator);
 		}
 	}
 	return Plugin_Continue;
@@ -2846,7 +2846,7 @@ public void OnWeaponPostSwitch(int client, int weapon)
 public Action Command_KarmaReset(int client, int args)
 {
 	LoopValidClients(i)
-	setKarma(g_iKarma[i], 100);
+		setKarma(g_iKarma[i], 100);
 	return Plugin_Handled;
 }
 

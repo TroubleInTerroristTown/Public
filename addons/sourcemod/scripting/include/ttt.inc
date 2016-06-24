@@ -448,8 +448,8 @@ stock void ShowOverlayToClient(int client, const char[] overlaypath)
 stock void ShowOverlayToAll(const char[] overlaypath)
 {
 	LoopValidClients(i)
-	if (!IsFakeClient(i))
-		ShowOverlayToClient(i, overlaypath);
+		if (!IsFakeClient(i))
+			ShowOverlayToClient(i, overlaypath);
 }
 
 stock bool IsWorldDamage(int iAttacker, int damagetype)
