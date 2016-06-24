@@ -153,14 +153,12 @@ public void TTT_OnClientGetRole(int client, int role)
 	AssignOverlay(client, role);
 }
 
-public void TTT_OnUpdate()
+public void TTT_OnUpdate1(int client)
 {	
 	if(g_bEndOverlay)
 		return;
 	
-	LoopValidClients(i)
-		if(TTT_IsClientValid(i))
-			AssignOverlay(i, TTT_GetClientRole(i));
+	AssignOverlay(client, TTT_GetClientRole(client));
 }
 
 public void AssignOverlay(int client, int role)

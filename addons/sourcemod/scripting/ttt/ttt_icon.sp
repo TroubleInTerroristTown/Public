@@ -85,11 +85,10 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		ClearIcon(client);
 }
 
-public void TTT_OnUpdate()
+public void TTT_OnUpdate1(int client)
 {
-	LoopValidClients(i)
-		if(IsPlayerAlive(i))
-			g_iIcon[i] = CreateIcon(i, TTT_GetClientRole(i));
+	if(IsPlayerAlive(client))
+		g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
 }
 
 public void TTT_OnRoundStart()
