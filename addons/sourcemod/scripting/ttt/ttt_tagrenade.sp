@@ -70,7 +70,6 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
-	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
 public void OnClientDisconnect(int client)
@@ -78,18 +77,12 @@ public void OnClientDisconnect(int client)
 	ResetTAG(client);
 }
 
-public Action Timer_UpdateGlow(Handle timer)
+public void TTT_OnUpdate3(int client)
 {
-	LoopValidClients(i)
-	{
-		if(TTT_IsClientValid(i))
-		{
-			if(IsPlayerAlive(i))
-				SetupGlowSkin(i);
-			else
-				UnhookGlow(i);
-		}
-	}
+	if(IsPlayerAlive(i))
+		SetupGlowSkin(i);
+	else
+		UnhookGlow(i);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)

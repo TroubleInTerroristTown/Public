@@ -86,9 +86,6 @@ public void OnPluginStart()
 	
 	Config_Done();
 
-	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
-	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
-
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 }
 
@@ -136,29 +133,21 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	healthStation_cleanUp();
 }
 
-public Action Timer_1(Handle timer)
+public void TTT_OnUpdate1(int client)
 {
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
-			continue;
+	if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+		continue;
 
-		checkDistanceFromHealthStation(i);
-	}
-
-	return Plugin_Continue;
+	checkDistanceFromHealthStation(i);
 }
 
-public Action Timer_5(Handle timer)
+public void TTT_OnUpdate5(int client)
 {
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(i))
-			continue;
+	if (!IsPlayerAlive(i))
+		continue;
 
-		if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
-			g_iHealthStationCharges[i]++;
-	}
+	if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
+		g_iHealthStationCharges[i]++;
 }
 
 public void OnClientDisconnect(int client)

@@ -40,8 +40,6 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
-	
-	CreateTimer(3.0, Timer_UpdateGlow, TIMER_REPEAT);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
@@ -61,18 +59,12 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action Timer_UpdateGlow(Handle timer)
+public void TTT_OnUpdate3(int client)
 {
-	LoopValidClients(i)
-	{
-		if(TTT_IsClientValid(i))
-		{
-			if(IsPlayerAlive(i))
-				SetupGlowSkin(i);
-			else
-				UnhookGlow(i);
-		}
-	}
+	if(IsPlayerAlive(i))
+		SetupGlowSkin(i);
+	else
+		UnhookGlow(i);
 }
 
 public void TTT_OnClientGetRole(int client, int role)
