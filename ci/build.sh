@@ -1,9 +1,8 @@
 #!/bin/bash
 
-BRANCH=$6
-COUNT="$(git rev-list --count $BRANCH)"
+BID=$6
 HASH="$(git log --pretty=format:%h -n 1)"
-FILE=ttt-$2-$1-$COUNT-$HASH.zip
+FILE=ttt-$2-$1-$BID-$HASH.zip
 LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
@@ -20,7 +19,7 @@ chmod +x addons/sourcemod/scripting/spcomp
 echo "Set plugins version"
 for file in addons/sourcemod/scripting/include/ttt.inc
 do
-  sed -i "s/<ID>/$COUNT/g" $file > output.txt
+  sed -i "s/<ID>/B$6/g" $file > output.txt
   rm output.txt
 done
 
