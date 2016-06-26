@@ -41,9 +41,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
-
-	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
-	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 	
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
 	g_hOnUpdate3 = CreateGlobalForward("TTT_OnUpdate3", ET_Ignore, Param_Cell);
@@ -52,14 +49,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
-	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
 	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
-	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
-	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
@@ -103,11 +97,10 @@ public void OnPluginStart()
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
-	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
 	
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
-	RegConsoleCmd("sm_credits", Command_Credits);
+	
 	RegConsoleCmd("sm_logs", Command_Logs);
 	RegConsoleCmd("sm_log", Command_Logs);
 	
@@ -168,15 +161,6 @@ void SetupConfig()
 	
 	Config_Setup("TTT", g_sConfigFile);
 	
-	g_iConfig[i_creditsII] = Config_LoadInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
-	g_iConfig[i_creditsIT] = Config_LoadInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
-	g_iConfig[i_creditsID] = Config_LoadInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "The amount of credits an innocent will lose for killing a detective.");
-	g_iConfig[i_creditsTI] = Config_LoadInt("ttt_credits_killer_traitor_victim_innocent_add", 600, "The amount of credits a traitor will recieve for killing an innocent.");
-	g_iConfig[i_creditsTT] = Config_LoadInt("ttt_credits_killer_traitor_victim_traitor_subtract", 3000, "The amount of credits a traitor will lose for killing a traitor.");
-	g_iConfig[i_creditsTD] = Config_LoadInt("ttt_credits_killer_traitor_victim_detective_add", 4200, "The amount of credits a traitor will recieve for killing a detective.");
-	g_iConfig[i_creditsDI] = Config_LoadInt("ttt_credits_killer_detective_victim_innocent_subtract", 300, "The amount of credits a detective will lose for killing an innocent.");
-	g_iConfig[i_creditsDT] = Config_LoadInt("ttt_credits_killer_detective_victim_traitor_add", 2100, "The amount of credits a detective will recieve for killing a traitor.");
-	g_iConfig[i_creditsDD] = Config_LoadInt("ttt_credits_killer_detective_victim_detective_subtract", 300, "The amount of credits a detective will lose for killing a detective.");
 	g_iConfig[i_karmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
 	g_iConfig[i_karmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
 	g_iConfig[i_karmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
@@ -192,19 +176,11 @@ void SetupConfig()
 	g_iConfig[i_maxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
 	g_iConfig[i_requiredPlayersD] = Config_LoadInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
 	g_iConfig[i_requiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
-	g_iConfig[i_traitorloseAliveNonTraitors] = Config_LoadInt("ttt_credits_roundend_traitorlose_alive_nontraitors", 4800, "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
-	g_iConfig[i_traitorloseDeadNonTraitors] = Config_LoadInt("ttt_credits_roundend_traitorlose_dead_nontraitors", 1200, "The amount of credits an innocent or detective will recieve for winning the round if they died.");
-	g_iConfig[i_traitorwinAliveTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "The amount of credits a traitor will recieve for winning the round if they survived.");
-	g_iConfig[i_traitorwinDeadTraitors] = Config_LoadInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "The amount of credits a traitor will recieve for winning the round if they died.");
-	g_iConfig[i_creditsFoundBody] = Config_LoadInt("ttt_credits_found_body_add", 1200, "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
 	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showEarnCreditsMessage] = Config_LoadBool("ttt_show_message_earn_credits", true, "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showLoseCreditsMessage] = Config_LoadBool("ttt_show_message_lose_credits", true, "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled");
 	g_iConfig[i_messageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
-	g_iConfig[i_messageTypCredits] = Config_LoadInt("ttt_message_typ_credits", 1, "The credit message type. 1 = Hint Text, 2 = Chat Message");
 	g_iConfig[b_blockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
 	g_iConfig[b_blockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
 	g_iConfig[b_blockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
@@ -235,7 +211,6 @@ void SetupConfig()
 	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
 	g_iConfig[b_denyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
 	g_iConfig[b_slayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
-	g_iConfig[i_startCredits] = Config_LoadInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
 	g_iConfig[b_removeBuyzone] = Config_LoadBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_forceTeams] = Config_LoadBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
 	g_iConfig[b_randomWinner] = Config_LoadBool("ttt_random_winner", true, "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No");
@@ -243,7 +218,6 @@ void SetupConfig()
 	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
-	g_iConfig[bResetCreditsEachRound] = Config_LoadBool("ttt_credits_reset_each_round", false, "Reset credits for all players each round?. 0 = Disabled (default). 1 = Enabled.");
 	
 	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
@@ -260,11 +234,6 @@ void SetupConfig()
 	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
 	
-	g_iConfig[bCreditsTimer] = Config_LoadBool("ttt_credits_timer", true, "Players earn every minute (configurable) credits");
-	g_iConfig[bCreditsMessage] = Config_LoadBool("ttt_credits_show_message", true, "Show a message when player earn credits (bCreditsTimer must be true)");
-	g_iConfig[fCreditsInterval] = Config_LoadFloat("ttt_credits_interval", 60.0, "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)");
-	g_iConfig[iCreditsMin] = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
-	g_iConfig[iCreditsMax] = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
@@ -955,35 +924,10 @@ stock void TeamInitialize(int client)
 		}
 	}
 	
-	if(g_iConfig[bCreditsTimer])
-		if(g_iConfig[fCreditsInterval] > 60.0)
-			g_hCreditsTimer[client] = CreateTimer(g_iConfig[fCreditsInterval], Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-	
 	Call_StartForward(g_hOnClientGetRole);
 	Call_PushCell(client);
 	Call_PushCell(g_iRole[client]);
 	Call_Finish();
-}
-
-public Action Timer_CreditsTimer(Handle timer, any userid)
-{
-	int client = GetClientOfUserId(userid);
-	
-	if(TTT_IsClientValid(client))
-	{
-		if(IsPlayerAlive(client))
-		{
-			int iCredits = GetRandomInt(g_iConfig[iCreditsMin], g_iConfig[iCreditsMax]);
-			addCredits(client, iCredits, g_iConfig[bCreditsMessage]);
-		}
-		else
-		{
-			g_hCreditsTimer[client] = null;
-			return Plugin_Stop;
-		}
-	}
-	
-	return Plugin_Stop;
 }
 
 stock void TeamTag(int client)
@@ -1007,14 +951,6 @@ stock void TeamTag(int client)
 public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	if (TTT_IsClientValid(client))
-	{
-		if (g_iConfig[bResetCreditsEachRound])
-		{
-			g_iCredits[client] = g_iConfig[i_startCredits];
-		}
-	}
 	
 	if (g_bRoundStarted && TTT_IsClientValid(client))
 	{
@@ -1066,7 +1002,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		}
 		else
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
 		
@@ -1097,8 +1032,6 @@ public void OnClientPutInServer(int client)
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
-	
-	g_iCredits[client] = g_iConfig[i_startCredits];
 }
 
 stock void BanBadPlayerKarma(int client)
@@ -1143,7 +1076,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	g_iInnoKills[client] = 0;
 	g_iTraitorKills[client] = 0;
 	g_iDetectiveKills[client] = 0;
-	ClearTimer(g_hCreditsTimer[client]);
 	
 	int iRagdoll = 0;
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
@@ -1577,7 +1509,6 @@ public void OnClientDisconnect(int client)
 			g_iArmor[client] = 0;
 		
 		ClearTimer(g_hRDMTimer[client]);
-		ClearTimer(g_hCreditsTimer[client]);
 		
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
@@ -1702,15 +1633,6 @@ public Action Timer_1(Handle timer)
 	}
 }
 
-public Action Command_Credits(int client, int args)
-{
-	if (!TTT_IsClientValid(client))
-		return Plugin_Handled;
-	
-	CPrintToChat(client, g_iConfig[s_pluginTag], "Your credits is", client, g_iCredits[client]);
-	
-	return Plugin_Handled;
-}
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
@@ -1753,7 +1675,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaII], true);
-		subtractCredits(iAttacker, g_iConfig[i_creditsII], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -1761,7 +1682,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaIT], true);
-		addCredits(iAttacker, g_iConfig[i_creditsIT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
@@ -1769,7 +1689,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaID], true);
-		subtractCredits(iAttacker, g_iConfig[i_creditsID], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -1777,7 +1696,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaTI], true);
-		addCredits(iAttacker, g_iConfig[i_creditsTI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -1785,7 +1703,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaTT], true);
-		subtractCredits(iAttacker, g_iConfig[i_creditsTT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
@@ -1793,7 +1710,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaTD], true);
-		addCredits(iAttacker, g_iConfig[i_creditsTD], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -1801,7 +1717,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaDI], true);
-		subtractCredits(iAttacker, g_iConfig[i_creditsDI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -1809,7 +1724,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		addKarma(iAttacker, g_iConfig[i_karmaDT], true);
-		addCredits(iAttacker, g_iConfig[i_creditsDT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
@@ -1817,7 +1731,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		addArrayTime(iItem);
 		
 		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
-		subtractCredits(iAttacker, g_iConfig[i_creditsDD], true);
 	}
 	
 	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
@@ -1852,7 +1765,6 @@ public void OnMapEnd()
 		if(g_iConfig[bTranfserArmor])
 			g_iArmor[i] = 0;
 		g_bKarma[i] = false;
-		ClearTimer(g_hCreditsTimer[i]);
 	}
 }
 
@@ -1910,44 +1822,6 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		WinningTeam = TTT_TEAM_TRAITOR;
 	}
 	
-	LoopValidClients(client)
-	{
-		ClearTimer(g_hCreditsTimer[client]);
-		switch (WinningTeam)
-		{
-			case TTT_TEAM_DETECTIVE:
-			{
-				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
-				}
-				
-			}
-			case TTT_TEAM_INNOCENT:
-			{
-				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
-				}
-			}
-			case TTT_TEAM_TRAITOR:
-			{
-				if (g_iRole[client] == TTT_TEAM_TRAITOR)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
-				}
-			}
-		}
-	}
 	
 	Call_StartForward(g_hOnRoundEnd);
 	Call_PushCell(WinningTeam);
@@ -2136,8 +2010,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							Call_PushCell(iRagdollC[Victim]);
 							Call_PushString(iRagdollC[VictimName]);
 							Call_Finish();
-							
-							addCredits(client, g_iConfig[i_creditsFoundBody]);
 						}
 						g_aRagdoll.SetArray(i, iRagdollC[0]);
 						break;
@@ -2315,88 +2187,6 @@ stock void UpdateKarma(int client, int karma)
 
 	if(g_hDatabase != null)
 		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
-}
-
-stock void addCredits(int client, int credits, bool message = false)
-{
-	credits = RoundToNearest((credits) * (g_iKarma[client] * 0.01));
-	int newcredits = g_iCredits[client] + credits;
-	
-	Action res = Plugin_Continue;
-	Call_StartForward(g_hOnCreditsGiven_Pre);
-	Call_PushCell(client);
-	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
-	Call_Finish(res);
-	
-	if (res > Plugin_Changed)
-		return;
-	
-	g_iCredits[client] = newcredits;
-	
-	if (g_iConfig[b_showEarnCreditsMessage] && message)
-	{
-		if (g_iConfig[i_messageTypCredits] == 1)
-		{
-			char sBuffer[MAX_MESSAGE_LENGTH];
-			Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
-			CFormatColor(sBuffer, sizeof(sBuffer), client);
-			PrintHintText(client, sBuffer);
-		}
-		else
-			CPrintToChat(client, g_iConfig[s_pluginTag], "credits earned", client, credits, g_iCredits[client]);
-	}
-	
-	Call_StartForward(g_hOnCreditsGiven);
-	Call_PushCell(client);
-	Call_PushCell(g_iCredits[client]);
-	Call_Finish();
-}
-
-stock void subtractCredits(int client, int credits, bool message = false)
-{
-	int newcredits = g_iCredits[client] - credits;
-	
-	Action res = Plugin_Continue;
-	Call_StartForward(g_hOnCreditsGiven_Pre);
-	Call_PushCell(client);
-	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
-	Call_Finish(res);
-	
-	if (res > Plugin_Changed)
-		return;
-	
-	g_iCredits[client] = newcredits;
-	
-	if (g_iCredits[client] < 0)
-		g_iCredits[client] = 0;
-	
-	if (g_iConfig[b_showLoseCreditsMessage] && message)
-	{
-		if (g_iConfig[i_messageTypCredits] == 1)
-		{
-			char sBuffer[MAX_MESSAGE_LENGTH];
-			Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
-			CFormatColor(sBuffer, sizeof(sBuffer), client);
-			PrintHintText(client, sBuffer);
-		}
-		else
-			CPrintToChat(client, g_iConfig[s_pluginTag], "lost credits", client, credits, g_iCredits[client]);
-	}
-	
-	Call_StartForward(g_hOnCreditsGiven);
-	Call_PushCell(client);
-	Call_PushCell(g_iCredits[client]);
-	Call_Finish();
-}
-
-stock void setCredits(int client, int credits)
-{
-	g_iCredits[client] = credits;
-	
-	if (g_iCredits[client] < 0)
-		g_iCredits[client] = 0;
 }
 
 stock void addArrayTime(char[] message)
@@ -2627,48 +2417,6 @@ public Action Command_SetKarma(int client, int args)
 		setKarma(target, karma);
 		
 		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target, karma, "Karma");
-	}
-	
-	return Plugin_Continue;
-}
-
-public Action Command_SetCredits(int client, int args)
-{
-	if (!TTT_IsClientValid(client))
-		return Plugin_Handled;
-	
-	if (args != 2)
-	{
-		ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
-		
-		return Plugin_Handled;
-	}
-	char arg1[32];
-	GetCmdArg(1, arg1, sizeof(arg1));
-	
-	char arg2[32];
-	GetCmdArg(2, arg2, sizeof(arg2));
-	int credits = StringToInt(arg2);
-	
-	char target_name[MAX_TARGET_LENGTH];
-	int target_list[MAXPLAYERS];
-	int target_count;
-	bool tn_is_ml;
-	
-	if ((target_count = ProcessTargetString(arg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
-	{
-		ReplyToTargetError(client, target_count);
-		return Plugin_Handled;
-	}
-	
-	for (int i = 0; i < target_count; i++)
-	{
-		if (!TTT_IsClientValid(target_list[i]))
-			return Plugin_Handled;
-		
-		setCredits(target_list[i], credits);
-		
-		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target_list[i], credits, "Credits");
 	}
 	
 	return Plugin_Continue;

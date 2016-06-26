@@ -21,15 +21,6 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 	return 0;
 }
 
-public int Native_GetClientCredits(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	
-	if (TTT_IsClientValid(client))
-		return g_iCredits[client];
-	return 0;
-}
-
 public int Native_GetClientRagdoll(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
@@ -87,19 +78,6 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 	return 0;
 }
 
-public int Native_SetClientCredits(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	int credits = GetNativeCell(2);
-	
-	if (TTT_IsClientValid(client))
-	{
-		setCredits(client, credits);
-		return g_iCredits[client];
-	}
-	return 0;
-}
-
 public int Native_AddClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
@@ -109,19 +87,6 @@ public int Native_AddClientKarma(Handle plugin, int numParams)
 	{
 		setKarma(client, g_iKarma[client]+karma);
 		return g_iKarma[client];
-	}
-	return 0;
-}
-
-public int Native_AddClientCredits(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	int credits = GetNativeCell(2);
-	
-	if (TTT_IsClientValid(client))
-	{
-		setCredits(client, g_iCredits[client]+credits);
-		return g_iCredits[client];
 	}
 	return 0;
 }

@@ -10,8 +10,6 @@ int g_iConfig[eConfig];
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 
-int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
-
 bool g_bRoundEnded = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
@@ -91,8 +89,6 @@ Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
-Handle g_hOnCreditsGiven_Pre = null;
-Handle g_hOnCreditsGiven = null;
 Handle g_hOnUpdate5 = null;
 Handle g_hOnUpdate3 = null;
 Handle g_hOnUpdate1 = null;
@@ -135,5 +131,4 @@ char g_sRemoveEntityList[][] =  {
 };
 
 bool g_bRoundEnding = false;
-Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
 int g_iPlayerManager = 0;

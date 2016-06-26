@@ -40,28 +40,11 @@ enum eConfig
 	i_karmaDI, 
 	i_karmaDT, 
 	i_karmaDD, 
-	i_creditsII, 
-	i_creditsIT, 
-	i_creditsID, 
-	i_creditsTI, 
-	i_creditsTT, 
-	i_creditsTD, 
-	i_creditsDI, 
-	i_creditsDT, 
-	i_creditsDD, 
-	i_creditsFoundBody, 
-	i_traitorloseAliveNonTraitors, 
-	i_traitorloseDeadNonTraitors, 
-	i_traitorwinAliveTraitors, 
-	i_traitorwinDeadTraitors, 
 	bool:b_showDeathMessage, 
 	bool:b_showKillMessage, 
 	bool:b_showEarnKarmaMessage, 
-	bool:b_showEarnCreditsMessage, 
 	bool:b_showLoseKarmaMessage, 
-	bool:b_showLoseCreditsMessage, 
 	i_messageTypKarma, 
-	i_messageTypCredits, 
 	bool:b_blockSuicide, 
 	bool:b_allowFlash, 
 	bool:b_blockLookAtWeapon, 
@@ -89,7 +72,6 @@ enum eConfig
 	i_detectiveRatio, 
 	bool:b_denyFire, 
 	bool:b_slayAfterStart, 
-	i_startCredits, 
 	bool:b_removeBuyzone, 
 	bool:b_forceTeams, 
 	bool:b_randomWinner, 
@@ -110,7 +92,6 @@ enum eConfig
 	Float:f_roundDelay, 
 	bool:b_nextRoundAlert, 
 	bool:b_endroundDMG, 
-	bool:bResetCreditsEachRound, 
 	bool:b_ignoreDeaths, 
 	bool:b_ignoreRDMMenu, 
 	bool:b_deadPlayersCanSeeOtherRules,
@@ -122,11 +103,6 @@ enum eConfig
 	bool:dChatToDead,
 	bool:bTranfserArmor,
 	bool:bShowTraitors,
-	bool:bCreditsTimer,
-	bool:bCreditsMessage,
-	Float:fCreditsInterval,
-	iCreditsMin,
-	iCreditsMax,
 	bool:bRespawnDeadPlayers
 };
 
@@ -232,23 +208,6 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
 forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
 /*
- * Called before a players credits are modified.
- *
- * @param client            Client index.
- * @param oldcredits        The old amount of credits.
- * @param newcredits     	 The new amount of credits.
- */
-forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
-
-/*
- * Called after a players credits are modified.
- *
- * @param client            Client index.
- * @param credits     	    The new amount of credits.
- */
-forward void TTT_OnCreditsChanged(int client, int &credits);
-
-/*
  * Checks if the round is active.
  */
 native bool TTT_IsRoundActive();
@@ -266,12 +225,6 @@ native int TTT_GetClientRole(int client);
  * @param client            Client index.
  */
 native int TTT_GetClientKarma(int client);
-/*
- * Retrieve a client's credits.
- *
- * @param client            Client index.
- */
-native int TTT_GetClientCredits(int client);
 
 /*
  * Retrieve the Radgoll Info.
@@ -303,25 +256,11 @@ native int TTT_SetClientRole(int client, int role);
 native int TTT_SetClientKarma(int client, int karma);
 
 /*
- * Set a client's credits.
- *
- * @param client            Client index.
- */
-native int TTT_SetClientCredits(int client, int credits);
-
-/*
  * Add a client's karma (currentKarma+karma).
  *
  * @param client            Client index.
  */
 native int TTT_AddClientKarma(int client, int karma);
-
-/*
- * Add a client's credits (currentCredits+credits).
- *
- * @param client            Client index.
- */
-native int TTT_AddClientCredits(int client, int credits);
 
 /*
  * Determins whether a player's body was found (if dead).
