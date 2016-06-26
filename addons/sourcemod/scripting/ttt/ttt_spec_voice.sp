@@ -15,8 +15,10 @@
 #define SPECMODE_3RDPERSON 5
 #define SPECMODE_FREELOOK 6
 
-#define LO_MUTE   true
-#define LO_UNMUTE  false
+#define LO_MUTE   1
+#define LO_UNMUTE  2
+#define LC_MUTE 3
+#define LC_UNMUTE 3
 
 bool g_bMutePlayers = false;
 bool g_bAutoOpen = true;
@@ -25,7 +27,7 @@ int g_iMenuTime = 0;
 bool g_bEnableTVoice = false;
 bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 
-bool g_iMute[MAXPLAYERS + 1][MAXPLAYERS + 1];
+int g_iMute[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -138,9 +140,9 @@ public void Timer_OnUpdate1(int i)
 		if(IsFakeClient(j))
 			continue;
 		
-		if(g_iMute[j][i])
+		if(g_iMute[j][i] == LO_MUTE)
 			SetListenOverride(j, i, Listen_No);
-		else
+		else if(g_iMute[j][i] == LO_UNMUTE)
 			SetListenOverride(j, i, Listen_Yes);
 	}
 }
