@@ -21,12 +21,15 @@
 #define LC_UNMUTE 3
 
 bool g_bMutePlayers = false;
+bool g_bOpenMenu[MAXPLAYERS + 1] = false;
 bool g_bAutoOpen = true;
 int g_iMenuTime = 0;
 
 bool g_bEnableTVoice = false;
 bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 
+bool g_bAlive[MAXPLAYERS + 1] =  { false, ... };
+bool g_bDead[MAXPLAYERS + 1] =  { false, ... };
 int g_iMute[MAXPLAYERS + 1][MAXPLAYERS + 1];
 
 public Plugin myinfo =
@@ -60,6 +63,7 @@ public void OnPluginStart()
 	
 	RegConsoleCmd("sm_tvoice", Command_TVoice);
 	
+	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_death", Event_PlayerDeath);
 }
 
@@ -100,6 +104,16 @@ public Action Command_TVoice(int client, int args)
 	return Plugin_Continue;
 }
 
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if(TTT_IsClientValid(client))
+	{
+		ResetAll(client);
+	}
+}
+
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
@@ -123,11 +137,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 public void TTT_OnClientGetRole(int client, int role)
 {
 	LoopValidClients(i)
+	{
+		ResetAll(client, true);
 		if(role == TTT_TEAM_TRAITOR && g_bTVoice[client])
 		{
 			// SetListenOverride(i, client, Listen_Yes);
 			g_iMute[client][i] = LO_UNMUTE;
 		}
+	}
 }
 
 public void Timer_OnUpdate1(int i)
@@ -140,9 +157,9 @@ public void Timer_OnUpdate1(int i)
 		if(IsFakeClient(j))
 			continue;
 		
-		if(g_iMute[j][i] == LO_MUTE)
+		if(g_iMute[i][j] == LO_MUTE)
 			SetListenOverride(j, i, Listen_No);
-		else if(g_iMute[j][i] == LO_UNMUTE)
+		else if(g_iMute[i][j] == LO_UNMUTE)
 			SetListenOverride(j, i, Listen_Yes);
 	}
 }
@@ -159,36 +176,36 @@ public void Timer_OnUpdate5(int i)
 		
 		if(!TTT_IsRoundActive())
 			//SetListenOverride(i, j, Listen_Yes);
-			g_iMute[j][i] = LO_UNMUTE;
+			g_iMute[i][j] = LO_UNMUTE;
 			
 		else if(IsPlayerAlive(i) && TTT_GetClientRole(j) == TTT_TEAM_UNASSIGNED)
 			// SetListenOverride(i, j, Listen_No);
-			g_iMute[j][i] = LO_MUTE;
+			g_iMute[i][j] = LO_MUTE;
 			
 		else if(IsPlayerAlive(i) && !IsPlayerAlive(j))
 			// SetListenOverride(i, j, Listen_No);
-			g_iMute[j][i] = LO_MUTE;
+			g_iMute[i][j] = LO_MUTE;
 			
 		else if(!IsPlayerAlive(i) && IsPlayerAlive(j))
 			// SetListenOverride(i, j, Listen_Yes);
-			g_iMute[j][i] = LO_UNMUTE;
+			g_iMute[i][j] = LO_UNMUTE;
 		
 		else if(!IsPlayerAlive(i) && !IsPlayerAlive(j))
 			// SetListenOverride(i, j, Listen_Yes);
-			g_iMute[j][i] = LO_UNMUTE;
+			g_iMute[i][j] = LO_UNMUTE;
 			
 		else if(IsPlayerAlive(i) && IsPlayerAlive(j))
 			// SetListenOverride(i, j, Listen_Yes);
-			g_iMute[j][i] = LO_UNMUTE;
+			g_iMute[i][j] = LO_UNMUTE;
 		
 		if(g_bEnableTVoice && TTT_GetClientRole(j) == TTT_TEAM_TRAITOR && g_bTVoice[j])
 		{
 			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
 				// SetListenOverride(i, j, Listen_Yes);
-				g_iMute[j][i] = LO_UNMUTE;
+				g_iMute[i][j] = LO_UNMUTE;
 			else
 				// SetListenOverride(i, j, Listen_No);
-				g_iMute[j][i] = LO_MUTE;
+				g_iMute[i][j] = LO_MUTE;
 		}
 	}
 }
@@ -212,34 +229,66 @@ void ShowSpecMenu(int client)
 	
 	if(target > 0)
 	{
-		char sPlayer[128], sStatus[32];
-		Format(sPlayer, sizeof(sPlayer), "%T", "SpecMenu: Player", client, target);
+		char sItem[128];
 		
-		Format(sStatus, sizeof(sStatus), "Status:");
+		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Player", client, target);
+		menu.AddItem("player", sItem, ITEMDRAW_DISABLED);
 		
 		if(g_iMute[client][target] == LO_MUTE || g_iMute[client][target] == LC_MUTE)
-			Format(sStatus, sizeof(sStatus), "%s Muted");
+			Format(sItem, sizeof(sItem), "Status: Muted"); // TODO: Add translation
 		else if(g_iMute[client][target] == LO_UNMUTE || g_iMute[client][target] == LC_UNMUTE)
-			Format(sStatus, sizeof(sStatus), "%s Unmuted");
+			Format(sItem, sizeof(sItem), "Status: Unmuted"); // TODO: Add translation
 		
-		menu.AddItem("player", sPlayer, ITEMDRAW_DISABLED);
-		menu.AddItem("status", sStatus, ITEMDRAW_DISABLED);
+		menu.AddItem("status", sItem, ITEMDRAW_DISABLED);
 	}
 	
-	char sNext[32], sPrev[32];
-	Format(sNext, sizeof(sNext), "%T", "SpecMenu: Next", client);
-	Format(sPrev, sizeof(sPrev), "%T", "SpecMenu: Prev", client);
-	menu.AddItem("next", sNext);
-	menu.AddItem("prev", sPrev);
+	char sNav[32];
+	Format(sNav, sizeof(sNav), "%T", "SpecMenu: Next", client);
+	menu.AddItem("next", sNav);
+	Format(sNav, sizeof(sNav), "%T", "SpecMenu: Prev", client);
+	menu.AddItem("prev", sNav);
 	
 	if(g_bMutePlayers)
 	{
 		char sMute[32];
-		Format(sMute, sizeof(sMute), "%T", "SpecMenu: Mute", client);
-		menu.AddItem("mute", sMute);
+		
+		if(!g_iMute[client][target])
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Mute", client);
+			menu.AddItem("mute-player", sMute);
+		}
+		else
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UMute", client);
+			menu.AddItem("unmute-player", sMute);
+		}
+		
+		if(!g_bAlive[client])
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Alive", client);
+			menu.AddItem("mute-alive", sMute);
+		}
+		else
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UAlive", client);
+			menu.AddItem("unmute-alive", sMute);
+		}
+		
+		if(!g_bDead[client])
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Dead", client);
+			menu.AddItem("mute-dead", sMute);
+		}
+		else
+		{
+			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UDead", client);
+			menu.AddItem("unmute-alive", sMute);
+		}
 	}
 
 	menu.ExitButton = true;
+	
+	g_bOpenMenu[client] = true;
 	
 	if(g_iMenuTime == 0)
 		menu.Display(client, MENU_TIME_FOREVER);
@@ -260,28 +309,82 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 			{
 				FakeClientCommand(client, "spec_next");
 				ShowSpecMenu(client);
-				
 				return 0;
 			}
 			else if (StrEqual(sParam, "prev", false))
 			{
 				FakeClientCommand(client, "spec_prev");
 				ShowSpecMenu(client);
-				
 				return 0;
 			}
-			else if (StrEqual(sParam, "mute", false))
+			else if (StrEqual(sParam, "mute-player", false))
 			{
-				if(GetObservTarget(client) > 0)
-					SetListenOverride(client, GetObservTarget(client), Listen_No);
-				else
-					return 0;
+				int target = GetObservTarget(client);
+				if(target > 0)
+					// SetListenOverride(client, target, Listen_No);
+					g_iMute[client][target] = LC_MUTE;
+				
+				ShowSpecMenu(client);
+				return 0;
+			}
+			else if (StrEqual(sParam, "unmute-player", false))
+			{
+				int target = GetObservTarget(client);
+				if(target > 0)
+					// SetListenOverride(client, target, Listen_No);
+					g_iMute[client][target] = LC_UNMUTE;
+				
+				ShowSpecMenu(client);
+				return 0;
+			}
+			else if (StrEqual(sParam, "mute-alive", false))
+			{
+				LoopValidClients(i)
+					if(IsPlayerAlive(i))
+						g_iMute[client][i] = LC_MUTE;
+				
+				g_bAlive[client] = true;
+				ShowSpecMenu(client);
+				return 0;
+			}
+			else if (StrEqual(sParam, "unmute-alive", false))
+			{
+				LoopValidClients(i)
+					if(IsPlayerAlive(i))
+						g_iMute[client][i] = LC_UNMUTE;
+				
+				g_bAlive[client] = false;
+				ShowSpecMenu(client);
+				return 0;
+			}
+			else if (StrEqual(sParam, "mute-dead", false))
+			{
+				LoopValidClients(i)
+					if(!IsPlayerAlive(i))
+						g_iMute[client][i] = LC_MUTE;
+						
+				g_bDead[client] = true;
+				ShowSpecMenu(client);
+				return 0;
+			}
+			else if (StrEqual(sParam, "unmute-dead", false))
+			{
+				LoopValidClients(i)
+					if(!IsPlayerAlive(i))
+						g_iMute[client][i] = LC_UNMUTE;
+						
+				g_bDead[client] = false;
+				ShowSpecMenu(client);
+				return 0;
 			}
 		}
 		return 0;
 	}
 	else if (action == MenuAction_End)
+	{
+		g_bOpenMenu[client] = false;
 		delete menu;
+	}
 	
 	return 0;
 }
@@ -302,4 +405,18 @@ int GetObservTarget(int client)
 		}
 	}
 	return 0;
+}
+
+stock void ResetAll(int client, bool ignoreTVoice = false)
+{
+	if(ignoreTVoice)
+		g_bTVoice[client] = false;
+	g_bAlive[client] = false;
+	g_bDead[client] = false;
+	
+	if(g_bOpenMenu[client])
+	{
+		g_bOpenMenu[client] = false;
+		ShowSpecMenu(client);
+	}
 }
