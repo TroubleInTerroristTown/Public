@@ -208,11 +208,22 @@ void ShowSpecMenu(int client)
 	Menu menu = new Menu(Menu_MainMenu);
 	menu.SetTitle("%T", "SpecMenu: Title", client);
 	
-	if(GetObservTarget(client) > 0)
+	int target = GetObservTarget(client);
+	
+	if(target > 0)
 	{
-		char sPlayer[128];
-		Format(sPlayer, sizeof(sPlayer), "%T", "SpecMenu: Player", client, GetObservTarget(client));
+		char sPlayer[128], sStatus[32];
+		Format(sPlayer, sizeof(sPlayer), "%T", "SpecMenu: Player", client, target);
+		
+		Format(sStatus, sizeof(sStatus), "Status:");
+		
+		if(g_iMute[client][target] == LO_MUTE || g_iMute[client][target] == LC_MUTE)
+			Format(sStatus, sizeof(sStatus), "%s Muted");
+		else if(g_iMute[client][target] == LO_UNMUTE || g_iMute[client][target] == LC_UNMUTE)
+			Format(sStatus, sizeof(sStatus), "%s Unmuted");
+		
 		menu.AddItem("player", sPlayer, ITEMDRAW_DISABLED);
+		menu.AddItem("status", sStatus, ITEMDRAW_DISABLED);
 	}
 	
 	char sNext[32], sPrev[32];
