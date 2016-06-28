@@ -133,20 +133,16 @@ public bool ShowSelectionMenu(int client)
 	
 	int c = 0;
 	char sName[MAX_NAME_LENGTH];
-	for (int i = 1; i <= MaxClients; i++)
+	LoopValidClients(i)
 	{
-		if(TTT_IsClientValid(i))
-		{
-			GetClientName(i, sName, sizeof(sName));
-			menu.AddItem(sName, sName);
-			c++;
-		}
-		
-		if(c<=0)
-			return false;
-	
-		menu.Display(client, MENU_TIME_FOREVER);
+		GetClientName(i, sName, sizeof(sName));
+		menu.AddItem(sName, sName);
+		c++;
 	}
+	if(c<=0)
+		return false;
+	
+	menu.Display(client, MENU_TIME_FOREVER);
 	return true;
 }
 
