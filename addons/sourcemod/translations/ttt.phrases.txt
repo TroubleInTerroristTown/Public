@@ -866,4 +866,12 @@
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
+	"FakeNick Title"
+	{
+		"en"		"Choose a Name"
+	}
+	"FakeNick expired"
+	{
+		"en"		"Your faked nick expired."
+	}
 }
