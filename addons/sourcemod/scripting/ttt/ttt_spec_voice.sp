@@ -222,8 +222,7 @@ public Action Command_SpecMenu(int client, int args)
 
 void ShowSpecMenu(int client)
 {
-	Menu menu = new Menu(Menu_MainMenu);
-	menu.SetTitle("%T", "SpecMenu: Title", client);
+	Panel panel = new Panel();
 	
 	int target = GetObservTarget(client);
 	
@@ -232,78 +231,84 @@ void ShowSpecMenu(int client)
 		char sItem[128];
 		
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Player", client, target);
-		menu.AddItem("player", sItem, ITEMDRAW_DISABLED);
+		panel.SetTitle(sItem);
 		
 		if(g_iMute[client][target] == LO_MUTE || g_iMute[client][target] == LC_MUTE)
 			Format(sItem, sizeof(sItem), "Status: Muted"); // TODO: Add translation
 		else if(g_iMute[client][target] == LO_UNMUTE || g_iMute[client][target] == LC_UNMUTE)
 			Format(sItem, sizeof(sItem), "Status: Unmuted"); // TODO: Add translation
 		
-		menu.AddItem("status", sItem, ITEMDRAW_DISABLED);
+		panel.DrawText(sItem);
+		panel.DrawItem(sItem, ITEMDRAW_RAWLINE);
+	}
+	else
+	{
+		char sTitle[64];
+		Format(sTitle, sizeof(sTitle), "%T", "SpecMenu: Title", client);
+		panel.SetTitle(sTitle);
 	}
 	
 	char sNav[32];
 	Format(sNav, sizeof(sNav), "%T", "SpecMenu: Next", client);
-	menu.AddItem("next", sNav);
+	panel.DrawItem(sNav);
 	Format(sNav, sizeof(sNav), "%T", "SpecMenu: Prev", client);
-	menu.AddItem("prev", sNav);
+	panel.DrawItem(sNav);
 	
 	if(g_bMutePlayers)
 	{
 		char sMute[32];
+		panel.DrawItem(sMute, ITEMDRAW_RAWLINE);
 		
 		if(!g_iMute[client][target])
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Mute", client);
-			menu.AddItem("mute-player", sMute);
+			panel.DrawItem(sMute);
 		}
 		else
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UMute", client);
-			menu.AddItem("unmute-player", sMute);
+			panel.DrawItem(sMute);
 		}
 		
 		if(!g_bAlive[client])
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Alive", client);
-			menu.AddItem("mute-alive", sMute);
+			panel.DrawItem(sMute);
 		}
 		else
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UAlive", client);
-			menu.AddItem("unmute-alive", sMute);
+			panel.DrawItem(sMute);
 		}
 		
 		if(!g_bDead[client])
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: Dead", client);
-			menu.AddItem("mute-dead", sMute);
+			panel.DrawItem(sMute);
 		}
 		else
 		{
 			Format(sMute, sizeof(sMute), "%T", "SpecMenu: UDead", client);
-			menu.AddItem("unmute-alive", sMute);
+			panel.DrawItem(sMute);
 		}
 	}
 
-	menu.ExitButton = true;
-	
 	g_bOpenMenu[client] = true;
 	
 	if(g_iMenuTime == 0)
-		menu.Display(client, MENU_TIME_FOREVER);
+		panel.Send(client, Panel_SpecMain, MENU_TIME_FOREVER);
 	else if(g_iMenuTime > 0)
-		menu.Display(client, g_iMenuTime);
+		panel.Send(client, Panel_SpecMain, g_iMenuTime);
 }
 
-public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
+public int Panel_SpecMain(Menu panel, MenuAction action, int client, int param)
 {
 	if (action == MenuAction_Select)
 	{
 		if(!IsPlayerAlive(client) || IsClientObserver(client))
 		{
 			char sParam[32];
-			GetMenuItem(menu, param, sParam, sizeof(sParam));
+			GetMenuItem(panel, param, sParam, sizeof(sParam));
 			
 			if (StrEqual(sParam, "next", false))
 			{
@@ -383,7 +388,7 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 	else if (action == MenuAction_End)
 	{
 		g_bOpenMenu[client] = false;
-		delete menu;
+		delete panel;
 	}
 	
 	return 0;
