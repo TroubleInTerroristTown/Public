@@ -30,7 +30,6 @@ char g_soverlayDWin[PLATFORM_MAX_PATH] = "";
 char g_soverlayTWin[PLATFORM_MAX_PATH] = "";
 char g_soverlayIWin[PLATFORM_MAX_PATH] = "";
 
-bool g_bEndwithD;
 bool g_bEndOverlay = false;
 
 float g_fDelay;
@@ -40,7 +39,6 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	
-	g_bEndwithD = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	g_fDelay = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 	Config_Done();
 
@@ -82,16 +80,13 @@ public void OnMapStart()
 	PrecacheDecal(g_soverlayIWin, true);
 
 
-	if(g_bEndwithD)
-	{
-		Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayDWin);
-		AddFileToDownloadsTable(sBuffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayDWin);
+	AddFileToDownloadsTable(sBuffer);
 
-		Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayDWin);
-		AddFileToDownloadsTable(sBuffer);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_soverlayDWin);
+	AddFileToDownloadsTable(sBuffer);
 
-		PrecacheDecal(g_soverlayDWin, true);
-	}
+	PrecacheDecal(g_soverlayDWin, true);
 
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sDetectiveIcon);
@@ -137,9 +132,9 @@ public void TTT_OnRoundEnd(int winner)
 	
 	if(winner == TTT_TEAM_TRAITOR)
 		ShowOverlayToAll(g_soverlayTWin);
-	else if(winner == TTT_TEAM_INNOCENT && !g_bEndwithD)
+	else if(winner == TTT_TEAM_INNOCENT)
 		ShowOverlayToAll(g_soverlayIWin);
-	else if(winner == TTT_TEAM_DETECTIVE && g_bEndwithD)
+	else if(winner == TTT_TEAM_DETECTIVE)
 		ShowOverlayToAll(g_soverlayDWin);
 }
 
