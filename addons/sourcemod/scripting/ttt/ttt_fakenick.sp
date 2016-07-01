@@ -58,7 +58,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/fakenick.cfg");
 	Config_Setup("TTT-FakeNick", g_sConfigFile);
 	
-	Config_LoadString("faken_name", "Ice Knife", "The name of the Ice Knife in the Shop", g_sLongName, sizeof(g_sLongName));
+	Config_LoadString("faken_name", "Fakenick", "The name of the Ice Knife in the Shop", g_sLongName, sizeof(g_sLongName));
 	
 	g_iPrice = Config_LoadInt("faken_price", 9000, "The amount of credits a fake nick costs as traitor. 0 to disable.");
 	g_iCount = Config_LoadInt("faken_count", 1, "The amount of usages for fake nick per round as traitor. 0 to disable.");
