@@ -44,6 +44,8 @@ bool g_bOnSpawn = false;
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
+int g_iTDamage = 100;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -82,7 +84,8 @@ public void OnPluginStart()
 	g_iICount = Config_LoadInt("ta_innocent_count", 1, "The amount of usages for tasers per round as innocent. 0 to disable.");
 	g_iTCount = Config_LoadInt("ta_traitor_count", 1, "The amount of usages for tasers per round as traitor. 0 to disable.");
 	
-	g_iDamage = Config_LoadInt("ta_damage", 0, "The amount of damage a taser deals");
+	g_iDamage = Config_LoadInt("ta_damage", 0, "The amount of damage a taser deals for detectives and innocents");
+	g_iTDamage = Config_LoadInt("ta_traitor_damage", 0, "The amount of damage a taser deals for traitors");
 	
 	g_bOnSpawn = Config_LoadBool("ta_give_taser_spawn", true, "Give the Detective a taser when he spawns?");
 	
@@ -180,34 +183,43 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	
 	char item[512], sWeapon[64];
+	int iRole = TTT_GetClientRole(iVictim);
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
 	if (StrEqual(sWeapon, "weapon_taser", false))
 	{
-		if (TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
+		if (iRole == TTT_TEAM_TRAITOR)
 		{
 			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
 			CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
-		else if (TTT_GetClientRole(iVictim) == TTT_TEAM_DETECTIVE)
+		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
 			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
 			CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
 		}
-		else if (TTT_GetClientRole(iVictim) == TTT_TEAM_INNOCENT)
+		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
 			CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
 		}
 		
-		if (g_iDamage == 0)
-			return Plugin_Handled;
-		else if (g_iDamage > 0)
+		if(iRole != TTT_TEAM_TRAITOR)
 		{
-			damage = view_as<float>(g_iDamage);
+			if (g_iDamage == 0)
+				return Plugin_Handled;
+			else if (g_iDamage > 0)
+			{
+				damage = view_as<float>(g_iDamage);
+				return Plugin_Changed;
+			}
+		}
+		else
+		{
+			damage = view_as<float>(g_iTDamage);
 			return Plugin_Changed;
 		}
 	}

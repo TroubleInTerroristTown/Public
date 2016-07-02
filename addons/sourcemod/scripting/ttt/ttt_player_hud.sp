@@ -83,9 +83,9 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 {
 	Format(sName, iNameLength, "%T", "Hud Name", client);
 	Format(sHealth, iHealthLength, "%T", "Hud Health", client);
-	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(client));
+	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(target));
 	Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
-	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(client));
+	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(target));
 	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextT);
@@ -121,17 +121,17 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Call_StartForward(g_hOnHudSend_Pre);
 	Call_PushCell(client);
 	Call_PushCell(target);
-	Call_PushStringEx(sName, iNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sName, iNameLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iNameLength);
-	Call_PushStringEx(sPlayerName, iPlayerNameLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sPlayerName, iPlayerNameLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iPlayerNameLength);
-	Call_PushStringEx(sHealth, iHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sHealth, iHealthLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iHealthLength);
-	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iPlayerHealthLength);
-	Call_PushStringEx(sKarma, iKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sKarma, iKarmaLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iKarmaLength);
-	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK);
+	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
 	Call_PushCell(iPlayerKarmaLength);
 	Call_Finish(res);
 	if (res >= Plugin_Handled)
