@@ -153,7 +153,7 @@ public int SelectMenu_Callback(Menu menu, MenuAction action, int param1, int par
 		char sParam[MAX_NAME_LENGTH];
 		GetMenuItem(menu, param2, sParam, sizeof(sParam));
 		
-		g_sPTarget[param1] = sParam;
+		Format(g_sPTarget[param1], MAX_NAME_LENGTH, "%s", sParam);
 
 		ClearTimer(g_hPTimer[param1]);
 		
@@ -161,9 +161,6 @@ public int SelectMenu_Callback(Menu menu, MenuAction action, int param1, int par
 		
 		delete menu;
 		
-	}
-	else if(action == MenuAction_Cancel)
-	{
 	}
 	else if (action == MenuAction_End)
 		delete menu;
@@ -174,7 +171,7 @@ public int SelectMenu_Callback(Menu menu, MenuAction action, int param1, int par
 public Action NickTimer(Handle timer, int client)
 {
 	ResetItem(client);
-	CPrintToChat(client, "%T", "FakeNick expired", client);
+	CPrintToChat(client, g_sPluginTag, "FakeNick expired", client);
 	return Plugin_Handled;
 }
 
