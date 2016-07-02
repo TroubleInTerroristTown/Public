@@ -1780,29 +1780,10 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	if (g_bRoundStarted)
 		return Plugin_Handled;
 	
-	LoopValidClients(client)
-	{
-		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound]) {
-			g_iKarmaStart[client] = g_iKarma[client];
-			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma has been updated", client);
-		}
-	}
-	
 	bool bInnoAlive = false;
 	bool bDeteAlive = false;
 	
 	int WinningTeam = TTT_TEAM_UNASSIGNED;
-	
-	LoopValidClients(client)
-	{
-		if (IsPlayerAlive(client))
-		{
-			if (g_iRole[client] == TTT_TEAM_INNOCENT)
-				bInnoAlive = true;
-			else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
-				bDeteAlive = true;
-		}
-	}
 	
 	if (bInnoAlive)
 	{
@@ -1811,17 +1792,70 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	else if (!bInnoAlive && bDeteAlive)
 	{
 		if (g_iConfig[b_endwithD])
-		{
 			WinningTeam = TTT_TEAM_DETECTIVE;
-		} else {
+		else
 			WinningTeam = TTT_TEAM_INNOCENT;
-		}
 	}
 	else
 	{
 		WinningTeam = TTT_TEAM_TRAITOR;
 	}
 	
+<<<<<<< HEAD
+=======
+	LoopValidClients(client)
+	{
+		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
+		{
+			g_iKarmaStart[client] = g_iKarma[client];
+			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma has been updated", client);
+		}
+		
+		if (IsPlayerAlive(client))
+		{
+			if (g_iRole[client] == TTT_TEAM_INNOCENT)
+				bInnoAlive = true;
+			else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+				bDeteAlive = true;
+		}
+		
+		ClearTimer(g_hCreditsTimer[client]);
+		switch (WinningTeam)
+		{
+			case TTT_TEAM_DETECTIVE:
+			{
+				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
+				{
+					if (IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
+				}
+				
+			}
+			case TTT_TEAM_INNOCENT:
+			{
+				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
+				{
+					if (IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
+				}
+			}
+			case TTT_TEAM_TRAITOR:
+			{
+				if (g_iRole[client] == TTT_TEAM_TRAITOR)
+				{
+					if (IsPlayerAlive(client))
+						addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
+					else
+						addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
+				}
+			}
+		}
+	}
+>>>>>>> refs/remotes/origin/master
 	
 	Call_StartForward(g_hOnRoundEnd);
 	Call_PushCell(WinningTeam);
