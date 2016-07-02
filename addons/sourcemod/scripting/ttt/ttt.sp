@@ -1785,24 +1785,6 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	
 	int WinningTeam = TTT_TEAM_UNASSIGNED;
 	
-	if (bInnoAlive)
-	{
-		WinningTeam = TTT_TEAM_INNOCENT;
-	}
-	else if (!bInnoAlive && bDeteAlive)
-	{
-		if (g_iConfig[b_endwithD])
-			WinningTeam = TTT_TEAM_DETECTIVE;
-		else
-			WinningTeam = TTT_TEAM_INNOCENT;
-	}
-	else
-	{
-		WinningTeam = TTT_TEAM_TRAITOR;
-	}
-	
-<<<<<<< HEAD
-=======
 	LoopValidClients(client)
 	{
 		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
@@ -1818,44 +1800,23 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 			else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 				bDeteAlive = true;
 		}
-		
-		ClearTimer(g_hCreditsTimer[client]);
-		switch (WinningTeam)
-		{
-			case TTT_TEAM_DETECTIVE:
-			{
-				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
-				}
-				
-			}
-			case TTT_TEAM_INNOCENT:
-			{
-				if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorloseAliveNonTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorloseDeadNonTraitors]);
-				}
-			}
-			case TTT_TEAM_TRAITOR:
-			{
-				if (g_iRole[client] == TTT_TEAM_TRAITOR)
-				{
-					if (IsPlayerAlive(client))
-						addCredits(client, g_iConfig[i_traitorwinAliveTraitors]);
-					else
-						addCredits(client, g_iConfig[i_traitorwinDeadTraitors]);
-				}
-			}
-		}
 	}
->>>>>>> refs/remotes/origin/master
+	
+	if (bInnoAlive)
+	{
+		WinningTeam = TTT_TEAM_INNOCENT;
+	}
+	else if (!bInnoAlive && bDeteAlive)
+	{
+		if (g_iConfig[b_endwithD])
+			WinningTeam = TTT_TEAM_DETECTIVE;
+		else
+			WinningTeam = TTT_TEAM_INNOCENT;
+	}
+	else
+	{
+		WinningTeam = TTT_TEAM_TRAITOR;
+	}
 	
 	Call_StartForward(g_hOnRoundEnd);
 	Call_PushCell(WinningTeam);
