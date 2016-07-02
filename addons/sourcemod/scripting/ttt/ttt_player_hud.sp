@@ -83,9 +83,9 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 {
 	Format(sName, iNameLength, "%T", "Hud Name", client);
 	Format(sHealth, iHealthLength, "%T", "Hud Health", client);
-	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(client));
+	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(target));
 	Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
-	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(client));
+	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(target));
 	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextT);
