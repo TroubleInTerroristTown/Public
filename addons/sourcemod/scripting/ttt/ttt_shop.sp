@@ -28,6 +28,7 @@ ArrayList g_aCustomItems;
 
 char g_sPluginTag[128];
 char g_sConfigFile[PLATFORM_MAX_PATH];
+char g_sCreditsName[32];
 
 bool g_bSortItems = false;
 bool g_bShowEarnCreditsMessage = false;
@@ -97,8 +98,6 @@ public void OnPluginStart()
 	
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
 	
-	RegConsoleCmd("sm_credits", Command_Credits);
-	
 	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
@@ -141,10 +140,16 @@ public void OnPluginStart()
 	g_iCreditsMin = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
 	g_iCreditsMax = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
 	
+	Config_LoadString("ttt_credits_command", "credits", "The command to show the credits", g_sCreditsName, sizeof(g_sCreditsName));
+	
 	// Doesn't exist anymore
 	Config_Remove("ttt_sort_items_price");
 	Config_Remove("ttt_sort_items_price_order");
 	Config_Done();
+	
+	char g_sCreditsCMD[sizeof(g_sCreditsName)+3];
+	Format(g_sCreditsCMD, sizeof(g_sCreditsName), "sm_%s", g_sCreditsName);
+	RegConsoleCmd(g_sCreditsCMD, Command_Credits);
 	
 	LoadTranslations("ttt.phrases");
 }
