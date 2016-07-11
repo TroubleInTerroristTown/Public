@@ -38,3 +38,41 @@ native int TTT_GetCustomItemPrice(const char[] item);
  * @param item              The short-tag identifier of the item.
  */
 native int TTT_GetCustomItemRole(const char[] item);
+
+/*
+ * Called after a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param credits     	    The new amount of credits.
+ */
+forward void TTT_OnCreditsChanged(int client, int &credits);
+
+/*
+ * Called before a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param oldcredits        The old amount of credits.
+ * @param newcredits     	 The new amount of credits.
+ */
+forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
+
+/*
+ * Retrieve a client's credits.
+ *
+ * @param client            Client index.
+ */
+native int TTT_GetClientCredits(int client);
+
+/*
+ * Set a client's credits.
+ *
+ * @param client            Client index.
+ */
+native int TTT_SetClientCredits(int client, int credits);
+
+/*
+ * Add a client's credits (currentCredits+credits).
+ *
+ * @param client            Client index.
+ */
+native int TTT_AddClientCredits(int client, int credits);
