@@ -273,8 +273,11 @@ void UnhookGlow(int client)
 	if(client < 1)
 		return;
 	
-	char sModel[PLATFORM_MAX_PATH];
-	GetClientModel(client, sModel, sizeof(sModel));
-	SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
-	SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+	if (HasEntProp(client, Prop_Send, "m_bShouldGlow"))
+	{
+		char sModel[PLATFORM_MAX_PATH];
+		GetClientModel(client, sModel, sizeof(sModel));
+		SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
+		SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+	}
 }
