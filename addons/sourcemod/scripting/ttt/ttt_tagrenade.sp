@@ -345,14 +345,15 @@ void UnhookGlow(int client)
 		return;
 	
 	int iOffset;
+	int iSkin = EntRefToEntIndex(CPS_GetSkin(client));
 	
-	if (!iOffset && (iOffset = GetEntSendPropOffs(CPS_GetSkin(client), "m_clrGlow")) == -1)
+	if (iSkin < 1 && !iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
 		return;
 	else
 	{
 		char sModel[PLATFORM_MAX_PATH];
 		GetClientModel(client, sModel, sizeof(sModel));
 		SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
-		SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+		SDKUnhook(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 	}
 }
