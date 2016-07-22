@@ -344,7 +344,11 @@ void UnhookGlow(int client)
 	if(client < 1)
 		return;
 	
-	if (HasEntProp(client, Prop_Send, "m_bShouldGlow"))
+	int iOffset;
+	
+	if (!iOffset && (iOffset = GetEntSendPropOffs(CPS_GetSkin(client), "m_clrGlow")) == -1)
+		return;
+	else
 	{
 		char sModel[PLATFORM_MAX_PATH];
 		GetClientModel(client, sModel, sizeof(sModel));
