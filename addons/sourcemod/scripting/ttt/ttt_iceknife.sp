@@ -90,12 +90,14 @@ public void OnMapStart()
 
 public void OnClientPutInServer(int client)
 {
-	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
+	if(TTT_IsClientValid(client))
+		SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
 public void OnClientDisconnect(int client)
 {
-	ResetIceK(client);
+	if(TTT_IsClientValid(client))
+		ResetIceK(client);
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
