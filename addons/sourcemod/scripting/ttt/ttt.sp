@@ -490,8 +490,28 @@ public void OnMapStart()
 	if (g_iMVPs == -1)
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	
+	SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
+}
+
+public void ThinkPost(int entity)
+{
+	int isAlive[MAXPLAYERS+1];
 	
-	g_iPlayerManager = FindEntityByClassname(0, "cs_player_manager");
+	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS+1);
+	LoopValidClients(i)
+		isAlive[i] = (!g_bFound[i]);
+		
+	if (g_iConfig[b_kadRemover])
+	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
+		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
+		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
+	}
+	
+	SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS+1);
 }
 
 public Action Command_Karma(int client, int args)
@@ -511,11 +531,11 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	
 	g_bInactive = false;
 	g_bRoundEnded = false;
+
 	LoopValidClients(i)
 	{
 		g_iRole[i] = TTT_TEAM_UNASSIGNED;
 		g_bFound[i] = true;
-		IsAliveCheck();
 		g_iInnoKills[i] = 0;
 		g_iTraitorKills[i] = 0;
 		g_iDetectiveKills[i] = 0;
@@ -549,7 +569,6 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	LoopValidClients(i)
 	{
 		g_bFound[i] = true;
-		IsAliveCheck();
 		g_iInnoKills[i] = 0;
 		g_iTraitorKills[i] = 0;
 		g_iDetectiveKills[i] = 0;
@@ -562,7 +581,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 			if(IsPlayerAlive(i))
 				g_iArmor[i] = GetEntProp(i, Prop_Send, "m_ArmorValue");
 	}
-	
+
 	ShowLogs(0);
 	
 	g_iTeamSelectTime = 0;
@@ -716,7 +735,7 @@ public Action Timer_Selection(Handle hTimer)
 			GivePlayerItem(player, g_iConfig[s_defaultSec]);
 		
 		g_bFound[player] = false;
-		IsAliveCheck();
+
 		
 		g_aPlayer.Erase(index);
 	}
@@ -1028,10 +1047,22 @@ public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
 	g_bFound[client] = true;
-	IsAliveCheck();
+
 	
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
+	SDKHook(client, SDKHook_PostThink, OnPostThink);
+}
+
+public Action OnPostThink(int client)
+{
+	if (TTT_IsClientValid(client))
+	{
+		if (g_iConfig[b_publicKarma])
+			CS_SetClientContributionScore(client, g_iKarma[client]);
+		else if (g_iConfig[b_karmaRound])
+			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
+	}
 }
 
 stock void BanBadPlayerKarma(int client)
@@ -1068,9 +1099,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
-{
-	ResetPlayerStats();
-	
+{	
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	g_iInnoKills[client] = 0;
@@ -1503,7 +1532,7 @@ public void OnClientDisconnect(int client)
 	{
 		g_bKarma[client] = false;
 		g_bFound[client] = true;
-		IsAliveCheck();
+
 		
 		if(g_iConfig[bTranfserArmor])
 			g_iArmor[client] = 0;
@@ -1581,11 +1610,6 @@ public Action Timer_1(Handle timer)
 		Call_PushCell(i);
 		Call_Finish();
 		
-		if (g_iConfig[b_publicKarma])
-			CS_SetClientContributionScore(i, g_iKarma[i]);
-		else if (g_iConfig[b_karmaRound])
-			CS_SetClientContributionScore(i, g_iKarmaStart[i]);
-		
 		if (IsPlayerAlive(i))
 		{
 			if (g_iRole[i] == TTT_TEAM_TRAITOR)
@@ -1616,7 +1640,7 @@ public Action Timer_1(Handle timer)
 		}
 	}
 	
-	IsAliveCheck();
+
 	
 	if (g_bRoundStarted)
 	{
@@ -1737,7 +1761,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	{
 		CS_SetClientClanTag(client, "UNASSIGNED");
 		g_bFound[client] = true;
-		IsAliveCheck();
 	}
 	
 	CheckTeams();
@@ -1976,7 +1999,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 							if (IsClientInGame(iRagdollC[Victim]))
 							{
 								g_bFound[iRagdollC[Victim]] = true;
-								IsAliveCheck();
 							}
 							
 							if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
@@ -2622,7 +2644,6 @@ void CheckTeams()
 			if (g_iRole[i] == TTT_TEAM_UNASSIGNED)
 			{
 				g_bFound[i] = true;
-				IsAliveCheck();
 				CS_SetClientClanTag(i, "UNASSIGNED");
 			}
 		}
@@ -2780,27 +2801,3 @@ stock void StripAllWeapons(int client)
 		}
 	}
 }
-
-stock void ResetPlayerStats()
-{
-	if (g_iConfig[b_kadRemover])
-	{
-		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-		
-		SetEntDataArray(g_iPlayerManager, g_iKills, iZero, MaxClients + 1);
-		SetEntDataArray(g_iPlayerManager, g_iDeaths, iZero, MaxClients + 1);
-		SetEntDataArray(g_iPlayerManager, g_iAssists, iZero, MaxClients + 1);
-		SetEntDataArray(g_iPlayerManager, g_iMVPs, iZero, MaxClients + 1);
-	}
-}
-
-stock void IsAliveCheck()
-{
-	bool bAlive[MAXPLAYERS+1];
-	
-	GetEntDataArray(g_iPlayerManager, g_iAlive, bAlive, MAXPLAYERS+1);
-	LoopValidClients(i)
-		bAlive[i] = (!g_bFound[i]);
-	SetEntDataArray(g_iPlayerManager, g_iAlive, bAlive, MAXPLAYERS+1);
-}
-

@@ -131,4 +131,3 @@ char g_sRemoveEntityList[][] =  {
 };
 
 bool g_bRoundEnding = false;
-int g_iPlayerManager = 0;

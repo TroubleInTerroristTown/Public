@@ -32,14 +32,15 @@ public void OnPluginStart()
 	g_bEnableTVoice = Config_LoadBool("tor_traitor_voice_chat", true, "Enable traitor voice chat (command for players: sm_tvoice)?");
 	Config_Done();
 	
-	RegConsoleCmd("sm_tvoice", Command_TVoice);
+	if(g_bEnableTVoice)
+		RegConsoleCmd("sm_tvoice", Command_TVoice);
 	
 	HookEvent("player_death", Event_PlayerDeath);
 }
 
 public Action Command_TVoice(int client, int args)
 {
-	if(client < 1)
+	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
 	
 	if(!TTT_IsRoundActive())
@@ -55,11 +56,24 @@ public Action Command_TVoice(int client, int args)
 	{
 		PrintToChat(client, "Traitor Voice Chat: Disabled!");
 		g_bTVoice[client] = false;
+		LoopValidClients(i)
+		{
+			SetListenOverride(i, client, Listen_Yes);
+			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+			PrintToChat(i, "%N stoped talking in Traitor Voice Chat", client);
+		}
 	}
 	else
 	{
-		PrintToChat(client, "Traitor Voice Chat: Enabled!");
 		g_bTVoice[client] = true;
+		PrintToChat(client, "Traitor Voice Chat: Enabled!");
+		LoopValidClients(i)
+		{
+			if(TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
+				SetListenOverride(i, client, Listen_No);
+			else
+			PrintToChat(i, "%N is now talking in Traitor Voice Chat", client);
+		}
 	}
 	return Plugin_Continue;
 }
@@ -67,60 +81,34 @@ public Action Command_TVoice(int client, int args)
 public void OnClientPostAdminCheck(int client)
 {
 	LoopValidClients(i)
+	{
 		if(IsPlayerAlive(i))
-			SetListenOverride(i, client, Listen_No);
+		{
+			if(TTT_IsRoundActive())
+				SetListenOverride(i, client, Listen_No);
+			else
+				SetListenOverride(i, client, Listen_Yes);
+		}else{
+			SetListenOverride(i, client, Listen_Yes);
+		}
+	}
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
-	
+	g_bTVoice[client] = false;
 	LoopValidClients(i)
+	{
 		if(IsPlayerAlive(i))
 			SetListenOverride(i, victim, Listen_No);
+		else
+			SetListenOverride(i, victim, Listen_Yes);
+	}
 }
 
 public void TTT_OnClientGetRole(int client, int role)
 {
 	LoopValidClients(i)
-		if(role == TTT_TEAM_TRAITOR && g_bTVoice[client])
-			SetListenOverride(i, client, Listen_Yes);
-}
-
-public void Timer_OnUpdate1(int i)
-{
-	if(IsFakeClient(i))
-		return;
-	
-	LoopValidClients(j)
-	{
-		if(IsFakeClient(j))
-			continue;
-		
-		if(!TTT_IsRoundActive())
-			SetListenOverride(i, j, Listen_Yes);
-			
-		else if(IsPlayerAlive(i) && TTT_GetClientRole(j) == TTT_TEAM_UNASSIGNED)
-			SetListenOverride(i, j, Listen_No);
-			
-		else if(IsPlayerAlive(i) && !IsPlayerAlive(j))
-			SetListenOverride(i, j, Listen_No);
-			
-		else if(!IsPlayerAlive(i) && IsPlayerAlive(j))
-			SetListenOverride(i, j, Listen_Yes);
-		
-		else if(!IsPlayerAlive(i) && !IsPlayerAlive(j))
-			SetListenOverride(i, j, Listen_Yes);
-			
-		else if(IsPlayerAlive(i) && IsPlayerAlive(j))
-			SetListenOverride(i, j, Listen_Yes);
-		
-		if(g_bEnableTVoice && TTT_GetClientRole(j) == TTT_TEAM_TRAITOR && g_bTVoice[j])
-		{
-			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-				SetListenOverride(i, j, Listen_Yes);
-			else
-				SetListenOverride(i, j, Listen_No);
-		}
-	}
+		SetListenOverride(i, client, Listen_Yes);
 }
