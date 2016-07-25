@@ -10,5 +10,5 @@ before_install:
   - sudo apt-get install -y gcc-multilib lib32stdc++6 lib32z1 lynx lftp
 
 script:
-  - 'if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then bash ci/test.sh $VERSION "dev"; fi'
-  - 'if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_BUILD_ID; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "stable" ]]; then bash ci/test.sh $VERSION "dev"; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_BUILD_ID; fi'
