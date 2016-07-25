@@ -13,6 +13,7 @@
 bool g_bEnableTVoice = false;
 bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 char g_sConfigFile[PLATFORM_MAX_PATH];
+char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo = 
 {
@@ -26,6 +27,13 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+	
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
+	Config_Setup("TTT", g_sConfigFile);
+	
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	
+	Config_Done();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/talk_override.cfg");
 	Config_Setup("TTT-TalkOverride", g_sConfigFile);
@@ -54,25 +62,25 @@ public Action Command_TVoice(int client, int args)
 	
 	if(g_bTVoice[client])
 	{
-		PrintToChat(client, "Traitor Voice Chat: Disabled!");
+		PrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
 		g_bTVoice[client] = false;
 		LoopValidClients(i)
 		{
 			SetListenOverride(i, client, Listen_Yes);
 			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-			PrintToChat(i, "%N stoped talking in Traitor Voice Chat", client);
+				PrintToChat(i, g_sPluginTag, "%N stoped talking in Traitor Voice Chat", i, client);
 		}
 	}
 	else
 	{
 		g_bTVoice[client] = true;
-		PrintToChat(client, "Traitor Voice Chat: Enabled!");
+		PrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
 		LoopValidClients(i)
 		{
 			if(TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
 				SetListenOverride(i, client, Listen_No);
 			else
-			PrintToChat(i, "%N is now talking in Traitor Voice Chat", client);
+				PrintToChat(i, g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
 		}
 	}
 	return Plugin_Continue;

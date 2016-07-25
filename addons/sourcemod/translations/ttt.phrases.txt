@@ -866,4 +866,22 @@
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
+	"is now talking in Traitor Voice Chat"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} is now talking in Traitor Voice Chat"
+	}
+	"stopped talking in Traitor Voice Chat"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} stopped talking in Traitor Voice Chat"
+	}
+	"Traitor Voice Chat: Disabled!"
+	{
+		"en"		"Traitor Voice Chat: Disabled!"
+	}
+	"Traitor Voice Chat: Enabled!"
+	{
+		"en"		"Traitor Voice Chat: Enabled!"
+	}
 }
