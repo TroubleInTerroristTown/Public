@@ -37,6 +37,8 @@ int g_iHeavy_Armor;
 int g_iHeavy_Price;
 int g_iHelm_Type;
 int g_iHelm_Price;
+int g_iKevHelm_Type;
+int g_iKevHelm_Price;
 int g_iUSP_Price;
 int g_iM4_Price;
 
@@ -50,6 +52,9 @@ int g_iKev_Max;
 int g_iHeavy_Max;
 int g_iKev_Prio;
 int g_iHeavy_Prio;
+
+int g_iKevHelm_Max;
+int g_iKevHelm_Prio;
 
 int g_iHelm_Max;
 int g_iHelm_Prio;
@@ -65,8 +70,10 @@ int g_iKnives[MAXPLAYERS+1];
 int g_iKevs[MAXPLAYERS+1];
 int g_iHeavy[MAXPLAYERS+1];
 int g_iHelms[MAXPLAYERS+1];
+int g_iKevHelms[MAXPLAYERS+1];
 
 char g_cKev_Long[64];
+char g_cKevHelm_Long[64];
 char g_cHeavy_Long[64];
 char g_cHelm_Long[64];
 char g_cUSP_Long[64];
@@ -100,6 +107,12 @@ public void OnPluginStart()
 	g_iHelm_Max = Config_LoadInt("helm_max", 5, "The max amount of times a player can purchase helm in one round. 0 for unlimited.");
 	g_iHelm_Prio = Config_LoadInt("helm_sort_prio", 0, "The sorting priority of the helm in the shop menu.");
 	Config_LoadString("helm_name", "Helm", "The name of the helm in the shop menu.", g_cHelm_Long, sizeof(g_cHelm_Long));
+	
+	g_iKevHelm_Type = Config_LoadInt("kevhelm_type", 1, "Type of kevlar+helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+	g_iKevHelm_Price = Config_LoadInt("kevhelm_price", 2000, "The amount of credits the kevlar+helm costs. 0 to disable.");
+	g_iKevHelm_Max = Config_LoadInt("kevhelm_max", 5, "The max amount of times a player can purchase kevlar+helm in one round. 0 for unlimited.");
+	g_iKevHelm_Prio = Config_LoadInt("kevhelm_sort_prio", 0, "The sorting priority of the kevlar+helm in the shop menu.");
+	Config_LoadString("kevhelm_name", "Kevlar+Helm", "The name of the kevlar+helm in the shop menu.", g_cKevHelm_Long, sizeof(g_cKevHelm_Long));
 
 
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
@@ -172,6 +185,17 @@ public void OnAllPluginsLoaded()
 	}
 	if(g_iHelm_Type == 2)
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
+		
+	
+	if(g_iKevHelm_Type == 0)
+		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_UNASSIGNED, g_iKevHelm_Prio);
+	if(g_iKevHelm_Type == 1)
+	{
+		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_TRAITOR, g_iKevHelm_Prio);
+		TTT_RegisterCustomItem(KEVHELM_D_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_DETECTIVE, g_iKevHelm_Prio);
+	}
+	if(g_iKevHelm_Type == 2)
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_TRAITOR, g_iKevHelm_Prio);
 
 	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR, g_iKnife_Prio);
 	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR, g_iM4_Prio);
@@ -280,6 +304,37 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 					GiveArmor(client);
+		}
+		else if(	(strcmp(itemshort, KEVHELM_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, KEVHELM_T_ITEM_SHORT, false) == 0)
+		 || (strcmp(itemshort, KEVHELM_D_ITEM_SHORT, false) == 0))
+		 {
+				if(g_iKevHelms[client] > g_iKevHelm_Max > 0){
+					CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
+					return Plugin_Stop;
+				}
+
+				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+				{
+					if(g_iKev_Type == 0)
+					{
+						GiveArmor(client);
+						GiveHelm(client);
+					}
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+				{
+					if(g_iKev_Type == 0 || g_iKev_Type == 1)
+					{
+						GiveArmor(client);
+						GiveHelm(client);
+					}
+				}
+				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				{
+					GiveArmor(client);
+					GiveHelm(client);
+				}
 		}
 		else if(	(strcmp(itemshort, HELM_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, HELM_T_ITEM_SHORT, false) == 0)
