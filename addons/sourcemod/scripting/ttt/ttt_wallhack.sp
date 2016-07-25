@@ -276,7 +276,9 @@ void UnhookGlow(int client)
 	int iOffset;
 	int iSkin = EntRefToEntIndex(CPS_GetSkin(client));
 	
-	if (iSkin < 1 && !iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+	if(iSkin < 1)
+		return;
+ 	if (!iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
 		return;
 	else
 	{
