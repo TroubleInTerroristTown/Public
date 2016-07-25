@@ -68,7 +68,7 @@ public Action Command_TVoice(int client, int args)
 		{
 			SetListenOverride(i, client, Listen_Yes);
 			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-				PrintToChat(i, g_sPluginTag, "%N stoped talking in Traitor Voice Chat", i, client);
+				PrintToChat(i, g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
 		}
 	}
 	else
@@ -105,7 +105,7 @@ public void OnClientPostAdminCheck(int client)
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
-	g_bTVoice[client] = false;
+	g_bTVoice[victim] = false;
 	LoopValidClients(i)
 	{
 		if(IsPlayerAlive(i))
