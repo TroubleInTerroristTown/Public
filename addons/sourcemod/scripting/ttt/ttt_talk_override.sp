@@ -44,6 +44,8 @@ public void OnPluginStart()
 		RegConsoleCmd("sm_tvoice", Command_TVoice);
 	
 	HookEvent("player_death", Event_PlayerDeath);
+	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("player_team", Event_PlayerTeam);
 }
 
 public Action Command_TVoice(int client, int args)
@@ -86,20 +88,12 @@ public Action Command_TVoice(int client, int args)
 	return Plugin_Continue;
 }
 
-public void OnClientPostAdminCheck(int client)
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
+	
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	LoopValidClients(i)
-	{
-		if(IsPlayerAlive(i))
-		{
-			if(TTT_IsRoundActive())
-				SetListenOverride(i, client, Listen_No);
-			else
-				SetListenOverride(i, client, Listen_Yes);
-		}else{
-			SetListenOverride(i, client, Listen_Yes);
-		}
-	}
+		SetListenOverride(i, client, Listen_Yes);
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
@@ -115,8 +109,28 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	
 	LoopValidClients(i)
-		SetListenOverride(i, client, Listen_Yes);
+	{
+		if(!IsPlayerAlive(client))
+		{
+			if(IsPlayerAlive(i))
+			{
+				SetListenOverride(i, client, Listen_No);
+				SetListenOverride(client, i, Listen_Yes);
+			}else{
+				SetListenOverride(i, client, Listen_Yes);
+				SetListenOverride(client, i, Listen_Yes);
+			}
+		}
+		else
+		{
+			SetListenOverride(client, i, Listen_Yes);
+			SetListenOverride(i, client, Listen_Yes);
+		}
+	}
+	
 }
