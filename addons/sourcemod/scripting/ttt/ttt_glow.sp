@@ -58,14 +58,6 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public void TTT_OnUpdate3(int i)
-{
-	if(IsPlayerAlive(i))
-		SetupGlowSkin(i);
-	else
-		UnhookGlow(i);
-}
-
 public void TTT_OnClientGetRole(int client, int role)
 {
 	SetupGlowSkin(client);
@@ -73,7 +65,7 @@ public void TTT_OnClientGetRole(int client, int role)
 
 void SetupGlowSkin(int client)
 {
-	if(!TTT_IsRoundActive())
+	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client) || !TTT_IsRoundActive())
 		return;
 	
 	char sModel[PLATFORM_MAX_PATH];
@@ -91,7 +83,7 @@ void SetupGlow(int client, int iSkin)
 {
 	int iOffset;
 	
-	if (!iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+	if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
 		return;
 	
 	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
@@ -170,21 +162,13 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 
 void UnhookGlow(int client)
 {
-	if(client < 1)
+	if(!TTT_IsClientValid(client))
 		return;
-	
-	int iOffset;
-	int iSkin = EntRefToEntIndex(CPS_GetSkin(client));
-	
-	if(iSkin < 1)
-		return;
- 	if (!iOffset && (iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
-		return;
-	else
+		
+	int iSkin = CPS_GetSkin(client);
+	if(IsValidEntity(iSkin))
 	{
-		char sModel[PLATFORM_MAX_PATH];
-		GetClientModel(client, sModel, sizeof(sModel));
-		SetEntProp(client, Prop_Send, "m_bShouldGlow", false, true);
+		SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, 1);
 		SDKUnhook(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 	}
 }
