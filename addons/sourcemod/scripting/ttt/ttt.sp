@@ -104,6 +104,9 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_logs", Command_Logs);
 	RegConsoleCmd("sm_log", Command_Logs);
 	
+	RegConsoleCmd("sm_trules", Command_TRules);
+	RegConsoleCmd("sm_drules", Command_DetectiveRules);
+	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
@@ -1242,6 +1245,18 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
 	else if (g_iConfig[b_showDetectiveMenu])
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
+}
+
+public Action Command_TRules(int client, int args)
+{
+	ShowRules(client, g_iSite[client]);
+	return Plugin_Handled;
+}
+
+public Action Command_DRules(int client, int args)
+{
+	AskClientForMicrophone(client);
+	return Plugin_Handled;
 }
 
 public void Frame_ShowWelcomeMenu(any userid)
