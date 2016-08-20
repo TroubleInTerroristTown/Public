@@ -543,7 +543,6 @@ public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
 
 stock void addCredits(int client, int credits, bool message = false)
 {
-	credits = RoundToNearest((credits) * (TTT_GetClientKarma(client) * 0.01));
 	int newcredits = g_iCredits[client] + credits;
 	
 	Action res = Plugin_Continue;
