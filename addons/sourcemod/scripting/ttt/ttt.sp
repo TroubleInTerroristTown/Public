@@ -707,9 +707,8 @@ public Action Timer_Selection(Handle hTimer)
 	int index;
 	int player;
 	
+	SetRandomSeed(GetTime());
 	// We do this 3 times cuz the random stream sucks
-	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
-	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
 	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
 	
 	while ((index = GetRandomArray(g_aPlayer)) != -1)
