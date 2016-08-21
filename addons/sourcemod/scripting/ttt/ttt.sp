@@ -2379,7 +2379,7 @@ public Action Command_SetRole(int client, int args)
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Innocent", client, target);
-		LogAction(client,target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
+		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
 		return Plugin_Handled;
 	}
 	else if (role == TTT_TEAM_TRAITOR)
@@ -2388,7 +2388,7 @@ public Action Command_SetRole(int client, int args)
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
-		LogAction(client,target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
+		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
 		return Plugin_Handled;
 	}
 	else if (role == TTT_TEAM_DETECTIVE)
@@ -2396,7 +2396,7 @@ public Action Command_SetRole(int client, int args)
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
 		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Detective", client, target);
-		LogAction(client,target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Detective");
+		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Detective");
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
@@ -2451,7 +2451,7 @@ public Action Command_SetKarma(int client, int args)
 		setKarma(target, karma);
 		
 		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target, karma, "Karma");
-		LogAction(client,target, "\"%L\" set the karma of \"%L\" to \"%i\"", client, target, karma);
+		LogAction(client, target, "\"%L\" set the karma of \"%L\" to \"%i\"", client, target, karma);
 	}
 	
 	return Plugin_Continue;
@@ -2635,7 +2635,7 @@ public Action Command_KarmaReset(int client, int args)
 	LoopValidClients(i)
 	{
 		setKarma(g_iKarma[i],g_iConfig[i_startKarma]);
-		LogAction(client,i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[i_startKarma]);
+		LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[i_startKarma]);
 	}
 	return Plugin_Handled;
 }
