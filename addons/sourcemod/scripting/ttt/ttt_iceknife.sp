@@ -91,7 +91,7 @@ public void OnMapStart()
 
 public void OnClientPutInServer(int client)
 {
-	ClientHooks(client);
+	HookClient(client);
 }
 
 public void LateLoadAll()
@@ -103,7 +103,7 @@ public void LateLoadAll()
 }
 public void LateLoadClient(int client)
 {
-	ClientHooks(client);
+	HookClient(client);
 }
 
 public void HookClient(int client)

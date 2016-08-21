@@ -1050,7 +1050,7 @@ public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
 	g_bFound[client] = true;
-	ClientHooks(client);
+	HookClient(client);
 }
 public void LateLoadAll()
 {
@@ -1061,7 +1061,7 @@ public void LateLoadAll()
 }
 public void LateLoadClient(int client)
 {
-	ClientHooks(client);
+	HookClient(client);
 }
 
 public void HookClient(int client)
