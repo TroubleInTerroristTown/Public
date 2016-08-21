@@ -1062,6 +1062,7 @@ public void LateLoadAll()
 public void LateLoadClient(int client)
 {
 	HookClient(client);
+	LoadClientKarma(GetClientUserId(client));
 }
 
 public void HookClient(int client)
