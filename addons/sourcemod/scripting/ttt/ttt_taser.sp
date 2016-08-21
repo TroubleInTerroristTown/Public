@@ -96,6 +96,7 @@ public void OnPluginStart()
 	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	LateLoadAll();
 }
 
 public void OnClientDisconnect(int client)
