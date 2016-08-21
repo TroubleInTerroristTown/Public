@@ -2634,7 +2634,7 @@ public Action Command_KarmaReset(int client, int args)
 {
 	LoopValidClients(i)
 	{
-		setKarma(g_iKarma[i],g_iConfig[i_startKarma]);
+		setKarma(g_iKarma[i], g_iConfig[i_startKarma]);
 		LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[i_startKarma]);
 	}
 	return Plugin_Handled;
