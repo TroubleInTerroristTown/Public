@@ -1253,7 +1253,7 @@ public Action Command_TRules(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Command_DRules(int client, int args)
+public Action Command_DetectiveRules(int client, int args)
 {
 	AskClientForMicrophone(client);
 	return Plugin_Handled;
