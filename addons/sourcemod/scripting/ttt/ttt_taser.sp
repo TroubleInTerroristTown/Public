@@ -120,7 +120,7 @@ public void LateLoadClient(int client)
 	ClientHooks(client);
 }
 
-public void ClientHooks(int client)
+public void HookClient(int client)
 {
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
