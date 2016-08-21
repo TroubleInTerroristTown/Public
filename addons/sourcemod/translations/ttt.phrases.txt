@@ -94,6 +94,24 @@
 		"en"		"You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
 	}
 
+	"You tased a Traitor"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player {darkred}{2} {lightgreen}and he is a {darkred}TRAITOR!"
+	}
+
+	"You tased a Detective"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player{blue} {2} {lightgreen}and he is a {blue}DETECTIVE!"
+	}
+
+	"You tased an Innocent"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
+	}
+
 	"is possibly RDMing"
 	{
 		"#format"	"{1:N}"

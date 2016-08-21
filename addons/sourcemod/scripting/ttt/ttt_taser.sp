@@ -41,6 +41,8 @@ int g_iCreditsTaserHurtTraitor;
 
 bool g_bOnSpawn = false;
 
+bool g_bBroadcastTaserResult = false;
+
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
@@ -88,6 +90,8 @@ public void OnPluginStart()
 	g_iTDamage = Config_LoadInt("ta_traitor_damage", 0, "The amount of damage a taser deals for traitors");
 	
 	g_bOnSpawn = Config_LoadBool("ta_give_taser_spawn", true, "Give the Detective a taser when he spawns?");
+
+	g_bBroadcastTaserResult = Config_LoadBool("ta_broadcast_taser_result", false, "When set to true the results of the taser message will be printed to everyone instead of the client that tased");
 	
 	Config_Done();
 	
@@ -191,20 +195,41 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
-			CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
+			if(g_bBroadcastTaserResult)
+			{
+				CPrintToChatAll(g_sPluginTag, "You tased a Traitor",iAttacker,iVictim);
+			}
+			else
+			{
+				CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
+			}
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
 			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
-			CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+			if(g_bBroadcastTaserResult)
+			{
+				CPrintToChatAll(g_sPluginTag, "You tased a Detective",iAttacker,iVictim);
+			}
+			else
+			{
+				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+			}
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
-			CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+			if(g_bBroadcastTaserResult)
+			{
+				CPrintToChatAll(g_sPluginTag, "You tased an Innocent",iAttacker,iVictim);
+			}
+			else
+			{
+				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+			}
 		}
 		
 		if(iRole != TTT_TEAM_TRAITOR)
