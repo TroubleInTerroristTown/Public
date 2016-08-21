@@ -105,6 +105,23 @@ public void OnClientDisconnect(int client)
 
 public void OnClientPutInServer(int client)
 {
+	ClientHooks(client);
+}
+
+public void LateLoadAll()
+{
+	LoopValidClients(i)
+	{
+		LateLoadClient(i);
+	}
+}
+public void LateLoadClient(int client)
+{
+	ClientHooks(client);
+}
+
+public void ClientHooks(int client)
+{
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
