@@ -1,4 +1,6 @@
+- [Bara](http://steamcommunity.com/profiles/76561198041923231/)
 - [Franc1sco](http://steamcommunity.com/profiles/76561198011608644/) (original author)
+- [good_live](http://steamcommunity.com/profiles/76561198060485155/)
 - [Slayers Gaming](http://slayersgaming.com/)/[Darkness](http://steamcommunity.com/profiles/76561198127839952/) (for C4, RDM Manager, Health Station and some fixes)
 - [Dream Community](http://dream-community.de/)
 - [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
