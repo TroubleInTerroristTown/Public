@@ -175,7 +175,7 @@ stock int TraceClientViewEntity(int client)
 	GetClientEyePosition(client, m_vecOrigin);
 	GetClientEyeAngles(client, m_angRotation);
 
-	Handle tr = TR_TraceRayFilterEx(m_vecOrigin, m_angRotation, MASK_SHOT, RayType_Infinite, TRDontHitSelf, client);
+	Handle tr = TR_TraceRayFilterEx(m_vecOrigin, m_angRotation, MASK_SOLID, RayType_Infinite, TRDontHitSelf, client);
 	int pEntity = -1;
 
 	if (TR_DidHit(tr))
@@ -193,5 +193,5 @@ stock int TraceClientViewEntity(int client)
 
 public bool TRDontHitSelf(int entity, int mask, int data)
 {
-	return (1 <= entity <= MaxClients && entity != data);
+	return (entity != data);
 }
