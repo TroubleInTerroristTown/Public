@@ -96,6 +96,7 @@ public void OnPluginStart()
 	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	LateLoadAll();
 }
 
 public void OnClientDisconnect(int client)
@@ -104,6 +105,23 @@ public void OnClientDisconnect(int client)
 }
 
 public void OnClientPutInServer(int client)
+{
+	HookClient(client);
+}
+
+public void LateLoadAll()
+{
+	LoopValidClients(i)
+	{
+		LateLoadClient(i);
+	}
+}
+public void LateLoadClient(int client)
+{
+	HookClient(client);
+}
+
+public void HookClient(int client)
 {
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }

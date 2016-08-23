@@ -133,6 +133,7 @@ public void OnPluginStart()
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	
 	SetupConfig();
+	LateLoadAll();
 }
 
 public void OnAllPluginsLoaded()
@@ -1049,8 +1050,23 @@ public void OnClientPutInServer(int client)
 {
 	g_bImmuneRDMManager[client] = false;
 	g_bFound[client] = true;
+	HookClient(client);
+}
+public void LateLoadAll()
+{
+	LoopValidClients(i)
+	{
+		LateLoadClient(i);
+	}
+}
+public void LateLoadClient(int client)
+{
+	HookClient(client);
+	LoadClientKarma(GetClientUserId(client));
+}
 
-	
+public void HookClient(int client)
+{
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PostThink, OnPostThink);
