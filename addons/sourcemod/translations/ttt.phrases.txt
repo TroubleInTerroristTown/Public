@@ -752,6 +752,12 @@
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit for tasers! (Usage(s) per round: {1})"
 	}
+	
+	"AlreadyTaser"
+	{
+		"#format"	"{1:d}"
+		"en"		"You've already a taser in your inventory!"
+	}
 
 	"AdminSet"
 	{

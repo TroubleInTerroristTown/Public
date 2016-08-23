@@ -362,6 +362,22 @@ stock void TTT_IsGameCSGO()
 	}
 }
 
+stock bool HasWeapon(int client, int slot, const char[] weapon)
+{
+	int iWeapon;
+	while ((iWeapon = GetPlayerWeaponSlot(client, slot)) != -1)
+	{
+		char sWeapon[32];
+		GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+		
+		if(StrContains(sWeapon, weapon, false) != -1)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);

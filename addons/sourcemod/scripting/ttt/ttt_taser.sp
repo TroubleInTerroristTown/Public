@@ -130,7 +130,8 @@ public void TTT_OnClientGetRole(int client, int role)
 {
 	if(role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
 	{
-		GivePlayerItem(client, "weapon_taser");
+		if(!HasWeapon(client, CS_SLOT_KNIFE, "taser"))
+			GivePlayerItem(client, "weapon_taser");
 		g_iDPCount[client]++;
 	}
 }
@@ -171,6 +172,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			else if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iTCount);
+				return Plugin_Stop;
+			}
+			
+			if(HasWeapon(client, CS_SLOT_KNIFE, "taser"))
+			{
+				CPrintToChat(client, g_sPluginTag, "AlreadyTaser", client);
 				return Plugin_Stop;
 			}
 				
