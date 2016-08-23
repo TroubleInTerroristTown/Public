@@ -19,7 +19,7 @@ chmod +x addons/sourcemod/scripting/spcomp
 echo "Set plugins version"
 for file in addons/sourcemod/scripting/include/ttt.inc
 do
-  sed -i "s/<ID>/B$6/g" $file > output.txt
+  sed -i "s/<ID>/$6/g" $file > output.txt
   rm output.txt
 done
 
