@@ -13,5 +13,6 @@
 - [Dream Community](http://dream-community.de/)
 - [Phoenix Gaming Network](https://www.pgn.site)
 - [Slayers Gaming](http://slayersgaming.com/)
+- [AlliedGaming](http://allied-gaming.com/)
 
 - Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
