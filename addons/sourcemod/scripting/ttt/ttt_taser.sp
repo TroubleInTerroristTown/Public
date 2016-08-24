@@ -130,8 +130,10 @@ public void TTT_OnClientGetRole(int client, int role)
 {
 	if(role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
 	{
-		if(!HasTaser(client))
-			GivePlayerItem(client, "weapon_taser");
+		if(HasTaser(client))
+			return;
+		
+		GivePlayerItem(client, "weapon_taser");
 		g_iDPCount[client]++;
 	}
 }
@@ -284,7 +286,10 @@ stock bool HasTaser(int client)
 	while (iWeapon != -1)
 	{
 		if(GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex") == WEAPON_TASER)
+		{
 			bTaser = true;
+			break;
+		}
 	}
 	
 	return bTaser;
