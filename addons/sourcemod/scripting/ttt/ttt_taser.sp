@@ -210,6 +210,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			}
 				
 			GivePlayerItem(client, "weapon_taser");
+			g_bTaser[client] = true;
 			
 			if(role == TTT_TEAM_DETECTIVE)
 				g_iDPCount[client]++;
@@ -226,6 +227,8 @@ void ResetTaser(int client)
 {
 	g_iDPCount[client] = 0;
 	g_iIPCount[client] = 0;
+
+	g_bTaser[client] = false;
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -249,56 +252,50 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
+			
 			if(g_bBroadcastTaserResult)
-			{
 				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", iAttacker, iVictim);
-			}
 			else
-			{
 				CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
-			}
+			
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
 			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
+			
 			if(g_bBroadcastTaserResult)
-			{
 				CPrintToChatAll(g_sPluginTag, "You tased a Detective", iAttacker, iVictim);
-			}
 			else
-			{
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
-			}
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			TTT_LogString(item);
+			
 			if(g_bBroadcastTaserResult)
-			{
 				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", iAttacker, iVictim);
-			}
 			else
-			{
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
-			}
 		}
 		
 		if(iARole != TTT_TEAM_TRAITOR)
 		{
 			if (g_iDamage == 0)
+			{
 				return Plugin_Handled;
+			}
 			else if (g_iDamage > 0)
 			{
-				damage = view_as<float>(g_iDamage);
+				damage = g_iDamage + 0.0;
 				return Plugin_Changed;
 			}
 		}
 		else
 		{
-			damage = view_as<float>(g_iTDamage);
+			damage = g_iTDamage + 0.0;
 			return Plugin_Changed;
 		}
 	}
