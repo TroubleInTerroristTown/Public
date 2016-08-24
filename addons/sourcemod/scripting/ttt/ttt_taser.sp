@@ -50,6 +50,8 @@ char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 int g_iTDamage = 100;
 
+
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -99,7 +101,6 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("item_equip", Event_ItemEquip);
-	HookEvent("weapon_fire", Event_WeaponFire);
 	
 	LateLoadAll();
 }
@@ -161,11 +162,9 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
 		g_bTaser[client] = true;
 }
 
-public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(event.GetInt("userid"));
 	char sWeapon[32];
-	event.GetString("weapon", sWeapon, sizeof(sWeapon));
+	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
 	
 	if (StrContains(sWeapon, "taser", false) != -1)
 		g_bTaser[client] = false;
@@ -240,8 +239,9 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	
 	char item[512], sWeapon[64];
 	int iRole = TTT_GetClientRole(iVictim);
+	int iARole = TTT_GetClientRole(iAttacker);
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-	if (StrEqual(sWeapon, "weapon_taser", false))
+	if (StrContains(sWeapon, "taser", false) != -1)
 	{
 		if (iRole == TTT_TEAM_TRAITOR)
 		{
@@ -284,7 +284,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
-		if(iRole != TTT_TEAM_TRAITOR)
+		if(iARole != TTT_TEAM_TRAITOR)
 		{
 			if (g_iDamage == 0)
 				return Plugin_Handled;
