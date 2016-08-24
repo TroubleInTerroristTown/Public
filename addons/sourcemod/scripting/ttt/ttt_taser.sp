@@ -130,7 +130,7 @@ public void TTT_OnClientGetRole(int client, int role)
 {
 	if(role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
 	{
-		if(!HasWeapon(client, CS_SLOT_KNIFE, "taser"))
+		if(!HasTaser(client))
 			GivePlayerItem(client, "weapon_taser");
 		g_iDPCount[client]++;
 	}
@@ -175,7 +175,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			if(HasWeapon(client, CS_SLOT_KNIFE, "taser"))
+			if(HasTaser(client))
 			{
 				CPrintToChat(client, g_sPluginTag, "AlreadyTaser", client);
 				return Plugin_Stop;
@@ -274,4 +274,18 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 	}
 	return Plugin_Continue;
+}
+
+stock bool HasTaser(int client)
+{
+	int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
+	bool bTaser = false;
+	
+	while (iWeapon != -1)
+	{
+		if(GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex") == WEAPON_TASER)
+			bTaser = true;
+	}
+	
+	return bTaser;
 }

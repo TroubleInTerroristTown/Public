@@ -18,6 +18,8 @@
 
 #define MAX_CUSTOM_ITEMS 64
 
+#define WEAPON_TASER 31
+
 #define TTT_ITEM_SIZE 512
 
 enum eConfig
@@ -360,23 +362,6 @@ stock void TTT_IsGameCSGO()
 		SetFailState("Only CS:GO Support!");
 		return;
 	}
-}
-
-stock bool HasWeapon(int client, int slot, const char[] weapon)
-{
-	int iWeapon = -1;
-	bool bFonud = false;
-	while ((iWeapon = GetPlayerWeaponSlot(client, slot)) != -1)
-	{
-		char sWeapon[32];
-		GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
-		
-		if(StrContains(sWeapon, weapon, false) != -1)
-		{
-			bFonud = true;
-		}
-	}
-	return bFonud;
 }
 
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
