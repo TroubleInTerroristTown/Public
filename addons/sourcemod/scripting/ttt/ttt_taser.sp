@@ -36,6 +36,8 @@ int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iTCount = 0;
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
+bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
+
 int g_iDamage = 0;
 int g_iCreditsTaserHurtTraitor;
 
@@ -96,6 +98,9 @@ public void OnPluginStart()
 	Config_Done();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("item_equip", Event_ItemEquip);
+	HookEvent("weapon_fire", Event_WeaponFire);
+	
 	LateLoadAll();
 }
 
@@ -130,7 +135,7 @@ public void TTT_OnClientGetRole(int client, int role)
 {
 	if(role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
 	{
-		if(HasTaser(client))
+		if(g_bTaser[client])
 			return;
 		
 		GivePlayerItem(client, "weapon_taser");
@@ -144,6 +149,26 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if(TTT_IsClientValid(client))
 		ResetTaser(client);
+}
+
+public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	char sWeapon[32];
+	event.GetString("item", sWeapon, sizeof(sWeapon));
+	
+	if (StrContains(sWeapon, "taser", false) != -1)
+		g_bTaser[client] = true;
+}
+
+public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	char sWeapon[32];
+	event.GetString("weapon", sWeapon, sizeof(sWeapon));
+	
+	if (StrContains(sWeapon, "taser", false) != -1)
+		g_bTaser[client] = false;
 }
 
 public void OnAllPluginsLoaded()
@@ -177,7 +202,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			if(HasTaser(client))
+			if(g_bTaser[client])
 			{
 				CPrintToChat(client, g_sPluginTag, "AlreadyTaser", client);
 				return Plugin_Stop;
@@ -276,21 +301,4 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 	}
 	return Plugin_Continue;
-}
-
-stock bool HasTaser(int client)
-{
-	int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
-	bool bTaser = false;
-	
-	while (iWeapon != -1)
-	{
-		if(GetEntProp(iWeapon, Prop_Send, "m_iItemDefinitionIndex") == WEAPON_TASER)
-		{
-			bTaser = true;
-			break;
-		}
-	}
-	
-	return bTaser;
 }
