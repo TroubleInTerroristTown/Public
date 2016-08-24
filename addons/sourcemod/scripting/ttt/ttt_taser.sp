@@ -130,6 +130,7 @@ public void LateLoadClient(int client)
 public void HookClient(int client)
 {
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
+	SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -162,6 +163,7 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
 		g_bTaser[client] = true;
 }
 
+public Action OnWeaponDrop(int client, int weapon)
 {
 	char sWeapon[32];
 	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
