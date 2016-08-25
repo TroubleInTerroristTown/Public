@@ -165,6 +165,9 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
 
 public Action OnWeaponDrop(int client, int weapon)
 {
+	if(weapon == -1)
+		return;
+	
 	char sWeapon[32];
 	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
 	
