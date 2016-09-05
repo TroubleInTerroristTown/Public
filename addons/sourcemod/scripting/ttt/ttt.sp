@@ -1067,6 +1067,7 @@ public void LateLoadClient(int client)
 
 public void HookClient(int client)
 {
+	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PostThink, OnPostThink);
@@ -1094,6 +1095,13 @@ stock void BanBadPlayerKarma(int client)
 		SBBanPlayer(0, client, g_iConfig[i_karmaBanLength], sReason);
 	else
 		ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
+}
+
+public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
+{
+	if (!g_bRoundStarted)
+		return Plugin_Handled;
+	return Plugin_Continue;
 }
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
