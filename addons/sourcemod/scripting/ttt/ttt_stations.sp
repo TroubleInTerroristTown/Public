@@ -238,7 +238,7 @@ void checkDistanceFromHealthStation(int client)
 		if(hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			continue;
 		
-		if ((!hurt) && (curHealth >= 125))
+		if ((!hurt) && (curHealth >= 125)) // TODO: Add cvar for max health
 			continue;
 
 		if (g_iHealthStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))

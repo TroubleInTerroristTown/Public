@@ -1099,7 +1099,7 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-	if (!g_bRoundStarted)
+	if (!g_bRoundStarted || !g_iConfig[b_endroundDMG] && g_bRoundEnded)
 		return Plugin_Handled;
 	return Plugin_Continue;
 }
@@ -1109,7 +1109,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if (g_bRoundEnded && g_iConfig[b_endroundDMG])
 		return Plugin_Continue;
 	
-	if (!g_bRoundStarted)
+	if (!g_bRoundStarted || !g_iConfig[b_endroundDMG] && g_bRoundEnded)
 		return Plugin_Handled;
 	
 	if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG])
