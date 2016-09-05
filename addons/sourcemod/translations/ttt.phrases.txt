@@ -682,6 +682,11 @@
 	{
 		"en"		"You dont have a ID. Buy one in the Shop."
 	}
+	
+	"ID: Cooldown"
+	{
+		"en"		"You need to wait, before you can use that command again."
+	}
 
 	"ID: Shows ID"
 	{

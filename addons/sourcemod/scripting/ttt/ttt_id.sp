@@ -25,7 +25,11 @@ int g_iIPrice = 0;
 int g_iTPrio = 0;
 int g_iIPrio = 0;
 
+Handle g_hTimer[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
+
 bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
+
+float g_fCooldown;
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[512] = "";
@@ -58,6 +62,8 @@ public void OnPluginStart()
 	g_iTPrio = Config_LoadInt("id_traitor_sort_prio", 0, "The sorting priority of the fake ID in the shop menu.");
 	g_iIPrio = Config_LoadInt("id_innocent_sort_prio", 0, "The sorting priority of the ID in the shop menu.");
 	
+	g_fCooldown = Config_LoadFloat("id_cooldown_time", 0.0, "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
+	
 	Config_Done();
 
 	RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
@@ -71,7 +77,19 @@ public Action Command_ID(int client, int args)
 {
 	if(!TTT_IsClientValid(client))
 		return Plugin_Handled;
+
+	if(g_fCooldown > 0.0)
+	{
+		if(g_hTimer[client] != INVALID_HANDLE)
+		{
+			CPrintToChat(client, g_sPluginTag, "ID: Cooldown", client);
+			return Plugin_Handled;
+		}else{
+			g_hTimer[client] = CreateTimer(g_fCooldown, Timer_Cooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+		}
+	}
 	
+
 	if(!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sPluginTag, "ID: Need to be Alive", client);
@@ -92,6 +110,21 @@ public Action Command_ID(int client, int args)
 		CPrintToChat(i, g_sPluginTag, "ID: Shows ID", i, sName);
 	
 	return Plugin_Handled;
+}
+
+public Action Timer_Cooldown(Handle timer, int userid)
+{
+	int client = GetClientOfUserId(userid);
+	if(TTT_IsClientValid(client))
+	{
+		if(g_hTimer[client] != INVALID_HANDLE)
+		{
+			CloseHandle(g_hTimer[client]);
+			g_hTimer[client] = INVALID_HANDLE;
+			return Plugin_Stop;
+		}
+	}
+	return Plugin_Stop;
 }
 
 public void OnClientDisconnect(int client)
@@ -135,4 +168,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 void Reset(int client)
 {
 	g_bHasID[client] = false;
+	if(g_hTimer[client] != INVALID_HANDLE)
+	{
+		CloseHandle(g_hTimer[client]);
+		g_hTimer[client] = INVALID_HANDLE;
+	}
 }
