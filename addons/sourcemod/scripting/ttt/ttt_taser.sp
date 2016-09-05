@@ -230,6 +230,7 @@ void ResetTaser(int client)
 {
 	g_iDPCount[client] = 0;
 	g_iIPCount[client] = 0;
+	g_iTPCount[client] = 0;
 
 	g_bTaser[client] = false;
 }
