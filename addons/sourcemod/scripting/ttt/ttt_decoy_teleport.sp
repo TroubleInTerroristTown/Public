@@ -28,7 +28,7 @@ int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDCount = 0;
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
-int g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iRefund = 0;
 
