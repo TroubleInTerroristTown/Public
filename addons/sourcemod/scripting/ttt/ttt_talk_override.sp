@@ -2,6 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <multicolors>
 
 #pragma newdecls required
 
@@ -46,6 +47,8 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_team", Event_PlayerTeam);
+	
+	LoadTranslations("ttt.phrases");
 }
 
 public Action Command_TVoice(int client, int args)
@@ -64,25 +67,25 @@ public Action Command_TVoice(int client, int args)
 	
 	if(g_bTVoice[client])
 	{
-		PrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
+		CPrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
 		g_bTVoice[client] = false;
 		LoopValidClients(i)
 		{
 			SetListenOverride(i, client, Listen_Yes);
 			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-				PrintToChat(i, g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
+				CPrintToChat(i, g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
 		}
 	}
 	else
 	{
 		g_bTVoice[client] = true;
-		PrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
+		CPrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
 		LoopValidClients(i)
 		{
 			if(TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
 				SetListenOverride(i, client, Listen_No);
 			else
-				PrintToChat(i, g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
+				CPrintToChat(i, g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
 		}
 	}
 	return Plugin_Continue;
