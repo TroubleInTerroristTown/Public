@@ -2,8 +2,11 @@ addons:
   apt:
     packages:
     - lftp
+    - lib32z1
 
 language: c
+
+sudo: false
 
 env:
   - VERSION=1.7
