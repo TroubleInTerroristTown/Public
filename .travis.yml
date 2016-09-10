@@ -1,13 +1,14 @@
+addons:
+  apt:
+    packages:
+    - lftp
+
 language: c
 
 env:
   - VERSION=1.7
   - VERSION=1.8
   - VERSION=1.9
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y lib32stdc++6 lib32z1 lynx lftp
 
 script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" ]]; then bash ci/test.sh $VERSION "dev"; fi'
