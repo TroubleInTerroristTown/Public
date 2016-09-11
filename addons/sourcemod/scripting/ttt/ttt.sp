@@ -765,45 +765,54 @@ public Action Timer_Selection(Handle hTimer)
 			iInnocent++;
 	}
 	
-	/* No detective found, but we need one */
-	if (iDetective == 0 && needDetective)
-	{
-		LoopValidClients(i)
-		{
-			if (g_iRole[i] != TTT_TEAM_INNOCENT && (!g_bConfirmDetectiveRules[i] && g_iConfig[b_showDetectiveMenu]))
-				continue;
-			
-			iInnocent--;
-			iDetective++;
-			
-			g_iRole[i] = TTT_TEAM_DETECTIVE;
-			
-			char sBuffer[256];
-			Format(sBuffer, sizeof(sBuffer), "%N was forced to be detective.", i);
-			g_aLogs.PushString(sBuffer);
-			
-			break;
-		}
-	}
+	ArrayList aPlayers = new ArrayList(1);
 	
-	/* No triaitor found, but we need one */
+	LoopValidClients(i)
+	{
+		if (g_iRole[i] != TTT_TEAM_INNOCENT)
+			continue;
+		aPlayers.Push(i);
+	}	
+	
 	if (iTraitors == 0)
 	{
-		LoopValidClients(i)
+		while((index = GetRandomArray(aPlayers)) != -1)
 		{
-			if (g_iRole[i] != TTT_TEAM_INNOCENT)
-				continue;
+			if(iTraitors >= iTraitores)
+				break;
 			
 			iInnocent--;
 			iTraitors++;
 			
-			g_iRole[i] = TTT_TEAM_TRAITOR;
+			int client = aPlayers.Get(index);
+			
+			g_iRole[client] = TTT_TEAM_TRAITOR;
 			
 			char sBuffer[256];
-			Format(sBuffer, sizeof(sBuffer), "%N was forced to be traitor.", i);
+			Format(sBuffer, sizeof(sBuffer), "%N was forced to be traitor.", client);
 			g_aLogs.PushString(sBuffer);
+			aPlayers.Erase(index);
+		}
+	}
+	
+	/* No detective found, but we need one */
+	if (iDetective == 0 && needDetective)
+	{
+		while((index = GetRandomArray(aPlayers)) != -1)
+		{
+			if(iDetective >= iDetectives)
+				break;
+			iInnocent--;
+			iDetective++;
 			
-			break;
+			int client = aPlayers.Get(index);
+			
+			g_iRole[client] = TTT_TEAM_DETECTIVE;
+			
+			char sBuffer[256];
+			Format(sBuffer, sizeof(sBuffer), "%N was forced to be detective.", client);
+			g_aLogs.PushString(sBuffer);
+			aPlayers.Erase(index);
 		}
 	}
 	
