@@ -1282,12 +1282,18 @@ public void OnClientPostAdminCheck(int client)
 
 public Action Command_TRules(int client, int args)
 {
+	if(!g_iConfig[b_showRulesMenu])
+		return Plugin_Handled;
+	
 	ShowRules(client, g_iSite[client]);
 	return Plugin_Handled;
 }
 
 public Action Command_DetectiveRules(int client, int args)
 {
+	if(!g_iConfig[b_showDetectiveMenu])
+		return Plugin_Handled;
+	
 	AskClientForMicrophone(client);
 	return Plugin_Handled;
 }
