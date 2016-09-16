@@ -669,7 +669,6 @@ public Action Timer_Selection(Handle hTimer)
 			
 		aPlayers.Push(i);
 	}
-	
 	if (aPlayers.Length < g_iConfig[i_requiredPlayers])
 	{
 		g_bInactive = true;
@@ -787,17 +786,17 @@ public Action Timer_Selection(Handle hTimer)
 	iInnocents = aPlayers.Length;
 	
 	
-	for(int i = 0; i < aPlayers.Length; i++)
+	while(aPlayers.Length > 0)
 	{
-		client = aPlayers.Get(i);
+		client = aPlayers.Get(0);
+		PrintToChatAll("Setting %N Innocent", client);
 		if(TTT_IsClientValid(client))
 		{
 			g_iLastRole[client] = TTT_TEAM_INNOCENT;
 			g_iRole[client] = TTT_TEAM_INNOCENT;
 		}
-		aPlayers.Erase(i);
+		aPlayers.Erase(0);
 	}
-	
 	CloseHandle(aPlayers);
 	
 	LoopValidClients(i)
@@ -914,7 +913,11 @@ stock void TeamInitialize(int client)
 		
 		if (g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
-			
+		
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -928,6 +931,11 @@ stock void TeamInitialize(int client)
 			if (GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -941,6 +949,10 @@ stock void TeamInitialize(int client)
 			if (GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
 	}
 	else if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
 		CS_SetClientClanTag(client, "UNASSIGNED");
