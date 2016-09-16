@@ -159,8 +159,10 @@ void ResetIceK(int client)
 	SetEntityMoveType(client, MOVETYPE_WALK);
 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
 	
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
 	if(g_iOldColors[client][3] > 0)
 		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+#endif
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -191,8 +193,11 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		g_bIceKnife[iAttacker] = false;
 		SetEntityMoveType(iVictim, MOVETYPE_NONE);
 		SetEntPropFloat(iVictim, Prop_Data, "m_flLaggedMovementValue", 0.0);
+
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
 		GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
-		
+#endif
+
 		if (g_sFreezeSound[0])
 		{
 			float vec[3];
@@ -225,8 +230,12 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 	{
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
+
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
 		if(g_iOldColors[client][3] > 0)
 			SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+#endif
+
 		g_bFreezed[client] = false;
 	}
 	return Plugin_Stop;
