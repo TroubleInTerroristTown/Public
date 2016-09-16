@@ -1280,6 +1280,36 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
+public Action OnClientCommandKeyValues(int client, KeyValues kv)
+{
+	char sCmd[64];
+	
+	if (kv.GetSectionName(sCmd, sizeof(sCmd)) && StrEqual(sCmd, "ClanTagChanged", false))
+	{
+		char sTag[32];
+		CS_GetClientClanTag(client, sTag, sizeof(sTag));
+		
+		if(!ValidClantag(client, sTag))
+		{
+			if(!g_bFound[client])
+			{
+				if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+					CS_SetClientClanTag(client, "UNASSIGNED");
+				else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+					CS_SetClientClanTag(client, "DETECTIVE");
+				else
+					CS_SetClientClanTag(client, " ");
+			}
+			else if (g_bFound[client])
+				TeamTag(client);
+			
+			return Plugin_Handled;
+		}
+	}
+	
+	return Plugin_Continue;
+}
+
 public Action Command_TRules(int client, int args)
 {
 	if(!g_iConfig[b_showRulesMenu])
@@ -2517,6 +2547,7 @@ public Action Timer_3(Handle timer)
 {
 	LoopValidClients(i)
 	{
+		TeamTag(i);
 		Call_StartForward(g_hOnUpdate3);
 		Call_PushCell(i);
 		Call_Finish();
@@ -2860,4 +2891,15 @@ stock void StripAllWeapons(int client)
 			AcceptEntityInput(iEnt, "Kill");
 		}
 	}
+}
+
+stock bool ValidClantag(int client, const char[] sTag)
+{
+	if(StrContains(sTag, "DETECTIVE", false) != -1 || StrContains(sTag, "TRAITOR", false) != -1 || StrContains(sTag, "INNOCENT", false) != -1 || StrContains(sTag, "UNASSIGNED", false) != -1)
+		return true;
+	
+	if(StrEqual(sTag, " ", false))
+		return true;
+	
+	return false;
 }
