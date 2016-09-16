@@ -896,8 +896,6 @@ stock void TeamInitialize(int client)
 	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		CS_SetClientClanTag(client, "DETECTIVE");
-		
 		if (g_iConfig[b_forceTeams])
 		{
 			if (GetClientTeam(client) != CS_TEAM_CT)
@@ -939,8 +937,8 @@ stock void TeamInitialize(int client)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
 	}
-	else if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
-		CS_SetClientClanTag(client, "UNASSIGNED");
+	
+	CheckClantag(client);
 	
 	if (g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
@@ -1916,9 +1914,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	char sTag[32];
-	CS_GetClientClanTag(client, sTag, sizeof(sTag));
-	CheckClantag(client, sTag);
+	CheckClantag(client);
 	
 	if (g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
 	{
@@ -2526,9 +2522,7 @@ public Action Timer_3(Handle timer)
 		Call_PushCell(i);
 		Call_Finish();
 		
-		char sTag[32];
-		CS_GetClientClanTag(i, sTag, sizeof(sTag));
-		CheckClantag(i, sTag);
+		CheckClantag(i);
 	}
 }
 
@@ -2871,8 +2865,11 @@ stock void StripAllWeapons(int client)
 	}
 }
 
-stock void CheckClantag(int client, const char[] sTag)
+stock void CheckClantag(int client)
 {
+	char sTag[32];
+	CS_GetClientClanTag(client, sTag, sizeof(sTag));
+	
 	if(!ValidClantag(client, sTag))
 	{
 		if(!g_bFound[client])
