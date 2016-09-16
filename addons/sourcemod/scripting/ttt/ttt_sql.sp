@@ -81,6 +81,9 @@ void SQL_Start()
 	{
 		char sError[255];
 		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
+		
+		if(strlen(sError) > 1)
+			LogError("(SQL_Start) Error: %s", sError);
 
 		if(g_dDatabase == null)
 		{
