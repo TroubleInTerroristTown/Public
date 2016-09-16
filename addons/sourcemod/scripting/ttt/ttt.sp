@@ -1280,22 +1280,6 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 }
 
-public Action OnClientCommandKeyValues(int client, KeyValues kv)
-{
-	char sCmd[64];
-	
-	if (kv.GetSectionName(sCmd, sizeof(sCmd)) && StrEqual(sCmd, "ClanTagChanged", false))
-	{
-		char sTag[32];
-		CS_GetClientClanTag(client, sTag, sizeof(sTag));
-		
-		CheckClantag(client, sTag);
-		return Plugin_Handled;
-	}
-	
-	return Plugin_Continue;
-}
-
 public Action Command_TRules(int client, int args)
 {
 	if(!g_iConfig[b_showRulesMenu])
@@ -2536,6 +2520,10 @@ public Action Timer_3(Handle timer)
 		Call_StartForward(g_hOnUpdate3);
 		Call_PushCell(i);
 		Call_Finish();
+		
+		char sTag[32];
+		CS_GetClientClanTag(i, sTag, sizeof(sTag));
+		CheckClantag(i, sTag);
 	}
 }
 
@@ -2558,10 +2546,6 @@ public Action Timer_5(Handle timer)
 		
 		if (g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
-		
-		char sTag[32];
-		CS_GetClientClanTag(i, sTag, sizeof(sTag));
-		CheckClantag(i, sTag);
 	}
 	
 	if (g_bRoundStarted)
