@@ -1915,6 +1915,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
 {
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	char sTag[32];
+	CS_GetClientClanTag(client, sTag, sizeof(sTag));
+	CheckClantag(client, sTag);
+	
 	if (g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
 	{
 		event.BroadcastDisabled = true;
