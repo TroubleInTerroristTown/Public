@@ -2547,7 +2547,6 @@ public Action Timer_3(Handle timer)
 {
 	LoopValidClients(i)
 	{
-		TeamTag(i);
 		Call_StartForward(g_hOnUpdate3);
 		Call_PushCell(i);
 		Call_Finish();
