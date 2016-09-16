@@ -666,7 +666,7 @@ public Action Timer_Selection(Handle hTimer)
 		
 		if(IsFakeClient(i))
 			continue;
-		
+			
 		aPlayers.Push(i);
 	}
 	
@@ -692,6 +692,7 @@ public Action Timer_Selection(Handle hTimer)
 	int iTCount = GetTCount(aPlayers.Length);
 	int iDCount = GetDCount(aPlayers.Length);
 	
+	
 	int iTraitors;
 	int iDetectives;
 	int iInnocents;
@@ -708,8 +709,9 @@ public Action Timer_Selection(Handle hTimer)
 			iIndex = aPlayers.FindValue(client);
 			if(iIndex != -1)
 			{
-				TTT_SetClientRole(client, TTT_TEAM_TRAITOR);
+				g_iRole[client] = TTT_TEAM_TRAITOR;
 				iTraitors++;
+				g_iLastRole[client] = TTT_TEAM_TRAITOR;
 				aPlayers.Erase(iIndex);
 			}
 			g_aForceTraitor.Erase(0);
@@ -724,7 +726,8 @@ public Action Timer_Selection(Handle hTimer)
 		//Every client has a 1/3 chance to become Traitor again.
 		if(TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 3) == 2))
 		{
-			TTT_SetClientRole(client, TTT_TEAM_TRAITOR);
+			g_iRole[client] = TTT_TEAM_TRAITOR;
+			g_iLastRole[client] = TTT_TEAM_TRAITOR;
 			aPlayers.Erase(iRand);
 			iTraitors++;
 		}
@@ -738,7 +741,8 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			for(int i = 0; i < aPlayers.Length; i++)
 			{
-				TTT_SetClientRole(aPlayers.Get(i), TTT_TEAM_DETECTIVE);
+				g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
 				iDetectives++;
 			}
 			break;
@@ -750,7 +754,8 @@ public Action Timer_Selection(Handle hTimer)
 			iIndex = aPlayers.FindValue(client);
 			if(iIndex != -1)
 			{
-				TTT_SetClientRole(client, TTT_TEAM_DETECTIVE);
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				g_iRole[client] = TTT_TEAM_DETECTIVE;
 				iDetectives++;
 				aPlayers.Erase(iIndex);
 			}
@@ -766,10 +771,13 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			//Does he wanna get detective?
 			if(g_bAvoidDetective[client] == true)
-				TTT_SetClientRole(client, TTT_TEAM_INNOCENT);
-			else
 			{
-				TTT_SetClientRole(client, TTT_TEAM_DETECTIVE);
+				g_iLastRole[client] = TTT_TEAM_INNOCENT;	
+				g_iRole[client] = TTT_TEAM_INNOCENT;
+			}else
+			{
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				g_iRole[client] = TTT_TEAM_DETECTIVE;
 				iDetectives++;
 			}
 			aPlayers.Erase(iRand);
@@ -778,12 +786,15 @@ public Action Timer_Selection(Handle hTimer)
 	
 	iInnocents = aPlayers.Length;
 	
+	
 	for(int i = 0; i < aPlayers.Length; i++)
 	{
 		client = aPlayers.Get(i);
 		if(TTT_IsClientValid(client))
-			TTT_SetClientRole(i, TTT_TEAM_INNOCENT);
-		
+		{
+			g_iLastRole[client] = TTT_TEAM_INNOCENT;
+			g_iRole[client] = TTT_TEAM_INNOCENT;
+		}
 		aPlayers.Erase(i);
 	}
 	
