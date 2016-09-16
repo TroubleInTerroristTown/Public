@@ -105,7 +105,10 @@ enum eConfig
 	bool:dChatToDead,
 	bool:bTranfserArmor,
 	bool:bShowTraitors,
-	bool:bRespawnDeadPlayers
+	bool:bRespawnDeadPlayers,
+	i_maxTraitors,
+	i_maxDetectives,
+	i_minKarmaDetective
 };
 
 enum Ragdolls

@@ -33,11 +33,14 @@ Handle g_hStartTimer = null;
 float g_fRealRoundStart;
 Handle g_hCountdownTimer = null;
 
-Handle g_hDetectives = null;
-Handle g_hTraitores = null;
+ArrayList g_aForceTraitor;
+ArrayList g_aForceDetective;
 
 bool g_bRoundStarted = false;
 bool g_bCheckPlayers = false;
+
+int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...}; 
+bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRoundTimer = null;
 
@@ -72,12 +75,9 @@ bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 
 ArrayList g_aLogs = null;
 ArrayList g_aRagdoll = null;
-ArrayList g_aPlayer = null;
 
 bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
-
-bool g_bConfirmDetectiveRules[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 
