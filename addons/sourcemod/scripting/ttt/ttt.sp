@@ -1271,7 +1271,6 @@ public void OnClientPostAdminCheck(int client)
 	
 	g_iRole[client] = TTT_TEAM_UNASSIGNED;
 	CS_SetClientClanTag(client, "UNASSIGNED");
-	CreateTimer(5.0, Timer_RecheckClantag, GetClientUserId(client));
 	
 	LoadClientKarma(GetClientUserId(client));
 	
@@ -1279,34 +1278,6 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
 	else if (g_iConfig[b_showDetectiveMenu])
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
-}
-
-public Action Timer_RecheckClantag(Handle timer, any userid)
-{
-	int client = GetClientOfUserId(userid);
-	
-	if(TTT_IsClientValid(client))
-	{
-		char sTag[32];
-		CS_GetClientClanTag(client, sTag, sizeof(sTag));
-		
-		if(!ValidClantag(client, sTag))
-		{
-			if(!g_bFound[client])
-			{
-				if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
-					CS_SetClientClanTag(client, "UNASSIGNED");
-				else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
-					CS_SetClientClanTag(client, "DETECTIVE");
-				else
-					CS_SetClientClanTag(client, " ");
-			}
-			else if (g_bFound[client])
-				TeamTag(client);
-			
-			return Plugin_Handled;
-		}
-	}
 }
 
 public Action OnClientCommandKeyValues(int client, KeyValues kv)
@@ -1318,22 +1289,8 @@ public Action OnClientCommandKeyValues(int client, KeyValues kv)
 		char sTag[32];
 		CS_GetClientClanTag(client, sTag, sizeof(sTag));
 		
-		if(!ValidClantag(client, sTag))
-		{
-			if(!g_bFound[client])
-			{
-				if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
-					CS_SetClientClanTag(client, "UNASSIGNED");
-				else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
-					CS_SetClientClanTag(client, "DETECTIVE");
-				else
-					CS_SetClientClanTag(client, " ");
-			}
-			else if (g_bFound[client])
-				TeamTag(client);
-			
-			return Plugin_Handled;
-		}
+		CheckClantag(client, sTag);
+		return Plugin_Handled;
 	}
 	
 	return Plugin_Continue;
@@ -2601,6 +2558,10 @@ public Action Timer_5(Handle timer)
 		
 		if (g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
 			BanBadPlayerKarma(i);
+		
+		char sTag[32];
+		CS_GetClientClanTag(i, sTag, sizeof(sTag));
+		CheckClantag(i, sTag);
 	}
 	
 	if (g_bRoundStarted)
@@ -2918,6 +2879,24 @@ stock void StripAllWeapons(int client)
 			RemovePlayerItem(client, iEnt);
 			AcceptEntityInput(iEnt, "Kill");
 		}
+	}
+}
+
+stock void CheckClantag(int client, const char[] sTag)
+{
+	if(!ValidClantag(client, sTag))
+	{
+		if(!g_bFound[client])
+		{
+			if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+				CS_SetClientClanTag(client, "UNASSIGNED");
+			else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+				CS_SetClientClanTag(client, "DETECTIVE");
+			else
+				CS_SetClientClanTag(client, " ");
+		}
+		else if (g_bFound[client])
+			TeamTag(client);
 	}
 }
 
