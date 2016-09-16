@@ -22,7 +22,9 @@ int g_iCount = 0;
 int g_iPrio = 0;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
+#if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
 int g_iOldColors[MAXPLAYERS + 1][4];
+#endif
 
 float g_fFreezeTime = 0.0;
 
