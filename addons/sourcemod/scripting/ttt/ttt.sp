@@ -914,6 +914,7 @@ stock void TeamInitialize(int client)
 		if (g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
 		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
 			GivePlayerItem(client, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
@@ -949,6 +950,7 @@ stock void TeamInitialize(int client)
 			if (GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
 			GivePlayerItem(client, "weapon_knife");
 		
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
