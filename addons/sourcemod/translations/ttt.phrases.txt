@@ -824,9 +824,21 @@
 		"en"		"Prev player"
 	}
 	
-	"SpecMenu: Mute"
+	"SpecMenu: Unmute Dead"
 	{
-		"en"		"Mute this player"
+		"en"		"Unmute dead players"
+	}
+	"SpecMenu: Mute Dead"
+	{
+		"en"		"Mute dead players"
+	}
+	"SpecMenu: Unmute Alive"
+	{
+		"en"		"Unmute alive players"
+	}
+	"SpecMenu: Mute Alive"
+	{
+		"en"		"Mute alive players"
 	}
 	"Hud Name"
 	{
