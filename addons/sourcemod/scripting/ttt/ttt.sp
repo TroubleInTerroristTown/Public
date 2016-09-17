@@ -917,6 +917,7 @@ stock void TeamInitialize(int client)
 		
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -935,6 +936,7 @@ stock void TeamInitialize(int client)
 		
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -953,6 +955,7 @@ stock void TeamInitialize(int client)
 		
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	
 	CheckClantag(client);
