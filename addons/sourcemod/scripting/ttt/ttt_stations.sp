@@ -33,16 +33,19 @@ bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
 bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
-int g_iHealthPrice;
+int g_iHealthPrice = 0;
 int g_iHealthPrio = 0;
-int g_iHealthHeal;
-int g_iHealthCharges;
-int g_iHurtPrice;
+int g_iHealthHeal = 0;
+int g_iHealthCharges = 0;
+int g_iHurtPrice = 0;
 int g_iHurtPrio = 0;
-int g_iHurtDamage;
-int g_iHurtCharges;
-float g_fHurtDistance;
-float g_fHealthDistance;
+int g_iHurtDamage = 0;
+int g_iHurtCharges = 0;
+
+float g_fHurtDistance = 0.0;
+float g_fHealthDistance = 0.0;
+
+bool g_bHurtTraitors = false;
 
 // bool g_bHurtStationGlow = true;
 
@@ -78,6 +81,8 @@ public void OnPluginStart()
 
 	g_fHealthDistance = Config_LoadFloat("health_station_distance", 200.0, "The distance that the health station should reach.");
 	g_fHurtDistance = Config_LoadFloat("hurt_station_distance", 200.0, "The distance that the hurt station should reach.");
+	
+	g_bHurtTraitors = Config_LoadBool("hurt_station_hurt_other_traitors", false, "Hurt other traitors with a hurtstation?");
 	
 	// g_bHurtStationGlow = Config_LoadBool("hurt_station_glow", true, "Enable the glow effect for hurt stations");
 
@@ -235,7 +240,7 @@ void checkDistanceFromHealthStation(int client)
 		
 		curHealth = GetClientHealth(client);
 		
-		if(hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		if(!g_bHurtTraitors && hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			continue;
 		
 		if ((!hurt) && (curHealth >= 125)) // TODO: Add cvar for max health

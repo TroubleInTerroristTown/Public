@@ -2892,17 +2892,23 @@ stock void CheckClantag(int client)
 	
 	if(!ValidClantag(client, sTag))
 	{
-		if(!g_bFound[client])
+		if(!g_bRoundStarted)
+			CS_SetClientClanTag(client, " ");
+		else
 		{
-			if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
-				CS_SetClientClanTag(client, "UNASSIGNED");
-			else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
-				CS_SetClientClanTag(client, "DETECTIVE");
-			else
-				CS_SetClientClanTag(client, " ");
+		
+			if(!g_bFound[client])
+			{
+				if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+					CS_SetClientClanTag(client, "UNASSIGNED");
+				else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+					CS_SetClientClanTag(client, "DETECTIVE");
+				else
+					CS_SetClientClanTag(client, " ");
+			}
+			else if (g_bFound[client])
+				TeamTag(client);
 		}
-		else if (g_bFound[client])
-			TeamTag(client);
 	}
 }
 
