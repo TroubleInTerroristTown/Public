@@ -691,6 +691,7 @@ public Action Timer_Selection(Handle hTimer)
 	int iTCount = GetTCount(aPlayers.Length);
 	int iDCount = GetDCount(aPlayers.Length);
 	
+	PrintToChatAll("Amount Detectives = %i", iDCount);
 	
 	int iTraitors;
 	int iDetectives;
@@ -843,7 +844,7 @@ public Action Timer_Selection(Handle hTimer)
 
 int GetTCount(int iActivePlayers)
 {
-	int iTCount = RoundToFloor(view_as<float>(iActivePlayers) * (float(g_iConfig[i_traitorRatio]) / 100.0));
+	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_traitorRatio]) / 100.0));
 
 	//Make sure that there is a least 1 Traitor
 	if(iTCount < 1)
@@ -861,8 +862,8 @@ int GetDCount(int iActivePlayers)
 	//Check if there are enough players for a detective
 	if(iActivePlayers < g_iConfig[i_requiredPlayersD])
 		return 0;
-
-	int iDCount = RoundToFloor(view_as<float>(iActivePlayers) * (float(g_iConfig[i_detectiveRatio]) / 100.0));
+	
+	int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_detectiveRatio]) / 100.0));
 
 	//Cap detective amount to a max
 	if(iDCount > g_iConfig[i_maxDetectives])
