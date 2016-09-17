@@ -85,8 +85,10 @@ public void OnPluginStart()
 	LoadBadNames();
 	
 	g_aRagdoll = new ArrayList(102);
-	g_aPlayer = new ArrayList();
 	g_aLogs = new ArrayList(512);
+	
+	g_aForceTraitor = new ArrayList();
+	g_aForceDetective = new ArrayList();
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
@@ -180,6 +182,9 @@ void SetupConfig()
 	g_iConfig[i_maxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
 	g_iConfig[i_requiredPlayersD] = Config_LoadInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
 	g_iConfig[i_requiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
+	g_iConfig[i_maxTraitors] = Config_LoadInt("ttt_traitor_max", 32, "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
+	g_iConfig[i_maxDetectives] = Config_LoadInt("ttt_detective_max", 32, "Maximum number of detectives. Can be used to cap or disable detectives.");
+	g_iConfig[i_minKarmaDetective] = Config_LoadInt("ttt_detective_karma_min", 100, "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
 	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
@@ -631,15 +636,6 @@ public Action Timer_Selection(Handle hTimer)
 	g_bRoundEnding = false;
 	g_hStartTimer = null;
 	
-	if(g_aPlayer != null)
-		g_aPlayer.Clear();
-	
-	if (g_hDetectives == null)
-		g_hDetectives = CreateArray(1);
-	
-	if (g_hTraitores == null)
-		g_hTraitores = CreateArray(1);
-	
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnRoundStart_Pre);
 	Call_Finish(res);
@@ -654,7 +650,7 @@ public Action Timer_Selection(Handle hTimer)
 		return;
 	}
 	
-	int iCount = 0;
+	ArrayList aPlayers = new ArrayList(1);
 	LoopValidClients(i)
 	{
 		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
@@ -668,14 +664,12 @@ public Action Timer_Selection(Handle hTimer)
 				continue;
 		}
 		
-		if (IsFakeClient(i))
+		if(IsFakeClient(i))
 			continue;
-		
-		iCount++;
-		g_aPlayer.Push(i);
+			
+		aPlayers.Push(i);
 	}
-	
-	if (iCount < g_iConfig[i_requiredPlayers])
+	if (aPlayers.Length < g_iConfig[i_requiredPlayers])
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
@@ -684,7 +678,7 @@ public Action Timer_Selection(Handle hTimer)
 		g_bCheckPlayers = true;
 		
 		Call_StartForward(g_hOnRoundStartFailed);
-		Call_PushCell(iCount);
+		Call_PushCell(aPlayers.Length);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
 		
@@ -694,139 +688,115 @@ public Action Timer_Selection(Handle hTimer)
 	g_bRoundStarted = true;
 	g_bCheckPlayers = false;
 	
-	int iDetectives = RoundToNearest(iCount * float(g_iConfig[i_detectiveRatio]) / 100.0);
-	if (iDetectives == 0)
-		iDetectives = 1;
+	int iTCount = GetTCount(aPlayers.Length);
+	int iDCount = GetDCount(aPlayers.Length);
 	
-	bool needDetective = (iCount >= g_iConfig[i_requiredPlayersD]);
+	int iTraitors;
+	int iDetectives;
+	int iInnocents;
+	int iRand;
+	int client;
+	int iIndex;
 	
-	/* Not enough players to allow a detective */
-	if (!needDetective)
-		iDetectives = 0;
-	
-	int iTraitores = RoundToNearest(iCount * float(g_iConfig[i_traitorRatio]) / 100.0);
-	if (iTraitores == 0)
-		iTraitores = 1;
-	
-	int index;
-	int player;
-	
-	SetRandomSeed(GetTime());
-	// We do this 3 times cuz the random stream sucks
-	SortADTArray(g_aPlayer, Sort_Random, Sort_Integer);
-	
-	while ((index = GetRandomArray(g_aPlayer)) != -1)
+	while(iTraitors < iTCount)
 	{
-		player = g_aPlayer.Get(index);
-		
-		if (iDetectives > 0 && (!g_iConfig[b_showDetectiveMenu] || g_bConfirmDetectiveRules[player]) && (g_iConfig[b_roleAgain] || !IsPlayerInArray(player, g_hDetectives)))
+		//Check if there is a Player, that should get Traitor.
+		if(g_aForceTraitor.Length > 0)
 		{
-			g_iRole[player] = TTT_TEAM_DETECTIVE;
-			iDetectives--;
+			client = GetClientOfUserId(g_aForceTraitor.Get(0));
+			iIndex = aPlayers.FindValue(client);
+			if(iIndex != -1)
+			{
+				g_iRole[client] = TTT_TEAM_TRAITOR;
+				iTraitors++;
+				g_iLastRole[client] = TTT_TEAM_TRAITOR;
+				aPlayers.Erase(iIndex);
+			}
+			g_aForceTraitor.Erase(0);
+			continue;
 		}
-		else if (iTraitores > 0 && (g_iConfig[b_roleAgain] || !IsPlayerInArray(player, g_hTraitores)))
-		{
-			g_iRole[player] = TTT_TEAM_TRAITOR;
-			iTraitores--;
-		}
-		else g_iRole[player] = TTT_TEAM_INNOCENT;
-		
-		while (GetPlayerWeaponSlot(player, CS_SLOT_KNIFE) == -1)
-			GivePlayerItem(player, "weapon_knife");
-		
-		if (GetPlayerWeaponSlot(player, CS_SLOT_SECONDARY) == -1)
-			GivePlayerItem(player, g_iConfig[s_defaultSec]);
-		
-		g_bFound[player] = false;
 
-		
-		g_aPlayer.Erase(index);
-	}
-	
-	/* Recount roles */
-	
-	int iTraitors = 0;
-	int iInnocent = 0;
-	int iDetective = 0;
-	
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(i))
-			continue;
-		
-		if (IsFakeClient(i))
-			continue;
-		
-		if (g_iRole[i] == TTT_TEAM_TRAITOR)
-			iTraitors++;
-		else if (g_iRole[i] == TTT_TEAM_DETECTIVE)
-			iDetective++;
-		else if (g_iRole[i] == TTT_TEAM_INNOCENT)
-			iInnocent++;
-	}
-	
-	ArrayList aPlayers = new ArrayList(1);
-	
-	LoopValidClients(i)
-	{
-		if (g_iRole[i] != TTT_TEAM_INNOCENT)
-			continue;
-		aPlayers.Push(i);
-	}	
-	
-	if (iTraitors == 0)
-	{
-		while((index = GetRandomArray(aPlayers)) != -1)
+		//Get a random client
+		SetRandomSeed(GetTime());
+		iRand = GetRandomInt(0, aPlayers.Length - 1);
+		client = aPlayers.Get(iRand);
+
+		//Every client has a 1/3 chance to become Traitor again.
+		if(TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 3) == 2))
 		{
-			if(iTraitors >= iTraitores)
-				break;
-			
-			iInnocent--;
-			iTraitors++;
-			
-			int client = aPlayers.Get(index);
-			
 			g_iRole[client] = TTT_TEAM_TRAITOR;
-			
-			char sBuffer[256];
-			Format(sBuffer, sizeof(sBuffer), "%N was forced to be traitor.", client);
-			g_aLogs.PushString(sBuffer);
-			aPlayers.Erase(index);
+			g_iLastRole[client] = TTT_TEAM_TRAITOR;
+			aPlayers.Erase(iRand);
+			iTraitors++;
 		}
 	}
 	
-	/* No detective found, but we need one */
-	if (iDetective == 0 && needDetective)
+	//Choose Detectives
+	while(iDetectives < iDCount && aPlayers.Length > 0)
 	{
-		while((index = GetRandomArray(aPlayers)) != -1)
+		//Set everybody Detective when there are less player left than detectives needed.
+		if(aPlayers.Length <= (iDCount - iDetectives))
 		{
-			if(iDetective >= iDetectives)
-				break;
-			iInnocent--;
-			iDetective++;
-			
-			int client = aPlayers.Get(index);
-			
-			g_iRole[client] = TTT_TEAM_DETECTIVE;
-			
-			char sBuffer[256];
-			Format(sBuffer, sizeof(sBuffer), "%N was forced to be detective.", client);
-			g_aLogs.PushString(sBuffer);
-			aPlayers.Erase(index);
+			for(int i = 0; i < aPlayers.Length; i++)
+			{
+				g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				iDetectives++;
+			}
+			break;
+		}
+
+		if(g_aForceDetective.Length > 0)
+		{
+			client = GetClientOfUserId(g_aForceDetective.Get(0));
+			iIndex = aPlayers.FindValue(client);
+			if(iIndex != -1)
+			{
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				g_iRole[client] = TTT_TEAM_DETECTIVE;
+				iDetectives++;
+				aPlayers.Erase(iIndex);
+			}
+			g_aForceDetective.Erase(0);
+			continue;
+		}
+
+		iRand = GetRandomInt(0, aPlayers.Length - 1);
+		client = aPlayers.Get(iRand);
+
+		//Same here every client has a 1/3 chance to get Detective when he had a special role before.
+		if(TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_iConfig[i_minKarmaDetective] && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
+		{
+			//Does he wanna get detective?
+			if(g_bAvoidDetective[client] == true)
+			{
+				g_iLastRole[client] = TTT_TEAM_INNOCENT;	
+				g_iRole[client] = TTT_TEAM_INNOCENT;
+			}else
+			{
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				g_iRole[client] = TTT_TEAM_DETECTIVE;
+				iDetectives++;
+			}
+			aPlayers.Erase(iRand);
 		}
 	}
 	
-	/* Remember role, to prevent same role next round for players */
-	ClearArray(g_hDetectives);
-	ClearArray(g_hTraitores);
+	iInnocents = aPlayers.Length;
 	
-	LoopValidClients(i)
+	
+	while(aPlayers.Length > 0)
 	{
-		if (g_iRole[i] == TTT_TEAM_DETECTIVE)
-			PushArrayCell(g_hDetectives, i);
-		else if (g_iRole[i] == TTT_TEAM_TRAITOR)
-			PushArrayCell(g_hTraitores, i);
+		client = aPlayers.Get(0);
+		PrintToChatAll("Setting %N Innocent", client);
+		if(TTT_IsClientValid(client))
+		{
+			g_iLastRole[client] = TTT_TEAM_INNOCENT;
+			g_iRole[client] = TTT_TEAM_INNOCENT;
+		}
+		aPlayers.Erase(0);
 	}
+	CloseHandle(aPlayers);
 	
 	LoopValidClients(i)
 	{
@@ -864,11 +834,42 @@ public Action Timer_Selection(Handle hTimer)
 	g_iTeamSelectTime = GetTime();
 	
 	Call_StartForward(g_hOnRoundStart);
-	Call_PushCell(iInnocent);
+	Call_PushCell(iInnocents);
 	Call_PushCell(iTraitors);
-	Call_PushCell(iDetective);
+	Call_PushCell(iDetectives);
 	Call_Finish();
 }
+
+int GetTCount(int iActivePlayers)
+{
+	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_traitorRatio]) / 100.0));
+
+	//Make sure that there is a least 1 Traitor
+	if(iTCount < 1)
+		iTCount = 1;
+
+	//Cap the traitor amount to a max
+	if(iTCount > g_iConfig[i_maxTraitors])
+		iTCount = g_iConfig[i_maxTraitors];
+
+	return iTCount;
+}
+
+int GetDCount(int iActivePlayers)
+{
+	//Check if there are enough players for a detective
+	if(iActivePlayers < g_iConfig[i_requiredPlayersD])
+		return 0;
+	
+	int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_detectiveRatio]) / 100.0));
+
+	//Cap detective amount to a max
+	if(iDCount > g_iConfig[i_maxDetectives])
+		iDCount = g_iConfig[i_maxDetectives];
+
+	return iDCount;
+}
+
 
 stock int GetRandomArray(Handle array)
 {
@@ -909,7 +910,13 @@ stock void TeamInitialize(int client)
 		
 		if (g_iConfig[i_spawnHPD] > 0)
 			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
-			
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -923,6 +930,12 @@ stock void TeamInitialize(int client)
 			if (GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -936,6 +949,12 @@ stock void TeamInitialize(int client)
 			if (GetClientTeam(client) != CS_TEAM_T)
 				CS_SwitchTeam(client, CS_TEAM_T);
 		}
+		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+			GivePlayerItem(client, "weapon_knife");
+		
+		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+		g_bFound[client] = false;
 	}
 	
 	CheckClantag(client);
@@ -1565,12 +1584,12 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 		GetMenuItem(menu, param, sParam, sizeof(sParam));
 		
 		if (!StrEqual(sParam, "yes", false))
-			g_bConfirmDetectiveRules[client] = false;
+			g_bAvoidDetective[client] = true;
 		else
-			g_bConfirmDetectiveRules[client] = true;
+			g_bAvoidDetective[client] = false;
 	}
 	else if (action == MenuAction_Cancel)
-		g_bConfirmDetectiveRules[client] = false;
+		g_bAvoidDetective[client] = true;
 	else if (action == MenuAction_End)
 		delete menu;
 	
