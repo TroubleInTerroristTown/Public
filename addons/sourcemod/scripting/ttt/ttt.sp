@@ -898,8 +898,6 @@ stock void TeamInitialize(int client)
 	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		CS_SetClientClanTag(client, "DETECTIVE");
-		
 		if (g_iConfig[b_forceTeams])
 		{
 			if (GetClientTeam(client) != CS_TEAM_CT)
@@ -956,8 +954,8 @@ stock void TeamInitialize(int client)
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 			GivePlayerItem(client, g_iConfig[s_defaultSec]);
 	}
-	else if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
-		CS_SetClientClanTag(client, "UNASSIGNED");
+	
+	CheckClantag(client);
 	
 	if (g_iConfig[b_updateClientModel])
 		CS_UpdateClientModel(client);
@@ -1932,6 +1930,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
 {
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	CheckClantag(client);
+	
 	if (g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
 	{
 		event.BroadcastDisabled = true;
@@ -2537,6 +2538,8 @@ public Action Timer_3(Handle timer)
 		Call_StartForward(g_hOnUpdate3);
 		Call_PushCell(i);
 		Call_Finish();
+		
+		CheckClantag(i);
 	}
 }
 
@@ -2877,4 +2880,36 @@ stock void StripAllWeapons(int client)
 			AcceptEntityInput(iEnt, "Kill");
 		}
 	}
+}
+
+stock void CheckClantag(int client)
+{
+	char sTag[32];
+	CS_GetClientClanTag(client, sTag, sizeof(sTag));
+	
+	if(!ValidClantag(client, sTag))
+	{
+		if(!g_bFound[client])
+		{
+			if(g_iRole[client] == TTT_TEAM_UNASSIGNED)
+				CS_SetClientClanTag(client, "UNASSIGNED");
+			else if(g_iRole[client] == TTT_TEAM_DETECTIVE)
+				CS_SetClientClanTag(client, "DETECTIVE");
+			else
+				CS_SetClientClanTag(client, " ");
+		}
+		else if (g_bFound[client])
+			TeamTag(client);
+	}
+}
+
+stock bool ValidClantag(int client, const char[] sTag)
+{
+	if(StrContains(sTag, "DETECTIVE", false) != -1 || StrContains(sTag, "TRAITOR", false) != -1 || StrContains(sTag, "INNOCENT", false) != -1 || StrContains(sTag, "UNASSIGNED", false) != -1)
+		return true;
+	
+	if(StrEqual(sTag, " ", false))
+		return true;
+	
+	return false;
 }

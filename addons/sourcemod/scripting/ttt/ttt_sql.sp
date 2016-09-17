@@ -79,13 +79,11 @@ void SQL_Start()
 	
 	if (!SQL_CheckConfig(g_sEntry))
 	{
-		char error[255];
-		Handle kv = null;
-
-		kv = CreateKeyValues("");
-		KvSetString(kv, "database", g_sEntry);
-		g_dDatabase = SQL_ConnectCustom(kv, error, sizeof(error), true);
-		delete kv;
+		char sError[255];
+		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
+		
+		if(strlen(sError) > 1)
+			LogError("(SQL_Start) Error: %s", sError);
 
 		if(g_dDatabase == null)
 		{
