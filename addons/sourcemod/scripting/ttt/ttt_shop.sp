@@ -247,7 +247,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					
 					if (res < Plugin_Stop) {
 						TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - temp_item[Price]));
-						CPrintToChat(client, g_sPluginTag, "Item bought! Your REAL money is", client, TTT_GetClientCredits(client));
+						CPrintToChat(client, g_sPluginTag, "Item bought!", client, TTT_GetClientCredits(client), temp_item[Long]);
 					}
 				}
 				else
