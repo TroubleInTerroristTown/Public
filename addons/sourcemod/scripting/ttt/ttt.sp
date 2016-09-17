@@ -691,8 +691,6 @@ public Action Timer_Selection(Handle hTimer)
 	int iTCount = GetTCount(aPlayers.Length);
 	int iDCount = GetDCount(aPlayers.Length);
 	
-	PrintToChatAll("Amount Detectives = %i", iDCount);
-	
 	int iTraitors;
 	int iDetectives;
 	int iInnocents;
