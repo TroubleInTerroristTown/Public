@@ -305,36 +305,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 					GiveArmor(client);
 		}
-		else if(	(strcmp(itemshort, KEVHELM_ITEM_SHORT, false) == 0)
+		else if((strcmp(itemshort, KEVHELM_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEVHELM_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEVHELM_D_ITEM_SHORT, false) == 0))
 		 {
-				if(g_iKevHelms[client] > g_iKevHelm_Max > 0){
-					CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
-					return Plugin_Stop;
-				}
-
-				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-				{
-					if(g_iKev_Type == 0)
-					{
-						GiveArmor(client);
-						GiveHelm(client);
-					}
-				}
-				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-				{
-					if(g_iKev_Type == 0 || g_iKev_Type == 1)
-					{
-						GiveArmor(client);
-						GiveHelm(client);
-					}
-				}
-				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-				{
-					GiveArmor(client);
-					GiveHelm(client);
-				}
+			if(g_iKevHelms[client] > g_iKevHelm_Max > 0){
+				CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
+				return Plugin_Stop;
+			}
+			
+			GiveArmor(client);
+			GiveHelm(client);
 		}
 		else if(	(strcmp(itemshort, HELM_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, HELM_T_ITEM_SHORT, false) == 0)
