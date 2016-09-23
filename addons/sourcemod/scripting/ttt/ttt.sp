@@ -788,7 +788,6 @@ public Action Timer_Selection(Handle hTimer)
 	while(aPlayers.Length > 0)
 	{
 		client = aPlayers.Get(0);
-		PrintToChatAll("Setting %N Innocent", client);
 		if(TTT_IsClientValid(client))
 		{
 			g_iLastRole[client] = TTT_TEAM_INNOCENT;
