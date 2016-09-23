@@ -140,7 +140,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 public void TTT_OnUpdate1(int i)
 {
-	if (i < 1 || !IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
 		return;
 
 	checkDistanceFromHealthStation(i);
@@ -148,7 +148,7 @@ public void TTT_OnUpdate1(int i)
 
 public void TTT_OnUpdate5(int i)
 {
-	if (i < 1 || !IsPlayerAlive(i))
+	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i))
 		return;
 
 	if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
