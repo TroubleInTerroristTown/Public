@@ -290,7 +290,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 {
 	if (numParams < 4)
 		return false;
-	
+
 	char temp_short[16];
 	char temp_long[64];
 	GetNativeString(1, temp_short, sizeof(temp_short));
@@ -299,7 +299,6 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
 	int temp_sort = GetNativeCell(5);
-	
 	int temp_item[Item];
 	
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
@@ -321,32 +320,27 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Sort] = temp_sort;
 	g_aCustomItems.PushArray(temp_item[0]);
 	
+	
 	if(g_bSortItems)
-	{
-		Sorting();
-	}
+		SortADTArrayCustom(g_aCustomItems, Sorting);
 	
 	return true;
 }
 
-//TODO Improve sort algorithm (currently it's a bubble sort)
-public void Sorting()
+public int Sorting(int i, int j, Handle array, Handle hndl)
 {
 	int temp_item[Item];
 	int temp_item2[Item];
 
-	for (int i = 1; i < g_aCustomItems.Length; i++)
+	g_aCustomItems.GetArray(i, temp_item[0]);
+	g_aCustomItems.GetArray(j, temp_item2[0]);
+	if (temp_item[Sort] < temp_item2[Sort])
 	{
-		for (int j = 0; j < (g_aCustomItems.Length - i); j++)
-		{
-			g_aCustomItems.GetArray(j, temp_item[0]);
-			g_aCustomItems.GetArray(j + 1, temp_item2[0]);
-			if (temp_item[Sort] < temp_item2[Sort])
-			{
-				g_aCustomItems.SwapAt(j, j + 1);
-			}
-		}
+		return -1;
+	}else if(temp_item[Sort] > temp_item2[Sort]){
+		return 1;
 	}
+	return 0;
 }
 
 public int Native_GetCustomItemPrice(Handle plugin, int numParams)
