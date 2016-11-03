@@ -258,7 +258,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			TTT_LogString(item);
 			
 			if(g_bBroadcastTaserResult)
-				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", iAttacker, iVictim);
+				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
 			else
 				CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
 			
@@ -270,7 +270,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			TTT_LogString(item);
 			
 			if(g_bBroadcastTaserResult)
-				CPrintToChatAll(g_sPluginTag, "You tased a Detective", iAttacker, iVictim);
+				CPrintToChatAll(g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
 			else
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
 		}
@@ -280,7 +280,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			TTT_LogString(item);
 			
 			if(g_bBroadcastTaserResult)
-				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", iAttacker, iVictim);
+				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
 			else
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
 		}
