@@ -36,6 +36,7 @@ bool g_bShowLoseCreditsMessage = false;
 bool g_bResetCreditsEachRound = false;
 bool g_bCreditsTimer = false;
 bool g_bCreditsMessage = false;
+bool g_bReopenMenu = false;
 
 Handle g_hOnItemPurchased = null;
 Handle g_hOnCreditsGiven_Pre = null;
@@ -135,10 +136,12 @@ public void OnPluginStart()
 	g_bResetCreditsEachRound = Config_LoadBool("ttt_credits_reset_each_round", false, "Reset credits for all players each round?. 0 = Disabled (default). 1 = Enabled.");
 	
 	g_bCreditsTimer = Config_LoadBool("ttt_credits_timer", true, "Players earn every minute (configurable) credits");
-	g_bCreditsMessage = Config_LoadBool("ttt_credits_show_message", true, "Show a message when player earn credits (bCreditsTimer must be true)");
+	g_bCreditsMessage = Config_LoadBool("ttt_credits_show_message", true, "Show a message when player earn credits (ttt_credits_timer must be true)");
 	g_fCreditsInterval = Config_LoadFloat("ttt_credits_interval", 60.0, "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)");
 	g_iCreditsMin = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
 	g_iCreditsMax = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
+	
+	g_bReopenMenu = Config_LoadBool("ttt_menu_reopen", true, "Reopen the shop menu, after buying something.");
 	
 	Config_LoadString("ttt_credits_command", "credits", "The command to show the credits", g_sCreditsName, sizeof(g_sCreditsName));
 	
@@ -254,6 +257,8 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 					CPrintToChat(client, g_sPluginTag, "You don't have enough money", client);
 			}
 		}
+		if(g_bReopenMenu)
+			Command_Shop(client, 0);
 	}
 	
 	else if (action == MenuAction_End)
