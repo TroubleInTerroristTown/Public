@@ -15,4 +15,4 @@
 - [Slayers Gaming](http://slayersgaming.com/)
 - [Allied Gaming](http://allied-gaming.com/)
 - ___
-- Authors of [TroubleinTerroristTown.com](troubleinterroristtown.com)
+- Authors of [TroubleinTerroristTown.com](http://www.troubleinterroristtown.com/)
