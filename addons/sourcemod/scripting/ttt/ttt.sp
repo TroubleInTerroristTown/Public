@@ -388,8 +388,8 @@ public void OnCreate(any data)
 	int userid = ReadPackCell(data);
 	int index = ReadPackCell(data);
 	
-	if (data != INVALID_HANDLE)
-		CloseHandle(data);
+	if (view_as<Handle>(data) != null)
+		delete view_as<Handle>(data);
 	int client;
 	if (userid == 0)
 		client = userid;
@@ -572,7 +572,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	g_bRoundStarted = false;
 	
 	if (g_hRoundTimer != null)
-		CloseHandle(g_hRoundTimer);
+		delete g_hRoundTimer;
 	
 	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0), Timer_OnRoundEnd);
 }
@@ -601,7 +601,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	
 	if (g_hRoundTimer != null)
 	{
-		CloseHandle(g_hRoundTimer);
+		delete g_hRoundTimer;
 		g_hRoundTimer = null;
 	}
 }
@@ -796,7 +796,8 @@ public Action Timer_Selection(Handle hTimer)
 		}
 		aPlayers.Erase(0);
 	}
-	CloseHandle(aPlayers);
+	
+	delete aPlayers;
 	
 	LoopValidClients(i)
 	{
@@ -1846,7 +1847,7 @@ public void OnMapEnd()
 	g_bRoundEnding = false;
 	if (g_hRoundTimer != null)
 	{
-		CloseHandle(g_hRoundTimer);
+		delete g_hRoundTimer;
 		g_hRoundTimer = null;
 	}
 	
@@ -2384,7 +2385,7 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 		}
 		case MenuAction_End:
 		{
-			CloseHandle(menu);
+			delete menu;
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Choose Forgive Victim", client, iAttacker);
 			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;

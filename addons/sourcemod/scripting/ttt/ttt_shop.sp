@@ -263,7 +263,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	
 	else if (action == MenuAction_End)
 	{
-		CloseHandle(menu);
+		delete menu;
 	}
 }
 

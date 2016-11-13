@@ -43,8 +43,8 @@ bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 
 bool g_bRemoveBomb = false;
 
-Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
-Handle g_hJihadBomb[MAXPLAYERS + 1] =  { INVALID_HANDLE, ... };
+Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
+Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -593,7 +593,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 		}
 		case MenuAction_End:
 		{
-			CloseHandle(menu);
+			delete menu;
 			g_bHasActiveBomb[client] = false;
 			removeBomb(client);
 		}
@@ -653,7 +653,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		}
 		case MenuAction_End:
 		{
-			CloseHandle(menu);
+			delete menu;
 			g_iDefusePlayerIndex[client] = -1;
 		}
 		case MenuAction_Cancel:

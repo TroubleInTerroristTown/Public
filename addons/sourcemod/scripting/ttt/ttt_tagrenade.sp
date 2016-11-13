@@ -216,7 +216,7 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 	int client = GetClientOfUserId(ReadPackCell(pack));
 	if (client == 0)
 	{
-		CloseHandle(pack);
+		delete pack;
 		return Plugin_Continue;
 	}
 	
@@ -229,7 +229,7 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 	position[0] = ReadPackFloat(pack);
 	position[1] = ReadPackFloat(pack);
 	position[2] = ReadPackFloat(pack);
-	CloseHandle(pack);
+	delete pack;
 	
 	g_bSeePlayers[client] = true;
 	
@@ -268,7 +268,7 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);
 			if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
 				g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;
-			CloseHandle(trace);
+			delete trace;
 		}
 		else
 			g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;

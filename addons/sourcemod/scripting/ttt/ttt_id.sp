@@ -25,7 +25,7 @@ int g_iIPrice = 0;
 int g_iTPrio = 0;
 int g_iIPrio = 0;
 
-Handle g_hTimer[MAXPLAYERS + 1] = {INVALID_HANDLE, ...};
+Handle g_hTimer[MAXPLAYERS + 1] = {null, ...};
 
 bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
 
@@ -80,7 +80,7 @@ public Action Command_ID(int client, int args)
 
 	if(g_fCooldown > 0.0)
 	{
-		if(g_hTimer[client] != INVALID_HANDLE)
+		if(g_hTimer[client] != null)
 		{
 			CPrintToChat(client, g_sPluginTag, "ID: Cooldown", client);
 			return Plugin_Handled;
@@ -117,10 +117,10 @@ public Action Timer_Cooldown(Handle timer, int userid)
 	int client = GetClientOfUserId(userid);
 	if(TTT_IsClientValid(client))
 	{
-		if(g_hTimer[client] != INVALID_HANDLE)
+		if(g_hTimer[client] != null)
 		{
-			CloseHandle(g_hTimer[client]);
-			g_hTimer[client] = INVALID_HANDLE;
+			delete g_hTimer[client];
+			g_hTimer[client] = null;
 			return Plugin_Stop;
 		}
 	}
@@ -168,9 +168,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 void Reset(int client)
 {
 	g_bHasID[client] = false;
-	if(g_hTimer[client] != INVALID_HANDLE)
+	if(g_hTimer[client] != null)
 	{
-		CloseHandle(g_hTimer[client]);
-		g_hTimer[client] = INVALID_HANDLE;
+		delete g_hTimer[client];
+		g_hTimer[client] = null;
 	}
 }

@@ -181,8 +181,8 @@ public int TraceToEntity(int client)
 
 	TR_TraceRayFilter(vecClientEyePos, vecClientEyeAng, MASK_PLAYERSOLID, RayType_Infinite, TraceASDF, client);
 
-	if (TR_DidHit(INVALID_HANDLE))
-		return (TR_GetEntityIndex(INVALID_HANDLE));
+	if (TR_DidHit(null))
+		return (TR_GetEntityIndex(null));
 
 	return (-1);
 }
