@@ -73,7 +73,7 @@ public Action Command_TVoice(int client, int args)
 		{
 			SetListenOverride(i, client, Listen_Yes);
 			if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-				CPrintToChat(i, g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
+				CPrintToChat(i, g_sPluginTag, "%N stopped talking in Traitor Voice Chat", i, client);
 		}
 	}
 	else
