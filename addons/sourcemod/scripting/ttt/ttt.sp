@@ -657,7 +657,7 @@ public Action Timer_Selection(Handle hTimer)
 	ArrayList aPlayers = new ArrayList(1);
 	LoopValidClients(i)
 	{
-		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
+		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
 			continue;
 		
 		if (!IsPlayerAlive(i))
@@ -668,9 +668,6 @@ public Action Timer_Selection(Handle hTimer)
 				continue;
 		}
 		
-		if(IsFakeClient(i))
-			continue;
-			
 		aPlayers.Push(i);
 	}
 	if (aPlayers.Length < g_iConfig[i_requiredPlayers])
