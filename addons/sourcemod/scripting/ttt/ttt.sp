@@ -708,6 +708,7 @@ public Action Timer_Selection(Handle hTimer)
 	
 	pProfiler2 = CreateProfiler();
 	StartProfiling(pProfiler2);
+	int counter;
 	while(iTraitors < iTCount)
 	{
 		//Check if there is a Player, that should get Traitor.
@@ -727,7 +728,7 @@ public Action Timer_Selection(Handle hTimer)
 		}
 
 		//Get a random client
-		SetRandomSeed(GetTime());
+		SetRandomSeed(100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
@@ -778,7 +779,8 @@ public Action Timer_Selection(Handle hTimer)
 			g_aForceDetective.Erase(0);
 			continue;
 		}
-
+		
+		SetRandomSeed(100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
