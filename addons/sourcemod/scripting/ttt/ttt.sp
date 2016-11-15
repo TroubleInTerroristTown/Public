@@ -12,6 +12,7 @@
 #include <ttt-sql>
 #include <config_loader>
 #include <smlib>
+#include <profiler>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -686,6 +687,9 @@ public Action Timer_Selection(Handle hTimer)
 		return;
 	}
 	
+	Handle pProfiler = CreateProfiler();
+	StartProfiling(pProfiler);
+	
 	g_bRoundStarted = true;
 	g_bCheckPlayers = false;
 	
@@ -839,6 +843,11 @@ public Action Timer_Selection(Handle hTimer)
 	Call_PushCell(iTraitors);
 	Call_PushCell(iDetectives);
 	Call_Finish();
+	
+	StopProfiling(pProfiler);
+	float fTime = GetProfilerTime(pProfiler);
+	delete pProfiler;
+	LogMessage("[TTT] Timer_Selection - Benchmark: %f sec.", fTime);
 }
 
 int GetTCount(int iActivePlayers)
