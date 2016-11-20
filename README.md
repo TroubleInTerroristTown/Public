@@ -1,5 +1,6 @@
-# TroubleinTerroristTown
-## Build Status
+# [TroubleinTerroristTown](http://csgottt.com/)
 [![Build Status](https://travis-ci.org/Bara20/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
-## Short description
-The game is about a group of "terrorists" who have traitors among them, out to kill everyone who's not a traitor.
+---
+ - [AlliedModders Thread](https://forums.alliedmods.net/showthread.php?t=273960)
+ - [Recommended CVars](https://github.com/Bara20/TroubleinTerroristTown/blob/master/CVARS.txt)
+ - [Credits](https://github.com/Bara20/TroubleinTerroristTown/blob/master/CREDITS.md)
