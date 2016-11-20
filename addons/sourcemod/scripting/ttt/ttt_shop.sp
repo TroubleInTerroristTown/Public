@@ -156,9 +156,15 @@ public void OnPluginStart()
 	
 	char g_sCreditsCMD[sizeof(g_sCreditsName)+3];
 	Format(g_sCreditsCMD, sizeof(g_sCreditsName), "sm_%s", g_sCreditsName);
+	RegConsoleCmd(g_sCreditsCMD, Command_Credits);
 	
-	RegConsoleCmd(g_sShowCmd, Command_ShowItems);
-	RegConsoleCmd(g_sBuyCmd, Command_Buy);
+	char g_sBuyCMDTemp[sizeof(g_sBuyCmd)+3];
+	Format(g_sBuyCMDTemp, sizeof(g_sBuyCMDTemp), "sm_%s", g_sBuyCmd);
+	RegConsoleCmd(g_sBuyCMDTemp, Command_Buy);
+	
+	char g_sShowCmdTemp[sizeof(g_sShowCmd)+3];
+	Format(g_sShowCmdTemp, sizeof(g_sShowCmdTemp), "sm_%s", g_sShowCmd);
+	RegConsoleCmd(g_sShowCmdTemp, Command_ShowItems);
 	
 	LoadTranslations("ttt.phrases");
 }
