@@ -146,25 +146,24 @@ public void OnPluginStart()
 	g_bReopenMenu = Config_LoadBool("ttt_menu_reopen", true, "Reopen the shop menu, after buying something.");
 	
 	Config_LoadString("ttt_credits_command", "credits", "The command to show the credits", g_sCreditsName, sizeof(g_sCreditsName));
-	Config_LoadString("ttt_shop_buy_command", "sm_buyitem", "The command to buy a shop item instantly", g_sBuyCmd, sizeof(g_sBuyCmd));
-	Config_LoadString("ttt_shop_show_command", "sm_showitems", "The command to show the shortname of the shopitems (to use for the buycommand)", g_sShowCmd, sizeof(g_sShowCmd));
+	Config_LoadString("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly", g_sBuyCmd, sizeof(g_sBuyCmd));
+	Config_LoadString("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)", g_sShowCmd, sizeof(g_sShowCmd));
 	
 	// Doesn't exist anymore
 	Config_Remove("ttt_sort_items_price");
 	Config_Remove("ttt_sort_items_price_order");
 	Config_Done();
 	
-	char g_sCreditsCMD[sizeof(g_sCreditsName)+3];
-	Format(g_sCreditsCMD, sizeof(g_sCreditsName), "sm_%s", g_sCreditsName);
-	RegConsoleCmd(g_sCreditsCMD, Command_Credits);
+	char sBuffer[32];
 	
-	char g_sBuyCMDTemp[sizeof(g_sBuyCmd)+3];
-	Format(g_sBuyCMDTemp, sizeof(g_sBuyCMDTemp), "sm_%s", g_sBuyCmd);
-	RegConsoleCmd(g_sBuyCMDTemp, Command_Buy);
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sCreditsName);
+	RegConsoleCmd(sBuffer, Command_Credits);
 	
-	char g_sShowCmdTemp[sizeof(g_sShowCmd)+3];
-	Format(g_sShowCmdTemp, sizeof(g_sShowCmdTemp), "sm_%s", g_sShowCmd);
-	RegConsoleCmd(g_sShowCmdTemp, Command_ShowItems);
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sBuyCmd);
+	RegConsoleCmd(sBuffer, Command_Buy);
+	
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShowCmd);
+	RegConsoleCmd(sBuffer, Command_ShowItems);
 	
 	LoadTranslations("ttt.phrases");
 }
