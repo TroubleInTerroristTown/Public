@@ -416,9 +416,9 @@ public Action explodeC4(Handle timer, Handle pack)
 	return Plugin_Continue;
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
+public int TTT_OnButtonPress(int client, int button)
 {
-	if (buttons & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client])
+	if (button & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client])
 	{
 		g_bHasActiveBomb[client] = true;
 		int bombEnt = CreateEntityByName("prop_physics");
@@ -440,7 +440,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
-	if (buttons & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
+	if (button & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
 	{
 		int target = GetClientAimTarget(client, false);
 		if (target > 0)
@@ -449,7 +449,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			GetClientEyePosition(client, clientEyes);
 			GetEntPropVector(target, Prop_Data, "m_vecOrigin", targetOrigin);
 			if (GetVectorDistance(clientEyes, targetOrigin) > 100.0)
-				return Plugin_Continue;
+				return;
 
 			int iEnt;
 			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
@@ -457,13 +457,13 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
 
 				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
-					return Plugin_Continue;
+					return;
 
 				char sModelPath[PLATFORM_MAX_PATH];
 				GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 
 				if(!StrEqual(MDL_C4, sModelPath))
-					return Plugin_Continue;
+					return;
 
 				if (target == iEnt)
 				{
@@ -473,8 +473,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
-
-	return Plugin_Continue;
 }
 
 /* void SetupGlow(int entity)
