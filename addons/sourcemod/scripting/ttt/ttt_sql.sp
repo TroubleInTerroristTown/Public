@@ -77,7 +77,10 @@ void SQL_Start()
 	if(g_iRetries >= 1 && g_iRetries <= g_cRetries)
 		LogMessage("We try again to connect to a database (Retry #%d)!", g_iRetries);
 	
-	if (!SQL_CheckConfig(g_sEntry))
+	if(g_iRetries == g_cRetries)
+		LogMessage("Last chance with sqlite. Let me try it!");
+	
+	if (!SQL_CheckConfig(g_sEntry) || g_iRetries == g_cRetries)
 	{
 		char sError[255];
 		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
@@ -87,14 +90,12 @@ void SQL_Start()
 
 		if(g_dDatabase == null)
 		{
-			LogError("(SQL_Start) Database failure: Couldn't find the database entry \"%s\" and can't use SQlite as default.", g_sEntry);
+			LogError("(SQL_Start) Database failure: Couldn't connect to \"%s\"!", g_sEntry);
 			CreateTimer(5.0, Timer_Retry);
 			return;
 		}
 		else
 			Call_OnSQLConnect();
-
-		CheckAndCreateTables("sqlite");
 	}
 	else
 		Database.Connect(OnConnect, g_sEntry); // MySQL
