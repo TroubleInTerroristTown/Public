@@ -42,6 +42,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
+	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
 	g_hOnUpdate3 = CreateGlobalForward("TTT_OnUpdate3", ET_Ignore, Param_Cell);
@@ -700,6 +702,7 @@ public Action Timer_Selection(Handle hTimer)
 	int client;
 	int iIndex;
 	
+	int counter = 0;
 	while(iTraitors < iTCount)
 	{
 		//Check if there is a Player, that should get Traitor.
@@ -719,7 +722,7 @@ public Action Timer_Selection(Handle hTimer)
 		}
 
 		//Get a random client
-		SetRandomSeed(GetTime());
+		SetRandomSeed(100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
@@ -762,7 +765,8 @@ public Action Timer_Selection(Handle hTimer)
 			g_aForceDetective.Erase(0);
 			continue;
 		}
-
+		
+		SetRandomSeed(100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
@@ -2013,11 +2017,8 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
+public Action OnPlayerRunCmd(int client, int &buttons)
 {
-	if (!IsClientInGame(client))
-		return Plugin_Continue;
-	
 	if (g_iConfig[b_denyFire] && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
 	{
 		buttons &= ~IN_ATTACK;
@@ -2025,7 +2026,41 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		return Plugin_Changed;
 	}
 	
-	if (buttons & IN_USE)
+	int button = -1;
+	for (int i = 0; i < 25; i++)
+	{
+		button = (1 << i);
+		
+		if ((buttons & button))
+		{
+			if (!(g_iLastButtons[client] & button))
+			{
+				Call_StartForward(g_hOnButtonPress);
+				Call_PushCell(client);
+				Call_PushCell(button);
+				Call_Finish();
+			}
+		}
+		else if ((g_iLastButtons[client] & button))
+		{
+			Call_StartForward(g_hOnButtonRelease);
+			Call_PushCell(client);
+			Call_PushCell(button);
+			Call_Finish();
+		}
+	}
+	
+	g_iLastButtons[client] = buttons;
+	
+	return Plugin_Continue;
+}
+
+public int TTT_OnButtonPress(int client, int button)
+{
+	if (!IsClientInGame(client))
+		return;
+	
+	if (button & IN_USE)
 	{
 		g_bHoldingProp[client] = true;
 		
@@ -2036,11 +2071,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			GetClientEyePosition(client, TargetOriginG);
 			GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", OriginG);
 			if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
-				return Plugin_Continue;
+				return;
 			
 			int iSize = g_aRagdoll.Length;
 			if (iSize == 0)
-				return Plugin_Continue;
+				return;
 			
 			int iRagdollC[Ragdolls];
 			int entity;
@@ -2060,11 +2095,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
 						Call_Finish(res);
 						if(res == Plugin_Stop)
-							return Plugin_Continue;
+							return;
 						else if(res == Plugin_Changed)
 						{
 							g_aRagdoll.SetArray(i, iRagdollC[0]);
-							return Plugin_Continue;
+							return;
 						}
 						
 						InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
@@ -2112,12 +2147,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
-	else{ 
+}
+
+public int TTT_OnButtonRelease(int client, int button)
+{
+	if (button & IN_USE)
+	{
 		g_bHoldingProp[client] = false;
 		g_bIsChecking[client] = false;
 	}
-	
-	return Plugin_Continue;
 }
 
 public Action Command_Say(int client, const char[] command, int argc)

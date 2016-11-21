@@ -212,6 +212,9 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  */
 forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
+forward int TTT_OnButtonPress(int client, int button);
+forward int TTT_OnButtonRelease(int client, int button);
+
 /*
  * Checks if the round is active.
  */

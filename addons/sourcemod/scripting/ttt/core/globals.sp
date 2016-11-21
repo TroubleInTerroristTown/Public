@@ -92,6 +92,8 @@ Handle g_hOnBodyChecked = null;
 Handle g_hOnUpdate5 = null;
 Handle g_hOnUpdate3 = null;
 Handle g_hOnUpdate1 = null;
+Handle g_hOnButtonPress = null;
+Handle g_hOnButtonRelease = null;
 
 bool g_bSourcebans = false;
 
@@ -131,3 +133,4 @@ char g_sRemoveEntityList[][] =  {
 };
 
 bool g_bRoundEnding = false;
+int g_iLastButtons[MAXPLAYERS + 1] =  { 0, ... };

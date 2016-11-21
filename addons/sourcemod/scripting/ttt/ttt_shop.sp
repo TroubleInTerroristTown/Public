@@ -29,6 +29,8 @@ ArrayList g_aCustomItems;
 char g_sPluginTag[128];
 char g_sConfigFile[PLATFORM_MAX_PATH];
 char g_sCreditsName[32];
+char g_sBuyCmd[32];
+char g_sShowCmd[32];
 
 bool g_bSortItems = false;
 bool g_bShowEarnCreditsMessage = false;
@@ -144,15 +146,24 @@ public void OnPluginStart()
 	g_bReopenMenu = Config_LoadBool("ttt_menu_reopen", true, "Reopen the shop menu, after buying something.");
 	
 	Config_LoadString("ttt_credits_command", "credits", "The command to show the credits", g_sCreditsName, sizeof(g_sCreditsName));
+	Config_LoadString("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly", g_sBuyCmd, sizeof(g_sBuyCmd));
+	Config_LoadString("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)", g_sShowCmd, sizeof(g_sShowCmd));
 	
 	// Doesn't exist anymore
 	Config_Remove("ttt_sort_items_price");
 	Config_Remove("ttt_sort_items_price_order");
 	Config_Done();
 	
-	char g_sCreditsCMD[sizeof(g_sCreditsName)+3];
-	Format(g_sCreditsCMD, sizeof(g_sCreditsName), "sm_%s", g_sCreditsName);
-	RegConsoleCmd(g_sCreditsCMD, Command_Credits);
+	char sBuffer[32];
+	
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sCreditsName);
+	RegConsoleCmd(sBuffer, Command_Credits);
+	
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sBuyCmd);
+	RegConsoleCmd(sBuffer, Command_Buy);
+	
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShowCmd);
+	RegConsoleCmd(sBuffer, Command_ShowItems);
 	
 	LoadTranslations("ttt.phrases");
 }
@@ -173,6 +184,44 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 	
 	return APLRes_Success;
+}
+
+public Action Command_Buy(int client, int args)
+{
+	if (!TTT_IsClientValid(client) || args < 1)
+		return Plugin_Handled;
+	
+	if(!IsPlayerAlive(client))
+	{
+		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		return Plugin_Handled;
+	}
+	
+	char sItem[16];
+	GetCmdArg(1, sItem, sizeof(sItem));
+	
+	if(strlen(sItem) > 0)
+		ClientBuyItem(client, sItem);
+		
+	return Plugin_Handled;
+}
+
+public Action Command_ShowItems(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+		
+	int temp_item[Item];
+	
+	PrintToConsole(client, "ShortName - LongName, Team", temp_item[Short], temp_item[Long], temp_item[Role]);
+	
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if (strlen(temp_item[Short]) > 1)
+			PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
+	}
+	return Plugin_Handled;
 }
 
 public Action Command_Shop(int client, int args)
@@ -233,30 +282,8 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		char info[32];
 		GetMenuItem(menu, itemNum, info, sizeof(info));	
 		
-		int temp_item[Item];
+		ClientBuyItem(client, info);
 		
-		for (int i = 0; i < g_aCustomItems.Length; i++)
-		{
-			g_aCustomItems.GetArray(i, temp_item[0]);
-			if ((strlen(temp_item[Short]) > 0) && (strcmp(info, temp_item[Short]) == 0))
-			{
-				if ((TTT_GetClientCredits(client) >= temp_item[Price]) && ((temp_item[Role] == 0) || (TTT_GetClientRole(client) == temp_item[Role])))
-				{
-					Action res = Plugin_Continue;
-					Call_StartForward(g_hOnItemPurchased);
-					Call_PushCell(client);
-					Call_PushString(temp_item[Short]);
-					Call_Finish(res);
-					
-					if (res < Plugin_Stop) {
-						TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - temp_item[Price]));
-						CPrintToChat(client, g_sPluginTag, "Item bought!", client, TTT_GetClientCredits(client), temp_item[Long]);
-					}
-				}
-				else
-					CPrintToChat(client, g_sPluginTag, "You don't have enough money", client);
-			}
-		}
 		if(g_bReopenMenu)
 			Command_Shop(client, 0);
 	}
@@ -266,6 +293,39 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		delete menu;
 	}
 }
+
+bool ClientBuyItem(int client, char[] item)
+{
+	int temp_item[Item];
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0))
+		{
+			if ((TTT_GetClientCredits(client) >= temp_item[Price]) && ((temp_item[Role] == 0) || (TTT_GetClientRole(client) == temp_item[Role])))
+			{
+				Action res = Plugin_Continue;
+				Call_StartForward(g_hOnItemPurchased);
+				Call_PushCell(client);
+				Call_PushString(temp_item[Short]);
+				Call_Finish(res);
+				
+				if (res < Plugin_Stop) {
+					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - temp_item[Price]));
+					CPrintToChat(client, g_sPluginTag, "Item bought!", client, TTT_GetClientCredits(client), temp_item[Long]);
+					return true;
+				}
+			}
+			else
+			{
+				CPrintToChat(client, g_sPluginTag, "You don't have enough money", client);
+				return false;
+			}
+		}
+	}
+	return false;
+}
+
 
 public Action Command_Say(int client, const char[] command, int argc)
 {
