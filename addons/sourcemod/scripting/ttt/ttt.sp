@@ -687,9 +687,6 @@ public Action Timer_Selection(Handle hTimer)
 		return;
 	}
 	
-	Handle pProfiler = CreateProfiler();
-	StartProfiling(pProfiler);
-	
 	g_bRoundStarted = true;
 	g_bCheckPlayers = false;
 	
@@ -703,11 +700,6 @@ public Action Timer_Selection(Handle hTimer)
 	int client;
 	int iIndex;
 	
-	Handle pProfiler2 = null;
-	float fTime2 = 0.0;
-	
-	pProfiler2 = CreateProfiler();
-	StartProfiling(pProfiler2);
 	while(iTraitors < iTCount)
 	{
 		//Check if there is a Player, that should get Traitor.
@@ -740,15 +732,7 @@ public Action Timer_Selection(Handle hTimer)
 			iTraitors++;
 		}
 	}
-	StopProfiling(pProfiler2);
-	fTime2 = GetProfilerTime(pProfiler2);
-	delete pProfiler2;
-	LogMessage("[TTT] Timer_Selection  - while(iTraitors < iTCount) - Benchmark: %f sec.", fTime2);
-	fTime2 = 0.0;
 	
-	
-	pProfiler2 = CreateProfiler();
-	StartProfiling(pProfiler2);
 	//Choose Detectives
 	while(iDetectives < iDCount && aPlayers.Length > 0)
 	{
@@ -799,17 +783,9 @@ public Action Timer_Selection(Handle hTimer)
 			aPlayers.Erase(iRand);
 		}
 	}
-	StopProfiling(pProfiler2);
-	fTime2 = GetProfilerTime(pProfiler2);
-	delete pProfiler2;
-	LogMessage("[TTT] Timer_Selection  - while(iDetectives < iDCount && aPlayers.Length > 0) - Benchmark: %f sec.", fTime2);
-	fTime2 = 0.0;
 	
 	iInnocents = aPlayers.Length;
 	
-	
-	pProfiler2 = CreateProfiler();
-	StartProfiling(pProfiler2);
 	while(aPlayers.Length > 0)
 	{
 		client = aPlayers.Get(0);
@@ -820,17 +796,10 @@ public Action Timer_Selection(Handle hTimer)
 		}
 		aPlayers.Erase(0);
 	}
-	StopProfiling(pProfiler2);
-	fTime2 = GetProfilerTime(pProfiler2);
-	delete pProfiler2;
-	LogMessage("[TTT] Timer_Selection  - while(aPlayers.Length > 0) - Benchmark: %f sec.", fTime2);
-	fTime2 = 0.0;
 	
 	delete aPlayers;
 	
 	
-	pProfiler2 = CreateProfiler();
-	StartProfiling(pProfiler2);
 	LoopValidClients(i)
 	{
 		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
@@ -860,11 +829,6 @@ public Action Timer_Selection(Handle hTimer)
 		
 		TeamInitialize(i);
 	}
-	StopProfiling(pProfiler2);
-	fTime2 = GetProfilerTime(pProfiler2);
-	delete pProfiler2;
-	LogMessage("[TTT] Timer_Selection  - LoopValidClients/TeamInitialize - Benchmark: %f sec.", fTime2);
-	fTime2 = 0.0;
 	
 	if(g_aLogs != null)
 		g_aLogs.Clear();
@@ -876,11 +840,6 @@ public Action Timer_Selection(Handle hTimer)
 	Call_PushCell(iTraitors);
 	Call_PushCell(iDetectives);
 	Call_Finish();
-	
-	StopProfiling(pProfiler);
-	float fTime = GetProfilerTime(pProfiler);
-	delete pProfiler;
-	LogMessage("[TTT] Timer_Selection - Benchmark: %f sec.", fTime);
 }
 
 int GetTCount(int iActivePlayers)
@@ -1121,6 +1080,7 @@ public void OnClientPutInServer(int client)
 	g_bFound[client] = true;
 	HookClient(client);
 }
+
 public void LateLoadAll()
 {
 	LoopValidClients(i)
@@ -1128,6 +1088,7 @@ public void LateLoadAll()
 		LateLoadClient(i);
 	}
 }
+
 public void LateLoadClient(int client)
 {
 	HookClient(client);
