@@ -703,6 +703,7 @@ public Action Timer_Selection(Handle hTimer)
 	int iIndex;
 	
 	int counter = 0;
+	int iCurrentTime = GetTime();
 	while(iTraitors < iTCount)
 	{
 		//Check if there is a Player, that should get Traitor.
@@ -722,7 +723,7 @@ public Action Timer_Selection(Handle hTimer)
 		}
 
 		//Get a random client
-		SetRandomSeed(100*counter++);
+		SetRandomSeed(iCurrentTime*100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
@@ -766,7 +767,7 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		}
 		
-		SetRandomSeed(100*counter++);
+		SetRandomSeed(iCurrentTime*100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
