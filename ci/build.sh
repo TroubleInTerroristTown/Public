@@ -1,8 +1,9 @@
 #!/bin/bash
 
-BID=$6
+git fetch --unshallow
+COUNT=$(git rev-list --count HEAD)
 HASH="$(git log --pretty=format:%h -n 1)"
-FILE=ttt-$2-$1-$BID-$HASH.zip
+FILE=ttt-$2-$1-$COUNT-$HASH.zip
 LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
