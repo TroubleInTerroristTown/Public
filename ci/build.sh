@@ -99,7 +99,7 @@ echo "Go to build folder"
 cd build
 
 echo "Compress directories and files"
-zip -9rq $FILE addons materials sound
+zip -9rq $FILE addons materials sound LICENSE CVARS.txt
 
 echo "Upload file"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
