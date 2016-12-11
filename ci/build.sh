@@ -81,6 +81,9 @@ rm -r build/addons/sourcemod/scripting
 rm -r build/addons/sourcemod/translations
 rm build/addons/sourcemod/*.txt
 
+echo "Add LICENSE to build package"
+cp LICENSE CVARS.txt build/
+
 echo "Create clean plugins folder"
 mkdir build/addons/sourcemod/translations
 
