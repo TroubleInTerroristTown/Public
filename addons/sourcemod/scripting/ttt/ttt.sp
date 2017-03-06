@@ -1112,10 +1112,20 @@ public Action OnPostThink(int client)
 {
 	if (TTT_IsClientValid(client))
 	{
-		if (g_iConfig[b_publicKarma])
-			CS_SetClientContributionScore(client, g_iKarma[client]);
-		else if (g_iConfig[b_karmaRound])
-			CS_SetClientContributionScore(client, g_iKarmaStart[client]);
+		int iKarma;
+		if (g_iConfig[b_publicKarma]) {
+			if(g_bFound[client])
+				iKarma = g_iKarma[client] * -1;
+			else
+				iKarma = g_iKarma[client];
+		}
+		else if (g_iConfig[b_karmaRound]) {
+			if(g_bFound[client])
+				iKarma = g_iKarmaStart[client] * -1;
+			else
+				iKarma = g_iKarmaStart[client];
+		}
+		CS_SetClientContributionScore(client, iKarma);
 	}
 }
 
