@@ -246,7 +246,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
 	
-	char item[512], sWeapon[64];
+	char sWeapon[64];
 	int iRole = TTT_GetClientRole(iVictim);
 	int iARole = TTT_GetClientRole(iAttacker);
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
@@ -254,8 +254,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		if (iRole == TTT_TEAM_TRAITOR)
 		{
-			Format(item, sizeof(item), "-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
-			TTT_LogString(item);
+			TTT_LogString("-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			
 			if(g_bBroadcastTaserResult)
 				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
@@ -266,8 +265,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
-			Format(item, sizeof(item), "-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
-			TTT_LogString(item);
+			TTT_LogString("-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			
 			if(g_bBroadcastTaserResult)
 				CPrintToChatAll(g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
@@ -276,8 +274,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
-			Format(item, sizeof(item), "-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
-			TTT_LogString(item);
+			TTT_LogString("-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			
 			if(g_bBroadcastTaserResult)
 				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
