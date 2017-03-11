@@ -304,7 +304,7 @@ native void TTT_SetFoundStatus(int client, bool found);
  *
  * @param string            The message that should get logged.
  */
-native void TTT_LogString(const char[] string);
+native void TTT_LogString(const char[] format, any ...);
 
 /*
  * Overrides a config setting.

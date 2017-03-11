@@ -146,8 +146,9 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 public int Native_LogString(Handle plugin, int numParams)
 {
 	char message[512];
-	GetNativeString(1, message, sizeof(message));
+	int bytes;
 	
+	FormatNativeString(0, 1, 2, sizeof(message), bytes, message);
 	g_aLogs.PushString(message);
 	
 	return 0;
