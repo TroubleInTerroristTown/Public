@@ -700,8 +700,8 @@ public Action Timer_Selection(Handle hTimer)
 	int client;
 	int iIndex;
 	
-	int counter = 0;
-	int iCurrentTime = GetTime();
+	SetRandomSeed(GetTime() * 100 * GetRandomInt(2, 3));
+	
 	while(iTraitors < iTCount)
 	{
 		//Check if there is a Player, that should get Traitor.
@@ -721,12 +721,16 @@ public Action Timer_Selection(Handle hTimer)
 		}
 
 		//Get a random client
-		SetRandomSeed(iCurrentTime*100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		//Every client has a 1/3 chance to become Traitor again.
-		if(TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 3) == 2))
+		//Client may not be traitor again if b_roleAgain is false.
+		if(TTT_IsClientValid(client) && !(g_iLastRole[client] == TTT_TEAM_TRAITOR && !g_iConfig[b_roleAgain]))
+		{
+			break;
+		}
+		
+		if(TTT_IsClientValid(client))
 		{
 			g_iRole[client] = TTT_TEAM_TRAITOR;
 			g_iLastRole[client] = TTT_TEAM_TRAITOR;
@@ -765,12 +769,18 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		}
 		
-		SetRandomSeed(iCurrentTime*100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		//Same here every client has a 1/3 chance to get Detective when he had a special role before.
-		if(TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_iConfig[i_minKarmaDetective] && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
+		
+		//Client may not be detective again if b_roleAgain is false.
+		if(!g_iConfig[b_roleAgain] && g_iLastRole[client] == TTT_TEAM_TRAITOR)
+		{
+			break;
+		}
+		
+		//Same here every client has the same chance to get Detective when he had a special role before if b_roleAgain is true.
+		if(TTT_IsClientValid(client) && (TTT_GetClientKarma(client) > g_iConfig[i_minKarmaDetective]) && (g_iLastRole[client] == TTT_TEAM_INNOCENT || g_iConfig[b_roleAgain]))
 		{
 			//Does he wanna get detective?
 			if(g_bAvoidDetective[client] == true)
