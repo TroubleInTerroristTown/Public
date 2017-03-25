@@ -228,9 +228,7 @@ void SetupConfig()
 	g_iConfig[b_randomWinner] = Config_LoadBool("ttt_random_winner", true, "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No");
 	g_iConfig[b_forceModel] = Config_LoadBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
 	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
-	
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
-	
 	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
 	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
@@ -245,8 +243,8 @@ void SetupConfig()
 	g_iConfig[tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
 	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
-	
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
+	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_enable_damage_before_round_start", false, "Enable damage before round start (Default disabled to prevent kills)?");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -1144,7 +1142,7 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-	if (!g_bRoundStarted || !g_iConfig[b_endroundDMG] && g_bRoundEnding)
+	if (!g_bRoundStarted && !g_iConfig[bEnableDamage] || !g_iConfig[b_endroundDMG] && g_bRoundEnding)
 		return Plugin_Handled;
 	return Plugin_Continue;
 }
@@ -1154,7 +1152,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	if (g_bRoundEnded && g_iConfig[b_endroundDMG])
 		return Plugin_Continue;
 	
-	if (!g_bRoundStarted || !g_iConfig[b_endroundDMG] && g_bRoundEnding)
+	if (!g_bRoundStarted && !g_iConfig[bEnableDamage] || !g_iConfig[b_endroundDMG] && g_bRoundEnding)
 		return Plugin_Handled;
 	
 	if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG])

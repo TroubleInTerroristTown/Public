@@ -108,7 +108,8 @@ enum eConfig
 	bool:bRespawnDeadPlayers,
 	i_maxTraitors,
 	i_maxDetectives,
-	i_minKarmaDetective
+	i_minKarmaDetective,
+	bool:bEnableDamage
 };
 
 enum Ragdolls
