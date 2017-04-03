@@ -50,7 +50,7 @@ char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 int g_iTDamage = 100;
 
-
+bool g_bInflictor = true;
 
 public Plugin myinfo =
 {
@@ -96,6 +96,8 @@ public void OnPluginStart()
 	g_bOnSpawn = Config_LoadBool("ta_give_taser_spawn", true, "Give the Detective a taser when he spawns?");
 
 	g_bBroadcastTaserResult = Config_LoadBool("ta_broadcast_taser_result", false, "When set to true the results of the taser message will be printed to everyone instead of the client that tased");
+	
+	g_bInflictor = Config_LoadBool("ta_barrel_fix", true, "Prevent bug with taser and a explosive barrel");
 	
 	Config_Done();
 	
@@ -245,6 +247,9 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	
 	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 		return Plugin_Continue;
+	
+	if (g_bInflictor && iAttacker != inflictor)
+		return Plugin_Handled;
 	
 	char sWeapon[64];
 	int iRole = TTT_GetClientRole(iVictim);
