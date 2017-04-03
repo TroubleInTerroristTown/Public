@@ -74,15 +74,15 @@ public void OnPluginStart()
 	
 	g_bEnableHud = Config_LoadBool("ttt_hud_text_enable", false, "Enable hud_text? (it's a bit buggy with 4:3 and 16:9 resolutions)");
 	
-	g_fPosRX = Config_LoadFloat("ttt_hud_text_remaining_position", 0.28, "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
-	g_fPosDX = Config_LoadFloat("ttt_hud_text_detective_position", 0.37, "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
-	g_fPosIX = Config_LoadFloat("ttt_hud_text_innocent_position", 0.48, "Innocent position (Default Horizontal: 0.48 Vertical: 0.3,) (<X>-POSITION>)");
-	g_fPosTX = Config_LoadFloat("ttt_hud_text_traitor_position", 0.586, "Traitor position (Default Horizontal: 0.586 Vertical: 0.3) (<X>-POSITION>)");
+	g_fPosRX = Config_LoadFloat("ttt_hud_text_remaining_x_position", 0.28, "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
+	g_fPosDX = Config_LoadFloat("ttt_hud_text_detective_x_position", 0.37, "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
+	g_fPosIX = Config_LoadFloat("ttt_hud_text_innocent_x_position", 0.48, "Innocent position (Default Horizontal: 0.48 Vertical: 0.3,) (<X>-POSITION>)");
+	g_fPosTX = Config_LoadFloat("ttt_hud_text_traitor_x_position", 0.586, "Traitor position (Default Horizontal: 0.586 Vertical: 0.3) (<X>-POSITION>)");
 	
-	g_fPosRY = Config_LoadFloat("ttt_hud_text_remaining_position", 0.0, "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
-	g_fPosDY = Config_LoadFloat("ttt_hud_text_detective_position", 0.0, "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
-	g_fPosIY = Config_LoadFloat("ttt_hud_text_innocent_position", 0.0, "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
-	g_fPosTY = Config_LoadFloat("ttt_hud_text_traitor_position", 0.0, "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
+	g_fPosRY = Config_LoadFloat("ttt_hud_text_remaining_y_position", 0.0, "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_fPosDY = Config_LoadFloat("ttt_hud_text_detective_y_position", 0.0, "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_fPosIY = Config_LoadFloat("ttt_hud_text_innocent_y_position", 0.0, "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
+	g_fPosTY = Config_LoadFloat("ttt_hud_text_traitor_y_position", 0.0, "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
 	
 	Config_LoadString("ttt_hud_text_remaining_color", "255,255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorR, sizeof(g_sColorR));
 	Config_LoadString("ttt_hud_text_detective_color", "0,0,255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorD, sizeof(g_sColorD));
