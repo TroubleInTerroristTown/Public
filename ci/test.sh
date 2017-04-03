@@ -10,6 +10,7 @@ chmod +x addons/sourcemod/scripting/spcomp
 echo "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
+  echo -e "\nCompiling $file..." 
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
