@@ -9,66 +9,67 @@ HOST=$3
 USER=$4
 PASS=$5
 
-echo "Download und extract sourcemod"
+echo -e "Download und extract sourcemod\n"
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
-echo "Give compiler rights for compile"
+echo -e "Give compiler rights for compile\n"
 chmod +x addons/sourcemod/scripting/spcomp
 
-echo "Set plugins version"
+echo -e "Set plugins version\n"
 for file in addons/sourcemod/scripting/include/ttt.inc
 do
   sed -i "s/<ID>/$COUNT/g" $file > output.txt
   rm output.txt
 done
 
-echo "Compile ttt plugins"
+echo -e "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
+  echo -e -e "\nCompiling $file..." 
   addons/sourcemod/scripting/spcomp -E -v0 $file
 done
 
-echo "Compile 3rd-party-plugins"
+echo -e "Compile 3rd-party-plugins\n"
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
 
-echo "Remove plugins folder if exists"
+echo -e "Remove plugins folder if exists\n"
 if [ -d "addons/sourcemod/plugins" ]; then
   rm -r addons/sourcemod/plugins
 fi
 
-echo "Create clean plugins folder"
+echo -e "Create clean plugins folder\n"
 mkdir addons/sourcemod/plugins
 mkdir addons/sourcemod/plugins/ttt
 
-echo "Move all ttt binary files to plugins folder"
+echo -e "Move all ttt binary files to plugins folder\n"
 for file in ttt*.smx
 do
   mv $file addons/sourcemod/plugins/ttt
 done
 
-echo "Move all other binary files to plugins folder"
+echo -e "Move all other binary files to plugins folder\n"
 for file in *.smx
 do
   mv $file addons/sourcemod/plugins
 done
 
-echo "Remove api test plugin"
+echo -e "Remove api test plugin\n"
 rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
 
-echo "Remove build folder if exists"
+echo -e "Remove build folder if exists\n"
 if [ -d "build" ]; then
   rm -r build
 fi
 
-echo "Create clean build folder"
+echo -e "Create clean build folder\n"
 mkdir build
 
-echo "Move addons, materials and sound folder"
+echo -e "Move addons, materials and sound folder\n"
 mv addons materials sound build/
 
-echo "Remove sourcemod folders"
+echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
 rm -r build/addons/sourcemod/bin
 rm -r build/addons/sourcemod/configs/geoip
@@ -81,31 +82,31 @@ rm -r build/addons/sourcemod/scripting
 rm -r build/addons/sourcemod/translations
 rm build/addons/sourcemod/*.txt
 
-echo "Add LICENSE to build package"
+echo -e "Add LICENSE to build package\n"
 cp LICENSE CVARS.txt build/
 
-echo "Create clean plugins folder"
+echo -e "Create clean plugins folder\n"
 mkdir build/addons/sourcemod/translations
 
-echo "Download und unzip translations files"
+echo -e "Download und unzip translations files\n"
 wget -q -O translations.zip http://translator.mitchdempsey.com/sourcemod_plugins/158/download/ttt.translations.zip
 unzip -qo translations.zip -d build/
 
-echo "Clean root folder"
+echo -e "Clean root folder\n"
 rm sourcemod.tar.gz
 rm translations.zip
 
-echo "Go to build folder"
+echo -e "Go to build folder\n"
 cd build
 
-echo "Compress directories and files"
+echo -e "Compress directories and files\n"
 zip -9rq $FILE addons materials sound LICENSE CVARS.txt
 
-echo "Upload file"
+echo -e "Upload file\n"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
 
-echo "Add latest build"
+echo -e "Add latest build\n"
 mv $FILE $LATEST
 
-echo "Upload latest build"
+echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
