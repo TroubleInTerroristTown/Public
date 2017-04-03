@@ -97,7 +97,7 @@ stock void GrabSomething(int client)
 			return;
 		else
 		{
-			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
+			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
 			{
 				if (IsValidEdict(ent) && IsValidEntity(ent)) 
 				{
