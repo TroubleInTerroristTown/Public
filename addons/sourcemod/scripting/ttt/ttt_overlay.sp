@@ -32,6 +32,25 @@ char g_soverlayIWin[PLATFORM_MAX_PATH] = "";
 
 bool g_bEndOverlay = false;
 
+bool g_bEnableHud = false;
+
+float g_fPosRX;
+float g_fPosRY;
+
+float g_fPosDX;
+float g_fPosDY;
+
+float g_fPosIX;
+float g_fPosIY;
+
+float g_fPosTX;
+float g_fPosTY;
+
+char g_sColorR[32];
+char g_sColorD[32];
+char g_sColorI[32];
+char g_sColorT[32];
+
 float g_fDelay;
 
 public void OnPluginStart()
@@ -52,6 +71,23 @@ public void OnPluginStart()
 	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_soverlayDWin, sizeof(g_soverlayDWin));
 	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_soverlayTWin, sizeof(g_soverlayTWin));
 	Config_LoadString("ttt_overlay_inno_win", "overlays/ttt/innocents_win", "The overlay to display when innocent win.", g_soverlayIWin, sizeof(g_soverlayIWin));
+	
+	g_bEnableHud = Config_LoadBool("ttt_hud_text_enable", false, "Enable hud_text? (it's a bit buggy with 4:3 and 16:9 resolutions)");
+	
+	g_fPosRX = Config_LoadFloat("ttt_hud_text_remaining_position", 0.28, "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
+	g_fPosDX = Config_LoadFloat("ttt_hud_text_detective_position", 0.37, "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
+	g_fPosIX = Config_LoadFloat("ttt_hud_text_innocent_position", 0.48, "Innocent position (Default Horizontal: 0.48 Vertical: 0.3,) (<X>-POSITION>)");
+	g_fPosTX = Config_LoadFloat("ttt_hud_text_traitor_position", 0.586, "Traitor position (Default Horizontal: 0.586 Vertical: 0.3) (<X>-POSITION>)");
+	
+	g_fPosRY = Config_LoadFloat("ttt_hud_text_remaining_position", 0.0, "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_fPosDY = Config_LoadFloat("ttt_hud_text_detective_position", 0.0, "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_fPosIY = Config_LoadFloat("ttt_hud_text_innocent_position", 0.0, "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
+	g_fPosTY = Config_LoadFloat("ttt_hud_text_traitor_position", 0.0, "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
+	
+	Config_LoadString("ttt_hud_text_remaining_color", "255,255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorR, sizeof(g_sColorR));
+	Config_LoadString("ttt_hud_text_detective_color", "0,0,255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorD, sizeof(g_sColorD));
+	Config_LoadString("ttt_hud_text_innocent_color", "0,255,0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorI, sizeof(g_sColorI));
+	Config_LoadString("ttt_hud_text_traitor_color", "255,0,0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorT, sizeof(g_sColorT));
 	
 	Config_Done();
 
@@ -149,11 +185,68 @@ public void TTT_OnClientGetRole(int client, int role)
 }
 
 public void TTT_OnUpdate1(int client)
-{	
-	if(g_bEndOverlay)
+{
+	if(!g_bEndOverlay)
+		AssignOverlay(client, TTT_GetClientRole(client));
+	
+	if(!TTT_IsRoundActive())
 		return;
 	
-	AssignOverlay(client, TTT_GetClientRole(client));
+	int iDet = 0;
+	int iInn = 0;
+	int iTra = 0;
+	
+	LoopValidClients(i)
+	{
+		if(!TTT_WasBodyFound(i))
+		{
+			if(TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+				iDet++;
+			else if(TTT_GetClientRole(i) == TTT_TEAM_INNOCENT)
+				iInn++;
+			else if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+				iTra++;
+		}
+	}
+	
+	if(g_bEnableHud)
+	{
+		char sCR[4][4], sCD[4][4], sCI[4][4], sCT[4][4];
+		char sR[24], sD[24], sI[24], sT[24];
+		
+		// Remaining formating
+		Format(sR, sizeof(sR), "Remaining:");
+		ExplodeString(g_sColorR, ";", sCR, sizeof(sCR), sizeof(sCR[]));
+		
+		// Detective formating
+		if(iDet == 1)
+			Format(sD, sizeof(sD), "%d Detective", iDet);
+		else
+			Format(sD, sizeof(sD), "%d Detectives", iDet);
+		ExplodeString(g_sColorD, ";", sCD, sizeof(sCD), sizeof(sCD[]));
+		
+		// Innocent formating
+		if(iInn == 1)
+			Format(sI, sizeof(sI), "%d Innocent", iInn);
+		else
+			Format(sI, sizeof(sI), "%d Innocents", iInn);
+		ExplodeString(g_sColorI, ";", sCI, sizeof(sCI), sizeof(sCI[]));
+		
+		// Traitor formating
+		if(iTra == 1)
+			Format(sT, sizeof(sT), "%d Traitor", iTra);
+		else
+			Format(sT, sizeof(sT), "%d Traitors", iTra);
+		ExplodeString(g_sColorT, ";", sCT, sizeof(sCT), sizeof(sCT[]));
+		
+		LoopValidClients(i)
+		{
+			showHud(CreateHudSynchronizer(), i, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
+			showHud(CreateHudSynchronizer(), i, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
+			showHud(CreateHudSynchronizer(), i, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
+			showHud(CreateHudSynchronizer(), i, sT, g_fPosTX, g_fPosTY, sCT[0], sCT[1], sCT[2], sCT[3]);
+		}
+	}
 }
 
 public void AssignOverlay(int client, int role)
@@ -170,3 +263,11 @@ public void AssignOverlay(int client, int role)
 	else if (role == TTT_TEAM_INNOCENT)
 		ShowOverlayToClient(client, g_sInnocentIcon);
 }
+
+void showHud(Handle sync, int client, char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
+{
+	SetHudTextParams(x, y, 1.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
+	ShowSyncHudText(client, sync, message);
+	delete sync;
+}
+
