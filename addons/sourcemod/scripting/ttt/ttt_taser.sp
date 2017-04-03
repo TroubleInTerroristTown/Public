@@ -249,7 +249,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	
 	if (g_bInflictor && iAttacker != inflictor)
-		return Plugin_Handled;
+		return Plugin_Continue;
 	
 	char sWeapon[64];
 	int iRole = TTT_GetClientRole(iVictim);
