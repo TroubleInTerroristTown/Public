@@ -53,6 +53,11 @@ char g_sColorT[32];
 
 float g_fDelay;
 
+Handle g_hSyncR = null;
+Handle g_hSyncD = null;
+Handle g_hSyncI = null;
+Handle g_hSyncT = null;
+
 public void OnPluginStart()
 {
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
@@ -92,6 +97,11 @@ public void OnPluginStart()
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
+	
+	g_hSyncR = CreateHudSynchronizer();
+	g_hSyncD = CreateHudSynchronizer();
+	g_hSyncI = CreateHudSynchronizer();
+	g_hSyncT = CreateHudSynchronizer();
 }
 
 public void OnMapStart()
@@ -221,30 +231,30 @@ public void TTT_OnUpdate1(int client)
 		// Detective formating
 		if(iDet == 1)
 			Format(sD, sizeof(sD), "%d Detective", iDet);
-		else
+		else if(iDet > 1)
 			Format(sD, sizeof(sD), "%d Detectives", iDet);
 		ExplodeString(g_sColorD, ";", sCD, sizeof(sCD), sizeof(sCD[]));
 		
 		// Innocent formating
 		if(iInn == 1)
 			Format(sI, sizeof(sI), "%d Innocent", iInn);
-		else
+		else if(iInn > 1)
 			Format(sI, sizeof(sI), "%d Innocents", iInn);
 		ExplodeString(g_sColorI, ";", sCI, sizeof(sCI), sizeof(sCI[]));
 		
 		// Traitor formating
 		if(iTra == 1)
 			Format(sT, sizeof(sT), "%d Traitor", iTra);
-		else
+		else if(iTra > 1)
 			Format(sT, sizeof(sT), "%d Traitors", iTra);
 		ExplodeString(g_sColorT, ";", sCT, sizeof(sCT), sizeof(sCT[]));
 		
 		LoopValidClients(i)
 		{
-			showHud(CreateHudSynchronizer(), i, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
-			showHud(CreateHudSynchronizer(), i, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
-			showHud(CreateHudSynchronizer(), i, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
-			showHud(CreateHudSynchronizer(), i, sT, g_fPosTX, g_fPosTY, sCT[0], sCT[1], sCT[2], sCT[3]);
+			showHud(g_hSyncR, i, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
+			showHud(g_hSyncD, i, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
+			showHud(g_hSyncI, i, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
+			showHud(g_hSyncT, i, sT, g_fPosTX, g_fPosTY, sCT[0], sCT[1], sCT[2], sCT[3]);
 		}
 	}
 }
@@ -268,6 +278,5 @@ void showHud(Handle sync, int client, char[] message, float x, float y, const ch
 {
 	SetHudTextParams(x, y, 1.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
 	ShowSyncHudText(client, sync, message);
-	delete sync;
 }
 
