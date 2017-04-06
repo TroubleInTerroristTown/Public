@@ -5,6 +5,8 @@
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
 
+#define COLLISION_GROUP_DEBRIS_TRIGGER 2
+
 int g_iConfig[eConfig];
 
 char g_sConfigFile[PLATFORM_MAX_PATH + 1];

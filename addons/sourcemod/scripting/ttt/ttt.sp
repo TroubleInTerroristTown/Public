@@ -11,7 +11,6 @@
 #include <ttt>
 #include <ttt-sql>
 #include <config_loader>
-#include <smlib> // ??? for one function ???
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -1235,7 +1234,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		else
 			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		
-		Entity_SetCollisionGroup(iEntity, COLLISION_GROUP_DEBRIS_TRIGGER);
+		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
 		
 		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 		char name[MAX_NAME_LENGTH];
