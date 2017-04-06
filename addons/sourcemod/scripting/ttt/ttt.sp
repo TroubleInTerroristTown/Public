@@ -262,8 +262,8 @@ void SetupConfig()
 	
 	// Weapons on fail start
 	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
-	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want?", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
-	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want?", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
+	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
+	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
 	
 	
 	Config_Done();
@@ -668,12 +668,12 @@ public Action Timer_Selection(Handle hTimer)
 				
 				if (IsPlayerAlive(i))
 				{
-					// Primary
-					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
-					GivePlayerItem(i, sWeapon);
-					
 					// Secondary
 					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
+					GivePlayerItem(i, sWeapon);
+					
+					// Primary
+					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
 					GivePlayerItem(i, sWeapon);
 				}
 			}
@@ -1057,7 +1057,18 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			}
 		}
 		else
+		{
 			CS_SetClientClanTag(client, " ");
+			
+			char sWeapon[32];
+			// Secondary
+			Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
+			GivePlayerItem(client, sWeapon);
+			
+			// Primary
+			Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
+			GivePlayerItem(client, sWeapon);
+		}
 		
 		g_iInnoKills[client] = 0;
 		g_iTraitorKills[client] = 0;
