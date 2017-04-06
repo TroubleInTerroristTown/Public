@@ -11,8 +11,7 @@
 #include <ttt>
 #include <ttt-sql>
 #include <config_loader>
-#include <smlib>
-#include <profiler>
+#include <smlib> // ??? for one function ???
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -260,6 +259,12 @@ void SetupConfig()
 	g_iConfig[i_RoundStartFontSize] = Config_LoadInt("ttt_round_start_font_size", 24, "Font size of the text while the countdown runs");
 	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
 	g_iConfig[bShowTraitors] = Config_LoadBool("ttt_show_traitor_names", true, "Show traitor partners on team selection?");
+	
+	// Weapons on fail start
+	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
+	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want?", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
+	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want?", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
+	
 	
 	Config_Done();
 	
@@ -651,6 +656,28 @@ public Action Timer_Selection(Handle hTimer)
 		Call_PushCell(-1);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
+		
+		if(g_iConfig[bGiveWeaponsOnFailStart])
+		{
+			char sWeapon[32];
+			
+			LoopValidClients(i)
+			{
+				if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
+					continue;
+				
+				if (IsPlayerAlive(i))
+				{
+					// Primary
+					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
+					GivePlayerItem(i, sWeapon);
+					
+					// Secondary
+					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
+					GivePlayerItem(i, sWeapon);
+				}
+			}
+		}
 		
 		return;
 	}

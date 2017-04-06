@@ -109,7 +109,10 @@ enum eConfig
 	i_maxTraitors,
 	i_maxDetectives,
 	i_minKarmaDetective,
-	bool:bEnableDamage
+	bool:bEnableDamage,
+	bool:bGiveWeaponsOnFailStart,
+	String:sFSPrimary[32],
+	String:sFSSecondary[32]
 };
 
 enum Ragdolls
