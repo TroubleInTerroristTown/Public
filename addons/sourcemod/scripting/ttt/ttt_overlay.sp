@@ -89,10 +89,10 @@ public void OnPluginStart()
 	g_fPosIY = Config_LoadFloat("ttt_hud_text_innocent_y_position", 0.0, "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
 	g_fPosTY = Config_LoadFloat("ttt_hud_text_traitor_y_position", 0.0, "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
 	
-	Config_LoadString("ttt_hud_text_remaining_color", "255,255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorR, sizeof(g_sColorR));
-	Config_LoadString("ttt_hud_text_detective_color", "0,0,255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorD, sizeof(g_sColorD));
-	Config_LoadString("ttt_hud_text_innocent_color", "0,255,0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorI, sizeof(g_sColorI));
-	Config_LoadString("ttt_hud_text_traitor_color", "255,0,0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorT, sizeof(g_sColorT));
+	Config_LoadString("ttt_hud_text_remaining_color", "255;255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorR, sizeof(g_sColorR));
+	Config_LoadString("ttt_hud_text_detective_color", "0;0;255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorD, sizeof(g_sColorD));
+	Config_LoadString("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorI, sizeof(g_sColorI));
+	Config_LoadString("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorT, sizeof(g_sColorT));
 	
 	Config_Done();
 
