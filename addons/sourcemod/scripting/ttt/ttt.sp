@@ -657,27 +657,7 @@ public Action Timer_Selection(Handle hTimer)
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
 		
-		if(g_iConfig[bGiveWeaponsOnFailStart])
-		{
-			char sWeapon[32];
-			
-			LoopValidClients(i)
-			{
-				if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
-					continue;
-				
-				if (IsPlayerAlive(i))
-				{
-					// Secondary
-					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
-					GivePlayerItem(i, sWeapon);
-					
-					// Primary
-					Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
-					GivePlayerItem(i, sWeapon);
-				}
-			}
-		}
+		GiveWeaponsOnFailStart();
 		
 		return;
 	}
@@ -710,6 +690,8 @@ public Action Timer_Selection(Handle hTimer)
 		Call_PushCell(aPlayers.Length);
 		Call_PushCell(g_iConfig[i_requiredPlayers]);
 		Call_Finish();
+		
+		GiveWeaponsOnFailStart();
 		
 		return;
 	}
@@ -3009,4 +2991,29 @@ stock bool ValidClantag(int client, const char[] sTag)
 		return true;
 	
 	return false;
+}
+
+void GiveWeaponsOnFailStart()
+{
+	if(g_iConfig[bGiveWeaponsOnFailStart])
+	{
+		char sWeapon[32];
+		
+		LoopValidClients(i)
+		{
+			if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
+				continue;
+			
+			if (IsPlayerAlive(i))
+			{
+				// Secondary
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
+				GivePlayerItem(i, sWeapon);
+				
+				// Primary
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
+				GivePlayerItem(i, sWeapon);
+			}
+		}
+	}
 }
