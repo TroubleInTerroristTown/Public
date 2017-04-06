@@ -1041,14 +1041,20 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 		{
 			CS_SetClientClanTag(client, " ");
 			
-			char sWeapon[32];
-			// Secondary
-			Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
-			GivePlayerItem(client, sWeapon);
-			
-			// Primary
-			Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
-			GivePlayerItem(client, sWeapon);
+			if(g_iConfig[bEnableDamage])
+			{
+				char sWeapon[32];
+				//Knife
+				GivePlayerItem(client, "weapon_knife");
+				
+				// Secondary
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
+				GivePlayerItem(client, sWeapon);
+				
+				// Primary
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
+				GivePlayerItem(client, sWeapon);
+			}
 		}
 		
 		g_iInnoKills[client] = 0;
@@ -2994,7 +3000,7 @@ stock bool ValidClantag(int client, const char[] sTag)
 
 void GiveWeaponsOnFailStart()
 {
-	if(g_iConfig[bGiveWeaponsOnFailStart])
+	if(g_iConfig[bGiveWeaponsOnFailStart] && g_iConfig[bEnableDamage])
 	{
 		char sWeapon[32];
 		
@@ -3005,6 +3011,9 @@ void GiveWeaponsOnFailStart()
 			
 			if (IsPlayerAlive(i))
 			{
+				// Knife
+				GivePlayerItem(i, "weapon_knife");
+				
 				// Secondary
 				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
 				GivePlayerItem(i, sWeapon);
