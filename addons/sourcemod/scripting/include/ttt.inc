@@ -1,7 +1,7 @@
-#if defined _TTT_included
+#if defined _ttt_included
 #endinput
 #endif
-#define _TTT_included
+#define _ttt_included
 
 #define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(TTT_IsClientValid(%1))
 

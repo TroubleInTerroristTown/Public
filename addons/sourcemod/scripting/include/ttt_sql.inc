@@ -1,7 +1,7 @@
-#if defined _TTT_SQL_included
+#if defined _ttt_sql_included
  #endinput
 #endif
-#define _TTT_SQL_included
+#define _ttt_sql_included
 
 native void TTT_Query(const char[] debugname, const char[] query);
 native Database TTT_GetSQLConnection();

@@ -1,10 +1,10 @@
 /*
 **
 */
-#if defined _TTT_SHOP_included
+#if defined _ttt_shop_included
  #endinput
 #endif
-#define _TTT_SHOP_included
+#define _ttt_shop_included
 
 /*
  * Called when an item is purchased in the menu. Return Plugin_Stop

@@ -1,7 +1,7 @@
-#if defined _TTT_PLAYERHUD_included
+#if defined _ttt_playerhud_included
  #endinput
 #endif
-#define _TTT_PLAYERHUD_included
+#define _ttt_playerhud_included
 /*
  * Called when a HUD is send to a player. Return Plugin_Stop
  * to prevent the HUD from beeing send.

@@ -1,7 +1,7 @@
-#if defined _TTT_weaponitems_included
+#if defined _ttt_weapons_included
  #endinput
 #endif
-#define _TTT_weaponitems_included
+#define _ttt_weapons_included
 
 #define KEV_ITEM_SHORT "kevlar"
 #define KEV_T_ITEM_SHORT "kevlarT"

@@ -30,6 +30,10 @@ Handle g_hOnHudSend_Pre = null;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
+	
+	RegPluginLibrary("ttt_playerhud");
+	
+	return APLRes_Success;
 }
 
 public void OnPluginStart()

@@ -88,6 +88,26 @@ enum Item
 	Sort
 }
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
+	
+	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
+
+	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
+	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
+	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
+	
+	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
+	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
+	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
+	
+	RegPluginLibrary("ttt_shop");
+	
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
@@ -187,24 +207,6 @@ public void OnPluginStart()
 			OnClientCookiesCached(i);
 		}
 	}
-}
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
-	
-	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
-	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
-
-	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
-	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
-	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
-	
-	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
-	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
-	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
-	
-	return APLRes_Success;
 }
 
 public void OnClientCookiesCached(int client)

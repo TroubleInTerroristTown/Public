@@ -31,6 +31,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	
 	g_hOnConnect = CreateGlobalForward("TTT_OnSQLConnect", ET_Ignore, Param_Cell);
 	
+	RegPluginLibrary("ttt_sql");
+	
 	return APLRes_Success;
 }
 

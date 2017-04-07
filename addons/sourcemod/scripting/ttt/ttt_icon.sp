@@ -33,6 +33,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
 	CreateNative("TTT_SetIcon", Native_SetIcon);
 	
+	RegPluginLibrary("ttt_icon");
+	
 	return APLRes_Success;
 }
 

@@ -101,6 +101,13 @@ char g_cM4_Long[64];
 char g_cAWP_Long[64];
 char g_cKF_Long[64];
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	RegPluginLibrary("ttt_weapons");
+	
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
