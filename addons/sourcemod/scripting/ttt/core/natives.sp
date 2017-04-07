@@ -38,7 +38,7 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
 			g_aRagdoll.GetArray(i, Body[0], sizeof(Body));
-			if(Body[Victim] == client)
+			if (Body[Victim] == client)
 			{
 				SetNativeArray(2, Body[0], sizeof(Body));
 			}
