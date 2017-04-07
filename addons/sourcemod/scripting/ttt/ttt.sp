@@ -136,6 +136,7 @@ public void OnPluginStart()
 		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
 	
 	SetupConfig();
+	
 	LateLoadAll();
 }
 
@@ -1130,7 +1131,9 @@ public void LateLoadClients()
 public void LateLoadClient(int client)
 {
 	HookClient(client);
-	LoadClientKarma(GetClientUserId(client));
+	
+	if(TTT_GetSQLConnection() != null)
+		LoadClientKarma(GetClientUserId(client));
 }
 
 public void HookClient(int client)
