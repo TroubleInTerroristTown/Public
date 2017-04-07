@@ -109,7 +109,7 @@ void SQL_Start()
 	}
 	else
 	{
-		Database.Connect(OnConnect, g_sEntry); // MySQL
+		Database.Connect(OnConnect, g_sEntry);
 	}
 }
 

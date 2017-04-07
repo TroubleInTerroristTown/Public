@@ -41,13 +41,12 @@ int g_iHurtPrice = 0;
 int g_iHurtPrio = 0;
 int g_iHurtDamage = 0;
 int g_iHurtCharges = 0;
+int g_iMaxHealth = 0;
 
 float g_fHurtDistance = 0.0;
 float g_fHealthDistance = 0.0;
 
 bool g_bHurtTraitors = false;
-
-// bool g_bHurtStationGlow = true;
 
 char g_cHurt[64];
 char g_cHealth[64];
@@ -84,8 +83,8 @@ public void OnPluginStart()
 	
 	g_bHurtTraitors = Config_LoadBool("hurt_station_hurt_other_traitors", false, "Hurt other traitors with a hurtstation?");
 	
-	// g_bHurtStationGlow = Config_LoadBool("hurt_station_glow", true, "Enable the glow effect for hurt stations");
-
+	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?")
+	
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
 	
@@ -212,7 +211,6 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 	if (g_iHealthStationHealth[owner] <= 0)
 	{
 		AcceptEntityInput(stationIndex, "Kill");
-		// SDKUnhook(stationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		g_bHasActiveHealthStation[owner] = false;
 	}
 	return Plugin_Continue;
@@ -269,7 +267,7 @@ void checkDistanceFromHealthStation(int client)
 			continue;
 		}
 		
-		if ((!hurt) && (curHealth >= 125)) // TODO: Add cvar for max health
+		if ((!hurt) && (curHealth >= g_iMaxHealth))
 		{
 			continue;
 		}
@@ -334,63 +332,8 @@ void spawnHealthStation(int client)
 		g_bHasActiveHealthStation[client] = true;
 		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
 		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
-		
-		/* if (g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
-		{
-			if (SDKHookEx(healthStationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-					SetupGlow(healthStationIndex);
-		} */
 	}
 }
-
-/* void SetupGlow(int entity)
-{
-	int iOffset;
-	
-	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
-	{
-		return;
-	}
-	
-	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(entity, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
-	SetEntData(entity, iOffset, 255, _, true);
-	SetEntData(entity, iOffset + 1, 0, _, true);
-	SetEntData(entity, iOffset + 2, 0, _, true);
-	SetEntData(entity, iOffset + 3, 255, _, true);
-}
-
-public Action OnSetTransmit_GlowSkin(int entity, int client)
-{
-	if (!TTT_IsRoundActive())
-	{
-		return Plugin_Handled;
-	}
-	
-	if (client == 0 || IsFakeClient(client))
-	{
-		return Plugin_Handled;
-	}
-		
-	if (!IsPlayerAlive(client))
-	{
-		return Plugin_Handled;
-	}
-	
-	if (!IsValidEntity(entity))
-	{
-		return Plugin_Handled;
-	}
-	
-	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		return Plugin_Continue;
-	}
-	
-	return Plugin_Handled;
-} */
 
 void healthStation_cleanUp()
 {

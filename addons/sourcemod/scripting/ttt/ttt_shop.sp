@@ -69,7 +69,6 @@ int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
 float g_fCreditsInterval = 0.0;
 
-// Client settings
 bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
 Handle g_hReopenCookie = null;
 
@@ -179,7 +178,6 @@ public void OnPluginStart()
 	Config_LoadString("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly", g_sBuyCmd, sizeof(g_sBuyCmd));
 	Config_LoadString("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)", g_sShowCmd, sizeof(g_sShowCmd));
 	
-	// Doesn't exist anymore
 	Config_Remove("ttt_sort_items_price");
 	Config_Remove("ttt_sort_items_price_order");
 	Config_Done();
@@ -199,7 +197,6 @@ public void OnPluginStart()
 	
 	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
 	
-	// Late load
 	for (int i = 0; i <= MaxClients; i++)
 	{
 		if (TTT_IsClientValid(i))
@@ -544,7 +541,6 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 	return 0;
 }
 
-//Credits Part
 public void TTT_OnClientGetRole(int client, int role)
 {
 	if (g_bCreditsTimer)

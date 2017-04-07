@@ -240,11 +240,9 @@ public void TTT_OnUpdate1(int client)
 		char sCR[4][4], sCD[4][4], sCI[4][4], sCT[4][4];
 		char sR[24], sD[24], sI[24], sT[24];
 		
-		// Remaining formating
 		Format(sR, sizeof(sR), "Remaining:");
 		ExplodeString(g_sColorR, ";", sCR, sizeof(sCR), sizeof(sCR[]));
 		
-		// Detective formating
 		if (iDet == 1)
 		{
 			Format(sD, sizeof(sD), "%d Detective", iDet);
@@ -255,7 +253,6 @@ public void TTT_OnUpdate1(int client)
 		}
 		ExplodeString(g_sColorD, ";", sCD, sizeof(sCD), sizeof(sCD[]));
 		
-		// Innocent formating
 		if (iInn == 1)
 		{
 			Format(sI, sizeof(sI), "%d Innocent", iInn);
@@ -266,7 +263,6 @@ public void TTT_OnUpdate1(int client)
 		}
 		ExplodeString(g_sColorI, ";", sCI, sizeof(sCI), sizeof(sCI[]));
 		
-		// Traitor formating
 		if (iTra == 1)
 		{
 			Format(sT, sizeof(sT), "%d Traitor", iTra);

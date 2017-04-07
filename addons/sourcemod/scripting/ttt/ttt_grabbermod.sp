@@ -299,7 +299,6 @@ public Action Adjust(Handle timer)
 		{
 			if (ValidGrab(i))
 			{
-				// get client info
 				GetClientEyeAngles(i, viewang);
 				GetAngleVectors(viewang, vecDir, NULL_VECTOR, NULL_VECTOR);
 				GetClientEyePosition(i, vecPos);
@@ -324,7 +323,6 @@ public Action Adjust(Handle timer)
 					color[3] = 255;
 				}
 				
-				// update object
 				vecPos2 = vecPos;
 				vecPos[0] += vecDir[0] * g_fDistance[i];
 				vecPos[1] += vecDir[1] * g_fDistance[i];

@@ -1,6 +1,3 @@
- // Credits? Look here: http://git.tf/TTT/Plugin/blob/master/CREDITS.md
-
-
 #pragma semicolon 1
 
 #include <sourcemod>
@@ -93,7 +90,7 @@ public void OnPluginStart()
 	
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
-	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT); // Maybe every second is enough
+	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
 	CreateTimer(3.0, Timer_3, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
@@ -270,7 +267,6 @@ void SetupConfig()
 	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
 	g_iConfig[bShowTraitors] = Config_LoadBool("ttt_show_traitor_names", true, "Show traitor partners on team selection?");
 	
-	// Weapons on fail start
 	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
 	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
 	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
@@ -808,7 +804,6 @@ public Action Timer_Selection(Handle hTimer)
 	int iCurrentTime = GetTime();
 	while (iTraitors < iTCount)
 	{
-		//Check if there is a Player, that should get Traitor.
 		if (g_aForceTraitor.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceTraitor.Get(0));
@@ -824,12 +819,10 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		}
 
-		//Get a random client
 		SetRandomSeed(iCurrentTime*100*counter++);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		//Every client has a 1/3 chance to become Traitor again.
 		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 3) == 2))
 		{
 			g_iRole[client] = TTT_TEAM_TRAITOR;
@@ -839,10 +832,8 @@ public Action Timer_Selection(Handle hTimer)
 		}
 	}
 	
-	//Choose Detectives
 	while (iDetectives < iDCount && aPlayers.Length > 0)
 	{
-		//Set everybody Detective when there are less player left than detectives needed.
 		if (aPlayers.Length <= (iDCount - iDetectives))
 		{
 			for (int i = 0; i < aPlayers.Length; i++)
@@ -873,10 +864,8 @@ public Action Timer_Selection(Handle hTimer)
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		//Same here every client has a 1/3 chance to get Detective when he had a special role before.
 		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_iConfig[i_minKarmaDetective] && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
 		{
-			//Does he wanna get detective?
 			if (g_bAvoidDetective[client] == true)
 			{
 				g_iLastRole[client] = TTT_TEAM_INNOCENT;	
@@ -966,13 +955,11 @@ int GetTCount(int iActivePlayers)
 {
 	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_traitorRatio]) / 100.0));
 
-	//Make sure that there is a least 1 Traitor
 	if (iTCount < 1)
 	{
 		iTCount = 1;
 	}
 
-	//Cap the traitor amount to a max
 	if (iTCount > g_iConfig[i_maxTraitors])
 	{
 		iTCount = g_iConfig[i_maxTraitors];
@@ -983,7 +970,6 @@ int GetTCount(int iActivePlayers)
 
 int GetDCount(int iActivePlayers)
 {
-	//Check if there are enough players for a detective
 	if (iActivePlayers < g_iConfig[i_requiredPlayersD])
 	{
 		return 0;
@@ -991,7 +977,6 @@ int GetDCount(int iActivePlayers)
 	
 	int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_detectiveRatio]) / 100.0));
 
-	//Cap detective amount to a max
 	if (iDCount > g_iConfig[i_maxDetectives])
 	{
 		iDCount = g_iConfig[i_maxDetectives];
@@ -1176,7 +1161,6 @@ stock void TeamTag(int client)
 	}
 }
 
-// Prevent spawn if round has started
 public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
@@ -1211,15 +1195,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			
 			if (g_iConfig[bEnableDamage])
 			{
-				char sWeapon[32];
-				//Knife
 				GivePlayerItem(client, "weapon_knife");
 				
-				// Secondary
+				char sWeapon[32];
 				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
 				GivePlayerItem(client, sWeapon);
 				
-				// Primary
 				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
 				GivePlayerItem(client, sWeapon);
 			}
@@ -1430,13 +1411,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 		
-		// Prevent crash. If spawn isn't dispatched successfully,
-		// TeleportEntity() crashes the server. This left some very
-		// odd crash dumps, and usually only happened when 2 players
-		// died inside each other in the same tick.
-		// Thanks to -
-		// 		Phoenix Gaming Network (pgn.site)
-		// 		Prestige Gaming Organization
 		ActivateEntity(iEntity);
 		if (DispatchSpawn(iEntity))
 		{
@@ -1539,9 +1513,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	}
 	else
 	{
-		// Usually if this event is called for unassigned
-		// players, they spawned in late and were slayed by
-		// the plugin. So let's ditch their ragdolls to be sure.
 		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
 		if (iRagdoll > 0)
 		{
@@ -1922,25 +1893,6 @@ public void OnClientDisconnect(int client)
 		
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
-		/* 	int iSize = g_aRagdoll.Length;
-
-		if (iSize == 0) return;
-
-		int iRagdollC[Ragdolls];
-
-		for (int i = 0;i < g_aRagdoll.Length;i++)
-		{
-			g_aRagdoll.GetArray(iRagdollC[0]);
-
-			if (client == iRagdollC[Attacker] || client == iRagdollC[Victim])
-			{
-				int entity = EntRefToEntIndex(iRagdollC[index]);
-				if (entity != INVALID_ENT_REFERENCE) AcceptEntityInput(entity, "kill");
-
-				g_aRagdoll.Erase(i);
-				break;
-			}
-		}  */
 	}
 }
 
@@ -3483,14 +3435,11 @@ void GiveWeaponsOnFailStart()
 			
 			if (IsPlayerAlive(i))
 			{
-				// Knife
 				GivePlayerItem(i, "weapon_knife");
 				
-				// Secondary
 				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSSecondary]);
 				GivePlayerItem(i, sWeapon);
 				
-				// Primary
 				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_iConfig[sFSPrimary]);
 				GivePlayerItem(i, sWeapon);
 			}

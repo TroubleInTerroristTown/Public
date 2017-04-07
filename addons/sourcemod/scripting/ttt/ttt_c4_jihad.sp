@@ -60,8 +60,6 @@ float g_fC4KillRadius = 275.0;
 int g_iJihadDamageRadius = 600;
 int g_iJihadMagnitude = 1000;
 
-// bool g_bC4Glow = true;
-
 public Plugin myinfo = 
 {
 	name = PLUGIN_NAME, 
@@ -105,7 +103,6 @@ public void OnPluginStart()
 	g_iJihadMagnitude = Config_LoadInt("jihad_magnitude", 1000, "The amount of damage done by the explosion. For Jihad");
 	
 	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
-	// g_bC4Glow = Config_LoadBool("c4_glow", true, "Enable the glow effect for c4");
 	
 	Config_Done();
 	
@@ -464,14 +461,6 @@ public int TTT_OnButtonPress(int client, int button)
 			{
 				TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
 				showPlantMenu(client);
-				
-				/* if(g_bC4Glow)
-				{
-					if(SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-					{
-						SetupGlow(bombEnt);
-					}
-				} */
 			}
 		}
 	}
@@ -515,55 +504,6 @@ public int TTT_OnButtonPress(int client, int button)
 		}
 	}
 }
-
-/* void SetupGlow(int entity)
-{
-	int iOffset;
-	
-	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
-	{
-		return;
-	}
-	
-	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(entity, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
-	SetEntData(entity, iOffset, 255, _, true);
-	SetEntData(entity, iOffset + 1, 0, _, true);
-	SetEntData(entity, iOffset + 2, 0, _, true);
-	SetEntData(entity, iOffset + 3, 255, _, true);
-}
-
-public Action OnSetTransmit_GlowSkin(int entity, int client)
-{
-	if(!TTT_IsRoundActive())
-	{
-		return Plugin_Handled;
-	}
-	
-	if(client == 0 || IsFakeClient(client))
-	{
-		return Plugin_Handled;
-	}
-		
-	if(!IsPlayerAlive(client))
-	{
-		return Plugin_Handled;
-	}
-	
-	if(!IsValidEntity(entity))
-	{
-		return Plugin_Handled;
-	}
-	
-	if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		return Plugin_Continue;
-	}
-	
-	return Plugin_Handled;
-} */
 
 stock void showPlantMenu(int client)
 {
@@ -907,8 +847,6 @@ stock void removeBomb(int client)
 		{
 			continue;
 		}
-		
-		// SDKUnhook(iEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		
 		AcceptEntityInput(iEnt, "Kill");
 	}

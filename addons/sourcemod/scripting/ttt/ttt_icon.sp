@@ -182,7 +182,6 @@ public Action Hook_SetTransmitT(int entity, int client)
 {
 	if (TTT_IsClientValid(client))
 	{
-		// Show T-Icon to dead players if g_bSeeRoles true
 		if (!IsPlayerAlive(client))
 		{
 			if (g_bSeeRoles)
@@ -207,9 +206,10 @@ public Action Hook_SetTransmitT(int entity, int client)
 			}
 		}
 		
-		// Show T-Icon only for other living traitors
 		if (IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		{
 			return Plugin_Continue;
+		}
 	}	
 	return Plugin_Handled;
 }

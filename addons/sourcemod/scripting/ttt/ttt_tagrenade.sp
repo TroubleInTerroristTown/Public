@@ -243,44 +243,36 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 	
 	LoopValidClients(target)
 	{
-		// Ignore bots
 		if (IsFakeClient(client))
 		{
 			continue;
 		}
 		
-		// Ignore death players
 		if (!IsPlayerAlive(client))
 		{
 			continue;
 		}
 		
-		// Don't hit self
 		if (client == target)
 		{
 			continue;
 		}
 		
-		// Ignore players without role
 		if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
 		{
 			continue;
 		}
 			
-		// Remove game tagging (not FFA compatible)
 		SetEntPropFloat(target, Prop_Send, "m_flDetectedByEnemySensorTime", 0.0);
 		
-		// Check distance
 		GetClientEyePosition(target, targetposition);
 		distance = GetVectorDistance(position, targetposition);
 		
-		// Not in range
 		if (distance > g_fTagrenadeRange)
 		{
 			continue;
 		}
 		
-		// Visible?
 		if (g_bShowPlayersBehindWalls)
 		{
 			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);

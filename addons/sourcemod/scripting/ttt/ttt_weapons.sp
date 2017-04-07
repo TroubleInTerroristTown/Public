@@ -66,22 +66,18 @@ int g_iUSP_Prio = -1;
 int g_iM4_Prio = -1;
 int g_iAWP_Prio = -1;
 
-// AK47
 int g_iAK_Prio = -1;
 int g_iAK_Price = -1;
 char g_cAK_Long[64];
 
-// Deagle
 int g_iDeagle_Prio = -1;
 int g_iDeagle_Price = -1;
 char g_cDeagle_Long[64];
 
-// Revolver
 int g_iRevolver_Prio = -1;
 int g_iRevolver_Price = -1;
 char g_cRevolver_Long[64];
 
-// Scout
 int g_iScout_Prio = -1;
 int g_iScout_Price = -1;
 char g_cScout_Long[64];
@@ -141,27 +137,22 @@ public void OnPluginStart()
 	g_iKevHelm_Prio = Config_LoadInt("kevhelm_sort_prio", 0, "The sorting priority of the kevlar+helm in the shop menu.");
 	Config_LoadString("kevhelm_name", "Kevlar+Helm", "The name of the kevlar+helm in the shop menu.", g_cKevHelm_Long, sizeof(g_cKevHelm_Long));
 
-
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	g_iUSP_Prio = Config_LoadInt("usp_sort_prio", 0, "The sorting priority of the USP-S in the shop menu.");
 	Config_LoadString("usp_name", "USP-S", "The name of the USP-S in the shop menu.", g_cUSP_Long, sizeof(g_cUSP_Long));
 	
-	// AK47
 	g_iAK_Price = Config_LoadInt("ak47_price", 3000, "The amount of credits the AK47 costs. 0 to disable.");
 	g_iAK_Prio = Config_LoadInt("ak47_sort_prio", 0, "The sorting priority of the AK47 in the shop menu.");
 	Config_LoadString("ak47_name", "AK47", "The name of the AK47 in the shop menu.", g_cAK_Long, sizeof(g_cAK_Long));
 	
-	// Deagle
 	g_iDeagle_Price = Config_LoadInt("deagle_price", 3000, "The amount of credits the Deagle costs. 0 to disable.");
 	g_iDeagle_Prio = Config_LoadInt("deagle_sort_prio", 0, "The sorting priority of the Deagle in the shop menu.");
 	Config_LoadString("deagle_name", "Deagle", "The name of the Deagle in the shop menu.", g_cDeagle_Long, sizeof(g_cDeagle_Long));
 	
-	// Revolver
 	g_iRevolver_Price = Config_LoadInt("revolver_price", 3000, "The amount of credits the Revolver costs. 0 to disable.");
 	g_iRevolver_Prio = Config_LoadInt("revolver_sort_prio", 0, "The sorting priority of the Revolver in the shop menu.");
 	Config_LoadString("revolver_name", "Revolver", "The name of the Revolver in the shop menu.", g_cRevolver_Long, sizeof(g_cRevolver_Long));
 	
-	// Scout
 	g_iScout_Price = Config_LoadInt("scout_price", 3000, "The amount of credits the Scout costs. 0 to disable.");
 	g_iScout_Prio = Config_LoadInt("scout_sort_prio", 0, "The sorting priority of the Scout in the shop menu.");
 	Config_LoadString("scout_name", "Scout", "The name of the Scout in the shop menu.", g_cScout_Long, sizeof(g_cScout_Long));
