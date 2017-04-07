@@ -7,6 +7,7 @@
 #include <ttt>
 #include <config_loader>
 #include <multicolors>
+#include <clientprefs>
 #include <ttt_shop>
 
 #pragma newdecls required
@@ -68,6 +69,10 @@ int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
 float g_fCreditsInterval = 0.0;
 
+// Client settings
+bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
+Handle g_hReopenCookie = null;
+
 
 char g_sShopCMDs[][] =  {
 	"menu", 
@@ -93,6 +98,11 @@ public void OnPluginStart()
 		Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShopCMDs[i]);
 		RegConsoleCmd(sBuffer, Command_Shop);
 	}
+	
+	RegConsoleCmd("sm_reopenshop", Command_ReopenShop);
+	RegConsoleCmd("sm_roshop", Command_ReopenShop);
+	RegConsoleCmd("sm_reshop", Command_ReopenShop);
+	RegConsoleCmd("sm_rshop", Command_ReopenShop);
 	
 	g_aCustomItems = new ArrayList(83);
 	
@@ -166,6 +176,17 @@ public void OnPluginStart()
 	RegConsoleCmd(sBuffer, Command_ShowItems);
 	
 	LoadTranslations("ttt.phrases");
+	
+	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
+	
+	// Late load
+	for (int i = 0; i <= MaxClients; i++)
+	{
+		if(TTT_IsClientValid(i))
+		{
+			OnClientCookiesCached(i);
+		}
+	}
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -184,6 +205,22 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 	
 	return APLRes_Success;
+}
+
+public void OnClientCookiesCached(int client)
+{
+	if(AreClientCookiesCached(client))
+	{
+		char sBuffer[4];
+		GetClientCookie(client, g_hReopenCookie, sBuffer, sizeof(sBuffer));
+		g_bReopen[client] = view_as<bool>(StringToInt(sBuffer));
+	}
+	else
+	{
+		char sBuffer[4];
+		IntToString(view_as<int>(true), sBuffer, sizeof(sBuffer));
+		SetClientCookie(client, g_hReopenCookie, sBuffer);
+	}
 }
 
 public Action Command_Buy(int client, int args)
@@ -269,6 +306,35 @@ public Action Command_Shop(int client, int args)
 	
 }
 
+public Action Command_ReopenShop(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+		return Plugin_Handled;
+	
+	if (g_bReopen[client])
+	{
+		g_bReopen[client] = false;
+		
+		CPrintToChat(client, g_sPluginTag, "Reopen Shop deactivated", client);
+		
+		char sBuffer[4];
+		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
+		SetClientCookie(client, g_hReopenCookie, sBuffer);
+	}
+	else
+	{
+		g_bReopen[client] = true;
+		
+		CPrintToChat(client, g_sPluginTag, "Reopen Shop activated", client);
+		
+		char sBuffer[4];
+		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
+		SetClientCookie(client, g_hReopenCookie, sBuffer);
+	}
+	
+	return Plugin_Continue;
+}
+
 public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum)
 {
 	if (action == MenuAction_Select)
@@ -284,7 +350,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		
 		ClientBuyItem(client, info);
 		
-		if(g_bReopenMenu)
+		if(g_bReopenMenu && g_bReopen[client])
 			Command_Shop(client, 0);
 	}
 	

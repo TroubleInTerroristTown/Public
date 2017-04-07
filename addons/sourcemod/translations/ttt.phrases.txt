@@ -960,4 +960,12 @@
 	{
 		"en"		"Traitor Voice Chat: Enabled!"
 	}
+	"Reopen Shop activated"
+	{
+		"en"		"Shop will open again after buy a item."
+	}
+	"Reopen Shop deactivated"
+	{
+		"en"		"Shop will no longer open after buy a item."
+	}
 }
