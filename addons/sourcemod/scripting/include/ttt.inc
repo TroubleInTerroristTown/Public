@@ -1,5 +1,5 @@
 #if defined _ttt_included
-#endinput
+	#endinput
 #endif
 #define _ttt_included
 
@@ -361,7 +361,9 @@ stock bool TTT_IsLoaded()
 stock bool TTT_IsClientValid(int client)
 {
 	if (client > 0 && client <= MaxClients && IsClientInGame(client))
+	{
 		return true;
+	}
 	return false;
 }
 
@@ -379,11 +381,17 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 	int iFlags = GetUserFlagBits(client);
 	
 	if (iFlags & ADMFLAG_ROOT)
+	{
 		return true;
+	}
 	
 	for (new i = 0; i < sizeof(flags); i++)
+	{
 		if (iFlags & FlagToBit(flags[i]))
+		{
 			return true;
+		}
+	}
 	
 	return false;
 }
@@ -391,6 +399,7 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
 {
 	int iFlags = GetCommandFlags("r_screenoverlay");
+
 	SetCommandFlags("r_screenoverlay", iFlags &~ FCVAR_CHEAT);
 	ClientCommand(client, "r_screenoverlay \"%s\"", overlaypath);
 	SetCommandFlags("r_screenoverlay", iFlags);
@@ -399,8 +408,12 @@ stock void ShowOverlayToClient(int client, const char[] overlaypath)
 stock void ShowOverlayToAll(const char[] overlaypath)
 {
 	LoopValidClients(i)
+	{
 		if (!IsFakeClient(i))
+		{
 			ShowOverlayToClient(i, overlaypath);
+		}
+	}
 }
 
 stock bool IsWorldDamage(int iAttacker, int damagetype)
@@ -427,6 +440,8 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		 || damagetype == DMG_SLOWBURN
 		 || iAttacker == 0
 		)
-	return true;
+	{
+		return true;
+	}
 	return false;
 }

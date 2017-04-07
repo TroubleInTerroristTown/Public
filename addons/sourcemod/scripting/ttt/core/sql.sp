@@ -19,6 +19,8 @@ public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error,
 		int client = GetClientOfUserId(userid);
 
 		if(TTT_IsClientValid(client))
+		{
 			g_bKarma[client] = true;
+		}
 	}
 }

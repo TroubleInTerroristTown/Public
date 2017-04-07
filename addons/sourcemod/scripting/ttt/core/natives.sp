@@ -8,7 +8,10 @@ public int Native_GetClientRole(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	
 	if (TTT_IsClientValid(client))
+	{
 		return g_iRole[client];
+	}
+	
 	return 0;
 }
 
@@ -17,7 +20,10 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	
 	if (TTT_IsClientValid(client) && g_bKarma[client])
+	{
 		return g_iKarma[client];
+	}
+
 	return 0;
 }
 
@@ -26,6 +32,7 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	
 	int Body[Ragdolls];
+
 	if (TTT_IsClientValid(client))
 	{
 		for (int i = 0; i < g_aRagdoll.Length; i++)
@@ -38,14 +45,18 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 			return 1;
 		}
 	}
+
 	return 0;
 }
 
 public int Native_SetRagdoll(Handle plugin, int numParams)
 {
 	int Body[Ragdolls];
+
 	GetNativeArray(1, Body[0], sizeof(Body));
+
 	g_aRagdoll.PushArray(Body[0]);
+
 	return 0;
 }
 
@@ -61,7 +72,10 @@ public int Native_SetClientRole(Handle plugin, int numParams)
 		return g_iRole[client];
 	}
 	else if (role < TTT_TEAM_UNASSIGNED || role > TTT_TEAM_DETECTIVE)
+	{
 		ThrowNativeError(SP_ERROR_NATIVE, "Invalid role %d", role);
+	}
+
 	return 0;
 }
 
@@ -75,6 +89,7 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 		setKarma(client, karma);
 		return g_iKarma[client];
 	}
+
 	return 0;
 }
 
@@ -88,6 +103,7 @@ public int Native_AddClientKarma(Handle plugin, int numParams)
 		setKarma(client, g_iKarma[client]+karma);
 		return g_iKarma[client];
 	}
+	
 	return 0;
 }
 
@@ -100,7 +116,9 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 		int iSize = g_aRagdoll.Length;
 		
 		if (iSize == 0)
+		{
 			return false;
+		}
 		
 		int Items[Ragdolls];
 		
@@ -114,6 +132,7 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 			}
 		}
 	}
+
 	return 0;
 }
 
@@ -126,7 +145,9 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		int iSize = g_aRagdoll.Length;
 		
 		if (iSize == 0)
+		{
 			return false;
+		}
 		
 		int Items[Ragdolls];
 		
@@ -140,6 +161,7 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 			}
 		}
 	}
+
 	return 0;
 }
 
@@ -191,6 +213,7 @@ public int Native_OverrideConfigString(Handle plugin, int numParams)
 {
 	int size = GetNativeCell(3);
 	char[] buffer = new char[size];
+
 	GetNativeString(2, buffer, size);
 	strcopy(view_as<char>(g_iConfig[GetNativeCell(1)]), size, buffer);
 	

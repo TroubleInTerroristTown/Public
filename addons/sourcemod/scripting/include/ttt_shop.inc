@@ -1,8 +1,5 @@
-/*
-**
-*/
 #if defined _ttt_shop_included
- #endinput
+	#endinput
 #endif
 #define _ttt_shop_included
 
