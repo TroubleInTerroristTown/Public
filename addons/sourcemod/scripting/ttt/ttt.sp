@@ -812,7 +812,7 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			LoopValidClients(i)
 			{
-				if (TTT_WantT(i))
+				if (iTraitors < iTCount && TTT_WantT(i))
 				{
 					iIndex = aPlayers.FindValue(i);
 					
@@ -866,7 +866,7 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			LoopValidClients(i)
 			{
-				if (TTT_WantD(i))
+				if ((iDetectives < iDCount && aPlayers.Length > 0) && TTT_WantD(i))
 				{
 					iIndex = aPlayers.FindValue(i);
 					
