@@ -2,7 +2,7 @@
 
 #include <sourcemod>
 #include <ttt>
-#include <ttt-sql>
+#include <ttt_sql>
 #include <ttt_shop>
 
 #pragma newdecls required
@@ -91,11 +91,11 @@ public void TTT_OnSQLConnect(Database db)
 	PrintToServer("TTT_OnSQLConnect was called!");
 	PrintToServer("(TTT_OnSQLConnect) db: %d", db);
 	
-	int iDB = TTT_GetSQLConnection();
-	PrintToServer("(TTT_OnSQLConnect) iDB: %d", iDB);
+	Database dDB = TTT_GetSQLConnection();
+	PrintToServer("(TTT_OnSQLConnect) dDB: %d", dDB);
 	
-	if(iDB == view_as<int>(db))
+	if(dDB == db)
 	{
-		PrintToServer("(TTT_OnSQLConnect) db and iDB are equal!", db);
+		PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);
 	}
 }

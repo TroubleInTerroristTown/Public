@@ -9,7 +9,7 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <ttt>
-#include <ttt-sql>
+#include <ttt_sql>
 #include <config_loader>
 
 #undef REQUIRE_PLUGIN

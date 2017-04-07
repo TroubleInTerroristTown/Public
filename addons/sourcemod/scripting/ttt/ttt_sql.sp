@@ -6,7 +6,7 @@
 #include <cstrike>
 
 #include <ttt>
-#include <ttt-sql>
+#include <ttt_sql>
 #include <config_loader>
 
 #pragma newdecls required

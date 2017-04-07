@@ -7,7 +7,7 @@
 
 #include <ttt_shop>
 #include <ttt>
-#include <ttt-weapons>
+#include <ttt_weapons>
 #include <config_loader>
 #include <multicolors>
 
