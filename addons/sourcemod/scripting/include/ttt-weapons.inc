@@ -19,7 +19,12 @@
 #define HEAVY_T_ITEM_SHORT "heavyT"
 #define HEAVY_D_ITEM_SHORT "heavyD"
 
+// Weapons
 #define USP_ITEM_SHORT "usps"
 #define M4_ITEM_SHORT "m4a1s"
 #define AWP_ITEM_SHORT "awp"
 #define KF_ITEM_SHORT "1knife"
+#define AK_ITEM_SHORT "ak47"
+#define DEAGLE_ITEM_SHORT "deagle"
+#define REVOLVER_ITEM_SHORT "revolver"
+#define SCOUT_ITEM_SHORT "sg008"

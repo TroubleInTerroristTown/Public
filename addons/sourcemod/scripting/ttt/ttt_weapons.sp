@@ -7,7 +7,7 @@
 
 #include <ttt_shop>
 #include <ttt>
-#include <ttt-weaponitems>
+#include <ttt-weapons>
 #include <config_loader>
 #include <multicolors>
 
@@ -66,6 +66,26 @@ int g_iUSP_Prio;
 int g_iM4_Prio;
 int g_iAWP_Prio;
 
+// AK47
+int g_iAK_Prio;
+int g_iAK_Price;
+char g_cAK_Long[64];
+
+// Deagle
+int g_iDeagle_Prio;
+int g_iDeagle_Price;
+char g_cDeagle_Long[64];
+
+// Revolver
+int g_iRevolver_Prio;
+int g_iRevolver_Price;
+char g_cRevolver_Long[64];
+
+// Scout
+int g_iScout_Prio;
+int g_iScout_Price;
+char g_cScout_Long[64];
+
 int g_iKnives[MAXPLAYERS+1];
 int g_iKevs[MAXPLAYERS+1];
 int g_iHeavy[MAXPLAYERS+1];
@@ -118,7 +138,27 @@ public void OnPluginStart()
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	g_iUSP_Prio = Config_LoadInt("usp_sort_prio", 0, "The sorting priority of the USP-S in the shop menu.");
 	Config_LoadString("usp_name", "USP-S", "The name of the USP-S in the shop menu.", g_cUSP_Long, sizeof(g_cUSP_Long));
-
+	
+	// AK47
+	g_iAK_Price = Config_LoadInt("ak47_price", 3000, "The amount of credits the AK47 costs. 0 to disable.");
+	g_iAK_Prio = Config_LoadInt("ak47_sort_prio", 0, "The sorting priority of the AK47 in the shop menu.");
+	Config_LoadString("ak47_name", "AK47", "The name of the AK47 in the shop menu.", g_cAK_Long, sizeof(g_cAK_Long));
+	
+	// Deagle
+	g_iDeagle_Price = Config_LoadInt("deagle_price", 3000, "The amount of credits the Deagle costs. 0 to disable.");
+	g_iDeagle_Prio = Config_LoadInt("deagle_sort_prio", 0, "The sorting priority of the Deagle in the shop menu.");
+	Config_LoadString("deagle_name", "Deagle", "The name of the Deagle in the shop menu.", g_cDeagle_Long, sizeof(g_cDeagle_Long));
+	
+	// Revolver
+	g_iRevolver_Price = Config_LoadInt("revolver_price", 3000, "The amount of credits the Revolver costs. 0 to disable.");
+	g_iRevolver_Prio = Config_LoadInt("revolver_sort_prio", 0, "The sorting priority of the Revolver in the shop menu.");
+	Config_LoadString("revolver_name", "Revolver", "The name of the Revolver in the shop menu.", g_cRevolver_Long, sizeof(g_cRevolver_Long));
+	
+	// Scout
+	g_iScout_Price = Config_LoadInt("scout_price", 3000, "The amount of credits the Scout costs. 0 to disable.");
+	g_iScout_Prio = Config_LoadInt("scout_sort_prio", 0, "The sorting priority of the Scout in the shop menu.");
+	Config_LoadString("scout_name", "Scout", "The name of the Scout in the shop menu.", g_cScout_Long, sizeof(g_cScout_Long));
+	
 	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the M4A1-S costs. 0 to disable.");
 	g_iM4_Prio = Config_LoadInt("m4a1_sort_prio", 0, "The sorting priority of the M4A1-S in the shop menu.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
@@ -201,6 +241,10 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR, g_iM4_Prio);
 	TTT_RegisterCustomItem(AWP_ITEM_SHORT, g_cAWP_Long, g_iAWP_Price, TTT_TEAM_TRAITOR, g_iAWP_Prio);
 	TTT_RegisterCustomItem(USP_ITEM_SHORT, g_cUSP_Long, g_iUSP_Price, TTT_TEAM_TRAITOR, g_iUSP_Prio);
+	TTT_RegisterCustomItem(AK_ITEM_SHORT, g_cAK_Long, g_iAK_Price, TTT_TEAM_TRAITOR, g_iAK_Prio);
+	TTT_RegisterCustomItem(DEAGLE_ITEM_SHORT, g_cDeagle_Long, g_iDeagle_Price, TTT_TEAM_TRAITOR, g_iDeagle_Prio);
+	TTT_RegisterCustomItem(REVOLVER_ITEM_SHORT, g_cRevolver_Long, g_iRevolver_Price, TTT_TEAM_TRAITOR, g_iRevolver_Prio);
+	TTT_RegisterCustomItem(SCOUT_ITEM_SHORT, g_cScout_Long, g_iScout_Price, TTT_TEAM_TRAITOR, g_iScout_Prio);
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -243,6 +287,42 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
 
 			GivePlayerItem(client, "weapon_usp_silencer");
+		}
+		else if(strcmp(itemshort, AK_ITEM_SHORT, false) == 0)
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
+			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+
+			GivePlayerItem(client, "weapon_ak47");
+		}
+		else if(strcmp(itemshort, DEAGLE_ITEM_SHORT, false) == 0)
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
+			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+
+			GivePlayerItem(client, "weapon_deagle");
+		}
+		else if(strcmp(itemshort, REVOLVER_ITEM_SHORT, false) == 0)
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
+			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+
+			GivePlayerItem(client, "weapon_revolver");
+		}
+		else if(strcmp(itemshort, SCOUT_ITEM_SHORT, false) == 0)
+		{
+			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+				return Plugin_Stop;
+			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+
+			GivePlayerItem(client, "weapon_sg008");
 		}
 		else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
 		{
