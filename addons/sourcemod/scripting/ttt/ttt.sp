@@ -7,6 +7,7 @@
 #include <emitsoundany>
 #include <ttt>
 #include <ttt_sql>
+#include <ttt_buyroles>
 #include <config_loader>
 
 #undef REQUIRE_PLUGIN
@@ -802,8 +803,33 @@ public Action Timer_Selection(Handle hTimer)
 	
 	int counter = 0;
 	int iCurrentTime = GetTime();
+	
+	bool bOneTime = false;
+	
 	while (iTraitors < iTCount)
 	{
+		if (!bOneTime)
+		{
+			LoopValidClients(i)
+			{
+				if (TTT_WantT(i))
+				{
+					iIndex = aPlayers.FindValue(i);
+					
+					if (iIndex != -1)
+					{
+						g_iRole[i] = TTT_TEAM_TRAITOR;
+						iTraitors++;
+						g_iLastRole[i] = TTT_TEAM_TRAITOR;
+						aPlayers.Erase(iIndex);
+						TTT_WantReset(client);
+					}
+				}
+			}
+		}
+		
+		bOneTime = true;
+		
 		if (g_aForceTraitor.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceTraitor.Get(0));
@@ -832,19 +858,32 @@ public Action Timer_Selection(Handle hTimer)
 		}
 	}
 	
+	bOneTime = false;
+	
 	while (iDetectives < iDCount && aPlayers.Length > 0)
 	{
-		if (aPlayers.Length <= (iDCount - iDetectives))
+		if (!bOneTime)
 		{
-			for (int i = 0; i < aPlayers.Length; i++)
+			LoopValidClients(i)
 			{
-				g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
-				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-				iDetectives++;
+				if (TTT_WantD(i))
+				{
+					iIndex = aPlayers.FindValue(i);
+					
+					if (iIndex != -1)
+					{
+						g_iLastRole[i] = TTT_TEAM_DETECTIVE;
+						g_iRole[i] = TTT_TEAM_DETECTIVE;
+						iDetectives++;
+						aPlayers.Erase(iIndex);
+						TTT_WantReset(client);
+					}
+				}
 			}
-			break;
 		}
-
+		
+		bOneTime = true;
+		
 		if (g_aForceDetective.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceDetective.Get(0));
@@ -858,6 +897,17 @@ public Action Timer_Selection(Handle hTimer)
 			}
 			g_aForceDetective.Erase(0);
 			continue;
+		}
+		
+		if (aPlayers.Length <= (iDCount - iDetectives))
+		{
+			for (int i = 0; i < aPlayers.Length; i++)
+			{
+				g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
+				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+				iDetectives++;
+			}
+			break;
 		}
 		
 		SetRandomSeed(iCurrentTime*100*counter++);
