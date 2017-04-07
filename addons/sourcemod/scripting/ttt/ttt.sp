@@ -160,6 +160,8 @@ public void OnLibraryRemoved(const char[] library)
 public void TTT_OnSQLConnect(Database db)
 {
 	g_hDatabase = db;
+	
+	LateLoadClients();
 }
 
 void SetupConfig()
@@ -1114,6 +1116,14 @@ public void LateLoadAll()
 	LoopValidClients(i)
 	{
 		LateLoadClient(i);
+	}
+}
+
+public void LateLoadClients()
+{
+	LoopValidClients(i)
+	{
+		LoadClientKarma(GetClientUserId(i));
 	}
 }
 
