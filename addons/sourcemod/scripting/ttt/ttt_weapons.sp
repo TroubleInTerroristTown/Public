@@ -30,67 +30,67 @@ bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH];
 
-int g_iKev_Type;
-int g_iKev_Price;
-int g_iHeavy_Type;
-int g_iHeavy_Armor;
-int g_iHeavy_Price;
-int g_iHelm_Type;
-int g_iHelm_Price;
-int g_iKevHelm_Type;
-int g_iKevHelm_Price;
-int g_iUSP_Price;
-int g_iM4_Price;
+int g_iKev_Type = -1;
+int g_iKev_Price = -1;
+int g_iHeavy_Type = -1;
+int g_iHeavy_Armor = -1;
+int g_iHeavy_Price = -1;
+int g_iHelm_Type = -1;
+int g_iHelm_Price = -1;
+int g_iKevHelm_Type = -1;
+int g_iKevHelm_Price = -1;
+int g_iUSP_Price = -1;
+int g_iM4_Price = -1;
 
-int g_iAWP_Price;
-int g_iAWP_Min_Shots;
-int g_iAWP_Max_Shots;
+int g_iAWP_Price = -1;
+int g_iAWP_Min_Shots = -1;
+int g_iAWP_Max_Shots = -1;
 
-int g_iKF_Price;
+int g_iKF_Price = -1;
 
-int g_iKev_Max;
-int g_iHeavy_Max;
-int g_iKev_Prio;
-int g_iHeavy_Prio;
+int g_iKev_Max = -1;
+int g_iHeavy_Max = -1;
+int g_iKev_Prio = -1;
+int g_iHeavy_Prio = -1;
 
-int g_iKevHelm_Max;
-int g_iKevHelm_Prio;
+int g_iKevHelm_Max = -1;
+int g_iKevHelm_Prio = -1;
 
-int g_iHelm_Max;
-int g_iHelm_Prio;
+int g_iHelm_Max = -1;
+int g_iHelm_Prio = -1;
 
-int g_iKnife_Max;
-int g_iKnife_Prio;
+int g_iKnife_Max = -1;
+int g_iKnife_Prio = -1;
 
-int g_iUSP_Prio;
-int g_iM4_Prio;
-int g_iAWP_Prio;
+int g_iUSP_Prio = -1;
+int g_iM4_Prio = -1;
+int g_iAWP_Prio = -1;
 
 // AK47
-int g_iAK_Prio;
-int g_iAK_Price;
+int g_iAK_Prio = -1;
+int g_iAK_Price = -1;
 char g_cAK_Long[64];
 
 // Deagle
-int g_iDeagle_Prio;
-int g_iDeagle_Price;
+int g_iDeagle_Prio = -1;
+int g_iDeagle_Price = -1;
 char g_cDeagle_Long[64];
 
 // Revolver
-int g_iRevolver_Prio;
-int g_iRevolver_Price;
+int g_iRevolver_Prio = -1;
+int g_iRevolver_Price = -1;
 char g_cRevolver_Long[64];
 
 // Scout
-int g_iScout_Prio;
-int g_iScout_Price;
+int g_iScout_Prio = -1;
+int g_iScout_Price = -1;
 char g_cScout_Long[64];
 
-int g_iKnives[MAXPLAYERS+1];
-int g_iKevs[MAXPLAYERS+1];
-int g_iHeavy[MAXPLAYERS+1];
-int g_iHelms[MAXPLAYERS+1];
-int g_iKevHelms[MAXPLAYERS+1];
+int g_iKnives[MAXPLAYERS+1] = { -1, ...};
+int g_iKevs[MAXPLAYERS+1] = { -1, ...};
+int g_iHeavy[MAXPLAYERS+1] = { -1, ...};
+int g_iHelms[MAXPLAYERS+1] = { -1, ...};
+int g_iKevHelms[MAXPLAYERS+1] = { -1, ...};
 
 char g_cKev_Long[64];
 char g_cKevHelm_Long[64];
@@ -199,50 +199,66 @@ public void OnClientPutInServer(int client)
 public void OnAllPluginsLoaded()
 {
 	if(g_iKev_Type == 0)
+	{
 		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_UNASSIGNED, g_iKev_Prio);
-	if(g_iKev_Type == 1)
+	}
+	else if(g_iKev_Type == 1)
 	{
 		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
 		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_DETECTIVE, g_iKev_Prio);
 	}
-	if(g_iKev_Type == 2)
+	else if(g_iKev_Type == 2)
+	{
 		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
+	}
 	
 	
 	
 	if(g_iHeavy_Type == 0)
+	{
 		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_UNASSIGNED, g_iHeavy_Prio);
-	if(g_iHeavy_Type == 1)
+	}
+	else if(g_iHeavy_Type == 1)
 	{
 		TTT_RegisterCustomItem(HEAVY_T_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_TRAITOR, g_iHeavy_Prio);
 		TTT_RegisterCustomItem(HEAVY_D_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_DETECTIVE, g_iHeavy_Prio);
 	}
-	if(g_iHeavy_Type == 2)
+	else if(g_iHeavy_Type == 2)
+	{
 		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHelm_Long, g_iHeavy_Price, TTT_TEAM_TRAITOR, g_iHeavy_Prio);
+	}
 	
 	
 	
 	
 	if(g_iHelm_Type == 0)
+	{
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_UNASSIGNED, g_iHelm_Prio);
-	if(g_iHelm_Type == 1)
+	}
+	else if(g_iHelm_Type == 1)
 	{
 		TTT_RegisterCustomItem(HELM_T_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
 		TTT_RegisterCustomItem(HELM_D_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_DETECTIVE, g_iHelm_Prio);
 	}
-	if(g_iHelm_Type == 2)
+	else if(g_iHelm_Type == 2)
+	{
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
+	}
 		
 	
 	if(g_iKevHelm_Type == 0)
+	{
 		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_UNASSIGNED, g_iKevHelm_Prio);
-	if(g_iKevHelm_Type == 1)
+	}
+	else if(g_iKevHelm_Type == 1)
 	{
 		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_TRAITOR, g_iKevHelm_Prio);
 		TTT_RegisterCustomItem(KEVHELM_D_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_DETECTIVE, g_iKevHelm_Prio);
 	}
-	if(g_iKevHelm_Type == 2)
+	else if(g_iKevHelm_Type == 2)
+	{
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_TRAITOR, g_iKevHelm_Prio);
+	}
 
 	TTT_RegisterCustomItem(KF_ITEM_SHORT, g_cKF_Long, g_iKF_Price, TTT_TEAM_TRAITOR, g_iKnife_Prio);
 	TTT_RegisterCustomItem(M4_ITEM_SHORT, g_cM4_Long, g_iM4_Price, TTT_TEAM_TRAITOR, g_iM4_Prio);
@@ -288,81 +304,115 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		if(strcmp(itemshort, USP_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-					return Plugin_Stop;
+			{
+				return Plugin_Stop;
+			}
 
 			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+			}
 
 			GivePlayerItem(client, "weapon_usp_silencer");
 		}
 		else if(strcmp(itemshort, AK_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+			}
 
 			GivePlayerItem(client, "weapon_ak47");
 		}
 		else if(strcmp(itemshort, DEAGLE_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+			}
 
 			GivePlayerItem(client, "weapon_deagle");
 		}
 		else if(strcmp(itemshort, REVOLVER_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY));
+			}
 
 			GivePlayerItem(client, "weapon_revolver");
 		}
 		else if(strcmp(itemshort, SCOUT_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+			}
 
 			GivePlayerItem(client, "weapon_sg008");
 		}
 		else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+			}
 
 			GivePlayerItem(client, "weapon_m4a1_silencer");
 		}
 		if(strcmp(itemshort, AWP_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 			if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+			{
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+			}
 
 			int iAWP = GivePlayerItem(client, "weapon_awp");
 
-			if(iAWP != -1){
+			if(iAWP != -1)
+			{
 				EquipPlayerWeapon(client, iAWP);
 				SetEntProp(iAWP, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
 				SetEntProp(iAWP, Prop_Send, "m_iClip1", GetRandomInt(g_iAWP_Min_Shots, g_iAWP_Max_Shots));
-			}else{
+			}
+			else
+			{
 				TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_iAWP_Price);
 			}
 		}
 		else if(strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
 
-			if(g_iKnives[client] > g_iKnife_Max > 0){
+			if(g_iKnives[client] > g_iKnife_Max > 0)
+			{
 				CPrintToChat(client, "%t", "You reached limit", g_iKnife_Max);
 				return Plugin_Stop;
 			}
@@ -374,7 +424,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		 || (strcmp(itemshort, KEV_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEV_D_ITEM_SHORT, false) == 0))
 		 {
-				if(g_iKevs[client] > g_iKev_Max > 0){
+				if(g_iKevs[client] > g_iKev_Max > 0)
+				{
 					CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
 					return Plugin_Stop;
 				}
@@ -382,21 +433,28 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 				{
 					if(g_iKev_Type == 0)
+					{
 						GiveArmor(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 				{
 					if(g_iKev_Type == 0 || g_iKev_Type == 1)
+					{
 						GiveArmor(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				{
 					GiveArmor(client);
+				}
 		}
 		else if((strcmp(itemshort, KEVHELM_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEVHELM_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, KEVHELM_D_ITEM_SHORT, false) == 0))
 		 {
-			if(g_iKevHelms[client] > g_iKevHelm_Max > 0){
+			if(g_iKevHelms[client] > g_iKevHelm_Max > 0)
+			{
 				CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
 				return Plugin_Stop;
 			}
@@ -408,7 +466,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 		 || (strcmp(itemshort, HELM_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, HELM_D_ITEM_SHORT, false) == 0))
 		 {
-				if(g_iHelms[client] > g_iHelm_Max > 0){
+				if(g_iHelms[client] > g_iHelm_Max > 0)
+				{
 					CPrintToChat(client, "%t", "You reached limit", g_iHelm_Max);
 					return Plugin_Stop;
 				}
@@ -416,21 +475,28 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 				{
 					if(g_iHelm_Type == 0)
+					{
 						GiveHelm(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 				{
 					if(g_iHelm_Type == 0 || g_iHelm_Type == 1)
+					{
 						GiveHelm(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				{
 					GiveArmor(client);
+				}
 		}
 		else if(	(strcmp(itemshort, HEAVY_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, HEAVY_T_ITEM_SHORT, false) == 0)
 		 || (strcmp(itemshort, HEAVY_D_ITEM_SHORT, false) == 0))
 		 {
-				if(g_iHeavy[client] > g_iHeavy_Max > 0){
+				if(g_iHeavy[client] > g_iHeavy_Max > 0)
+				{
 					CPrintToChat(client, "%t", "You reached limit", g_iHeavy_Max);
 					return Plugin_Stop;
 				}
@@ -438,15 +504,21 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 				{
 					if(g_iHeavy_Type == 0)
+					{
 						GiveHeavy(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 				{
 					if(g_iHeavy_Type == 0 || g_iHeavy_Type == 1)
+					{
 						GiveHeavy(client);
+					}
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+				{
 					GiveHeavy(client);
+				}
 		}
 	}
 
@@ -467,7 +539,9 @@ void GiveHeavy(int client)
 	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
 	
 	if(g_iHeavy_Armor > 100)
+	{
 		SetEntProp(client, Prop_Data, "m_ArmorValue", g_iHeavy_Armor, 1);
+	}
 }
 
 void GiveHelm(int client)
@@ -478,7 +552,8 @@ void GiveHelm(int client)
 
 void ResetKnifes()
 {
-	LoopValidClients(i){
+	LoopValidClients(i)
+	{
 		g_bHasKnife[i] = false;
 		g_iKnives[i] = 0;
 		g_iKevs[i] = 0;
@@ -490,10 +565,14 @@ void ResetKnifes()
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType, int &iWeapon, float fDamageForce[3], float fDamagePosition[3])
 {
 	if(!TTT_IsRoundActive())
+	{
 		return Plugin_Continue;
+	}
 
 	if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+	{
 		return Plugin_Continue;
+	}
 
 	if(g_bHasKnife[iAttacker])
 	{

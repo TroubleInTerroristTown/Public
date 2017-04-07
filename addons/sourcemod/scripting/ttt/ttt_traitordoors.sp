@@ -38,9 +38,14 @@ Handle g_aDoors = null;
 
 stock void SetupDoors()
 {
-	if(g_aDoors == null)
+	if (g_aDoors == null)
+	{
 		g_aDoors = CreateArray(1);
-	else ClearArray(g_aDoors);
+	}
+	else
+	{
+		ClearArray(g_aDoors);
+	}
 	
 	int maxent = GetMaxEntities();
 	char sClass[64];
@@ -64,19 +69,27 @@ stock void SetupDoors()
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
+	{
 		return Plugin_Continue;
+	}
 		
-	if(!(buttons & IN_USE))
+	if (!(buttons & IN_USE))
+	{
 		return Plugin_Continue;
+	}
 	
-	if(TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+	{
 		return Plugin_Continue;
+	}
 	
 	int target = GetClientAimTarget(client, false);
 	
-	if(!IsValidEntity(target))
+	if (!IsValidEntity(target))
+	{
 		return Plugin_Continue;
+	}
 	
 	char sClass[64];
 	char sName[64];
@@ -95,8 +108,10 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public int OnLockedUse(const char[] output, int caller, int attacker, float data)
 {
-	if(TTT_GetClientRole(attacker) != TTT_TEAM_TRAITOR)
+	if (TTT_GetClientRole(attacker) != TTT_TEAM_TRAITOR)
+	{
 		return;
+	}
 	
 	AcceptEntityInput(caller, "Unlock");
 	AcceptEntityInput(caller, "Open");

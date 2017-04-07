@@ -127,14 +127,18 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (TTT_IsClientValid(client))
+	{
 		ResetGlobals(client);
+	}
 }
 
 public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	if (TTT_IsClientValid(client))
+	{
 		ResetJihad(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -171,7 +175,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if (role != TTT_TEAM_TRAITOR || g_bHasC4[client])
+			{
 				return Plugin_Stop;
+			}
 			if(g_iPCount_C4[client] >= g_iCount_C4)
 			{			
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName_C4, g_iCount_C4);
@@ -187,7 +193,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int role = TTT_GetClientRole(client);
 			
 			if (role != TTT_TEAM_TRAITOR || g_bHasJ[client])
+			{
 				return Plugin_Stop;
+			}
 			
 			
 			ClearTimer(g_hJihadBomb[client]);
@@ -205,7 +213,9 @@ public Action Timer_JihadPreparing(Handle timer, any userid)
 	int client = GetClientOfUserId(userid);
 	
 	if(!IsPlayerAlive(client))
+	{
 		return Plugin_Stop;
+	}
 	
 	CPrintToChat(client, g_sPluginTag, "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
@@ -216,14 +226,18 @@ public Action Timer_JihadPreparing(Handle timer, any userid)
 public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
 {
 	if (!g_bRemoveBomb)
+	{
 		return Plugin_Continue;
+	}
 	
 	char sItem[32];
 	event.GetString("item", sItem, sizeof(sItem));
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (TTT_IsClientValid(client))
+	{
 		RemoveC4(client);
+	}
 	return Plugin_Continue;
 }
 
@@ -276,7 +290,9 @@ stock void Detonate(int client)
 public Action Command_Detonate(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	if (!g_bHasJ[client])
 	{
@@ -301,7 +317,9 @@ public Action Command_Detonate(int client, int args)
 public Action TimerCallback_Detonate(Handle timer, any client)
 {
 	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	Detonate(client);
 	return Plugin_Handled;
@@ -310,7 +328,9 @@ public Action TimerCallback_Detonate(Handle timer, any client)
 public Action Command_LAW(int client, const char[] command, int argc)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Continue;
+	}
 	
 	if (IsPlayerAlive(client) && g_bHasJ[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
@@ -332,7 +352,9 @@ public Action Command_LAW(int client, const char[] command, int argc)
 public Action Reset(Handle timer, any client)
 {
 	if (!client || !IsClientInGame(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	g_bDetonate[client] = false;
 	return Plugin_Handled;
@@ -347,7 +369,9 @@ public Action explodeC4(Handle timer, Handle pack)
 	bombEnt = ReadPackCell(pack);
 	
 	if (!IsValidEntity(bombEnt))
+	{
 		return Plugin_Stop;
+	}
 	
 	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
@@ -358,7 +382,10 @@ public Action explodeC4(Handle timer, Handle pack)
 		g_hExplosionTimer[client] = null;
 		CPrintToChat(client, g_sPluginTag, "Bomb Detonated", client);
 	}
-	else return Plugin_Stop;
+	else
+	{
+		return Plugin_Stop;
+	}
 	
 	int explosionIndex = CreateEntityByName("env_explosion");
 	int particleIndex = CreateEntityByName("info_particle_system");
@@ -395,7 +422,9 @@ public Action explodeC4(Handle timer, Handle pack)
 		LoopValidClients(i)
 		{
 			if (!IsPlayerAlive(i))
+			{
 				continue;
+			}
 			
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
@@ -411,7 +440,9 @@ public Action explodeC4(Handle timer, Handle pack)
 		}
 		
 		for (int i = 1; i <= 2; i++)
-		EmitAmbientSoundAny(SND_BURST, explosionOrigin, _, SNDLEVEL_RAIDSIREN);
+		{
+			EmitAmbientSoundAny(SND_BURST, explosionOrigin, _, SNDLEVEL_RAIDSIREN);
+		}
 	}
 	return Plugin_Continue;
 }
@@ -435,8 +466,12 @@ public int TTT_OnButtonPress(int client, int button)
 				showPlantMenu(client);
 				
 				/* if(g_bC4Glow)
+				{
 					if(SDKHookEx(bombEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-						SetupGlow(bombEnt); */
+					{
+						SetupGlow(bombEnt);
+					}
+				} */
 			}
 		}
 	}
@@ -449,7 +484,9 @@ public int TTT_OnButtonPress(int client, int button)
 			GetClientEyePosition(client, clientEyes);
 			GetEntPropVector(target, Prop_Data, "m_vecOrigin", targetOrigin);
 			if (GetVectorDistance(clientEyes, targetOrigin) > 100.0)
+			{
 				return;
+			}
 
 			int iEnt;
 			while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
@@ -457,13 +494,17 @@ public int TTT_OnButtonPress(int client, int button)
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
 
 				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
+				{
 					return;
+				}
 
 				char sModelPath[PLATFORM_MAX_PATH];
 				GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 
 				if(!StrEqual(MDL_C4, sModelPath))
+				{
 					return;
+				}
 
 				if (target == iEnt)
 				{
@@ -480,7 +521,9 @@ public int TTT_OnButtonPress(int client, int button)
 	int iOffset;
 	
 	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
+	{
 		return;
+	}
 	
 	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
 	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
@@ -495,19 +538,29 @@ public int TTT_OnButtonPress(int client, int button)
 public Action OnSetTransmit_GlowSkin(int entity, int client)
 {
 	if(!TTT_IsRoundActive())
+	{
 		return Plugin_Handled;
+	}
 	
 	if(client == 0 || IsFakeClient(client))
+	{
 		return Plugin_Handled;
+	}
 		
 	if(!IsPlayerAlive(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	if(!IsValidEntity(entity))
+	{
 		return Plugin_Handled;
+	}
 	
 	if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		return Plugin_Continue;
+	}
 	
 	return Plugin_Handled;
 } */
@@ -515,7 +568,9 @@ public Action OnSetTransmit_GlowSkin(int entity, int client)
 stock void showPlantMenu(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return;
+	}
 	
 	char sTitle[128];
 	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
@@ -543,7 +598,9 @@ stock void showPlantMenu(int client)
 stock void showDefuseMenu(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return;
+	}
 	
 	char sTitle[128];
 	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
@@ -567,7 +624,9 @@ stock void showDefuseMenu(int client)
 public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return;
+	}
 	
 	switch (action)
 	{
@@ -576,17 +635,29 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 			char info[100];
 			GetMenuItem(menu, option, info, sizeof(info));
 			if (StrEqual(info, "10"))
+			{
 				plantBomb(client, 10.0);
+			}
 			else if (StrEqual(info, "20"))
+			{
 				plantBomb(client, 20.0);
+			}
 			else if (StrEqual(info, "30"))
+			{
 				plantBomb(client, 30.0);
+			}
 			else if (StrEqual(info, "40"))
+			{
 				plantBomb(client, 40.0);
+			}
 			else if (StrEqual(info, "50"))
+			{
 				plantBomb(client, 50.0);
+			}
 			else if (StrEqual(info, "60"))
+			{
 				plantBomb(client, 60.0);
+			}
 			g_bHasC4[client] = false;
 		}
 		case MenuAction_End:
@@ -606,7 +677,9 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return;
+	}
 	
 	switch (action)
 	{
@@ -655,14 +728,18 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			g_iDefusePlayerIndex[client] = -1;
 		}
 		case MenuAction_Cancel:
-		g_iDefusePlayerIndex[client] = -1;
+		{
+			g_iDefusePlayerIndex[client] = -1;
+		}
 	}
 }
 
 stock float plantBomb(int client, float time)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
+	{
 		return;
+	}
 	
 	if (!IsPlayerAlive(client))
 	{
@@ -677,18 +754,24 @@ stock float plantBomb(int client, float time)
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
 	{
 		if (GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity") != client)
+		{
 			continue;
+		}
 		
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(bombEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 		
 		if (!StrEqual(MDL_C4, sModelPath))
+		{
 			continue;
+		}
 		
 		Handle explosionPack;
 		Handle beepPack;
 		if (g_hExplosionTimer[client] != null)
+		{
 			KillTimer(g_hExplosionTimer[client]);
+		}
 		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack);
 		CreateDataTimer(1.0, bombBeep, beepPack);
 		WritePackCell(explosionPack, GetClientUserId(client));
@@ -700,7 +783,9 @@ stock float plantBomb(int client, float time)
 	}
 	
 	if (!bombFound)
+	{
 		CPrintToChat(client, g_sPluginTag, "Bomb Was Not Found", client);
+	}
 	
 	g_iWire[client] = Math_GetRandomInt(1, 4);
 	CPrintToChat(client, g_sPluginTag, "Wire Is", client, g_iWire[client]);
@@ -714,13 +799,17 @@ stock int findBombPlanter(int &bomb)
 		int iPlanter = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
 		
 		if (iPlanter <= 0)
+		{
 			continue;
+		}
 		
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 		
 		if (!StrEqual(MDL_C4, sModelPath))
+		{
 			continue;
+		}
 		
 		bomb = iEnt;
 		return iPlanter;
@@ -732,19 +821,25 @@ stock int findBombPlanter(int &bomb)
 stock int findBomb(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client))
+	{
 		return -1;
+	}
 	
 	int iEnt;
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
 		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
+		{
 			continue;
+		}
 		
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 		
 		if (!StrEqual(MDL_C4, sModelPath))
+		{
 			continue;
+		}
 		
 		return iEnt;
 	}
@@ -759,11 +854,15 @@ public Action bombBeep(Handle timer, Handle pack)
 	bombEnt = ReadPackCell(pack);
 	beeps = ReadPackCell(pack);
 	if (!IsValidEntity(bombEnt))
+	{
 		return Plugin_Stop;
+	}
 
 	int owner = GetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity");
 	if (!TTT_IsClientValid(owner))
+	{
 		return Plugin_Stop;
+	}
 
 	float bombPos[3];
 	GetEntPropVector(bombEnt, Prop_Data, "m_vecOrigin", bombPos);
@@ -774,10 +873,15 @@ public Action bombBeep(Handle timer, Handle pack)
 		beeps--;
 		stopBeeping = false;
 	}
-	else stopBeeping = true;
+	else
+	{
+		stopBeeping = true;
+	}
 
 	if (stopBeeping)
+	{
 		return Plugin_Stop;
+	}
 
 	Handle bombBeep2;
 	CreateDataTimer(1.0, bombBeep, bombBeep2);
@@ -792,13 +896,17 @@ stock void removeBomb(int client)
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
 		if (GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity") != client)
+		{
 			continue;
+		}
 		
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
 		
 		if (!StrEqual(MDL_C4, sModelPath))
+		{
 			continue;
+		}
 		
 		// SDKUnhook(iEnt, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		

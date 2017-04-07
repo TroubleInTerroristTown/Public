@@ -34,24 +34,24 @@ bool g_bEndOverlay = false;
 
 bool g_bEnableHud = false;
 
-float g_fPosRX;
-float g_fPosRY;
+float g_fPosRX = -1.0;
+float g_fPosRY = -1.0;
 
-float g_fPosDX;
-float g_fPosDY;
+float g_fPosDX = -1.0;
+float g_fPosDY = -1.0;
 
-float g_fPosIX;
-float g_fPosIY;
+float g_fPosIX = -1.0;
+float g_fPosIY = -1.0;
 
-float g_fPosTX;
-float g_fPosTY;
+float g_fPosTX = -1.0;
+float g_fPosTY = -1.0;
 
 char g_sColorR[32];
 char g_sColorD[32];
 char g_sColorI[32];
 char g_sColorT[32];
 
-float g_fDelay;
+float g_fDelay = -1.0;
 
 Handle g_hSyncR = null;
 Handle g_hSyncD = null;
@@ -170,18 +170,24 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 public void TTT_OnRoundEnd(int winner)
 {
-	if(g_fDelay > 0.0)
+	if (g_fDelay > 0.0)
 	{
 		g_bEndOverlay = true;
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
 	
-	if(winner == TTT_TEAM_TRAITOR)
+	if (winner == TTT_TEAM_TRAITOR)
+	{
 		ShowOverlayToAll(g_soverlayTWin);
-	else if(winner == TTT_TEAM_INNOCENT)
+	}
+	else if (winner == TTT_TEAM_INNOCENT)
+	{
 		ShowOverlayToAll(g_soverlayIWin);
-	else if(winner == TTT_TEAM_DETECTIVE)
+	}
+	else if (winner == TTT_TEAM_DETECTIVE)
+	{
 		ShowOverlayToAll(g_soverlayDWin);
+	}
 }
 
 public Action Delay_Timer(Handle timer, any data)
@@ -196,11 +202,15 @@ public void TTT_OnClientGetRole(int client, int role)
 
 public void TTT_OnUpdate1(int client)
 {
-	if(!g_bEndOverlay)
+	if (!g_bEndOverlay)
+	{
 		AssignOverlay(client, TTT_GetClientRole(client));
+	}
 	
-	if(!TTT_IsRoundActive())
+	if (!TTT_IsRoundActive())
+	{
 		return;
+	}
 	
 	int iDet = 0;
 	int iInn = 0;
@@ -208,18 +218,24 @@ public void TTT_OnUpdate1(int client)
 	
 	LoopValidClients(i)
 	{
-		if(!TTT_WasBodyFound(i))
+		if (!TTT_WasBodyFound(i))
 		{
-			if(TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+			if (TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+			{
 				iDet++;
-			else if(TTT_GetClientRole(i) == TTT_TEAM_INNOCENT)
+			}
+			else if (TTT_GetClientRole(i) == TTT_TEAM_INNOCENT)
+			{
 				iInn++;
-			else if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+			}
+			else if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+			{
 				iTra++;
+			}
 		}
 	}
 	
-	if(g_bEnableHud)
+	if (g_bEnableHud)
 	{
 		char sCR[4][4], sCD[4][4], sCI[4][4], sCT[4][4];
 		char sR[24], sD[24], sI[24], sT[24];
@@ -229,24 +245,36 @@ public void TTT_OnUpdate1(int client)
 		ExplodeString(g_sColorR, ";", sCR, sizeof(sCR), sizeof(sCR[]));
 		
 		// Detective formating
-		if(iDet == 1)
+		if (iDet == 1)
+		{
 			Format(sD, sizeof(sD), "%d Detective", iDet);
-		else if(iDet > 1)
+		}
+		else if (iDet > 1)
+		{
 			Format(sD, sizeof(sD), "%d Detectives", iDet);
+		}
 		ExplodeString(g_sColorD, ";", sCD, sizeof(sCD), sizeof(sCD[]));
 		
 		// Innocent formating
-		if(iInn == 1)
+		if (iInn == 1)
+		{
 			Format(sI, sizeof(sI), "%d Innocent", iInn);
-		else if(iInn > 1)
+		}
+		else if (iInn > 1)
+		{
 			Format(sI, sizeof(sI), "%d Innocents", iInn);
+		}
 		ExplodeString(g_sColorI, ";", sCI, sizeof(sCI), sizeof(sCI[]));
 		
 		// Traitor formating
-		if(iTra == 1)
+		if (iTra == 1)
+		{
 			Format(sT, sizeof(sT), "%d Traitor", iTra);
-		else if(iTra > 1)
+		}
+		else if (iTra > 1)
+		{
 			Format(sT, sizeof(sT), "%d Traitors", iTra);
+		}
 		ExplodeString(g_sColorT, ";", sCT, sizeof(sCT), sizeof(sCT[]));
 		
 		LoopValidClients(i)
@@ -261,17 +289,27 @@ public void TTT_OnUpdate1(int client)
 
 public void AssignOverlay(int client, int role)
 {
-	if(TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+	if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+	{
 		ShowOverlayToClient(client, " ");
-	if(!IsPlayerAlive(client))
+	}
+	if (!IsPlayerAlive(client))
+	{
 		ShowOverlayToClient(client, " ");
+	}
 	
 	if (role == TTT_TEAM_DETECTIVE)
+	{
 		ShowOverlayToClient(client, g_sDetectiveIcon);
+	}
 	else if (role == TTT_TEAM_TRAITOR)
+	{
 		ShowOverlayToClient(client, g_sTraitorIcon);
+	}
 	else if (role == TTT_TEAM_INNOCENT)
+	{
 		ShowOverlayToClient(client, g_sInnocentIcon);
+	}
 }
 
 void showHud(Handle sync, int client, char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)

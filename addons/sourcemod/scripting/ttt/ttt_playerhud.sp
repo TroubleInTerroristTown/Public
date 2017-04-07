@@ -61,12 +61,14 @@ public Action Timer_UpdateText(Handle timer)
 		if (IsPlayerAlive(client))
 		{
 			int iTarget = TraceClientViewEntity(client);
-			if(iTarget != g_iTarget[client])
+			if (iTarget != g_iTarget[client])
 			{	
 				g_iTarget[client] = iTarget;
 				
-				if(!TTT_IsClientValid(iTarget))
+				if (!TTT_IsClientValid(iTarget))
+				{
 					continue;
+				}
 				
 				char sName[32];
 				char sPlayerName[64];
@@ -76,8 +78,10 @@ public Action Timer_UpdateText(Handle timer)
 				char sPlayerKarma[32];
 				char sHintText[512];
 
-				if(PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
+				if (PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
+				{
 					PrintHintText(client, sHintText);
+				}
 			}
 		}
 	}
@@ -96,49 +100,81 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextT);
 		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-T", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-D", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-I", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-U", client, target);
+		}
 	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextD);
 		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-T", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-D", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-I", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-U", client, target);
+		}
 	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextI);
 		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-T", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-D", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-I", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-U", client, target);
+		}
 	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_UNASSIGNED)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_UNASSIGNED)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextI);
 		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-T", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-D", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-I", client, target);
-		else if(TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		}
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
+		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-U", client, target);
+		}
 	}
 	
 	Action res = Plugin_Continue;
@@ -159,7 +195,9 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Call_PushCell(iPlayerKarmaLength);
 	Call_Finish(res);
 	if (res >= Plugin_Handled)
+	{
 		return false;
+	}
 	
 	ReplaceString(sHintText, iHintTextLength, "{Name}", sName, false);
 	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName, false);
@@ -189,8 +227,10 @@ stock int TraceClientViewEntity(int client)
 		return pEntity;
 	}
 
-	if(tr != null)
+	if (tr != null)
+	{
 		delete(tr);
+	}
 
 	return -1;
 }

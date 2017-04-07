@@ -34,8 +34,10 @@ public void OnEntityCreated(int entity, const char[] classname)
 public int OnEntityCreated(int entity, const char[] classname)
 #endif
 {
-	if(StrEqual(classname, "prop_ragdoll"))
+	if (StrEqual(classname, "prop_ragdoll"))
+	{
 		SDKHook(entity, SDKHook_SpawnPost, Spawned);
+	}
 }
 
 public void Spawned(int entity)
@@ -49,13 +51,17 @@ public void OnEntityDestroyed(int entity)
 public int OnEntityDestroyed(int entity)
 #endif
 {
-	if(!IsValidEdict(entity) || !IsValidEntity(entity))
+	if (!IsValidEdict(entity) || !IsValidEntity(entity))
+	{
 		return;
+	}
 	
 	char classname[128];
 	GetEdictClassname(entity, classname, sizeof(classname));
-	if(StrEqual(classname, "prop_ragdoll"))
+	if (StrEqual(classname, "prop_ragdoll"))
+	{
 		SDKUnhook(entity, SDKHook_Think, OnThink);
+	}
 }
 
 public void OnThink(int entity)
@@ -63,11 +69,17 @@ public void OnThink(int entity)
 	float fVelocity[3];
 	GetEntPropVector(entity, Prop_Data, "m_vecVelocity", fVelocity);
 	float speed = GetVectorLength(fVelocity);
-	if(speed >= RemoveSpeed)
+	if (speed >= RemoveSpeed)
+	{
 		RemoveEdict(entity);
-	else if(speed >= FreezeSpeed)
-		if(!(GetEntityFlags(entity) & FL_FROZEN))
+	}
+	else if (speed >= FreezeSpeed)
+	{
+		if (!(GetEntityFlags(entity) & FL_FROZEN))
+		{
 			KillVelocity(entity);
+		}
+	}
 }
 
 stock void KillVelocity(int entity)
@@ -80,9 +92,9 @@ stock void KillVelocity(int entity)
 public Action Restore(Handle timer, any ref2)
 {
 	int entity = EntRefToEntIndex(ref2);
-	if(entity != INVALID_ENT_REFERENCE)
+	if (entity != INVALID_ENT_REFERENCE)
 	{
-		if(GetEntityFlags(entity) & FL_FROZEN)
+		if (GetEntityFlags(entity) & FL_FROZEN)
 		{
 			int flags = GetEntityFlags(entity);
 			SetEntityFlags(entity, flags&~FL_FROZEN);

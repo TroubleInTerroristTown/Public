@@ -137,10 +137,12 @@ public void HookClient(int client)
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if(role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
+	if (role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
 	{
-		if(g_bTaser[client])
+		if (g_bTaser[client])
+		{
 			return;
+		}
 		
 		GivePlayerItem(client, "weapon_taser");
 		g_iDPCount[client]++;
@@ -151,8 +153,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		ResetTaser(client);
+	}
 }
 
 public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)
@@ -162,19 +166,25 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
 	event.GetString("item", sWeapon, sizeof(sWeapon));
 	
 	if (StrContains(sWeapon, "taser", false) != -1)
+	{
 		g_bTaser[client] = true;
+	}
 }
 
 public Action OnWeaponDrop(int client, int weapon)
 {
-	if(weapon == -1)
+	if (weapon == -1)
+	{
 		return;
+	}
 	
 	char sWeapon[32];
 	GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
 	
 	if (StrContains(sWeapon, "taser", false) != -1)
+	{
 		g_bTaser[client] = false;
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -186,29 +196,29 @@ public void OnAllPluginsLoaded()
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
+		if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iDCount);
 				return Plugin_Stop;
 			}
-			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
+			else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
 			{
 				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iICount);
 				return Plugin_Stop;
 			}
-			else if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			else if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iTCount);
 				return Plugin_Stop;
 			}
 			
-			if(g_bTaser[client])
+			if (g_bTaser[client])
 			{
 				CPrintToChat(client, g_sPluginTag, "AlreadyTaser", client);
 				return Plugin_Stop;
@@ -217,12 +227,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			GivePlayerItem(client, "weapon_taser");
 			g_bTaser[client] = true;
 			
-			if(role == TTT_TEAM_DETECTIVE)
+			if (role == TTT_TEAM_DETECTIVE)
+			{
 				g_iDPCount[client]++;
-			else if(role == TTT_TEAM_INNOCENT)
+			}
+			else if (role == TTT_TEAM_INNOCENT)
+			{
 				g_iIPCount[client]++;
-			else if(role == TTT_TEAM_TRAITOR)
+			}
+			else if (role == TTT_TEAM_TRAITOR)
+			{
 				g_iTPCount[client]++;
+			}
 		}
 	}
 	return Plugin_Continue;
@@ -240,16 +256,24 @@ void ResetTaser(int client)
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
 	if (!TTT_IsRoundActive())
+	{
 		return Plugin_Continue;
+	}
 	
 	if (IsWorldDamage(iAttacker, damagetype))
+	{
 		return Plugin_Continue;
+	}
 	
 	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+	{
 		return Plugin_Continue;
+	}
 	
 	if (g_bInflictor && iAttacker != inflictor)
+	{
 		return Plugin_Continue;
+	}
 	
 	char sWeapon[64];
 	int iRole = TTT_GetClientRole(iVictim);
@@ -261,10 +285,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			TTT_LogString("-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
 			
-			if(g_bBroadcastTaserResult)
+			if (g_bBroadcastTaserResult)
+			{
 				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
+			}
 			else
+			{
 				CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
+			}
 			
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
@@ -272,22 +300,30 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			TTT_LogString("-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
 			
-			if(g_bBroadcastTaserResult)
+			if (g_bBroadcastTaserResult)
+			{
 				CPrintToChatAll(g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
+			}
 			else
+			{
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+			}
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			TTT_LogString("-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
 			
-			if(g_bBroadcastTaserResult)
+			if (g_bBroadcastTaserResult)
+			{
 				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
+			}
 			else
+			{
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+			}
 		}
 		
-		if(iARole != TTT_TEAM_TRAITOR)
+		if (iARole != TTT_TEAM_TRAITOR)
 		{
 			if (g_iDamage == 0)
 			{

@@ -84,13 +84,17 @@ public void OnClientDisconnect(int client)
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
 	LoopValidClients(client)
+	{
 		ClearIcon(client);
+	}
 }
 
 public void TTT_OnUpdate1(int client)
 {
-	if(IsPlayerAlive(client))
+	if (IsPlayerAlive(client))
+	{
 		g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
+	}
 }
 
 public void TTT_OnRoundStart()
@@ -113,16 +117,22 @@ public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroa
 stock void ApplyIcons()
 {
 	LoopValidClients(i)
-		if(IsPlayerAlive(i))
+	{
+		if (IsPlayerAlive(i))
+		{
 			g_iIcon[i] = CreateIcon(i, TTT_GetClientRole(i));
+		}
+	}
 }
 
 stock int CreateIcon(int client, int role)
 {
 	ClearIcon(client);
 	
-	if(role < TTT_TEAM_TRAITOR)
+	if (role < TTT_TEAM_TRAITOR)
+	{
 		return -1;
+	}
 
 	char iTarget[16];
 	Format(iTarget, 16, "client%d", client);
@@ -134,15 +144,21 @@ stock int CreateIcon(int client, int role)
 	origin[2] = origin[2] + 80.0;
 
 	int ent = CreateEntityByName("env_sprite");
-	if(!ent)
+	if (!ent)
+	{
 		return -1;
+	}
 	
 	char sBuffer[PLATFORM_MAX_PATH];
 	
-	if(role == TTT_TEAM_DETECTIVE)
+	if (role == TTT_TEAM_DETECTIVE)
+	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
-	else if(role == TTT_TEAM_TRAITOR)
+	}
+	else if (role == TTT_TEAM_TRAITOR)
+	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
+	}
 	
 	DispatchKeyValue(ent, "model", sBuffer);
 	DispatchKeyValue(ent, "classname", "env_sprite");
@@ -155,23 +171,27 @@ stock int CreateIcon(int client, int role)
 	SetVariantString(iTarget);
 	AcceptEntityInput(ent, "SetParent", ent, ent);
 
-	if(role == TTT_TEAM_TRAITOR)
+	if (role == TTT_TEAM_TRAITOR)
+	{
 		SDKHook(ent, SDKHook_SetTransmit, Hook_SetTransmitT);
+	}
 	return ent;
 }
 
 public Action Hook_SetTransmitT(int entity, int client)
 {
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
 		// Show T-Icon to dead players if g_bSeeRoles true
-		if(!IsPlayerAlive(client))
+		if (!IsPlayerAlive(client))
 		{
-			if(g_bSeeRoles)
+			if (g_bSeeRoles)
+			{
 				return Plugin_Continue;
+			}
 			else
 			{
-				if(strlen(g_sAdminImmunity) > 1)
+				if (strlen(g_sAdminImmunity) > 1)
 				{
 					char sFlags[16];
 					AdminFlag aFlags[16];
@@ -179,14 +199,16 @@ public Action Hook_SetTransmitT(int entity, int client)
 					Format(sFlags, sizeof(sFlags), g_sAdminImmunity);
 					FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
 					
-					if(TTT_HasFlags(client, aFlags))
+					if (TTT_HasFlags(client, aFlags))
+					{
 						return Plugin_Continue;
+					}
 				}
 			}
 		}
 		
 		// Show T-Icon only for other living traitors
-		if(IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		if (IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			return Plugin_Continue;
 	}	
 	return Plugin_Handled;
@@ -196,10 +218,12 @@ stock void ClearIcon(int client)
 {
 	int role = TTT_GetClientRole(client);
 	
-	if(IsValidEdict(g_iIcon[client]))
+	if (IsValidEdict(g_iIcon[client]))
 	{
-		if(role == TTT_TEAM_TRAITOR)
+		if (role == TTT_TEAM_TRAITOR)
+		{
 			SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
+		}
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
 	

@@ -202,7 +202,7 @@ public void OnPluginStart()
 	// Late load
 	for (int i = 0; i <= MaxClients; i++)
 	{
-		if(TTT_IsClientValid(i))
+		if (TTT_IsClientValid(i))
 		{
 			OnClientCookiesCached(i);
 		}
@@ -211,7 +211,7 @@ public void OnPluginStart()
 
 public void OnClientCookiesCached(int client)
 {
-	if(AreClientCookiesCached(client))
+	if (AreClientCookiesCached(client))
 	{
 		char sBuffer[4];
 		GetClientCookie(client, g_hReopenCookie, sBuffer, sizeof(sBuffer));
@@ -228,9 +228,11 @@ public void OnClientCookiesCached(int client)
 public Action Command_Buy(int client, int args)
 {
 	if (!TTT_IsClientValid(client) || args < 1)
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
@@ -239,8 +241,10 @@ public Action Command_Buy(int client, int args)
 	char sItem[16];
 	GetCmdArg(1, sItem, sizeof(sItem));
 	
-	if(strlen(sItem) > 0)
+	if (strlen(sItem) > 0)
+	{
 		ClientBuyItem(client, sItem);
+	}
 		
 	return Plugin_Handled;
 }
@@ -248,7 +252,9 @@ public Action Command_Buy(int client, int args)
 public Action Command_ShowItems(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 		
 	int temp_item[Item];
 	
@@ -258,7 +264,9 @@ public Action Command_ShowItems(int client, int args)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if (strlen(temp_item[Short]) > 1)
+		{
 			PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
+		}
 	}
 	return Plugin_Handled;
 }
@@ -266,9 +274,11 @@ public Action Command_ShowItems(int client, int args)
 public Action Command_Shop(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
@@ -311,7 +321,9 @@ public Action Command_Shop(int client, int args)
 public Action Command_ReopenShop(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	if (g_bReopen[client])
 	{
@@ -341,7 +353,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 {
 	if (action == MenuAction_Select)
 	{
-		if(!IsPlayerAlive(client))
+		if (!IsPlayerAlive(client))
 		{
 			CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
 			return;
@@ -352,8 +364,10 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		
 		ClientBuyItem(client, info);
 		
-		if(g_bReopenMenu && g_bReopen[client])
+		if (g_bReopenMenu && g_bReopen[client])
+		{
 			Command_Shop(client, 0);
+		}
 	}
 	
 	else if (action == MenuAction_End)
@@ -378,7 +392,8 @@ bool ClientBuyItem(int client, char[] item)
 				Call_PushString(temp_item[Short]);
 				Call_Finish(res);
 				
-				if (res < Plugin_Stop) {
+				if (res < Plugin_Stop)
+				{
 					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - temp_item[Price]));
 					CPrintToChat(client, g_sPluginTag, "Item bought!", client, TTT_GetClientCredits(client), temp_item[Long]);
 					return true;
@@ -398,7 +413,9 @@ bool ClientBuyItem(int client, char[] item)
 public Action Command_Say(int client, const char[] command, int argc)
 {
 	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
+	{
 		return Plugin_Continue;
+	}
 	
 	char sText[MAX_MESSAGE_LENGTH];
 	GetCmdArgString(sText, sizeof(sText));
@@ -406,7 +423,9 @@ public Action Command_Say(int client, const char[] command, int argc)
 	StripQuotes(sText);
 	
 	if (sText[0] == '@')
+	{
 		return Plugin_Continue;
+	}
 	
 	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
 	{
@@ -414,7 +433,9 @@ public Action Command_Say(int client, const char[] command, int argc)
 		Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
 		
 		if (StrEqual(sText, sBuffer, false))
+		{
 			return Plugin_Handled;
+		}
 	}
 	return Plugin_Continue;
 }
@@ -422,7 +443,9 @@ public Action Command_Say(int client, const char[] command, int argc)
 public int Native_RegisterCustomItem(Handle plugin, int numParams)
 {
 	if (numParams < 4)
+	{
 		return false;
+	}
 
 	char temp_short[16];
 	char temp_long[64];
@@ -435,7 +458,9 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	int temp_item[Item];
 	
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
+	{
 		return false;
+	}
 	
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
@@ -454,8 +479,10 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	g_aCustomItems.PushArray(temp_item[0]);
 	
 	
-	if(g_bSortItems)
+	if (g_bSortItems)
+	{
 		SortADTArrayCustom(g_aCustomItems, Sorting);
+	}
 	
 	return true;
 }
@@ -467,12 +494,16 @@ public int Sorting(int i, int j, Handle array, Handle hndl)
 
 	g_aCustomItems.GetArray(i, temp_item[0]);
 	g_aCustomItems.GetArray(j, temp_item2[0]);
+
 	if (temp_item[Sort] < temp_item2[Sort])
 	{
 		return -1;
-	}else if(temp_item[Sort] > temp_item2[Sort]){
+	}
+	else if (temp_item[Sort] > temp_item2[Sort])
+	{
 		return 1;
 	}
+
 	return 0;
 }
 
@@ -487,7 +518,9 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if (strcmp(temp_short, temp_item[Short], false) == 0)
+		{
 			return temp_item[Price];
+		}
 	}
 	
 	return 0;
@@ -504,7 +537,9 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if (strcmp(temp_short, temp_item[Short], false) == 0)
+		{
 			return temp_item[Role];
+		}
 	}
 	return 0;
 }
@@ -512,18 +547,22 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 //Credits Part
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if(g_bCreditsTimer)
-		if(g_fCreditsInterval > 60.0)
+	if (g_bCreditsTimer)
+	{
+		if (g_fCreditsInterval > 60.0)
+		{
 			g_hCreditsTimer[client] = CreateTimer(g_fCreditsInterval, Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+		}
+	}
 }
 
 public Action Timer_CreditsTimer(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
-		if(IsPlayerAlive(client))
+		if (IsPlayerAlive(client))
 		{
 			int iCredits = GetRandomInt(g_iCreditsMin, g_iCreditsMax);
 			addCredits(client, iCredits, g_bCreditsMessage);
@@ -556,9 +595,13 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
-		if(TTT_IsRoundActive())
+	if (TTT_IsClientValid(client))
+	{
+		if (TTT_IsRoundActive())
+		{
 			CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
+		}
+	}
 	
 	return Plugin_Continue;
 }
@@ -583,7 +626,9 @@ public void OnClientDisconnect(int client)
 public Action Command_Credits(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
 	
@@ -595,30 +640,52 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if (!TTT_IsClientValid(client))
+	{
 		return;
+	}
 	
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
+	{
 		return;
+	}
 	
 	if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
 		subtractCredits(iAttacker, g_iCreditsII, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		addCredits(iAttacker, g_iCreditsIT, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
 		subtractCredits(iAttacker, g_iCreditsID, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
 		addCredits(iAttacker, g_iCreditsTI, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		subtractCredits(iAttacker, g_iCreditsTT, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
 		addCredits(iAttacker, g_iCreditsTD, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
 		subtractCredits(iAttacker, g_iCreditsDI, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		addCredits(iAttacker, g_iCreditsDT, true);
+	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
 		subtractCredits(iAttacker, g_iCreditsDD, true);
+	}
 }
 
 public void TTT_OnRoundEnd(int WinningTeam)
@@ -633,9 +700,13 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE || TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 				{
 					if (IsPlayerAlive(client))
+					{
 						addCredits(client, g_iTraitorloseAliveNonTraitors);
+					}
 					else
+					{
 						addCredits(client, g_iTraitorloseDeadNonTraitors);
+					}
 				}
 				
 			}
@@ -644,9 +715,13 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE || TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 				{
 					if (IsPlayerAlive(client))
+					{
 						addCredits(client, g_iTraitorloseAliveNonTraitors);
+					}
 					else
+					{
 						addCredits(client, g_iTraitorloseDeadNonTraitors);
+					}
 				}
 			}
 			case TTT_TEAM_TRAITOR:
@@ -654,9 +729,13 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 				{
 					if (IsPlayerAlive(client))
+					{
 						addCredits(client, g_iTraitorwinAliveTraitors);
+					}
 					else
+					{
 						addCredits(client, g_iTraitorwinDeadTraitors);
+					}
 				}
 			}
 		}
@@ -680,7 +759,9 @@ stock void addCredits(int client, int credits, bool message = false)
 	Call_Finish(res);
 	
 	if (res > Plugin_Changed)
+	{
 		return;
+	}
 	
 	g_iCredits[client] = newcredits;
 	
@@ -694,7 +775,9 @@ stock void addCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
+		{
 			CPrintToChat(client, g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
+		}
 	}
 	
 	Call_StartForward(g_hOnCreditsGiven);
@@ -715,12 +798,16 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	Call_Finish(res);
 	
 	if (res > Plugin_Changed)
+	{
 		return;
+	}
 	
 	g_iCredits[client] = newcredits;
 	
 	if (g_iCredits[client] < 0)
+	{
 		g_iCredits[client] = 0;
+	}
 	
 	if (g_bShowLoseCreditsMessage && message)
 	{
@@ -732,7 +819,9 @@ stock void subtractCredits(int client, int credits, bool message = false)
 			PrintHintText(client, sBuffer);
 		}
 		else
+		{
 			CPrintToChat(client, g_sPluginTag, "lost credits", client, credits, g_iCredits[client]);
+		}
 	}
 	
 	Call_StartForward(g_hOnCreditsGiven);
@@ -746,13 +835,17 @@ stock void setCredits(int client, int credits)
 	g_iCredits[client] = credits;
 	
 	if (g_iCredits[client] < 0)
+	{
 		g_iCredits[client] = 0;
+	}
 }
 
 public Action Command_SetCredits(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	if (args != 2)
 	{
@@ -781,7 +874,9 @@ public Action Command_SetCredits(int client, int args)
 	for (int i = 0; i < target_count; i++)
 	{
 		if (!TTT_IsClientValid(target_list[i]))
+		{
 			return Plugin_Handled;
+		}
 		
 		setCredits(target_list[i], credits);
 		
@@ -796,7 +891,9 @@ public int Native_GetClientCredits(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	
 	if (TTT_IsClientValid(client))
+	{
 		return g_iCredits[client];
+	}
 	return 0;
 }
 

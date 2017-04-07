@@ -87,7 +87,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (TTT_IsClientValid(client))
+	{
 		ResetFB(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -108,7 +110,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			}
 			
 			if (!SpawnFakeBody(client))
+			{
 				return Plugin_Stop;
+			}
 			
 			g_iPCount[client]++;
 		}
@@ -164,31 +168,47 @@ stock bool SpawnFakeBody(int client)
 public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 {
 	if (!TTT_IsClientValid(client))
-		return Plugin_Continue;
-	
-	if(StrEqual(iRagdollC[Weaponused], "Fake!", false))
 	{
-		if(!g_bAllowProofByTraitors)
-			if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		return Plugin_Continue;
+	}
+	
+	if (StrEqual(iRagdollC[Weaponused], "Fake!", false))
+	{
+		if (!g_bAllowProofByTraitors)
+		{
+			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+			{
 				return Plugin_Stop;
+			}
+		}
 		
 		LoopValidClients(j)
 		{
-			if(g_bShowFakeMessage && !iRagdollC[Found])
+			if (g_bShowFakeMessage && !iRagdollC[Found])
+			{
 				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
-			else if(!g_bShowFakeMessage && !iRagdollC[Found])
+			}
+			else if (!g_bShowFakeMessage && !iRagdollC[Found])
+			{
 				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
-			else if(iRagdollC[Found])
+			}
+			else if (iRagdollC[Found])
+			{
 				return Plugin_Stop;
+			}
 		}
 		
 		iRagdollC[Found] = true;
 		
-		if(g_bDeleteFakeBodyAfterFound)
+		if (g_bDeleteFakeBodyAfterFound)
+		{
 			AcceptEntityInput(iRagdollC[Ent], "Kill");
+		}
 		
-		if(!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
+		if (!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
+		{
 			SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
+		}
 		
 		return Plugin_Changed;
 	}

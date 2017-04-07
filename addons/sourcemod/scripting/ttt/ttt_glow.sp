@@ -46,8 +46,10 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		UnhookGlow(client);
+	}
 }
 
 public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
@@ -65,18 +67,24 @@ public void TTT_OnClientGetRole(int client, int role)
 
 void SetupGlowSkin(int client)
 {
-	if(!TTT_IsClientValid(client) || !IsPlayerAlive(client) || !TTT_IsRoundActive())
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client) || !TTT_IsRoundActive())
+	{
 		return;
+	}
 	
 	char sModel[PLATFORM_MAX_PATH];
 	GetClientModel(client, sModel, sizeof(sModel));
 	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
 	
-	if(iSkin == -1)
+	if (iSkin == -1)
+	{
 		return;
+	}
 		
 	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
+	{
 		SetupGlow(client, iSkin);
+	}
 }
 
 void SetupGlow(int client, int iSkin)
@@ -84,7 +92,9 @@ void SetupGlow(int client, int iSkin)
 	int iOffset;
 	
 	if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+	{
 		return;
+	}
 	
 	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
 	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
@@ -94,19 +104,19 @@ void SetupGlow(int client, int iSkin)
 	int iGreen = 255;
 	int iBlue = 255;
 	
-	if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
 		iRed = g_iColorDetective[0];
 		iGreen = g_iColorDetective[1];
 		iBlue = g_iColorDetective[2];
 	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
 		iRed = g_iColorTraitor[0];
 		iGreen = g_iColorTraitor[1];
 		iBlue = g_iColorTraitor[2];
 	}
-	else if(TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
 		iRed = g_iColorInnocent[0];
 		iGreen = g_iColorInnocent[1];
@@ -121,40 +131,62 @@ void SetupGlow(int client, int iSkin)
 
 public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 {
-	if(!TTT_IsRoundActive())
+	if (!TTT_IsRoundActive())
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	if (!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	if (!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		return Plugin_Handled;
+	}
 	
 	LoopValidClients(target)
 	{
-		if(target < 1)
+		if (target < 1)
+		{
 			continue;
+		}
 			
-		if(IsFakeClient(target))
+		if (IsFakeClient(target))
+		{
 			continue;
+		}
 		
-		if(!IsPlayerAlive(target))
+		if (!IsPlayerAlive(target))
+		{
 			continue;
+		}
 		
-		if(!CPS_HasSkin(target))
+		if (!CPS_HasSkin(target))
+		{
 			continue;
+		}
 			
-		if(EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
+		if (EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
+		{
 			continue;
+		}
 			
-		if(TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		{
 			return Plugin_Continue;
+		}
 		
-		if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+		{
 			return Plugin_Continue;
+		}
 	}
 	
 	return Plugin_Handled;
@@ -162,11 +194,13 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 
 void UnhookGlow(int client)
 {
-	if(!TTT_IsClientValid(client))
+	if (!TTT_IsClientValid(client))
+	{
 		return;
+	}
 		
 	int iSkin = CPS_GetSkin(client);
-	if(IsValidEntity(iSkin))
+	if (IsValidEntity(iSkin))
 	{
 		SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, 1);
 		SDKUnhook(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);

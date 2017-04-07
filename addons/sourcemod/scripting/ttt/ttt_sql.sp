@@ -64,48 +64,58 @@ public void OnPluginStart()
 
 void SQL_Start()
 {
-	if(g_dDatabase != null)
+	if (g_dDatabase != null)
 	{
 		LogError("%s is already connected! (Handle: %d)", g_sEntry, g_dDatabase);
 		return;
 	}
 	
-	if(g_iRetries > g_cRetries)
+	if (g_iRetries > g_cRetries)
 	{
 		LogError("Can't connect to a database after %d retries!", g_iRetries-1);
 		return;
 	}
 	
-	if(g_iRetries >= 1 && g_iRetries <= g_cRetries)
+	if (g_iRetries >= 1 && g_iRetries <= g_cRetries)
+	{
 		LogMessage("We try again to connect to a database (Retry #%d)!", g_iRetries);
+	}
 	
-	if(g_iRetries == g_cRetries)
+	if (g_iRetries == g_cRetries)
+	{
 		LogMessage("Last chance with sqlite. Let me try it!");
+	}
 	
 	if (!SQL_CheckConfig(g_sEntry) || g_iRetries == g_cRetries)
 	{
 		char sError[255];
 		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
 		
-		if(strlen(sError) > 1)
+		if (strlen(sError) > 1)
+		{
 			LogError("(SQL_Start) Error: %s", sError);
+		}
 
-		if(g_dDatabase == null)
+		if (g_dDatabase == null)
 		{
 			LogError("(SQL_Start) Database failure: Couldn't connect to \"%s\"!", g_sEntry);
 			CreateTimer(5.0, Timer_Retry);
 			return;
 		}
 		else
+		{
 			Call_OnSQLConnect();
+		}
 	}
 	else
+	{
 		Database.Connect(OnConnect, g_sEntry); // MySQL
+	}
 }
 
 public void OnConnect(Database db, const char[] error, any data)
 {
-	if(db == null || strlen(error) > 0)
+	if (db == null || strlen(error) > 0)
 	{
 		LogError("(OnConnect) Connection to database failed: %s", error);
 		CreateTimer(5.0, Timer_Retry);
@@ -145,9 +155,13 @@ void CheckAndCreateTables(const char[] driver)
 {
 	char sQuery[256];
 	if (StrEqual(driver, "mysql", false))
+	{
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
+	}
 	else if (StrEqual(driver, "sqlite", false))
+	{
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`));");
+	}
 
 	TTT_Query("Callback_CheckAndCreateTables", sQuery);
 	
@@ -156,7 +170,7 @@ void CheckAndCreateTables(const char[] driver)
 
 void SetCharsetAndCollate(const char[] driver)
 {
-	if(StrEqual(driver, "mysql", false))
+	if (StrEqual(driver, "mysql", false))
 	{
 		g_dDatabase.SetCharset("utf8mb4");
 		TTT_Query("SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
@@ -178,7 +192,7 @@ public int Native_Query(Handle plugin, int numParams)
 
 public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, any data)
 {
-	if(db == null || strlen(error) > 0)
+	if (db == null || strlen(error) > 0)
 	{
 		char sBuffer[128];
 		IntToString(data, sBuffer, sizeof(sBuffer));

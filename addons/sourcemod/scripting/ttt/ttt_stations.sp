@@ -107,24 +107,28 @@ public void OnAllPluginsLoaded()
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
 		bool hurt = (strcmp(itemshort, HURT_ITEM_SHORT, false) == 0);
 		bool health = (strcmp(itemshort, HEALTH_ITEM_SHORT, false) == 0);
 		
-		if(hurt || health)
+		if (hurt || health)
 		{
-			if(g_bHasActiveHealthStation[client])
+			if (g_bHasActiveHealthStation[client])
 			{
 				CPrintToChat(client, g_sPluginTag, "You already have an active Health Station", client);
 				return Plugin_Stop;
 			}
 
-			if(health && (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE))
+			if (health && (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE))
+			{
 				return Plugin_Stop;
+			}
 
-			if(hurt && (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR))
+			if (hurt && (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR))
+			{
 				return Plugin_Stop;
+			}
 
 			spawnHealthStation(client);
 		}
@@ -141,7 +145,9 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 public void TTT_OnUpdate1(int i)
 {
 	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+	{
 		return;
+	}
 
 	checkDistanceFromHealthStation(i);
 }
@@ -149,10 +155,14 @@ public void TTT_OnUpdate1(int i)
 public void TTT_OnUpdate5(int i)
 {
 	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i))
+	{
 		return;
+	}
 
 	if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
+	{
 		g_iHealthStationCharges[i]++;
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -187,11 +197,15 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
 	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || iAttacker < 1 || iAttacker > MaxClients || !IsClientInGame(iAttacker))
+	{
 		return Plugin_Continue;
+	}
 
 	int owner = GetEntProp(stationIndex, Prop_Send, "m_hOwnerEntity");
 	if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
+	{
 		return Plugin_Continue;
+	}
 
 	g_iHealthStationHealth[owner]--;
 
@@ -207,7 +221,9 @@ public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &i
 void checkDistanceFromHealthStation(int client)
 {
 	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	{
 		return;
+	}
 	
 	float clientPos[3];
 	float stationPos[3];
@@ -220,12 +236,16 @@ void checkDistanceFromHealthStation(int client)
 	{
 		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
 		if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
+		{
 			continue;
+		}
 
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelName, sizeof(sModelName));
 
 		if (StrContains(sModelName, "microwave") == -1)
+		{
 			continue;
+		}
 
 		bool hurt = (TTT_GetClientRole(owner) == TTT_TEAM_TRAITOR);
 
@@ -233,31 +253,47 @@ void checkDistanceFromHealthStation(int client)
 		GetEntPropVector(iEnt, Prop_Send, "m_vecOrigin", stationPos);
 
 		if (GetVectorDistance(clientPos, stationPos) > (hurt ? g_fHurtDistance : g_fHealthDistance))
+		{
 			continue;
+		}
 
 		if (g_bOnHealingCoolDown[client])
+		{
 			continue;
+		}
 		
 		curHealth = GetClientHealth(client);
 		
-		if(!g_bHurtTraitors && hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		if (!g_bHurtTraitors && hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+		{
 			continue;
+		}
 		
 		if ((!hurt) && (curHealth >= 125)) // TODO: Add cvar for max health
+		{
 			continue;
+		}
 
 		if (g_iHealthStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))
 		{
 			newHealth = (hurt ? (curHealth - g_iHurtDamage) : (curHealth + g_iHealthHeal));
 			if (newHealth >= 125)
+			{
 				SetEntityHealth(client, 125);
+			}
 			else if (newHealth <= 0)
+			{
 				ForcePlayerSuicide(client);
+			}
 			else
+			{
 				SetEntityHealth(client, newHealth);
+			}
 
-			if(!hurt)
+			if (!hurt)
+			{
 				CPrintToChat(client, g_sPluginTag, "Healing From", client, owner);
+			}
 
 			EmitSoundToClientAny(client, SND_WARNING);
 			g_iHealthStationCharges[owner]--;
@@ -266,7 +302,7 @@ void checkDistanceFromHealthStation(int client)
 		}
 		else
 		{
-			if(!hurt)
+			if (!hurt)
 			{
 				CPrintToChat(client, g_sPluginTag, "Health Station Out Of Charges", client);
 				g_bOnHealingCoolDown[client] = true;
@@ -279,7 +315,9 @@ void checkDistanceFromHealthStation(int client)
 void spawnHealthStation(int client)
 {
 	if (!IsPlayerAlive(client))
+	{
 		return;
+	}
 
 	int healthStationIndex = CreateEntityByName("prop_physics_multiplayer");
 	if (healthStationIndex != -1)
@@ -297,7 +335,7 @@ void spawnHealthStation(int client)
 		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
 		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
 		
-		/* if(g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
+		/* if (g_bHurtStationGlow && role == TTT_TEAM_TRAITOR)
 		{
 			if (SDKHookEx(healthStationIndex, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 					SetupGlow(healthStationIndex);
@@ -310,7 +348,9 @@ void spawnHealthStation(int client)
 	int iOffset;
 	
 	if (!iOffset && (iOffset = GetEntSendPropOffs(entity, "m_clrGlow")) == -1)
+	{
 		return;
+	}
 	
 	SetEntProp(entity, Prop_Send, "m_bShouldGlow", true, true);
 	SetEntProp(entity, Prop_Send, "m_nGlowStyle", 0);
@@ -324,20 +364,30 @@ void spawnHealthStation(int client)
 
 public Action OnSetTransmit_GlowSkin(int entity, int client)
 {
-	if(!TTT_IsRoundActive())
+	if (!TTT_IsRoundActive())
+	{
 		return Plugin_Handled;
+	}
 	
-	if(client == 0 || IsFakeClient(client))
+	if (client == 0 || IsFakeClient(client))
+	{
 		return Plugin_Handled;
+	}
 		
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
+	{
 		return Plugin_Handled;
+	}
 	
-	if(!IsValidEntity(entity))
+	if (!IsValidEntity(entity))
+	{
 		return Plugin_Handled;
+	}
 	
-	if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
 		return Plugin_Continue;
+	}
 	
 	return Plugin_Handled;
 } */

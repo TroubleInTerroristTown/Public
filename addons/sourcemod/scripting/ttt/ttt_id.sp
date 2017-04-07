@@ -75,39 +75,47 @@ public void OnPluginStart()
 
 public Action Command_ID(int client, int args)
 {
-	if(!TTT_IsClientValid(client))
-		return Plugin_Handled;
-
-	if(g_fCooldown > 0.0)
+	if (!TTT_IsClientValid(client))
 	{
-		if(g_hTimer[client] != null)
+		return Plugin_Handled;
+	}
+
+	if (g_fCooldown > 0.0)
+	{
+		if (g_hTimer[client] != null)
 		{
 			CPrintToChat(client, g_sPluginTag, "ID: Cooldown", client);
 			return Plugin_Handled;
-		}else{
+		}
+		else
+		{
 			g_hTimer[client] = CreateTimer(g_fCooldown, Timer_Cooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
 	
 
-	if(!IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sPluginTag, "ID: Need to be Alive", client);
 		return Plugin_Handled;
 	}
 	
-	if(!g_bHasID[client])
+	if (!g_bHasID[client])
 	{
 		CPrintToChat(client, g_sPluginTag, "ID: Need to buy ID", client);
 		return Plugin_Handled;
 	}
 	
 	char sName[MAX_NAME_LENGTH];
-	if(!GetClientName(client, sName, sizeof(sName)))
+	if (!GetClientName(client, sName, sizeof(sName)))
+	{
 		return Plugin_Handled;
+	}
 	
 	LoopValidClients(i)
+	{
 		CPrintToChat(i, g_sPluginTag, "ID: Shows ID", i, sName);
+	}
 	
 	return Plugin_Handled;
 }
@@ -115,9 +123,9 @@ public Action Command_ID(int client, int args)
 public Action Timer_Cooldown(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
-		if(g_hTimer[client] != null)
+		if (g_hTimer[client] != null)
 		{
 			delete g_hTimer[client];
 			g_hTimer[client] = null;
@@ -136,8 +144,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		Reset(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -148,14 +158,16 @@ public void OnAllPluginsLoaded()
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false))
+		if (StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if(role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_UNASSIGNED || g_bHasID[client])
+			if (role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_UNASSIGNED || g_bHasID[client])
+			{
 				return Plugin_Stop;
+			}
 			
 			CPrintToChat(client, g_sPluginTag, "ID: Buy Message", client);
 			
@@ -168,7 +180,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 void Reset(int client)
 {
 	g_bHasID[client] = false;
-	if(g_hTimer[client] != null)
+	if (g_hTimer[client] != null)
 	{
 		delete g_hTimer[client];
 		g_hTimer[client] = null;

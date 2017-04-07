@@ -91,12 +91,14 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
 		int entity = event.GetInt("entityid");
 		
-		if(!g_bHasTeleporter[client])
+		if (!g_bHasTeleporter[client])
+		{
 			return Plugin_Continue;
+		}
 		
 		float fOldPos[3];
 		GetClientAbsOrigin(client, fOldPos);
@@ -110,7 +112,7 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		
 		bool stuck = StuckClient(client);
 		
-		if(stuck)
+		if (stuck)
 		{
 			TeleportEntity(client, fOldPos, NULL_VECTOR, NULL_VECTOR);
 			CPrintToChat(client, g_sPluginTag, "DT: Invalid Position", client);
@@ -118,20 +120,28 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 		
 		AcceptEntityInput(entity, "kill");
 		
-		if(stuck && g_iRefund == 1)
+		if (stuck && g_iRefund == 1)
 		{
 			int role = TTT_GetClientRole(client);
-			if(role == TTT_TEAM_TRAITOR)
+			if (role == TTT_TEAM_TRAITOR)
+			{
 				TTT_AddClientCredits(client, g_iDPrice);
-			else if(role == TTT_TEAM_DETECTIVE)
+			}
+			else if (role == TTT_TEAM_DETECTIVE)
+			{
 				TTT_AddClientCredits(client, g_iTPrice);
+			}
 			
 			g_bHasTeleporter[client] = false;
 		}
-		else if(stuck && g_iRefund == 2)
+		else if (stuck && g_iRefund == 2)
+		{
 			GivePlayerItem(client, "weapon_decoy");
+		}
 		else
+		{
 			g_bHasTeleporter[client] = false;
+		}
 		
 		return Plugin_Handled;
 	}
@@ -142,8 +152,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		ResetDecoyCount(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -154,18 +166,18 @@ public void OnAllPluginsLoaded()
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false))
+		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
 				return Plugin_Stop;
 			}
-			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iDCount);
 				return Plugin_Stop;
@@ -175,10 +187,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			
 			g_bHasTeleporter[client] = true;
 			
-			if(role == TTT_TEAM_TRAITOR)
+			if (role == TTT_TEAM_TRAITOR)
+			{
 				g_iTPCount[client]++;
-			else if(role == TTT_TEAM_DETECTIVE)
+			}
+			else if (role == TTT_TEAM_DETECTIVE)
+			{
 				g_iDPCount[client]++;
+			}
 		}
 	}
 	return Plugin_Continue;
@@ -209,7 +225,9 @@ bool StuckClient(int client)
 
 public bool OnlyPlayers(int entity, int contentsMask, any data)
 {
-	if(entity != data && entity > 0 && entity <= MaxClients) 
+	if (entity != data && entity > 0 && entity <= MaxClients)
+	{
     	return true;
+	}
 	return false;
 }

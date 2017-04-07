@@ -66,8 +66,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		ResetScanner(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -82,14 +84,16 @@ void ResetScanner(int client)
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false))
+		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if(role != TTT_TEAM_DETECTIVE)
+			if (role != TTT_TEAM_DETECTIVE)
+			{
 				return Plugin_Stop;
+			}
 			
 			g_bHasScanner[client] = true;
 		}
@@ -99,24 +103,34 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 
 public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 {
-	if(iRagdollC[Scanned])
+	if (iRagdollC[Scanned])
+	{
 		return Plugin_Continue;
+	}
 	
-	if(!TTT_IsClientValid(client))
+	if (!TTT_IsClientValid(client))
+	{
 		return Plugin_Continue;
+	}
 	
-	if(TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE || g_bHasScanner[client] == false)
+	if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE || g_bHasScanner[client] == false)
+	{
 		return Plugin_Continue;
+	}
 	
 	if (iRagdollC[Attacker] > 0 && iRagdollC[Attacker] != iRagdollC[Victim])
 	{
 		LoopValidClients(j)
+		{
 			CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+		}
 	}
 	else
 	{
 		LoopValidClients(j)
+		{
 			CPrintToChat(j, g_sPluginTag, "Detective scan found body suicide", j, client);
+		}
 	}
 	
 	iRagdollC[Scanned] = true;

@@ -62,40 +62,56 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	g_bMutedAlive[client] = false;
 	g_bMutedDead[client] = false;
 
-	if(TTT_IsClientValid(client) && !IsFakeClient(client))
-		if(g_aAlivePlayers.FindValue(client) == -1)
+	if (TTT_IsClientValid(client) && !IsFakeClient(client))
+	{
+		if (g_aAlivePlayers.FindValue(client) == -1)
+		{
 			g_aAlivePlayers.Push(client);
+		}
+	}
 }
 
 public void OnClientDisconnect(int client)
 {
 	int iIndex = g_aAlivePlayers.FindValue(client);
-	if(iIndex != -1)
+	if (iIndex != -1)
+	{
 		g_aAlivePlayers.Erase(iIndex);
+	}
 }
 
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client) && !IsFakeClient(client))
+	if (TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		LoopValidClients(i)
-			if(g_bMutedDead[i])
+		{
+			if (g_bMutedDead[i])
+			{
 				SetListenOverride(i, client, Listen_No);
+			}
+		}
 		int iIndex = g_aAlivePlayers.FindValue(client);
-		if(iIndex != -1)
+		if (iIndex != -1)
+		{
 			g_aAlivePlayers.Erase(iIndex);
+		}
 		
-		if(g_bAutoOpen)
+		if (g_bAutoOpen)
+		{
 			ShowSpecMenu(client);
+		}
 	}
 }
 
 public Action Command_SpecMenu(int client, int args)
 {
-	if(!TTT_IsClientValid(client) && !IsFakeClient(client))
+	if (!TTT_IsClientValid(client) && !IsFakeClient(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	ShowSpecMenu(client);
 	
@@ -107,7 +123,7 @@ void ShowSpecMenu(int client)
 	Menu menu = new Menu(Menu_MainMenu);
 	menu.SetTitle("%T", "SpecMenu: Title", client);
 	
-	if(TTT_IsClientValid(GetObservTarget(client)) && !IsFakeClient(client))
+	if (TTT_IsClientValid(GetObservTarget(client)) && !IsFakeClient(client))
 	{
 		char sPlayer[128];
 		Format(sPlayer, sizeof(sPlayer), "%T\n--------------------", "SpecMenu: Player", client, GetObservTarget(client));
@@ -122,62 +138,84 @@ void ShowSpecMenu(int client)
 	menu.AddItem("prev", sPrev);
 
 	char sItem[32];
-	if(g_bMutedAlive[client])
+	if (g_bMutedAlive[client])
+	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Unmute Alive", client);
+	}
 	else
+	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Mute Alive", client);
+	}
 	
 	menu.AddItem("alive", sItem);
 	
-	if(g_bMutedDead[client])
+	if (g_bMutedDead[client])
+	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Unmute Dead", client);
+	}
 	else
+	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Mute Dead", client);
+	}
 
 	menu.AddItem("dead", sItem);
 	
 	menu.ExitButton = true;
 	
-	if(g_iMenuTime == 0)
+	if (g_iMenuTime == 0)
+	{
 		menu.Display(client, MENU_TIME_FOREVER);
-	else if(g_iMenuTime > 0)
+	}
+	else if (g_iMenuTime > 0)
+	{
 		menu.Display(client, g_iMenuTime);
+	}
 }
 
 public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 {
 	if (action == MenuAction_Select)
 	{
-		if(IsPlayerAlive(client))
+		if (IsPlayerAlive(client))
 			return 0;
 
-		if(!IsPlayerAlive(client) || IsClientObserver(client))
+		if (!IsPlayerAlive(client) || IsClientObserver(client))
 		{
 			char sParam[32];
 			GetMenuItem(menu, param, sParam, sizeof(sParam));
 			
 			if (StrEqual(sParam, "next", false))
 			{
-				if(g_aAlivePlayers.Length > 0)
+				if (g_aAlivePlayers.Length > 0)
 				{
 					int iTarget = GetObservTarget(client);
 					int iIndex = g_aAlivePlayers.FindValue(iTarget) + 1;
 					
-					if(iIndex >= g_aAlivePlayers.Length)
+					if (iIndex >= g_aAlivePlayers.Length)
+					{
 						iIndex = 0;
+					}
 					
 					int iNextTarget = g_aAlivePlayers.Get(iIndex);
-					if(!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
+					if (!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
 					{
 						g_aAlivePlayers.Erase(iIndex);
 						FakeClientCommand(client, "spec_next");
-					}else{
+					}
+					else
+					{
 						int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
-						if(iMode != SPECMODE_FIRSTPERSON && iMode != SPECMODE_3RDPERSON)
+
+						if (iMode != SPECMODE_FIRSTPERSON && iMode != SPECMODE_3RDPERSON)
+						{
 							SetEntProp(client, Prop_Send, "m_iObserverMode", SPECMODE_FIRSTPERSON);
+						}
+
 						SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", iNextTarget);
 					}
-				}else{
+				}
+				else
+				{
 					FakeClientCommand(client, "spec_next");
 				}
 				
@@ -187,26 +225,36 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 			}
 			else if (StrEqual(sParam, "prev", false))
 			{
-				if(g_aAlivePlayers.Length > 0)
+				if (g_aAlivePlayers.Length > 0)
 				{
 					int iTarget = GetObservTarget(client);
 					int iIndex = g_aAlivePlayers.FindValue(iTarget) - 1;
 					
-					if(iIndex < 0)
+					if (iIndex < 0)
+					{
 						iIndex = g_aAlivePlayers.Length -1;
+					}
 					
 					int iNextTarget = g_aAlivePlayers.Get(iIndex);
-					if(!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
+					if (!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
 					{
 						g_aAlivePlayers.Erase(iIndex);
 						FakeClientCommand(client, "spec_next");
-					}else{
+					}
+					else
+					{
 						int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
-						if(iMode != SPECMODE_FIRSTPERSON && iMode != SPECMODE_3RDPERSON)
+
+						if (iMode != SPECMODE_FIRSTPERSON && iMode != SPECMODE_3RDPERSON)
+						{
 							SetEntProp(client, Prop_Send, "m_iObserverMode", SPECMODE_FIRSTPERSON);
+						}
+
 						SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", iNextTarget);
 					}
-				}else{
+				}
+				else
+				{
 					FakeClientCommand(client, "spec_next");
 				}
 				
@@ -216,56 +264,87 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 			}
 			else if (StrEqual(sParam, "alive", false))
 			{
-				if(g_bMutedAlive[client])
+				if (g_bMutedAlive[client])
 				{
 					LoopValidClients(i)
-						if(IsPlayerAlive(i))
+					{
+						if (IsPlayerAlive(i))
+						{
 							SetListenOverride(client, i, Listen_Yes);
+						}
+					}
+
 					g_bMutedAlive[client] = false;
-				}else{
+				}
+				else
+				{
 					LoopValidClients(i)
-						if(IsPlayerAlive(i))
+					{
+						if (IsPlayerAlive(i))
+						{
 							SetListenOverride(client, i, Listen_No);
+						}
+					}
+
 					g_bMutedAlive[client] = true;
 				}
+
 				ShowSpecMenu(client);
 			}
 			else if (StrEqual(sParam, "dead", false))
 			{
-				if(g_bMutedDead[client])
+				if (g_bMutedDead[client])
 				{
 					LoopValidClients(i)
-						if(!IsPlayerAlive(i))
+					{
+						if (!IsPlayerAlive(i))
+						{
 							SetListenOverride(client, i, Listen_Yes);
+						}
+					}
+
 					g_bMutedDead[client] = false;
-				}else{
+				}
+				else
+				{
 					LoopValidClients(i)
-						if(!IsPlayerAlive(i))
+					{
+						if (!IsPlayerAlive(i))
+						{
 							SetListenOverride(client, i, Listen_No);
+						}
+					}
+
 					g_bMutedDead[client] = true;
 				}
+
 				ShowSpecMenu(client);
 			}	
 		}
+
 		return 0;
 	}
 	else if (action == MenuAction_End)
+	{
 		delete menu;
+	}
 	
 	return 0;
 }
 
 int GetObservTarget(int client)
 {
-	if(!IsPlayerAlive(client) || IsClientObserver(client))
+	if (!IsPlayerAlive(client) || IsClientObserver(client))
 	{
 		int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
-		if(iMode == SPECMODE_FIRSTPERSON || iMode == SPECMODE_3RDPERSON)
+		if (iMode == SPECMODE_FIRSTPERSON || iMode == SPECMODE_3RDPERSON)
 		{
 			int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 			
-			if(target < 1 || !TTT_IsClientValid(client))
+			if (target < 1 || !TTT_IsClientValid(client))
+			{
 				target = 0;
+			}
 			
 			return target;
 		}

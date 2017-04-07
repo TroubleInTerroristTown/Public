@@ -92,8 +92,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		ResetHealthshot(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -105,35 +107,41 @@ public void OnAllPluginsLoaded()
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if(StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
+		if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
 		{
 			int role = TTT_GetClientRole(client);
 			
-			if(role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
 				return Plugin_Stop;
 			}
-			else if(role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iDCount);
 				return Plugin_Stop;
 			}
-			else if(role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
+			else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iICount);
 				return Plugin_Stop;
 			}	
 			GivePlayerItem(client, "weapon_healthshot");
 			
-			if(role == TTT_TEAM_TRAITOR)
+			if (role == TTT_TEAM_TRAITOR)
+			{
 				g_iTPCount[client]++;
-			else if(role == TTT_TEAM_DETECTIVE)
+			}
+			else if (role == TTT_TEAM_DETECTIVE)
+			{
 				g_iDPCount[client]++;
-			else if(role == TTT_TEAM_INNOCENT)
+			}
+			else if (role == TTT_TEAM_INNOCENT)
+			{
 				g_iIPCount[client]++;
+			}
 		}
 	}
 	return Plugin_Continue;

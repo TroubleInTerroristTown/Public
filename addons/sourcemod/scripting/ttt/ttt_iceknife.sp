@@ -88,7 +88,9 @@ public void OnMapStart()
 	}
 	
 	if (GameConfGetKeyValue(hConfig, "SoundFreeze", g_sFreezeSound, sizeof(g_sFreezeSound)) && g_sFreezeSound[0])
+	{
 		PrecacheSound(g_sFreezeSound, true);
+	}
 }
 
 public void OnClientPutInServer(int client)
@@ -116,8 +118,10 @@ public void HookClient(int client)
 
 public void OnClientDisconnect(int client)
 {
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		ResetIceK(client);
+	}
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -125,7 +129,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
 	if (TTT_IsClientValid(client))
+	{
 		ResetIceK(client);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -162,30 +168,44 @@ void ResetIceK(int client)
 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
 	
 #if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
-	if(g_iOldColors[client][3] > 0)
+	if (g_iOldColors[client][3] > 0)
+	{
 		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+	}
 #endif
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
 	if (!TTT_IsRoundActive())
+	{
 		return Plugin_Continue;
+	}
 	
 	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+	{
 		return Plugin_Continue;
+	}
 	
 	if (g_bFreezed[iVictim])
+	{
 		return Plugin_Handled;
+	}
 	
 	if (IsWorldDamage(iAttacker, damagetype))
+	{
 		return Plugin_Continue;
+	}
 	
 	if (!g_bIceKnife[iAttacker])
+	{
 		return Plugin_Continue;
+	}
 	
 	if (!g_bFreezeTraitors && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
+	{
 		return Plugin_Continue;
+	}
 	
 	char sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
@@ -210,11 +230,15 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			EmitAmbientSound(g_sFreezeSound, vec, iVictim, SNDLEVEL_RAIDSIREN);
 		}
 		
-		if(g_fFreezeTime > 0.0)
+		if (g_fFreezeTime > 0.0)
+		{
 			CreateTimer(g_fFreezeTime, Timer_FreezeEnd, GetClientUserId(iVictim));
+		}
 		
 		if (g_iDamage == 0)
+		{
 			return Plugin_Handled;
+		}
 		else if (g_iDamage > 0)
 		{
 			damage = view_as<float>(g_iDamage);
@@ -228,14 +252,16 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
 	{
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
 
 #if SOURCEMOD_V_MAJOR >= 1 && SOURCEMOD_V_MINOR >= 8
-		if(g_iOldColors[client][3] > 0)
+		if (g_iOldColors[client][3] > 0)
+		{
 			SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+		}
 #endif
 
 		g_bFreezed[client] = false;
@@ -245,7 +271,7 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-	if(g_bFreezed[client])
+	if (g_bFreezed[client])
 	{
 		float fVel[3];
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVel);

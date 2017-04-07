@@ -30,14 +30,18 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	if(TTT_IsLoaded())
+	if (TTT_IsLoaded())
+	{
 		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
+	}
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] item)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
+	{
 		PrintToChat(client, "It works! Hooray! Item: %s", item);
+	}
 
 	return Plugin_Continue;
 }
@@ -46,8 +50,10 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
-	if(TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client))
+	{
 		PrintToChat(client, "Player: %N, Karma %d, Credits: %d", client, TTT_GetClientKarma(client), TTT_GetClientCredits(client));
+	}
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
@@ -94,7 +100,7 @@ public void TTT_OnSQLConnect(Database db)
 	Database dDB = TTT_GetSQLConnection();
 	PrintToServer("(TTT_OnSQLConnect) dDB: %d", dDB);
 	
-	if(dDB == db)
+	if (dDB == db)
 	{
 		PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);
 	}
