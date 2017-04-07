@@ -225,4 +225,20 @@ public int Native_ReloadConfig(Handle plugin, int numParams)
 	SetupConfig();
 	
 	return;
-} 
+}
+
+public int Native_ForceTraitor(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	if(TTT_IsClientValid(client))
+		g_aForceTraitor.Push(client);
+	return;
+}
+
+public int Native_ForceDetective(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	if(TTT_IsClientValid(client))
+		g_aForceDetective.Push(client);
+	return;
+}

@@ -24,9 +24,6 @@ int g_iDPrio = 0;
 char g_sTLongName[64];
 char g_sDLongName[64];
 
-bool g_bWantT[MAXPLAYERS + 1] =  { false, ... };
-bool g_bWantD[MAXPLAYERS + 1] =  { false, ... };
-
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 
@@ -38,17 +35,6 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	CreateNative("TTT_WantTraitor", Native_WantTraitor);
-	CreateNative("TTT_WantDetective", Native_WantDetective);
-	CreateNative("TTT_WantReset", Native_WantReset);
-	
-	RegPluginLibrary("ttt_buyroles");
-	
-	return APLRes_Success;
-}
 
 public void OnPluginStart()
 {
@@ -67,39 +53,6 @@ public void OnPluginStart()
 	g_iDPrio = Config_LoadInt("broles_detective_prio", 0, "The sorting priority of the buy detective role in the shop menu.");
 	
 	Config_Done();
-	
-	HookEvent("player_spawn", Event_PlayerSpawn);
-}
-
-public void OnClientDisconnect(int client)
-{
-	ResetRoles(client);
-}
-
-public void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective)
-{
-	LoopValidClients(client)
-	{
-		ResetRoles(client);
-	}
-}
-
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
-{
-	LoopValidClients(client)
-	{
-		ResetRoles(client);
-	}
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	if (TTT_IsClientValid(client))
-	{
-		ResetRoles(client);
-	}
 }
 
 public void OnAllPluginsLoaded()
@@ -108,11 +61,6 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(D_SHORT_NAME, g_sDLongName, g_iDPrice, TTT_TEAM_INNOCENT, g_iDPrio);
 }
 
-void ResetRoles(int client)
-{
-	g_bWantT[client] = false;
-	g_bWantD[client] = false;
-}
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
@@ -127,7 +75,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			g_bWantD[client] = true;
+			TTT_ForceDetective(client);
 		}
 		else if (StrEqual(itemshort, T_SHORT_NAME, false))
 		{
@@ -138,30 +86,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			g_bWantT[client] = true;
+			TTT_ForceTraitor(client);
 		}
 	}
 	return Plugin_Continue;
-}
-
-public int Native_WantTraitor(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	
-	return g_bWantT[client];
-}
-
-public int Native_WantDetective(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	
-	return g_bWantD[client];
-}
-
-public int Native_WantReset(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	
-	g_bWantD[client] = false;
-	g_bWantT[client] = false;
 }

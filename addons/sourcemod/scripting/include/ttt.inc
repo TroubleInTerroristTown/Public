@@ -348,6 +348,20 @@ native void TTT_OverrideConfigString(int configIndex, char[] buffer);
 native void TTT_ReloadConfig();
 
 /*
+ * Force a player to be traitor next round. (If there are enough Traitors)
+ *
+ * @param client             The client index to change.
+ */
+native void TTT_ForceTraitor(int client);
+
+/*
+ * Force a player to be detective next round. (If there are enough Detectives)
+ *
+ * @param client             The client index to change.
+ */
+native void TTT_ForceDetective(int client);
+
+/*
  * Check if TTT plugin is loaded and running.
  */
 stock bool TTT_IsLoaded()

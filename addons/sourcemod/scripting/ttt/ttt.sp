@@ -7,7 +7,6 @@
 #include <emitsoundany>
 #include <ttt>
 #include <ttt_sql>
-#include <ttt_buyroles>
 #include <config_loader>
 
 #undef REQUIRE_PLUGIN
@@ -58,6 +57,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
 	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
 	CreateNative("TTT_LogString", Native_LogString);
+	
+	CreateNative("TTT_ForceTraitor", Native_ForceTraitor);
+	CreateNative("TTT_ForceDetective", Native_ForceDetective);
 	
 	CreateNative("TTT_OverrideConfigInt", Native_OverrideConfigInt);
 	CreateNative("TTT_OverrideConfigBool", Native_OverrideConfigBool);
@@ -804,32 +806,8 @@ public Action Timer_Selection(Handle hTimer)
 	int counter = 0;
 	int iCurrentTime = GetTime();
 	
-	bool bOneTime = false;
-	
 	while (iTraitors < iTCount)
 	{
-		if (!bOneTime)
-		{
-			LoopValidClients(i)
-			{
-				if (iTraitors < iTCount && TTT_WantT(i))
-				{
-					iIndex = aPlayers.FindValue(i);
-					
-					if (iIndex != -1)
-					{
-						g_iRole[i] = TTT_TEAM_TRAITOR;
-						iTraitors++;
-						g_iLastRole[i] = TTT_TEAM_TRAITOR;
-						aPlayers.Erase(iIndex);
-						TTT_WantReset(client);
-					}
-				}
-			}
-		}
-		
-		bOneTime = true;
-		
 		if (g_aForceTraitor.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceTraitor.Get(0));
@@ -858,32 +836,8 @@ public Action Timer_Selection(Handle hTimer)
 		}
 	}
 	
-	bOneTime = false;
-	
 	while (iDetectives < iDCount && aPlayers.Length > 0)
 	{
-		if (!bOneTime)
-		{
-			LoopValidClients(i)
-			{
-				if ((iDetectives < iDCount && aPlayers.Length > 0) && TTT_WantD(i))
-				{
-					iIndex = aPlayers.FindValue(i);
-					
-					if (iIndex != -1)
-					{
-						g_iLastRole[i] = TTT_TEAM_DETECTIVE;
-						g_iRole[i] = TTT_TEAM_DETECTIVE;
-						iDetectives++;
-						aPlayers.Erase(iIndex);
-						TTT_WantReset(client);
-					}
-				}
-			}
-		}
-		
-		bOneTime = true;
-		
 		if (g_aForceDetective.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceDetective.Get(0));
