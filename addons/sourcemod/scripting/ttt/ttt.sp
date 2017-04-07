@@ -1344,7 +1344,8 @@ public void OnClientPostAdminCheck(int client)
 	g_iRole[client] = TTT_TEAM_UNASSIGNED;
 	CS_SetClientClanTag(client, "UNASSIGNED");
 	
-	LoadClientKarma(GetClientUserId(client));
+	if(TTT_GetSQLConnection() != null)
+		LoadClientKarma(GetClientUserId(client));
 	
 	if (g_iConfig[b_showRulesMenu])
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
