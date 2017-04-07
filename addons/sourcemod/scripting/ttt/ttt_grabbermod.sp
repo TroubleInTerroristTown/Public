@@ -62,7 +62,9 @@ stock void Command_UnGrab(int client)
 		GetEdictClassname(g_iObject[client], edictname, 128);
 		
 		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
+		{
 			SetEntPropEnt(g_iObject[client], Prop_Data, "m_hPhysicsAttacker", 0);
+		}
 	}
 	
 	g_iObject[client] = -1;
@@ -78,27 +80,36 @@ stock void GrabSomething(int client)
 		ent = GetObject(client, false);
 		
 		if (ent == -1)
+		{
 			return;
+		}
 		
 		ent = EntRefToEntIndex(ent);
 		
 		if (ent == INVALID_ENT_REFERENCE)
+		{
 			return;
+		}
 			
 		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 		GetClientEyePosition(client, VecPos_Client);
-		if(GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+		if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+		{
 			return;
+		}
 		
 		char edictname[128];
 		GetEdictClassname(ent, edictname, sizeof(edictname));
 
 		if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
+		{
 			return;
+		}
 		else
 		{
 			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
 			{
+				
 				if (IsValidEdict(ent) && IsValidEntity(ent)) 
 				{
 					ent = ReplacePhysicsEntity(ent);
@@ -136,7 +147,9 @@ stock bool ValidGrab(int client)
 {
 	int obj = g_iObject[client];
 	if (obj != -1 && IsValidEntity(obj) && IsValidEdict(obj))
+	{
 		return (true);
+	}
 	return (false);
 }
 
@@ -161,13 +174,19 @@ stock int GetObject(int client, bool hitSelf=true)
 			if (StrEqual(edictname, "worldspawn"))
 			{
 				if (hitSelf)
+				{
 					ent = client;
+				}
 				else
+				{
 					ent = -1;
+				}
 			}
 		}
 		else
+		{
 			ent = -1;
+		}
 	}
 	
 	return (ent);
@@ -182,7 +201,9 @@ public int TraceToEntity(int client)
 	TR_TraceRayFilter(vecClientEyePos, vecClientEyeAng, MASK_PLAYERSOLID, RayType_Infinite, TraceASDF, client);
 
 	if (TR_DidHit(null))
+	{
 		return (TR_GetEntityIndex(null));
+	}
 
 	return (-1);
 }
@@ -213,22 +234,26 @@ stock int ReplacePhysicsEntity(int ent)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
 {
-	if(!IsClientInGame(client))
-		return Plugin_Continue;
-	
-	if(buttons & IN_JUMP)
+	if (!IsClientInGame(client))
 	{
-		if(g_bBlockJump)
+		return Plugin_Continue;
+	}
+	
+	if (buttons & IN_JUMP)
+	{
+		if (g_bBlockJump)
 		{
 			int iEnt = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
 			
-			if(iEnt > 0)
+			if (iEnt > 0)
 			{
 				char sName[128];
 				GetEdictClassname(iEnt, sName, sizeof(sName));
 				
 				if (StrContains(sName, "prop_", false) == -1 || StrContains(sName, "door", false) != -1)
+				{
 					return Plugin_Continue;
+				}
 				else
 				{
 					if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
@@ -244,13 +269,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		}
 	}
 	
-	if(buttons & IN_USE)
+	if (buttons & IN_USE)
 	{
-		if(IsPlayerAlive(client) && !ValidGrab(client))
+		if (IsPlayerAlive(client) && !ValidGrab(client))
+		{
 			Command_Grab(client);
+		}
 	}
-	else if(ValidGrab(client))
+	else if (ValidGrab(client))
+	{
 		Command_UnGrab(client);
+	}
 	
 	return Plugin_Continue;
 }
@@ -265,7 +294,8 @@ public Action Adjust(Handle timer)
 	float viewang[3];
 
 	LoopValidClients(i)
-		if(IsPlayerAlive(i))
+	{
+		if (IsPlayerAlive(i))
 		{
 			if (ValidGrab(i))
 			{
@@ -276,9 +306,9 @@ public Action Adjust(Handle timer)
 				
 				int color[4];
 				
-				if(g_bColored)
+				if (g_bColored)
 				{
-					if(g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
+					if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
 					{
 						color[0] = GetRandomInt(0, 255); 
 						color[1] = GetRandomInt(0, 255); 
@@ -313,6 +343,7 @@ public Action Adjust(Handle timer)
 				TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
 			}
 		}
+	}
 }
 
 public void OnClientDisconnect(int client)
