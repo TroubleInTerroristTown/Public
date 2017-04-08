@@ -75,7 +75,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			TTT_ForceDetective(client);
+			if(!TTT_ForceDetective(client))
+				return Plugin_Stop;
 		}
 		else if (StrEqual(itemshort, T_SHORT_NAME, false))
 		{
@@ -86,7 +87,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			TTT_ForceTraitor(client);
+			if(!TTT_ForceTraitor(client))
+				return Plugin_Stop;
 		}
 	}
 	return Plugin_Continue;

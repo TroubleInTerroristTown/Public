@@ -351,15 +351,17 @@ native void TTT_ReloadConfig();
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.
+ * @return False if the client's role already forced for the next round.
  */
-native void TTT_ForceTraitor(int client);
+native bool TTT_ForceTraitor(int client);
 
 /*
  * Force a player to be detective next round. (If there are enough Detectives)
  *
  * @param client             The client index to change.
+ * @return False if the client's role is already forced for the next round.
  */
-native void TTT_ForceDetective(int client);
+native bool TTT_ForceDetective(int client);
 
 /*
  * Check if TTT plugin is loaded and running.
