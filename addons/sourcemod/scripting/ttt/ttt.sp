@@ -139,7 +139,10 @@ public void OnPluginStart()
 	
 	SetupConfig();
 	
-	LateLoadAll();
+	if (TTT_GetSQLConnection() != null)
+	{
+		LateLoadClients();
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -1263,17 +1266,7 @@ public void Frame_SlapPlayer(any userid)
 
 public void OnClientPutInServer(int client)
 {
-	g_bImmuneRDMManager[client] = false;
-	g_bFound[client] = true;
 	HookClient(client);
-}
-
-public void LateLoadAll()
-{
-	LoopValidClients(i)
-	{
-		LateLoadClient(i);
-	}
 }
 
 public void LateLoadClients()
@@ -1535,12 +1528,15 @@ public void OnClientPostAdminCheck(int client)
 	GetClientName(client, name, sizeof(name));
 	nameCheck(client, name);
 	
+	g_bImmuneRDMManager[client] = false;
+	g_bFound[client] = true;
+	
 	g_iRole[client] = TTT_TEAM_UNASSIGNED;
 	CS_SetClientClanTag(client, "UNASSIGNED");
 	
 	if (TTT_GetSQLConnection() != null)
 	{
-		LoadClientKarma(GetClientUserId(client));
+		CreateTimer(1.0, Timer_OnClientPostAdminCheck, GetClientUserId(client));
 	}
 	
 	if (g_iConfig[b_showRulesMenu])
@@ -1550,6 +1546,16 @@ public void OnClientPostAdminCheck(int client)
 	else if (g_iConfig[b_showDetectiveMenu])
 	{
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
+	}
+}
+
+public Action Timer_OnClientPostAdminCheck(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	
+	if (TTT_IsClientValid(client))
+	{
+		HookClient(client);
 	}
 }
 
@@ -3253,7 +3259,6 @@ stock void LoadClients()
 	LoopValidClients(i)
 	{
 		OnClientPostAdminCheck(i);
-		OnClientPutInServer(i);
 	}
 }
 
