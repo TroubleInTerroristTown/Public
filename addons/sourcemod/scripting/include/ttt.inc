@@ -402,7 +402,7 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 		return true;
 	}
 	
-	for (new i = 0; i < sizeof(flags); i++)
+	for (int i = 0; i < sizeof(flags); i++)
 	{
 		if (iFlags & FlagToBit(flags[i]))
 		{
