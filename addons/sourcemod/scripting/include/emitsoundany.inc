@@ -125,7 +125,7 @@ stock void EmitSoundToClientAny(int client,
 				 bool updatePos = true,
 				 float soundtime = 0.0)
 {
-	int clients[] = new int[1];
+	int[] clients = new int[1];
 	clients[0] = client;
 	/* Save some work for SDKTools and remove SOUND_FROM_PLAYER references */
 	entity = (entity == SOUND_FROM_PLAYER) ? client : entity;
