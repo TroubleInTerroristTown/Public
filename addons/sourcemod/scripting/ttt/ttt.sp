@@ -182,6 +182,7 @@ void SetupConfig()
 	
 	Config_Setup("TTT", g_sConfigFile);
 	
+	g_iConfig[b_showKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
 	g_iConfig[i_karmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
 	g_iConfig[i_karmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
 	g_iConfig[i_karmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
@@ -1236,7 +1237,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 				ServerCommand("mp_restartgame 2");
 			}
 		}
-		else
+		
+		if (!g_bInactive && g_iConfig[b_showKarmaOnSpawn])
 		{
 			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
 		}
@@ -3277,7 +3279,7 @@ stock void LoadClientKarma(int userid)
 		}
 		
 		char sQuery[2048];
-		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\"", sCommunityID);
+		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
 		
 		if (g_hDatabase != null)
 		{
@@ -3346,11 +3348,12 @@ stock void InsertPlayer(int userid)
 		
 		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		{
+			LogToFileEx(g_iConfig[s_errFile], "(InsertPlayer) Auth failed: #%d", client);
 			return;
 		}
 		
 		char sQuery[2048];
-		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d)", sCommunityID, g_iKarma[client]);
+		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d);", sCommunityID, g_iKarma[client]);
 		
 		if (g_hDatabase != null)
 		{

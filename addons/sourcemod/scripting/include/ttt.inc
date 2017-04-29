@@ -112,7 +112,8 @@ enum eConfig
 	bool:bEnableDamage,
 	bool:bGiveWeaponsOnFailStart,
 	String:sFSPrimary[32],
-	String:sFSSecondary[32]
+	String:sFSSecondary[32],
+	bool:b_showKarmaOnSpawn
 };
 
 enum Ragdolls
