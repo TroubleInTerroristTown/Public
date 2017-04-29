@@ -42,7 +42,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
-	g_hOnUpdate3 = CreateGlobalForward("TTT_OnUpdate3", ET_Ignore, Param_Cell);
 	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
 	
 	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
@@ -95,7 +94,6 @@ public void OnPluginStart()
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	
 	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
-	CreateTimer(3.0, Timer_3, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 	
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
@@ -2961,18 +2959,6 @@ public Action Command_Status(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Timer_3(Handle timer)
-{
-	LoopValidClients(i)
-	{
-		Call_StartForward(g_hOnUpdate3);
-		Call_PushCell(i);
-		Call_Finish();
-		
-		CheckClantag(i);
-	}
-}
-
 public Action Timer_5(Handle timer)
 {
 	LoopValidClients(i)
@@ -3103,16 +3089,6 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 		}
 	}
 	return Plugin_Continue;
-}
-
-public Action UnImmune(Handle timer, any userId)
-{
-	int client = GetClientOfUserId(userId);
-	if (TTT_IsClientValid(client))
-	{
-		g_bImmuneRDMManager[client] = false;
-	}
-	return Plugin_Stop;
 }
 
 stock void listTraitors(int client)
@@ -3251,14 +3227,6 @@ stock void LoadBadNames()
 	}
 	
 	delete hFile;
-}
-
-stock void LoadClients()
-{
-	LoopValidClients(i)
-	{
-		OnClientPostAdminCheck(i);
-	}
 }
 
 stock void LoadClientKarma(int userid)
