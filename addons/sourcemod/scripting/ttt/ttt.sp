@@ -3040,11 +3040,7 @@ void CheckPlayers()
 	}
 }
 
-#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
 public void OnEntityCreated(int entity, const char[] name)
-#else
-public int OnEntityCreated(int entity, const char[] name)
-#endif
 {
 	if (StrEqual(name, "func_button"))
 	{

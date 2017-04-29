@@ -28,11 +28,7 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 }
 
-#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
 public void OnEntityCreated(int entity, const char[] classname)
-#else
-public int OnEntityCreated(int entity, const char[] classname)
-#endif
 {
 	if (StrEqual(classname, "prop_ragdoll"))
 	{
@@ -45,11 +41,7 @@ public void Spawned(int entity)
 	SDKHook(entity, SDKHook_Think, OnThink);
 }
 
-#if SOURCEMOD_V_MAJOR >= 1 && (SOURCEMOD_V_MINOR >= 8 || SOURCEMOD_V_MINOR >= 7 && SOURCEMOD_V_RELEASE >= 2)
 public void OnEntityDestroyed(int entity)
-#else
-public int OnEntityDestroyed(int entity)
-#endif
 {
 	if (!IsValidEdict(entity) || !IsValidEntity(entity))
 	{
