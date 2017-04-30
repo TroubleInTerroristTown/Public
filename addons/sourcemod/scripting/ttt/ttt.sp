@@ -30,43 +30,58 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	// Round forwards
 	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
 	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
+	
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
+	
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
+	
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
+	
 	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
 	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
 	
-	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
-	CreateNative("TTT_GetClientRole", Native_GetClientRole);
-	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
-	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
-	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
-	CreateNative("TTT_SetClientRole", Native_SetClientRole);
-	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
-	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
+	// Body / Status
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
 	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
 	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
-	CreateNative("TTT_LogString", Native_LogString);
 	
+	// Ragdoll
+	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
+	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
+	
+	// Roles
+	CreateNative("TTT_GetClientRole", Native_GetClientRole);
+	CreateNative("TTT_SetClientRole", Native_SetClientRole);
+	
+	// Karma
+	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
+	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
+	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
+	
+	// Force roles
 	CreateNative("TTT_ForceTraitor", Native_ForceTraitor);
 	CreateNative("TTT_ForceDetective", Native_ForceDetective);
 	
+	// Config
 	CreateNative("TTT_OverrideConfigInt", Native_OverrideConfigInt);
 	CreateNative("TTT_OverrideConfigBool", Native_OverrideConfigBool);
 	CreateNative("TTT_OverrideConfigFloat", Native_OverrideConfigFloat);
 	CreateNative("TTT_OverrideConfigString", Native_OverrideConfigString);
-	
 	CreateNative("TTT_ReloadConfig", Native_ReloadConfig);
+	
+	// Others
+	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
+	CreateNative("TTT_LogString", Native_LogString);
 	
 	RegPluginLibrary("ttt");
 	
@@ -181,7 +196,15 @@ void SetupConfig()
 	
 	Config_Setup("TTT", g_sConfigFile);
 	
+	// Karma settings
 	g_iConfig[b_showKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
+	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
+	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
+	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
+	g_iConfig[i_messageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
 	g_iConfig[i_karmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
 	g_iConfig[i_karmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
 	g_iConfig[i_karmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
@@ -200,14 +223,12 @@ void SetupConfig()
 	g_iConfig[i_maxTraitors] = Config_LoadInt("ttt_traitor_max", 32, "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
 	g_iConfig[i_maxDetectives] = Config_LoadInt("ttt_detective_max", 32, "Maximum number of detectives. Can be used to cap or disable detectives.");
 	g_iConfig[i_minKarmaDetective] = Config_LoadInt("ttt_detective_karma_min", 100, "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
-	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
-	g_iConfig[i_messageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
+	
 	g_iConfig[b_blockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
 	g_iConfig[b_blockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
 	g_iConfig[b_blockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
+	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
+	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_allowFlash] = Config_LoadBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled");
 	g_iConfig[b_blockLookAtWeapon] = Config_LoadBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
 	g_iConfig[b_enableNoBlock] = Config_LoadBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
@@ -241,19 +262,16 @@ void SetupConfig()
 	g_iConfig[b_forceModel] = Config_LoadBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
 	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
-	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
+	
 	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
-	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
-	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
 	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
 	g_iConfig[b_endroundDMG] = Config_LoadBool("ttt_end_round_dm", false, "Enable this to disable damage prevention between round end and warmup.");
 	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
-	g_iConfig[dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
+	g_iConfig[b_tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
+	g_iConfig[b_dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
 	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_enable_damage_before_round_start", false, "Enable damage before round start (Default disabled to prevent kills)?");
@@ -261,9 +279,11 @@ void SetupConfig()
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
 	
-	Config_LoadString("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\".", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
-	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\".", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	Config_LoadString("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
+	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
+	Config_LoadString("ttt_log_date_format", "%y-%m-%d", "Date format for the log files", g_iConfig[s_logDateFormat], sizeof(g_iConfig[s_logDateFormat]));
 	
+	// Move to ttt_weapons
 	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
 	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
 	
@@ -281,7 +301,7 @@ void SetupConfig()
 	Config_Done();
 	
 	char sDate[12];
-	FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
+	FormatTime(sDate, sizeof(sDate), g_iConfig[s_logDateFormat]);
 	ReplaceString(g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), "<DATE>", sDate, true);
 	ReplaceString(g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), "<DATE>", sDate, true);
 	
@@ -2522,7 +2542,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	{
 		LoopValidClients(i)
 		{
-			if (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[tChatToDead] && !IsPlayerAlive(i))
+			if (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[b_tChatToDead] && !IsPlayerAlive(i))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "T channel", i, client, sText);
@@ -2535,7 +2555,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	{
 		LoopValidClients(i)
 		{
-			if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[dChatToDead] && !IsPlayerAlive(i))
+			if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[b_dChatToDead] && !IsPlayerAlive(i))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "D channel", i, client, sText);
