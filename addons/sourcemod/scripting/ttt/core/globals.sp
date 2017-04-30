@@ -70,7 +70,7 @@ int g_iMVPs = -1;
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
 
-Handle g_hDatabase = null;
+Database g_dDB = null;
 
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };

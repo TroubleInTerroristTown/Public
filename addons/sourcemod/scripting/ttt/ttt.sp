@@ -185,7 +185,7 @@ public void OnLibraryRemoved(const char[] library)
 
 public void TTT_OnSQLConnect(Database db)
 {
-	g_hDatabase = db;
+	g_dDB = db;
 	
 	LateLoadClients(false);
 }
@@ -2686,9 +2686,9 @@ stock void UpdateKarma(int client, int karma)
 	char sQuery[2048];
 	Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `karma`=%d WHERE `communityid`=\"%s\";", karma, sCommunityID);
 
-	if (g_hDatabase != null)
+	if (g_dDB != null)
 	{
-		SQL_TQuery(g_hDatabase, Callback_Karma, sQuery, GetClientUserId(client));
+		g_dDB.Query(Callback_Karma, sQuery, GetClientUserId(client));
 	}
 }
 
@@ -3261,9 +3261,9 @@ stock void LoadClientKarma(int userid)
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
 		
-		if (g_hDatabase != null)
+		if (g_dDB != null)
 		{
-			SQL_TQuery(g_hDatabase, SQL_OnClientPostAdminCheck, sQuery, userid);
+			g_dDB.Query(SQL_OnClientPostAdminCheck, sQuery, userid);
 		}
 	}
 }
@@ -3322,8 +3322,6 @@ stock void InsertPlayer(int userid)
 	
 	if (TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
-		g_iKarma[client] = g_iConfig[i_startKarma];
-		
 		char sCommunityID[64];
 		
 		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
@@ -3332,12 +3330,14 @@ stock void InsertPlayer(int userid)
 			return;
 		}
 		
+		g_iKarma[client] = g_iConfig[i_startKarma];
+		
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (`communityid`, `karma`) VALUES (\"%s\", %d);", sCommunityID, g_iKarma[client]);
 		
-		if (g_hDatabase != null)
+		if (g_dDB != null)
 		{
-			SQL_TQuery(g_hDatabase, Callback_InsertPlayer, sQuery, userid);
+			g_dDB.Query(Callback_InsertPlayer, sQuery, userid);
 		}
 	}
 }

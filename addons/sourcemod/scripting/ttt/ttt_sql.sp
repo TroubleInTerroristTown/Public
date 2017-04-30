@@ -108,7 +108,6 @@ void SQL_Start()
 		else
 		{
 			LogError("(SQL_Start) We have a connection!");
-			Call_OnSQLConnect();
 			CheckAndCreateTables("sqlite");
 			return;
 		}
@@ -132,7 +131,7 @@ void SQL_Start()
 		}
 		else
 		{
-			Call_OnSQLConnect();
+			CheckAndCreateTables("sqlite");
 		}
 	}
 	else
@@ -161,7 +160,6 @@ public void OnConnect(Database db, const char[] error, any data)
 	}
 	
 	g_dDatabase = db;
-	Call_OnSQLConnect();
 	
 	CheckAndCreateTables(sDriver);
 }
@@ -192,6 +190,8 @@ void CheckAndCreateTables(const char[] driver)
 	}
 	
 	TTT_Query("Callback_CheckAndCreateTables", sQuery);
+	
+	Call_OnSQLConnect();
 	
 	SetCharsetAndCollate(driver);
 }
