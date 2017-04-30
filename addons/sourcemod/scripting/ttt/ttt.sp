@@ -155,7 +155,7 @@ public void OnPluginStart()
 	
 	if (TTT_GetSQLConnection() != null)
 	{
-		LateLoadClients();
+		LateLoadClients(true);
 	}
 }
 
@@ -187,7 +187,7 @@ public void TTT_OnSQLConnect(Database db)
 {
 	g_hDatabase = db;
 	
-	LateLoadClients();
+	LateLoadClients(false);
 }
 
 void SetupConfig()
@@ -1290,25 +1290,20 @@ public void OnClientPutInServer(int client)
 	HookClient(client);
 }
 
-public void LateLoadClients()
+void LateLoadClients(bool bHook = false)
 {
 	LoopValidClients(i)
 	{
 		LoadClientKarma(GetClientUserId(i));
+		
+		if (bHook)
+		{
+			HookClient(i);
+		}
 	}
 }
 
-public void LateLoadClient(int client)
-{
-	HookClient(client);
-	
-	if (TTT_GetSQLConnection() != null)
-	{
-		LoadClientKarma(GetClientUserId(client));
-	}
-}
-
-public void HookClient(int client)
+void HookClient(int client)
 {
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
@@ -1576,7 +1571,7 @@ public Action Timer_OnClientPostAdminCheck(Handle timer, any userid)
 	
 	if (TTT_IsClientValid(client))
 	{
-		HookClient(client);
+		LoadClientKarma(GetClientUserId(client));
 	}
 }
 
