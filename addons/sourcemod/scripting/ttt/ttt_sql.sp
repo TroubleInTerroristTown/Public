@@ -84,9 +84,37 @@ void SQL_Start()
 	if (g_iRetries == g_cRetries)
 	{
 		LogMessage("Last chance with sqlite. Let me try it!");
+		
+		KeyValues kvDatabase = CreateKeyValues("Databases");
+		
+		kvDatabase.SetString("driver", "sqlite");
+		kvDatabase.SetString("host", "localhost");
+		kvDatabase.SetString("database", "ttt");
+		kvDatabase.SetString("user", "root");
+		
+		char sError[255];
+		g_dDatabase = SQL_ConnectCustom(kvDatabase, sError, sizeof(sError), true);
+		
+		if (strlen(sError) > 1)
+		{
+			LogError("(SQL_Start) Error: %s", sError);
+		}
+		
+		if (g_dDatabase == null)
+		{
+			LogError("(SQL_Start) We can't connect to a database... :(");
+			return;
+		}
+		else
+		{
+			LogError("(SQL_Start) We have a connection!");
+			Call_OnSQLConnect();
+			CheckAndCreateTables("sqlite");
+			return;
+		}
 	}
 	
-	if (!SQL_CheckConfig(g_sEntry) || g_iRetries == g_cRetries)
+	if (!SQL_CheckConfig(g_sEntry) && g_iRetries < g_cRetries)
 	{
 		char sError[255];
 		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
@@ -162,7 +190,7 @@ void CheckAndCreateTables(const char[] driver)
 	{
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`));");
 	}
-
+	
 	TTT_Query("Callback_CheckAndCreateTables", sQuery);
 	
 	SetCharsetAndCollate(driver);
