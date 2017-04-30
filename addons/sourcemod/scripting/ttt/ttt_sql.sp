@@ -107,7 +107,7 @@ void SQL_Start()
 		}
 		else
 		{
-			LogError("(SQL_Start) We have a connection!");
+			LogMessage("(SQL_Start) We have a connection!");
 			CheckAndCreateTables("sqlite");
 			return;
 		}
@@ -131,7 +131,9 @@ void SQL_Start()
 		}
 		else
 		{
+			LogMessage("(SQL_Start) We have a connection!");
 			CheckAndCreateTables("sqlite");
+			return;
 		}
 	}
 	else
