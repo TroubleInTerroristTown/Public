@@ -11,10 +11,10 @@
 #define TTT_PLUGIN_VERSION "2.1.<ID>"
 #define TTT_PLUGIN_URL "https://github.com/Bara20/TroubleinTerroristTown"
 
-#define TTT_TEAM_UNASSIGNED 0
-#define TTT_TEAM_INNOCENT 1
-#define TTT_TEAM_TRAITOR 2
-#define TTT_TEAM_DETECTIVE 3
+#define TTT_TEAM_UNASSIGNED (1 << 0)
+#define TTT_TEAM_INNOCENT (1 << 1)
+#define TTT_TEAM_TRAITOR (1 << 2)
+#define TTT_TEAM_DETECTIVE (1 << 3)
 
 #define MAX_CUSTOM_ITEMS 64
 
