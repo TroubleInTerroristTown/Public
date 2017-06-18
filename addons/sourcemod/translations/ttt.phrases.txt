@@ -417,9 +417,9 @@
 		"en"		"Right click to plant the C4!"
 	}
 
-	"You already have an active Health Station"
+	"You already have an active Station"
 	{
-		"en"		"You already have an active Health Station!"
+		"en"		"You already have an active Station!"
 	}
 
 	"The player who RDM'd you is no longer available"
