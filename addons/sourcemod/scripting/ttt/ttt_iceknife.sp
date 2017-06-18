@@ -128,7 +128,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if (TTT_IsClientValid(client))
 	{
-		ResetIceK(client);
+		GetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
 	}
 }
 
@@ -162,13 +162,6 @@ void ResetIceK(int client)
 	g_iPCount[client] = 0;
 	g_bFreezed[client] = false;
 	g_bIceKnife[client] = false;
-	SetEntityMoveType(client, MOVETYPE_WALK);
-	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
-	
-	if (g_iOldColors[client][3] > 0)
-	{
-		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
-	}
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -209,20 +202,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		g_bFreezed[iVictim] = true;
 		g_bIceKnife[iAttacker] = false;
+		
 		SetEntityMoveType(iVictim, MOVETYPE_NONE);
 		SetEntPropFloat(iVictim, Prop_Data, "m_flLaggedMovementValue", 0.0);
 
 		GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
+		SetEntityRenderColor(iVictim, 0, 128, 255, 135);
 
-		if (g_sFreezeSound[0])
-		{
-			float vec[3];
-			GetClientAbsOrigin(iVictim, vec);
-			vec[2] += 10;	
-			
-			GetClientEyePosition(iVictim, vec);
-			EmitAmbientSound(g_sFreezeSound, vec, iVictim, SNDLEVEL_RAIDSIREN);
-		}
+		PlayFreezeSound(iVictim);
 		
 		if (g_fFreezeTime > 0.0)
 		{
@@ -248,13 +235,12 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 	
 	if (TTT_IsClientValid(client))
 	{
+		PlayFreezeSound(client);
+		
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
-
-		if (g_iOldColors[client][3] > 0)
-		{
-			SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
-		}
+		
+		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
 
 		g_bFreezed[client] = false;
 	}
@@ -271,4 +257,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
+}
+
+void PlayFreezeSound(int client)
+{
+	if (g_sFreezeSound[0])
+	{
+		float vec[3];
+		GetClientAbsOrigin(client, vec);
+		vec[2] += 10;	
+		
+		GetClientEyePosition(client, vec);
+		EmitAmbientSound(g_sFreezeSound, vec, client, SNDLEVEL_RAIDSIREN);
+	}
 }
