@@ -121,7 +121,9 @@ enum Ragdolls
 {
 	Ent, 
 	Victim, 
-	Attacker, 
+	Attacker,
+	VictimTeam,
+	AttackerTeam,
 	String:VictimName[MAX_NAME_LENGTH], 
 	String:AttackerName[MAX_NAME_LENGTH], 
 	bool:Scanned, 
