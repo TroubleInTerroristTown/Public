@@ -13,7 +13,8 @@
 
 #pragma newdecls required
 
-#define SHORT_NAME "wh"
+#define SHORT_NAME_T "wh_t"
+#define SHORT_NAME_D "wh_d"
 #define LONG_NAME "Wallhack"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
@@ -79,8 +80,8 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
+	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
@@ -180,7 +181,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if (StrEqual(itemshort, SHORT_NAME, false))
+		if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
 		{
 			if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
 					return Plugin_Stop;
