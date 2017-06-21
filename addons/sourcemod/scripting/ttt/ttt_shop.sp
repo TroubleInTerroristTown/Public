@@ -562,6 +562,7 @@ public Action Timer_CreditsTimer(Handle timer, any userid)
 		{
 			int iCredits = GetRandomInt(g_iCreditsMin, g_iCreditsMax);
 			addCredits(client, iCredits, g_bCreditsMessage);
+			return Plugin_Continue;
 		}
 	}
 	
