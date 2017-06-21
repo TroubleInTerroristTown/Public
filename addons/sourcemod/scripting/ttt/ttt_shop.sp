@@ -616,6 +616,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
 public void OnClientDisconnect(int client)
 {
+	g_hCreditsTimer[client] = null;
 	ClearTimer(g_hCreditsTimer[client]);
 }
 
@@ -688,6 +689,7 @@ public void TTT_OnRoundEnd(int WinningTeam)
 {
 	LoopValidClients(client)
 	{
+		g_hCreditsTimer[client] = null;
 		ClearTimer(g_hCreditsTimer[client]);
 		switch (WinningTeam)
 		{
