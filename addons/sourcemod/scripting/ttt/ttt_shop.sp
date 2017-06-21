@@ -545,7 +545,7 @@ public void TTT_OnClientGetRole(int client, int role)
 {
 	if (g_bCreditsTimer)
 	{
-		if (g_fCreditsInterval > 60.0)
+		if (g_fCreditsInterval >= 60.0)
 		{
 			g_hCreditsTimer[client] = CreateTimer(g_fCreditsInterval, Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 		}
