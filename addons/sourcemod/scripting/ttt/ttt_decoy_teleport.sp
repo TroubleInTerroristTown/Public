@@ -164,7 +164,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -187,13 +187,16 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			
 			g_bHasTeleporter[client] = true;
 			
-			if (role == TTT_TEAM_TRAITOR)
+			if (count)
 			{
-				g_iTPCount[client]++;
-			}
-			else if (role == TTT_TEAM_DETECTIVE)
-			{
-				g_iDPCount[client]++;
+				if (role == TTT_TEAM_TRAITOR)
+				{
+					g_iTPCount[client]++;
+				}
+				else if (role == TTT_TEAM_DETECTIVE)
+				{
+					g_iDPCount[client]++;
+				}
 			}
 		}
 	}

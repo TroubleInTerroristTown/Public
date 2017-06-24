@@ -104,7 +104,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR, g_iHurtPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

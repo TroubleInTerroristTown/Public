@@ -83,18 +83,16 @@ char g_sShopCMDs[][] =  {
 
 enum Item
 {
-	String:Long[64], 
-	String:Short[16], 
-	Price, 
+	String:Long[64],
+	String:Short[16],
+	Price,
 	Role,
 	Sort
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
-	
 	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_Cell, Param_String);
 	
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);

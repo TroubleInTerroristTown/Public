@@ -156,7 +156,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME_I, LONG_NAME_I, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

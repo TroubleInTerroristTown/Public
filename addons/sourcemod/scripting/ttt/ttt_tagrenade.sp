@@ -171,7 +171,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -187,7 +187,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				
 			GivePlayerItem(client, "weapon_tagrenade");
 			
-			g_iTPCount[client]++;
+			if (count)
+			{
+				g_iTPCount[client]++;
+			}
 		}
 	}
 	return Plugin_Continue;

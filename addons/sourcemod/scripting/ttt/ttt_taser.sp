@@ -194,7 +194,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -227,17 +227,20 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			GivePlayerItem(client, "weapon_taser");
 			g_bTaser[client] = true;
 			
-			if (role == TTT_TEAM_DETECTIVE)
+			if (count)
 			{
-				g_iDPCount[client]++;
-			}
-			else if (role == TTT_TEAM_INNOCENT)
-			{
-				g_iIPCount[client]++;
-			}
-			else if (role == TTT_TEAM_TRAITOR)
-			{
-				g_iTPCount[client]++;
+				if (role == TTT_TEAM_DETECTIVE)
+				{
+					g_iDPCount[client]++;
+				}
+				else if (role == TTT_TEAM_INNOCENT)
+				{
+					g_iIPCount[client]++;
+				}
+				else if (role == TTT_TEAM_TRAITOR)
+				{
+					g_iTPCount[client]++;
+				}
 			}
 		}
 	}

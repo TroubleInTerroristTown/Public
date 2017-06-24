@@ -288,7 +288,7 @@ public void TTT_OnClientDeath(int v, int a)
 	g_bHasKnife[v] = false;
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

@@ -36,11 +36,11 @@ public void OnAllPluginsLoaded()
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] item)
+public Action TTT_OnItemPurchased(int client, const char[] item, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
 	{
-		PrintToChat(client, "It works! Hooray! Item: %s", item);
+		PrintToChat(client, "It works! Hooray! Item: %s Count: %d", item, count);
 	}
 
 	return Plugin_Continue;

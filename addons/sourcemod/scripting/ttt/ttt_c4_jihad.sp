@@ -163,7 +163,7 @@ public void ResetGlobals(int client)
 	ClearTimer(g_hJihadBomb[client]);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -182,7 +182,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			}
 			
 			g_bHasC4[client] = true;
-			g_iPCount_C4[client]++;
+			
+			if (count)
+			{
+				g_iPCount_C4[client]++;
+			}
+			
 			CPrintToChat(client, g_sPluginTag, "Right click to plant the C4", client);
 		}
 		else if (StrEqual(itemshort, SHORT_NAME_J, false))

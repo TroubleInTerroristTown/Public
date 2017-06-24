@@ -97,7 +97,7 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -114,7 +114,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				return Plugin_Stop;
 			}
 			
-			g_iPCount[client]++;
+			if (count)
+			{
+				g_iPCount[client]++;
+			}
 		}
 	}
 	return Plugin_Continue;
