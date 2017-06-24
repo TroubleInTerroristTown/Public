@@ -93,9 +93,9 @@ enum Item
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
 	
-	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_String);
+	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_Cell, Param_String);
 	
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
@@ -389,11 +389,13 @@ bool ClientBuyItem(int client, char[] item)
 		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0))
 		{
 			int price = temp_item[Price];
+			int count = true;
 			
 			Action result = Plugin_Continue;
 			Call_StartForward(g_hOnItemPurchase);
 			Call_PushCell(client);
 			Call_PushCellRef(price);
+			Call_PushCellRef(count);
 			Call_PushString(temp_item[Short]);
 			Call_Finish(result);
 			
@@ -415,6 +417,7 @@ bool ClientBuyItem(int client, char[] item)
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
 				Call_PushCell(client);
+				Call_PushCell(count);
 				Call_PushString(temp_item[Short]);
 				Call_Finish(res);
 				
