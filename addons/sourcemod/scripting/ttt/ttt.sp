@@ -100,7 +100,7 @@ public void OnPluginStart()
 	
 	LoadBadNames();
 	
-	g_aRagdoll = new ArrayList(102);
+	g_aRagdoll = new ArrayList(104);
 	g_aLogs = new ArrayList(512);
 	
 	g_aForceTraitor = new ArrayList();
@@ -1452,10 +1452,12 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		int iRagdollC[Ragdolls];
 		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
 		iRagdollC[Victim] = client;
+		iRagdollC[VictimTeam] = g_iRole[client];
 		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, name);
 		iRagdollC[Scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
 		iRagdollC[Attacker] = iAttacker;
+		iRagdollC[AttackerTeam] = g_iRole[iAttacker];
 		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, name);
 		iRagdollC[GameTime] = GetGameTime();
 		event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
@@ -1946,6 +1948,7 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	
 	int iRagdollC[Ragdolls];
 	
+	//TODO Make this based on the userid to prevent abuse
 	for (int i = 0; i < g_aRagdoll.Length; i++)
 	{
 		g_aRagdoll.GetArray(i, iRagdollC[0]);
@@ -2448,19 +2451,19 @@ public int TTT_OnButtonPress(int client, int button)
 								g_bFound[iRagdollC[Victim]] = true;
 							}
 							
-							if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_INNOCENT)
+							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 							}
-							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_DETECTIVE)
+							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 							}
-							else if (g_iRole[iRagdollC[Victim]] == TTT_TEAM_TRAITOR)
+							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);

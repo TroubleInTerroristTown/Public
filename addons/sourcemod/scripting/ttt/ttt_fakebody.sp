@@ -152,9 +152,11 @@ stock bool SpawnFakeBody(int client)
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
 	iRagdollC[Victim] = client;
+	iRagdollC[VictimTeam] = TTT_GetClientRole(client);
 	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
 	iRagdollC[Scanned] = false;
 	iRagdollC[Attacker] = 0;
+	iRagdollC[AttackerTeam] = TTT_TEAM_TRAITOR;
 	Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
 	iRagdollC[GameTime] = 0.0;
 	Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
