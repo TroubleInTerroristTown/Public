@@ -415,8 +415,8 @@ bool ClientBuyItem(int client, char[] item)
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
 				Call_PushCell(client);
-				Call_PushCell(count);
 				Call_PushString(temp_item[Short]);
+				Call_PushCell(count);
 				Call_Finish(res);
 				
 				if (res < Plugin_Stop)
