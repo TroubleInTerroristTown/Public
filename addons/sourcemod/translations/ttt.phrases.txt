@@ -321,6 +321,12 @@
 	{
 		"en"		"You can´t see the logs now, you need be dead or round has to be inactive"
 	}
+	
+	"watching logs alive"
+	{
+		"#format"	"{1:N}"
+		"en"		"{green}{1} {default}is {red}alive {default}and watching logs of current round."
+	}
 
 	"Receiving logs"
 	{
