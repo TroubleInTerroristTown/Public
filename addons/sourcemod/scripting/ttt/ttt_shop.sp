@@ -390,11 +390,17 @@ bool ClientBuyItem(int client, char[] item)
 		{
 			int price = temp_item[Price];
 			
+			Action result = Plugin_Continue;
 			Call_StartForward(g_hOnItemPurchase);
 			Call_PushCell(client);
 			Call_PushCellRef(price);
 			Call_PushString(temp_item[Short]);
-			Call_Finish();
+			Call_Finish(result);
+			
+			if (result == Plugin_Stop || result == Plugin_Handled)
+			{
+				return false;
+			}
 			
 			if (g_bDebugMessages && temp_item[Price] != price)
 			{
