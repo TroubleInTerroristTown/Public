@@ -342,9 +342,10 @@ public Action Command_Logs(int client, int args)
 		}
 		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, aFlags))
 		{
-			if (g_iConfig[bLogsDeadOnly] && !IsPlayerAlive(client))
+			if (g_iConfig[bLogsDeadOnly])
 			{
-				ShowLogs(client);
+				if (!IsPlayerAlive(client))
+					ShowLogs(client);
 			}
 			else
 			{
