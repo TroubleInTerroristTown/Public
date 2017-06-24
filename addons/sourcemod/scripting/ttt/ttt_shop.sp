@@ -27,6 +27,8 @@ public Plugin myinfo =
 
 ArrayList g_aCustomItems;
 
+bool g_bDebugMessages = false;
+
 char g_sPluginTag[128];
 char g_sConfigFile[PLATFORM_MAX_PATH];
 char g_sCreditsName[32];
@@ -42,6 +44,7 @@ bool g_bCreditsMessage = false;
 bool g_bReopenMenu = false;
 
 Handle g_hOnItemPurchased = null;
+Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -89,7 +92,10 @@ enum Item
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String);
+	
+	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_String);
 	
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
@@ -138,6 +144,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
+	g_bDebugMessages = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
 	Config_Done();
 	
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/shop.cfg");
@@ -381,7 +388,23 @@ bool ClientBuyItem(int client, char[] item)
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0))
 		{
-			if ((TTT_GetClientCredits(client) >= temp_item[Price]) && ((temp_item[Role] == 0) || (TTT_GetClientRole(client) == temp_item[Role])))
+			int price = temp_item[Price];
+			
+			Call_StartForward(g_hOnItemPurchase);
+			Call_PushCell(client);
+			Call_PushCellRef(price);
+			Call_PushString(temp_item[Short]);
+			Call_Finish();
+			
+			if (g_bDebugMessages && temp_item[Price] != price)
+			{
+				if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
+				{
+					PrintToChat(client, "Item: %s Price: %d New Price: %d", temp_item[Long], temp_item[Price], price);
+				}
+			}
+			
+			if ((TTT_GetClientCredits(client) >= price) && ((temp_item[Role] == 0) || (TTT_GetClientRole(client) == temp_item[Role])))
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
@@ -391,8 +414,8 @@ bool ClientBuyItem(int client, char[] item)
 				
 				if (res < Plugin_Stop)
 				{
-					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - temp_item[Price]));
-					CPrintToChat(client, g_sPluginTag, "Item bought!", client, TTT_GetClientCredits(client), temp_item[Long]);
+					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - price));
+					CPrintToChat(client, g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
 					return true;
 				}
 			}
