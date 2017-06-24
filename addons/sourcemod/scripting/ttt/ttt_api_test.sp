@@ -36,11 +36,21 @@ public void OnAllPluginsLoaded()
 	}
 }
 
+public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item)
+{
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(item) > 2)
+	{
+		PrintToChat(client, "[TTT_OnItemPurchase] It works! Hooray! Item: %s Price: %d Count: %d", item, price, count);
+	}
+
+	return Plugin_Continue;
+}
+
 public Action TTT_OnItemPurchased(int client, const char[] item, bool count)
 {
-	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && (strcmp(item, PLUGIN_ITEM_SHORT) == 0))
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(item) > 2)
 	{
-		PrintToChat(client, "It works! Hooray! Item: %s Count: %d", item, count);
+		PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d", item, count);
 	}
 
 	return Plugin_Continue;
