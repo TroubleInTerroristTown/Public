@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 06:54:48 UTC
+// Date: 2017-06-25 07:09:18 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -911,6 +911,11 @@
 	"Reopen Shop activated"
 	{
 		"de"		"Nach dem Kauf eines Items wird der Shop wieder geöffnet."
+	}
+
+	"You already have an active Station"
+	{
+		"de"		"Du hast bereits eine aktive Station!"
 	}
 
 }
