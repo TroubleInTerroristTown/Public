@@ -11,7 +11,7 @@ PASS=$5
 
 echo -e "Download und extract sourcemod\n"
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
-tar -xzf sourcemod.tar.gz
+tar -xzf sourcemod.tar.gz --exclude='addons/sourcemod/translations'
 
 echo -e "Give compiler rights for compile\n"
 chmod +x addons/sourcemod/scripting/spcomp
@@ -66,11 +66,8 @@ fi
 echo -e "Create clean build folder\n"
 mkdir build
 
-echo -e "Move addons folders except translations\n"
-rsync -av --exclude='addons/sourcemod/translations' addons build
-
-echo -e "Move materials and sound folder\n"
-mv materials sound build/
+echo -e "Move addons, materials and sound folder\n"
+mv addons materials sound build/
 
 echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
