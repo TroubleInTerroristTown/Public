@@ -1,0 +1,596 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:50 UTC
+// Language: Russian (ru)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"ru"		"Ваша карма: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"ru"		"Команды сформированы!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"ru"		"Минимальное кол-во игроков для игры: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"ru"		"Ваша роль - {blue}ДЕТЕКТИВ"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"ru"		"Ваша роль - {darkred}ПРЕДАТЕЛЬ"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"ru"		"Ваша роль - {green}НЕВИНОВНЫЙ"
+	}
+
+	"Your credits is"
+	{
+		"ru"		"Количесво ваших кредитов: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"ru"		"Вас убил {darkred}ПРЕДАТЕЛЬ"
+	}
+
+	"Your killer is a Detective"
+	{
+		"ru"		"Вас убил {blue}ДЕТЕКТИВ"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"ru"		"Вас убил {green}НЕВИНОВНЫЙ"
+	}
+
+	"You killed a Traitor"
+	{
+		"ru"		"Вы убили {darkred}ПРЕДАТЕЛЯ"
+	}
+
+	"You killed a Detective"
+	{
+		"ru"		"Вы убили {blue}ДЕТЕКТИВА"
+	}
+
+	"You killed an Innocent"
+	{
+		"ru"		"Вы убили {green}НЕВИНОВНОГО"
+	}
+
+	"You hurt a Traitor"
+	{
+		"ru"		"Вы использовали детектор на {darkred}{1}{lightgreen}, и он оказался {darkred}ПРЕДАТЕЛЕМ"
+	}
+
+	"You hurt a Detective"
+	{
+		"ru"		"Вы использовали детектор на {blue}{1}{lightgreen}, и он оказался {blue}ДЕТЕКТИВОМ"
+	}
+
+	"You hurt an Innocent"
+	{
+		"ru"		"Вы использовали детектор на {green}{1}{lightgreen}, и он оказался {green}НЕВИНОВНЫМ"
+	}
+
+	"is possibly RDMing"
+	{
+		"ru"		"{darkred}{1} {lightgreen}возможно РДМил"
+	}
+
+	"Detective scan found body"
+	{
+		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: игрок совершил самоубийство"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"ru"		"Нож, убийство с 1 удара (можно использовать 1 раз) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"ru"		"Поддельная ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
+	}
+
+	"Health Station"
+	{
+		"ru"		"Аптечка - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"ru"		"ДНК сканнер (сканирование трупа и показ, кто убийца) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"ru"		"Бронежилет - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"ru"		"Роль ПРЕДАТЕЛЯ - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"ru"		"Роль ДЕТЕКТИВА - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"ru"		"ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"ru"		"Пожалуйста, подождите, пока ваша роль назначается"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"ru"		"Предмет куплен! Количество ваших КРЕДИТОВ {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"ru"		"У вас недостаточно кредитов!"
+	}
+
+	"Traitors"
+	{
+		"ru"		"ПРЕДАТЕЛЬ"
+	}
+
+	"Detectives"
+	{
+		"ru"		"ДЕТЕКТИВ"
+	}
+
+	"Innocents"
+	{
+		"ru"		"НЕВИНОВНЫЙ"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"ru"		"Тело осмотрено. Извлеченные данные:"
+	}
+
+	"Victim name"
+	{
+		"ru"		"Имя жертвы: {1}"
+	}
+
+	"Team victim"
+	{
+		"ru"		"Роль: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"ru"		"Прошедшее время со смерти: {1} сек"
+	}
+
+	"The weapon used has been"
+	{
+		"ru"		"Оружие убийства: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"ru"		"Оружие убийства: самоубийство"
+	}
+
+	"Killer is Player"
+	{
+		"ru"		"Убийца: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"ru"		"Игрок покончил жизнь самоубийством"
+	}
+
+	"Player Is an Innocent"
+	{
+		"ru"		"Игрок{green} {1} {lightgreen}НЕВИНОВНЫЙ!"
+	}
+
+	"T channel"
+	{
+		"ru"		"{darkred}*ПРЕДАТЕЛИ* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"ru"		"{blue}*ДЕТЕКТИВЫ* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"ru"		"Вы не можете это сделать!"
+	}
+
+	"TTT Shop"
+	{
+		"ru"		"TTT магазин"
+	}
+
+	"credits earned"
+	{
+		"ru"		"Вы выйграли {1} кредитов\nКоличество ваших кредитов: {2}"
+	}
+
+	"lost credits"
+	{
+		"ru"		"Вы проиграли {1} кредитов\nКоличество ваших кредитов: {2}"
+	}
+
+	"karma earned"
+	{
+		"ru"		"Вы выйграли {1} кармы\nВаша карма сейчас: {2}"
+	}
+
+	"lost karma"
+	{
+		"ru"		"Вы потеряли {1} кармы\nВаша карма сейчас: {2}"
+	}
+
+	"no logs yet"
+	{
+		"ru"		"Нет логов"
+	}
+
+	"See your console"
+	{
+		"ru"		"Логи записаны! Посмотрите в вашей консоли"
+	}
+
+	"you cant see logs"
+	{
+		"ru"		"Вы не можете посмотреть логи сейчас, вы должны быть мертвым"
+	}
+
+	"Receiving logs"
+	{
+		"ru"		"Запись логов..."
+	}
+
+	"Taser"
+	{
+		"ru"		"Электрошокер (детектор ролей) - {1}"
+	}
+
+	"USPS"
+	{
+		"ru"		"USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"ru"		"M4-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"ru"		"{orchid}{1} {lightgreen}нашел тело {green}{2}{lightgreen}. Он был {green}НЕВИНОВНЫМ"
+	}
+
+	"Found Detective"
+	{
+		"ru"		"{orchid}{1} {lightgreen}нашел тело {blue}{2}{lightgreen}. Он был {blue}ДЕТЕКТИВОМ"
+	}
+
+	"Found Traitor"
+	{
+		"ru"		"{orchid}{1} {lightgreen}нашел тело {darkred}{2}{lightgreen}. Он был {darkred}ПРЕДАТЕЛЕМ"
+	}
+
+	"Buy c4"
+	{
+		"ru"		"Бомба C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"ru"		"Джихад бомба - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"ru"		"Ваша бомба еще не собрана."
+	}
+
+	"Your bomb is now armed."
+	{
+		"ru"		"Ваша бомба готова."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"ru"		"Бомба будет готова через 60 сек, нажмите на F, чтобы взорвать"
+	}
+
+	"Your Karma is too low"
+	{
+		"ru"		"Вы были забанены, т.к. у вас маленькая карма!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"ru"		"БЫЛО ВЫБРАНО {darkred}{1} ПРЕДАТЕЛЕЙ"
+	}
+
+	"Buy radar"
+	{
+		"ru"		"Радар - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"ru"		"Суицид заблокирован"
+	}
+
+	"Right click to plant the C4"
+	{
+		"ru"		"Нажмите на правую кнопку мыши для закладки C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"ru"		"Вы уже активировали аптечку!"
+	}
+
+	"You were RDM'd"
+	{
+		"ru"		"Вы были заРДМлены игроком {1}!"
+	}
+
+	"Forgive"
+	{
+		"ru"		"Простить"
+	}
+
+	"Punish"
+	{
+		"ru"		"Наказать"
+	}
+
+	"Choose Punish"
+	{
+		"ru"		"{1} решил наказать {2} за РДМ!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"ru"		"Вы решили простить РДМ игроку {1}!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"ru"		"{1} решил простить вам РДМ!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"ru"		"{orchid}{1} {green}НЕВИНОВНЫЙ"
+	}
+
+	"Player is Now Traitor"
+	{
+		"ru"		"{orchid}{1} {darkred}ПРЕДАТЕЛЬ"
+	}
+
+	"Player is Now Detective"
+	{
+		"ru"		"{orchid}{1} {blue}ДЕТЕКТИВ!"
+	}
+
+	"You Are Unassigned"
+	{
+		"ru"		"Ваша роль еще не назначена!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"ru"		"Вы {green}НЕВИНОВНЫЙ"
+	}
+
+	"You Are Now Traitor"
+	{
+		"ru"		"Вы {darkred}ПРЕДАТЕЛЬ"
+	}
+
+	"You Are Now Detective"
+	{
+		"ru"		"Вы {blue}ДЕТЕКТИВ"
+	}
+
+	"Bomb Detonated"
+	{
+		"ru"		"Ваша бомба взорвалась!"
+	}
+
+	"Set C4 Timer"
+	{
+		"ru"		"Ввести время таймера C4"
+	}
+
+	"Seconds"
+	{
+		"ru"		"{1} сек"
+	}
+
+	"Defuse C4"
+	{
+		"ru"		"Обезвреживание C4!"
+	}
+
+	"C4 Wire"
+	{
+		"ru"		"Провод {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"ru"		"Вы обзвредили бомбу игрока {orchid}{1}{lightgreen}!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"ru"		"{orchid}{1} {lightgreen}обезвредил вашу бомбу!"
+	}
+
+	"Failed Defuse"
+	{
+		"ru"		"Неудачное обезвреживание!"
+	}
+
+	"Alive to Plant"
+	{
+		"ru"		"Вы должны быть живым, чтобы обезвредить бомбу!"
+	}
+
+	"Will Explode In"
+	{
+		"ru"		"{GREEN}You {NORMAL}(rating {GREEN}{1}, {LIGHT_RED}-{2}{NORMAL}) {NORMAL}lost to {PURPLE}{3} {NORMAL}(rating {PURPLE}{4}, {LIGHT_GREEN}+{5}{NORMAL})"
+	}
+
+	"Bomb Was Not Found"
+	{
+		"ru"		"Ваша бомба не найдена!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"ru"		"Ваши товарищи по команде:"
+	}
+
+	"No Traitor Partners"
+	{
+		"ru"		"У вас нет товарищей по команде."
+	}
+
+	"Kick Bad Name"
+	{
+		"ru"		"Удалите из вашего ника слово {1}!"
+	}
+
+	"Health Station Deployed"
+	{
+		"ru"		"Аптечка развернута. Стойте рядом и получайте ХП!"
+	}
+
+	"Healing From"
+	{
+		"ru"		"Аптечка игрока {orchid}{1}{lightgreen}!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"ru"		"Аптечка пока закончалась, подождите немного!"
+	}
+
+	"AM Yes"
+	{
+		"ru"		"Sorry, all the arenas are currently {PURPLE}full"
+	}
+
+	"AM No"
+	{
+		"ru"		"Нет, Я не могу принять это."
+	}
+
+	"WM No"
+	{
+		"ru"		"Нет, покажи мне правила!"
+	}
+
+	"You reached limit"
+	{
+		"ru"		"Привет"
+	}
+
+	"You reached limit"
+	{
+		"ru"		"Привет"
+	}
+
+	"Welcome Message 1"
+	{
+		"ru"		"[{green}Lasermines{default}] {lightgreen} Для установки лазерной мины напишите в чат {green}!lm"
+	}
+
+	"Welcome Message 2"
+	{
+		"ru"		"[{green}Lasermines{default}] {lightgreen}Напишите {green}!lm {lightgreen}в чат, чтобы установить лазерные мины или {green}!bm{lightgreen} для их покупки"
+	}
+
+	"Can't plant, while dead"
+	{
+		"ru"		"Мёртвые не могут устанавливать лазерные мины"
+	}
+
+	"Can't use, while spec"
+	{
+		"ru"		"Вы должны быть в команде, чтобы использовать лазерные мины"
+	}
+
+	"Infinity mines"
+	{
+		"ru"		"У вас бесконечное количество лазерных мин"
+	}
+
+	"Mines"
+	{
+		"ru"		"Лазерных мин: {1}"
+	}
+
+	"Out of buy zone"
+	{
+		"ru"		"Вы вне зоны покупки"
+	}
+
+	"Can't buy, max amount"
+	{
+		"ru"		"У вас максимальное количество лазерных мин"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"ru"		"{1} мин. У вас недостаточно денег, чтобы купить больше"
+	}
+
+	"Can't buy, while dead"
+	{
+		"ru"		"Мертвые не могут покупать лазерные мины"
+	}
+
+	"AlreadyTaser"
+	{
+		"ru"		"ArenasFull"
+	}
+
+}

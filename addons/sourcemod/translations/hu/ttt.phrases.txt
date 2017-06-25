@@ -1,0 +1,51 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:50 UTC
+// Language: Hungarian (hu)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"You killed a Traitor"
+	{
+		"hu"		"Megöltél egy {darkred}ÁRULÓT!"
+	}
+
+	"Detective scan found body"
+	{
+		"hu"		"DETEKTÍV{blue} {1} {lightgreen}Megvizsgált egy testet, A gyilkos:{darkred} {2} {lightgreen}Ezzel a fegyverrel:{orchid} {3}"
+	}
+
+	"Detectives"
+	{
+		"hu"		"NYOMOZÓK"
+	}
+
+	"Victim name"
+	{
+		"hu"		"Az áldozatod: {1}"
+	}
+
+	"D channel"
+	{
+		"hu"		"{blue}*DETEKTÍV* {1}:{green} {2}"
+	}
+
+	"Found Traitor"
+	{
+		"hu"		"{orchid}{1} {lightgreen}Megtalálta {darkred}{2} -t. {lightgreen}Egy {darkred}Áruló {lightgreen}volt!"
+	}
+
+	"Buy jihadbomb"
+	{
+		"hu"		"Jihad bomba vásárlás - {1}"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"hu"		"Ez az Egészségügyi Csomag kifogyott! Várd meg míg újratölt!"
+	}
+
+}

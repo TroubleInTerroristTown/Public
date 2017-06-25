@@ -1,0 +1,791 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: Polish (pl)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"pl"		"Twoja KARMA to: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"pl"		"DRUŻYNY ZOSTAŁY PRZYDZIELONE"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"pl"		"MIN. GRACZY WYMAGANYCH DO GRY: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"pl"		"Jesteś {blue}DETEKTYWEM"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"pl"		"Jesteś {darkred}ZDRAJCĄ"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"pl"		"Jesteś {green}NIEWINNY"
+	}
+
+	"Your credits is"
+	{
+		"pl"		"Twoje Kredyty wynoszą: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"pl"		"Twoim zabójcą był {darkred}ZDRAJCA!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"pl"		"Zostales zabity przez {blue}DETEKTYWA!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"pl"		"Twój zabójca był {green}NIEWINNY!"
+	}
+
+	"You killed a Traitor"
+	{
+		"pl"		"Zabiles {darkred}ZDRAJCE!"
+	}
+
+	"You killed a Detective"
+	{
+		"pl"		"Zabiłeś {blue}DETEKTYWA!"
+	}
+
+	"You killed an Innocent"
+	{
+		"pl"		"Zabiłeś {green}Niewinnego!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"pl"		"Użyłeś detektora na graczu {darkred}{1} {lightgreen}i jest {darkred}ZDRAJCĄ!"
+	}
+
+	"You hurt a Detective"
+	{
+		"pl"		"Użyłeś detektora na graczu{blue} {1} {lightgreen}i jest {blue}DETEKTYWEM!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"pl"		"Użyłeś detektora na graczu{green} {1} {lightgreen}i jest {green}NIEWINNY!"
+	}
+
+	"is possibly RDMing"
+	{
+		"pl"		"{darkred}{1} {lightgreen}prawdopodobnie RDM'uje"
+	}
+
+	"Detective scan found body"
+	{
+		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, Zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, gracz popełnił samobójstwo"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"pl"		"1 uderzenie zabijające nożem (tylko jedno użycie) - {1:d}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"pl"		"Fałszywe ID karty (wpisz !id aby zobaczyć swoją niewinność) - {1}"
+	}
+
+	"Health Station"
+	{
+		"pl"		"Stacja Medyczna - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"pl"		"Skaner DNA (skanuje zwloki i pokazuje kto jest zabojca) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"pl"		"Pancerz - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"pl"		"Kup rolę ZDRAJCY - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"pl"		"Kup rolę DETEKTYWA - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"pl"		"ID karty (wpisz !id aby zobaczyć swoją niewinność) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"pl"		"Proszę poczekaj do czasu aż twoja drużyna zostanie wybrana"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"pl"		"Przedmiot kupiony! Twoje Kredyty wynoszą {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"pl"		"Nie masz wystarczająco kredytów!"
+	}
+
+	"Traitors"
+	{
+		"pl"		"ZDRAJCY"
+	}
+
+	"Detectives"
+	{
+		"pl"		"DETEKTYWI"
+	}
+
+	"Innocents"
+	{
+		"pl"		"NIEWINNI"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"pl"		"Zbadano ciało. Zdobyte dane są następujące:"
+	}
+
+	"Victim name"
+	{
+		"pl"		"Nazwa ofiary: {1}"
+	}
+
+	"Team victim"
+	{
+		"pl"		"Drużyna: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"pl"		"Minęło: {1} sekund od jego śmierci"
+	}
+
+	"The weapon used has been"
+	{
+		"pl"		"Użyta broń została: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"pl"		"Użyta broń została: własnoręcznie {zabita}"
+	}
+
+	"Killer is Player"
+	{
+		"pl"		"Zabójcą jest: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"pl"		"Gracz popełnił samobójstwo"
+	}
+
+	"Player Is an Innocent"
+	{
+		"pl"		"Gracz{green} {1} {lightgreen}jest {green}NIEWINNY!"
+	}
+
+	"T channel"
+	{
+		"pl"		"{darkred}*ZDRAJCY* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"pl"		"{blue}*DETEKTYWI* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"pl"		"Nie masz tego!"
+	}
+
+	"TTT Shop"
+	{
+		"pl"		"Sklep TTT\nTwoje Kredyty: {1}"
+	}
+
+	"credits earned"
+	{
+		"pl"		"Wygrałeś {1} kredytów\nTwój obecny stan kredytów wynosi: {2}"
+	}
+
+	"lost credits"
+	{
+		"pl"		"Straciłeś {1} kredytów\nTwoje obecne kredyty to: {2}"
+	}
+
+	"karma earned"
+	{
+		"pl"		"Zdobyles {1} karme\nTwoja karma wynosi teraz: {2}"
+	}
+
+	"lost karma"
+	{
+		"pl"		"Straciles czesc {1} karmy\nTwoja karma wynosi teraz: {2}"
+	}
+
+	"no logs yet"
+	{
+		"pl"		"Brak logów"
+	}
+
+	"See your console"
+	{
+		"pl"		"Logi Pobrane! Sprawdz konsolę aby je zobaczyć"
+	}
+
+	"you cant see logs"
+	{
+		"pl"		"Nie możesz teraz zobaczyć logów, musisz być martwy albo runda musi być nieaktywna"
+	}
+
+	"Receiving logs"
+	{
+		"pl"		"Odbieranie logów... proszę czekać"
+	}
+
+	"Taser"
+	{
+		"pl"		"Kup Paralizator (detektor drużyny) - {1}"
+	}
+
+	"USPS"
+	{
+		"pl"		"Kup USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"pl"		"Kup M4-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"pl"		"{orchid}{1} {lightgreen}znalazł ciało {green}{2}. {lightgreen}To był {green}NIEWINNY!"
+	}
+
+	"Found Detective"
+	{
+		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {blue}{2}. {lightgreen}To byl {blue}DETEKTYW!"
+	}
+
+	"Found Traitor"
+	{
+		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkred}{2}. {lightgreen}To byl {darkred}Zdrajca!"
+	}
+
+	"Buy c4"
+	{
+		"pl"		"Kup C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"pl"		"Kup bombe Jihadu - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"pl"		"Twoja bomba nie jest uzbrojona."
+	}
+
+	"Your bomb is now armed."
+	{
+		"pl"		"Twoja bomba jest teraz uzbrojona"
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"pl"		"bomba zostanie uzbrojona za 60 sekund, kliknij 2 razy F aby zdetonować"
+	}
+
+	"Your Karma is too low"
+	{
+		"pl"		"Zostałeś zbanowany, ponieważ twoja karma była zbyt niska!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"pl"		"{darkred}{1} ZDRAJCY {lightgreen}ZOSTALI WYBRANI"
+	}
+
+	"Buy radar"
+	{
+		"pl"		"Kup radar - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"pl"		"Samobójstwo zablokowane"
+	}
+
+	"Right click to plant the C4"
+	{
+		"pl"		"Kliknij prawy przycisk myszy aby podłożyć C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"pl"		"Już posiadasz aktywną Stację Medyczną!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"pl"		"Gracz który ciebie zRDM'ował nie jest już dostępny!"
+	}
+
+	"You were RDM'd"
+	{
+		"pl"		"Zostałeś zRDM'owany przez {1}!"
+	}
+
+	"Forgive"
+	{
+		"pl"		"Wybacz"
+	}
+
+	"Punish"
+	{
+		"pl"		"Ukarz"
+	}
+
+	"Choose Punish"
+	{
+		"pl"		"{1} Wybrał by ukarać {2} za RDM!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"pl"		"Wybrałeś by wybaczyć {1} za RDM na tobie!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"pl"		"{1} Wybrał by ci darować za RDM"
+	}
+
+	"Player is Now Innocent"
+	{
+		"pl"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"pl"		"{orchid}{1} {lightgreen}jest teraz {darkred}zdrajca!"
+	}
+
+	"Player is Now Detective"
+	{
+		"pl"		"{orchid}{1} {lightgreen}zostal {blue}Detektywem!"
+	}
+
+	"You Are Unassigned"
+	{
+		"pl"		"Twoja rola nie została jeszcze ustalona!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"pl"		"Jesteś {green}Niewinny!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"pl"		"Jesteś {darkred}Zdrajcą!"
+	}
+
+	"You Are Now Detective"
+	{
+		"pl"		"Jesteś {blue}Detektywem!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"pl"		"{1} uruchomił spadające budynki jako NIE Zdracja."
+	}
+
+	"Bomb Detonated"
+	{
+		"pl"		"Twoja bomba wybuchla!"
+	}
+
+	"Set C4 Timer"
+	{
+		"pl"		"Ustaw licznik czasu C4..."
+	}
+
+	"Seconds"
+	{
+		"pl"		"{1} sekund"
+	}
+
+	"Defuse C4"
+	{
+		"pl"		"Rozbrój C4!"
+	}
+
+	"You Defused Bomb"
+	{
+		"pl"		"Rozbroiłeś {orchid}{1}{lightgreen} bombe!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"pl"		"{orchid}{1} {lightgreen}rozbroil bombe!"
+	}
+
+	"Failed Defuse"
+	{
+		"pl"		"Nie udało się rozbroić!"
+	}
+
+	"Alive to Plant"
+	{
+		"pl"		"Musisz byc zywy, aby podlozyc bombe!"
+	}
+
+	"Will Explode In"
+	{
+		"pl"		"Uzbrajanie c4 która wybuchnie za {orchid}{1} {lightgreen}sekund."
+	}
+
+	"Bomb Was Not Found"
+	{
+		"pl"		"Twoja bomba nie została znaleziona!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"pl"		"Twoi koledzy Zdrajcy to:"
+	}
+
+	"No Traitor Partners"
+	{
+		"pl"		"Nie masz partnerów."
+	}
+
+	"Kick Bad Name"
+	{
+		"pl"		"Usunięto {1} z twojego nicku!"
+	}
+
+	"Health Station Deployed"
+	{
+		"pl"		"Stacja Medyczna postawiona. Stań blisko niej aby się uleczyć!"
+	}
+
+	"Healing From"
+	{
+		"pl"		"Leczenie z {orchid}{1} {lightgreen} Stacji Medycznej!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"pl"		"Stacja Uzdrowiskowa jest wyczerpana! Poczekaj zanim się ponownie naładuje!"
+	}
+
+	"Traitor List"
+	{
+		"pl"		"{darkred} {1}"
+	}
+
+	"Welcome Menu"
+	{
+		"pl"		"Witaj {1},\nTo jest serwer TTT Tłumaczenie by Wolf i Janek_Waleczny\nnapisany przez {2}\n\nCzy jesteś zaznajomiony z regulaminem?"
+	}
+
+	"WM Yes"
+	{
+		"pl"		"Tak, jestem zaznajomiony z zasadami!"
+	}
+
+	"WM Kick Message"
+	{
+		"pl"		"Jesteś nieaktywny albo zamknij menu zasad!"
+	}
+
+	"AM Question"
+	{
+		"pl"		"Chcesz zagrać jako detektyw?\nWięc potrzebujesz następujących rzeczy:\n\n-działający mikrofon\n-rozmawiać z innymi graczami\n-aktywnie grać\n\nMożesz to potwierdzić?"
+	}
+
+	"AM Yes"
+	{
+		"pl"		"Tak, potwierdzam to."
+	}
+
+	"AM No"
+	{
+		"pl"		"Nie, Nie mogę tego potwierdzić."
+	}
+
+	"WM No"
+	{
+		"pl"		"Nie, pokaż mi zasady!"
+	}
+
+	"StartTimer"
+	{
+		"pl"		"Runda rozpocznie się za {1} sekund"
+	}
+
+	"next round in"
+	{
+		"pl"		"Następna runda rozpocznie się za {1} sekund!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"pl"		"Stacja Bólu została położona! Będzie ona zadawać obrażenia pobliskim graczom!"
+	}
+
+	"You reached limit"
+	{
+		"pl"		"Możesz tylko kupić {1} co rundę!"
+	}
+
+	"All karma has been updated"
+	{
+		"pl"		"KARMA ZOSTAŁA ZAKTUALIZOWANA!"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"pl"		"Musisz być żywy aby użyć tej komendy."
+	}
+
+	"ID: Need to buy ID"
+	{
+		"pl"		"Nie masz ID. Kup jedno w Sklepie."
+	}
+
+	"ID: Shows ID"
+	{
+		"pl"		"{1} jest Niewinny"
+	}
+
+	"Found Fake"
+	{
+		"pl"		"{orchid}{1} {lightgreen}znalazł fałszywe ciało!"
+	}
+
+	"Welcome Message 1"
+	{
+		"pl"		"[{green}Laserowe Miny{default}] {lightgreen}Wpisz {green}!lm {lightgreen}na czacie aby uzbroić laserową minę"
+	}
+
+	"Welcome Message 2"
+	{
+		"pl"		"[{green}Lasermines{default}] {lightgreen}Wpisz {green}!lm {lightgreen}na czacie aby podłożyć albo {green}!bm {lightgreen}by kupić laserowe miny"
+	}
+
+	"Can't plant, while dead"
+	{
+		"pl"		"Nie możesz podłożyć laserowej miny kiedy nie żyjesz"
+	}
+
+	"Can't use, while spec"
+	{
+		"pl"		"Musisz być w drużynie aby używać laserowych min"
+	}
+
+	"Infinity mines"
+	{
+		"pl"		"Masz nieskończoną ilość laserowych min"
+	}
+
+	"Mines"
+	{
+		"pl"		"Laserowe miny: {1}"
+	}
+
+	"Out of buy zone"
+	{
+		"pl"		"Jesteś poza zasięgiem strefy kupowania"
+	}
+
+	"Can't buy, max amount"
+	{
+		"pl"		"Masz wystarczającą ilość laserowych min"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"pl"		"{1} min. Nie masz wystarczająco dużo kasy by kupić więcej"
+	}
+
+	"Can't buy, while dead"
+	{
+		"pl"		"Nie możesz kupić laserowych min kiedy jesteś martwy"
+	}
+
+	"TaserMax"
+	{
+		"pl"		"Osiągnąłeś limit paralizatorów! (Użyć na rundę: {1})"
+	}
+
+	"AdminSet"
+	{
+		"pl"		"Dałeś {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"pl"		"Wpisz !id aby zobaczyć swoją niewinność."
+	}
+
+	"RoundStartCenter"
+	{
+		"pl"		"Runda rozpocznie się za {3} sekund"
+	}
+
+	"RoundStartedCenter"
+	{
+		"pl"		"GO GO GO !!!"
+	}
+
+	"YouAreDead"
+	{
+		"pl"		"Nie możesz tego używać kiedy jesteś martwy"
+	}
+
+	"Bought All"
+	{
+		"pl"		"Przekroczyłeś limit {1}'s {orchid}({2})"
+	}
+
+	"DT: Invalid Position"
+	{
+		"pl"		"Pozycja Wabiku była niepoprawna. (Problem z utknięciem)"
+	}
+
+	"SpecMenu: Title"
+	{
+		"pl"		"Menu Widza"
+	}
+
+	"SpecMenu: Player"
+	{
+		"pl"		"Gracz: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"pl"		"Następny gracz"
+	}
+
+	"SpecMenu: Prev"
+	{
+		"pl"		"Poprzedni gracz"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"pl"		"Wycisz tego gracza"
+	}
+
+	"Hud Name"
+	{
+		"pl"		"Nazwa"
+	}
+
+	"Hud Health"
+	{
+		"pl"		"Zdrowie"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"pl"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"pl"		"karma"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"pl"		"{1}"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"pl"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"pl"		"\"{1}\""
+	}
+
+}

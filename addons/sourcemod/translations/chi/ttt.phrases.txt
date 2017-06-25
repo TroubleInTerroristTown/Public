@@ -1,0 +1,596 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: Chinese (Simplified) (chi)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"chi"		"你的人品值: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"chi"		"已分配完队伍!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"chi"		"此模式需要玩家人数: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"chi"		"你是 {blue}侦探"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"chi"		"你是 {darkred}叛徒 "
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"chi"		"你是 {green}平民 "
+	}
+
+	"Your credits is"
+	{
+		"chi"		"现有点数: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"chi"		"杀你的是 {darkred}叛徒!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"chi"		"杀你的是 {darkred}侦探!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"chi"		"杀你的是 {darkred}平民!"
+	}
+
+	"You killed a Traitor"
+	{
+		"chi"		"你杀死了一个 {darkred}叛徒!"
+	}
+
+	"You killed a Detective"
+	{
+		"chi"		"你杀死了一个 {darkred}侦探!"
+	}
+
+	"You killed an Innocent"
+	{
+		"chi"		"你杀死了一个 {darkred}平民!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"chi"		"侦测器显示玩家{darkred}{1} {lightgreen}是{darkred}一个叛徒!"
+	}
+
+	"You hurt a Detective"
+	{
+		"chi"		"侦测器显示玩家{blue}{1} {lightgreen}是{bleu}一个侦探!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"chi"		"侦测器显示玩家{gre​​en}{1} {lightgreen}是{green}一个平民!"
+	}
+
+	"is possibly RDMing"
+	{
+		"chi"		"{darkred}{1} {lightgreen}有可能在猜测杀"
+	}
+
+	"Detective scan found body"
+	{
+		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 凶手是{darkred} {2} {lightgreen} 凶器是{orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 玩家为自杀身亡"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"chi"		"一刀毙命 (只能使用一次) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"chi"		"假的身份 (输入 !id 来证明你是无辜的)"
+	}
+
+	"Health Station"
+	{
+		"chi"		"补给站 - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"chi"		"DNA 扫描器(扫描尸体来显示谁是凶手) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"chi"		"防弹背心 - {1} "
+	}
+
+	"Buy rol Traitor"
+	{
+		"chi"		"购买叛徒角色 - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"chi"		"购买侦探角色 - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"chi"		"身份证 (输入 !id 显示你的身份)"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"chi"		"分配完队伍才可以使用"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"chi"		"购买完毕! 你的还剩 {1} 个点数"
+	}
+
+	"You don't have enough money"
+	{
+		"chi"		"点数不够!"
+	}
+
+	"Traitors"
+	{
+		"chi"		"叛徒 "
+	}
+
+	"Detectives"
+	{
+		"chi"		"侦探"
+	}
+
+	"Innocents"
+	{
+		"chi"		"平民"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"chi"		"检查了身体数据如下:"
+	}
+
+	"Victim name"
+	{
+		"chi"		"受害者的名字: {1}"
+	}
+
+	"Team victim"
+	{
+		"chi"		"队伍: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"chi"		"{1} 秒前死亡 "
+	}
+
+	"The weapon used has been"
+	{
+		"chi"		"使用武器: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"chi"		"使用的武器是：自己 (自杀)"
+	}
+
+	"Killer is Player"
+	{
+		"chi"		"凶手: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"chi"		"玩家自杀"
+	}
+
+	"Player Is an Innocent"
+	{
+		"chi"		"玩家{gre​​en} {1} {light green}是 {green}平民"
+	}
+
+	"T channel"
+	{
+		"chi"		"{darkred}*叛徒* {1}:{green} {2} "
+	}
+
+	"D channel"
+	{
+		"chi"		"{blue}*侦探* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"chi"		"你没拥有!"
+	}
+
+	"TTT Shop"
+	{
+		"chi"		"TTT 商店 "
+	}
+
+	"credits earned"
+	{
+		"chi"		"你赢得了{1} 点数\n你现在的点数为: {2}"
+	}
+
+	"lost credits"
+	{
+		"chi"		"你输了 {1} 点数\n你现在的点数为: {2}"
+	}
+
+	"karma earned"
+	{
+		"chi"		"你获得了{1} 人品值\n你现在的人品值为: {2}"
+	}
+
+	"lost karma"
+	{
+		"chi"		"你丧失了{1} 人品值\n你现在的人品值为: {2}"
+	}
+
+	"no logs yet"
+	{
+		"chi"		"目前无纪录"
+	}
+
+	"See your console"
+	{
+		"chi"		"记录收到！打开您的控制台查看日志"
+	}
+
+	"you cant see logs"
+	{
+		"chi"		"目前无法查看纪录, 只有死掉后或局还没开始前才能查看"
+	}
+
+	"Receiving logs"
+	{
+		"chi"		"接收记录中... 请稍后"
+	}
+
+	"Taser"
+	{
+		"chi"		"购买电击枪 (队伍判断器) - {1}"
+	}
+
+	"USPS"
+	{
+		"chi"		"购买 USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"chi"		"购买 M4A1-S - {1} "
+	}
+
+	"Found Innocent"
+	{
+		"chi"		"{orchid}{1} {light green}找到了{green}{2}{light green}的尸体. {lightgreen}他是一位{green}平民!"
+	}
+
+	"Found Detective"
+	{
+		"chi"		"{orchid}{1} {lightgray}找到了{blue}{2}{lightgray}的尸体. {lightgreen}他是一位{blue}侦探!"
+	}
+
+	"Found Traitor"
+	{
+		"chi"		"{orchid}{1} {light green}找到了{dark red}{2}{light green}的尸体. {lightgreen}他是一位{darkred}叛徒!"
+	}
+
+	"Buy c4"
+	{
+		"chi"		"购买 C4"
+	}
+
+	"Buy jihadbomb"
+	{
+		"chi"		"购买炸弹 - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"chi"		"你的炸弹还没启动."
+	}
+
+	"Your bomb is now armed."
+	{
+		"chi"		"你的炸弹已启动."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"chi"		"60 秒后炸弹将启动, 按 F 两下来引爆"
+	}
+
+	"Your Karma is too low"
+	{
+		"chi"		"因为你的人品值太低所以被封锁了! "
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"chi"		"{lightgreen}己选择好 {darkred}{1} 个叛徒"
+	}
+
+	"Buy radar"
+	{
+		"chi"		"购买雷达 - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"chi"		"自杀被阻止"
+	}
+
+	"Right click to plant the C4"
+	{
+		"chi"		"按右键来安装炸弹!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"chi"		"你已经有补给站了!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"chi"		"猜测杀你的玩家已不在服务器上! "
+	}
+
+	"You were RDM'd"
+	{
+		"chi"		"你被 {1} 猜测杀!"
+	}
+
+	"Forgive"
+	{
+		"chi"		"原谅"
+	}
+
+	"Punish"
+	{
+		"chi"		"惩罚"
+	}
+
+	"Choose Punish"
+	{
+		"chi"		"{1} 选择惩罚{2} 猜测杀他!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"chi"		"你选择原谅 {1} 猜测杀你!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"chi"		"{1} 选择原谅你猜测杀他!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"chi"		"{orchid}{1} {lightgreen}现在是 {green}平民!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"chi"		"{orchid}{1} {lightgreen}现在是 {darkred}叛徒! "
+	}
+
+	"Player is Now Detective"
+	{
+		"chi"		"{orchid}{1} {lightgreen}现在是 {blue}侦探!"
+	}
+
+	"You Are Unassigned"
+	{
+		"chi"		"你还没被分配身份!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"chi"		"你现在是 {green}平民!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"chi"		"你现在是 {darkred}叛徒!"
+	}
+
+	"You Are Now Detective"
+	{
+		"chi"		"你现在是 {blue}侦探!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"chi"		"{1} 非叛徒触发了按钮."
+	}
+
+	"Bomb Detonated"
+	{
+		"chi"		"你的炸弹成功爆炸!"
+	}
+
+	"Set C4 Timer"
+	{
+		"chi"		"设置炸弹时间..."
+	}
+
+	"Seconds"
+	{
+		"chi"		"{1} 秒"
+	}
+
+	"Defuse C4"
+	{
+		"chi"		"拆除炸弹!"
+	}
+
+	"C4 Wire"
+	{
+		"chi"		"线 {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"chi"		"你拆除了 {orchid}{1}{lightgreen} 的炸弹!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"chi"		"{orchid}{1} {lightgreen}拆除了你的炸弹!"
+	}
+
+	"Failed Defuse"
+	{
+		"chi"		"拆除炸弹失败!"
+	}
+
+	"Alive to Plant"
+	{
+		"chi"		"活着的时候才能放置炸弹!"
+	}
+
+	"Will Explode In"
+	{
+		"chi"		"炸弹将在{orchid}{1} {lightgreen}秒后爆炸."
+	}
+
+	"Bomb Was Not Found"
+	{
+		"chi"		"无法找出你的炸弹!"
+	}
+
+	"Wire Is"
+	{
+		"chi"		"拆除炸弹的线是 {orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"chi"		"你的叛徒合作伙伴是: "
+	}
+
+	"No Traitor Partners"
+	{
+		"chi"		"你没有伙伴."
+	}
+
+	"Kick Bad Name"
+	{
+		"chi"		"麻烦从你的名称移除 {1} 字眼!"
+	}
+
+	"Health Station Deployed"
+	{
+		"chi"		"已不属补给站. 站在附近来补血!"
+	}
+
+	"Healing From"
+	{
+		"chi"		"使用 {orchid}{1} {lightgreen} 的补给站!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"chi"		"补给站目前没办法使用! 请稍后!"
+	}
+
+	"Traitor List"
+	{
+		"chi"		"{darkred} {1} "
+	}
+
+	"Welcome Menu"
+	{
+		"chi"		"你好 {1},\n这个模式叫做谁是叛徒\n\n你知道游戏规则吗?"
+	}
+
+	"WM Yes"
+	{
+		"chi"		"是, 我己了解游戏规则!"
+	}
+
+	"WM Kick Message"
+	{
+		"chi"		"您正在处于非活动状态或规则菜单被关闭!"
+	}
+
+	"AM Question"
+	{
+		"chi"		"你想当侦探吗?\n当侦探需具备以下条件:\n\n-良好的麦克风\n-能与其他玩家交谈\n\n你有符合以上条件吗?"
+	}
+
+	"AM Yes"
+	{
+		"chi"		"是, 我确定."
+	}
+
+	"AM No"
+	{
+		"chi"		"否, 我不能确定"
+	}
+
+	"WM No"
+	{
+		"chi"		"否, 请告诉我游戏规则!"
+	}
+
+	"StartTimer"
+	{
+		"chi"		"在{1}秒内全面启动"
+	}
+
+	"next round in"
+	{
+		"chi"		"下一个回合将在 {1} 秒后开始!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"chi"		"伤害站已部署! 它会伤害任何附近的玩家!"
+	}
+
+	"You reached limit"
+	{
+		"chi"		"你每回合只能购买 {1} !"
+	}
+
+	"All karma has been updated"
+	{
+		"chi"		"人品值已更新!"
+	}
+
+}

@@ -4,6 +4,7 @@ addons:
     - lftp
     - lib32z1
     - lib32stdc++6
+    - rsync
 
 language: c
 

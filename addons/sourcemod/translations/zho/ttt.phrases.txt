@@ -1,0 +1,566 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:50 UTC
+// Language: Chinese (Traditional) (zho)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"zho"		"你的人品值: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"zho"		"已分配完隊伍!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"zho"		"此模式須要玩家人數: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"zho"		"你是 {blue}偵探"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"zho"		"你是 {darkred}叛徒"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"zho"		"你是 {green}平民"
+	}
+
+	"Your credits is"
+	{
+		"zho"		"現有點數: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"zho"		"殺你的是 {darkred}叛徒!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"zho"		"殺你的是 {darkred}偵探!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"zho"		"殺你的是 {darkred}平民!"
+	}
+
+	"You killed a Traitor"
+	{
+		"zho"		"你殺死了一個 {darkred}叛徒!"
+	}
+
+	"You killed a Detective"
+	{
+		"zho"		"你殺死了一個 {darkred}偵探!"
+	}
+
+	"You killed an Innocent"
+	{
+		"zho"		"你殺死了一個 {darkred}平民!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"zho"		"偵測器顯示玩家 {darkred}{1} {lightgreen}是 {darkred}一個叛徒!"
+	}
+
+	"You hurt a Detective"
+	{
+		"zho"		"偵測器顯示玩家 {blue}{1} {lightgreen}是 {blue}一個偵探!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"zho"		"偵測器顯示玩家 {green}{1} {lightgreen}是 {green}一個平民!"
+	}
+
+	"is possibly RDMing"
+	{
+		"zho"		"{darkred}{1} {lightgreen}有可能在猜殺"
+	}
+
+	"Detective scan found body"
+	{
+		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 兇手是{darkred} {2} {lightgreen} 兇器是 {orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 玩家為自殺身亡"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"zho"		"一刀斃命 (只能使用一次) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"zho"		"假身分 (輸入 !id 來顯示你是無罪的) - {1}"
+	}
+
+	"Health Station"
+	{
+		"zho"		"補給站 - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"zho"		"DNA 掃描器 (掃描屍體來顯示誰是兇手) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"zho"		"防彈背心 - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"zho"		"購買叛徒腳色 - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"zho"		"購買偵探腳色 - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"zho"		"身分證 (輸入 !id 來顯示你是無罪的) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"zho"		"分配完隊伍才可使用"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"zho"		"購買完畢! 你的還剩 {1} 個點數"
+	}
+
+	"You don't have enough money"
+	{
+		"zho"		"點數不夠!"
+	}
+
+	"Traitors"
+	{
+		"zho"		"叛徒"
+	}
+
+	"Detectives"
+	{
+		"zho"		"偵探"
+	}
+
+	"Innocents"
+	{
+		"zho"		"平民"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"zho"		"檢視屍體顯示:"
+	}
+
+	"Victim name"
+	{
+		"zho"		"死者: {1}"
+	}
+
+	"Team victim"
+	{
+		"zho"		"隊伍: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"zho"		"{1} 秒前死亡"
+	}
+
+	"The weapon used has been"
+	{
+		"zho"		"凶器: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"zho"		"凶器: 自殺"
+	}
+
+	"Killer is Player"
+	{
+		"zho"		"兇手: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"zho"		"玩家自殺"
+	}
+
+	"Player Is an Innocent"
+	{
+		"zho"		"玩家{green} {1} {lightgreen}是 {green}平民"
+	}
+
+	"T channel"
+	{
+		"zho"		"{darkred}*叛徒* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"zho"		"{blue}*警察* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"zho"		"你沒擁有!"
+	}
+
+	"TTT Shop"
+	{
+		"zho"		"TTT 商店"
+	}
+
+	"credits earned"
+	{
+		"zho"		"你贏得了 {1} 點數\n你現在的點數為: {2}"
+	}
+
+	"lost credits"
+	{
+		"zho"		"你輸了 {1} 點數\n你現在的點數為: {2}"
+	}
+
+	"karma earned"
+	{
+		"zho"		"你獲得了 {1} 人品值\n你現在的人品值為: {2}"
+	}
+
+	"lost karma"
+	{
+		"zho"		"你喪失了 {1} 人品值\n你現在的人品值為: {2}"
+	}
+
+	"no logs yet"
+	{
+		"zho"		"目前無紀錄"
+	}
+
+	"See your console"
+	{
+		"zho"		"紀錄收到! 打開你的後台來查看紀錄"
+	}
+
+	"you cant see logs"
+	{
+		"zho"		"目前沒辦法查看紀錄, 只有死掉後或局還沒開始前才能查看"
+	}
+
+	"Receiving logs"
+	{
+		"zho"		"接收紀錄中... 請稍後"
+	}
+
+	"Taser"
+	{
+		"zho"		"購買電槍 (隊伍判斷器) - {1}"
+	}
+
+	"USPS"
+	{
+		"zho"		"購買 USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"zho"		"購買 M4-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"zho"		"{orchid}{1} {lightgreen}找到了 {green}{2}{lightgreen}的屍體. {lightgreen}他是一位 {green}平民!"
+	}
+
+	"Found Detective"
+	{
+		"zho"		"{orchid}{1} {lightgreen}找到了 {blue}{2}{lightgreen}的屍體. {lightgreen}他是一位 {blue}偵探!"
+	}
+
+	"Found Traitor"
+	{
+		"zho"		"{orchid}{1} {lightgreen}找到了 {darkred}{2}{lightgreen}的屍體. {lightgreen}他是一位 {darkred}叛徒!"
+	}
+
+	"Buy c4"
+	{
+		"zho"		"購買 C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"zho"		"購買炸彈背心 - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"zho"		"你的炸彈還沒啟動."
+	}
+
+	"Your bomb is now armed."
+	{
+		"zho"		"你的炸彈已啟動."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"zho"		"60 秒後炸彈將啟動, 按 F 兩下來引爆"
+	}
+
+	"Your Karma is too low"
+	{
+		"zho"		"因人品質太低所以被封鎖了!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"zho"		"{lightgreen}以選擇好 {darkred}{1} 個叛徒 "
+	}
+
+	"Buy radar"
+	{
+		"zho"		"購買雷達 - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"zho"		"不行自殺"
+	}
+
+	"Right click to plant the C4"
+	{
+		"zho"		"按右鍵來安裝炸彈!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"zho"		"你已經有補給站了!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"zho"		"猜殺你的玩家已不再伺服器上!"
+	}
+
+	"You were RDM'd"
+	{
+		"zho"		"你被 {1} 猜殺!"
+	}
+
+	"Forgive"
+	{
+		"zho"		"原諒"
+	}
+
+	"Punish"
+	{
+		"zho"		"懲罰"
+	}
+
+	"Choose Punish"
+	{
+		"zho"		"{1} 選擇懲罰{2} 猜殺他!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"zho"		"你選擇原諒 {1} 猜殺你!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"zho"		"{1} 選擇原諒你猜殺他!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"zho"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"zho"		"{orchid}{1} {lightgreen}現在是 {darkred}歹徒!"
+	}
+
+	"Player is Now Detective"
+	{
+		"zho"		"{orchid}{1} {lightgreen}現在是 {blue}偵探!"
+	}
+
+	"You Are Unassigned"
+	{
+		"zho"		"你還沒被分派身分!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"zho"		"你現在是 {green}平民!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"zho"		"你現在是 {darkred}叛徒!"
+	}
+
+	"You Are Now Detective"
+	{
+		"zho"		"你現在是 {blue}偵探!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"zho"		"{1} 非叛徒觸發了按鈕."
+	}
+
+	"Bomb Detonated"
+	{
+		"zho"		"你的炸彈成功爆炸!"
+	}
+
+	"Set C4 Timer"
+	{
+		"zho"		"設定炸彈時間..."
+	}
+
+	"Seconds"
+	{
+		"zho"		"{1} 秒"
+	}
+
+	"Defuse C4"
+	{
+		"zho"		"拆除炸彈!"
+	}
+
+	"C4 Wire"
+	{
+		"zho"		"線 {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"zho"		"你拆除了 {orchid}{1}{lightgreen} 的炸彈!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"zho"		"{orchid}{1} {lightgreen}拆除了你的炸彈!"
+	}
+
+	"Failed Defuse"
+	{
+		"zho"		"失敗拆除炸彈!"
+	}
+
+	"Alive to Plant"
+	{
+		"zho"		"活著的時候才能放置炸彈!"
+	}
+
+	"Will Explode In"
+	{
+		"zho"		"炸彈將在 {orchid}{1} {lightgreen}秒後爆炸."
+	}
+
+	"Bomb Was Not Found"
+	{
+		"zho"		"無法找出你的炸彈!"
+	}
+
+	"Wire Is"
+	{
+		"zho"		"拆除炸彈的線是 {orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"zho"		"你的夥伴:"
+	}
+
+	"No Traitor Partners"
+	{
+		"zho"		"你沒有夥伴."
+	}
+
+	"Kick Bad Name"
+	{
+		"zho"		"麻煩從你的名稱移除 {1} 字眼!"
+	}
+
+	"Health Station Deployed"
+	{
+		"zho"		"已不屬補給站. 站在附近來補血!"
+	}
+
+	"Healing From"
+	{
+		"zho"		"使用 {orchid}{1} {lightgreen} 的補給站!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"zho"		"補給站目前沒辦法使用! 請稍後!"
+	}
+
+	"Welcome Menu"
+	{
+		"zho"		"你好 {1},\n這個模式叫做誰是叛徒\n\n你知道遊戲規則嗎?"
+	}
+
+	"WM Yes"
+	{
+		"zho"		"是, 我以了解遊戲規則!"
+	}
+
+	"WM Kick Message"
+	{
+		"zho"		"你沒有在時間內回答或者你故意把規則蓋掉!"
+	}
+
+	"AM Question"
+	{
+		"zho"		"你想當偵探嗎?\n當偵探須具備以下條件:\n\n-良好的麥克風\n-與其他玩家對談\n\n你有符合以上條件嗎?"
+	}
+
+	"AM Yes"
+	{
+		"zho"		"是, 我確定."
+	}
+
+	"AM No"
+	{
+		"zho"		"否, 我不能確定."
+	}
+
+	"WM No"
+	{
+		"zho"		"否, 請告訴我遊戲規則!"
+	}
+
+}

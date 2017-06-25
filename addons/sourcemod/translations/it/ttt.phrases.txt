@@ -1,0 +1,111 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:50 UTC
+// Language: Italian (it)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your credits is"
+	{
+		"it"		"I tuoi CREDITI sono: {orchid}{1}"
+	}
+
+	"You hurt a Traitor"
+	{
+		"it"		"Hai usato il rivelatore su {darkred}{1} {lightgreen}e' lui e' {darkred}TRADITORE!"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"it"		"Carta d'identita' falsa (digita !id per provare la tua innocenza)"
+	}
+
+	"Health Station"
+	{
+		"it"		"Stazione di Cura - {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"it"		"Non hai abbastanza crediti!"
+	}
+
+	"credits earned"
+	{
+		"it"		"Hai vinto {1}crediti\nI tuoi crediti sono: {2}"
+	}
+
+	"lost karma"
+	{
+		"it"		"Hai perso {1} di karma\nIl tuo karma ora e': {2}"
+	}
+
+	"Buy c4"
+	{
+		"it"		"Compra il C4 - {1}"
+	}
+
+	"Your bomb is now armed."
+	{
+		"it"		"La tua bomba si e' attivata."
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"it"		"{lightgreen}SONO STATI SCELTI {darkred}{1} TRADITORI."
+	}
+
+	"Forgive"
+	{
+		"it"		"Perdona"
+	}
+
+	"Choose Punish"
+	{
+		"it"		"{1} ha scelto di punire {2} per avergli fatto RDM!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"it"		"Hai scelto di perdonare {1} anche se ti ha fatto RDM!"
+	}
+
+	"Bomb Detonated"
+	{
+		"it"		"La tua bomba e' esplosa!"
+	}
+
+	"Seconds"
+	{
+		"it"		"{1} secondi"
+	}
+
+	"Defuse C4"
+	{
+		"it"		"Disinnesca il C4!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"it"		"I tuoi compagni Traditori sono:"
+	}
+
+	"WM Yes"
+	{
+		"it"		"Si, Conosco le regole!"
+	}
+
+	"WM Kick Message"
+	{
+		"it"		"Se inattivo o hai chiuso il menu' delle regole!"
+	}
+
+	"WM No"
+	{
+		"it"		"No, mostrami le regole!"
+	}
+
+}

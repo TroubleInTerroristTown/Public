@@ -1,0 +1,596 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: ua (ua)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"ua"		"Karma hiện tại của bạn: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"ua"		"TEAM ĐÃ SẮP XẾP XONG!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"ua"		"Số lượng player tối thiểu: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"ua"		"Bạn là {blue}DETECTIVE"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"ua"		"Bạn là {darkred}TRAITOR"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"ua"		"Bạn là {green}INNOCENT"
+	}
+
+	"Your credits is"
+	{
+		"ua"		"Credits hiện tại: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"ua"		"Bạn bị giết bởi một {darkred}TRAITOR!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"ua"		"Bạn bị giết bởi một {blue}DETECTIVE!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"ua"		"Bạn bị giết bởi một {green}INNOCENT!"
+	}
+
+	"You killed a Traitor"
+	{
+		"ua"		"Bạn đã giết một {darkred}TRAITOR!"
+	}
+
+	"You killed a Detective"
+	{
+		"ua"		"Bạn đã hạ sát một {blue}THÁM TỬ!"
+	}
+
+	"You killed an Innocent"
+	{
+		"ua"		"Bạn đã giết một {green}INNOCENT!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"ua"		"Bạn đã xét nghiệm Player {darkred}{1} {lightgreen}và xác nhận đó là {darkred}TRAITOR!"
+	}
+
+	"You hurt a Detective"
+	{
+		"ua"		"Bạn đã xét nghiệm Player{green} {1} {lightgreen}và xác nhận họ là {blue}DETECTIVE!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"ua"		"Bạn đã xét nghiệm Player{green} {1} {lightgreen}và xác nhận họ là {green}INNOCENT!"
+	}
+
+	"is possibly RDMing"
+	{
+		"ua"		"{darkred}{1} {lightgreen}phát hiện nghi vấn úp sọt bừa bãi."
+	}
+
+	"Detective scan found body"
+	{
+		"ua"		"DETECTIVE{blue} {1} {lightgreen} đã scan một xác chết, thủ phạm là Player {darkred} {2} {lightgreen}sử dụng vũ khí {orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"ua"		"DETECTIVE{blue} {1} {lightgreen}đã scan một xác chết, player đã tự sát."
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"ua"		"Dao đâm phát chết luôn (chỉ đâm được một lần) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"ua"		"Thẻ ID GIẢ (gõ !id để giả làm Innocent) - {1}"
+	}
+
+	"Health Station"
+	{
+		"ua"		"Trạm bơm máu - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"ua"		"Máy quét ADN (scan xác chết để tìm thủ phạm) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"ua"		"Kevlar - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"ua"		"Mua role TRAITOR - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"ua"		"Mua role DETECTIVE - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"ua"		"Thẻ ID (gõ !id để cho mọi người biết bạn là Innocent) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"ua"		"Xin chờ để được xếp team"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"ua"		"Đã xác nhận mua! Credits hiện tại: {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"ua"		"Bạn không đủ credits!"
+	}
+
+	"Traitors"
+	{
+		"ua"		"TRAITORS"
+	}
+
+	"Detectives"
+	{
+		"ua"		"DETECTIVES"
+	}
+
+	"Innocents"
+	{
+		"ua"		"INNOCENTS"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"ua"		"Xác chết đã khám nghiệm, các dấu vết được tìm thấy:"
+	}
+
+	"Victim name"
+	{
+		"ua"		"Nạn nhân: {1}"
+	}
+
+	"Team victim"
+	{
+		"ua"		"Đội: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"ua"		"Player bị giết {1} giây trước"
+	}
+
+	"The weapon used has been"
+	{
+		"ua"		"Vu khi duoc dung: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"ua"		"Nguyên nhân chết: tự đấm vào mặt (tự sát)"
+	}
+
+	"Killer is Player"
+	{
+		"ua"		"Thủ phạm: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"ua"		"Player đã tự sát"
+	}
+
+	"Player Is an Innocent"
+	{
+		"ua"		"Player{green} {1} {lightgreen}là {green}INNOCENT"
+	}
+
+	"T channel"
+	{
+		"ua"		"{darkred}*TRAITORS* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"ua"		"{blue}*DETECTIVES* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"ua"		"Không có trong ba lô!"
+	}
+
+	"TTT Shop"
+	{
+		"ua"		"TTT Shop"
+	}
+
+	"credits earned"
+	{
+		"ua"		"Bạn nhận được {1} credits\nCredits hiện tại: {2}"
+	}
+
+	"lost credits"
+	{
+		"ua"		"Bạn mất {1} credits\nCòn lại: {2}"
+	}
+
+	"karma earned"
+	{
+		"ua"		"Bạn đã nhận {1} Karma\nKarma hiện tại: {2}"
+	}
+
+	"lost karma"
+	{
+		"ua"		"Bạn đã mất {1} Karma\nKarma hiện tại: {2}"
+	}
+
+	"no logs yet"
+	{
+		"ua"		"Chưa có logs"
+	}
+
+	"See your console"
+	{
+		"ua"		"Logs Received! Mở console để kiểm tra logs"
+	}
+
+	"you cant see logs"
+	{
+		"ua"		"Bạn không có quyền xem logs khi còn sống hoặc khi round còn tiếp diễn."
+	}
+
+	"Receiving logs"
+	{
+		"ua"		"Đang nhận logs... xin đợi một lát"
+	}
+
+	"Taser"
+	{
+		"ua"		"Mua Zeus (dò team) - {1}"
+	}
+
+	"USPS"
+	{
+		"ua"		"Mua USP-Silenced - {1}"
+	}
+
+	"M4S"
+	{
+		"ua"		"Mua M4-Silenced - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã tìm thấy xác của {green}{2}. {lightgreen}Player đó là {green}INNOCENT!"
+	}
+
+	"Found Detective"
+	{
+		"ua"		"{orchid}{1} {lightgreen} đã tìm thấy xác của {blue}{2}. {lightgreen}Đó là xác của một {blue}DETECTIVE!"
+	}
+
+	"Found Traitor"
+	{
+		"ua"		"{orchid}{1} {lightgreen} đã tìm thấy xác của {darkred}{2}. {lightgreen} Player này là {darkred}Traitor!"
+	}
+
+	"Buy c4"
+	{
+		"ua"		"Mua C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"ua"		"Mua Bom cảm tử - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"ua"		"Bom chưa được đặt."
+	}
+
+	"Your bomb is now armed."
+	{
+		"ua"		"Bom da duoc cai dat."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"ua"		"Bomb sẽ được đặt trong 60 giây, nhấn F 2 lần để kích nổ"
+	}
+
+	"Your Karma is too low"
+	{
+		"ua"		"Bạn đã bị ban vì karma quá thấp!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"ua"		"{darkred}{1} TRAITORS {lightgreen}ĐÃ ĐƯỢC CHỌN"
+	}
+
+	"Buy radar"
+	{
+		"ua"		"Mua radar - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"ua"		"Không thể tự sát"
+	}
+
+	"Right click to plant the C4"
+	{
+		"ua"		"Right click để đặt C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"ua"		"Bạn đã có một trạm bơm rồi!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"ua"		"Người chơi đã úp sọt bạn đã rời khỏi server!"
+	}
+
+	"You were RDM'd"
+	{
+		"ua"		"{1} đã úp sọt nhầm bạn!"
+	}
+
+	"Forgive"
+	{
+		"ua"		"Tha thứ"
+	}
+
+	"Punish"
+	{
+		"ua"		"Trừng phạt"
+	}
+
+	"Choose Punish"
+	{
+		"ua"		"{1} đã quyết định trừng phạt {2} vì pha úp sọt nhầm!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"ua"		"Bạn đã chấp nhận bỏ qua quả úp sọt nhầm của {1}!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"ua"		"{1} đã chấp nhận tha thứ cho bạn sau pha úp sọt nhầm!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã trở thành {green}INNOCENT!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã trở thành {darkred}Traitor!"
+	}
+
+	"Player is Now Detective"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã trở thành {blue}Detective!"
+	}
+
+	"You Are Unassigned"
+	{
+		"ua"		"Bạn chưa được xếp role!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"ua"		"Bạn là {green}INNOCENT!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"ua"		"Bạn là {darkred}TRAITOR!"
+	}
+
+	"You Are Now Detective"
+	{
+		"ua"		"Bạn là {blue}DETECTIVE!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"ua"		"{1} đã kích hoạt trap mà không phải là Traitor."
+	}
+
+	"Bomb Detonated"
+	{
+		"ua"		"C4 bạn đặt đã nổ!"
+	}
+
+	"Set C4 Timer"
+	{
+		"ua"		"Hẹn giờ C4..."
+	}
+
+	"Seconds"
+	{
+		"ua"		"{1} giây"
+	}
+
+	"Defuse C4"
+	{
+		"ua"		"Gỡ bom mau!"
+	}
+
+	"C4 Wire"
+	{
+		"ua"		"Dây {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"ua"		"Bạn đã gỡ bom của {orchid}{1}{lightgreen}!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã gỡ bom của bạn!"
+	}
+
+	"Failed Defuse"
+	{
+		"ua"		"Gỡ bom thất bại!"
+	}
+
+	"Alive to Plant"
+	{
+		"ua"		"Bạn không thể đặt bom khi đã chết!"
+	}
+
+	"Will Explode In"
+	{
+		"ua"		"Đang đặt C4, kích nổ trong {orchid}{1} {lightgreen} giây."
+	}
+
+	"Bomb Was Not Found"
+	{
+		"ua"		"Không tìm thấy bom!"
+	}
+
+	"Wire Is"
+	{
+		"ua"		"Dây để gỡ bom là {orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"ua"		"Đây là các đồng dâm Traitors của bạn:"
+	}
+
+	"No Traitor Partners"
+	{
+		"ua"		"Không tìm thấy đồng dâm Traitors."
+	}
+
+	"Kick Bad Name"
+	{
+		"ua"		"Xin bỏ từ {1} khỏi tên của bạn!"
+	}
+
+	"Health Station Deployed"
+	{
+		"ua"		"Đã đặt trạm bơm máu. Đứng gần trạm bơm để tăng HP!"
+	}
+
+	"Healing From"
+	{
+		"ua"		"Đang hồi máu từ trạm bơm của {orchid}{1} {lightgreen}!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"ua"		"Trạm bơm đã cạn, hãy chờ đến khi nạp đầy."
+	}
+
+	"Traitor List"
+	{
+		"ua"		"{darkred} {1}"
+	}
+
+	"Welcome Menu"
+	{
+		"ua"		"Chào mừng {1},\nserver hiện đang chạy mode Trouble in Terrorist Town\nviết bởi {2}\n\nBạn đã biết luật chơi chưa?"
+	}
+
+	"WM Yes"
+	{
+		"ua"		"OK, đã đọc đã hiểu!"
+	}
+
+	"WM Kick Message"
+	{
+		"ua"		"Bạn AFK hoặc tắt menu rules!"
+	}
+
+	"AM Question"
+	{
+		"ua"		"Bạn muốn làm Detective?\nBạn cần các thứ sau:\n\n-có micro\n-giao tiếp với các player khác\n-chơi tích cực\n\nBạn đáp ứng được không?"
+	}
+
+	"AM Yes"
+	{
+		"ua"		"Xác nhận."
+	}
+
+	"AM No"
+	{
+		"ua"		"Không biết."
+	}
+
+	"WM No"
+	{
+		"ua"		"Chưa hiểu, cho tôi đọc lại luật!"
+	}
+
+	"StartTimer"
+	{
+		"ua"		"Round bắt đầu trong {1} giây"
+	}
+
+	"next round in"
+	{
+		"ua"		"Round tiếp theo bắt đầu trong {1} giây!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"ua"		"Hurt station đã được đặt, gây sát thương tất cả player ở gần!"
+	}
+
+	"You reached limit"
+	{
+		"ua"		"Bạn chỉ được quyền mua {1} item loại này mỗi round!"
+	}
+
+	"All karma has been updated"
+	{
+		"ua"		"Đã update điểm Karma!"
+	}
+
+}

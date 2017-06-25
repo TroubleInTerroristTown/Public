@@ -66,8 +66,11 @@ fi
 echo -e "Create clean build folder\n"
 mkdir build
 
-echo -e "Move addons, materials and sound folder\n"
-mv addons materials sound build/
+echo -e "Move addons folders except translations\n"
+rsync -av --exclude='addons/sourcemod/translations' addons build
+
+echo -e "Move materials and sound folder\n"
+mv materials sound build/
 
 echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
@@ -79,22 +82,13 @@ rm -r build/addons/sourcemod/data
 rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
-rm -r build/addons/sourcemod/translations
 rm build/addons/sourcemod/*.txt
 
 echo -e "Add LICENSE to build package\n"
 cp LICENSE CVARS.txt build/
 
-echo -e "Create clean plugins folder\n"
-mkdir build/addons/sourcemod/translations
-
-echo -e "Download und unzip translations files\n"
-wget -q -O translations.zip http://translator.mitchdempsey.com/sourcemod_plugins/158/download/ttt.translations.zip
-unzip -qo translations.zip -d build/
-
 echo -e "Clean root folder\n"
 rm sourcemod.tar.gz
-rm translations.zip
 
 echo -e "Go to build folder\n"
 cd build

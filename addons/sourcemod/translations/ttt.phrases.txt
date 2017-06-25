@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2016-05-22 13:30:39 UTC
+// Date: 2017-06-25 06:54:50 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -94,24 +94,6 @@
 		"en"		"You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
 	}
 
-	"You tased a Traitor"
-	{
-		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player {darkred}{2} {lightgreen}and he is a {darkred}TRAITOR!"
-	}
-
-	"You tased a Detective"
-	{
-		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player{blue} {2} {lightgreen}and he is a {blue}DETECTIVE!"
-	}
-
-	"You tased an Innocent"
-	{
-		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
-	}
-
 	"is possibly RDMing"
 	{
 		"#format"	"{1:N}"
@@ -183,10 +165,10 @@
 		"en"		"Please wait till your team is assigned"
 	}
 
-	"Item bought! (NEW)"
+	"Item bought! Your REAL money is"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"Item {2} bought for {3} credits! You've Credits now {1}"
+		"en"		"Item {2} bought! Your CREDITS are {1}"
 	}
 
 	"You don't have enough money"
@@ -417,9 +399,9 @@
 		"en"		"Right click to plant the C4!"
 	}
 
-	"You already have an active Station"
+	"You already have an active Health Station"
 	{
-		"en"		"You already have an active Station!"
+		"en"		"You already have an active Health Station!"
 	}
 
 	"The player who RDM'd you is no longer available"
@@ -682,11 +664,6 @@
 	{
 		"en"		"You dont have a ID. Buy one in the Shop."
 	}
-	
-	"ID: Cooldown"
-	{
-		"en"		"You need to wait, before you can use that command again."
-	}
 
 	"ID: Shows ID"
 	{
@@ -757,12 +734,6 @@
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit for tasers! (Usage(s) per round: {1})"
 	}
-	
-	"AlreadyTaser"
-	{
-		"#format"	"{1:d}"
-		"en"		"You've already a taser in your inventory!"
-	}
 
 	"AdminSet"
 	{
@@ -802,170 +773,246 @@
 	{
 		"en"		"Decoy Position was incorrect. (Stuck problem)"
 	}
-	
+
 	"SpecMenu: Title"
 	{
 		"en"		"Spec Menu"
 	}
-	
+
 	"SpecMenu: Player"
 	{
 		"#format"	"{1:N}"
 		"en"		"Player: {1}"
 	}
-	
+
 	"SpecMenu: Next"
 	{
 		"en"		"Next player"
 	}
-	
+
 	"SpecMenu: Prev"
 	{
 		"en"		"Prev player"
 	}
-	
-	"SpecMenu: Unmute Dead"
+
+	"SpecMenu: Mute"
 	{
-		"en"		"Unmute dead players"
+		"en"		"Mute this player"
 	}
-	"SpecMenu: Mute Dead"
-	{
-		"en"		"Mute dead players"
-	}
-	"SpecMenu: Unmute Alive"
-	{
-		"en"		"Unmute alive players"
-	}
-	"SpecMenu: Mute Alive"
-	{
-		"en"		"Mute alive players"
-	}
+
 	"Hud Name"
 	{
 		"en"		"Name"
 	}
+
 	"Hud Health"
 	{
 		"en"		"Health"
 	}
+
 	"Hud PlayerHealth"
 	{
 		"#format"	"{1:d}"
 		"en"		"{1}"
 	}
+
 	"Hud Karma"
 	{
 		"en"		"Karma"
 	}
+
 	"Hud PlayerKarma"
 	{
 		"#format"	"{1:d}"
 		"en"		"{1}"
 	}
+
 	"Hud PlayerName T-T"
 	{
 		"#format"	"{1:N}"
 		"en"		"<font color='#ff0000'>\"{1}\"</font>"
 	}
+
 	"Hud PlayerName T-D"
 	{
 		"#format"	"{1:N}"
 		"en"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
+
 	"Hud PlayerName T-I"
 	{
 		"#format"	"{1:N}"
 		"en"		"<font color='#008000'>\"{1}\"</font>"
 	}
-	"Hud PlayerName T-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
+
 	"Hud PlayerName D-T"
 	{
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
+
 	"Hud PlayerName D-D"
 	{
 		"#format"	"{1:N}"
 		"en"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
+
 	"Hud PlayerName D-I"
 	{
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
-	"Hud PlayerName D-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-	"Hud PlayerName U-T"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-	"Hud PlayerName U-D"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-	"Hud PlayerName U-I"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-	"Hud PlayerName U-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
+
 	"Hud PlayerName I-T"
 	{
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
+
 	"Hud PlayerName I-D"
 	{
 		"#format"	"{1:N}"
 		"en"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
+
 	"Hud PlayerName I-I"
 	{
 		"#format"	"{1:N}"
 		"en"		"\"{1}\""
 	}
-	"Hud PlayerName I-U"
+
+	"You tased a Traitor"
 	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player {darkred}{2} {lightgreen}and he is a {darkred}TRAITOR!"
 	}
+
+	"You tased a Detective"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player{blue} {2} {lightgreen}and he is a {blue}DETECTIVE!"
+	}
+
+	"You tased an Innocent"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
+	}
+
+	"AlreadyTaser"
+	{
+		"#format"	"{1:d}"
+		"en"		"You've already a taser in your inventory!"
+	}
+
 	"is now talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} is now talking in Traitor Voice Chat"
 	}
+
 	"stopped talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} stopped talking in Traitor Voice Chat"
 	}
+
 	"Traitor Voice Chat: Disabled!"
 	{
 		"en"		"Traitor Voice Chat: Disabled!"
 	}
+
 	"Traitor Voice Chat: Enabled!"
 	{
 		"en"		"Traitor Voice Chat: Enabled!"
 	}
-	"Reopen Shop activated"
+
+	"Hud PlayerName T-U"
 	{
-		"en"		"Shop will open again after buy a item."
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
 	}
+
+	"Hud PlayerName D-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"ID: Cooldown"
+	{
+		"en"		"You need to wait, before you can use that command again."
+	}
+
+	"Item bought!"
+	{
+		"#format"	"{1:i},{2:s}"
+		"en"		"Item {2} bought! Your CREDITS are {1}"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"en"		"Unmute dead players"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"en"		"Mute dead players"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"en"		"Unmute alive players"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"en"		"Mute alive players"
+	}
+
 	"Reopen Shop deactivated"
 	{
 		"en"		"Shop will no longer open after buy a item."
 	}
+
+	"Reopen Shop activated"
+	{
+		"en"		"Shop will open again after buy a item."
+	}
+
+	"You already have an active Station"
+	{
+		"en"		"You already have an active Station!"
+	}
+
 }

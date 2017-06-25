@@ -1,0 +1,936 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: Czech (cze)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"cze"		"Mas {orchid}{1} {default}bodu karmy"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"cze"		"TYMY BYLY VYBRANY !"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"cze"		"Minimalni pocet hracu pro spusteni hry: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"cze"		"Jsi {blue}DETEKTIV"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"cze"		"Jsi {darkred}ZRADCE"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"cze"		"Ty jsi {green}NEVINNY"
+	}
+
+	"Your credits is"
+	{
+		"cze"		"Tvoje KREDITY jsou:  {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"cze"		"Tvuj vrah byl {darkred}ZRADCE!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"cze"		"Tvuj vrah byl {blue}DETEKTIV!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"cze"		"Tvuj vrah byl {green}NEVINNY !"
+	}
+
+	"You killed a Traitor"
+	{
+		"cze"		"Zabil jsi {darkred}ZRADCE !"
+	}
+
+	"You killed a Detective"
+	{
+		"cze"		"Zabil jsi {blue}DETEKTIVA !"
+	}
+
+	"You killed an Innocent"
+	{
+		"cze"		"Zabil jsi {green}NEVINNEHO !"
+	}
+
+	"You hurt a Traitor"
+	{
+		"cze"		"Pouzil jsi detektor na hrace {darkred}{1} {lightgreen}, ktery je {darkred}ZRADCE!"
+	}
+
+	"You hurt a Detective"
+	{
+		"cze"		"Pouzil jsi detektor na Hrace{blue} {1} {lightgreen}a on je {blue}DETEKTIV !"
+	}
+
+	"You hurt an Innocent"
+	{
+		"cze"		"Pouzil jsi detektor na Hrace{green} {1} {lightgreen}a on je {green}NEVINNY !"
+	}
+
+	"is possibly RDMing"
+	{
+		"cze"		"{darkred}{1} {lightgreen} pravdepodobne zabiji nahodne"
+	}
+
+	"Detective scan found body"
+	{
+		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo, vrah je hrac{darkred} {2} {lightgreen}se zbrani{orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo. Hrac spachal sebevrazdu."
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"cze"		"One hit one kill nuz (jedno pouziti) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"cze"		"FALESNA ID karta (napis !id abys prokazal svoji nevinu) -  {1}"
+	}
+
+	"Health Station"
+	{
+		"cze"		"Uzdravovaci Stanice - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"cze"		"DNA skener (naskenuj telo a zjisti, kdo je vrah) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"cze"		"Vesta - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"cze"		"Koupit si roli ZRADCE - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"cze"		"Koupit roli DETEKTIV - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"cze"		"ID karta (napis !id pro prokazani sve neviny) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"cze"		"Prosim pockej nez je ti prirazen tym"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"cze"		"Koupil sis {2}! Stav tvych kreditu: {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"cze"		"Nemas dostatek kreditu!"
+	}
+
+	"Traitors"
+	{
+		"cze"		"ZRADCI"
+	}
+
+	"Detectives"
+	{
+		"cze"		"DETEKTIVOVE"
+	}
+
+	"Innocents"
+	{
+		"cze"		"NEVINNI"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"cze"		"Prozkoumal jsi telo. Tvoje poznatky jsou nasledujuci :"
+	}
+
+	"Victim name"
+	{
+		"cze"		"Jmeno obete: {1}"
+	}
+
+	"Team victim"
+	{
+		"cze"		"Tým {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"cze"		"Cas od jeho smrti: {1} sekund"
+	}
+
+	"The weapon used has been"
+	{
+		"cze"		"Pouzita zbran: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"cze"		"Zbran kterou pouzil: sebevrazda"
+	}
+
+	"Killer is Player"
+	{
+		"cze"		"Vrah je: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"cze"		"Hrac spachal sebevrazdu"
+	}
+
+	"Player Is an Innocent"
+	{
+		"cze"		"Hrac{green} {1} {lightgree}je {green}NEVINNY"
+	}
+
+	"T channel"
+	{
+		"cze"		"{darkred}* POCET ZRADCU* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"cze"		"{blue}*DETEKTIVOVE* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"cze"		"Nemas to!"
+	}
+
+	"TTT Shop"
+	{
+		"cze"		"TTT Obchod\nTvoje kredity: {1}"
+	}
+
+	"credits earned"
+	{
+		"cze"		"Vyhral jsi {1} kreditu\nStav kreditu: {2}"
+	}
+
+	"lost credits"
+	{
+		"cze"		"Ztratil jsi {1} kreditu\n Tvoje kredity: {2}"
+	}
+
+	"karma earned"
+	{
+		"cze"		"Dostanes {1} karmy a tvoje karma je ted: {2}"
+	}
+
+	"lost karma"
+	{
+		"cze"		"Ztratil jsi {1} bodu karmy\nTvoje karma je ted: {2}"
+	}
+
+	"no logs yet"
+	{
+		"cze"		"Zatim nejsou zadne zaznamy"
+	}
+
+	"See your console"
+	{
+		"cze"		"Zaznamy obdrzeny ! Koukni se do konzole pro prozkoumani zaznamu"
+	}
+
+	"you cant see logs"
+	{
+		"cze"		"Nemuzes ted videt svoje zapisy, musis byt mrtvy nebo kolo musi byt neaktivni"
+	}
+
+	"Receiving logs"
+	{
+		"cze"		"Prijimam zapisy... pockej chvili "
+	}
+
+	"Taser"
+	{
+		"cze"		"Koupit Taser (detektor tymu) - {1}"
+	}
+
+	"USPS"
+	{
+		"cze"		"Koupit USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"cze"		"Koupit M4a1-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {green}NEVINNY!"
+	}
+
+	"Found Innocent"
+	{
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {green}NEVINNY!"
+	}
+
+	"Found Detective"
+	{
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {blue}DETEKTIV!"
+	}
+
+	"Found Traitor"
+	{
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {darkred}ZRADCE!"
+	}
+
+	"Buy c4"
+	{
+		"cze"		"Koupit C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"cze"		"Koupit Jihad bombu - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"cze"		"Tvoje bomba neni odjistena."
+	}
+
+	"Your bomb is now armed."
+	{
+		"cze"		"Tvoje bomba je ted odjistena."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"cze"		"bomba bude odjistena za 60 sekund, zmackni dva krat F abys vybouchl"
+	}
+
+	"Your Karma is too low"
+	{
+		"cze"		"Byl jsi zabanovan, protoze mas prilis nizkou karmu !"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"cze"		"{darkred}ZRADCI {lightgreen}BYLI ZVOLENI! {default}Pocet zradcu: {darkred}{1}"
+	}
+
+	"Buy radar"
+	{
+		"cze"		"Koupit radar - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"cze"		"Samovrazda odeprena"
+	}
+
+	"Right click to plant the C4"
+	{
+		"cze"		"Klikni pravym tlacitkem abys polozil C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"cze"		"Jiz mas aktivni uzdravovaci stanici!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"cze"		"Hrac, ktery te nahodne zabil se odpojil!"
+	}
+
+	"You were RDM'd"
+	{
+		"cze"		"{1} te nahodne zabil!"
+	}
+
+	"Forgive"
+	{
+		"cze"		"Prominout"
+	}
+
+	"Punish"
+	{
+		"cze"		"Potrestat"
+	}
+
+	"Choose Punish"
+	{
+		"cze"		"{1} se rozhodnul ze potresta  {2} za nahodny zabiti !"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"cze"		"Rozhodnul jsi se prominout {1} za nahodne zabiti !"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"cze"		"{1} se rozhodnul ze ti promine za nahodny zabiti !"
+	}
+
+	"Player is Now Innocent"
+	{
+		"cze"		"{orchid}{1} {lightgreen}je nyni {green}NEVINNY!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"cze"		"{orchid}{1} {lightgreen}je nyni {darkred}Zradce!"
+	}
+
+	"Player is Now Detective"
+	{
+		"cze"		"{orchid}{1} {lightgreen}je ted {blue}Detektiv !"
+	}
+
+	"You Are Unassigned"
+	{
+		"cze"		"Tvoje role jeste nebyla prirazena !"
+	}
+
+	"You Are Now Innocent"
+	{
+		"cze"		"Ty jsi {green}Nevinny !"
+	}
+
+	"You Are Now Traitor"
+	{
+		"cze"		"Jsi {darkred}Zradce!"
+	}
+
+	"You Are Now Detective"
+	{
+		"cze"		"Ty jsi {blue}Detektiv !"
+	}
+
+	"Triggered Falling Building"
+	{
+		"cze"		"{1} spustil padajici budovu jako ne-zrádce."
+	}
+
+	"Bomb Detonated"
+	{
+		"cze"		"Tvoje bomba vybuchla!"
+	}
+
+	"Set C4 Timer"
+	{
+		"cze"		"Nastavit casovac C4..."
+	}
+
+	"Seconds"
+	{
+		"cze"		"{1} sekund"
+	}
+
+	"Defuse C4"
+	{
+		"cze"		"Zneskodnit C4 !"
+	}
+
+	"C4 Wire"
+	{
+		"cze"		"Drat {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"cze"		"Zneskodnil jsi {orchid}{1}{lightgreen}bomu ! "
+	}
+
+	"Has Defused Bomb"
+	{
+		"cze"		"{orchid}{1} {lightgreen} zneskodnil tvou bombu!"
+	}
+
+	"Failed Defuse"
+	{
+		"cze"		"Selhal jsi pri zneskodnovani !"
+	}
+
+	"Alive to Plant"
+	{
+		"cze"		"Musis byt zivy, abys mohl plantnout bombu!"
+	}
+
+	"Will Explode In"
+	{
+		"cze"		"Pokladani C4 ktera vybouchne ve {orchid}{1} {lightgreen} sekundach."
+	}
+
+	"Bomb Was Not Found"
+	{
+		"cze"		"Tvoje bomba nebyla nalezena !"
+	}
+
+	"Wire Is"
+	{
+		"cze"		"Zneskodnovaci drat je {orchid}{1} {lightgreen} !"
+	}
+
+	"Your Traitor Partners"
+	{
+		"cze"		"Tvoji partaci Zradci jsou:"
+	}
+
+	"No Traitor Partners"
+	{
+		"cze"		"Nemas zadny partaky."
+	}
+
+	"Kick Bad Name"
+	{
+		"cze"		"Odstran slovo {1} ze sveho jmena!"
+	}
+
+	"Health Station Deployed"
+	{
+		"cze"		"Uzdravovaci Stanice nasazena. Stuj blizko ni abys dostal HP !"
+	}
+
+	"Healing From"
+	{
+		"cze"		"Uzdravovani se z {lightgreen}uzdravovaci stanice hrace {orchid}{1}!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"cze"		"Tato uzdravovaci stanice je vycerpana! Pockej az se nabije!"
+	}
+
+	"Traitor List"
+	{
+		"cze"		"{darkred} {1}"
+	}
+
+	"Welcome Menu"
+	{
+		"cze"		"Ahoj {1},\ntohle je Trouble in Terrorist Town server\nnapsany {2}\n\nJsi seznamen s pravidly?"
+	}
+
+	"WM Yes"
+	{
+		"cze"		"Ano, jsem seznamen s pravidly!"
+	}
+
+	"WM Kick Message"
+	{
+		"cze"		"Jsi neaktivni nebo zatvor menu s pravidli !"
+	}
+
+	"AM Question"
+	{
+		"cze"		"Chtel by jsi hrat jako detektiv ?\nPotom musis udelat nasledujici: \n\n-fungující mikrofónq\n-mluvit s ostatními hráci\n-aktivne hrat\n\nMuzes to potvrdit ?"
+	}
+
+	"AM Question"
+	{
+		"cze"		"Chtel by jsi hrat jako detektiv ?\nPotom musis udelat nasledujici: \n\n-fungující mikrofónq\n-mluvit s ostatními hráci\n-aktivne hrat\n\nMuzes to potvrdit ?"
+	}
+
+	"AM Yes"
+	{
+		"cze"		"Ano, potvrzuji to."
+	}
+
+	"AM No"
+	{
+		"cze"		"Ne, nemuzu to potvrdit."
+	}
+
+	"WM No"
+	{
+		"cze"		"Ne, ukaz mi pravidla !"
+	}
+
+	"WM No"
+	{
+		"cze"		"Ne, ukaž mi pravidla !"
+	}
+
+	"StartTimer"
+	{
+		"cze"		"Kolo zacina v {1} sekundach"
+	}
+
+	"next round in"
+	{
+		"cze"		"Dalsi kolo zacne ve {1} sekundach !"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"cze"		"Zranovaci stanice byla polozena! Bude zranovat hrace v okoli!"
+	}
+
+	"You reached limit"
+	{
+		"cze"		"Muzes si koupit jenom {1} tehle tohle kolo."
+	}
+
+	"All karma has been updated"
+	{
+		"cze"		"KARMA BYLA AKTUALIZOVANA !"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"cze"		"Musis byt nazivu abys mohl pouzit tenhle prikaz."
+	}
+
+	"ID: Need to buy ID"
+	{
+		"cze"		"Nemas ID kartu. Kup si jednu v obchode socko."
+	}
+
+	"ID: Shows ID"
+	{
+		"cze"		"{1} je Nevinny"
+	}
+
+	"Found Fake"
+	{
+		"cze"		"{orchid}{1} {lightgreen}nasel falesnou mrtvolu!"
+	}
+
+	"Welcome Message 1"
+	{
+		"cze"		"[{green}Laserove miny{default}] {lightgreen}Napis {green}!lm {lightgreen}do chatuu pro polozeni laserovych min"
+	}
+
+	"Welcome Message 2"
+	{
+		"cze"		"[{green}Laserove miny{default}] {lightgreen}Napis {green}!lm {lightgreen}do chatu pro polozeni nebo {green}!bm {lightgreen} pro koupeni laserovych min"
+	}
+
+	"Can't plant, while dead"
+	{
+		"cze"		"Nemuzes polozit laserovou minu kdyz jsi mrtvy"
+	}
+
+	"Can't use, while spec"
+	{
+		"cze"		"Musis byt v tymu, abys mohl pouzivat laserove miny"
+	}
+
+	"Infinity mines"
+	{
+		"cze"		"Mas neomezeny pocet laserovych min"
+	}
+
+	"Mines"
+	{
+		"cze"		"Laserove miny: {1}"
+	}
+
+	"Out of buy zone"
+	{
+		"cze"		"Jsi mimo nakupni zony"
+	}
+
+	"Can't buy, max amount"
+	{
+		"cze"		"Mas maximalni mnozstvi laserovych min"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"cze"		"{1} min. Nemas dostatek penez abys koupil dalsi"
+	}
+
+	"Can't buy, while dead"
+	{
+		"cze"		"Nemuzes si koupit laserove miny pokud jsi mrtvy"
+	}
+
+	"TaserMax"
+	{
+		"cze"		"Dosahl jsi maximalniho poctu taseru! (Pocet pouziti za kolo: {1})"
+	}
+
+	"AdminSet"
+	{
+		"cze"		"Dal jsi {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"cze"		"Napis !id abys ukazal svoji nevinu."
+	}
+
+	"RoundStartCenter"
+	{
+		"cze"		"Kolo zacne za {3} sekund/y"
+	}
+
+	"RoundStartedCenter"
+	{
+		"cze"		"JEDU JEDU JEDU !!!"
+	}
+
+	"YouAreDead"
+	{
+		"cze"		"Tohle nemuzes pouzit jako mrtvy hrac"
+	}
+
+	"Bought All"
+	{
+		"cze"		"Dosahnul jsi limit {1}'s {orchid}({2})"
+	}
+
+	"DT: Invalid Position"
+	{
+		"cze"		"Vabici Pozice byla neplatna. (problem ze zaseknutim)"
+	}
+
+	"SpecMenu: Title"
+	{
+		"cze"		"Spec Menu"
+	}
+
+	"SpecMenu: Player"
+	{
+		"cze"		"Hrac: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"cze"		"Dalsi hrac"
+	}
+
+	"SpecMenu: Prev"
+	{
+		"cze"		"Predchozi hrac"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"cze"		"Umlcet tohoto hrace"
+	}
+
+	"Hud Name"
+	{
+		"cze"		"Jmeno"
+	}
+
+	"Hud Health"
+	{
+		"cze"		"Zivot"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"cze"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"cze"		"Karma"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"cze"		"{1}"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"cze"		"{1}"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"You tased a Traitor"
+	{
+		"cze"		"Hrac {lightgreen}{1} pouzil detektor na hrace {darkred}{2} {lightgreen}, ktery je {darkred}ZRADCE!"
+	}
+
+	"You tased a Detective"
+	{
+		"cze"		"Hrac {lightgreen}{1} pouzil detektor na Hrace{blue} {2} {lightgreen}a on je {blue}DETEKTIV !"
+	}
+
+	"You tased an Innocent"
+	{
+		"cze"		"Player {lightgreen}{1} pouzil detektor na Hrace{green} {2} {lightgreen}a je {green}NEVINNY !"
+	}
+
+	"AlreadyTaser"
+	{
+		"cze"		"Jiz mas taser ve svem inventari!"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"cze"		"{1} prave ted mluvi v Chate Zradcu"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"cze"		"{1} prestal mluvit v chatu Zradcu"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"cze"		"Chat Zdradcu: Vypnut !"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"cze"		"Chat Zdradcu: Zapnut !"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"ID: Cooldown"
+	{
+		"cze"		"Musis pockat nez budes moci znovu pouzit tento prikaz."
+	}
+
+	"Item bought!"
+	{
+		"cze"		"Koupil sis {2}! Stav tvych kreditu: {1}"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"cze"		"Odmlcet mrtve hrace"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"cze"		"Umlcet mrtve hrace"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"cze"		"Odumlcet zive hrace"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"cze"		"Umlcet zive hrace"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"cze"		"Obchod se nebude nadale otevirat po koupeni predmetu."
+	}
+
+	"Reopen Shop activated"
+	{
+		"cze"		"Obchod bude znovu dostupny po zakoupeni predmetu."
+	}
+
+}

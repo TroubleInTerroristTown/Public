@@ -1,0 +1,341 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: French (fr)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"fr"		"MIN. JOUEURS REQUIS POUR JOUER: {orchid}{1}"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"fr"		"Tu es un {darkred}TRAITOR."
+	}
+
+	"Your killer is a Traitor"
+	{
+		"fr"		"Ton tueur etais un {darkred}TRAITRE!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"fr"		"Celui qui ta tué étais un {blue}DETECTIVE"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"fr"		"Ton tueur etais un {darkred}INNOCENT!"
+	}
+
+	"You killed a Detective"
+	{
+		"fr"		"Tu as tue un {blue}DETECTIVE !"
+	}
+
+	"You killed an Innocent"
+	{
+		"fr"		"Tu as tue un {green}INNOCENT !"
+	}
+
+	"You hurt a Traitor"
+	{
+		"fr"		"Tu as utilise un detecteur sur le joueur {darkred}{1} {lightgreen} et c'est un {darkred}TRAITRE !"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"fr"		"DETECTIVE{blue} {1} {lightgreen}a scanne un corps, le joueur c'est suicide"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"fr"		"Scanner d'ADN (scan un mort et montre qui étais le tueur) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"fr"		"Kevlar - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"fr"		"Acheter le role de DETECTIVE - {1}"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"fr"		"Item achete ! Vous avez {1} CREDITS"
+	}
+
+	"You don't have enough money"
+	{
+		"fr"		"Tu n'as pas assez de credits !"
+	}
+
+	"Traitors"
+	{
+		"fr"		"TRAITRE"
+	}
+
+	"Detectives"
+	{
+		"fr"		"DETECTIVES"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"fr"		"Corps inspecte. Les donnees extraites sont les suivantes :"
+	}
+
+	"Team victim"
+	{
+		"fr"		"Equipe: {1}"
+	}
+
+	"The weapon used has been"
+	{
+		"fr"		"L'arme utilise a ete: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"fr"		"Le joueur s'est suicide"
+	}
+
+	"Player Is an Innocent"
+	{
+		"fr"		"Le joueur{green} {1} {lightgreen}est {green}INNOCENT"
+	}
+
+	"D channel"
+	{
+		"fr"		"{blue}*DETECTIVES* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"fr"		"Tu n'a pas sa !"
+	}
+
+	"lost credits"
+	{
+		"fr"		"Tu as perdu {1} credits\nTu as actuellement {2} credits."
+	}
+
+	"karma earned"
+	{
+		"fr"		"Tu as gagne {1} karma\nTon karma est maintenant a : {2}"
+	}
+
+	"lost karma"
+	{
+		"fr"		"Tu as perdu {1} karma\nTu as actuellement {2} karma."
+	}
+
+	"you cant see logs"
+	{
+		"fr"		"Vous ne pouvez pas voir les logs maintenant, vous devez etre mort ou le round doit etre inactif"
+	}
+
+	"Taser"
+	{
+		"fr"		"Acheter Taser (detecte la team) - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {green}{2}. {lightgreen}C'etais un {green}INNOCENT!"
+	}
+
+	"Found Detective"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {blue}{2}. {lightgreen}C'etais un {blue}DETECTIVE!"
+	}
+
+	"Found Traitor"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {darkred}{2}. {lightgreen}C'etais un{darkred}Traitre !"
+	}
+
+	"Buy c4"
+	{
+		"fr"		"Acheter C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"fr"		"Acheter une Bombe Jihad - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"fr"		"Ta bombe n'est pas arme."
+	}
+
+	"Your bomb is now armed."
+	{
+		"fr"		"Votre bombe est maintenant armé."
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"fr"		"{darkred}{1} TRAITRES {lightgreen}ONT ETE SELECTIONNES"
+	}
+
+	"Buy radar"
+	{
+		"fr"		"Acheter radar - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"fr"		"Suicide bloque"
+	}
+
+	"Right click to plant the C4"
+	{
+		"fr"		"Clic droit pour planter le C4 !"
+	}
+
+	"Choose Punish"
+	{
+		"fr"		"{1} a été choisis pour punir {2} pour les avoir RDM"
+	}
+
+	"Player is Now Traitor"
+	{
+		"fr"		"{orchid}{1} {lightgreen}est maintenant un {darkred}Traitre !"
+	}
+
+	"Player is Now Detective"
+	{
+		"fr"		"{orchid}{1} {lightgreen}est maintenant un {blue}Detective!"
+	}
+
+	"You Are Unassigned"
+	{
+		"fr"		"Ton role n'a pas encore ete assigne !"
+	}
+
+	"You Are Now Innocent"
+	{
+		"fr"		"Tu es un {green} Innocent !"
+	}
+
+	"You Are Now Traitor"
+	{
+		"fr"		"Tu es un {darkred}Traitre !"
+	}
+
+	"You Are Now Detective"
+	{
+		"fr"		"Tu es un {blue}Detective"
+	}
+
+	"Bomb Detonated"
+	{
+		"fr"		"Votre bombe a explose !"
+	}
+
+	"Seconds"
+	{
+		"fr"		"{1} secondes"
+	}
+
+	"C4 Wire"
+	{
+		"fr"		"Fil {1}"
+	}
+
+	"Has Defused Bomb"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a desamorcee votre bombe !"
+	}
+
+	"Alive to Plant"
+	{
+		"fr"		"Tu dois etre vivant pour planter une bombe"
+	}
+
+	"Bomb Was Not Found"
+	{
+		"fr"		"Votre bombe n'a pas ete trouve !"
+	}
+
+	"Wire Is"
+	{
+		"fr"		"Le fil pour desarmorcer est le {orchid}{1} {lightgreen}!"
+	}
+
+	"Kick Bad Name"
+	{
+		"fr"		"Enleve le mot {1} de ton nom !"
+	}
+
+	"WM Kick Message"
+	{
+		"fr"		"Tu es inactif ou ferme le menu des regles !"
+	}
+
+	"AM Question"
+	{
+		"fr"		"Tu veux jouer en tant que detective?\nDonc tu dois avoir ce qui suit:\n\n-Un micro fonctionnant\n-Parler aux autres joueurs\n-Etre actif\n\nTu peux confirmer cela?"
+	}
+
+	"AM No"
+	{
+		"fr"		"Non, je ne peux pas confirmer cela"
+	}
+
+	"WM No"
+	{
+		"fr"		"Non, montre moi les regles !"
+	}
+
+	"Can't plant, while dead"
+	{
+		"fr"		"Vous ne pouvez pas planter de mine laser quand vous êtes mort"
+	}
+
+	"Can't use, while spec"
+	{
+		"fr"		"Vous devez être dans une équipe pour utiliser des mines laser"
+	}
+
+	"Infinity mines"
+	{
+		"fr"		"Vous avez une quantité infinie de mines laser"
+	}
+
+	"Mines"
+	{
+		"fr"		"Mines laser: {1}"
+	}
+
+	"Out of buy zone"
+	{
+		"fr"		"Vous êtes hors de la zone d'achat"
+	}
+
+	"Can't buy, max amount"
+	{
+		"fr"		"Vous avez le maximum de mines laser"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"fr"		"{1} mines. Vous n'avez pas assez d'argent pour acheter plus"
+	}
+
+	"Can't buy, while dead"
+	{
+		"fr"		"Vous ne pouvez pas acheter de mine laser quand vous êtes mort"
+	}
+
+}

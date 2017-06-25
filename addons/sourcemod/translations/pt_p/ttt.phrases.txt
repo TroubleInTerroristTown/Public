@@ -1,0 +1,21 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:49 UTC
+// Language: Portuguese (pt_p)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"You hurt an Innocent"
+	{
+		"pt_p"		"Usaste um detector no Jogador {green} {1} {lightgreen}e ele é {green}INOCENTE!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"pt_p"		"{1} escolheu perdoar-te por fazer RDM nele."
+	}
+
+}

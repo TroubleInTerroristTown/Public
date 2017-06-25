@@ -1,0 +1,381 @@
+// Exported from SourceMod Translator
+// Date: 2017-06-25 06:54:50 UTC
+// Language: Brazilian Portuguese (pt)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"pt"		"AS EQUIPES TÊM SIDO SELECIONADAS!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"pt"		"MIN. JOGADORES NECESSÁRIOS PARA JOGAR: {orchid}{1}"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"pt"		"Você é um {darkred}TRAIDOR"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"pt"		"Você é {green}INOCENTE"
+	}
+
+	"Your credits is"
+	{
+		"pt"		"Seus CRÉDITOS são: {orchid} {1}"
+	}
+
+	"Your killer is a Detective"
+	{
+		"pt"		"Seu assassino era um {blue}DETETIVE!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"pt"		"Seu assassino era {green}INOCENTE!"
+	}
+
+	"You killed a Traitor"
+	{
+		"pt"		"Você matou um {darkred}TRAIDOR!"
+	}
+
+	"You killed a Detective"
+	{
+		"pt"		"Você matou um {blue}DETETIVE!"
+	}
+
+	"You killed an Innocent"
+	{
+		"pt"		"Você matou um {green}INOCENTE!"
+	}
+
+	"You hurt a Detective"
+	{
+		"pt"		"Você usou um detector no jogador{blue} {1} {lightgreen} e ele é um {blue}DETETIVE!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"pt"		"Você usou um detector no Jogador {green} {1} {lightgreen}e ele é {green}INOCENTE!"
+	}
+
+	"Detective scan found body"
+	{
+		"pt"		"DETETIVE{blue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
+	}
+
+	"Kevlar"
+	{
+		"pt"		"Kevlar - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"pt"		"Comprar papel TRAITOR - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"pt"		"Comprar papel DETETIVE - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"pt"		"Aguarde até que sua equipe seja designada"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"pt"		"Item {2} comprado! Seus CRÉDITOS são {1}"
+	}
+
+	"Traitors"
+	{
+		"pt"		"TRAIDORES"
+	}
+
+	"Detectives"
+	{
+		"pt"		"DETETIVES"
+	}
+
+	"Innocents"
+	{
+		"pt"		"INOCENTES"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"pt"		"Corpo inspecionado. Os dados extraídos foram os seguintes:"
+	}
+
+	"Victim name"
+	{
+		"pt"		"Nome da vítima: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"pt"		"Decorrido desde a sua morte: {1} segundos"
+	}
+
+	"The weapon used has been"
+	{
+		"pt"		"A arma usada foi: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"pt"		"A arma usada foi: ele mesmo (suicídio)"
+	}
+
+	"Player Is an Innocent"
+	{
+		"pt"		"O jogador{green} {1} {lightgreen}é {green}INOCENTE"
+	}
+
+	"You dont have it!"
+	{
+		"pt"		"Você não tem isso!"
+	}
+
+	"lost credits"
+	{
+		"pt"		"Você perdeu {1} créditos\nSeus créditos atuais são: {2}"
+	}
+
+	"lost karma"
+	{
+		"pt"		"Você perdeu {1} karma\nYour karma é agora: {2}"
+	}
+
+	"no logs yet"
+	{
+		"pt"		"Sem logs ainda"
+	}
+
+	"you cant see logs"
+	{
+		"pt"		"Você não pode ver os registros agora, você precisa estar morto ou em volta tem que estar inativo"
+	}
+
+	"Receiving logs"
+	{
+		"pt"		"Recebendo logs... aguarde um momento"
+	}
+
+	"Taser"
+	{
+		"pt"		"Comprar Taser (detector de equipe) - {1}"
+	}
+
+	"USPS"
+	{
+		"pt"		"Comprar USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"pt"		"Comprar M4-S - {1}"
+	}
+
+	"Found Detective"
+	{
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {blue}{2}. {lightgreen}Isso era um {blue}DETETIVE!"
+	}
+
+	"Found Traitor"
+	{
+		"pt"		"{orchid} {1} {lightgreen} encontrou o corpo de {darkred}{2}. {lightgreen}Esse era um traidor{darkred}!"
+	}
+
+	"Buy c4"
+	{
+		"pt"		"Comprar C4 - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"pt"		"Sua bomba não está armada."
+	}
+
+	"Your bomb is now armed."
+	{
+		"pt"		"Sua bomba agora está armada."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"pt"		"Bomba vai armar em 60 segundos, F duplo para explodir"
+	}
+
+	"Your Karma is too low"
+	{
+		"pt"		"Você foi banido, porque seu karma é muito baixo!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"pt"		"{darkred}{1} TRAIDORES {lightgreen}FORAM SELECIONADOS"
+	}
+
+	"Buy radar"
+	{
+		"pt"		"Comprar radar - {1}"
+	}
+
+	"Right click to plant the C4"
+	{
+		"pt"		"Clique com o botão direito do mouse para plantar o C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"pt"		"Você já tem uma Estação de Saúde ativa!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"pt"		"O jogador que RDM'd você não está mais disponível!"
+	}
+
+	"You were RDM'd"
+	{
+		"pt"		"Você foi RDM'd por {1}!"
+	}
+
+	"Forgive"
+	{
+		"pt"		"Perdoar"
+	}
+
+	"Punish"
+	{
+		"pt"		"Punir"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"pt"		"Você escolheu perdoar {1} por RDMing você!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"pt"		"{1} escolheu perdoar você por fazer RDM nele."
+	}
+
+	"Player is Now Innocent"
+	{
+		"pt"		"{orchid}{1} {lightgreen}é agora {green}INOCENTE! "
+	}
+
+	"Player is Now Traitor"
+	{
+		"pt"		"{orchid}{1} {lightgreen}agora é {darkred}Traidor!"
+	}
+
+	"You Are Unassigned"
+	{
+		"pt"		"Sua função ainda não foi atribuída!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"pt"		"Você é um {green}inocente!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"pt"		"Você é um {darkred}Traidor!"
+	}
+
+	"You Are Now Detective"
+	{
+		"pt"		"Você é um {blue}detetive!"
+	}
+
+	"Bomb Detonated"
+	{
+		"pt"		"Sua bomba foi detonada!"
+	}
+
+	"Seconds"
+	{
+		"pt"		"{1} segundos"
+	}
+
+	"Defuse C4"
+	{
+		"pt"		"Desative o C4!"
+	}
+
+	"C4 Wire"
+	{
+		"pt"		"Fio {1}"
+	}
+
+	"Has Defused Bomb"
+	{
+		"pt"		"{orchid}{1} {lightgreen} desativou sua bomba!"
+	}
+
+	"Failed Defuse"
+	{
+		"pt"		"Falha ao desativar!"
+	}
+
+	"Alive to Plant"
+	{
+		"pt"		"Você deve estar vivo para plantar uma bomba!"
+	}
+
+	"Will Explode In"
+	{
+		"pt"		"Implantando um c4 que explodirá em {orchid}{1} {lightgreen} segundos."
+	}
+
+	"Wire Is"
+	{
+		"pt"		"O fio de desativação é {orchid} {1} {lightgreen}!"
+	}
+
+	"Kick Bad Name"
+	{
+		"pt"		"Remova a palavra {1} do seu nome!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"pt"		"Esta estação da saúde está descarregada! Espere pela recarga!"
+	}
+
+	"WM Yes"
+	{
+		"pt"		"Sim, estou familiarizado com as regras!"
+	}
+
+	"WM Kick Message"
+	{
+		"pt"		"Você está inativo ou feche o menu de regras!"
+	}
+
+	"AM Question"
+	{
+		"pt"		"Você quer jogar como detetive? \nEntão você precisa das seguintes coisas:\n\n-microfone funcionando\n-fale com outros jogadores\n-jogo ativo\n\nVocê pode confirmar isso?"
+	}
+
+	"WM No"
+	{
+		"pt"		"Não, mostre-me as regras!"
+	}
+
+}
