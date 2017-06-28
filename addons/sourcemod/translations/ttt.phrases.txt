@@ -452,7 +452,7 @@
 	"Player is Now Innocent"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
+		"en"		"{orchid}{1} {lightgreen}is now {green}Innocent!"
 	}
 
 	"Player is Now Traitor"
