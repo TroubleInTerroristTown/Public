@@ -2873,7 +2873,7 @@ public Action Command_SetRole(int client, int args)
 		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_INNOCENT)
+	else if (role == 1)
 	{
 		g_iRole[target] = TTT_TEAM_INNOCENT;
 		TeamInitialize(target);
@@ -2882,7 +2882,7 @@ public Action Command_SetRole(int client, int args)
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_TRAITOR)
+	else if (role == 2)
 	{
 		g_iRole[target] = TTT_TEAM_TRAITOR;
 		TeamInitialize(target);
@@ -2891,7 +2891,7 @@ public Action Command_SetRole(int client, int args)
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
 		return Plugin_Handled;
 	}
-	else if (role == TTT_TEAM_DETECTIVE)
+	else if (role == 3)
 	{
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
