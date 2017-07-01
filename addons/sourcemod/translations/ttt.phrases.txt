@@ -165,10 +165,10 @@
 		"en"		"Please wait till your team is assigned"
 	}
 
-	"Item bought! Your REAL money is"
+	"Item bought! (NEW)"
 	{
 		"#format"	"{1:i},{2:s}"
-		"en"		"Item {2} bought! Your CREDITS are {1}"
+		"en"		"Item {2} bought for {3} credits! Remaining Credits: {1}"
 	}
 
 	"You don't have enough money"
