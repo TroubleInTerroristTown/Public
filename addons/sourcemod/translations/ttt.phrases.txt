@@ -307,7 +307,7 @@
 	"watching logs alive"
 	{
 		"#format"	"{1:N}"
-		"en"		"{green}{1} {default}is {red}alive {default}and watching logs of current round."
+		"en"		"{green}{1} {default}is {darkred}alive {default}and watching logs of current round."
 	}
 
 	"Receiving logs"
