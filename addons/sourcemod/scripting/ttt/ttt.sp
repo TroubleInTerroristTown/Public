@@ -350,10 +350,25 @@ public Action Command_Logs(int client, int args)
 			else
 			{
 				ShowLogs(client);
-				if (g_iConfig[bLogsNotifyAlive] && IsPlayerAlive(client))
+				if (g_iConfig[bLogsNotifyAlive] > 0 && IsPlayerAlive(client))
 				{
-					LoopValidClients(j)
-						CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+					if (g_iConfig[bLogsNotifyAlive] == 1)
+					{
+						LoopValidClients(j)
+						{
+							CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+						}
+					}
+					else if (g_iConfig[bLogsNotifyAlive] == 2)
+					{
+						LoopValidClients(j)
+						{
+							if (TTT_HasFlags(j, aFlags))
+							{
+								CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+							}
+						}
+					}
 				}
 			}
 		}	
