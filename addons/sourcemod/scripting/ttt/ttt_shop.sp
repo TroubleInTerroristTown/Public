@@ -410,7 +410,7 @@ bool ClientBuyItem(int client, char[] item)
 				}
 			}
 			
-			if ((TTT_GetClientCredits(client) >= price) && ((temp_item[Role] == 0) || (TTT_GetClientRole(client) == temp_item[Role])))
+			if ((TTT_GetClientCredits(client) >= price) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
