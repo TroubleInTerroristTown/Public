@@ -350,7 +350,7 @@ public Action Command_Logs(int client, int args)
 			else
 			{
 				ShowLogs(client);
-				if (g_iConfig[bLogsNotifyAlive])
+				if (g_iConfig[bLogsNotifyAlive] && IsPlayerAlive(client))
 				{
 					LoopValidClients(j)
 						CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
