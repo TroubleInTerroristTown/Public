@@ -248,7 +248,7 @@ void SetupConfig()
 	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
 	Config_LoadString("ttt_logs_access", "bz", "Admin flags to view logs in a round.", g_iConfig[s_logsAccess], sizeof(g_iConfig[s_logsAccess]));
 	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logs_dead_only", false, "Access to logs only for dead admins?");
-	g_iConfig[bLogsNotifyAlive] = Config_LoadBool("ttt_logs_notify_alive", true, "Notify if logs has been watched by alive admin");
+	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logs_notify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
 	g_iConfig[b_updateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
 	g_iConfig[b_removeHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[b_removeBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
@@ -350,10 +350,25 @@ public Action Command_Logs(int client, int args)
 			else
 			{
 				ShowLogs(client);
-				if (g_iConfig[bLogsNotifyAlive] && IsPlayerAlive(client))
+				if (g_iConfig[bLogsNotifyAlive] > 0 && IsPlayerAlive(client))
 				{
-					LoopValidClients(j)
-						CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+					if (g_iConfig[bLogsNotifyAlive] == 1)
+					{
+						LoopValidClients(j)
+						{
+							CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+						}
+					}
+					else if (g_iConfig[bLogsNotifyAlive] == 2)
+					{
+						LoopValidClients(j)
+						{
+							if (TTT_HasFlags(j, aFlags))
+							{
+								CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+							}
+						}
+					}
 				}
 			}
 		}	
