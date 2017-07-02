@@ -300,7 +300,7 @@ public Action Command_Shop(int client, int args)
 			g_aCustomItems.GetArray(i, temp_item[0]);
 			if (strlen(temp_item[Short]) > 1)
 			{
-				if ((temp_item[Role] == 0) || (temp_item[Role] == team))
+				if ((temp_item[Role] == 1) || (temp_item[Role] == team))
 				{
 					Format(display, sizeof(display), "%s - %d", temp_item[Long], temp_item[Price]);
 					AddMenuItem(menu, temp_item[Short], display);
