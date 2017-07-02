@@ -167,7 +167,7 @@
 
 	"Item bought! (NEW)"
 	{
-		"#format"	"{1:i},{2:s}"
+		"#format"	"{1:i},{2:s},{3:d}"
 		"en"		"Item {2} bought for {3} credits! Remaining Credits: {1}"
 	}
 
