@@ -66,7 +66,7 @@ enum eConfig
 	String:s_kickImmunity[16],
 	String:s_logsAccess[16],
 	bool:bLogsDeadOnly,
-	bool:bLogsNotifyAlive,
+	bLogsNotifyAlive,
 	bool:b_updateClientModel, 
 	bool:b_removeHostages, 
 	bool:b_removeBomb, 
