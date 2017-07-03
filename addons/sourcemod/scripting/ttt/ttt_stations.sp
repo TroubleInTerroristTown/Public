@@ -332,7 +332,7 @@ void spawnStation(int client)
 		g_iStationHealth[client] = 10;
 		g_bHasActiveStation[client] = true;
 		g_iStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
-		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
+		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Hurt Station Deployed" : "Health Station Deployed"), client);
 	}
 }
 
