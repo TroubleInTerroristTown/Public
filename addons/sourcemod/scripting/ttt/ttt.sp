@@ -350,7 +350,7 @@ public Action Command_Logs(int client, int args)
 			else
 			{
 				ShowLogs(client);
-				if (g_iConfig[bLogsNotifyAlive] > 0 && IsPlayerAlive(client))
+				if (g_iConfig[bLogsNotifyAlive] > 0 && !g_bRoundEnding && IsPlayerAlive(client))
 				{
 					if (g_iConfig[bLogsNotifyAlive] == 1)
 					{
