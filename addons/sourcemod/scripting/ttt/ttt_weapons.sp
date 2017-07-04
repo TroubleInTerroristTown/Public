@@ -356,7 +356,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
 			}
 
-			GivePlayerItem(client, "weapon_sg008");
+			GivePlayerItem(client, "weapon_ssg008");
 		}
 		else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
 		{
