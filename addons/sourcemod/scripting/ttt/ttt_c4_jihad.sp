@@ -8,9 +8,11 @@
 #include <config_loader>
 #include <ttt_shop>
 #include <multicolors>
-#include <smlib>
 #include <emitsoundany>
-#include <sdkhooks>
+#include <cstrike>
+
+// #include <smlib>
+// #include <sdkhooks>
 
 #pragma newdecls required
 
@@ -247,7 +249,7 @@ stock void RemoveC4(int client)
 {
 	if (!g_bHasC4[client] && !g_bHasJ[client])
 	{
-		LOOP_CLIENTWEAPONS(client, weapon, index)
+		/* LOOP_CLIENTWEAPONS(client, weapon, index)
 		{
 			char sWeapon[128];
 			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
@@ -256,6 +258,21 @@ stock void RemoveC4(int client)
 			{
 				RemovePlayerItem(client, weapon);
 				AcceptEntityInput(weapon, "Kill");
+			}
+		} */
+		
+		int weapon = -1;
+		while((weapon = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
+		{
+			char sWeapon[128];
+			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
+			
+			if (StrContains(sWeapon, "weapon_c4", false) != -1)
+			{
+				RemovePlayerItem(client, weapon);
+				AcceptEntityInput(weapon, "Kill");
+				
+				break;
 			}
 		}
 	}
@@ -732,7 +749,7 @@ stock float plantBomb(int client, float time)
 		CPrintToChat(client, g_sPluginTag, "Bomb Was Not Found", client);
 	}
 	
-	g_iWire[client] = Math_GetRandomInt(1, 4);
+	g_iWire[client] = GetRandomInt(1, 4);
 	CPrintToChat(client, g_sPluginTag, "Wire Is", client, g_iWire[client]);
 }
 
