@@ -4,7 +4,6 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-#include <smlib>
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>

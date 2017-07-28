@@ -11,9 +11,6 @@
 #include <emitsoundany>
 #include <cstrike>
 
-// #include <smlib>
-// #include <sdkhooks>
-
 #pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - C4 & Jihad"
@@ -249,18 +246,6 @@ stock void RemoveC4(int client)
 {
 	if (!g_bHasC4[client] && !g_bHasJ[client])
 	{
-		/* LOOP_CLIENTWEAPONS(client, weapon, index)
-		{
-			char sWeapon[128];
-			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
-			
-			if (StrContains(sWeapon, "weapon_c4", false) != -1)
-			{
-				RemovePlayerItem(client, weapon);
-				AcceptEntityInput(weapon, "Kill");
-			}
-		} */
-		
 		int weapon = -1;
 		while((weapon = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
 		{

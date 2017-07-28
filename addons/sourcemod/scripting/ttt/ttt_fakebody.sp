@@ -4,7 +4,6 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-#include <smlib>
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
@@ -13,8 +12,9 @@
 #pragma newdecls required
 
 #define SHORT_NAME "fb"
-
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Fake Body"
+
+#define COLLISION_GROUP_DEBRIS_TRIGGER 2
 
 int g_iPrice = 0;
 
@@ -150,7 +150,7 @@ stock bool SpawnFakeBody(int client)
 		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 	}
 	
-	Entity_SetCollisionGroup(iEntity, COLLISION_GROUP_DEBRIS_TRIGGER);
+	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
 	
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
