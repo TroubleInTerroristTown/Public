@@ -1385,7 +1385,7 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-	if ((g_bRoundEnded && !g_iConfig[b_endroundDMG]) || (!g_bRoundStarted && !g_iConfig[bEnableDamage]))
+	if (!IsDamageAllowed())
 	{
 		return Plugin_Handled;
 	}
@@ -1395,7 +1395,7 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
-	if ((g_bRoundEnded && !g_iConfig[b_endroundDMG]) || (!g_bRoundStarted && !g_iConfig[bEnableDamage]))
+	if (!IsDamageAllowed())
 	{
 		return Plugin_Handled;
 	}
@@ -1410,6 +1410,21 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	}
 	
 	return Plugin_Continue;
+}
+
+bool IsDamageAllowed()
+{
+	if (g_bRoundEnded && g_iConfig[b_endroundDMG])
+	{
+		return true;
+	}
+	
+	if (!g_bRoundStarted && g_iConfig[bEnableDamage])
+	{
+		return true;
+	}
+	
+	return false;
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
