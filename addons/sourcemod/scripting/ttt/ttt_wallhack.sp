@@ -42,6 +42,8 @@ char g_sConfigFile[PLATFORM_MAX_PATH];
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 
+bool g_bCPS = false;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -76,12 +78,37 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
+	
+	g_bCPS = LibraryExists("CustomPlayerSkins");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = false;
+	}
 }
 
 public void OnAllPluginsLoaded()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
-	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+	if (g_bCPS)
+	{
+		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
+		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+	}
+	else
+	{
+		SetFailState("CustomPlayerSkins not loaded!");
+	}
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)

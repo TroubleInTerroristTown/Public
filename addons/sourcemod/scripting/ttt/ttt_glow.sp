@@ -15,6 +15,8 @@ bool g_bTGlow = false;
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
+bool g_bCPS = false;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -40,6 +42,32 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
+	
+	g_bCPS = LibraryExists("CustomPlayerSkins");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = false;
+	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	if (!g_bCPS)
+	{
+		SetFailState("CustomPlayerSkins not loaded!");
+	}
 }
 
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)

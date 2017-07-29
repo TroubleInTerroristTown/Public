@@ -33,6 +33,8 @@ char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 char g_sLongName[64];
 
+bool g_bCPS = false;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -70,6 +72,36 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
+	
+	g_bCPS = LibraryExists("CustomPlayerSkins");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "CustomPlayerSkins"))
+	{
+		g_bCPS = false;
+	}
+}
+
+public void OnAllPluginsLoaded()
+{
+	if (g_bCPS)
+	{
+		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	}
+	else
+	{
+		SetFailState("CustomPlayerSkins not loaded!");
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -164,11 +196,6 @@ void SetupGlow(int client, int iSkin)
 	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
 	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
 	SetEntData(iSkin, iOffset + 3, 255, _, true);
-}
-
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
