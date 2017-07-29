@@ -135,3 +135,5 @@ char g_sRemoveEntityList[][] =  {
 
 bool g_bRoundEnding = false;
 int g_iLastButtons[MAXPLAYERS + 1] =  { 0, ... };
+
+bool g_bDebug = false;
