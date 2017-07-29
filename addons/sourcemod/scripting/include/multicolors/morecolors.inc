@@ -236,7 +236,7 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 		ReplaceString(buffer, maxlen, "{teamcolor}", "\x03", false);
 	}
 	int cursor = 0;
-	int iValue;
+	int value;
 	char tag[32], buff[32]; 
 	char[] output = new char[maxlen];
 
@@ -271,14 +271,14 @@ stock void MC_ReplaceColorCodes(char[] buffer, int author = 0, bool removeTags =
 			} else {
 				ReplaceString(output, maxlen, tag, buff, false);
 			}
-		} else if(!GetTrieValue(MC_Trie, buff, iValue)) {
+		} else if(!GetTrieValue(MC_Trie, buff, value)) {
 			continue;
 		}
 
 		if(removeTags) {
 			ReplaceString(output, maxlen, tag, "", false);
 		} else {
-			Format(buff, sizeof(buff), "\x07%06X", iValue);
+			Format(buff, sizeof(buff), "\x07%06X", value);
 			ReplaceString(output, maxlen, tag, buff, false);
 		}
 	}
