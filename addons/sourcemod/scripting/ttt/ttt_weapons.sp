@@ -565,7 +565,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, fl
 		return Plugin_Continue;
 	}
 
-	if(g_bHasKnife[iAttacker])
+	if(g_bHasKnife[iAttacker] && IsValidEntity(iWeapon))
 	{
 		char sWeapon[64];
 		
