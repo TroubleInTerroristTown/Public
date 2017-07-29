@@ -798,7 +798,7 @@ public Action Timer_Selection(Handle hTimer)
 	ArrayList aPlayers = new ArrayList(1);
 	LoopValidClients(i)
 	{
-		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
+		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T  || (!g_bDebug && IsFakeClient(i)))
 		{
 			continue;
 		}
@@ -980,7 +980,7 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		}
 		
-		if (IsFakeClient(i))
+		if (!g_bDebug && IsFakeClient(i))
 		{
 			continue;
 		}

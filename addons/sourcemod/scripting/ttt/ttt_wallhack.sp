@@ -44,6 +44,8 @@ Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 
 bool g_bCPS = false;
 
+bool g_bDebug = false;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -138,6 +140,7 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 public void TTT_OnClientGetRole(int client, int role)
 {
 	SetupGlowSkin(client);
+	if (g_bDebug) PrintToChat(client, "Pre SetupGlowSkin");
 }
 
 void SetupGlowSkin(int client)
@@ -153,11 +156,13 @@ void SetupGlowSkin(int client)
 	
 	if (iSkin == -1)
 	{
+		if (g_bDebug) PrintToChat(client, " FAILED SetupGlowSkin iSkin == -1");
 		return;
 	}
 		
 	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
+		if (g_bDebug) PrintToChat(client, " SUCCESS SetupGlowSkin SDKHookEx");
 		SetupGlow(client, iSkin);
 	}
 }
@@ -178,6 +183,8 @@ void SetupGlow(int client, int iSkin)
 	int iRed = 255;
 	int iGreen = 255;
 	int iBlue = 255;
+	
+	if (g_bDebug) PrintToChat(client, "SetupGlow");
 	
 	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
@@ -216,6 +223,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			g_bHasWH[client] = true;
 			g_bOwnWH[client] = true;
 			
+			if (g_bDebug) PrintToChat(client, "TTT_OnItemPurchased");
+			
 			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
 				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
@@ -235,6 +244,7 @@ public Action Timer_WHActive(Handle timer, any userid)
 	
 	if (TTT_IsClientValid(client) && g_bOwnWH[client] && g_bHasWH[client])
 	{
+		if (g_bDebug) PrintToChat(client, "WH deactived...");
 		g_bHasWH[client] = false;
 		g_hTimer[client] = null;
 		
@@ -257,6 +267,7 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	
 	if (TTT_IsClientValid(client) && g_bOwnWH[client] && !g_bHasWH[client])
 	{
+		if (g_bDebug) PrintToChat(client, "WH actived...");
 		g_bHasWH[client] = true;
 		g_hTimer[client] = null;
 		
@@ -297,7 +308,7 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 			continue;
 		}
 		
-		if (IsFakeClient(target))
+		if (!g_bDebug && IsFakeClient(target))
 		{
 			continue;
 		}
@@ -309,6 +320,7 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		
 		if (!CPS_HasSkin(target))
 		{
+			if (g_bDebug) PrintToChat(client, "%N hasn't a skin...", target);
 			continue;
 		}
 		
@@ -319,6 +331,7 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		
 		if (g_bHasWH[client] && g_bOwnWH[client])
 		{
+			if (g_bDebug) PrintToChat(client, "You should see %N", target);
 			return Plugin_Continue;
 		}
 	}
