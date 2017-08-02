@@ -55,6 +55,8 @@ public void OnPluginStart()
 	Config_Done();
 	
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
+	
+	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -89,11 +91,14 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	}
 }
 
-public void TTT_OnUpdate1(int client)
+public Action Timer_CreateIcon(Handle timer)
 {
-	if (IsPlayerAlive(client))
+	LoopValidClients(client)
 	{
-		g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
+		if (IsPlayerAlive(client))
+		{
+			g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
+		}
 	}
 }
 
