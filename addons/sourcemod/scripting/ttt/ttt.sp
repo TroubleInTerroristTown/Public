@@ -778,24 +778,10 @@ public Action Timer_Selection(Handle hTimer)
 {
 	g_bRoundEnding = false;
 	g_hStartTimer = null;
-	
-	Action res = Plugin_Continue;
-	Call_StartForward(g_hOnRoundStart_Pre);
-	Call_Finish(res);
-	
-	if (res >= Plugin_Handled)
-	{
-		Call_StartForward(g_hOnRoundStartFailed);
-		Call_PushCell(-1);
-		Call_PushCell(g_iConfig[i_requiredPlayers]);
-		Call_Finish();
-		
-		GiveWeaponsOnFailStart();
-		
-		return;
-	}
+
 	
 	ArrayList aPlayers = new ArrayList(1);
+	
 	LoopValidClients(i)
 	{
 		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T  || (!g_bDebug && IsFakeClient(i)))
@@ -817,6 +803,30 @@ public Action Timer_Selection(Handle hTimer)
 		
 		aPlayers.Push(i);
 	}
+	
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnRoundStart_Pre);
+	Call_Finish(res);
+	
+	if (res >= Plugin_Handled)
+	{
+		Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(-1);
+		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_Finish();
+		
+		GiveWeaponsOnFailStart();
+		
+		return;
+	}
+	
+	//Check if there are any slain players
+	for (int i = 0; i < aPlayers.Length; i++)
+	{
+		if(!IsPlayerAlive(aPlayers.Get(i)))
+			aPlayers.Erase(i--);
+	}
+	
 	if (aPlayers.Length < g_iConfig[i_requiredPlayers])
 	{
 		g_bInactive = true;
