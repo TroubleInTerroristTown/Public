@@ -357,9 +357,19 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		return Plugin_Handled;
 	}
 	
+	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+	{
+		return Plugin_Handled;
+	}
+	
 	LoopValidClients(target)
 	{
 		if (target < 1)
+		{
+			continue;
+		}
+		
+		if (client == target)
 		{
 			continue;
 		}

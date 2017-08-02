@@ -185,6 +185,11 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		{
 			continue;
 		}
+		
+		if (client == target)
+		{
+			continue;
+		}
 			
 		if (IsFakeClient(target))
 		{
