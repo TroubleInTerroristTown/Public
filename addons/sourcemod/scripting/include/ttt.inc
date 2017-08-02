@@ -142,13 +142,6 @@ enum Ragdolls
 forward void TTT_OnUpdate5(int client);
 
 /*
- * Called every 3 seconds
- *
- * @param client            Client index.
- */
-forward void TTT_OnUpdate3(int client);
-
-/*
  * Called every second
  *
  * @param client            Client index.
