@@ -102,6 +102,8 @@ public void OnPluginStart()
 	g_hSyncD = CreateHudSynchronizer();
 	g_hSyncI = CreateHudSynchronizer();
 	g_hSyncT = CreateHudSynchronizer();
+	
+	CreateTimer(3.0, Timer_HUD, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -206,7 +208,10 @@ public void TTT_OnUpdate1(int client)
 	{
 		AssignOverlay(client, TTT_GetClientRole(client));
 	}
-	
+}
+
+public Action Timer_HUD(Handle timer)
+{
 	if (!TTT_IsRoundActive())
 	{
 		return;
@@ -273,13 +278,10 @@ public void TTT_OnUpdate1(int client)
 		}
 		ExplodeString(g_sColorT, ";", sCT, sizeof(sCT), sizeof(sCT[]));
 		
-		LoopValidClients(i)
-		{
-			showHud(g_hSyncR, i, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
-			showHud(g_hSyncD, i, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
-			showHud(g_hSyncI, i, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
-			showHud(g_hSyncT, i, sT, g_fPosTX, g_fPosTY, sCT[0], sCT[1], sCT[2], sCT[3]);
-		}
+		showHudToAll(g_hSyncR, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
+		showHudToAll(g_hSyncD, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
+		showHudToAll(g_hSyncI, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
+		showHudToAll(g_hSyncT, sT, g_fPosTX, g_fPosTY, sCT[0], sCT[1], sCT[2], sCT[3]);
 	}
 }
 
@@ -308,9 +310,12 @@ public void AssignOverlay(int client, int role)
 	}
 }
 
-void showHud(Handle sync, int client, char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
+void showHudToAll(Handle sync, char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
 {
-	SetHudTextParams(x, y, 1.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
-	ShowSyncHudText(client, sync, message);
+	LoopValidClients(client)
+	{
+		SetHudTextParams(x, y, 1.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
+		ShowSyncHudText(client, sync, message);
+	}
 }
 
