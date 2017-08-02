@@ -2015,7 +2015,6 @@ public Action Timer_1(Handle timer)
 		{
 			if (g_iRole[i] == TTT_TEAM_TRAITOR)
 			{
-				
 				g_iTraitorAlive++;
 				int[] clients = new int[MaxClients];
 				int index = 0;
@@ -2045,8 +2044,6 @@ public Action Timer_1(Handle timer)
 			}
 		}
 	}
-	
-
 	
 	if (g_bRoundStarted)
 	{
