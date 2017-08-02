@@ -91,6 +91,8 @@ public void OnPluginStart()
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
+	
+	CreateTimer(1.5, Timer_CheckDistance, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -142,14 +144,17 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	cleanupStation();
 }
 
-public void TTT_OnUpdate1(int i)
+public Action Timer_CheckDistance(Handle timer)
 {
-	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+	LoopValidClients(i)
 	{
-		return;
+		if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+		{
+			return;
+		}
+	
+		checkDistanceFromStation(i);
 	}
-
-	checkDistanceFromStation(i);
 }
 
 public void TTT_OnUpdate5(int i)
@@ -219,7 +224,7 @@ public Action OnTakeDamageStation(int stationIndex, int &iAttacker, int &inflict
 
 void checkDistanceFromStation(int client)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!IsPlayerAlive(client))
 	{
 		return;
 	}
@@ -234,7 +239,7 @@ void checkDistanceFromStation(int client)
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics_multiplayer")) != -1)
 	{
 		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-		if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
+		if (!TTT_IsClientValid(owner))
 		{
 			continue;
 		}
