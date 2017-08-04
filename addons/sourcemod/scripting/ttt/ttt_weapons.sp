@@ -526,7 +526,7 @@ void GiveHeavy(int client)
 {
 	g_iHeavy[client]++;
 	SetEntityModel(client, HEAVY_MODEL);
-	GivePlayerItem(client, "item_assaultsuit");
+	GivePlayerItem(client, "item_heavyassaultsuit");
 	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
 	
 	if(g_iHeavy_Armor > 100)
