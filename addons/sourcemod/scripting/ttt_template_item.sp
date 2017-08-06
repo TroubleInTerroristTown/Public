@@ -58,6 +58,25 @@ public void OnClientDisconnect(int client)
 	ResetTemplate(client);
 }
 
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+{
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+	{
+		if (StrEqual(itemshort, SHORT_NAME, false))
+		{
+			int role = TTT_GetClientRole(client);
+			
+			if (role != TTT_TEAM_DETECTIVE)
+			{
+				return Plugin_Stop;
+			}
+			
+			g_bHasItem[client] = true;
+		}
+	}
+	return Plugin_Continue;
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
