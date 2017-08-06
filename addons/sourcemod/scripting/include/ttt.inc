@@ -411,6 +411,36 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 	return false;
 }
 
+stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
+{
+	if (!IsValidEntity(iWeapon) || !IsValidEdict(iWeapon))
+		return false;
+	
+	if (!HasEntProp(iWeapon, Prop_Send, "m_hOwnerEntity"))
+		return false;
+	
+	int iOwnerEntity = GetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity");
+	
+	if (iOwnerEntity != iClient)
+		SetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity", iClient);
+	
+	CS_DropWeapon(iClient, iWeapon, false);
+	
+	if (HasEntProp(iWeapon, Prop_Send, "m_hWeaponWorldModel"))
+	{
+		int iWorldModel = GetEntPropEnt(iWeapon, Prop_Send, "m_hWeaponWorldModel");
+		
+		if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
+			if (!AcceptEntityInput(iWorldModel, "Kill"))
+				return false;
+	}
+	
+	if (!AcceptEntityInput(iWeapon, "Kill"))
+		return false;
+	
+	return true;
+}
+
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
 {
 	int iFlags = GetCommandFlags("r_screenoverlay");
