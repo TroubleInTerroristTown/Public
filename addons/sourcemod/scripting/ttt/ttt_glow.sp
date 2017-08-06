@@ -44,6 +44,11 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundReset);
 	
 	g_bCPS = LibraryExists("CustomPlayerSkins");
+	
+	if (g_bCPS)
+	{
+		CreateTimer(0.5, Timer_SetupGlow, _, TIMER_REPEAT);
+	}
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -70,63 +75,70 @@ public void OnAllPluginsLoaded()
 	}
 }
 
-public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
+public Action Timer_SetupGlow(Handle timer, any data)
 {
-	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(!TTT_IsRoundActive())
+	{
+		return Plugin_Continue;
+	}
 	
-	if (TTT_IsClientValid(client))
+	LoopValidClients(i)
 	{
-		UnhookGlow(client);
+		if (!IsPlayerAlive(i))
+		{
+			continue;
+		}
+		
+		SetupGlowSkin(i);
 	}
-}
-
-public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
-{
-	LoopValidClients(client)
-	{
-		UnhookGlow(client);
-	}
-}
-
-public void TTT_OnClientGetRole(int client, int role)
-{
-	SetupGlowSkin(client);
+	
+	return Plugin_Continue;
 }
 
 void SetupGlowSkin(int client)
 {
-	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client) || !TTT_IsRoundActive())
+	UnHookSkin(client);
+	CPS_RemoveSkin(client);
+	
+	char model[PLATFORM_MAX_PATH];
+	GetClientModel(client, model, sizeof(model));
+	int skin = CPS_SetSkin(client, model, CPS_RENDER);
+	
+	if(skin == -1)
 	{
 		return;
 	}
-	
-	char sModel[PLATFORM_MAX_PATH];
-	GetClientModel(client, sModel, sizeof(sModel));
-	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
-	
-	if (iSkin == -1)
+	if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
-		return;
-	}
-		
-	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-	{
-		SetupGlow(client, iSkin);
+		SetupGlow(client, skin);
 	}
 }
 
-void SetupGlow(int client, int iSkin)
+void UnHookSkin(int client)
+{
+	if(CPS_HasSkin(client))
+	{
+		int skin = EntRefToEntIndex(CPS_GetSkin(client));
+		
+		if(IsValidEntity(skin))
+		{
+			SDKUnhook(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin)
+		}
+	}
+}
+
+void SetupGlow(int client, int skin)
 {
 	int iOffset;
 	
-	if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+	if ((iOffset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1)
 	{
 		return;
 	}
 	
-	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+	SetEntProp(skin, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(skin, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(skin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
 	
 	int iRed = 255;
 	int iGreen = 255;
@@ -151,15 +163,20 @@ void SetupGlow(int client, int iSkin)
 		iBlue = g_iColorInnocent[2];
 	}
 	
-	SetEntData(iSkin, iOffset, iRed, _, true);
-	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
-	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
-	SetEntData(iSkin, iOffset + 3, 255, _, true);
+	SetEntData(skin, iOffset, iRed, _, true);
+	SetEntData(skin, iOffset + 1, iGreen, _, true);
+	SetEntData(skin, iOffset + 2, iBlue, _, true);
+	SetEntData(skin, iOffset + 3, 255, _, true);
 }
 
-public Action OnSetTransmit_GlowSkin(int iSkin, int client)
+public Action OnSetTransmit_GlowSkin(int skin, int client)
 {
 	if (!TTT_IsRoundActive())
+	{
+		return Plugin_Handled;
+	}
+	
+	if (IsFakeClient(client) || IsClientSourceTV(client))
 	{
 		return Plugin_Handled;
 	}
@@ -179,7 +196,8 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 		return Plugin_Handled;
 	}
 	
-	LoopValidClients(target)
+	int target = -1;
+	LoopValidClients(i)
 	{
 		if (target < 1)
 		{
@@ -206,36 +224,23 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 			continue;
 		}
 			
-		if (EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
+		if (EntRefToEntIndex(CPS_GetSkin(target)) != skin)
 		{
 			continue;
 		}
-			
-		if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
-		{
-			return Plugin_Continue;
-		}
-		
-		if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
-		{
-			return Plugin_Continue;
-		}
+
+		target = i;
+	}
+	
+	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+	{
+		return Plugin_Continue;
+	}
+	
+	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+	{
+		return Plugin_Continue;
 	}
 	
 	return Plugin_Handled;
-}
-
-void UnhookGlow(int client)
-{
-	if (!TTT_IsClientValid(client))
-	{
-		return;
-	}
-		
-	int iSkin = CPS_GetSkin(client);
-	if (IsValidEntity(iSkin))
-	{
-		SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, 1);
-		SDKUnhook(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
-	}
 }
