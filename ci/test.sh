@@ -15,9 +15,9 @@ do
 done
 
 echo -e "\nCompile 3rd-party-plugins"
-echo -e -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
+echo -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
-echo -e -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
+echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
-echo -e -e "\nCompiling addons/sourcemod/scripting/cameras-and-drones.sp..."
+echo -e "\nCompiling addons/sourcemod/scripting/cameras-and-drones.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/cameras-and-drones.sp
