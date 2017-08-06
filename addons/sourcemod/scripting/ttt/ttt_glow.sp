@@ -39,10 +39,6 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_PlayerReset);
-	HookEvent("player_death", Event_PlayerReset);
-	HookEvent("round_end", Event_RoundReset);
-	
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 	
 	if (g_bCPS)
