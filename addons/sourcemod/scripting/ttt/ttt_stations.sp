@@ -66,7 +66,7 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/stations.cfg");
 	Config_Setup("TTT-Stations", g_cConfigFile);
-	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for traitors. 0 to disable.");
+	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for detectives. 0 to disable.");
 	g_iHurtPrice = Config_LoadInt("hurt_station_price", 0, "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
 	
 	g_iHealthPrio = Config_LoadInt("health_sort_prio", 0, "The sorting priority of the Health Station in the shop menu.");
