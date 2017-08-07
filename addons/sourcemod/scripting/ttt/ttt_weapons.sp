@@ -404,7 +404,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			if(g_iKnives[client] > g_iKnife_Max > 0)
 			{
-				CPrintToChat(client, "%t", "You reached limit", g_iKnife_Max);
+				CPrintToChat(client, "%T", "You reached limit", client, g_iKnife_Max);
 				return Plugin_Stop;
 			}
 
@@ -417,7 +417,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		 {
 				if(g_iKevs[client] > g_iKev_Max > 0)
 				{
-					CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
+					CPrintToChat(client, "%T", "You reached limit", client, g_iKev_Max);
 					return Plugin_Stop;
 				}
 
@@ -446,7 +446,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		 {
 			if(g_iKevHelms[client] > g_iKevHelm_Max > 0)
 			{
-				CPrintToChat(client, "%t", "You reached limit", g_iKev_Max);
+				CPrintToChat(client, "%T", "You reached limit", client, g_iKev_Max);
 				return Plugin_Stop;
 			}
 			
@@ -459,7 +459,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		 {
 				if(g_iHelms[client] > g_iHelm_Max > 0)
 				{
-					CPrintToChat(client, "%t", "You reached limit", g_iHelm_Max);
+					CPrintToChat(client, "%T", "You reached limit", client, g_iHelm_Max);
 					return Plugin_Stop;
 				}
 
@@ -488,7 +488,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		 {
 				if(g_iHeavy[client] > g_iHeavy_Max > 0)
 				{
-					CPrintToChat(client, "%t", "You reached limit", g_iHeavy_Max);
+					CPrintToChat(client, "%T", "You reached limit", client, g_iHeavy_Max);
 					return Plugin_Stop;
 				}
 
