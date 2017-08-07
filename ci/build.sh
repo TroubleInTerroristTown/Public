@@ -35,8 +35,6 @@ echo -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
 echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
-echo -e "\nCompiling addons/sourcemod/scripting/cameras-and-drones.sp..."
-addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/cameras-and-drones.sp
 
 echo -e "Remove plugins folder if exists\n"
 if [ -d "addons/sourcemod/plugins" ]; then
@@ -58,6 +56,9 @@ for file in *.smx
 do
   mv $file addons/sourcemod/plugins
 done
+
+echo -e "Download Cameras and Drones smx File"
+wget "https://github.com/Keplyx/cameras-and-drones/blob/dev/cameras-and-drones.smx?raw=true" -O addons/sourcemod/plugins/cameras-and-drones.smx
 
 echo -e "Remove api test plugin\n"
 rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
