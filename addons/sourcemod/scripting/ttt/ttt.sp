@@ -3369,7 +3369,7 @@ stock void UpdatePlayer(int client)
 	}
 	
 	char sQuery[2048];
-	Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
+	Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
 	
 	if (g_dDB != null)
 	{
