@@ -95,6 +95,31 @@ void SetupGlowSkin(int client)
 	UnHookSkin(client);
 	CPS_RemoveSkin(client);
 	
+	if (!TTT_IsRoundActive())
+	{
+		return;
+	}
+	
+	if (IsFakeClient(client) || IsClientSourceTV(client))
+	{
+		return;
+	}
+	
+	if (!IsPlayerAlive(client))
+	{
+		return;
+	}
+	
+	if (!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
+		return;
+	}
+	
+	if (!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
+		return;
+	}
+	
 	char model[PLATFORM_MAX_PATH];
 	GetClientModel(client, model, sizeof(model));
 	int skin = CPS_SetSkin(client, model, CPS_RENDER);
@@ -166,31 +191,6 @@ void SetupGlow(int client, int skin)
 
 public Action OnSetTransmit_GlowSkin(int skin, int client)
 {
-	if (!TTT_IsRoundActive())
-	{
-		return Plugin_Handled;
-	}
-	
-	if (IsFakeClient(client) || IsClientSourceTV(client))
-	{
-		return Plugin_Handled;
-	}
-	
-	if (!IsPlayerAlive(client))
-	{
-		return Plugin_Handled;
-	}
-	
-	if (!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-	{
-		return Plugin_Handled;
-	}
-	
-	if (!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		return Plugin_Handled;
-	}
-	
 	int target = -1;
 	LoopValidClients(i)
 	{

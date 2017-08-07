@@ -104,20 +104,20 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		}
 		
 		for(int offset = 0; offset < 128; offset += 4)
+		{
+			int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+			
+			if (IsValidEntity(weapon))
 			{
-				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+				char sClass[32];
+				GetEntityClassname(weapon, sClass, sizeof(sClass));
 				
-				if (IsValidEntity(weapon))
+				if (StrEqual(sClass, "weapon_tagrenade", false))
 				{
-					char sClass[32];
-					GetEntityClassname(weapon, sClass, sizeof(sClass));
-					
-					if (StrEqual(sClass, "weapon_tagrenade", false))
-					{
-						TTT_SafeRemoveWeapon(client, weapon);
-					}
+					TTT_SafeRemoveWeapon(client, weapon);
 				}
 			}
+		}
 		
 		GivePlayerItem(client, "weapon_tagrenade");
 	}
