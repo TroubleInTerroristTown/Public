@@ -40,11 +40,6 @@ public void OnPluginStart()
 	Config_Done();
 	
 	g_bCPS = LibraryExists("CustomPlayerSkins");
-	
-	if (g_bCPS)
-	{
-		CreateTimer(0.5, Timer_SetupGlow, _, TIMER_REPEAT);
-	}
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -68,6 +63,10 @@ public void OnAllPluginsLoaded()
 	if (!g_bCPS)
 	{
 		SetFailState("CustomPlayerSkins not loaded!");
+	}
+	else
+	{
+		CreateTimer(0.5, Timer_SetupGlow, _, TIMER_REPEAT);
 	}
 }
 
@@ -195,32 +194,32 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 	int target = -1;
 	LoopValidClients(i)
 	{
-		if (target < 1)
+		if (i < 1)
 		{
 			continue;
 		}
 		
-		if (client == target)
-		{
-			continue;
-		}
-			
-		if (IsFakeClient(target))
+		if (client == i)
 		{
 			continue;
 		}
 		
-		if (!IsPlayerAlive(target))
+		if (IsFakeClient(i))
 		{
 			continue;
 		}
 		
-		if (!CPS_HasSkin(target))
+		if (!IsPlayerAlive(i))
 		{
 			continue;
 		}
-			
-		if (EntRefToEntIndex(CPS_GetSkin(target)) != skin)
+		
+		if (!CPS_HasSkin(i))
+		{
+			continue;
+		}
+		
+		if (EntRefToEntIndex(CPS_GetSkin(i)) != skin)
 		{
 			continue;
 		}
