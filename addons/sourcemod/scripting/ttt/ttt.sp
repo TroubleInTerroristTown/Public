@@ -626,10 +626,10 @@ public void OnMapStart()
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	}
 	
-	SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
+	SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_PostThinkPost, PostThinkPost);
 }
 
-public void ThinkPost(int entity)
+public void PostThinkPost(int entity)
 {
 	int isAlive[MAXPLAYERS+1];
 	
