@@ -1,6 +1,8 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <sdktools>
+#include <cstrike>
 #include <ttt>
 #include <ttt_shop>
 #include <config_loader>
@@ -20,6 +22,8 @@ char g_sDLongName[64];
 int g_iDPrice = 0;
 int g_iDPrio = 0;
 
+int g_iMyWeapons = -1;
+
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
@@ -35,6 +39,12 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+	
+	g_iMyWeapons = FindSendPropInfo("CBasePlayer", "m_hMyWeapons");
+	if (g_iMyWeapons == -1)
+	{
+		SetFailState("m_hMyWeapons not found...");
+	}
 	
 	LoadTranslations("ttt.phrases");
 	
@@ -52,7 +62,7 @@ public void OnPluginStart()
 	g_iCPrice = Config_LoadInt("cad_camera_price", 9000, "The amount of credits a camera costs as detective. 0 to disable.");
 	g_iCPrio = Config_LoadInt("cad_camera_sort_prio", 0, "The sorting priority of the TEMPLATE in the shop menu.");
 	
-	Config_LoadString("cad_drone_name", "Tempalte", "The name of this in Shop", g_sDLongName, sizeof(g_sDLongName));
+	Config_LoadString("cad_drone_name", "Drone", "The name of this in Shop", g_sDLongName, sizeof(g_sDLongName));
 	g_iDPrice = Config_LoadInt("cad_drone_price", 9000, "The amount of credits a drone costs as detective. 0 to disable.");
 	g_iDPrio = Config_LoadInt("cad_drone_sort_prio", 0, "The sorting priority of the drone in the shop menu.");
 	
@@ -92,6 +102,24 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			
 			OverridePlayerGear(client, 2);
 		}
+		
+		for(int offset = 0; offset < 128; offset += 4)
+			{
+				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+				
+				if (IsValidEntity(weapon))
+				{
+					char sClass[32];
+					GetEntityClassname(weapon, sClass, sizeof(sClass));
+					
+					if (StrEqual(sClass, "weapon_tagrenade", false))
+					{
+						TTT_SafeRemoveWeapon(client, weapon);
+					}
+				}
+			}
+		
+		GivePlayerItem(client, "weapon_tagrenade");
 	}
 	return Plugin_Continue;
 }
