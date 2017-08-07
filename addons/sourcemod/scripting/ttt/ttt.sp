@@ -2689,7 +2689,7 @@ stock void addKarma(int client, int karma, bool message = false)
 		}
 	}
 	
-	UpdatePlayer(client, false, g_iKarma[client]);
+	UpdatePlayer(client);
 }
 
 stock void setKarma(int client, int karma)
@@ -2706,7 +2706,7 @@ stock void setKarma(int client, int karma)
 		g_iKarma[client] = g_iConfig[i_maxKarma];
 	}
 	
-	UpdatePlayer(client, false, g_iKarma[client]);
+	UpdatePlayer(client);
 }
 
 stock void subtractKarma(int client, int karma, bool message = false)
@@ -2730,7 +2730,7 @@ stock void subtractKarma(int client, int karma, bool message = false)
 		}
 	}
 	
-	UpdatePlayer(client, false, g_iKarma[client]);
+	UpdatePlayer(client);
 }
 
 stock void addArrayTime(char[] message)
@@ -3327,7 +3327,8 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 	{
 		if (!SQL_FetchRow(hndl))
 		{
-			UpdatePlayer(userid);
+			g_iKarma[client] = g_iConfig[i_startKarma];
+			UpdatePlayer(client);
 		}
 		else
 		{
@@ -3357,32 +3358,22 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 	}
 }
 
-stock void UpdatePlayer(int userid, bool insert = true, int karma = -1)
+stock void UpdatePlayer(int client)
 {
-	int client = GetClientOfUserId(userid);
+	char sCommunityID[64];
 	
-	if (TTT_IsClientValid(client) && !IsFakeClient(client))
+	if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 	{
-		char sCommunityID[64];
-		
-		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
-		{
-			LogToFileEx(g_iConfig[s_errFile], "(UpdatePlayer) Auth failed: #%d (Insert: %d)", client, insert);
-			return;
-		}
-		
-		if (insert)
-		{
-			g_iKarma[client] = g_iConfig[i_startKarma];
-		}
-			
-		char sQuery[2048];
-		Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
-		
-		if (g_dDB != null)
-		{
-			g_dDB.Query(Callback_UpdatePlayer, sQuery, userid);
-		}
+		LogToFileEx(g_iConfig[s_errFile], "(UpdatePlayer) Auth failed: #%d", client);
+		return;
+	}
+	
+	char sQuery[2048];
+	Format(sQuery, sizeof(sQuery), "INSERT INTO `ttt` (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
+	
+	if (g_dDB != null)
+	{
+		g_dDB.Query(Callback_UpdatePlayer, sQuery, GetClientUserId(client));
 	}
 }
 
