@@ -7,11 +7,11 @@ public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any us
 	}
 }
 
-public void Callback_InsertPlayer(Handle owner, Handle hndl, const char[] error, any userid)
+public void Callback_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if (hndl == null || strlen(error) > 0)
 	{
-		LogToFileEx(g_iConfig[s_errFile], "(Callback_InsertPlayer) Query failed: %s", error);
+		LogToFileEx(g_iConfig[s_errFile], "(Callback_UpdatePlayer) Query failed: %s", error);
 		return;
 	}
 	else
