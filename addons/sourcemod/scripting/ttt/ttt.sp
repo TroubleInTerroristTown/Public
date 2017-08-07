@@ -2665,6 +2665,11 @@ public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum
 
 stock void addKarma(int client, int karma, bool message = false)
 {
+	if (!g_bRoundStarted)
+	{
+		return;
+	}
+	
 	g_iKarma[client] += karma;
 	
 	if (g_iKarma[client] > g_iConfig[i_maxKarma])
@@ -2689,6 +2694,11 @@ stock void addKarma(int client, int karma, bool message = false)
 
 stock void setKarma(int client, int karma)
 {
+	if (!g_bRoundStarted)
+	{
+		return;
+	}
+	
 	g_iKarma[client] = karma;
 	
 	if (g_iKarma[client] > g_iConfig[i_maxKarma])
@@ -2701,6 +2711,11 @@ stock void setKarma(int client, int karma)
 
 stock void subtractKarma(int client, int karma, bool message = false)
 {
+	if (!g_bRoundStarted)
+	{
+		return;
+	}
+	
 	g_iKarma[client] -= karma;
 	
 	if (g_iConfig[b_showLoseKarmaMessage] && message)
