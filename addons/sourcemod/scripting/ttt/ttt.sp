@@ -3289,7 +3289,7 @@ stock void LoadClientKarma(int userid)
 {
 	int client = GetClientOfUserId(userid);
 	
-	if (TTT_IsClientValid(client) && !IsFakeClient(client))
+	if (!IsFakeClient(client))
 	{
 		char sCommunityID[64];
 		
@@ -3301,6 +3301,11 @@ stock void LoadClientKarma(int userid)
 		
 		char sQuery[2048];
 		Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
+		
+		if (g_bDebug)
+		{
+			LogToFileEx(g_iConfig[s_logFile], sQuery);
+		}
 		
 		if (g_dDB != null)
 		{
@@ -3342,18 +3347,23 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 			
 			int karma = SQL_FetchInt(hndl, 0);
 			
-			g_bKarma[client] = true;
+			if (g_bDebug)
+			{
+				LogToFileEx(g_iConfig[s_logFile], "Name: %L has %d karma", client, karma);
+			}
 			
 			if (karma == 0)
 			{
-				setKarma(client, g_iConfig[i_startKarma]);
+				g_iKarma[client] = g_iConfig[i_startKarma];
 			}
 			else
 			{
-				setKarma(client, karma);
+				g_iKarma[client] = karma;
 			}
 			
 			CS_SetClientContributionScore(client, karma);
+			
+			g_bKarma[client] = true;
 		}
 	}
 }
@@ -3370,6 +3380,11 @@ stock void UpdatePlayer(int client)
 	
 	char sQuery[2048];
 	Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
+	
+	if (g_bDebug)
+	{
+		LogToFileEx(g_iConfig[s_logFile], sQuery);
+	}
 	
 	if (g_dDB != null)
 	{
