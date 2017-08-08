@@ -29,9 +29,9 @@ Handle g_hOnHudSend_Pre = null;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
-	
+
 	RegPluginLibrary("ttt_playerhud");
-	
+
 	return APLRes_Success;
 }
 
@@ -46,29 +46,29 @@ public void OnPluginStart()
 	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextT, sizeof(g_sTextT));
 	Config_LoadString("hud_display_unassigned", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextU, sizeof(g_sTextU));
 	Config_Done();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
 {
-	
+
 	LoopValidClients(client)
 	{
 		if (IsPlayerAlive(client))
 		{
 			int iTarget = TraceClientViewEntity(client);
 			if (iTarget != g_iTarget[client])
-			{	
+			{
 				g_iTarget[client] = iTarget;
-				
+
 				if (!TTT_IsClientValid(iTarget))
 				{
 					continue;
 				}
-				
+
 				char sName[32];
 				char sPlayerName[64];
 				char sHealth[32];
@@ -175,7 +175,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-U", client, target);
 		}
 	}
-	
+
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnHudSend_Pre);
 	Call_PushCell(client);
@@ -197,7 +197,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		return false;
 	}
-	
+
 	ReplaceString(sHintText, iHintTextLength, "{Name}", sName, false);
 	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName, false);
 	ReplaceString(sHintText, iHintTextLength, "{Health}", sHealth, false);

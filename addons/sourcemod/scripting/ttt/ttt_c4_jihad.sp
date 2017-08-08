@@ -56,57 +56,57 @@ float g_fC4KillRadius = 275.0;
 int g_iJihadDamageRadius = 600;
 int g_iJihadMagnitude = 1000;
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
-	name = PLUGIN_NAME, 
-	author = TTT_PLUGIN_AUTHOR, 
-	description = TTT_PLUGIN_DESCRIPTION, 
-	version = TTT_PLUGIN_VERSION, 
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/c4_jihad.cfg");
 	Config_Setup("TTT-Bomb", g_sConfigFile);
-	
+
 	Config_LoadString("c4_name", "C4", "The name of the C4 in the Shop", g_sLongName_C4, sizeof(g_sLongName_C4));
 	g_iPrice_C4 = Config_LoadInt("c4_price", 9000, "The amount of credits a c4 costs as traitor. 0 to disable.");
 	g_iPrio_C4 = Config_LoadInt("c4_sort_prio", 0, "The sorting priority of the C4 in the shop menu.");
 	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
 	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
 	g_iC4DamageRadius = Config_LoadInt("c4_damage_radius", 850, "The damage radius of the C4 explosion.");
-	
+
 	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
 	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
 	g_iPrio_J = Config_LoadInt("jihad_sort_prio", 0, "The sorting priority of the Jihad in the shop menu.");
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iJihadDamageRadius = Config_LoadInt("jihad_damage_radius", 600, "The damage radius of the Jihad explosion.");
-	
+
 	g_iC4Magnitude = Config_LoadInt("c4_magnitude", 850, "The amount of damage done by the explosion. For C4");
 	g_iJihadMagnitude = Config_LoadInt("jihad_magnitude", 1000, "The amount of damage done by the explosion. For Jihad");
-	
+
 	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
-	
+
 	Config_Done();
-	
+
 	AddCommandListener(Command_LAW, "+lookatweapon");
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_death", Event_PlayerDeath);
-	
+
 	LoadTranslations("ttt.phrases");
 }
 
@@ -118,7 +118,7 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		ResetGlobals(client);
@@ -166,40 +166,40 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		if (StrEqual(itemshort, SHORT_NAME_C4, false))
 		{
 			int role = TTT_GetClientRole(client);
-			
+
 			if (role != TTT_TEAM_TRAITOR || g_bHasC4[client])
 			{
 				return Plugin_Stop;
 			}
 			if(g_iPCount_C4[client] >= g_iCount_C4)
-			{			
+			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName_C4, g_iCount_C4);
 				return Plugin_Stop;
 			}
-			
+
 			g_bHasC4[client] = true;
-			
+
 			if (count)
 			{
 				g_iPCount_C4[client]++;
 			}
-			
+
 			CPrintToChat(client, g_sPluginTag, "Right click to plant the C4", client);
 		}
 		else if (StrEqual(itemshort, SHORT_NAME_J, false))
 		{
 			int role = TTT_GetClientRole(client);
-			
+
 			if (role != TTT_TEAM_TRAITOR || g_bHasJ[client])
 			{
 				return Plugin_Stop;
 			}
-			
-			
+
+
 			ClearTimer(g_hJihadBomb[client]);
 			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client));
 			g_bHasJ[client] = true;
-			
+
 			CPrintToChat(client, g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
 		}
 	}
@@ -209,12 +209,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 public Action Timer_JihadPreparing(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if(!IsPlayerAlive(client))
 	{
 		return Plugin_Stop;
 	}
-	
+
 	CPrintToChat(client, g_sPluginTag, "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
 	g_hJihadBomb[client] = null;
@@ -227,11 +227,11 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	{
 		return Plugin_Continue;
 	}
-	
+
 	char sItem[32];
 	event.GetString("item", sItem, sizeof(sItem));
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		RemoveC4(client);
@@ -248,12 +248,12 @@ stock void RemoveC4(int client)
 		{
 			char sWeapon[128];
 			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
-			
+
 			if (StrContains(sWeapon, "weapon_c4", false) != -1)
 			{
 				RemovePlayerItem(client, weapon);
 				AcceptEntityInput(weapon, "Kill");
-				
+
 				break;
 			}
 		}
@@ -268,21 +268,21 @@ stock void Detonate(int client)
 		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384);
 		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_iJihadMagnitude);
 		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_iJihadDamageRadius);
-		
+
 		DispatchSpawn(ExplosionIndex);
 		ActivateEntity(ExplosionIndex);
-		
+
 		float playerEyes[3];
 		GetClientEyePosition(client, playerEyes);
-		
+
 		TeleportEntity(ExplosionIndex, playerEyes, NULL_VECTOR, NULL_VECTOR);
 		SetEntPropEnt(ExplosionIndex, Prop_Send, "m_hOwnerEntity", client);
-		
+
 		EmitAmbientSoundAny("ttt/jihad/explosion.mp3", NULL_VECTOR, client, SNDLEVEL_RAIDSIREN);
-		
-		
+
+
 		AcceptEntityInput(ExplosionIndex, "Explode");
-		
+
 		AcceptEntityInput(ExplosionIndex, "Kill");
 	}
 	g_bHasJ[client] = false;
@@ -294,24 +294,24 @@ public Action Command_Detonate(int client, int args)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (!g_bHasJ[client])
 	{
 		CPrintToChat(client, g_sPluginTag, "You dont have it!", client);
 		return Plugin_Handled;
 	}
-	
+
 	if (g_hJihadBomb[client] != null)
 	{
 		CPrintToChat(client, g_sPluginTag, "Your bomb is not armed.", client);
 		return Plugin_Handled;
 	}
-	
+
 	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
-	
+
 	CreateTimer(2.0, TimerCallback_Detonate, client);
 	g_bHasJ[client] = false;
-	
+
 	return Plugin_Handled;
 }
 
@@ -321,7 +321,7 @@ public Action TimerCallback_Detonate(Handle timer, any client)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	Detonate(client);
 	return Plugin_Handled;
 }
@@ -332,14 +332,14 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (IsPlayerAlive(client) && g_bHasJ[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
-		
+
 		CreateTimer(2.0, TimerCallback_Detonate, client);
 		g_bHasJ[client] = false;
-		
+
 		return Plugin_Continue;
 	}
 	else
@@ -356,7 +356,7 @@ public Action Reset(Handle timer, any client)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	g_bDetonate[client] = false;
 	return Plugin_Handled;
 }
@@ -368,12 +368,12 @@ public Action explodeC4(Handle timer, Handle pack)
 	ResetPack(pack);
 	clientUserId = ReadPackCell(pack);
 	bombEnt = ReadPackCell(pack);
-	
+
 	if (!IsValidEntity(bombEnt))
 	{
 		return Plugin_Stop;
 	}
-	
+
 	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
 	GetEntPropVector(bombEnt, Prop_Send, "m_vecOrigin", explosionOrigin);
@@ -387,7 +387,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	{
 		return Plugin_Stop;
 	}
-	
+
 	int explosionIndex = CreateEntityByName("env_explosion");
 	int particleIndex = CreateEntityByName("info_particle_system");
 	int shakeIndex = CreateEntityByName("env_shake");
@@ -395,7 +395,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	{
 		char sShakeRadius[8];
 		IntToString(g_iC4ShakeRadius, sShakeRadius, sizeof(sShakeRadius));
-		
+
 		DispatchKeyValue(shakeIndex, "amplitude", "4");
 		DispatchKeyValue(shakeIndex, "duration", "1");
 		DispatchKeyValue(shakeIndex, "frequency", "2.5");
@@ -419,17 +419,17 @@ public Action explodeC4(Handle timer, Handle pack)
 		AcceptEntityInput(particleIndex, "Start");
 		AcceptEntityInput(shakeIndex, "StartShake");
 		AcceptEntityInput(explosionIndex, "Kill");
-		
+
 		LoopValidClients(i)
 		{
 			if (!IsPlayerAlive(i))
 			{
 				continue;
 			}
-			
+
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
-			
+
 			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_fC4KillRadius)
 			{
 				Handle killEvent = CreateEvent("player_death", true);
@@ -439,7 +439,7 @@ public Action explodeC4(Handle timer, Handle pack)
 				ForcePlayerSuicide(i);
 			}
 		}
-		
+
 		for (int i = 1; i <= 2; i++)
 		{
 			EmitAmbientSoundAny(SND_BURST, explosionOrigin, _, SNDLEVEL_RAIDSIREN);
@@ -515,10 +515,10 @@ stock void showPlantMenu(int client)
 	{
 		return;
 	}
-	
+
 	char sTitle[128];
 	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
-	
+
 	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
 	Format(s10, sizeof(s10), "%T", "Seconds", client, 10);
 	Format(s20, sizeof(s20), "%T", "Seconds", client, 20);
@@ -526,7 +526,7 @@ stock void showPlantMenu(int client)
 	Format(s40, sizeof(s40), "%T", "Seconds", client, 40);
 	Format(s50, sizeof(s50), "%T", "Seconds", client, 50);
 	Format(s60, sizeof(s60), "%T", "Seconds", client, 60);
-	
+
 	Handle menuHandle = CreateMenu(plantBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
 	AddMenuItem(menuHandle, "10", s10);
@@ -545,16 +545,16 @@ stock void showDefuseMenu(int client)
 	{
 		return;
 	}
-	
+
 	char sTitle[128];
 	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
-	
+
 	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
 	Format(sWire1, sizeof(sWire1), "%T", "C4 Wire", client, 1);
 	Format(sWire2, sizeof(sWire2), "%T", "C4 Wire", client, 2);
 	Format(sWire3, sizeof(sWire3), "%T", "C4 Wire", client, 3);
 	Format(sWire4, sizeof(sWire4), "%T", "C4 Wire", client, 4);
-	
+
 	Handle menuHandle = CreateMenu(defuseBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
 	AddMenuItem(menuHandle, "1", sWire1);
@@ -571,7 +571,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 	{
 		return;
 	}
-	
+
 	switch (action)
 	{
 		case MenuAction_Select:
@@ -624,7 +624,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 	{
 		return;
 	}
-	
+
 	switch (action)
 	{
 		case MenuAction_Select:
@@ -632,13 +632,13 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 			char info[100];
 			int planter = g_iDefusePlayerIndex[client];
 			g_iDefusePlayerIndex[client] = -1;
-			
+
 			if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
 			{
 				g_iDefusePlayerIndex[client] = -1;
 				return;
 			}
-			
+
 			int wire;
 			int correctWire;
 			int planterBombIndex = findBomb(planter);
@@ -684,15 +684,15 @@ stock float plantBomb(int client, float time)
 	{
 		return;
 	}
-	
+
 	if (!IsPlayerAlive(client))
 	{
 		CPrintToChat(client, g_sPluginTag, "Alive to Plant", client);
 		return;
 	}
-	
+
 	CPrintToChat(client, g_sPluginTag, "Will Explode In", client, time);
-	
+
 	bool bombFound;
 	int bombEnt;
 	while ((bombEnt = FindEntityByClassname(bombEnt, "prop_physics")) != -1)
@@ -701,15 +701,15 @@ stock float plantBomb(int client, float time)
 		{
 			continue;
 		}
-		
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(bombEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if (!StrEqual(MDL_C4, sModelPath))
 		{
 			continue;
 		}
-		
+
 		Handle explosionPack;
 		Handle beepPack;
 		if (g_hExplosionTimer[client] != null)
@@ -725,12 +725,12 @@ stock float plantBomb(int client, float time)
 		g_bHasActiveBomb[client] = true;
 		bombFound = true;
 	}
-	
+
 	if (!bombFound)
 	{
 		CPrintToChat(client, g_sPluginTag, "Bomb Was Not Found", client);
 	}
-	
+
 	g_iWire[client] = GetRandomInt(1, 4);
 	CPrintToChat(client, g_sPluginTag, "Wire Is", client, g_iWire[client]);
 }
@@ -741,24 +741,24 @@ stock int findBombPlanter(int &bomb)
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
 		int iPlanter = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-		
+
 		if (iPlanter <= 0)
 		{
 			continue;
 		}
-		
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if (!StrEqual(MDL_C4, sModelPath))
 		{
 			continue;
 		}
-		
+
 		bomb = iEnt;
 		return iPlanter;
 	}
-	
+
 	return -1;
 }
 
@@ -768,7 +768,7 @@ stock int findBomb(int client)
 	{
 		return -1;
 	}
-	
+
 	int iEnt;
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
 	{
@@ -776,15 +776,15 @@ stock int findBomb(int client)
 		{
 			continue;
 		}
-		
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if (!StrEqual(MDL_C4, sModelPath))
 		{
 			continue;
 		}
-		
+
 		return iEnt;
 	}
 	return -1;
@@ -843,15 +843,15 @@ stock void removeBomb(int client)
 		{
 			continue;
 		}
-		
+
 		char sModelPath[PLATFORM_MAX_PATH];
 		GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-		
+
 		if (!StrEqual(MDL_C4, sModelPath))
 		{
 			continue;
 		}
-		
+
 		AcceptEntityInput(iEnt, "Kill");
 	}
 }
@@ -871,12 +871,12 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_BURST, true);
 	PrecacheSoundAny(SND_BEEP, true);
 	PrecacheSoundAny(SND_DISARM, true);
-	
+
 	PrecacheModel("weapons/w_c4_planted.mdl", true);
-	
+
 	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
 	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
-	
+
 	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
 	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 }

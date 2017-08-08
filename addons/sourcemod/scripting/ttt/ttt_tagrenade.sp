@@ -50,17 +50,17 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/tagrenade.cfg");
 	Config_Setup("TTT-TAGrenade", g_sConfigFile);
-	
+
 	Config_LoadString("tag_name", "TA-Grenade", "The name of the TA-Grenade in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iTPrice = Config_LoadInt("tag_traitor_price", 9000, "The amount of credits for tagrenade costs as traitor. 0 to disable.");
 	g_iTCount = Config_LoadInt("tag_traitor_count", 1, "The amount of usages for tagrenade per round as innocent. 0 to disable.");
@@ -68,14 +68,14 @@ public void OnPluginStart()
 	g_fTagrenadeRange = Config_LoadFloat("tag_tagrenade_distance", 1000.0, "Sets the proximity in which the tactical grenade will tag an opponent.");
 	g_fTagrenadeTime = Config_LoadFloat("tag_tagrenade_time", 3.5, "How long a player is tagged for in seconds.");
 	g_bShowPlayersBehindWalls = Config_LoadBool("tag_players_behind_walls", true, "Tag players behind a wall?");
-	
+
 	Config_Done();
-	
+
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
 	HookEvent("round_end", Event_RoundReset);
 	HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
-	
+
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 }
 
@@ -115,7 +115,7 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		UnhookGlow(client);
@@ -143,16 +143,16 @@ void SetupGlowSkin(int client)
 	{
 		return;
 	}
-	
+
 	char sModel[PLATFORM_MAX_PATH];
 	GetClientModel(client, sModel, sizeof(sModel));
 	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
-	
+
 	if (iSkin == -1)
 	{
 		return;
 	}
-		
+
 	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
 		SetupGlow(client, iSkin);
@@ -162,20 +162,20 @@ void SetupGlowSkin(int client)
 void SetupGlow(int client, int iSkin)
 {
 	int iOffset;
-	
+
 	if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
 	{
 		return;
 	}
-	
+
 	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
 	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
 	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
+
 	int iRed = 255;
 	int iGreen = 255;
 	int iBlue = 255;
-	
+
 	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
 		iRed = g_iColorDetective[0];
@@ -194,7 +194,7 @@ void SetupGlow(int client, int iSkin)
 		iGreen = g_iColorInnocent[1];
 		iBlue = g_iColorInnocent[2];
 	}
-	
+
 	SetEntData(iSkin, iOffset, iRed, _, true);
 	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
 	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
@@ -208,15 +208,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
-			
+
 			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
 			{
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
 				return Plugin_Stop;
 			}
-				
+
 			GivePlayerItem(client, "weapon_tagrenade");
-			
+
 			if (count)
 			{
 				g_iTPCount[client]++;
@@ -242,7 +242,7 @@ public void OnTagrenadeDetonate(Handle event, const char[] name, bool dontBroadc
 public Action Timer_ResetTags(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		g_bSeePlayers[client] = false;
@@ -253,59 +253,59 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 {
 	Handle pack = view_as<Handle>(data);
 	ResetPack(pack);
-	
+
 	int client = GetClientOfUserId(ReadPackCell(pack));
 	if (client == 0)
 	{
 		delete pack;
 		return Plugin_Continue;
 	}
-	
+
 	int entity = ReadPackCell(pack);
-	
+
 	float position[3];
 	float targetposition[3];
 	float distance;
-	
+
 	position[0] = ReadPackFloat(pack);
 	position[1] = ReadPackFloat(pack);
 	position[2] = ReadPackFloat(pack);
 	delete pack;
-	
+
 	g_bSeePlayers[client] = true;
-	
+
 	LoopValidClients(target)
 	{
 		if (IsFakeClient(client))
 		{
 			continue;
 		}
-		
+
 		if (!IsPlayerAlive(client))
 		{
 			continue;
 		}
-		
+
 		if (client == target)
 		{
 			continue;
 		}
-		
+
 		if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
 		{
 			continue;
 		}
-			
+
 		SetEntPropFloat(target, Prop_Send, "m_flDetectedByEnemySensorTime", 0.0);
-		
+
 		GetClientEyePosition(target, targetposition);
 		distance = GetVectorDistance(position, targetposition);
-		
+
 		if (distance > g_fTagrenadeRange)
 		{
 			continue;
 		}
-		
+
 		if (g_bShowPlayersBehindWalls)
 		{
 			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);
@@ -349,60 +349,60 @@ public Action OnSetTransmit_GlowSkin(int iSkin, int client)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (!IsPlayerAlive(client))
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (!g_bSeePlayers[client])
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	LoopValidClients(target)
 	{
 		if (target < 1)
 		{
 			continue;
 		}
-		
+
 		if (client == target)
 		{
 			continue;
 		}
-			
+
 		if (IsFakeClient(target))
 		{
 			continue;
 		}
-		
+
 		if (!IsPlayerAlive(target))
 		{
 			continue;
 		}
-		
+
 		if (!CPS_HasSkin(target))
 		{
 			continue;
 		}
-			
+
 		if (EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
 		{
 			continue;
 		}
-			
+
 		if (GetGameTime() < GetPlayerTagEndTime(target))
 		{
 			return Plugin_Continue;
 		}
 	}
-	
+
 	return Plugin_Handled;
 }
 
@@ -412,7 +412,7 @@ void UnhookGlow(int client)
 	{
 		return;
 	}
-		
+
 	int iSkin = CPS_GetSkin(client);
 	if (IsValidEntity(iSkin))
 	{

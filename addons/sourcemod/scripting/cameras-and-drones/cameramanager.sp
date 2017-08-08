@@ -60,9 +60,9 @@ public void CreateCamera(int client_index, float pos[3], float rot[3])
 		DispatchKeyValue(cam, "solid", "6");
 		DispatchSpawn(cam);
 		ActivateEntity(cam);
-		
+
 		TeleportEntity(cam, pos, rot, NULL_VECTOR);
-		
+
 		SDKHook(cam, SDKHook_OnTakeDamage, Hook_TakeDamageGear);
 		SetEntityRenderMode(cam, RENDER_NONE);
 		CreateCameraModel(client_index, cam);
@@ -77,11 +77,11 @@ public void CreateCameraModel(int client_index, int cam)
 		DispatchKeyValue(model, "solid", "0");
 		DispatchSpawn(model);
 		ActivateEntity(model);
-		
+
 		SetVariantString("!activator"); AcceptEntityInput(model, "SetParent", cam, model, 0);
 		float pos[3], rot[3];
 		TeleportEntity(model, pos, rot, NULL_VECTOR);
-		
+
 		SDKHook(model, SDKHook_SetTransmit, Hook_SetTransmitGear);
 		AddCamera(cam, model, client_index);
 	}
@@ -107,14 +107,14 @@ public void CreateFlash(int client_index, int cam)
 		DispatchKeyValue(flash, "rendermode", "5"); // Additive
 		DispatchKeyValue(flash, "renderfx", "13"); // Fast Flicker
 		DispatchKeyValue(flash, "model", "sprites/glow01.vmt");
-		
+
 		float pos[3], rot[3];
 		GetEntPropVector(cam, Prop_Send, "m_vecOrigin", pos);
 		TeleportEntity(flash, pos, rot, NULL_VECTOR);
-		
+
 		DispatchSpawn(flash);
 		ActivateEntity(flash);
-		
+
 		SDKHook(flash, SDKHook_SetTransmit, Hook_SetTransmitGear);
 	}
 }
@@ -139,7 +139,7 @@ public void Hook_PostThinkCam(int client_index)
 {
 	if (activeCam[client_index][0] < 0)
 		return;
-	
+
 	HideHudGuns(client_index);
 	SetViewModel(client_index, false);
 	LowerCameraView(client_index);
@@ -159,7 +159,7 @@ public void TpToCam(int client_index, int cam)
 		EmitSoundToClient(client_index, openCamSound, SOUND_FROM_PLAYER, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL);
 	}
 	SetGearScreen(client_index, true);
-	
+
 	SetEntityModel(client_index, InCamModel); // Set to a small model to prevent collisions/shots
 	SetEntityMoveType(client_index, MOVETYPE_NOCLIP);
 	SetEntPropFloat(client_index, Prop_Data, "m_flLaggedMovementValue", 0.0);
@@ -175,7 +175,7 @@ public void TpToCam(int client_index, int cam)
 	oldCollisionValue[client_index] = GetEntData(client_index, GetCollOffset(), 1);
 	SetEntData(client_index, GetCollOffset(), 2, 4, true);
 	SetEntProp(client_index, Prop_Send, "m_nHitboxSet", 2);
-	
+
 	activeCam[client_index][0] = cam;
 	activeCam[client_index][1] = camerasModelList.Get(camerasList.FindValue(cam));
 	// Create flashing light
@@ -186,11 +186,11 @@ public void TpToCam(int client_index, int cam)
 public void ExitCam(int client_index)
 {
 	SetGearScreen(client_index, false);
-	
+
 	char modelName[PLATFORM_MAX_PATH];
 	GetEntPropString(fakePlayersListCamera[client_index], Prop_Data, "m_ModelName", modelName, sizeof(modelName));
 	SetEntityModel(client_index, modelName); // Set back to original model
-	
+
 	SetViewModel(client_index, true);
 	SetEntityMoveType(client_index, MOVETYPE_WALK);
 	SetEntPropFloat(client_index, Prop_Data, "m_flLaggedMovementValue", 1.0);
@@ -232,7 +232,7 @@ public void DestroyCamera(int cam, bool isSilent)
 			CloseCamera(i);
 		}
 	}
-	
+
 	if (IsValidEdict(cam))
 		RemoveEdict(cam);
 	if (IsValidEdict(camerasModelList.Get(camerasList.FindValue(cam))))

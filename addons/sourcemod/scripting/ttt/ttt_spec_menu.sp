@@ -44,12 +44,12 @@ public void OnPluginStart()
 	g_bAutoOpen = Config_LoadBool("specmenu_auto_open", true, "Show spec menu automatically after death?");
 	g_iMenuTime = Config_LoadInt("specmenu_menu_time", 0, "Time (in seconds) to autoclose the menu (0 - FOREVER)");
 	Config_Done();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	RegConsoleCmd("sm_specmenu", Command_SpecMenu);
 	RegConsoleCmd("sm_spm", Command_SpecMenu);
-	
+
 	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
 	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 }
@@ -82,7 +82,7 @@ public void OnClientDisconnect(int client)
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		LoopValidClients(i)
@@ -97,7 +97,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 		{
 			g_aAlivePlayers.Erase(iIndex);
 		}
-		
+
 		if (g_bAutoOpen)
 		{
 			ShowSpecMenu(client);
@@ -111,9 +111,9 @@ public Action Command_SpecMenu(int client, int args)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	ShowSpecMenu(client);
-	
+
 	return Plugin_Continue;
 }
 
@@ -121,18 +121,18 @@ void ShowSpecMenu(int client)
 {
 	Menu menu = new Menu(Menu_MainMenu);
 	menu.SetTitle("%T", "SpecMenu: Title", client);
-	
+
 	if (TTT_IsClientValid(GetObservTarget(client)) && !IsFakeClient(client))
 	{
 		char sPlayer[128];
 		Format(sPlayer, sizeof(sPlayer), "%T\n--------------------", "SpecMenu: Player", client, GetObservTarget(client));
 		menu.AddItem("player", sPlayer, ITEMDRAW_DISABLED);
 	}
-	
+
 	char sNext[32], sPrev[32];
 	Format(sNext, sizeof(sNext), "%T", "SpecMenu: Next", client);
 	Format(sPrev, sizeof(sPrev), "%T\n--------------------", "SpecMenu: Prev", client);
-	
+
 	menu.AddItem("next", sNext);
 	menu.AddItem("prev", sPrev);
 
@@ -145,9 +145,9 @@ void ShowSpecMenu(int client)
 	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Mute Alive", client);
 	}
-	
+
 	menu.AddItem("alive", sItem);
-	
+
 	if (g_bMutedDead[client])
 	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Unmute Dead", client);
@@ -158,9 +158,9 @@ void ShowSpecMenu(int client)
 	}
 
 	menu.AddItem("dead", sItem);
-	
+
 	menu.ExitButton = true;
-	
+
 	if (g_iMenuTime == 0)
 	{
 		menu.Display(client, MENU_TIME_FOREVER);
@@ -182,19 +182,19 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 		{
 			char sParam[32];
 			GetMenuItem(menu, param, sParam, sizeof(sParam));
-			
+
 			if (StrEqual(sParam, "next", false))
 			{
 				if (g_aAlivePlayers.Length > 0)
 				{
 					int iTarget = GetObservTarget(client);
 					int iIndex = g_aAlivePlayers.FindValue(iTarget) + 1;
-					
+
 					if (iIndex >= g_aAlivePlayers.Length)
 					{
 						iIndex = 0;
 					}
-					
+
 					int iNextTarget = g_aAlivePlayers.Get(iIndex);
 					if (!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
 					{
@@ -217,9 +217,9 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 				{
 					FakeClientCommand(client, "spec_next");
 				}
-				
+
 				ShowSpecMenu(client);
-				
+
 				return 0;
 			}
 			else if (StrEqual(sParam, "prev", false))
@@ -228,12 +228,12 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 				{
 					int iTarget = GetObservTarget(client);
 					int iIndex = g_aAlivePlayers.FindValue(iTarget) - 1;
-					
+
 					if (iIndex < 0)
 					{
 						iIndex = g_aAlivePlayers.Length -1;
 					}
-					
+
 					int iNextTarget = g_aAlivePlayers.Get(iIndex);
 					if (!TTT_IsClientValid(iNextTarget) && !IsFakeClient(client))
 					{
@@ -256,9 +256,9 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 				{
 					FakeClientCommand(client, "spec_next");
 				}
-				
+
 				ShowSpecMenu(client);
-				
+
 				return 0;
 			}
 			else if (StrEqual(sParam, "alive", false))
@@ -318,7 +318,7 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 				}
 
 				ShowSpecMenu(client);
-			}	
+			}
 		}
 
 		return 0;
@@ -327,7 +327,7 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
 	{
 		delete menu;
 	}
-	
+
 	return 0;
 }
 
@@ -339,12 +339,12 @@ int GetObservTarget(int client)
 		if (iMode == SPECMODE_FIRSTPERSON || iMode == SPECMODE_3RDPERSON)
 		{
 			int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-			
+
 			if (target < 1 || !TTT_IsClientValid(client))
 			{
 				target = 0;
 			}
-			
+
 			return target;
 		}
 	}

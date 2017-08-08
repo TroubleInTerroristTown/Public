@@ -32,7 +32,7 @@ public void Menu_Cameras(int client_index, int args)
 	{
 		int owner = camOwnersList.Get(i);
 		GetClientName(owner, ownerName, sizeof(ownerName));
-		
+
 		if (args == i)
 		{
 			Format(name, sizeof(name), "Active: %s's Camera", ownerName);
@@ -43,7 +43,7 @@ public void Menu_Cameras(int client_index, int args)
 		{
 			Format(name, sizeof(name), "Watch %s's Camera", ownerName);
 			Format(num, sizeof(num), "%i", i);
-			playerCamMenus[client_index].AddItem(num, name); 
+			playerCamMenus[client_index].AddItem(num, name);
 		}
 	}
 	playerCamMenus[client_index].ExitButton = true;

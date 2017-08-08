@@ -98,7 +98,7 @@ char g_cKF_Long[64];
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	RegPluginLibrary("ttt_weapons");
-	
+
 	return APLRes_Success;
 }
 
@@ -115,20 +115,20 @@ public void OnPluginStart()
 	g_iKev_Max = Config_LoadInt("kevlar_max", 5, "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
 	g_iKev_Prio = Config_LoadInt("kevlar_sort_prio", 0, "The sorting priority of the kevlar in the shop menu.");
 	Config_LoadString("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.", g_cKev_Long, sizeof(g_cKev_Long));
-	
+
 	g_iHeavy_Type = Config_LoadInt("heavy_type", 1, "Type of heavy configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iHeavy_Armor = Config_LoadInt("heavy_armor", 100, "The amount of armor the heavy has. 100 is default.");
 	g_iHeavy_Price = Config_LoadInt("heavy_price", 10000, "The amount of credits the heavy costs. 0 to disable.");
 	g_iHeavy_Max = Config_LoadInt("heavy_max", 5, "The max amount of times a player can purchase heavy in one round. 0 for unlimited.");
 	g_iHeavy_Prio = Config_LoadInt("heavy_sort_prio", 0, "The sorting priority of the heavy in the shop menu.");
 	Config_LoadString("heavy_name", "Heavy", "The name of the heavy in the shop menu.", g_cHeavy_Long, sizeof(g_cHeavy_Long));
-	
+
 	g_iHelm_Type = Config_LoadInt("helm_type", 1, "Type of helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iHelm_Price = Config_LoadInt("helm_price", 2000, "The amount of credits the helm costs. 0 to disable.");
 	g_iHelm_Max = Config_LoadInt("helm_max", 5, "The max amount of times a player can purchase helm in one round. 0 for unlimited.");
 	g_iHelm_Prio = Config_LoadInt("helm_sort_prio", 0, "The sorting priority of the helm in the shop menu.");
 	Config_LoadString("helm_name", "Helm", "The name of the helm in the shop menu.", g_cHelm_Long, sizeof(g_cHelm_Long));
-	
+
 	g_iKevHelm_Type = Config_LoadInt("kevhelm_type", 1, "Type of kevlar+helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_iKevHelm_Price = Config_LoadInt("kevhelm_price", 2000, "The amount of credits the kevlar+helm costs. 0 to disable.");
 	g_iKevHelm_Max = Config_LoadInt("kevhelm_max", 5, "The max amount of times a player can purchase kevlar+helm in one round. 0 for unlimited.");
@@ -138,23 +138,23 @@ public void OnPluginStart()
 	g_iUSP_Price = Config_LoadInt("usp_price", 3000, "The amount of credits the USP-S costs. 0 to disable.");
 	g_iUSP_Prio = Config_LoadInt("usp_sort_prio", 0, "The sorting priority of the USP-S in the shop menu.");
 	Config_LoadString("usp_name", "USP-S", "The name of the USP-S in the shop menu.", g_cUSP_Long, sizeof(g_cUSP_Long));
-	
+
 	g_iAK_Price = Config_LoadInt("ak47_price", 3000, "The amount of credits the AK47 costs. 0 to disable.");
 	g_iAK_Prio = Config_LoadInt("ak47_sort_prio", 0, "The sorting priority of the AK47 in the shop menu.");
 	Config_LoadString("ak47_name", "AK47", "The name of the AK47 in the shop menu.", g_cAK_Long, sizeof(g_cAK_Long));
-	
+
 	g_iDeagle_Price = Config_LoadInt("deagle_price", 3000, "The amount of credits the Deagle costs. 0 to disable.");
 	g_iDeagle_Prio = Config_LoadInt("deagle_sort_prio", 0, "The sorting priority of the Deagle in the shop menu.");
 	Config_LoadString("deagle_name", "Deagle", "The name of the Deagle in the shop menu.", g_cDeagle_Long, sizeof(g_cDeagle_Long));
-	
+
 	g_iRevolver_Price = Config_LoadInt("revolver_price", 3000, "The amount of credits the Revolver costs. 0 to disable.");
 	g_iRevolver_Prio = Config_LoadInt("revolver_sort_prio", 0, "The sorting priority of the Revolver in the shop menu.");
 	Config_LoadString("revolver_name", "Revolver", "The name of the Revolver in the shop menu.", g_cRevolver_Long, sizeof(g_cRevolver_Long));
-	
+
 	g_iScout_Price = Config_LoadInt("scout_price", 3000, "The amount of credits the Scout costs. 0 to disable.");
 	g_iScout_Prio = Config_LoadInt("scout_sort_prio", 0, "The sorting priority of the Scout in the shop menu.");
 	Config_LoadString("scout_name", "Scout", "The name of the Scout in the shop menu.", g_cScout_Long, sizeof(g_cScout_Long));
-	
+
 	g_iM4_Price = Config_LoadInt("m4a1_price", 3000, "The amount of credits the M4A1-S costs. 0 to disable.");
 	g_iM4_Prio = Config_LoadInt("m4a1_sort_prio", 0, "The sorting priority of the M4A1-S in the shop menu.");
 	Config_LoadString("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.", g_cM4_Long, sizeof(g_cM4_Long));
@@ -169,7 +169,7 @@ public void OnPluginStart()
 	g_iKnife_Max = Config_LoadInt("1knife_max", 5, "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
 	g_iKnife_Prio = Config_LoadInt("1knife_sort_prio", 0, "The sorting priority of the One-Hit Knife in the shop menu.");
 	Config_LoadString("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.", g_cKF_Long, sizeof(g_cKF_Long));
-	
+
 	Config_Done();
 
 	LoadTranslations("ttt.phrases");
@@ -200,9 +200,9 @@ public void OnAllPluginsLoaded()
 	{
 		TTT_RegisterCustomItem(KEV_ITEM_SHORT, g_cKev_Long, g_iKev_Price, TTT_TEAM_TRAITOR, g_iKev_Prio);
 	}
-	
-	
-	
+
+
+
 	if(g_iHeavy_Type == 0)
 	{
 		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHeavy_Long, g_iHeavy_Price, TTT_TEAM_UNASSIGNED, g_iHeavy_Prio);
@@ -216,10 +216,10 @@ public void OnAllPluginsLoaded()
 	{
 		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, g_cHelm_Long, g_iHeavy_Price, TTT_TEAM_TRAITOR, g_iHeavy_Prio);
 	}
-	
-	
-	
-	
+
+
+
+
 	if(g_iHelm_Type == 0)
 	{
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_UNASSIGNED, g_iHelm_Prio);
@@ -233,8 +233,8 @@ public void OnAllPluginsLoaded()
 	{
 		TTT_RegisterCustomItem(HELM_ITEM_SHORT, g_cHelm_Long, g_iHelm_Price, TTT_TEAM_TRAITOR, g_iHelm_Prio);
 	}
-		
-	
+
+
 	if(g_iKevHelm_Type == 0)
 	{
 		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, g_cKevHelm_Long, g_iKevHelm_Price, TTT_TEAM_UNASSIGNED, g_iKevHelm_Prio);
@@ -447,7 +447,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				CPrintToChat(client, "%T", "You reached limit", client, g_iKev_Max);
 				return Plugin_Stop;
 			}
-			
+
 			GiveArmor(client);
 			GiveHelm(client);
 		}
@@ -526,7 +526,7 @@ void GiveHeavy(int client)
 	SetEntityModel(client, HEAVY_MODEL);
 	GivePlayerItem(client, "item_heavyassaultsuit");
 	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
-	
+
 	if(g_iHeavy_Armor > 100)
 	{
 		SetEntProp(client, Prop_Data, "m_ArmorValue", g_iHeavy_Armor, 1);
@@ -566,7 +566,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, fl
 	if(g_bHasKnife[iAttacker] && IsValidEntity(iWeapon))
 	{
 		char sWeapon[64];
-		
+
 		GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon));
 
 		if((StrContains(sWeapon, "knife", false) != -1) || (StrContains(sWeapon, "bayonet", false) != -1))

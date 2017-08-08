@@ -31,25 +31,25 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
 
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/template.cfg");
 	Config_Setup("TTT-Template", g_sConfigFile);
-	
+
 	Config_LoadString("template_name", "Tempalte", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("template_price", 9000, "The amount of credits TEMPLATE costs as detective. 0 to disable.");
 	g_iPrio = Config_LoadInt("template_sort_prio", 0, "The sorting priority of the TEMPLATE in the shop menu.");
-	
+
 	Config_Done();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
@@ -65,12 +65,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
-			
+
 			if (role != TTT_TEAM_DETECTIVE)
 			{
 				return Plugin_Stop;
 			}
-			
+
 			g_bHasItem[client] = true;
 		}
 	}
@@ -80,7 +80,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		ResetTemplate(client);

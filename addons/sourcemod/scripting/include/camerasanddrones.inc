@@ -21,7 +21,7 @@
 #endif
 
 #define _camerasanddrones_included
- 
+
 
 /**
  * Buy the gear (camera or drone) depending on the player team

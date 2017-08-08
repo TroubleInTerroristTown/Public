@@ -15,7 +15,7 @@ bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 char g_sConfigFile[PLATFORM_MAX_PATH];
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
 	author = TTT_PLUGIN_AUTHOR,
@@ -27,28 +27,28 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/talk_override.cfg");
 	Config_Setup("TTT-TalkOverride", g_sConfigFile);
 	g_bEnableTVoice = Config_LoadBool("tor_traitor_voice_chat", true, "Enable traitor voice chat (command for players: sm_tvoice)?");
 	Config_Done();
-	
+
 	if (g_bEnableTVoice)
 	{
 		RegConsoleCmd("sm_tvoice", Command_TVoice);
 	}
-	
+
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_team", Event_PlayerTeam);
-	
+
 	LoadTranslations("ttt.phrases");
 }
 
@@ -58,22 +58,22 @@ public Action Command_TVoice(int client, int args)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (!TTT_IsRoundActive())
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (!IsPlayerAlive(client))
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (g_bTVoice[client])
 	{
 		CPrintToChat(client, g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
@@ -108,7 +108,7 @@ public Action Command_TVoice(int client, int args)
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-	
+
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	LoopValidClients(i)
 	{
@@ -136,7 +136,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	LoopValidClients(i)
 	{
 		if (!IsPlayerAlive(client))
@@ -158,5 +158,5 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 			SetListenOverride(i, client, Listen_Yes);
 		}
 	}
-	
+
 }

@@ -32,7 +32,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("CPS_GetSkin", Native_GetSkin);
 	CreateNative("CPS_RemoveSkin", Native_RemoveSkin);
 	CreateNative("CPS_HasSkin", Native_HasSkin);
-	
+
 	CreateNative("CPS_SetTransmit", Native_SetTransmit);
 	RegPluginLibrary("CustomPlayerSkins");
 	return APLRes_Success;

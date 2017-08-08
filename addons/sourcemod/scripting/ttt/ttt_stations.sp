@@ -60,7 +60,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
@@ -70,7 +70,7 @@ public void OnPluginStart()
 	Config_Setup("TTT-Stations", g_cConfigFile);
 	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for detectives. 0 to disable.");
 	g_iHurtPrice = Config_LoadInt("hurt_station_price", 0, "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
-	
+
 	g_iHealthPrio = Config_LoadInt("health_sort_prio", 0, "The sorting priority of the Health Station in the shop menu.");
 	g_iHurtPrio = Config_LoadInt("hurt_sort_prio", 0, "The sorting priority of the Hurt Station in the shop menu.");
 
@@ -82,18 +82,18 @@ public void OnPluginStart()
 
 	g_fHealthDistance = Config_LoadFloat("health_station_distance", 200.0, "The distance that the health station should reach.");
 	g_fHurtDistance = Config_LoadFloat("hurt_station_distance", 200.0, "The distance that the hurt station should reach.");
-	
+
 	g_bHurtTraitors = Config_LoadBool("hurt_station_hurt_other_traitors", false, "Hurt other traitors with a hurtstation?");
-	
+
 	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?");
-	
+
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
-	
+
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
-	
+
 	CreateTimer(1.5, Timer_CheckDistance, _, TIMER_REPEAT);
 }
 
@@ -114,7 +114,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	{
 		bool hurt = (strcmp(itemshort, HURT_ITEM_SHORT, false) == 0);
 		bool health = (strcmp(itemshort, HEALTH_ITEM_SHORT, false) == 0);
-		
+
 		if (hurt || health)
 		{
 			if (health && (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE))
@@ -126,11 +126,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
-			
+
 			if (g_bHasActiveStation[client])
 			{
 				CPrintToChat(client, g_sPluginTag, "You already have an active Station", client);
-				
+
 				return Plugin_Stop;
 			}
 
@@ -154,7 +154,7 @@ public Action Timer_CheckDistance(Handle timer)
 		{
 			return;
 		}
-	
+
 		checkDistanceFromStation(i);
 	}
 }
@@ -230,14 +230,14 @@ void checkDistanceFromStation(int client)
 	{
 		return;
 	}
-	
+
 	float clientPos[3];
 	float stationPos[3];
 	int curHealth;
 	int newHealth;
 	int iEnt;
 	char sModelName[PLATFORM_MAX_PATH];
-	
+
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics_multiplayer")) != -1)
 	{
 		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
@@ -267,14 +267,14 @@ void checkDistanceFromStation(int client)
 		{
 			continue;
 		}
-		
+
 		curHealth = GetClientHealth(client);
-		
+
 		if (!g_bHurtTraitors && hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 		{
 			continue;
 		}
-		
+
 		if ((!hurt) && (curHealth >= g_iMaxHealth))
 		{
 			continue;

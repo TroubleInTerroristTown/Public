@@ -121,7 +121,7 @@ stock void CPrintToChatObservers(int target, const char[] message, any ...)
 		{
  			int observee 		= GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
  			int ObserverMode 	= GetEntProp(client, Prop_Send, "m_iObserverMode");
- 
+
  			if(observee == target && (ObserverMode == 4 || ObserverMode == 5))
 			{
  				CPrintToChat(client, buffer);
@@ -195,7 +195,7 @@ stock void CPrintToChatObserversEx(int target, const char[] message, any ...)
 		{
  			int observee 		= GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
  			int ObserverMode 	= GetEntProp(client, Prop_Send, "m_iObserverMode");
- 
+
  			if(observee == target && (ObserverMode == 4 || ObserverMode == 5))
 			{
  				CPrintToChatEx(client, target, buffer);
@@ -207,7 +207,7 @@ stock void CPrintToChatObserversEx(int target, const char[] message, any ...)
 
 /**
  * Replies to a command with colors
- * 
+ *
  * @param client		Client to reply to
  * @param message		Message (formatting rules)
  */
@@ -229,7 +229,7 @@ stock void CReplyToCommand(int author, const char[] message, any ...)
 
 /**
  * Replies to a command with colors
- * 
+ *
  * @param client		Client to reply to
  * @param author		Client to use for {teamcolor}
  * @param message		Message (formatting rules)
@@ -251,7 +251,7 @@ stock void CReplyToCommand(int author, const char[] message, any ...)
 
 /**
  * Remove all tags and print to server
- * 
+ *
  * @param message		Message (formatting rules)
  */
  stock void CPrintToServer(const char[] message, any ...)
@@ -274,19 +274,19 @@ stock void CReplyToCommand(int author, const char[] message, any ...)
 
 
 /**
- * Displays usage of an admin command to users depending on the 
- * setting of the sm_show_activity cvar.  
+ * Displays usage of an admin command to users depending on the
+ * setting of the sm_show_activity cvar.
  *
- * This version does not display a message to the originating client 
- * if used from chat triggers or menus.  If manual replies are used 
- * for these cases, then this function will suffice.  Otherwise, 
+ * This version does not display a message to the originating client
+ * if used from chat triggers or menus.  If manual replies are used
+ * for these cases, then this function will suffice.  Otherwise,
  * CShowActivity2() is slightly more useful.
  * Supports color tags.
  *
  * @param client		Client index doing the action, or 0 for server.
  * @param format		Formatting rules.
  * @param ...			Variable number of format parameters.
- * 
+ *
  * @error
  */
 stock void CShowActivity(int author, const char[] message, any ...)
@@ -312,7 +312,7 @@ stock void CShowActivity(int author, const char[] message, any ...)
  * @param tags			Tag to display with.
  * @param format		Formatting rules.
  * @param ...			Variable number of format parameters.
- * 
+ *
  * @error
  */
 stock void CShowActivityEx(int author, const char[] tag, const char[] message, any ...)
@@ -333,7 +333,7 @@ stock void CShowActivityEx(int author, const char[] tag, const char[] message, a
 
 /**
  * Displays usage of an admin command to users depending on the setting of the sm_show_activity cvar.
- * All users receive a message in their chat text, except for the originating client, 
+ * All users receive a message in their chat text, except for the originating client,
  * who receives the message based on the current ReplySource.
  * Supports color tags.
  *
@@ -341,7 +341,7 @@ stock void CShowActivityEx(int author, const char[] tag, const char[] message, a
  * @param tags			Tag to prepend to the message.
  * @param format		Formatting rules.
  * @param ...			Variable number of format parameters.
- * 
+ *
  * @error
  */
  stock void CShowActivity2(int author, const char[] tag, const char[] message, any ...)
@@ -391,7 +391,7 @@ stock void CFormatColor(char[] message, int maxlength, int author = -1)
 
 /**
  * Removes color tags from a message
- * 
+ *
  * @param message		Message to remove tags from
  * @param maxlen		Maximum buffer length
  */

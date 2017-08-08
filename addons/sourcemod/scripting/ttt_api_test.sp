@@ -106,10 +106,10 @@ public void TTT_OnSQLConnect(Database db)
 {
 	PrintToServer("TTT_OnSQLConnect was called!");
 	PrintToServer("(TTT_OnSQLConnect) db: %d", db);
-	
+
 	Database dDB = TTT_GetSQLConnection();
 	PrintToServer("(TTT_OnSQLConnect) dDB: %d", dDB);
-	
+
 	if (dDB == db)
 	{
 		PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);

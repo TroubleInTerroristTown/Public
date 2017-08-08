@@ -46,7 +46,7 @@ public void OnEntityDestroyed(int entity)
 	{
 		return;
 	}
-	
+
 	char classname[128];
 	GetEdictClassname(entity, classname, sizeof(classname));
 	if (StrEqual(classname, "prop_ragdoll"))

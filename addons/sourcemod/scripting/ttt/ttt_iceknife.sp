@@ -33,43 +33,43 @@ char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 char g_sFreezeSound[PLATFORM_MAX_PATH] = "";
 char g_sLongName[64] = "";
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
-	name = PLUGIN_NAME, 
-	author = TTT_PLUGIN_AUTHOR, 
-	description = TTT_PLUGIN_DESCRIPTION, 
-	version = TTT_PLUGIN_VERSION, 
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/iceknife.cfg");
 	Config_Setup("TTT-IceKnife", g_sConfigFile);
-	
+
 	Config_LoadString("icek_name", "Ice Knife", "The name of the Ice Knife in the Shop", g_sLongName, sizeof(g_sLongName));
-	
+
 	g_iPrice = Config_LoadInt("icek_price", 9000, "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
 	g_iCount = Config_LoadInt("icek_count", 1, "The amount of usages for Ice Knifes per round as traitor. 0 to disable.");
 	g_iPrio = Config_LoadInt("icek_sort_prio", 0, "The sorting priority of the Ice Knife in the shop menu.");
 	g_iDamage = Config_LoadInt("icek_damage", 0, "Amount of damage with a ice knife. 0 to disable.");
 	g_bFreezeTraitors = Config_LoadBool("icek_freeze_traitors", false, "Allow to freeze other traitors?");
 	g_fFreezeTime = Config_LoadFloat("icek_freeze_time", 5.0, "Length of the freeze time.");
-	
-	
+
+
 	Config_Done();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
 }
@@ -82,7 +82,7 @@ public void OnMapStart()
 		SetFailState("Unable to load game config funcommands.games");
 		return;
 	}
-	
+
 	if (GameConfGetKeyValue(hConfig, "SoundFreeze", g_sFreezeSound, sizeof(g_sFreezeSound)) && g_sFreezeSound[0])
 	{
 		PrecacheSound(g_sFreezeSound, true);
@@ -123,7 +123,7 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		GetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
@@ -146,12 +146,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iCount);
 				return Plugin_Stop;
 			}
-			
+
 			if (count)
 			{
 				g_bIceKnife[client] = true;
 			}
-			
+
 			g_iPCount[client]++;
 		}
 	}
@@ -171,39 +171,39 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (g_bFreezed[iVictim])
 	{
 		return Plugin_Handled;
 	}
-	
+
 	if (IsWorldDamage(iAttacker, damagetype))
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (!g_bIceKnife[iAttacker])
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (!g_bFreezeTraitors && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Continue;
 	}
-	
+
 	char sWeapon[64];
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
 	if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1)
 	{
 		g_bFreezed[iVictim] = true;
 		g_bIceKnife[iAttacker] = false;
-		
+
 		SetEntityMoveType(iVictim, MOVETYPE_NONE);
 		SetEntPropFloat(iVictim, Prop_Data, "m_flLaggedMovementValue", 0.0);
 
@@ -211,12 +211,12 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		SetEntityRenderColor(iVictim, 0, 128, 255, 135);
 
 		PlayFreezeSound(iVictim);
-		
+
 		if (g_fFreezeTime > 0.0)
 		{
 			CreateTimer(g_fFreezeTime, Timer_FreezeEnd, GetClientUserId(iVictim));
 		}
-		
+
 		if (g_iDamage == 0)
 		{
 			return Plugin_Handled;
@@ -233,14 +233,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 public Action Timer_FreezeEnd(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		PlayFreezeSound(client);
-		
+
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
-		
+
 		SetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
 
 		g_bFreezed[client] = false;
@@ -254,7 +254,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		float fVel[3];
 		TeleportEntity(client, NULL_VECTOR, NULL_VECTOR, fVel);
-		
+
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -266,8 +266,8 @@ void PlayFreezeSound(int client)
 	{
 		float vec[3];
 		GetClientAbsOrigin(client, vec);
-		vec[2] += 10;	
-		
+		vec[2] += 10;
+
 		GetClientEyePosition(client, vec);
 		EmitAmbientSound(g_sFreezeSound, vec, client, SNDLEVEL_RAIDSIREN);
 	}

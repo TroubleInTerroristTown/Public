@@ -64,7 +64,7 @@ public void RemoveDroneFromList(int drone)
 public void CreateDrone(int client_index, float pos[3], float rot[3])
 {
 	// Can be moved, must have a larger hitbox than the drone model (no stuck, easier pickup, easier target)
-	int drone = CreateEntityByName("prop_physics_override"); 
+	int drone = CreateEntityByName("prop_physics_override");
 	if (IsValidEntity(drone)) {
 		SetEntityModel(drone, dronePhysModel);
 		DispatchKeyValue(drone, "solid", "6");
@@ -73,7 +73,7 @@ public void CreateDrone(int client_index, float pos[3], float rot[3])
 		DispatchSpawn(drone);
 		ActivateEntity(drone);
 		TeleportEntity(drone, pos, rot, NULL_VECTOR);
-		
+
 		SDKHook(drone, SDKHook_OnTakeDamage, Hook_TakeDamageGear);
 		SetEntityRenderMode(drone, RENDER_NONE);
 		CreateDroneModel(client_index, drone);
@@ -83,19 +83,19 @@ public void CreateDrone(int client_index, float pos[3], float rot[3])
 public void CreateDroneModel(int client_index, int drone)
 {
 	// This one can be animated/move with player
-	int model = CreateEntityByName("prop_dynamic_override"); 
+	int model = CreateEntityByName("prop_dynamic_override");
 	if (IsValidEntity(model)) {
 		SetEntityModel(model, droneModel);
 		DispatchKeyValue(model, "solid", "0");
 		DispatchSpawn(model);
 		ActivateEntity(model);
-		
+
 		SetVariantString("!activator"); AcceptEntityInput(model, "SetParent", drone, model, 0);
-		
+
 		float pos[3], rot[3];
 		TeleportEntity(model, pos, rot, NULL_VECTOR);
 		SDKHook(model, SDKHook_SetTransmit, Hook_SetTransmitGear);
-		
+
 		AddDrone(drone, model, client_index);
 	}
 }
@@ -134,18 +134,18 @@ public void Hook_PostThinkDrone(int client_index)
 		return
 	int drone = activeDrone[client_index][0];
 	float groundDistance = DistanceToGround(drone);
-	
+
 	LowerDroneView(client_index);
 	HideHudGuns(client_index);
 	SetViewModel(client_index, false);
 	float rot[3];
 	GetClientEyeAngles(client_index, rot);
 	TeleportEntity(activeDrone[client_index][1], NULL_VECTOR, rot, NULL_VECTOR); // Model follows player rotation
-	
+
 	isDroneGrounded[client_index] = !(groundDistance > (droneHoverHeight + 1.0));
 	if (!isDroneMoving[client_index] || !isDroneGrounded[client_index])
 		return;
-	
+
 	float pos[3], nullRot[3], vel[3];
 	GetEntPropVector(drone, Prop_Send, "m_vecOrigin", pos);
 	GetEntPropVector(drone, Prop_Data, "m_vecVelocity", vel);
@@ -168,7 +168,7 @@ public float DistanceToGround(int entity_index)
 	flAng[0] = 90.0; // points to the ground
 	flAng[1] = 0.0;
 	flAng[2] = 0.0;
-	
+
 	Handle hTrace = TR_TraceRayFilterEx(flPos, flAng, MASK_ALL, RayType_Infinite, TraceFilterIgnorePlayers, entity_index);
 	if(hTrace != INVALID_HANDLE && TR_DidHit(hTrace))
 	{
@@ -189,7 +189,7 @@ public bool TraceFilterIgnorePlayers(int entity_index, int mask, any data)
 		return false;
 	}
 	return true;
-} 
+}
 
 public void TpToDrone(int client_index, int drone)
 {
@@ -226,7 +226,7 @@ public void TpToDrone(int client_index, int drone)
 	oldCollisionValueD[client_index] = GetEntData(client_index, GetCollOffset(), 1);
 	SetEntData(client_index, GetCollOffset(), 2, 4, true);
 	SetEntProp(client_index, Prop_Send, "m_nHitboxSet", 2);
-	
+
 	// Sound
 	EmitSoundToAll(droneSound, drone, SNDCHAN_AUTO, SNDLEVEL_CAR, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL);
 }
@@ -279,11 +279,11 @@ public void DestroyDrone(int drone, bool isSilent)
 			CloseDrone(i);
 		}
 	}
-	
+
 	if (IsValidEdict(drone))
 		RemoveEdict(drone);
 	if (IsValidEdict(dronesModelList.Get(dronesList.FindValue(drone))))
 		RemoveEdict(dronesModelList.Get(dronesList.FindValue(drone)));
-	
+
 	RemoveDroneFromList(drone);
 }

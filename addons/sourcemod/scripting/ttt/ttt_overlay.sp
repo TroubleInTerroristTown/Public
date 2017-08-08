@@ -59,54 +59,54 @@ public void OnPluginStart()
 {
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	g_fDelay = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 	Config_Done();
 
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/overlay.cfg");
 	Config_Setup("TTT-Overlay", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.", g_sDetectiveIcon, sizeof(g_sDetectiveIcon));
 	Config_LoadString("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.", g_sTraitorIcon, sizeof(g_sTraitorIcon));
 	Config_LoadString("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for detectives during the round.", g_sInnocentIcon, sizeof(g_sInnocentIcon));
-	
+
 	Config_LoadString("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.", g_soverlayDWin, sizeof(g_soverlayDWin));
 	Config_LoadString("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.", g_soverlayTWin, sizeof(g_soverlayTWin));
 	Config_LoadString("ttt_overlay_inno_win", "overlays/ttt/innocents_win", "The overlay to display when innocent win.", g_soverlayIWin, sizeof(g_soverlayIWin));
-	
+
 	g_bEnableHud = Config_LoadBool("ttt_hud_text_enable", false, "Enable hud_text? (it's a bit buggy with 4:3 and 16:9 resolutions)");
-	
+
 	g_fPosRX = Config_LoadFloat("ttt_hud_text_remaining_x_position", 0.28, "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
 	g_fPosDX = Config_LoadFloat("ttt_hud_text_detective_x_position", 0.37, "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
 	g_fPosIX = Config_LoadFloat("ttt_hud_text_innocent_x_position", 0.48, "Innocent position (Default Horizontal: 0.48 Vertical: 0.3,) (<X>-POSITION>)");
 	g_fPosTX = Config_LoadFloat("ttt_hud_text_traitor_x_position", 0.586, "Traitor position (Default Horizontal: 0.586 Vertical: 0.3) (<X>-POSITION>)");
-	
+
 	g_fPosRY = Config_LoadFloat("ttt_hud_text_remaining_y_position", 0.0, "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
 	g_fPosDY = Config_LoadFloat("ttt_hud_text_detective_y_position", 0.0, "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
 	g_fPosIY = Config_LoadFloat("ttt_hud_text_innocent_y_position", 0.0, "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
 	g_fPosTY = Config_LoadFloat("ttt_hud_text_traitor_y_position", 0.0, "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
-	
+
 	Config_LoadString("ttt_hud_text_remaining_color", "255;255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorR, sizeof(g_sColorR));
 	Config_LoadString("ttt_hud_text_detective_color", "0;0;255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorD, sizeof(g_sColorD));
 	Config_LoadString("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorI, sizeof(g_sColorI));
 	Config_LoadString("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)", g_sColorT, sizeof(g_sColorT));
-	
+
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
-	
+
 	g_hSyncR = CreateHudSynchronizer();
 	g_hSyncD = CreateHudSynchronizer();
 	g_hSyncI = CreateHudSynchronizer();
 	g_hSyncT = CreateHudSynchronizer();
-	
+
 	CreateTimer(3.0, Timer_HUD, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
 {
 	char sBuffer[PLATFORM_MAX_PATH];
-	
+
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_soverlayTWin);
 	AddFileToDownloadsTable(sBuffer);
 
@@ -174,7 +174,7 @@ public void TTT_OnRoundEnd(int winner)
 		g_bEndOverlay = true;
 		CreateTimer(g_fDelay, Delay_Timer);
 	}
-	
+
 	if (winner == TTT_TEAM_TRAITOR)
 	{
 		ShowOverlayToAll(g_soverlayTWin);
@@ -213,11 +213,11 @@ public Action Timer_HUD(Handle timer)
 	{
 		return;
 	}
-	
+
 	int iDet = 0;
 	int iInn = 0;
 	int iTra = 0;
-	
+
 	LoopValidClients(i)
 	{
 		if (!TTT_WasBodyFound(i))
@@ -236,15 +236,15 @@ public Action Timer_HUD(Handle timer)
 			}
 		}
 	}
-	
+
 	if (g_bEnableHud)
 	{
 		char sCR[4][4], sCD[4][4], sCI[4][4], sCT[4][4];
 		char sR[24], sD[24], sI[24], sT[24];
-		
+
 		Format(sR, sizeof(sR), "Remaining:");
 		ExplodeString(g_sColorR, ";", sCR, sizeof(sCR), sizeof(sCR[]));
-		
+
 		if (iDet == 1)
 		{
 			Format(sD, sizeof(sD), "%d Detective", iDet);
@@ -254,7 +254,7 @@ public Action Timer_HUD(Handle timer)
 			Format(sD, sizeof(sD), "%d Detectives", iDet);
 		}
 		ExplodeString(g_sColorD, ";", sCD, sizeof(sCD), sizeof(sCD[]));
-		
+
 		if (iInn == 1)
 		{
 			Format(sI, sizeof(sI), "%d Innocent", iInn);
@@ -264,7 +264,7 @@ public Action Timer_HUD(Handle timer)
 			Format(sI, sizeof(sI), "%d Innocents", iInn);
 		}
 		ExplodeString(g_sColorI, ";", sCI, sizeof(sCI), sizeof(sCI[]));
-		
+
 		if (iTra == 1)
 		{
 			Format(sT, sizeof(sT), "%d Traitor", iTra);
@@ -274,7 +274,7 @@ public Action Timer_HUD(Handle timer)
 			Format(sT, sizeof(sT), "%d Traitors", iTra);
 		}
 		ExplodeString(g_sColorT, ";", sCT, sizeof(sCT), sizeof(sCT[]));
-		
+
 		showHudToAll(g_hSyncR, sR, g_fPosRX, g_fPosRY, sCR[0], sCR[1], sCR[2], sCR[3]);
 		showHudToAll(g_hSyncD, sD, g_fPosDX, g_fPosDY, sCD[0], sCD[1], sCD[2], sCD[3]);
 		showHudToAll(g_hSyncI, sI, g_fPosIX, g_fPosIY, sCI[0], sCI[1], sCI[2], sCI[3]);
@@ -292,7 +292,7 @@ public void AssignOverlay(int client, int role)
 	{
 		ShowOverlayToClient(client, " ");
 	}
-	
+
 	if (role == TTT_TEAM_DETECTIVE)
 	{
 		ShowOverlayToClient(client, g_sDetectiveIcon);
@@ -315,4 +315,3 @@ void showHudToAll(Handle sync, char[] message, float x, float y, const char[] re
 		ShowSyncHudText(client, sync, message);
 	}
 }
-

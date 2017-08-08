@@ -41,7 +41,7 @@ ArrayList g_aForceDetective;
 bool g_bRoundStarted = false;
 bool g_bCheckPlayers = false;
 
-int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...}; 
+int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
 bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRoundTimer = null;
@@ -99,37 +99,37 @@ Handle g_hOnButtonRelease = null;
 bool g_bSourcebans = false;
 
 char g_sRadioCMDs[][] =  {
-	"coverme", 
-	"takepoint", 
-	"holdpos", 
-	"regroup", 
-	"followme", 
-	"takingfire", 
-	"go", 
-	"fallback", 
-	"sticktog", 
-	"getinpos", 
-	"stormfront", 
-	"report", 
-	"roger", 
-	"enemyspot", 
-	"needbackup", 
-	"sectorclear", 
-	"inposition", 
-	"reportingin", 
-	"getout", 
-	"negative", 
-	"enemydown", 
-	"compliment", 
-	"thanks", 
+	"coverme",
+	"takepoint",
+	"holdpos",
+	"regroup",
+	"followme",
+	"takingfire",
+	"go",
+	"fallback",
+	"sticktog",
+	"getinpos",
+	"stormfront",
+	"report",
+	"roger",
+	"enemyspot",
+	"needbackup",
+	"sectorclear",
+	"inposition",
+	"reportingin",
+	"getout",
+	"negative",
+	"enemydown",
+	"compliment",
+	"thanks",
 	"cheer"
 };
 
 char g_sRemoveEntityList[][] =  {
-	"func_bomb_target", 
-	"hostage_entity", 
-	"func_hostage_rescue", 
-	"info_hostage_spawn", 
+	"func_bomb_target",
+	"hostage_entity",
+	"func_hostage_rescue",
+	"info_hostage_spawn",
 	"func_buyzone"
 };
 

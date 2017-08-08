@@ -86,20 +86,20 @@ public void OnPluginStart()
 	AddNormalSoundHook(NormalSoundHook);
 	HookEvent("round_start", Event_RoundStart);
 	HookEvent("player_spawn", Event_PlayerSpawn);
-	AddCommandListener(CommandDrop, "drop"); 
+	AddCommandListener(CommandDrop, "drop");
 	AddCommandListener(CommandJoinTeam, "jointeam");
-	
+
 	CreateConVars(VERSION);
 	RegisterCommands();
-	
+
 	collisionOffsets = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
-	
+
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidClient(i) && !IsFakeClient(i))
 			OnClientPostAdminCheck(i);
 	}
-	
+
 	if (lateload)
 		ServerCommand("mp_restartgame 1");
 }
@@ -114,7 +114,7 @@ public void OnMapStart()
 	PrecacheModel(InCamModel, true);
 	PrecacheModel(dronePhysModel, true);
 	PrecacheModel(camPhysModel, true);
-	
+
 	PrecacheSound(droneSound, true);
 	PrecacheSound(droneJumpSound, true);
 	PrecacheSound(openDroneSound, true);
@@ -158,7 +158,7 @@ public void ResetPlayer(int client_index)
 				DestroyCamera(camerasList.Get(i), true);
 		}
 	}
-	
+
 	boughtGear[client_index] = 0;
 	canDisplayThrowWarning[client_index] = true;
 	canDroneJump[client_index] = true;
@@ -221,12 +221,12 @@ public int Native_OverridePlayerGear(Handle plugin, int numParams)
 		return;
 	}
 	int gearNum = GetNativeCell(2);
-	
+
 	if (gearNum > 2 || gearNum < -1)
 		gearNum = 0;
-	
+
 	playerGearOverride[client_index] = gearNum;
-	
+
 	switch (gearNum)
 	{
 		case -1: PrintToConsole(client_index, "You can't use any gear");
@@ -282,7 +282,7 @@ public Action StartTouchGrenade(int entity1, int entity2)
 		GetEntPropVector(entity1, Prop_Send, "m_vecOrigin", pos);
 		GetEntPropVector(entity1, Prop_Send, "m_angRotation", rot);
 		int owner = GetEntPropEnt(entity1, Prop_Send, "m_hOwnerEntity");
-		
+
 		if (IsValidClient(entity2))
 		{
 			PreventGearActivation(owner, entity1);
@@ -296,7 +296,7 @@ public Action StartTouchGrenade(int entity1, int entity2)
 				return;
 			}
 		}
-		
+
 		RemoveEdict(entity1);
 		if (IsClientTeamCameras(owner))
 			CreateCamera(owner, pos, rot);
@@ -343,7 +343,7 @@ public Action ShowHelp(int client_index, int args)
 	PrintToConsole(client_index, "EXAMPLE:");
 	PrintToConsole(client_index, "bind \"z\" \"cd_buy\" | This will bind the buy command to the <Z> key");
 	PrintToConsole(client_index, "bind \"x\" \"cd_cam\" | This will bind the open command to the <X> key");
-	
+
 	CPrintToChat(client_index, "{green}----- CAMERAS AND DRONES HELP -----");
 	CPrintToChat(client_index, "{lime}>>> START");
 	CPrintToChat(client_index, "This plugin is used with the console:");
@@ -366,7 +366,7 @@ public Action OverrideGear(int client_index, int args)
 		PrintToConsole(client_index, "<gear_num> = 1 | force drone");
 		return Plugin_Handled;
 	}
-	
+
 	char name[32];
 	int target = -1;
 	GetCmdArg(1, name, sizeof(name));
@@ -399,16 +399,16 @@ public Action OverrideGear(int client_index, int args)
 		}
 		return Plugin_Handled;
 	}
-	
+
 	char gear[32];
 	GetCmdArg(2, gear, sizeof(gear));
 	int gearNum = StringToInt(gear);
-	
+
 	if (gearNum > 2 || gearNum < -1)
 		gearNum = 0;
-	
+
 	playerGearOverride[target] = gearNum;
-	
+
 	switch (gearNum)
 	{
 		case -1:
@@ -432,7 +432,7 @@ public Action OverrideGear(int client_index, int args)
 			PrintToConsole(target, "You are now using drones");
 		}
 	}
-	
+
 	return Plugin_Handled;
 }
 
@@ -442,7 +442,7 @@ public Action BuyGear(int client_index, int args)
 		BuyCamera(client_index, false);
 	else if (IsClientTeamDrones(client_index))
 		BuyDrone(client_index, false);
-	
+
 	return Plugin_Handled;
 }
 
@@ -496,7 +496,7 @@ public Action OpenGear(int client_index, int args) //Set player skin if authoriz
 		OpenCamera(client_index);
 	else if (IsClientTeamDrones(client_index))
 		OpenDrone(client_index);
-	
+
 	return Plugin_Handled;
 }
 
@@ -533,7 +533,7 @@ public void OpenCamera(int client_index)
 	}
 	if (target == -1)
 		target = camerasList.Get(0);
-	
+
 	Menu_Cameras(client_index, camerasList.FindValue(target));
 	TpToCam(client_index, target);
 }
@@ -574,7 +574,7 @@ public void OpenDrone(int client_index)
 		PrintHintText(client_index, "<font color='#ff0000' size='30'>No drones available</font>");
 		return;
 	}
-	
+
 	Menu_Drones(client_index, dronesList.FindValue(target));
 	TpToDrone(client_index, target);
 }
@@ -643,7 +643,7 @@ public void PickupGear(int client_index, int i)
 {
 	float pos[3], gearPos[3];
 	GetClientEyePosition(client_index, pos);
-	
+
 	if (IsClientTeamCameras(client_index))
 	{
 		int cam = camerasList.Get(i);
@@ -707,13 +707,13 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 {
 	if (!IsPlayerAlive(client_index))
 		return Plugin_Continue;
-	
+
 	if (IsClientInGear(client_index)) // in gear input
 	{
 		//Disable weapons
 		float fUnlockTime = GetGameTime() + 1.0;
 		SetEntPropFloat(client_index, Prop_Send, "m_flNextAttack", fUnlockTime);
-		
+
 		if (buttons & IN_DUCK) // Prevent crouching camera bugs
 		{
 			buttons &= ~IN_DUCK;
@@ -759,7 +759,7 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 			}
 		}
 	}
-	
+
 	if (IsClientInDrone(client_index)) // Drone specific input
 	{
 		vel[0] = 0.0;
@@ -790,7 +790,7 @@ public Action OnPlayerRunCmd(int client_index, int &buttons, int &impulse, float
 /************************************************************************************************************
  *											TIMERS
  ************************************************************************************************************/
- 
+
 public Action Timer_WelcomeMessage(Handle timer, any ref)
 {
 	int client_index = EntRefToEntIndex(ref);
@@ -836,7 +836,7 @@ public Action Timer_IsJumping(Handle timer, any ref)
 /************************************************************************************************************
  *											HOOKS
  ************************************************************************************************************/
- 
+
 public Action NormalSoundHook(int clients[64], int &numClients, char sample[PLATFORM_MAX_PATH], int &entity, int &channel, float &volume, int &level, int &pitch, int &flags)
 {
 	if (IsValidEntity(entity))
@@ -851,7 +851,7 @@ public Action Hook_SetTransmitPlayer(int entity_index, int client_index) // hide
 {
 	if (client_index != entity_index && IsValidClient(entity_index) && IsClientInGear(entity_index))
 		return Plugin_Handled;
-	
+
 	return Plugin_Continue;
 }
 
@@ -859,7 +859,7 @@ public Action Hook_SetTransmitGear(int entity_index, int client_index) // Hide c
 {
 	if (IsValidClient(client_index) && ((activeCam[client_index][1] == entity_index || activeCam[client_index][2] == entity_index) || activeDrone[client_index][1] == entity_index))
 		return Plugin_Handled;
-	
+
 	return Plugin_Continue;
 }
 
@@ -871,12 +871,12 @@ public Action Hook_TakeDamageFakePlayer(int victim, int &attacker, int &inflicto
 	RemoveHealth(owner, damage, attacker, damagetype, weapon);
 }
 
-public Action Hook_WeaponCanUse(int client_index, int weapon_index)  
+public Action Hook_WeaponCanUse(int client_index, int weapon_index)
 {
 	if (IsClientInGear(client_index))
 		return Plugin_Handled;
-	
-	
+
+
 	return Plugin_Continue;
 }
 
@@ -891,12 +891,12 @@ public Action Hook_TakeDamageGear(int victim, int &attacker, int &inflictor, flo
 		return Plugin_Handled;
 	if (cvar_tkprotect.BoolValue && GetClientTeam(client_index) == GetClientTeam(inflictor) && client_index != inflictor)
 		return Plugin_Handled;
-	
+
 	if (IsClientTeamCameras(client_index))
 		DestroyCamera(victim, false);
 	else if (IsClientTeamDrones(client_index))
 		DestroyDrone(victim, false);
-	
+
 	return Plugin_Continue;
 }
 
@@ -909,7 +909,7 @@ public Action CommandDrop(int client_index, const char[] command, int argc)
 {
 	if (IsClientInGear(client_index))
 		return Plugin_Handled;
-	
+
 	int weapon_index = GetEntPropEnt(client_index, Prop_Send, "m_hActiveWeapon");
 	if (IsWeaponGear(weapon_index))
 	{
@@ -932,7 +932,7 @@ public Action CommandJoinTeam(int client_index, const char[] command, int argc)
 
 public void RemoveHealth(int client_index, float damage, int attacker, int damagetype, char[] weapon)
 {
-	
+
 	int health = GetClientHealth(client_index);
 	int dmg = RoundToNearest(damage);
 	if (health > dmg)
@@ -983,7 +983,7 @@ public void CreateFakePlayer(int client_index, bool isCam)
 		GetEntPropString(client_index, Prop_Data, "m_ModelName", modelName, sizeof(modelName));
 		SetEntityModel(fake, modelName);
 		SetEntPropEnt(fake, Prop_Send, "m_hOwnerEntity", client_index);
-		
+
 		float pos[3], rot[3];
 		GetClientEyeAngles(client_index, rot);
 		rot[0] = 0.0;
@@ -992,12 +992,12 @@ public void CreateFakePlayer(int client_index, bool isCam)
 		DispatchKeyValue(fake, "Solid", "6");
 		DispatchSpawn(fake);
 		ActivateEntity(fake);
-		
-		
+
+
 		SDKHook(fake, SDKHook_OnTakeDamage, Hook_TakeDamageFakePlayer);
-		
+
 		//SetVariantString("ACT_IDLE"); AcceptEntityInput(fake, "SetAnimation"); // Can't find sequence ?!
-		
+
 		if (isCam)
 			fakePlayersListCamera[client_index] = fake;
 		else
@@ -1060,10 +1060,10 @@ public int GetViewModelIndex(int client_index)
 	while ((index = FindEntityByClassname(index, "predicted_viewmodel")) != -1)
 	{
 		int owner = GetEntPropEnt(index, Prop_Send, "m_hOwner");
-		
+
 		if (owner != client_index)
 			continue;
-		
+
 		return index;
 	}
 	return -1;
@@ -1083,7 +1083,7 @@ public void SetGearScreen(int client, bool isActive)
 {
 	if (!IsClientInGame(client) || !IsPlayerAlive(client))
 		return;
-	
+
 	int duration = 255;
 	int holdtime = 255;
 	int color[4];
@@ -1094,7 +1094,7 @@ public void SetGearScreen(int client, bool isActive)
 	color[0] = 120;
 	color[1] = 120;
 	color[2] = 120;
-	
+
 	Handle message = StartMessageOne("Fade",client);
 	if (GetUserMessageType() == UM_Protobuf)
 	{
@@ -1113,7 +1113,7 @@ public void SetGearScreen(int client, bool isActive)
 		BfWriteByte(message,color[2]);
 		BfWriteByte(message,color[3]);
 	}
-	
+
 	EndMessage();
 }
 

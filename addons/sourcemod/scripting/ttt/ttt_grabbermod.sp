@@ -33,13 +33,13 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
 	Config_Done();
-	
+
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
 
@@ -59,13 +59,13 @@ stock void Command_UnGrab(int client)
 	{
 		char edictname[128];
 		GetEdictClassname(g_iObject[client], edictname, 128);
-		
+
 		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
 		{
 			SetEntPropEnt(g_iObject[client], Prop_Data, "m_hPhysicsAttacker", 0);
 		}
 	}
-	
+
 	g_iObject[client] = -1;
 	g_fTime[client] = 0.0;
 }
@@ -75,28 +75,28 @@ stock void GrabSomething(int client)
 
 		int ent;
 		float VecPos_Ent[3], VecPos_Client[3];
-		
+
 		ent = GetObject(client, false);
-		
+
 		if (ent == -1)
 		{
 			return;
 		}
-		
+
 		ent = EntRefToEntIndex(ent);
-		
+
 		if (ent == INVALID_ENT_REFERENCE)
 		{
 			return;
 		}
-			
+
 		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 		GetClientEyePosition(client, VecPos_Client);
 		if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
 		{
 			return;
 		}
-		
+
 		char edictname[128];
 		GetEdictClassname(ent, edictname, sizeof(edictname));
 
@@ -108,11 +108,11 @@ stock void GrabSomething(int client)
 		{
 			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
 			{
-				
-				if (IsValidEdict(ent) && IsValidEntity(ent)) 
+
+				if (IsValidEdict(ent) && IsValidEntity(ent))
 				{
 					ent = ReplacePhysicsEntity(ent);
-					
+
 					SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
 					SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
 				}
@@ -155,7 +155,7 @@ stock bool ValidGrab(int client)
 stock int GetObject(int client, bool hitSelf=true)
 {
 	int ent = -1;
-	
+
 	if (IsClientInGame(client))
 	{
 		if (ValidGrab(client))
@@ -165,7 +165,7 @@ stock int GetObject(int client, bool hitSelf=true)
 		}
 
 		ent = TraceToEntity(client);
-		
+
 		if (IsValidEntity(ent) && IsValidEdict(ent))
 		{
 			char edictname[64];
@@ -187,7 +187,7 @@ stock int GetObject(int client, bool hitSelf=true)
 			ent = -1;
 		}
 	}
-	
+
 	return (ent);
 }
 
@@ -195,7 +195,7 @@ public int TraceToEntity(int client)
 {
 	float vecClientEyePos[3], vecClientEyeAng[3];
 	GetClientEyePosition(client, vecClientEyePos);
-	GetClientEyeAngles(client, vecClientEyeAng);    
+	GetClientEyeAngles(client, vecClientEyeAng);
 
 	TR_TraceRayFilter(vecClientEyePos, vecClientEyeAng, MASK_PLAYERSOLID, RayType_Infinite, TraceASDF, client);
 
@@ -224,7 +224,7 @@ stock int ReplacePhysicsEntity(int ent)
 	AcceptEntityInput(ent, "EnableMotion");
 	AcceptEntityInput(ent, "EnableDamageForces");
 	DispatchKeyValue(ent, "physdamagescale", "0.0");
-	
+
 	TeleportEntity(ent, VecPos_Ent, VecAng_Ent, NULL_VECTOR);
 	SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
 
@@ -237,18 +237,18 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (buttons & IN_JUMP)
 	{
 		if (g_bBlockJump)
 		{
 			int iEnt = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
-			
+
 			if (iEnt > 0)
 			{
 				char sName[128];
 				GetEdictClassname(iEnt, sName, sizeof(sName));
-				
+
 				if (StrContains(sName, "prop_", false) == -1 || StrContains(sName, "door", false) != -1)
 				{
 					return Plugin_Continue;
@@ -257,7 +257,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				{
 					if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
 					{
-						if (IsValidEdict(iEnt) && IsValidEntity(iEnt)) 
+						if (IsValidEdict(iEnt) && IsValidEntity(iEnt))
 						{
 							buttons &= ~IN_JUMP;
 							return Plugin_Changed;
@@ -267,7 +267,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			}
 		}
 	}
-	
+
 	if (buttons & IN_USE)
 	{
 		if (IsPlayerAlive(client) && !ValidGrab(client))
@@ -279,13 +279,13 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		Command_UnGrab(client);
 	}
-	
+
 	return Plugin_Continue;
 }
 
 public Action Adjust(Handle timer)
-{	
-	
+{
+
 	float vecDir[3];
 	float vecPos[3];
 	float vecPos2[3];
@@ -301,42 +301,42 @@ public Action Adjust(Handle timer)
 				GetClientEyeAngles(i, viewang);
 				GetAngleVectors(viewang, vecDir, NULL_VECTOR, NULL_VECTOR);
 				GetClientEyePosition(i, vecPos);
-				
+
 				int color[4];
-				
+
 				if (g_bColored)
 				{
 					if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
 					{
-						color[0] = GetRandomInt(0, 255); 
-						color[1] = GetRandomInt(0, 255); 
-						color[2] = GetRandomInt(0, 255); 
+						color[0] = GetRandomInt(0, 255);
+						color[1] = GetRandomInt(0, 255);
+						color[2] = GetRandomInt(0, 255);
 						color[3] = 255;
 					}
 				}
 				else
 				{
-					color[0] = 255; 
-					color[1] = 0; 
+					color[0] = 255;
+					color[1] = 0;
 					color[2] = 0;
 					color[3] = 255;
 				}
-				
+
 				vecPos2 = vecPos;
 				vecPos[0] += vecDir[0] * g_fDistance[i];
 				vecPos[1] += vecDir[1] * g_fDistance[i];
 				vecPos[2] += vecDir[2] * g_fDistance[i];
-			
+
 				GetEntPropVector(g_iObject[i], Prop_Send, "m_vecOrigin", vecDir);
-				
+
 				TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
 				TE_SendToAll();
-				
+
 				g_fTime[i] = GetGameTime() + 1.0;
-			
+
 				SubtractVectors(vecPos, vecDir, vecVel);
 				ScaleVector(vecVel, 10.0);
-			
+
 				TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
 			}
 		}

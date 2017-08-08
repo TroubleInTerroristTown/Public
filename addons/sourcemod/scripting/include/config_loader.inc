@@ -121,7 +121,7 @@ stock void Config_Remove(const char[] name){
 		LogError("[CONFIG LOADER] No valid config loaded!");
 		return;
 	}
-	
+
 	if(__g_kConfigKV.JumpToKey(name, false)){
 		__g_kConfigKV.DeleteThis();
 		__g_kConfigKV.Rewind();

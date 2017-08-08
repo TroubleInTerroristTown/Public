@@ -43,51 +43,51 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	if (g_iCollisionGroup == -1)
 	{
 		SetFailState("m_CollisionGroup not found...");
 	}
-	
+
 	g_iFreeze = FindSendPropInfo("CBasePlayer", "m_fFlags");
 	if (g_iFreeze == -1)
 	{
 		SetFailState("m_fFlags not found...");
 	}
-	
+
 	g_iMyWeapons = FindSendPropInfo("CBasePlayer", "m_hMyWeapons");
 	if (g_iMyWeapons == -1)
 	{
 		SetFailState("m_hMyWeapons not found...");
 	}
-	
+
 	g_uFade = GetUserMessageId("Fade");
 	if (g_uFade == view_as<UserMsg>(-1))
 	{
 		SetFailState("Failure with UserMessage Fade...");
 	}
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
 
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/knockout.cfg");
 	Config_Setup("TTT-Knockout", g_sConfigFile);
-	
+
 	Config_LoadString("knockout_name", "Knockout", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("knockout_price", 9000, "The amount of credits a knockout costs as detective. 0 to disable.");
 	g_iPrio = Config_LoadInt("knockout_sort_prio", 0, "The sorting priority of the knockout in the shop menu.");
-	
+
 	Config_Done();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
-	
+
 	LoopValidClients(i)
 	{
 		OnClientPutInServer(i);
@@ -112,7 +112,7 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		ResetKnockout(client);
@@ -126,23 +126,23 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
-			
+
 			if (role != TTT_TEAM_TRAITOR)
 			{
 				return Plugin_Stop;
 			}
-			
+
 			g_bHasKnockout[client] = true;
-			
+
 			for(int offset = 0; offset < 128; offset += 4)
 			{
 				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
-				
+
 				if (IsValidEntity(weapon))
 				{
 					char sClass[32];
 					GetEntityClassname(weapon, sClass, sizeof(sClass));
-					
+
 					if (StrEqual(sClass, "weapon_taser", false))
 					{
 						TTT_SafeRemoveWeapon(client, weapon);
@@ -161,25 +161,25 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (TTT_IsClientValid(attacker))
 	{
 		if (g_bHasKnockout[attacker])
 		{
 			char sWeapon[32];
 			GetClientWeapon(attacker, sWeapon, sizeof(sWeapon));
-			
+
 			if (StrContains(sWeapon, "taser", false) != -1)
 			{
 				KnockoutPlayer(victim);
 				g_bHasKnockout[attacker] = false;
-				
+
 				damage = 0.0;
 				return Plugin_Changed;
 			}
 		}
 	}
-	
+
 	return Plugin_Continue;
 }
 

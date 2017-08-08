@@ -31,48 +31,48 @@ char g_sLongName[64];
 
 int g_iCollisionGroup = -1;
 
-public Plugin myinfo = 
+public Plugin myinfo =
 {
-	name = PLUGIN_NAME, 
-	author = TTT_PLUGIN_AUTHOR, 
-	description = TTT_PLUGIN_DESCRIPTION, 
-	version = TTT_PLUGIN_VERSION, 
+	name = PLUGIN_NAME,
+	author = TTT_PLUGIN_AUTHOR,
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	LoadTranslations("ttt.phrases");
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
-	
+
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	
+
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/fakebody.cfg");
 	Config_Setup("TTT-Fakebody", g_sConfigFile);
-	
+
 	Config_LoadString("fb_name", "Fakebody", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
-	
+
 	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
-	
+
 	g_iCount = Config_LoadInt("fb_count", 1, "The amount of usages for fake bodys per round as traitor. 0 to disable.");
-	
+
 	g_iPrio = Config_LoadInt("fb_sort_prio", 0, "The sorting priority of the fake body in the shop menu.");
-	
+
 	g_bAllowProofByTraitors = Config_LoadBool("fb_allow_proof_by_all", true, "Allow fake body scan for traitors players?");
-	
+
 	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
 	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
-	
+
 	Config_Done();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
-	
+
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 }
 
@@ -84,7 +84,7 @@ public void OnClientDisconnect(int client)
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		ResetFB(client);
@@ -107,12 +107,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iCount);
 				return Plugin_Stop;
 			}
-			
+
 			if (!SpawnFakeBody(client))
 			{
 				return Plugin_Stop;
 			}
-			
+
 			if (count)
 			{
 				g_iPCount[client]++;
@@ -132,25 +132,25 @@ stock bool SpawnFakeBody(int client)
 	char sModel[256];
 	float pos[3];
 	char sName[32];
-	
+
 	GetClientModel(client, sModel, sizeof(sModel));
 	GetClientEyePosition(client, pos);
 	Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
-	
+
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
 	DispatchKeyValue(iEntity, "targetname", sName);
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
-	
+
 	if (DispatchSpawn(iEntity))
 	{
 		pos[2] -= 16.0;
 		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 	}
-	
+
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-	
+
 	int iRagdollC[Ragdolls];
 	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
 	iRagdollC[Victim] = client;
@@ -163,9 +163,9 @@ stock bool SpawnFakeBody(int client)
 	iRagdollC[GameTime] = 0.0;
 	Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
 	iRagdollC[Found] = false;
-	
+
 	TTT_SetRagdoll(iRagdollC[0]);
-	
+
 	return true;
 }
 
@@ -175,7 +175,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	{
 		return Plugin_Continue;
 	}
-	
+
 	if (StrEqual(iRagdollC[Weaponused], "Fake!", false))
 	{
 		if (!g_bAllowProofByTraitors)
@@ -185,7 +185,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 				return Plugin_Stop;
 			}
 		}
-		
+
 		LoopValidClients(j)
 		{
 			if (g_bShowFakeMessage && !iRagdollC[Found])
@@ -201,23 +201,23 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 				return Plugin_Stop;
 			}
 		}
-		
+
 		iRagdollC[Found] = true;
-		
+
 		if (g_bDeleteFakeBodyAfterFound)
 		{
 			AcceptEntityInput(iRagdollC[Ent], "Kill");
 		}
-		
+
 		if (!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
 		{
 			SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
 		}
-		
+
 		return Plugin_Changed;
 	}
 	return Plugin_Continue;
-} 
+}
 
 stock void SetNoBlock(int client)
 {

@@ -24,80 +24,80 @@
 
 enum eConfig
 {
-	i_requiredPlayersD, 
-	i_requiredPlayers, 
-	i_startKarma, 
-	i_karmaBan, 
-	i_karmaBanLength, 
-	i_maxKarma, 
-	i_spawnHPT, 
-	i_spawnHPD, 
-	i_spawnHPI, 
-	i_karmaII, 
-	i_karmaIT, 
-	i_karmaID, 
-	i_karmaTI, 
-	i_karmaTT, 
-	i_karmaTD, 
-	i_karmaDI, 
-	i_karmaDT, 
-	i_karmaDD, 
-	bool:b_showDeathMessage, 
-	bool:b_showKillMessage, 
-	bool:b_showEarnKarmaMessage, 
-	bool:b_showLoseKarmaMessage, 
-	i_messageTypKarma, 
-	bool:b_blockSuicide, 
-	bool:b_allowFlash, 
-	bool:b_blockLookAtWeapon, 
-	bool:b_blockGrenadeMessage, 
-	bool:b_blockRadioMessage, 
-	bool:b_enableNoBlock, 
-	String:s_pluginTag[250], 
-	bool:b_kadRemover, 
-	i_rulesClosePunishment, 
-	i_punishInnoKills, 
-	i_punishTraitorKills, 
-	i_punishDetectiveKills, 
-	i_timeToReadRules, 
-	i_timeToReadDetectiveRules, 
-	bool:b_showRulesMenu, 
-	bool:b_showDetectiveMenu, 
+	i_requiredPlayersD,
+	i_requiredPlayers,
+	i_startKarma,
+	i_karmaBan,
+	i_karmaBanLength,
+	i_maxKarma,
+	i_spawnHPT,
+	i_spawnHPD,
+	i_spawnHPI,
+	i_karmaII,
+	i_karmaIT,
+	i_karmaID,
+	i_karmaTI,
+	i_karmaTT,
+	i_karmaTD,
+	i_karmaDI,
+	i_karmaDT,
+	i_karmaDD,
+	bool:b_showDeathMessage,
+	bool:b_showKillMessage,
+	bool:b_showEarnKarmaMessage,
+	bool:b_showLoseKarmaMessage,
+	i_messageTypKarma,
+	bool:b_blockSuicide,
+	bool:b_allowFlash,
+	bool:b_blockLookAtWeapon,
+	bool:b_blockGrenadeMessage,
+	bool:b_blockRadioMessage,
+	bool:b_enableNoBlock,
+	String:s_pluginTag[250],
+	bool:b_kadRemover,
+	i_rulesClosePunishment,
+	i_punishInnoKills,
+	i_punishTraitorKills,
+	i_punishDetectiveKills,
+	i_timeToReadRules,
+	i_timeToReadDetectiveRules,
+	bool:b_showRulesMenu,
+	bool:b_showDetectiveMenu,
 	String:s_kickImmunity[16],
 	String:s_logsAccess[16],
 	bool:bLogsDeadOnly,
 	bLogsNotifyAlive,
-	bool:b_updateClientModel, 
-	bool:b_removeHostages, 
-	bool:b_removeBomb, 
-	bool:b_roleAgain, 
-	i_traitorRatio, 
-	i_detectiveRatio, 
-	bool:b_denyFire, 
-	bool:b_slayAfterStart, 
-	bool:b_removeBuyzone, 
-	bool:b_forceTeams, 
-	bool:b_randomWinner, 
-	bool:b_forceModel, 
-	String:s_modelCT[PLATFORM_MAX_PATH], 
-	String:s_modelT[PLATFORM_MAX_PATH], 
-	String:s_logFile[PLATFORM_MAX_PATH], 
-	String:s_errFile[PLATFORM_MAX_PATH], 
+	bool:b_updateClientModel,
+	bool:b_removeHostages,
+	bool:b_removeBomb,
+	bool:b_roleAgain,
+	i_traitorRatio,
+	i_detectiveRatio,
+	bool:b_denyFire,
+	bool:b_slayAfterStart,
+	bool:b_removeBuyzone,
+	bool:b_forceTeams,
+	bool:b_randomWinner,
+	bool:b_forceModel,
+	String:s_modelCT[PLATFORM_MAX_PATH],
+	String:s_modelT[PLATFORM_MAX_PATH],
+	String:s_logFile[PLATFORM_MAX_PATH],
+	String:s_errFile[PLATFORM_MAX_PATH],
 	String:s_logDateFormat[24],
-	String:s_defaultPri_D[64], 
-	String:s_defaultSec[64], 
-	bool:b_endwithD, 
-	bool:b_hideTeams, 
-	bool:b_publicKarma, 
-	bool:b_karmaRound, 
-	bool:b_stripWeapons, 
-	bool:b_karmaDMG, 
-	bool:b_karmaDMG_up, 
-	Float:f_roundDelay, 
-	bool:b_nextRoundAlert, 
-	bool:b_endroundDMG, 
-	bool:b_ignoreDeaths, 
-	bool:b_ignoreRDMMenu, 
+	String:s_defaultPri_D[64],
+	String:s_defaultSec[64],
+	bool:b_endwithD,
+	bool:b_hideTeams,
+	bool:b_publicKarma,
+	bool:b_karmaRound,
+	bool:b_stripWeapons,
+	bool:b_karmaDMG,
+	bool:b_karmaDMG_up,
+	Float:f_roundDelay,
+	bool:b_nextRoundAlert,
+	bool:b_endroundDMG,
+	bool:b_ignoreDeaths,
+	bool:b_ignoreRDMMenu,
 	bool:b_deadPlayersCanSeeOtherRules,
 	i_RoundStartedFontSize,
 	String:s_RoundStartedFontColor[12],
@@ -121,16 +121,16 @@ enum eConfig
 
 enum Ragdolls
 {
-	Ent, 
-	Victim, 
+	Ent,
+	Victim,
 	Attacker,
 	VictimTeam,
 	AttackerTeam,
-	String:VictimName[MAX_NAME_LENGTH], 
-	String:AttackerName[MAX_NAME_LENGTH], 
-	bool:Scanned, 
-	Float:GameTime, 
-	String:Weaponused[32], 
+	String:VictimName[MAX_NAME_LENGTH],
+	String:AttackerName[MAX_NAME_LENGTH],
+	bool:Scanned,
+	Float:GameTime,
+	String:Weaponused[32],
 	bool:Found
 }
 
@@ -394,12 +394,12 @@ stock void TTT_IsGameCSGO()
 stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
-	
+
 	if (iFlags & ADMFLAG_ROOT)
 	{
 		return true;
 	}
-	
+
 	for (int i = 0; i < sizeof(flags); i++)
 	{
 		if (iFlags & FlagToBit(flags[i]))
@@ -407,7 +407,7 @@ stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
@@ -415,29 +415,29 @@ stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
 {
 	if (!IsValidEntity(iWeapon) || !IsValidEdict(iWeapon))
 		return false;
-	
+
 	if (!HasEntProp(iWeapon, Prop_Send, "m_hOwnerEntity"))
 		return false;
-	
+
 	int iOwnerEntity = GetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity");
-	
+
 	if (iOwnerEntity != iClient)
 		SetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity", iClient);
-	
+
 	CS_DropWeapon(iClient, iWeapon, false);
-	
+
 	if (HasEntProp(iWeapon, Prop_Send, "m_hWeaponWorldModel"))
 	{
 		int iWorldModel = GetEntPropEnt(iWeapon, Prop_Send, "m_hWeaponWorldModel");
-		
+
 		if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
 			if (!AcceptEntityInput(iWorldModel, "Kill"))
 				return false;
 	}
-	
+
 	if (!AcceptEntityInput(iWeapon, "Kill"))
 		return false;
-	
+
 	return true;
 }
 

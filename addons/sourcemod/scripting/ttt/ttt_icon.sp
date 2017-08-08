@@ -31,47 +31,47 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	CreateNative("TTT_SetIcon", Native_SetIcon);
-	
+
 	RegPluginLibrary("ttt_icon");
-	
+
 	return APLRes_Success;
 }
 
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	g_bSeeRoles = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
 	Config_Done();
-	
+
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/icon.cfg");
 	Config_Setup("TTT-Icons", g_sConfigFile);
 	Config_LoadString("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file", g_sTraitorIcon, sizeof(g_sTraitorIcon));
 	Config_LoadString("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file", g_sDetectiveIcon, sizeof(g_sDetectiveIcon));
 	Config_LoadString("ttt_icon_dead_admin", "bz", "Show traitor icon for dead admins? (Nothing to disable it)", g_sAdminImmunity, sizeof(g_sAdminImmunity));
 	Config_Done();
-	
+
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
-	
+
 	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
 {
 	char sBuffer[PLATFORM_MAX_PATH];
-	
+
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sTraitorIcon);
 	AddFileToDownloadsTable(sBuffer);
-	
+
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sTraitorIcon);
 	AddFileToDownloadsTable(sBuffer);
 	PrecacheModel(sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sDetectiveIcon);
 	AddFileToDownloadsTable(sBuffer);
-	
+
 	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sDetectiveIcon);
 	AddFileToDownloadsTable(sBuffer);
 	PrecacheModel(sBuffer);
@@ -114,7 +114,7 @@ public void TTT_OnClientGetRole(int client, int role)
 public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	
+
 	ClearIcon(client);
 }
 
@@ -132,7 +132,7 @@ stock void ApplyIcons()
 stock int CreateIcon(int client, int role)
 {
 	ClearIcon(client);
-	
+
 	if (role < TTT_TEAM_TRAITOR)
 	{
 		return -1;
@@ -152,9 +152,9 @@ stock int CreateIcon(int client, int role)
 	{
 		return -1;
 	}
-	
+
 	char sBuffer[PLATFORM_MAX_PATH];
-	
+
 	if (role == TTT_TEAM_DETECTIVE)
 	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
@@ -163,7 +163,7 @@ stock int CreateIcon(int client, int role)
 	{
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
 	}
-	
+
 	DispatchKeyValue(ent, "model", sBuffer);
 	DispatchKeyValue(ent, "classname", "env_sprite");
 	DispatchKeyValue(ent, "spawnflags", "1");
@@ -198,10 +198,10 @@ public Action Hook_SetTransmitT(int entity, int client)
 				{
 					char sFlags[16];
 					AdminFlag aFlags[16];
-					
+
 					Format(sFlags, sizeof(sFlags), g_sAdminImmunity);
 					FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
-					
+
 					if (TTT_HasFlags(client, aFlags))
 					{
 						return Plugin_Continue;
@@ -209,19 +209,19 @@ public Action Hook_SetTransmitT(int entity, int client)
 				}
 			}
 		}
-		
+
 		if (IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 		{
 			return Plugin_Continue;
 		}
-	}	
+	}
 	return Plugin_Handled;
 }
 
 stock void ClearIcon(int client)
 {
 	int role = TTT_GetClientRole(client);
-	
+
 	if (IsValidEdict(g_iIcon[client]))
 	{
 		if (role == TTT_TEAM_TRAITOR)
@@ -230,7 +230,7 @@ stock void ClearIcon(int client)
 		}
 		AcceptEntityInput(g_iIcon[client], "Kill");
 	}
-	
+
 	g_iIcon[client] = -1;
 
 }
@@ -239,8 +239,8 @@ public int Native_SetIcon(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int role = GetNativeCell(2);
-	
+
 	g_iIcon[client] = CreateIcon(client, role);
-		
+
 	return 0;
 }
