@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
@@ -10,8 +11,6 @@
 #include <config_loader>
 #include <CustomPlayerSkins>
 #include <multicolors>
-
-#pragma newdecls required
 
 #define SHORT_NAME_T "wh_t"
 #define SHORT_NAME_D "wh_d"
@@ -77,10 +76,6 @@ public void OnPluginStart()
 	
 	Config_Done();
 	
-	HookEvent("player_spawn", Event_PlayerReset);
-	HookEvent("player_death", Event_PlayerReset);
-	HookEvent("round_end", Event_RoundReset);
-	
 	RegAdminCmd("sm_dwallhack", Command_DWallhack, ADMFLAG_ROOT);
 	
 	g_bCPS = LibraryExists("CustomPlayerSkins");
@@ -118,109 +113,13 @@ public void OnAllPluginsLoaded()
 	{
 		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
 		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+		
+		CreateTimer(0.5, Timer_SetupGlow, _, TIMER_REPEAT);
 	}
 	else
 	{
 		SetFailState("CustomPlayerSkins not loaded!");
 	}
-}
-
-public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	
-	if (TTT_IsClientValid(client))
-	{
-		g_bHasWH[client] = false;
-		g_bOwnWH[client] = false;
-		
-		UnhookGlow(client);
-	}
-}
-
-public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
-{
-	LoopValidClients(client)
-	{
-		g_bHasWH[client] = false;
-		g_bOwnWH[client] = false;
-		
-		UnhookGlow(client);
-	}
-}
-
-public void TTT_OnClientGetRole(int client, int role)
-{
-	SetupGlowSkin(client);
-	if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "Pre SetupGlowSkin");
-}
-
-void SetupGlowSkin(int client)
-{
-	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client) || !TTT_IsRoundActive())
-	{
-		return;
-	}
-	
-	char sModel[PLATFORM_MAX_PATH];
-	GetClientModel(client, sModel, sizeof(sModel));
-	int iSkin = CPS_SetSkin(client, sModel, CPS_RENDER);
-	
-	if (iSkin == -1)
-	{
-		if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, " FAILED SetupGlowSkin iSkin == -1");
-		return;
-	}
-		
-	if (SDKHookEx(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-	{
-		if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, " SUCCESS SetupGlowSkin SDKHookEx");
-		SetupGlow(client, iSkin);
-	}
-}
-
-void SetupGlow(int client, int iSkin)
-{
-	int iOffset;
-	
-	if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
-	{
-		return;
-	}
-	
-	SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", true, true);
-	SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", 0);
-	SetEntPropFloat(iSkin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-	
-	int iRed = 255;
-	int iGreen = 255;
-	int iBlue = 255;
-	
-	if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "SetupGlow");
-	
-	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-	{
-		iRed = g_iColorDetective[0];
-		iGreen = g_iColorDetective[1];
-		iBlue = g_iColorDetective[2];
-	}
-	else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-	{
-		iRed = g_iColorTraitor[0];
-		iGreen = g_iColorTraitor[1];
-		iBlue = g_iColorTraitor[2];
-	}
-	else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-	{
-		iRed = g_iColorInnocent[0];
-		iGreen = g_iColorInnocent[1];
-		iBlue = g_iColorInnocent[2];
-	}
-	
-	SetEntData(iSkin, iOffset, iRed, _, true);
-	SetEntData(iSkin, iOffset + 1, iGreen, _, true);
-	SetEntData(iSkin, iOffset + 2, iBlue, _, true);
-	SetEntData(iSkin, iOffset + 3, 255, _, true);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -296,77 +195,154 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action OnSetTransmit_GlowSkin(int iSkin, int client)
+public Action Timer_SetupGlow(Handle timer, any data)
 {
+	if(!TTT_IsRoundActive())
+	{
+		return Plugin_Continue;
+	}
+	
+	LoopValidClients(i)
+	{
+		if (!IsPlayerAlive(i))
+		{
+			continue;
+		}
+		
+		SetupGlowSkin(i);
+	}
+	
+	return Plugin_Continue;
+}
+
+void SetupGlowSkin(int client)
+{
+	UnHookSkin(client);
+	CPS_RemoveSkin(client);
+	
 	if (!TTT_IsRoundActive())
 	{
-		return Plugin_Handled;
+		return;
+	}
+	
+	if (IsFakeClient(client) || IsClientSourceTV(client))
+	{
+		return;
 	}
 	
 	if (!IsPlayerAlive(client))
 	{
-		return Plugin_Handled;
+		return;
 	}
 	
-	if (!g_bOwnWH[client] ||!g_bHasWH[client])
-	{
-		return Plugin_Handled;
-	}
+	char model[PLATFORM_MAX_PATH];
+	GetClientModel(client, model, sizeof(model));
+	int skin = CPS_SetSkin(client, model, CPS_RENDER);
 	
-	LoopValidClients(target)
-	{
-		if (target < 1)
-		{
-			continue;
-		}
-		
-		if (client == target)
-		{
-			continue;
-		}
-		
-		if (!g_bDebug && IsFakeClient(target))
-		{
-			continue;
-		}
-		
-		if (!IsPlayerAlive(target))
-		{
-			continue;
-		}
-		
-		if (!CPS_HasSkin(target))
-		{
-			if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "%N hasn't a skin...", target);
-			continue;
-		}
-		
-		if (EntRefToEntIndex(CPS_GetSkin(target)) != iSkin)
-		{
-			continue;
-		}
-		
-		if (g_bHasWH[client] && g_bOwnWH[client])
-		{
-			if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "You should see %N", target);
-			return Plugin_Continue;
-		}
-	}
-	
-	return Plugin_Handled;
-}
-
-void UnhookGlow(int client)
-{
-	if (!TTT_IsClientValid(client))
+	if(skin == -1)
 	{
 		return;
 	}
-		
-	int iSkin = CPS_GetSkin(client);
-	if (IsValidEntity(iSkin))
+	if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
-		SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, 1);
-		SDKUnhook(iSkin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+		SetupGlow(client, skin);
 	}
+}
+
+void UnHookSkin(int client)
+{
+	if(CPS_HasSkin(client))
+	{
+		int skin = EntRefToEntIndex(CPS_GetSkin(client));
+		
+		if(IsValidEntity(skin))
+		{
+			SDKUnhook(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
+		}
+	}
+}
+
+void SetupGlow(int client, int skin)
+{
+	int iOffset;
+	
+	if ((iOffset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1)
+	{
+		return;
+	}
+	
+	SetEntProp(skin, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(skin, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(skin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+	
+	int iRed = 255;
+	int iGreen = 255;
+	int iBlue = 255;
+	
+	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	{
+		iRed = g_iColorDetective[0];
+		iGreen = g_iColorDetective[1];
+		iBlue = g_iColorDetective[2];
+	}
+	else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	{
+		iRed = g_iColorTraitor[0];
+		iGreen = g_iColorTraitor[1];
+		iBlue = g_iColorTraitor[2];
+	}
+	else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	{
+		iRed = g_iColorInnocent[0];
+		iGreen = g_iColorInnocent[1];
+		iBlue = g_iColorInnocent[2];
+	}
+	
+	SetEntData(skin, iOffset, iRed, _, true);
+	SetEntData(skin, iOffset + 1, iGreen, _, true);
+	SetEntData(skin, iOffset + 2, iBlue, _, true);
+	SetEntData(skin, iOffset + 3, 255, _, true);
+}
+
+public Action OnSetTransmit_GlowSkin(int skin, int client)
+{
+	LoopValidClients(i)
+	{
+		if (i < 1)
+		{
+			continue;
+		}
+		
+		if (client == i)
+		{
+			continue;
+		}
+		
+		if (IsFakeClient(i))
+		{
+			continue;
+		}
+		
+		if (!IsPlayerAlive(i))
+		{
+			continue;
+		}
+		
+		if (!CPS_HasSkin(i))
+		{
+			continue;
+		}
+		
+		if (EntRefToEntIndex(CPS_GetSkin(i)) != skin)
+		{
+			continue;
+		}
+	}
+	
+	if (g_bHasWH[client] && g_bOwnWH[client])
+	{
+		return Plugin_Continue;
+	}
+	
+	return Plugin_Handled;
 }
