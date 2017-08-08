@@ -13,8 +13,6 @@
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
 
-#pragma newdecls required
-
 #include "core/globals.sp"
 #include "core/natives.sp"
 #include "core/sql.sp"
