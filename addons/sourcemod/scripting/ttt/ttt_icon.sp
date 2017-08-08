@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -6,8 +7,6 @@
 #include <cstrike>
 #include <ttt>
 #include <config_loader>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Icons"
 

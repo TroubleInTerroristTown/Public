@@ -1,10 +1,9 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
-
-#pragma newdecls required
 
 #include <ttt>
 #include <config_loader>

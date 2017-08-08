@@ -1,3 +1,6 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <sourcemod>
 #include <sdkhooks>
 #include <ttt>
@@ -142,7 +145,7 @@ void UnHookSkin(int client)
 		
 		if(IsValidEntity(skin))
 		{
-			SDKUnhook(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin)
+			SDKUnhook(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
 		}
 	}
 }

@@ -1,11 +1,10 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <ttt>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Crash Catcher"
 

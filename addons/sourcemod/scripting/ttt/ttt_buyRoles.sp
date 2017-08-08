@@ -1,6 +1,5 @@
 #pragma semicolon 1
-
-#define DEBUG
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -8,8 +7,6 @@
 #include <config_loader>
 #include <ttt_shop>
 #include <multicolors>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Buy Roles"
 

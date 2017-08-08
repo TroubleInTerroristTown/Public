@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -9,8 +10,6 @@
 #include <multicolors>
 #include <clientprefs>
 #include <ttt_shop>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Shop"
 

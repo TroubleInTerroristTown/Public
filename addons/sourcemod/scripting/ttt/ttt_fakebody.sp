@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
@@ -8,8 +9,6 @@
 #include <ttt>
 #include <config_loader>
 #include <multicolors>
-
-#pragma newdecls required
 
 #define SHORT_NAME "fb"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Fake Body"

@@ -1,17 +1,15 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-
 #include <ttt_shop>
 #include <ttt>
 #include <ttt_weapons>
 #include <config_loader>
 #include <multicolors>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Weapons"
 

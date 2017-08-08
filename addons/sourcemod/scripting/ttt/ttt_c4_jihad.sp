@@ -1,6 +1,5 @@
 #pragma semicolon 1
-
-#define DEBUG
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -10,8 +9,6 @@
 #include <multicolors>
 #include <emitsoundany>
 #include <cstrike>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - C4 & Jihad"
 #define SHORT_NAME_C4 "c4"

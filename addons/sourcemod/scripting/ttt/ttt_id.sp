@@ -1,16 +1,14 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
 #include <multicolors>
-
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
-
-#pragma newdecls required
 
 #define SHORT_NAME_I "id"
 #define SHORT_NAME_T "id_t"

@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
@@ -7,8 +8,6 @@
 #include <ttt_shop>
 #include <config_loader>
 #include <camerasanddrones>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Cameras and Drones"
 

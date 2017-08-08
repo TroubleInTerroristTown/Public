@@ -72,9 +72,9 @@ native void CPS_SetTransmit(int owner, int client, int transmit);
  * @param client Client index
  * @return Returns the client index's skin flags.
  */
-native CPS_GetFlags(client);
+native int CPS_GetFlags(int client);
 
-public SharedPlugin:__pl_CustomPlayerSkins =
+public SharedPlugin __pl_CustomPlayerSkins =
 {
 	name = "CustomPlayerSkins",
 	file = "CustomPlayerSkins.smx",

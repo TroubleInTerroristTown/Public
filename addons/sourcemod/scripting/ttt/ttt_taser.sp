@@ -1,16 +1,14 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
 #include <multicolors>
-
-#pragma newdecls required
 
 #define SHORT_NAME "taser"
 #define SHORT_NAME_T "taser_t"

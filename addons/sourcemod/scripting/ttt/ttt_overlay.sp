@@ -1,14 +1,11 @@
 #pragma semicolon 1
-
-#define DEBUG
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
 #include <config_loader>
 #include <cstrike>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
 

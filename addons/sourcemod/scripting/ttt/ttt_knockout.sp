@@ -1,16 +1,13 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
-
 #include <ttt>
 #include <ttt_shop>
-
 #include <config_loader>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Knockout"
 #define SHORT_NAME "knockout"

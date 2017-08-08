@@ -1,15 +1,13 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
 #include <cstrike>
-
 #include <ttt>
 #include <ttt_sql>
 #include <config_loader>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - SQL Manager"
 

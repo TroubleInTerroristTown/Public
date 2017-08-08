@@ -1,3 +1,6 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
@@ -335,7 +338,7 @@ float GetPlayerTagEndTime(int client)
 void ResetTAG(int client)
 {
 	g_iTPCount[client] = 0;
-	g_fTaggingEndTime[client] = 0.0
+	g_fTaggingEndTime[client] = 0.0;
 	g_bPlayerIsTagged[client] = false;
 	g_bSeePlayers[client] = false;
 }

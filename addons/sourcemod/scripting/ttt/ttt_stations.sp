@@ -1,10 +1,12 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <sourcemod>
 #include <cstrike>
 #include <sdkhooks>
 #include <sdktools>
 #include <multicolors>
 #include <emitsoundany>
-
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
@@ -83,7 +85,7 @@ public void OnPluginStart()
 	
 	g_bHurtTraitors = Config_LoadBool("hurt_station_hurt_other_traitors", false, "Hurt other traitors with a hurtstation?");
 	
-	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?")
+	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?");
 	
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
