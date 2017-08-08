@@ -2060,12 +2060,20 @@ public Action Timer_1(Handle timer)
 		if (g_iInnoAlive == 0 && ((g_iConfig[b_endwithD]) || (g_iDetectiveAlive == 0)))
 		{
 			g_bRoundStarted = false;
-			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+			
+			if (!g_bDebug)
+			{
+				CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+			}
 		}
 		else if (g_iTraitorAlive == 0)
 		{
 			g_bRoundStarted = false;
-			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+			
+			if (!g_bDebug)
+			{
+				CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+			}
 		}
 	}
 }
@@ -2224,7 +2232,11 @@ public Action Timer_OnRoundEnd(Handle timer)
 {
 	g_hRoundTimer = null;
 	g_bRoundStarted = false;
-	CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+	
+	if (!g_bDebug)
+	{
+		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+	}
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -3078,7 +3090,11 @@ void CheckPlayers()
 	if (iCount >= g_iConfig[i_requiredPlayers])
 	{
 		g_bCheckPlayers = false;
-		CS_TerminateRound(3.0, CSRoundEnd_Draw);
+		
+		if (!g_bDebug)
+		{
+			CS_TerminateRound(3.0, CSRoundEnd_Draw);
+		}
 	}
 }
 
@@ -3244,13 +3260,21 @@ void CheckTeams()
 	{
 		g_bRoundStarted = false;
 		g_bRoundEnded = true;
-		CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+		
+		if (!g_bDebug)
+		{
+			CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
+		}
 	}
 	else if (iT == 0)
 	{
 		g_bRoundStarted = false;
 		g_bRoundEnded = true;
-		CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+		
+		if (!g_bDebug)
+		{
+			CS_TerminateRound(7.0, CSRoundEnd_CTWin);
+		}
 	}
 }
 
