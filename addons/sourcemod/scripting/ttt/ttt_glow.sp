@@ -82,11 +82,6 @@ public Action Timer_SetupGlow(Handle timer, any data)
 
 	LoopValidClients(i)
 	{
-		if (!IsPlayerAlive(i))
-		{
-			continue;
-		}
-
 		SetupGlowSkin(i);
 	}
 

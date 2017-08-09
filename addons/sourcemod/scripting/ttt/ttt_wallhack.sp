@@ -43,8 +43,6 @@ Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 
 bool g_bCPS = false;
 
-bool g_bDebug = false;
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -76,19 +74,7 @@ public void OnPluginStart()
 
 	Config_Done();
 
-	RegAdminCmd("sm_dwallhack", Command_DWallhack, ADMFLAG_ROOT);
-
 	g_bCPS = LibraryExists("CustomPlayerSkins");
-}
-
-public Action Command_DWallhack(int client, int args)
-{
-	if (g_bDebug)
-		g_bDebug = false;
-	else
-		g_bDebug = true;
-
-	PrintToChat(client, "Debug: %d", g_bDebug);
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -134,8 +120,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			g_bHasWH[client] = true;
 			g_bOwnWH[client] = true;
 
-			if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "TTT_OnItemPurchased");
-
 			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
 				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
@@ -155,7 +139,6 @@ public Action Timer_WHActive(Handle timer, any userid)
 
 	if (TTT_IsClientValid(client) && g_bOwnWH[client] && g_bHasWH[client])
 	{
-		if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "WH deactived...");
 		g_bHasWH[client] = false;
 		g_hTimer[client] = null;
 
@@ -178,7 +161,6 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 
 	if (TTT_IsClientValid(client) && g_bOwnWH[client] && !g_bHasWH[client])
 	{
-		if (g_bDebug && CheckCommandAccess(client, "sm_dwallhack", ADMFLAG_ROOT, true)) PrintToChat(client, "WH actived...");
 		g_bHasWH[client] = true;
 		g_hTimer[client] = null;
 
@@ -204,11 +186,6 @@ public Action Timer_SetupGlow(Handle timer, any data)
 
 	LoopValidClients(i)
 	{
-		if (!IsPlayerAlive(i))
-		{
-			continue;
-		}
-
 		SetupGlowSkin(i);
 	}
 
@@ -222,19 +199,20 @@ void SetupGlowSkin(int client)
 
 	if (!TTT_IsRoundActive())
 	{
-		return;
+		return Plugin_Continue;
 	}
 
-	if (IsFakeClient(client) || IsClientSourceTV(client))
+	if (IsFakeClient(i) || IsClientSourceTV(i))
 	{
-		return;
+		return Plugin_Continue;
 	}
 
-	if (!IsPlayerAlive(client))
+	if (!IsPlayerAlive(i))
 	{
-		return;
+		return Plugin_Continue;
 	}
-
+		
+	
 	char model[PLATFORM_MAX_PATH];
 	GetClientModel(client, model, sizeof(model));
 	int skin = CPS_SetSkin(client, model, CPS_RENDER);
@@ -243,6 +221,7 @@ void SetupGlowSkin(int client)
 	{
 		return;
 	}
+	
 	if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
 		SetupGlow(client, skin);

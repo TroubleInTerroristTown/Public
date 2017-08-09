@@ -630,7 +630,7 @@ public void OnMapStart()
 public void ThinkPost(int entity)
 {
 	int isAlive[MAXPLAYERS+1];
-	
+
 	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS+1);
 	LoopValidClients(i)
 	{
