@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <ttt>
+#include <ttt_wallhack>
 #include <CustomPlayerSkins>
 #include <config_loader>
 
@@ -19,6 +20,7 @@ bool g_bTGlow = false;
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 bool g_bCPS = false;
+bool g_bWallhack = false;
 
 public Plugin myinfo =
 {
@@ -28,6 +30,13 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	RegPluginLibrary("ttt_glow");
+
+	return APLRes_Success;
+}
 
 public void OnPluginStart()
 {
@@ -43,6 +52,7 @@ public void OnPluginStart()
 	Config_Done();
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
+	g_bWallhack = LibraryExists("ttt_wallhack");
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -51,6 +61,11 @@ public void OnLibraryAdded(const char[] name)
 	{
 		g_bCPS = true;
 	}
+	
+	if (StrEqual(name, "ttt_wallhack"))
+	{
+		g_bWallhack = true;
+	}
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -58,6 +73,11 @@ public void OnLibraryRemoved(const char[] name)
 	if (StrEqual(name, "CustomPlayerSkins"))
 	{
 		g_bCPS = false;
+	}
+	
+	if (StrEqual(name, "ttt_wallhack"))
+	{
+		g_bWallhack = false;
 	}
 }
 
@@ -69,7 +89,7 @@ public void OnAllPluginsLoaded()
 	}
 	else
 	{
-		CreateTimer(0.5, Timer_SetupGlow, _, TIMER_REPEAT);
+		CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
 	}
 }
 
@@ -224,7 +244,12 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 
 		target = i;
 	}
-
+	
+	if (g_bWallhack && TTT_HasActiveWallhack(client))
+	{
+		return Plugin_Continue;
+	}
+	
 	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
 	{
 		return Plugin_Continue;
