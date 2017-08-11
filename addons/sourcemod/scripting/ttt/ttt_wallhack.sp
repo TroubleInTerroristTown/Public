@@ -97,7 +97,7 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundReset);
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
-	g_bCPS = LibraryExists("ttt_glow");
+	g_bGlow = LibraryExists("ttt_glow");
 }
 
 public void OnLibraryAdded(const char[] name)
