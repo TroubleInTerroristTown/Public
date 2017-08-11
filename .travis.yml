@@ -15,6 +15,6 @@ env:
   - VERSION=1.8
   - VERSION=1.9
 
-install:
+before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "stable" ]]; then bash ci/test.sh $VERSION "dev"; fi'
   - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS; fi'
