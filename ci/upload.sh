@@ -9,6 +9,9 @@ HOST=$3
 USER=$4
 PASS=$5
 
+echo -e "Go to build folder\n"
+cd build
+
 echo -e "Upload file\n"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
 
