@@ -5,6 +5,7 @@
 #include <sdkhooks>
 #include <ttt>
 #include <ttt_wallhack>
+#include <ttt_tagrenade>
 #include <CustomPlayerSkins>
 #include <config_loader>
 
@@ -21,6 +22,7 @@ char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 bool g_bCPS = false;
 bool g_bWallhack = false;
+bool g_bTAGrenade = false;
 
 public Plugin myinfo =
 {
@@ -53,6 +55,7 @@ public void OnPluginStart()
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 	g_bWallhack = LibraryExists("ttt_wallhack");
+	g_bTAGrenade = LibraryExists("ttt_tagrenade");
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -66,6 +69,11 @@ public void OnLibraryAdded(const char[] name)
 	{
 		g_bWallhack = true;
 	}
+	
+	if (StrEqual(name, "ttt_tagrenade"))
+	{
+		g_bTAGrenade = true;
+	}
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -78,6 +86,11 @@ public void OnLibraryRemoved(const char[] name)
 	if (StrEqual(name, "ttt_wallhack"))
 	{
 		g_bWallhack = false;
+	}
+	
+	if (StrEqual(name, "ttt_tagrenade"))
+	{
+		g_bTAGrenade = false;
 	}
 }
 
@@ -246,6 +259,11 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 	}
 	
 	if (g_bWallhack && TTT_HasActiveWallhack(client))
+	{
+		return Plugin_Continue;
+	}
+	
+	if (g_bTAGrenade && TTT_CheckTAGrenade(client, target))
 	{
 		return Plugin_Continue;
 	}
