@@ -11,9 +11,9 @@
 #include <config_loader>
 #include <multicolors>
 
-#define SHORT_NAME "hs"
-#define SHORT_NAME_D "hs_d"
-#define SHORT_NAME_T "hs_t"
+#define SHORT_NAME "healthshot"
+#define SHORT_NAME_D "healthshot_d"
+#define SHORT_NAME_T "healthshot_t"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Healthshot"
 

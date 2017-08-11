@@ -10,7 +10,7 @@
 #include <config_loader>
 #include <multicolors>
 
-#define SHORT_NAME "fb"
+#define SHORT_NAME "fakebody"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Fake Body"
 
 #define COLLISION_GROUP_DEBRIS_TRIGGER 2

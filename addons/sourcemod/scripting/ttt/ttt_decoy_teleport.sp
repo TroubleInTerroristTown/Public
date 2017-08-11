@@ -11,7 +11,7 @@
 #include <config_loader>
 #include <multicolors>
 
-#define SHORT_NAME "dt"
+#define SHORT_NAME "decoyteleport"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Decoy Teleporter"
 

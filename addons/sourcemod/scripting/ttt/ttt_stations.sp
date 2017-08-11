@@ -11,8 +11,8 @@
 #include <ttt>
 #include <config_loader>
 
-#define HEALTH_ITEM_SHORT "hlthstat"
-#define HURT_ITEM_SHORT "hurtstat"
+#define HEALTH_ITEM_SHORT "healthstation"
+#define HURT_ITEM_SHORT "hurtstation"
 
 #define SND_WARNING "resource/warning.wav"
 

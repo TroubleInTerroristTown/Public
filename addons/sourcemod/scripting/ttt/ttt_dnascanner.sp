@@ -9,7 +9,7 @@
 #include <multicolors>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Dna Scanner"
-#define SHORT_NAME "dna"
+#define SHORT_NAME "dnascanner"
 
 int g_iPrice = 0;
 int g_iPrio = 0;

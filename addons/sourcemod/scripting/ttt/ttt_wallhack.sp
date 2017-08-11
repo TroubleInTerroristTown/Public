@@ -12,8 +12,8 @@
 #include <CustomPlayerSkins>
 #include <multicolors>
 
-#define SHORT_NAME_T "wh_t"
-#define SHORT_NAME_D "wh_d"
+#define SHORT_NAME_T "wallhack_t"
+#define SHORT_NAME_D "wallhack_d"
 #define LONG_NAME "Wallhack"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME

@@ -10,7 +10,7 @@
 #include <config_loader>
 #include <multicolors>
 
-#define SHORT_NAME "icek"
+#define SHORT_NAME "iceknife"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
 

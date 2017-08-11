@@ -11,9 +11,9 @@
 #include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Silent AWP"
-#define SHORT_NAME_T "awp_t"
-#define SHORT_NAME_D "awp_d"
-#define SHORT_NAME_I "awp_i"
+#define SHORT_NAME_T "silentawp_t"
+#define SHORT_NAME_D "silentawp_d"
+#define SHORT_NAME_I "silentawp_i"
 
 int g_iPriceT = -1;
 int g_iPriceD = -1;

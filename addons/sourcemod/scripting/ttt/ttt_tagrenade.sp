@@ -10,7 +10,7 @@
 #include <CustomPlayerSkins>
 #include <multicolors>
 
-#define SHORT_NAME "tag"
+#define SHORT_NAME "tagrenade"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
 int g_iTPrice = 0;
