@@ -58,7 +58,7 @@ do
 done
 
 echo -e "Download Cameras and Drones smx File"
-wget "https://github.com/Keplyx/cameras-and-drones/blob/dev/cameras-and-drones.smx?raw=true" -O addons/sourcemod/plugins/cameras-and-drones.smx
+wget "https://github.com/Keplyx/cameras-and-drones/blob/dev/plugins/cameras-and-drones.smx?raw=true" -O addons/sourcemod/plugins/cameras-and-drones.smx
 
 echo -e "Remove api test plugin\n"
 rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
