@@ -82,6 +82,14 @@ rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
 
+
+echo -e "Create gamedata/cameras-and-drones dir."
+mkdir build/addons/sourcemod/gamedata
+mkdir build/addons/sourcemod/gamedata/cameras-and-drones
+
+echo -e "Download custom_models.txt for cameras and drones"
+wget "https://github.com/Keplyx/cameras-and-drones/raw/master/gamedata/cameras-and-drones/custom_models.txt" -O build/addons/sourcemod/gamedata/cameras-and-drones/custom_models.txt
+
 echo -e "Add LICENSE to build package\n"
 cp LICENSE CVARS.txt build/
 
