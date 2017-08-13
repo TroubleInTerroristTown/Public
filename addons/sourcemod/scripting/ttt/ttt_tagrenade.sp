@@ -58,7 +58,7 @@ public int Native_CheckTAGrenade(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	int target = GetNativeCell(2);
 	
-	if (g_bSeePlayers[client] && GetGameTime() < GetPlayerTagEndTime(target))
+	if (g_bSeePlayers[client] && GetGameTime() < g_fTaggingEndTime[target])
 	{
 		return true;
 	}
@@ -291,11 +291,6 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 		return false;
 	}
 	return true;
-}
-
-float GetPlayerTagEndTime(int client)
-{
-	return g_fTaggingEndTime[client];
 }
 
 void ResetTAG(int client)
