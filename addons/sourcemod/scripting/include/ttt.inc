@@ -95,7 +95,7 @@ enum eConfig
 	bool:b_karmaDMG_up,
 	Float:f_roundDelay,
 	bool:b_nextRoundAlert,
-	bool:b_endroundDMG,
+	bool:b_roundendDamage,
 	bool:b_ignoreDeaths,
 	bool:b_ignoreRDMMenu,
 	bool:b_deadPlayersCanSeeOtherRules,
