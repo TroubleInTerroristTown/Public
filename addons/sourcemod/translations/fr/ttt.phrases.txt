@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 06:54:49 UTC
+// Date: 2017-08-14 14:19:19 UTC
 // Language: French (fr)
 // 
 // To view other translations for this plugin, please visit:
@@ -18,6 +18,11 @@
 		"fr"		"Tu es un {darkred}TRAITOR."
 	}
 
+	"Your Team is INNOCENTS"
+	{
+		"fr"		"Tu es {green}INNOCENT."
+	}
+
 	"Your killer is a Traitor"
 	{
 		"fr"		"Ton tueur etais un {darkred}TRAITRE!"
@@ -31,6 +36,11 @@
 	"Your killer is an Innocent"
 	{
 		"fr"		"Ton tueur etais un {darkred}INNOCENT!"
+	}
+
+	"You killed a Traitor"
+	{
+		"fr"		"Vous avez tué un {darkred}TRAITRE!"
 	}
 
 	"You killed a Detective"
@@ -53,6 +63,11 @@
 		"fr"		"DETECTIVE{blue} {1} {lightgreen}a scanne un corps, le joueur c'est suicide"
 	}
 
+	"Health Station"
+	{
+		"fr"		"Station de santé - {1}"
+	}
+
 	"DNA scanner (scan a dead body and show who the killer is)"
 	{
 		"fr"		"Scanner d'ADN (scan un mort et montre qui étais le tueur) - {1}"
@@ -66,6 +81,11 @@
 	"Buy rol Detective"
 	{
 		"fr"		"Acheter le role de DETECTIVE - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"fr"		"Attendez que votre équipe soit affectée"
 	}
 
 	"Item bought! Your REAL money is"
@@ -123,6 +143,11 @@
 		"fr"		"Tu n'a pas sa !"
 	}
 
+	"credits earned"
+	{
+		"fr"		"Vous avez gagné {1} crédits\nVos crédits actuel sont: {2}"
+	}
+
 	"lost credits"
 	{
 		"fr"		"Tu as perdu {1} credits\nTu as actuellement {2} credits."
@@ -146,6 +171,11 @@
 	"Taser"
 	{
 		"fr"		"Acheter Taser (detecte la team) - {1}"
+	}
+
+	"M4S"
+	{
+		"fr"		"Acheter M4-S - {1}"
 	}
 
 	"Found Innocent"
@@ -203,9 +233,19 @@
 		"fr"		"Clic droit pour planter le C4 !"
 	}
 
+	"You already have an active Health Station"
+	{
+		"fr"		"Vous avez déjà une station de santé active!"
+	}
+
 	"Choose Punish"
 	{
 		"fr"		"{1} a été choisis pour punir {2} pour les avoir RDM"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"fr"		"Vous avez choisi de pardonner {1} Pour RDMing vous!"
 	}
 
 	"Player is Now Traitor"
@@ -271,6 +311,16 @@
 	"Wire Is"
 	{
 		"fr"		"Le fil pour desarmorcer est le {orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"fr"		"Vos partenaires Traitres sont:"
+	}
+
+	"No Traitor Partners"
+	{
+		"fr"		"Vous n'avez aucun partenaire."
 	}
 
 	"Kick Bad Name"

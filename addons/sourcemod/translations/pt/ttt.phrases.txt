@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 06:54:50 UTC
+// Date: 2017-08-14 14:19:21 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -16,6 +16,11 @@
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
 		"pt"		"MIN. JOGADORES NECESSÁRIOS PARA JOGAR: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"pt"		"Você é um {blue}DETETIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -58,6 +63,11 @@
 		"pt"		"Você matou um {green}INOCENTE!"
 	}
 
+	"You hurt a Traitor"
+	{
+		"pt"		"Você usou o detector no jogador {darkred}{1} {lightgreen}e ele era um {darkred}TRAIDOR!"
+	}
+
 	"You hurt a Detective"
 	{
 		"pt"		"Você usou um detector no jogador{blue} {1} {lightgreen} e ele é um {blue}DETETIVE!"
@@ -71,6 +81,26 @@
 	"Detective scan found body"
 	{
 		"pt"		"DETETIVE{blue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"pt"		"DETETIVE{blue} {1} {lightgreen}escaneou o corpo, jogador cometeu suicido"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"pt"		"Matar com 1 hit de Faca (apenas 1 uso) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"pt"		"Carteira de Identidade Falsa (digite !id para provar a sua inocência.) - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"pt"		"Escaner DNA (escanear um corpo e descobrir quem o matou) - {1}"
 	}
 
 	"Kevlar"
@@ -88,6 +118,11 @@
 		"pt"		"Comprar papel DETETIVE - {1}"
 	}
 
+	"ID card (type !id for show your innocence)"
+	{
+		"pt"		"Carteira de Identidade (digite !id para provar a sua inocência.) - {1}"
+	}
+
 	"Please wait till your team is assigned"
 	{
 		"pt"		"Aguarde até que sua equipe seja designada"
@@ -96,6 +131,11 @@
 	"Item bought! Your REAL money is"
 	{
 		"pt"		"Item {2} comprado! Seus CRÉDITOS são {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"pt"		"Você não possui créditos suficientes!"
 	}
 
 	"Traitors"
@@ -123,6 +163,11 @@
 		"pt"		"Nome da vítima: {1}"
 	}
 
+	"Team victim"
+	{
+		"pt"		"Time: {1}"
+	}
+
 	"Elapsed since his death"
 	{
 		"pt"		"Decorrido desde a sua morte: {1} segundos"
@@ -138,9 +183,24 @@
 		"pt"		"A arma usada foi: ele mesmo (suicídio)"
 	}
 
+	"Killer is Player"
+	{
+		"pt"		"Matador: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"pt"		"Jogador cometeu suicido"
+	}
+
 	"Player Is an Innocent"
 	{
 		"pt"		"O jogador{green} {1} {lightgreen}é {green}INOCENTE"
+	}
+
+	"T channel"
+	{
+		"pt"		"{darkred}*TRAIDORES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -151,6 +211,11 @@
 	"lost credits"
 	{
 		"pt"		"Você perdeu {1} créditos\nSeus créditos atuais são: {2}"
+	}
+
+	"karma earned"
+	{
+		"pt"		"Você ganhou {1} karma\nSeu karma agora é: {2}"
 	}
 
 	"lost karma"
@@ -186,6 +251,11 @@
 	"M4S"
 	{
 		"pt"		"Comprar M4-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {green}{2}. {lightgreen}Ele era  {green}INOCENTE!"
 	}
 
 	"Found Detective"
@@ -233,6 +303,11 @@
 		"pt"		"Comprar radar - {1}"
 	}
 
+	"Suicide Blocked"
+	{
+		"pt"		"Suicídio está bloqueado"
+	}
+
 	"Right click to plant the C4"
 	{
 		"pt"		"Clique com o botão direito do mouse para plantar o C4!"
@@ -261,6 +336,11 @@
 	"Punish"
 	{
 		"pt"		"Punir"
+	}
+
+	"Choose Punish"
+	{
+		"pt"		"{1} escolheu punir {2} por RDM!"
 	}
 
 	"Choose Forgive Victim"
@@ -308,6 +388,11 @@
 		"pt"		"Sua bomba foi detonada!"
 	}
 
+	"Set C4 Timer"
+	{
+		"pt"		"Configurar tempo da C4..."
+	}
+
 	"Seconds"
 	{
 		"pt"		"{1} segundos"
@@ -321,6 +406,11 @@
 	"C4 Wire"
 	{
 		"pt"		"Fio {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"pt"		"Você defusou a bomba de {orchid}{1}{lightgreen}!"
 	}
 
 	"Has Defused Bomb"
@@ -343,9 +433,24 @@
 		"pt"		"Implantando um c4 que explodirá em {orchid}{1} {lightgreen} segundos."
 	}
 
+	"Bomb Was Not Found"
+	{
+		"pt"		"Sua bomba não foi encontrada!"
+	}
+
 	"Wire Is"
 	{
 		"pt"		"O fio de desativação é {orchid} {1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"pt"		"Seus Traidores parceiros:"
+	}
+
+	"No Traitor Partners"
+	{
+		"pt"		"Você não possui parceiros."
 	}
 
 	"Kick Bad Name"
@@ -353,9 +458,24 @@
 		"pt"		"Remova a palavra {1} do seu nome!"
 	}
 
+	"Health Station Deployed"
+	{
+		"pt"		"Health Station ativada. Fique por perto para recuperar HP!"
+	}
+
+	"Healing From"
+	{
+		"pt"		"Curando através da {lightgreen}Health Station de {orchid}{1}!"
+	}
+
 	"Health Station Out Of Charges"
 	{
 		"pt"		"Esta estação da saúde está descarregada! Espere pela recarga!"
+	}
+
+	"Welcome Menu"
+	{
+		"pt"		"Olá {1},\nesse é um servidor Trouble in Terrorist Town \ndesenvolvido by {2}\n\nVocê já conhece as regras?"
 	}
 
 	"WM Yes"
@@ -373,9 +493,159 @@
 		"pt"		"Você quer jogar como detetive? \nEntão você precisa das seguintes coisas:\n\n-microfone funcionando\n-fale com outros jogadores\n-jogo ativo\n\nVocê pode confirmar isso?"
 	}
 
+	"AM No"
+	{
+		"pt"		"Não, eu não posso confirmar isso."
+	}
+
 	"WM No"
 	{
 		"pt"		"Não, mostre-me as regras!"
+	}
+
+	"next round in"
+	{
+		"pt"		"Próximo round começará em {1} segundos!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"pt"		"Hurt station foi ativada! Ela irá causar dano nos jogadores que estiverem próximos!"
+	}
+
+	"All karma has been updated"
+	{
+		"pt"		"KARMA ATUALIZADO!"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"pt"		"Você precisa estar vivo para utilizar esse comando."
+	}
+
+	"Welcome Message 1"
+	{
+		"pt"		"[{green}Mina Laser{default}] {lightgreen}Digite {green}!lm {lightgreen}no chat para plantar as minhas laser"
+	}
+
+	"Welcome Message 2"
+	{
+		"pt"		"[{green}Mina Laser{default}] {lightgreen}Digite {green}!lm {lightgreen}para plantar ou {green}!bm {lightgreen}para comprar minas laser"
+	}
+
+	"Infinity mines"
+	{
+		"pt"		"Você possui minas laser infinitas"
+	}
+
+	"Mines"
+	{
+		"pt"		"Minas laser: {1}"
+	}
+
+	"Can't buy, max amount"
+	{
+		"pt"		"Você já possui o limite máximo de minas laser"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"pt"		"{1} minas. Você não possui mais dinheiro disponível."
+	}
+
+	"TaserMax"
+	{
+		"pt"		"Você alcançou o limite máximo de tasers! (Uso por round: {1})"
+	}
+
+	"AdminSet"
+	{
+		"pt"		"Você deu {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"pt"		"Digite !id para provar a sua inocência."
+	}
+
+	"RoundStartCenter"
+	{
+		"pt"		"Round começará em {3} segundos"
+	}
+
+	"YouAreDead"
+	{
+		"pt"		"Você precisa estar vivo para utilizar isso"
+	}
+
+	"DT: Invalid Position"
+	{
+		"pt"		"Posição da Decoy incorreta. (Problema de travamento)"
+	}
+
+	"SpecMenu: Player"
+	{
+		"pt"		"Jogador: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"pt"		"Próximo jogador"
+	}
+
+	"Hud Name"
+	{
+		"pt"		"Nome"
+	}
+
+	"Hud Health"
+	{
+		"pt"		"Vida"
+	}
+
+	"You tased a Traitor"
+	{
+		"pt"		"Jogador {lightgreen}{1} usou o detector em {darkred}{2} {lightgreen}e ele é {darkred}TRAIDOR!"
+	}
+
+	"You tased a Detective"
+	{
+		"pt"		"Jogador {lightgreen}{1} usou o detector em {blue} {2} {lightgreen}e ele era um {blue}DETETIVE!"
+	}
+
+	"AlreadyTaser"
+	{
+		"pt"		"Você já possui uma taser em seu inventário!"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"pt"		"Chat de voz dos Traidores: Desativado!"
+	}
+
+	"Item bought!"
+	{
+		"pt"		"Item {2} comprado! CRÉDITOS atuais {1}"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"pt"		"Desmutar jogadores mortos"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"pt"		"Desmutar jogadores vivos"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"pt"		"Shop não estará disponível após a compra de um item."
+	}
+
+	"Reopen Shop activated"
+	{
+		"pt"		"Shop estará disponível após a compra de um item."
 	}
 
 }

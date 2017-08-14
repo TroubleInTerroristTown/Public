@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 07:09:18 UTC
+// Date: 2017-08-14 14:26:23 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -916,6 +916,16 @@
 	"You already have an active Station"
 	{
 		"de"		"Du hast bereits eine aktive Station!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"de"		"Item {2} für {3} Credits gekauft! Verbleibende Credits: {1}"
+	}
+
+	"watching logs alive"
+	{
+		"de"		"{green}{1} {default}betrachtet als {darkred}lebender {default}die Logs der aktuellen Runde."
 	}
 
 }

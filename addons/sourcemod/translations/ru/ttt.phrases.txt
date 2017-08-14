@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 06:54:50 UTC
+// Date: 2017-08-14 14:19:21 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:

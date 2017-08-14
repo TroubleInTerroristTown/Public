@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-06-25 06:54:50 UTC
+// Date: 2017-08-14 14:19:20 UTC
 // Language: Italian (it)
 // 
 // To view other translations for this plugin, please visit:
@@ -8,14 +8,59 @@
 "Phrases"
 {
 
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"it"		"GIOCATORI MINIMII NECESSARI:  {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"it"		"Sei un {blue}DETECTIVE"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"it"		"Sei {green}INNOCENTE"
+	}
+
 	"Your credits is"
 	{
 		"it"		"I tuoi CREDITI sono: {orchid}{1}"
 	}
 
+	"Your killer is a Detective"
+	{
+		"it"		"Il tuo killer era un {blue}DETECTIVE!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"it"		"Il tuo killer era {green}INNOCENTE!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"it"		"Il tuo killer era {green}INNOCENTE!"
+	}
+
+	"You killed a Detective"
+	{
+		"it"		"Hai ucciso un {blue}DETECTIVE!"
+	}
+
+	"You killed an Innocent"
+	{
+		"it"		"Hai ucciso un {green}INNOCENTE!"
+	}
+
 	"You hurt a Traitor"
 	{
 		"it"		"Hai usato il rivelatore su {darkred}{1} {lightgreen}e' lui e' {darkred}TRADITORE!"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"it"		"Uccisione Istantanea con il Coltello (monouso) - {1}"
 	}
 
 	"FAKE ID card (type !id for show your innocence)"
@@ -28,9 +73,59 @@
 		"it"		"Stazione di Cura - {1}"
 	}
 
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"it"		"DNA scanner (scannerizza il corpo e guarda chi è il killer) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"it"		"Kevlar - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"it"		"Compra il ruolo DETECTIVE  -  {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"it"		"Aspetta che ti venga assegnato il tuo team, grazie"
+	}
+
 	"You don't have enough money"
 	{
 		"it"		"Non hai abbastanza crediti!"
+	}
+
+	"Traitors"
+	{
+		"it"		"TRADITORI"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"it"		"Corpo Ispezionato. I dati estratti sono i seguenti:"
+	}
+
+	"Player committed suicide"
+	{
+		"it"		"Un giocatore si è suicidato"
+	}
+
+	"Player committed suicide"
+	{
+		"it"		"Un giocatore si è suicidato"
+	}
+
+	"Player Is an Innocent"
+	{
+		"it"		"Il Giocatore{green} {1} {lightgreen}è {green}INNOCENTE"
+	}
+
+	"D channel"
+	{
+		"it"		"{blue}*DETECTIVE* {1}:{green} {2}"
 	}
 
 	"credits earned"
@@ -38,9 +133,44 @@
 		"it"		"Hai vinto {1}crediti\nI tuoi crediti sono: {2}"
 	}
 
+	"lost credits"
+	{
+		"it"		"Hai perso {1} crediti\nI tuoi crediti attuali sono: {2}"
+	}
+
+	"karma earned"
+	{
+		"it"		"Hai guadagnato {1} karma\nOra il tuo Karma è: {2}"
+	}
+
 	"lost karma"
 	{
 		"it"		"Hai perso {1} di karma\nIl tuo karma ora e': {2}"
+	}
+
+	"you cant see logs"
+	{
+		"it"		"Non puoi vedere i log ora, devi essere morto o il round inattivo"
+	}
+
+	"USPS"
+	{
+		"it"		"Compra USP-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {green}{2}. {lightgreen}Era un {green}INNOCENTE!"
+	}
+
+	"Found Detective"
+	{
+		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {blue}{2}. {lightgreen}Era un {blue}DETECTIVE!"
+	}
+
+	"Found Traitor"
+	{
+		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {darkred}{2}. {lightgreen}Era un {darkred}Traditore!"
 	}
 
 	"Buy c4"
@@ -48,14 +178,49 @@
 		"it"		"Compra il C4 - {1}"
 	}
 
+	"Buy jihadbomb"
+	{
+		"it"		"Compra una Bomba Jihad - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"it"		"La tua bomba non è stata innescata"
+	}
+
 	"Your bomb is now armed."
 	{
 		"it"		"La tua bomba si e' attivata."
 	}
 
+	"Your Karma is too low"
+	{
+		"it"		"Sei stato bannato perchè il tuo karma è troppo basso!"
+	}
+
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"it"		"{lightgreen}SONO STATI SCELTI {darkred}{1} TRADITORI."
+	}
+
+	"Buy radar"
+	{
+		"it"		"Compra il radar - {1}"
+	}
+
+	"Buy radar"
+	{
+		"it"		"Compra il radar"
+	}
+
+	"Suicide Blocked"
+	{
+		"it"		"Suicidio bloccato"
+	}
+
+	"Right click to plant the C4"
+	{
+		"it"		"Tasto destro per innescare il C4!"
 	}
 
 	"Forgive"
@@ -73,9 +238,29 @@
 		"it"		"Hai scelto di perdonare {1} anche se ti ha fatto RDM!"
 	}
 
+	"Player is Now Detective"
+	{
+		"it"		"{orchid}{1} {lightgreen}è ora un {blue}Detective!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"it"		"Sei un {green}Innocente!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"it"		"Sei  un {darkred}Traditore!"
+	}
+
 	"Bomb Detonated"
 	{
 		"it"		"La tua bomba e' esplosa!"
+	}
+
+	"Set C4 Timer"
+	{
+		"it"		"Configura il timer del C4..."
 	}
 
 	"Seconds"
@@ -88,9 +273,24 @@
 		"it"		"Disinnesca il C4!"
 	}
 
+	"Has Defused Bomb"
+	{
+		"it"		"{orchid}{1} {lightgreen}ha disinnescato la bomba!"
+	}
+
+	"Bomb Was Not Found"
+	{
+		"it"		"La tua bomba non è stata trovata!"
+	}
+
 	"Your Traitor Partners"
 	{
 		"it"		"I tuoi compagni Traditori sono:"
+	}
+
+	"Kick Bad Name"
+	{
+		"it"		"Rimuovi la parola {1} dal tuo nome!"
 	}
 
 	"WM Yes"
