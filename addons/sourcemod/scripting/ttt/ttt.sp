@@ -267,7 +267,6 @@ void SetupConfig()
 	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
 	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
 	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
-	g_iConfig[b_roundendDamage] = Config_LoadBool("ttt_roundend_dm", true, "Enable this to disable damage prevention between round end and warmup.");
 	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
@@ -275,7 +274,8 @@ void SetupConfig()
 	g_iConfig[b_dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
-	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_prestart_damage", true, "Enable damage before round start (Default disabled to prevent kills)?");
+	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_prestart_damage", false, "Enable damage before round start (Default disabled to prevent kills)?");
+	g_iConfig[b_roundendDamage] = Config_LoadBool("ttt_roundend_dm", false, "Enable this to disable damage prevention between round end and warmup.");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
@@ -1444,12 +1444,12 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
 bool IsDamageForbidden()
 {
-	if (g_bRoundEnded && !g_iConfig[b_roundendDamage])
+	if (!g_bRoundStarted && !g_iConfig[bEnableDamage])
 	{
 		return true;
 	}
-
-	if (!g_bRoundStarted && !g_iConfig[bEnableDamage])
+	
+	if (g_bRoundEnded && !g_iConfig[b_roundendDamage])
 	{
 		return true;
 	}
