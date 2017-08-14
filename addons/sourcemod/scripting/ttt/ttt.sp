@@ -759,6 +759,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 	ShowLogs(0);
 
 	g_iTeamSelectTime = 0;
+	g_bSelection = false;
 
 	if (g_hRoundTimer != null)
 	{
@@ -870,6 +871,7 @@ public Action Timer_Selection(Handle hTimer)
 	}
 
 	g_bRoundStarted = true;
+	g_bSelection = true;
 	g_bCheckPlayers = false;
 
 	int iTCount = GetTCount(aPlayers.Length);
@@ -1026,6 +1028,8 @@ public Action Timer_Selection(Handle hTimer)
 	}
 
 	g_iTeamSelectTime = GetTime();
+	
+	g_bSelection = false;
 
 	Call_StartForward(g_hOnRoundStart);
 	Call_PushCell(iInnocents);
@@ -2347,7 +2351,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
-	CheckClantag(client);
+	
+	if (!g_bSelection)
+	{
+		CheckClantag(client);
+	}
 
 	if (g_iConfig[bhideTeams] && (!event.GetBool("silent")))
 	{

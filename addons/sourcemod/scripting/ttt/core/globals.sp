@@ -39,6 +39,7 @@ ArrayList g_aForceTraitor;
 ArrayList g_aForceDetective;
 
 bool g_bRoundStarted = false;
+bool g_bSelection = false;
 bool g_bCheckPlayers = false;
 
 int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
