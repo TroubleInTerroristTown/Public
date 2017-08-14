@@ -593,11 +593,16 @@ public void OnMapStart()
 	PrecacheModel(g_iConfig[s_modelCT], true);
 	PrecacheModel(g_iConfig[s_modelT], true);
 
-
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
 	{
 		SetFailState("CCSPlayerResource \"m_bAlive\" offset is invalid");
+	}
+	
+	g_iHealth = FindSendPropInfo("CCSPlayerResource", "m_iHealth");
+	if (g_iHealth == -1)
+	{
+		SetFailState("CCSPlayerResource \"m_iHealth\" offset is invalid");
 	}
 
 	g_iKills = FindSendPropInfo("CCSPlayerResource", "m_iKills");
@@ -629,9 +634,10 @@ public void OnMapStart()
 
 public void ThinkPost(int entity)
 {
-	int isAlive[MAXPLAYERS+1];
+	int isAlive[MAXPLAYERS + 1];
+	int iZero[MAXPLAYERS + 1] =  { 0, ... };
 
-	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS+1);
+	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
 	LoopValidClients(i)
 	{
 		isAlive[i] = (!g_bFound[i]);
@@ -639,15 +645,14 @@ public void ThinkPost(int entity)
 
 	if (g_iConfig[b_kadRemover])
 	{
-		int iZero[MAXPLAYERS + 1] =  { 0, ... };
-
 		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
 
-	SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS+1);
+	SetEntDataArray(entity, g_iHealth, iZero, MAXPLAYERS + 1);
+	SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
 }
 
 public Action Command_Karma(int client, int args)
