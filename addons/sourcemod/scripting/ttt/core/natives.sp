@@ -31,16 +31,16 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 
-	int Body[Ragdolls];
+	int iBody[Ragdolls];
 
 	if (TTT_IsClientValid(client))
 	{
 		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
-			g_aRagdoll.GetArray(i, Body[0], sizeof(Body));
-			if (Body[Victim] == client)
+			g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
+			if (iBody[Victim] == client)
 			{
-				SetNativeArray(2, Body[0], sizeof(Body));
+				SetNativeArray(2, iBody[0], sizeof(iBody));
 			}
 			return 1;
 		}
@@ -51,11 +51,11 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 
 public int Native_SetRagdoll(Handle plugin, int numParams)
 {
-	int Body[Ragdolls];
+	int iBody[Ragdolls];
 
-	GetNativeArray(1, Body[0], sizeof(Body));
+	GetNativeArray(1, iBody[0], sizeof(iBody));
 
-	g_aRagdoll.PushArray(Body[0]);
+	g_aRagdoll.PushArray(iBody[0]);
 
 	return 0;
 }
@@ -86,8 +86,7 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		setKarma(client, karma);
-		return g_iKarma[client];
+		return setKarma(client, karma);
 	}
 
 	return 0;
@@ -100,8 +99,7 @@ public int Native_AddClientKarma(Handle plugin, int numParams)
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		setKarma(client, g_iKarma[client]+karma);
-		return g_iKarma[client];
+		return setKarma(client, g_iKarma[client] + karma);
 	}
 
 	return 0;
@@ -120,15 +118,15 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 			return false;
 		}
 
-		int Items[Ragdolls];
+		int iRagdoll[Ragdolls];
 
 		for (int i = 0; i < iSize; i++)
 		{
-			g_aRagdoll.GetArray(i, Items[0]);
+			g_aRagdoll.GetArray(i, iRagdoll[0]);
 
-			if (Items[Victim] == client)
+			if (iRagdoll[Victim] == client)
 			{
-				return Items[Found];
+				return iRagdoll[Found];
 			}
 		}
 	}
@@ -149,15 +147,15 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 			return false;
 		}
 
-		int Items[Ragdolls];
+		int iRagdoll[Ragdolls];
 
 		for (int i = 0; i < iSize; i++)
 		{
-			g_aRagdoll.GetArray(i, Items[0]);
+			g_aRagdoll.GetArray(i, iRagdoll[0]);
 
-			if (Items[Victim] == client)
+			if (iRagdoll[Victim] == client)
 			{
-				return Items[Scanned];
+				return iRagdoll[Scanned];
 			}
 		}
 	}
@@ -233,9 +231,13 @@ public int Native_ForceTraitor(Handle plugin, int numParams)
 	if(TTT_IsClientValid(client))
 	{
 		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
+		{
 			g_aForceTraitor.Push(client);
+		}
 		else
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -244,12 +246,17 @@ public int Native_ForceTraitor(Handle plugin, int numParams)
 public int Native_ForceDetective(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
+	
 	if(TTT_IsClientValid(client))
 	{
 		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
+		{
 			g_aForceDetective.Push(client);
+		}
 		else
+		{
 			return false;
+		}
 	}
 
 	return true;

@@ -112,6 +112,7 @@ public void OnPluginStart()
 	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
 	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
+	RegAdminCmd("sm_reloadcfg", Command_ReloadCFG, ADMFLAG_ROOT);
 
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
@@ -195,125 +196,125 @@ void SetupConfig()
 	Config_Setup("TTT", g_sConfigFile);
 
 	// Karma settings
-	g_iConfig[b_showKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
-	g_iConfig[b_showEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_publicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
-	g_iConfig[b_karmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
-	g_iConfig[b_karmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
-	g_iConfig[b_karmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
-	g_iConfig[i_messageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
-	g_iConfig[i_karmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
-	g_iConfig[i_karmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
-	g_iConfig[i_karmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
-	g_iConfig[i_karmaTI] = Config_LoadInt("ttt_karma_killer_traitor_victim_innocent_add", 2, "The amount of karma a traitor will recieve for killing an innocent.");
-	g_iConfig[i_karmaTT] = Config_LoadInt("ttt_karma_killer_traitor_victim_traitor_subtract", 5, "The amount of karma a traitor will lose for killing a traitor.");
-	g_iConfig[i_karmaTD] = Config_LoadInt("ttt_karma_killer_traitor_victim_detective_add", 3, "The amount of karma a traitor will recieve for killing a detective.");
-	g_iConfig[i_karmaDI] = Config_LoadInt("ttt_karma_killer_detective_victim_innocent_subtract", 3, "The amount of karma a detective will lose for killing an innocent.");
-	g_iConfig[i_karmaDT] = Config_LoadInt("ttt_karma_killer_detective_victim_traitor_add", 7, "The amount of karma a detective will recieve for killing a traitor.");
-	g_iConfig[i_karmaDD] = Config_LoadInt("ttt_karma_killer_detective_victim_detective_subtract", 7, "The amount of karma a detective will lose for killing a detective.");
-	g_iConfig[i_startKarma] = Config_LoadInt("ttt_start_karma", 100, "The amount of karma new players and players who were karma banned will start with.");
-	g_iConfig[i_karmaBan] = Config_LoadInt("ttt_with_karma_ban", 75, "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)");
-	g_iConfig[i_karmaBanLength] = Config_LoadInt("ttt_with_karma_ban_length", 10080, "The length of a Bad Karma ban. (Default = 1 Week)");
-	g_iConfig[i_maxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
-	g_iConfig[i_requiredPlayersD] = Config_LoadInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
-	g_iConfig[i_requiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
-	g_iConfig[i_maxTraitors] = Config_LoadInt("ttt_traitor_max", 32, "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
-	g_iConfig[i_maxDetectives] = Config_LoadInt("ttt_detective_max", 32, "Maximum number of detectives. Can be used to cap or disable detectives.");
-	g_iConfig[i_minKarmaDetective] = Config_LoadInt("ttt_detective_karma_min", 100, "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
+	g_iConfig[bshowKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
+	g_iConfig[bshowEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bshowLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bpublicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
+	g_iConfig[bkarmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
+	g_iConfig[bkarmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
+	g_iConfig[bkarmaDMG_up] = Config_LoadBool("ttt_karma_dmg_up", false, "If ttt_karma_dmg is enabled, should be enable scaling damage upward?");
+	g_iConfig[imessageTypKarma] = Config_LoadInt("ttt_message_typ_karma", 1, "The karma message type. 1 = Hint Text or 2 = Chat Message");
+	g_iConfig[ikarmaII] = Config_LoadInt("ttt_karma_killer_innocent_victim_innocent_subtract", 5, "The amount of karma an innocent will lose for killing an innocent.");
+	g_iConfig[ikarmaIT] = Config_LoadInt("ttt_karma_killer_innocent_victim_traitor_add", 5, "The amount of karma an innocent will recieve for killing a traitor.");
+	g_iConfig[ikarmaID] = Config_LoadInt("ttt_karma_killer_innocent_victim_detective_subtract", 7, "The amount of karma an innocent will lose for killing a detective.");
+	g_iConfig[ikarmaTI] = Config_LoadInt("ttt_karma_killer_traitor_victim_innocent_add", 2, "The amount of karma a traitor will recieve for killing an innocent.");
+	g_iConfig[ikarmaTT] = Config_LoadInt("ttt_karma_killer_traitor_victim_traitor_subtract", 5, "The amount of karma a traitor will lose for killing a traitor.");
+	g_iConfig[ikarmaTD] = Config_LoadInt("ttt_karma_killer_traitor_victim_detective_add", 3, "The amount of karma a traitor will recieve for killing a detective.");
+	g_iConfig[ikarmaDI] = Config_LoadInt("ttt_karma_killer_detective_victim_innocent_subtract", 3, "The amount of karma a detective will lose for killing an innocent.");
+	g_iConfig[ikarmaDT] = Config_LoadInt("ttt_karma_killer_detective_victim_traitor_add", 7, "The amount of karma a detective will recieve for killing a traitor.");
+	g_iConfig[ikarmaDD] = Config_LoadInt("ttt_karma_killer_detective_victim_detective_subtract", 7, "The amount of karma a detective will lose for killing a detective.");
+	g_iConfig[istartKarma] = Config_LoadInt("ttt_start_karma", 100, "The amount of karma new players and players who were karma banned will start with.");
+	g_iConfig[ikarmaBan] = Config_LoadInt("ttt_with_karma_ban", 75, "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)");
+	g_iConfig[ikarmaBanLength] = Config_LoadInt("ttt_with_karma_ban_length", 10080, "The length of a Bad Karma ban. (Default = 1 Week)");
+	g_iConfig[imaxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
+	g_iConfig[irequiredPlayersD] = Config_LoadInt("ttt_required_playersdetective", 6, "The amount of players required to activate the detective role.");
+	g_iConfig[irequiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
+	g_iConfig[imaxTraitors] = Config_LoadInt("ttt_traitor_max", 32, "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
+	g_iConfig[imaxDetectives] = Config_LoadInt("ttt_detective_max", 32, "Maximum number of detectives. Can be used to cap or disable detectives.");
+	g_iConfig[iminKarmaDetective] = Config_LoadInt("ttt_detective_karma_min", 100, "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
 
-	g_iConfig[b_blockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_blockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_blockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
-	g_iConfig[b_showDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_showKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_allowFlash] = Config_LoadBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled");
-	g_iConfig[b_blockLookAtWeapon] = Config_LoadBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
-	g_iConfig[b_enableNoBlock] = Config_LoadBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
-	g_iConfig[b_kadRemover] = Config_LoadBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
-	g_iConfig[i_fakeHealth] = Config_LoadInt("ttt_fake_health", 100, "TODO: Add description");
-	g_iConfig[i_fakeLife] = Config_LoadInt("ttt_fake_life", 0, "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)");
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
-	g_iConfig[i_spawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
-	g_iConfig[i_spawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
-	g_iConfig[i_spawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
-	g_iConfig[i_rulesClosePunishment] = Config_LoadInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
-	g_iConfig[i_timeToReadDetectiveRules] = Config_LoadInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
-	g_iConfig[i_timeToReadRules] = Config_LoadInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
-	g_iConfig[b_showDetectiveMenu] = Config_LoadBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
-	g_iConfig[b_showRulesMenu] = Config_LoadBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
-	g_iConfig[i_punishInnoKills] = Config_LoadInt("ttt_punish_innocent_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent/detective before being punished for RDM.");
-	g_iConfig[i_punishTraitorKills] = Config_LoadInt("ttt_punish_traitor_for_rdm_kils", 1, "The amount of times an traitor will be allowed to kill another traitor before being punished for RDM.");
-	g_iConfig[i_punishDetectiveKills] = Config_LoadInt("ttt_punish_detective_for_rdm_kils", 5, "The amount of times an detective will be allowed to kill another innocent/detective before being punished for RDM.");
-	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[s_kickImmunity], sizeof(g_iConfig[s_kickImmunity]));
-	Config_LoadString("ttt_logs_access", "bz", "Admin flags to view logs in a round.", g_iConfig[s_logsAccess], sizeof(g_iConfig[s_logsAccess]));
-	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logs_dead_only", false, "Access to logs only for dead admins?");
-	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logs_notify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
-	g_iConfig[b_updateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
-	g_iConfig[b_removeHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_removeBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_roleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
-	g_iConfig[i_traitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
-	g_iConfig[i_detectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
-	g_iConfig[b_denyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
-	g_iConfig[b_slayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
-	g_iConfig[b_removeBuyzone] = Config_LoadBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[b_forceTeams] = Config_LoadBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
-	g_iConfig[b_randomWinner] = Config_LoadBool("ttt_random_winner", true, "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No");
-	g_iConfig[b_forceModel] = Config_LoadBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
-	g_iConfig[b_endwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[b_hideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
+	g_iConfig[bblockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
+	g_iConfig[bblockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
+	g_iConfig[bblockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
+	g_iConfig[bshowDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bshowKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
+	g_iConfig[ballowFlash] = Config_LoadBool("ttt_allow_flash", true, "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled");
+	g_iConfig[bblockLookAtWeapon] = Config_LoadBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
+	g_iConfig[benableNoBlock] = Config_LoadBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bkadRemover] = Config_LoadBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
+	g_iConfig[ifakeHealth] = Config_LoadInt("ttt_fake_health", 100, "TODO: Add description");
+	g_iConfig[ifakeLife] = Config_LoadInt("ttt_fake_life", 0, "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)");
+	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[spluginTag], sizeof(g_iConfig[spluginTag]));
+	g_iConfig[ispawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
+	g_iConfig[ispawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
+	g_iConfig[ispawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
+	g_iConfig[irulesClosePunishment] = Config_LoadInt("ttt_rulesclose_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
+	g_iConfig[itimeToReadDetectiveRules] = Config_LoadInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
+	g_iConfig[itimeToReadRules] = Config_LoadInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
+	g_iConfig[bshowDetectiveMenu] = Config_LoadBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
+	g_iConfig[bshowRulesMenu] = Config_LoadBool("ttt_show_rulesmenu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
+	g_iConfig[ipunishInnoKills] = Config_LoadInt("ttt_punish_innocent_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent/detective before being punished for RDM.");
+	g_iConfig[ipunishTraitorKills] = Config_LoadInt("ttt_punish_traitor_for_rdm_kils", 1, "The amount of times an traitor will be allowed to kill another traitor before being punished for RDM.");
+	g_iConfig[ipunishDetectiveKills] = Config_LoadInt("ttt_punish_detective_for_rdm_kils", 5, "The amount of times an detective will be allowed to kill another innocent/detective before being punished for RDM.");
+	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[skickImmunity], sizeof(g_iConfig[skickImmunity]));
+	Config_LoadString("ttt_logsaccess", "bz", "Admin flags to view logs in a round.", g_iConfig[slogsAccess], sizeof(g_iConfig[slogsAccess]));
+	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logsdead_only", false, "Access to logs only for dead admins?");
+	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logsnotify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
+	g_iConfig[bupdateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
+	g_iConfig[bremoveHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[bremoveBomb] = Config_LoadBool("ttt_remove_bombon_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[broleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
+	g_iConfig[itraitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
+	g_iConfig[idetectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
+	g_iConfig[bdenyFire] = Config_LoadBool("ttt_deny_fire", true, "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)");
+	g_iConfig[bslayAfterStart] = Config_LoadBool("ttt_slay_after_start", true, "Slay all players after ttt round started");
+	g_iConfig[bremoveBuyzone] = Config_LoadBool("ttt_disable_buyzone", false, "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[bforceTeams] = Config_LoadBool("ttt_force_teams", true, "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.");
+	g_iConfig[brandomWinner] = Config_LoadBool("ttt_random_winner", true, "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No");
+	g_iConfig[bforceModel] = Config_LoadBool("ttt_force_models", false, "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).");
+	g_iConfig[bendwithD] = Config_LoadBool("ttt_end_with_detective", false, "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[bhideTeams] = Config_LoadBool("ttt_hide_teams", false, "Hide team changes from chat.");
 
-	g_iConfig[b_stripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
+	g_iConfig[bstripWeapons] = Config_LoadBool("ttt_strip_weapons", true, "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.");
 	g_iConfig[f_roundDelay] = Config_LoadFloat("ttt_after_round_delay", 7.0, "The amount of seconds to use for round-end delay. Use 0.0 for default.");
-	g_iConfig[b_nextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
-	g_iConfig[b_ignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[b_ignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[b_deadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[b_tChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
-	g_iConfig[b_dChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
+	g_iConfig[bnextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
+	g_iConfig[bignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[bignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[bdeadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_playerscan_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[btChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
+	g_iConfig[bdChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
 	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_prestart_damage", false, "Enable damage before round start (Default disabled to prevent kills)?");
-	g_iConfig[b_roundendDamage] = Config_LoadBool("ttt_roundend_dm", false, "Enable this to disable damage prevention between round end and warmup.");
+	g_iConfig[broundendDamage] = Config_LoadBool("ttt_roundend_dm", false, "Enable damage after a round until round end.");
 
-	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[s_modelCT], sizeof(g_iConfig[s_modelCT]));
-	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[s_modelT], sizeof(g_iConfig[s_modelT]));
+	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[smodelCT], sizeof(g_iConfig[smodelCT]));
+	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[smodelT], sizeof(g_iConfig[smodelT]));
 
-	Config_LoadString("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]));
-	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]));
-	Config_LoadString("ttt_log_date_format", "%y-%m-%d", "Date format for the log files", g_iConfig[s_logDateFormat], sizeof(g_iConfig[s_logDateFormat]));
+	Config_LoadString("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[slogFile], sizeof(g_iConfig[slogFile]));
+	Config_LoadString("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.", g_iConfig[serrFile], sizeof(g_iConfig[serrFile]));
+	Config_LoadString("ttt_log_date_format", "%y-%m-%d", "Date format for the log files", g_iConfig[slogDateFormat], sizeof(g_iConfig[slogDateFormat]));
 
 	// Move to ttt_weapons
-	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[s_defaultPri_D], sizeof(g_iConfig[s_defaultPri_D]));
-	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[s_defaultSec], sizeof(g_iConfig[s_defaultSec]));
+	Config_LoadString("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).", g_iConfig[sdefaultPriD], sizeof(g_iConfig[sdefaultPriD]));
+	Config_LoadString("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).", g_iConfig[sdefaultSec], sizeof(g_iConfig[sdefaultSec]));
 
-	g_iConfig[i_RoundStartedFontSize] = Config_LoadInt("ttt_round_started_font_size", 32, "Font size of the text if round started");
-	Config_LoadString("ttt_round_started_font_color", "44ff22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[s_RoundStartedFontColor], sizeof(g_iConfig[s_RoundStartedFontColor]));
-	g_iConfig[i_RoundStartFontSize] = Config_LoadInt("ttt_round_start_font_size", 24, "Font size of the text while the countdown runs");
-	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[s_RoundStartFontColor], sizeof(g_iConfig[s_RoundStartFontColor]));
+	g_iConfig[iRoundStartedFontSize] = Config_LoadInt("ttt_round_started_font_size", 32, "Font size of the text if round started");
+	Config_LoadString("ttt_round_started_font_color", "44ff22", "Font color (hexcode without hastag!) of the text if round started", g_iConfig[sRoundStartedFontColor], sizeof(g_iConfig[sRoundStartedFontColor]));
+	g_iConfig[iRoundStartFontSize] = Config_LoadInt("ttt_round_start_font_size", 24, "Font size of the text while the countdown runs");
+	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[sRoundStartFontColor], sizeof(g_iConfig[sRoundStartFontColor]));
 	g_iConfig[bShowTraitors] = Config_LoadBool("ttt_show_traitor_names", true, "Show traitor partners on team selection?");
 
-	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
-	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
-	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
+	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weaponson_failed_start", false, "Give player weapons on a fail start?");
+	Config_LoadString("ttt_give_weaponsfail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
+	Config_LoadString("ttt_give_weaponsfail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
 	
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
 
 	Config_Done();
 
 	char sDate[12];
-	FormatTime(sDate, sizeof(sDate), g_iConfig[s_logDateFormat]);
-	ReplaceString(g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), "<DATE>", sDate, true);
-	ReplaceString(g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), "<DATE>", sDate, true);
+	FormatTime(sDate, sizeof(sDate), g_iConfig[slogDateFormat]);
+	ReplaceString(g_iConfig[slogFile], sizeof(g_iConfig[slogFile]), "<DATE>", sDate, true);
+	ReplaceString(g_iConfig[serrFile], sizeof(g_iConfig[serrFile]), "<DATE>", sDate, true);
 
-	BuildPath(Path_SM, g_iConfig[s_logFile], sizeof(g_iConfig[s_logFile]), g_iConfig[s_logFile]);
-	BuildPath(Path_SM, g_iConfig[s_errFile], sizeof(g_iConfig[s_errFile]), g_iConfig[s_errFile]);
+	BuildPath(Path_SM, g_iConfig[slogFile], sizeof(g_iConfig[slogFile]), g_iConfig[slogFile]);
+	BuildPath(Path_SM, g_iConfig[serrFile], sizeof(g_iConfig[serrFile]), g_iConfig[serrFile]);
 }
 
 public void OnConfigsExecuted()
 {
-	if (g_iConfig[b_blockGrenadeMessage])
+	if (g_iConfig[bblockGrenadeMessage])
 	{
 		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), true);
 	}
@@ -321,7 +322,7 @@ public void OnConfigsExecuted()
 	ConVar cHoliday = FindConVar("sv_holiday_mode");
 	if (cHoliday != null)
 	{
-		cHoliday.SetBool(false);
+		cHoliday.SetInt(0); // 0 = OFF, 1 = Halloween, 2 = Winter
 	}
 }
 
@@ -330,7 +331,7 @@ public Action Command_Logs(int client, int args)
 	char sFlags[16];
 	AdminFlag aFlags[16];
 
-	Format(sFlags, sizeof(sFlags), g_iConfig[s_logsAccess]);
+	Format(sFlags, sizeof(sFlags), g_iConfig[slogsAccess]);
 	FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
 
 	if (g_bRoundEnding || g_bRoundStarted)
@@ -349,13 +350,14 @@ public Action Command_Logs(int client, int args)
 			else
 			{
 				ShowLogs(client);
+				
 				if (g_iConfig[bLogsNotifyAlive] > 0 && !g_bRoundEnding && IsPlayerAlive(client))
 				{
 					if (g_iConfig[bLogsNotifyAlive] == 1)
 					{
 						LoopValidClients(j)
 						{
-							CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+							CPrintToChat(j, g_iConfig[spluginTag], "watching logs alive", j, client);
 						}
 					}
 					else if (g_iConfig[bLogsNotifyAlive] == 2)
@@ -364,7 +366,7 @@ public Action Command_Logs(int client, int args)
 						{
 							if (TTT_HasFlags(j, aFlags))
 							{
-								CPrintToChat(j, g_iConfig[s_pluginTag], "watching logs alive", j, client);
+								CPrintToChat(j, g_iConfig[spluginTag], "watching logs alive", j, client);
 							}
 						}
 					}
@@ -374,7 +376,7 @@ public Action Command_Logs(int client, int args)
 		return Plugin_Continue;
 	}
 
-	CPrintToChat(client, g_iConfig[s_pluginTag], "you cant see logs", client);
+	CPrintToChat(client, g_iConfig[spluginTag], "you cant see logs", client);
 	return Plugin_Handled;
 }
 
@@ -389,7 +391,7 @@ stock void ShowLogs(int client)
 		}
 		else
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "no logs yet", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "no logs yet", client);
 		}
 
 		return;
@@ -404,12 +406,12 @@ stock void ShowLogs(int client)
 
 	if (client == 0)
 	{
-		LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
-		LogToFileEx(g_iConfig[s_logFile], "-----------START ROUND LOGS-----------");
+		LogToFileEx(g_iConfig[slogFile], "--------------------------------------");
+		LogToFileEx(g_iConfig[slogFile], "-----------START ROUND LOGS-----------");
 	}
 	else
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Receiving logs", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "Receiving logs", client);
 		PrintToConsole(client, "--------------------------------------");
 		PrintToConsole(client, "---------------TTT LOGS---------------");
 	}
@@ -430,7 +432,7 @@ stock void ShowLogs(int client)
 
 		if (client == 0)
 		{
-			LogToFileEx(g_iConfig[s_logFile], iItem);
+			LogToFileEx(g_iConfig[slogFile], iItem);
 		}
 		else
 		{
@@ -441,10 +443,10 @@ stock void ShowLogs(int client)
 	if (end)
 	{
 		if (client == 0)
-			LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+			LogToFileEx(g_iConfig[slogFile], "--------------------------------------");
 		else
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "See your console", client);
 			PrintToConsole(client, "--------------------------------------");
 			PrintToConsole(client, "--------------------------------------");
 		}
@@ -511,7 +513,7 @@ public void OnCreate(any data)
 
 			if (client == 0)
 			{
-				LogToFileEx(g_iConfig[s_logFile], iItem);
+				LogToFileEx(g_iConfig[slogFile], iItem);
 			}
 			else
 			{
@@ -522,10 +524,10 @@ public void OnCreate(any data)
 		if (end)
 		{
 			if (client == 0)
-				LogToFileEx(g_iConfig[s_logFile], "--------------------------------------");
+				LogToFileEx(g_iConfig[slogFile], "--------------------------------------");
 			else
 			{
-				CPrintToChat(client, g_iConfig[s_pluginTag], "See your console", client);
+				CPrintToChat(client, g_iConfig[spluginTag], "See your console", client);
 				PrintToConsole(client, "--------------------------------------");
 				PrintToConsole(client, "--------------------------------------");
 			}
@@ -552,9 +554,9 @@ public void OnCreate(any data)
 
 public Action Command_InterceptSuicide(int client, const char[] command, int args)
 {
-	if (g_iConfig[b_blockSuicide] && IsPlayerAlive(client))
+	if (g_iConfig[bblockSuicide] && IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Suicide Blocked", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "Suicide Blocked", client);
 		return Plugin_Handled;
 	}
 	return Plugin_Continue;
@@ -562,7 +564,7 @@ public Action Command_InterceptSuicide(int client, const char[] command, int arg
 
 public Action Command_RadioCMDs(int client, const char[] command, int args)
 {
-	if (g_iConfig[b_blockRadioMessage])
+	if (g_iConfig[bblockRadioMessage])
 	{
 		return Plugin_Handled;
 	}
@@ -591,8 +593,8 @@ public void OnMapStart()
 	if (g_aLogs != null)
 		g_aLogs.Clear();
 
-	PrecacheModel(g_iConfig[s_modelCT], true);
-	PrecacheModel(g_iConfig[s_modelT], true);
+	PrecacheModel(g_iConfig[smodelCT], true);
+	PrecacheModel(g_iConfig[smodelT], true);
 
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
@@ -630,12 +632,12 @@ public void OnMapStart()
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	}
 
-	SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
+	SDKHook(FindEntityByClassname(0, "csplayer_manager"), SDKHook_ThinkPost, ThinkPost);
 }
 
 public void ThinkPost(int entity)
 {
-	if (g_iConfig[b_kadRemover])
+	if (g_iConfig[bkadRemover])
 	{
 		int iZero[MAXPLAYERS + 1] =  { 0, ... };
 		
@@ -652,20 +654,20 @@ public void ThinkPost(int entity)
 	
 	LoopValidClients(i)
 	{
-		if (g_iConfig[i_fakeLife] == 0)
+		if (g_iConfig[ifakeLife] == 0)
 		{
 			isAlive[i] = (!g_bFound[i]);
 		}
-		else if (g_iConfig[i_fakeLife] == 1)
+		else if (g_iConfig[ifakeLife] == 1)
 		{
 			isAlive[i] = false;
 		}
-		else if (g_iConfig[i_fakeLife] == 2)
+		else if (g_iConfig[ifakeLife] == 2)
 		{
 			isAlive[i] = true;
 		}
 		
-		iHealth[i] = g_iConfig[i_fakeHealth];
+		iHealth[i] = g_iConfig[ifakeHealth];
 	}
 	
 	SetEntDataArray(entity, g_iHealth, iHealth, MAXPLAYERS + 1);
@@ -679,7 +681,7 @@ public Action Command_Karma(int client, int args)
 		return Plugin_Handled;
 	}
 
-	CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
+	CPrintToChat(client, g_iConfig[spluginTag], "Your karma is", client, g_iKarma[client]);
 
 	return Plugin_Handled;
 }
@@ -776,7 +778,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 		{
 			LoopValidClients(i)
 			{
-				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_iConfig[i_RoundStartedFontSize], g_iConfig[s_RoundStartedFontColor]);
+				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_iConfig[iRoundStartedFontSize], g_iConfig[sRoundStartedFontColor]);
 				PrintHintText(i, centerText);
 			}
 		}
@@ -787,7 +789,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
 	LoopValidClients(i)
 	{
-		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_iConfig[i_RoundStartFontSize], g_iConfig[s_RoundStartFontColor], timeLeft);
+		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_iConfig[iRoundStartFontSize], g_iConfig[sRoundStartFontColor], timeLeft);
 		PrintHintText(i, centerText);
 	}
 
@@ -832,7 +834,7 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(-1);
-		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_PushCell(g_iConfig[irequiredPlayers]);
 		Call_Finish();
 
 		GiveWeaponsOnFailStart();
@@ -847,19 +849,19 @@ public Action Timer_Selection(Handle hTimer)
 			aPlayers.Erase(i--);
 	}
 
-	if (aPlayers.Length < g_iConfig[i_requiredPlayers])
+	if (aPlayers.Length < g_iConfig[irequiredPlayers])
 	{
 		g_bInactive = true;
 		LoopValidClients(i)
 		{
-			CPrintToChat(i, g_iConfig[s_pluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[i_requiredPlayers]);
+			CPrintToChat(i, g_iConfig[spluginTag], "MIN PLAYERS REQUIRED FOR PLAY", i, g_iConfig[irequiredPlayers]);
 		}
 
 		g_bCheckPlayers = true;
 
 		Call_StartForward(g_hOnRoundStartFailed);
 		Call_PushCell(aPlayers.Length);
-		Call_PushCell(g_iConfig[i_requiredPlayers]);
+		Call_PushCell(g_iConfig[irequiredPlayers]);
 		Call_Finish();
 
 		GiveWeaponsOnFailStart();
@@ -945,7 +947,7 @@ public Action Timer_Selection(Handle hTimer)
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_iConfig[i_minKarmaDetective] && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
+		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_iConfig[iminKarmaDetective] && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
 		{
 			if (g_bAvoidDetective[client] == true)
 			{
@@ -980,17 +982,17 @@ public Action Timer_Selection(Handle hTimer)
 
 	LoopValidClients(i)
 	{
-		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
+		if ((!g_iConfig[bpublicKarma]) && g_iConfig[bkarmaRound])
 		{
 			g_iKarmaStart[i] = g_iKarma[i];
-			CPrintToChat(i, g_iConfig[s_pluginTag], "All karma has been updated", i);
+			CPrintToChat(i, g_iConfig[spluginTag], "All karma has been updated", i);
 		}
 
-		CPrintToChat(i, g_iConfig[s_pluginTag], "TEAMS HAS BEEN SELECTED", i);
+		CPrintToChat(i, g_iConfig[spluginTag], "TEAMS HAS BEEN SELECTED", i);
 
 		if (g_iRole[i] != TTT_TEAM_TRAITOR)
 		{
-			CPrintToChat(i, g_iConfig[s_pluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
+			CPrintToChat(i, g_iConfig[spluginTag], "TRAITORS HAS BEEN SELECTED", i, iTraitors);
 		}
 		else
 		{
@@ -1034,16 +1036,16 @@ public Action Timer_Selection(Handle hTimer)
 
 int GetTCount(int iActivePlayers)
 {
-	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_traitorRatio]) / 100.0));
+	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[itraitorRatio]) / 100.0));
 
 	if (iTCount < 1)
 	{
 		iTCount = 1;
 	}
 
-	if (iTCount > g_iConfig[i_maxTraitors])
+	if (iTCount > g_iConfig[imaxTraitors])
 	{
-		iTCount = g_iConfig[i_maxTraitors];
+		iTCount = g_iConfig[imaxTraitors];
 	}
 
 	return iTCount;
@@ -1051,16 +1053,16 @@ int GetTCount(int iActivePlayers)
 
 int GetDCount(int iActivePlayers)
 {
-	if (iActivePlayers < g_iConfig[i_requiredPlayersD])
+	if (iActivePlayers < g_iConfig[irequiredPlayersD])
 	{
 		return 0;
 	}
 
-	int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[i_detectiveRatio]) / 100.0));
+	int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_iConfig[idetectiveRatio]) / 100.0));
 
-	if (iDCount > g_iConfig[i_maxDetectives])
+	if (iDCount > g_iConfig[imaxDetectives])
 	{
-		iDCount = g_iConfig[i_maxDetectives];
+		iDCount = g_iConfig[imaxDetectives];
 	}
 
 	return iDCount;
@@ -1100,7 +1102,7 @@ stock void TeamInitialize(int client)
 
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		if (g_iConfig[b_forceTeams])
+		if (g_iConfig[bforceTeams])
 		{
 			if (GetClientTeam(client) != CS_TEAM_CT)
 			{
@@ -1110,14 +1112,14 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 		{
-			GivePlayerItem(client, g_iConfig[s_defaultPri_D]);
+			GivePlayerItem(client, g_iConfig[sdefaultPriD]);
 		}
 
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is DETECTIVES", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "Your Team is DETECTIVES", client);
 
-		if (g_iConfig[i_spawnHPD] > 0)
+		if (g_iConfig[ispawnHPD] > 0)
 		{
-			SetEntityHealth(client, g_iConfig[i_spawnHPD]);
+			SetEntityHealth(client, g_iConfig[ispawnHPD]);
 		}
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
@@ -1127,20 +1129,20 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
 		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is TRAITORS", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "Your Team is TRAITORS", client);
 
-		if (g_iConfig[i_spawnHPT] > 0)
+		if (g_iConfig[ispawnHPT] > 0)
 		{
-			SetEntityHealth(client, g_iConfig[i_spawnHPT]);
+			SetEntityHealth(client, g_iConfig[ispawnHPT]);
 		}
 
-		if (g_iConfig[b_forceTeams])
+		if (g_iConfig[bforceTeams])
 		{
 			if (GetClientTeam(client) != CS_TEAM_T)
 			{
@@ -1154,20 +1156,20 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
 		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Your Team is INNOCENTS", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "Your Team is INNOCENTS", client);
 
-		if (g_iConfig[i_spawnHPI] > 0)
+		if (g_iConfig[ispawnHPI] > 0)
 		{
-			SetEntityHealth(client, g_iConfig[i_spawnHPI]);
+			SetEntityHealth(client, g_iConfig[ispawnHPI]);
 		}
 
-		if (g_iConfig[b_forceTeams])
+		if (g_iConfig[bforceTeams])
 		{
 			if (GetClientTeam(client) != CS_TEAM_T)
 			{
@@ -1181,28 +1183,28 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			GivePlayerItem(client, g_iConfig[s_defaultSec]);
+			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
 		g_bFound[client] = false;
 	}
 
 	CheckClantag(client);
 
-	if (g_iConfig[b_updateClientModel])
+	if (g_iConfig[bupdateClientModel])
 	{
 		CS_UpdateClientModel(client);
 	}
-	else if (g_iConfig[b_forceModel])
+	else if (g_iConfig[bforceModel])
 	{
 		switch (g_iRole[client])
 		{
 			case TTT_TEAM_INNOCENT, TTT_TEAM_TRAITOR:
 			{
-				SetEntityModel(client, g_iConfig[s_modelT]);
+				SetEntityModel(client, g_iConfig[smodelT]);
 			}
 			case TTT_TEAM_DETECTIVE:
 			{
-				SetEntityModel(client, g_iConfig[s_modelCT]);
+				SetEntityModel(client, g_iConfig[smodelCT]);
 			}
 		}
 	}
@@ -1263,7 +1265,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		if (g_bRoundStarted)
 		{
-			if (g_iConfig[b_slayAfterStart])
+			if (g_iConfig[bslayAfterStart])
 			{
 				g_iRole[client] = TTT_TEAM_UNASSIGNED;
 				RequestFrame(Frame_SlapPlayer, GetClientUserId(client));
@@ -1311,12 +1313,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			}
 		}
 
-		if (!g_bInactive && g_iConfig[b_showKarmaOnSpawn])
+		if (!g_bInactive && g_iConfig[bshowKarmaOnSpawn])
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Your karma is", client, g_iKarma[client]);
+			CPrintToChat(client, g_iConfig[spluginTag], "Your karma is", client, g_iKarma[client]);
 		}
 
-		if (g_iConfig[b_enableNoBlock])
+		if (g_iConfig[benableNoBlock])
 		{
 			SetNoBlock(client);
 		}
@@ -1370,7 +1372,7 @@ public Action OnPostThink(int client)
 	if (TTT_IsClientValid(client))
 	{
 		int iKarma;
-		if (g_iConfig[b_publicKarma])
+		if (g_iConfig[bpublicKarma])
 		{
 			if (g_bFound[client])
 			{
@@ -1381,7 +1383,7 @@ public Action OnPostThink(int client)
 				iKarma = g_iKarma[client];
 			}
 		}
-		else if (g_iConfig[b_karmaRound])
+		else if (g_iConfig[bkarmaRound])
 		{
 			if (g_bFound[client])
 			{
@@ -1401,15 +1403,15 @@ stock void BanBadPlayerKarma(int client)
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 
-	setKarma(client, g_iConfig[i_startKarma]);
+	setKarma(client, g_iConfig[istartKarma]);
 
 	if (g_bSourcebans)
 	{
-		SBBanPlayer(0, client, g_iConfig[i_karmaBanLength], sReason);
+		SBBanPlayer(0, client, g_iConfig[ikarmaBanLength], sReason);
 	}
 	else
 	{
-		ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[i_karmaBanLength], sReason);
+		ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_iConfig[ikarmaBanLength], sReason);
 	}
 }
 
@@ -1430,12 +1432,15 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 		return Plugin_Handled;
 	}
 
-	if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_iConfig[b_karmaDMG])
+	if (g_bRoundStarted && !g_bRoundEnded)
 	{
-		if (g_iConfig[b_karmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[i_startKarma]))
+		if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_iConfig[bkarmaDMG])
 		{
-			damage *= FloatDiv(float(g_iKarma[iAttacker]), float(g_iConfig[i_startKarma]));
-			return Plugin_Changed;
+			if (g_iConfig[bkarmaDMG_up] || (g_iKarma[iAttacker] < g_iConfig[istartKarma]))
+			{
+				damage *= FloatDiv(float(g_iKarma[iAttacker]), float(g_iConfig[istartKarma]));
+				return Plugin_Changed;
+			}
 		}
 	}
 
@@ -1444,12 +1449,12 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
 bool IsDamageForbidden()
 {
-	if (!g_bRoundStarted && !g_iConfig[bEnableDamage])
+	if (g_bRoundEnded && !g_iConfig[broundendDamage])
 	{
 		return true;
 	}
 	
-	if (g_bRoundEnded && !g_iConfig[b_roundendDamage])
+	if (!g_bRoundStarted && !g_iConfig[bEnableDamage])
 	{
 		return true;
 	}
@@ -1503,7 +1508,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		}
 		else
 		{
-			LogToFileEx(g_iConfig[s_errFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
+			LogToFileEx(g_iConfig[serrFile], "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
 		}
 
 		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
@@ -1574,17 +1579,17 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 				g_iDetectiveKills[iAttacker]++;
 			}
 
-			if (g_iInnoKills[iAttacker] >= g_iConfig[i_punishInnoKills])
+			if (g_iInnoKills[iAttacker] >= g_iConfig[ipunishInnoKills])
 			{
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 			}
 
-			if (g_iTraitorKills[iAttacker] >= g_iConfig[i_punishTraitorKills])
+			if (g_iTraitorKills[iAttacker] >= g_iConfig[ipunishTraitorKills])
 			{
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 			}
 
-			if (g_iDetectiveKills[iAttacker] >= g_iConfig[i_punishDetectiveKills])
+			if (g_iDetectiveKills[iAttacker] >= g_iConfig[ipunishDetectiveKills])
 			{
 				ServerCommand("sm_slay #%i 5", GetClientUserId(iAttacker));
 			}
@@ -1621,11 +1626,11 @@ public void OnClientPostAdminCheck(int client)
 		CreateTimer(1.0, Timer_OnClientPostAdminCheck, GetClientUserId(client));
 	}
 
-	if (g_iConfig[b_showRulesMenu])
+	if (g_iConfig[bshowRulesMenu])
 	{
 		CreateTimer(3.0, Timer_ShowWelcomeMenu, GetClientUserId(client));
 	}
-	else if (g_iConfig[b_showDetectiveMenu])
+	else if (g_iConfig[bshowDetectiveMenu])
 	{
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 	}
@@ -1643,7 +1648,7 @@ public Action Timer_OnClientPostAdminCheck(Handle timer, any userid)
 
 public Action Command_TRules(int client, int args)
 {
-	if (!g_iConfig[b_showRulesMenu])
+	if (!g_iConfig[bshowRulesMenu])
 	{
 		return Plugin_Handled;
 	}
@@ -1654,7 +1659,7 @@ public Action Command_TRules(int client, int args)
 
 public Action Command_DetectiveRules(int client, int args)
 {
-	if (!g_iConfig[b_showDetectiveMenu])
+	if (!g_iConfig[bshowDetectiveMenu])
 	{
 		return Plugin_Handled;
 	}
@@ -1732,7 +1737,7 @@ stock void ShowRules(int client, int iItem)
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
 	menu.ExitBackButton = false;
-	menu.DisplayAt(client, iItem, g_iConfig[i_timeToReadRules]);
+	menu.DisplayAt(client, iItem, g_iConfig[itimeToReadRules]);
 }
 
 public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int param)
@@ -1807,7 +1812,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				if (strlen(sValue) > 0)
 				{
 					char sURL[512];
-					Format(sURL, sizeof(sURL), "http://cola-team.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue);
+					Format(sURL, sizeof(sURL), "http://cola-team.com/franug/webshortcuts2.php?web=height=720,width=1280;franug_is_pro;%s", sValue); // TODO: Replace this
 					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
 
 					g_bKnowRules[client] = false;
@@ -1847,7 +1852,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
 					rMenu.ExitButton = false;
 					rMenu.ExitBackButton = true;
-					rMenu.Display(client, g_iConfig[i_timeToReadRules]);
+					rMenu.Display(client, g_iConfig[itimeToReadRules]);
 
 					delete hRFile;
 					delete kvRules;
@@ -1866,19 +1871,19 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 			g_bReadRules[client] = false;
 		}
 
-		if (g_iConfig[b_showDetectiveMenu])
+		if (g_iConfig[bshowDetectiveMenu])
 		{
 			AskClientForMicrophone(client);
 		}
 	}
 	else if (action == MenuAction_Cancel)
 	{
-		if (TTT_IsClientValid(client) && g_iConfig[i_rulesClosePunishment] == 0)
+		if (TTT_IsClientValid(client) && g_iConfig[irulesClosePunishment] == 0)
 		{
 			char sFlags[16];
 			AdminFlag aFlags[16];
 
-			Format(sFlags, sizeof(sFlags), g_iConfig[s_kickImmunity]);
+			Format(sFlags, sizeof(sFlags), g_iConfig[skickImmunity]);
 			FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
 
 			if (!TTT_HasFlags(client, aFlags))
@@ -1936,7 +1941,7 @@ stock void AskClientForMicrophone(int client)
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
 	menu.ExitBackButton = false;
-	menu.Display(client, g_iConfig[i_timeToReadDetectiveRules]);
+	menu.Display(client, g_iConfig[itimeToReadDetectiveRules]);
 }
 
 
@@ -2077,7 +2082,7 @@ public Action Timer_1(Handle timer)
 
 	if (g_bRoundStarted)
 	{
-		if (g_iInnoAlive == 0 && ((g_iConfig[b_endwithD]) || (g_iDetectiveAlive == 0)))
+		if (g_iInnoAlive == 0 && ((g_iConfig[bendwithD]) || (g_iDetectiveAlive == 0)))
 		{
 			g_bRoundStarted = false;
 
@@ -2114,35 +2119,35 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		return;
 	}
 
-	if (g_iConfig[b_showDeathMessage])
+	if (g_iConfig[bshowDeathMessage])
 	{
 		if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Your killer is a Traitor", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "Your killer is a Traitor", client);
 		}
 		else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE)
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Your killer is a Detective", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "Your killer is a Detective", client);
 		}
 		else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT)
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Your killer is an Innocent", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "Your killer is an Innocent", client);
 		}
 	}
 
-	if (g_iConfig[b_showKillMessage])
+	if (g_iConfig[bshowKillMessage])
 	{
 		if (g_iRole[client] == TTT_TEAM_TRAITOR)
 		{
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Traitor", iAttacker);
+			CPrintToChat(iAttacker, g_iConfig[spluginTag], "You killed a Traitor", iAttacker);
 		}
 		else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 		{
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed a Detective", iAttacker);
+			CPrintToChat(iAttacker, g_iConfig[spluginTag], "You killed a Detective", iAttacker);
 		}
 		else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 		{
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "You killed an Innocent", iAttacker);
+			CPrintToChat(iAttacker, g_iConfig[spluginTag], "You killed an Innocent", iAttacker);
 		}
 	}
 
@@ -2155,63 +2160,63 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Innocent) with %s] - BAD ACTION", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		subtractKarma(iAttacker, g_iConfig[i_karmaII], true);
+		subtractKarma(iAttacker, g_iConfig[ikarmaII], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Traitor) with %s]", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		addKarma(iAttacker, g_iConfig[i_karmaIT], true);
+		addKarma(iAttacker, g_iConfig[ikarmaIT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Innocent) killed %N (Detective) with %s] - BAD ACTION", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		subtractKarma(iAttacker, g_iConfig[i_karmaID], true);
+		subtractKarma(iAttacker, g_iConfig[ikarmaID], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Innocent) with %s]", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		addKarma(iAttacker, g_iConfig[i_karmaTI], true);
+		addKarma(iAttacker, g_iConfig[ikarmaTI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Traitor) with %s] - BAD ACTION", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		subtractKarma(iAttacker, g_iConfig[i_karmaTT], true);
+		subtractKarma(iAttacker, g_iConfig[ikarmaTT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Traitor) killed %N (Detective) with %s]", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		addKarma(iAttacker, g_iConfig[i_karmaTD], true);
+		addKarma(iAttacker, g_iConfig[ikarmaTD], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Innocent) with %s] - BAD ACTION", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		subtractKarma(iAttacker, g_iConfig[i_karmaDI], true);
+		subtractKarma(iAttacker, g_iConfig[ikarmaDI], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Traitor) with %s]", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		addKarma(iAttacker, g_iConfig[i_karmaDT], true);
+		addKarma(iAttacker, g_iConfig[ikarmaDT], true);
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N (Detective) killed %N (Detective) with %s] - BAD ACTION", iAttacker, client, sWeapon);
 		addArrayTime(iItem);
 
-		subtractKarma(iAttacker, g_iConfig[i_karmaDD], true);
+		subtractKarma(iAttacker, g_iConfig[ikarmaDD], true);
 	}
 
 	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
@@ -2273,10 +2278,10 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 	LoopValidClients(client)
 	{
-		if ((!g_iConfig[b_publicKarma]) && g_iConfig[b_karmaRound])
+		if ((!g_iConfig[bpublicKarma]) && g_iConfig[bkarmaRound])
 		{
 			g_iKarmaStart[client] = g_iKarma[client];
-			CPrintToChat(client, g_iConfig[s_pluginTag], "All karma has been updated", client);
+			CPrintToChat(client, g_iConfig[spluginTag], "All karma has been updated", client);
 		}
 
 		if (IsPlayerAlive(client))
@@ -2298,7 +2303,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	}
 	else if (!bInnoAlive && bDeteAlive)
 	{
-		if (g_iConfig[b_endwithD])
+		if (g_iConfig[bendwithD])
 		{
 			WinningTeam = TTT_TEAM_DETECTIVE;
 		}
@@ -2316,7 +2321,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 	Call_PushCell(WinningTeam);
 	Call_Finish();
 
-	if (g_iConfig[b_randomWinner])
+	if (g_iConfig[brandomWinner])
 	{
 		reason = view_as<CSRoundEndReason>(GetRandomInt(view_as<int>(CSRoundEnd_CTWin), view_as<int>(CSRoundEnd_TerroristWin)));
 	}
@@ -2326,11 +2331,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 		delay = g_iConfig[f_roundDelay];
 	}
 
-	if (g_iConfig[b_nextRoundAlert])
+	if (g_iConfig[bnextRoundAlert])
 	{
 		LoopValidClients(client)
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "next round in", client, delay);
+			CPrintToChat(client, g_iConfig[spluginTag], "next round in", client, delay);
 		}
 	}
 
@@ -2344,7 +2349,7 @@ public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroa
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	CheckClantag(client);
 
-	if (g_iConfig[b_hideTeams] && (!event.GetBool("silent")))
+	if (g_iConfig[bhideTeams] && (!event.GetBool("silent")))
 	{
 		event.BroadcastDisabled = true;
 		dontBroadcast = true;
@@ -2422,7 +2427,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 
 public Action OnPlayerRunCmd(int client, int &buttons)
 {
-	if (g_iConfig[b_denyFire] && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
+	if (g_iConfig[bdenyFire] && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
 	{
 		buttons &= ~IN_ATTACK;
 		buttons &= ~IN_ATTACK2;
@@ -2525,19 +2530,19 @@ public int TTT_OnButtonPress(int client, int button)
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
-									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[spluginTag], "Found Innocent", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
-									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[spluginTag], "Found Detective", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
-									CPrintToChat(j, g_iConfig[s_pluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
+									CPrintToChat(j, g_iConfig[spluginTag], "Found Traitor", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 							}
 
@@ -2613,7 +2618,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	{
 		LoopValidClients(i)
 		{
-			if (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[b_tChatToDead] && !IsPlayerAlive(i))
+			if (g_iRole[i] == TTT_TEAM_TRAITOR || g_iConfig[btChatToDead] && !IsPlayerAlive(i))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "T channel", i, client, sText);
@@ -2626,7 +2631,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	{
 		LoopValidClients(i)
 		{
-			if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[b_dChatToDead] && !IsPlayerAlive(i))
+			if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_iConfig[bdChatToDead] && !IsPlayerAlive(i))
 			{
 				EmitSoundToClient(i, SND_TCHAT);
 				CPrintToChat(i, "%T", "D channel", i, client, sText);
@@ -2695,74 +2700,80 @@ public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum
 	}
 }
 
-stock void addKarma(int client, int karma, bool message = false)
+stock int addKarma(int client, int karma, bool message = false)
 {
 	if (!g_bRoundStarted)
 	{
-		return;
+		return -1;
 	}
 
 	g_iKarma[client] += karma;
 
-	if (g_iKarma[client] > g_iConfig[i_maxKarma])
+	if (g_iKarma[client] > g_iConfig[imaxKarma])
 	{
-		g_iKarma[client] = g_iConfig[i_maxKarma];
+		g_iKarma[client] = g_iConfig[imaxKarma];
 	}
 
-	if (g_iConfig[b_showEarnKarmaMessage] && message)
+	if (g_iConfig[bshowEarnKarmaMessage] && message)
 	{
-		if (g_iConfig[i_messageTypKarma] == 1)
+		if (g_iConfig[imessageTypKarma] == 1)
 		{
 			PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
 		}
 		else
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "karma earned", client, karma, g_iKarma[client]);
+			CPrintToChat(client, g_iConfig[spluginTag], "karma earned", client, karma, g_iKarma[client]);
 		}
 	}
 
 	UpdatePlayer(client);
+	
+	return g_iKarma[client];
 }
 
-stock void setKarma(int client, int karma)
+stock int setKarma(int client, int karma)
 {
 	if (!g_bRoundStarted)
 	{
-		return;
+		return -1;
 	}
 
 	g_iKarma[client] = karma;
 
-	if (g_iKarma[client] > g_iConfig[i_maxKarma])
+	if (g_iKarma[client] > g_iConfig[imaxKarma])
 	{
-		g_iKarma[client] = g_iConfig[i_maxKarma];
+		g_iKarma[client] = g_iConfig[imaxKarma];
 	}
 
 	UpdatePlayer(client);
+	
+	return g_iKarma[client];
 }
 
-stock void subtractKarma(int client, int karma, bool message = false)
+stock int subtractKarma(int client, int karma, bool message = false)
 {
 	if (!g_bRoundStarted)
 	{
-		return;
+		return -1;
 	}
 
 	g_iKarma[client] -= karma;
 
-	if (g_iConfig[b_showLoseKarmaMessage] && message)
+	if (g_iConfig[bshowLoseKarmaMessage] && message)
 	{
-		if (g_iConfig[i_messageTypKarma] == 1)
+		if (g_iConfig[imessageTypKarma] == 1)
 		{
 			PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
 		}
 		else
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "lost karma", client, karma, g_iKarma[client]);
+			CPrintToChat(client, g_iConfig[spluginTag], "lost karma", client, karma, g_iKarma[client]);
 		}
 	}
 
 	UpdatePlayer(client);
+	
+	return g_iKarma[client];
 }
 
 stock void addArrayTime(char[] message)
@@ -2794,13 +2805,13 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		return Plugin_Continue;
 	}
 
-	if (g_iConfig[b_allowFlash] && IsPlayerAlive(client))
+	if (g_iConfig[ballowFlash] && IsPlayerAlive(client))
 	{
 		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
 		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
 	}
 
-	if (g_iConfig[b_blockLookAtWeapon])
+	if (g_iConfig[bblockLookAtWeapon])
 	{
 		return Plugin_Handled;
 	}
@@ -2815,7 +2826,7 @@ stock void manageRDM(int client)
 		return;
 	}
 
-	if (g_iConfig[b_ignoreRDMMenu])
+	if (g_iConfig[bignoreRDMMenu])
 	{
 		return;
 	}
@@ -2823,7 +2834,7 @@ stock void manageRDM(int client)
 	int iAttacker = g_iRDMAttacker[client];
 	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "The player who RDM'd you is no longer available", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "The player who RDM'd you is no longer available", client);
 		return;
 	}
 	char sAttackerName[MAX_NAME_LENGTH];
@@ -2862,29 +2873,29 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 			GetMenuItem(menu, option, info, sizeof(info));
 			if (StrEqual(info, "Forgive", false))
 			{
-				CPrintToChat(client, g_iConfig[s_pluginTag], "Choose Forgive Victim", client, iAttacker);
-				CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "Choose Forgive Attacker", iAttacker, client);
+				CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
+				CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
 				g_iRDMAttacker[client] = -1;
 			}
 			if (StrEqual(info, "Punish", false))
 			{
 				LoopValidClients(i)
-					CPrintToChat(i, g_iConfig[s_pluginTag], "Choose Punish", i, client, iAttacker);
+					CPrintToChat(i, g_iConfig[spluginTag], "Choose Punish", i, client, iAttacker);
 				ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
 				g_iRDMAttacker[client] = -1;
 			}
 		}
 		case MenuAction_Cancel:
 		{
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Choose Forgive Victim", client, iAttacker);
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "Choose Forgive Attacker", iAttacker, client);
+			CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 		case MenuAction_End:
 		{
 			delete menu;
-			CPrintToChat(client, g_iConfig[s_pluginTag], "Choose Forgive Victim", client, iAttacker);
-			CPrintToChat(iAttacker, g_iConfig[s_pluginTag], "Choose Forgive Attacker", iAttacker, client);
+			CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
+			CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
 	}
@@ -2939,7 +2950,7 @@ public Action Command_SetRole(int client, int args)
 		g_iRole[target] = TTT_TEAM_INNOCENT;
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Innocent", client, target);
+		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Innocent", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
 		return Plugin_Handled;
 	}
@@ -2948,7 +2959,7 @@ public Action Command_SetRole(int client, int args)
 		g_iRole[target] = TTT_TEAM_TRAITOR;
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Traitor", client, target);
+		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Traitor", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
 		return Plugin_Handled;
 	}
@@ -2956,7 +2967,7 @@ public Action Command_SetRole(int client, int args)
 	{
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
 		TeamInitialize(target);
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Player is Now Detective", client, target);
+		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Detective", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Detective");
 		return Plugin_Handled;
 	}
@@ -3013,11 +3024,23 @@ public Action Command_SetKarma(int client, int args)
 
 		setKarma(target, karma);
 
-		CPrintToChat(client, g_iConfig[s_pluginTag], "AdminSet", client, target, karma, "Karma");
+		CPrintToChat(client, g_iConfig[spluginTag], "AdminSet", client, target, karma, "Karma");
 		LogAction(client, target, "\"%L\" set the karma of \"%L\" to \"%i\"", client, target, karma);
 	}
 
 	return Plugin_Continue;
+}
+
+public Action Command_ReloadCFG(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+
+	SetupConfig();
+	
+	return Plugin_Handled;
 }
 
 public Action Command_Status(int client, int args)
@@ -3029,19 +3052,19 @@ public Action Command_Status(int client, int args)
 
 	if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Unassigned", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "You Are Unassigned", client);
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Innocent", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "You Are Now Innocent", client);
 	}
 	else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Detective", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "You Are Now Detective", client);
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "You Are Now Traitor", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "You Are Now Traitor", client);
 	}
 
 	return Plugin_Handled;
@@ -3070,7 +3093,7 @@ public Action Timer_5(Handle timer)
 			continue;
 		}
 
-		if (g_bKarma[i] && g_iConfig[i_karmaBan] != 0 && g_iKarma[i] <= g_iConfig[i_karmaBan])
+		if (g_bKarma[i] && g_iConfig[ikarmaBan] != 0 && g_iKarma[i] <= g_iConfig[ikarmaBan])
 		{
 			BanBadPlayerKarma(i);
 		}
@@ -3107,7 +3130,7 @@ void CheckPlayers()
 		iCount++;
 	}
 
-	if (iCount >= g_iConfig[i_requiredPlayers])
+	if (iCount >= g_iConfig[irequiredPlayers])
 	{
 		g_bCheckPlayers = false;
 
@@ -3138,15 +3161,15 @@ public void OnEntityCreated(int entity, const char[] name)
 				continue;
 			}
 
-			if (g_iConfig[b_removeBomb] && StrEqual("func_bomb_target", g_sRemoveEntityList[i], false))
+			if (g_iConfig[bremoveBomb] && StrEqual("func_bombtarget", g_sRemoveEntityList[i], false))
 			{
 				AcceptEntityInput(entity, "kill");
 			}
-			else if (g_iConfig[b_removeBuyzone] && StrEqual("func_buyzone", g_sRemoveEntityList[i], false))
+			else if (g_iConfig[bremoveBuyzone] && StrEqual("func_buyzone", g_sRemoveEntityList[i], false))
 			{
 				AcceptEntityInput(entity, "kill");
 			}
-			else if (g_iConfig[b_removeHostages])
+			else if (g_iConfig[bremoveHostages])
 			{
 				AcceptEntityInput(entity, "kill");
 			}
@@ -3176,7 +3199,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 
 			LoopValidClients(i)
 			{
-				CPrintToChat(i, g_iConfig[s_pluginTag], "Triggered Falling Building", i, activator);
+				CPrintToChat(i, g_iConfig[spluginTag], "Triggered Falling Building", i, activator);
 			}
 		}
 	}
@@ -3185,7 +3208,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 
 stock void listTraitors(int client)
 {
-	CPrintToChat(client, g_iConfig[s_pluginTag], "Your Traitor Partners", client);
+	CPrintToChat(client, g_iConfig[spluginTag], "Your Traitor Partners", client);
 	int iCount = 0;
 
 	LoopValidClients(i)
@@ -3194,13 +3217,13 @@ stock void listTraitors(int client)
 		{
 			continue;
 		}
-		CPrintToChat(client, g_iConfig[s_pluginTag], "Traitor List", client, i);
+		CPrintToChat(client, g_iConfig[spluginTag], "Traitor List", client, i);
 		iCount++;
 	}
 
 	if (iCount == 0)
 	{
-		CPrintToChat(client, g_iConfig[s_pluginTag], "No Traitor Partners", client);
+		CPrintToChat(client, g_iConfig[spluginTag], "No Traitor Partners", client);
 	}
 }
 
@@ -3231,8 +3254,8 @@ public Action Command_KarmaReset(int client, int args)
 {
 	LoopValidClients(i)
 	{
-		setKarma(g_iKarma[i], g_iConfig[i_startKarma]);
-		LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[i_startKarma]);
+		setKarma(g_iKarma[i], g_iConfig[istartKarma]);
+		LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[istartKarma]);
 	}
 	return Plugin_Handled;
 }
@@ -3271,7 +3294,7 @@ void CheckTeams()
 		}
 	}
 
-	if (g_iConfig[b_ignoreDeaths])
+	if (g_iConfig[bignoreDeaths])
 	{
 		return;
 	}
@@ -3339,7 +3362,7 @@ stock void LoadClientKarma(int userid)
 
 		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 		{
-			LogToFileEx(g_iConfig[s_errFile], "(LoadClientKarma) Auth failed: #%d", client);
+			LogToFileEx(g_iConfig[serrFile], "(LoadClientKarma) Auth failed: #%d", client);
 			return;
 		}
 
@@ -3348,66 +3371,12 @@ stock void LoadClientKarma(int userid)
 
 		if (g_bDebug)
 		{
-			LogToFileEx(g_iConfig[s_logFile], sQuery);
+			LogToFileEx(g_iConfig[slogFile], sQuery);
 		}
 
 		if (g_dDB != null)
 		{
 			g_dDB.Query(SQL_OnClientPostAdminCheck, sQuery, userid);
-		}
-	}
-}
-
-public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
-{
-	int client = GetClientOfUserId(userid);
-
-	if (!client || !TTT_IsClientValid(client) || IsFakeClient(client))
-	{
-		return;
-	}
-
-	if (hndl == null || strlen(error) > 0)
-	{
-		LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
-		return;
-	}
-	else
-	{
-		if (!SQL_FetchRow(hndl))
-		{
-			g_iKarma[client] = g_iConfig[i_startKarma];
-			UpdatePlayer(client);
-		}
-		else
-		{
-			char sCommunityID[64];
-
-			if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
-			{
-				LogToFileEx(g_iConfig[s_errFile], "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-				return;
-			}
-
-			int karma = SQL_FetchInt(hndl, 0);
-
-			if (g_bDebug)
-			{
-				LogToFileEx(g_iConfig[s_logFile], "Name: %L has %d karma", client, karma);
-			}
-
-			if (karma == 0)
-			{
-				g_iKarma[client] = g_iConfig[i_startKarma];
-			}
-			else
-			{
-				g_iKarma[client] = karma;
-			}
-
-			CS_SetClientContributionScore(client, karma);
-
-			g_bKarma[client] = true;
 		}
 	}
 }
@@ -3418,7 +3387,7 @@ stock void UpdatePlayer(int client)
 
 	if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 	{
-		LogToFileEx(g_iConfig[s_errFile], "(UpdatePlayer) Auth failed: #%d", client);
+		LogToFileEx(g_iConfig[serrFile], "(UpdatePlayer) Auth failed: #%d", client);
 		return;
 	}
 
@@ -3427,7 +3396,7 @@ stock void UpdatePlayer(int client)
 
 	if (g_bDebug)
 	{
-		LogToFileEx(g_iConfig[s_logFile], sQuery);
+		LogToFileEx(g_iConfig[slogFile], sQuery);
 	}
 
 	if (g_dDB != null)
@@ -3438,7 +3407,7 @@ stock void UpdatePlayer(int client)
 
 stock void StripAllWeapons(int client)
 {
-	if (!g_iConfig[b_stripWeapons])
+	if (!g_iConfig[bstripWeapons])
 	{
 		return;
 	}
