@@ -3417,8 +3417,7 @@ stock void StripAllWeapons(int client)
 	{
 		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
 		{
-			RemovePlayerItem(client, iEnt);
-			AcceptEntityInput(iEnt, "Kill");
+			TTT_SafeRemoveWeapon(client, iEnt);
 		}
 	}
 }
