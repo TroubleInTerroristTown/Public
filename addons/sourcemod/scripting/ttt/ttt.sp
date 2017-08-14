@@ -632,7 +632,7 @@ public void OnMapStart()
 		SetFailState("CCSPlayerResource \"m_iMVPs\"  offset is invalid");
 	}
 
-	SDKHook(FindEntityByClassname(0, "csplayer_manager"), SDKHook_ThinkPost, ThinkPost);
+	SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
 }
 
 public void ThinkPost(int entity)
