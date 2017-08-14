@@ -116,7 +116,9 @@ enum eConfig
 	String:sFSPrimary[32],
 	String:sFSSecondary[32],
 	bool:b_showKarmaOnSpawn,
-	bool:bDebugMessages
+	bool:bDebugMessages,
+	i_fakeHealth,
+	i_fakeLife
 };
 
 enum Ragdolls

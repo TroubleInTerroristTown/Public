@@ -231,6 +231,8 @@ void SetupConfig()
 	g_iConfig[b_blockLookAtWeapon] = Config_LoadBool("ttt_block_look_at_weapon", true, "Block weapon inspecting. 1 = Block, 0 = Don't Block)");
 	g_iConfig[b_enableNoBlock] = Config_LoadBool("ttt_enable_noblock", false, "Enable No Block. 1 = Enabled, 0 = Disabled");
 	g_iConfig[b_kadRemover] = Config_LoadBool("ttt_kad_remover", true, "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled");
+	g_iConfig[i_fakeHealth] = Config_LoadInt("ttt_fake_health", 100, "TODO: Add description");
+	g_iConfig[i_fakeLife] = Config_LoadInt("ttt_fake_life", 0, "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)");
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_iConfig[s_pluginTag], sizeof(g_iConfig[s_pluginTag]));
 	g_iConfig[i_spawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
 	g_iConfig[i_spawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
@@ -295,9 +297,8 @@ void SetupConfig()
 	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
 	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
 	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
-
+	
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
-
 
 	Config_Done();
 
@@ -634,24 +635,40 @@ public void OnMapStart()
 
 public void ThinkPost(int entity)
 {
-	int isAlive[MAXPLAYERS + 1];
-	int iZero[MAXPLAYERS + 1] =  { 0, ... };
-
-	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
-	LoopValidClients(i)
-	{
-		isAlive[i] = (!g_bFound[i]);
-	}
-
 	if (g_iConfig[b_kadRemover])
 	{
+		int iZero[MAXPLAYERS + 1] =  { 0, ... };
+		
 		SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
 		SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
 	}
+	
+	int isAlive[MAXPLAYERS + 1];
+	int iHealth[MAXPLAYERS + 1];
 
-	SetEntDataArray(entity, g_iHealth, iZero, MAXPLAYERS + 1);
+	GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
+	
+	LoopValidClients(i)
+	{
+		if (g_iConfig[i_fakeLife] == 0)
+		{
+			isAlive[i] = (!g_bFound[i]);
+		}
+		else if (g_iConfig[i_fakeLife] == 1)
+		{
+			isAlive[i] = false;
+		}
+		else if (g_iConfig[i_fakeLife] == 2)
+		{
+			isAlive[i] = true;
+		}
+		
+		iHealth[i] = g_iConfig[i_fakeHealth];
+	}
+	
+	SetEntDataArray(entity, g_iHealth, iHealth, MAXPLAYERS + 1);
 	SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
 }
 
