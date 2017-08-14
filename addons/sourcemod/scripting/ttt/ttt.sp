@@ -1103,6 +1103,8 @@ stock void TeamInitialize(int client)
 	{
 		return;
 	}
+	
+	g_bFound[client] = false;
 
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
@@ -1135,7 +1137,6 @@ stock void TeamInitialize(int client)
 		{
 			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
-		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
@@ -1162,7 +1163,6 @@ stock void TeamInitialize(int client)
 		{
 			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
-		g_bFound[client] = false;
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
@@ -1189,7 +1189,6 @@ stock void TeamInitialize(int client)
 		{
 			GivePlayerItem(client, g_iConfig[sdefaultSec]);
 		}
-		g_bFound[client] = false;
 	}
 
 	CheckClantag(client);
