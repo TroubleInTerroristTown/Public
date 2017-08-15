@@ -133,13 +133,20 @@ public void OnAllPluginsLoaded()
 		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
 		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 	}
-	else if (g_bCPS)
+	else if (!g_bCPS)
 	{
 		SetFailState("CustomPlayerSkins not loaded!");
 	}
-	else if (g_bGlow)
+	else if (!g_bGlow)
 	{
-		SetFailState("TTT-Glow not loaded!");
+		if (!LibraryExists("ttt_glow"))
+		{
+			SetFailState("TTT-Glow not loaded!");
+		}
+		else
+		{
+			g_bGlow = true;
+		}
 	}
 }
 

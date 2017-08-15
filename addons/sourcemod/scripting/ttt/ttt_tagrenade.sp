@@ -131,17 +131,34 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnAllPluginsLoaded()
 {
+	Handle hPlugin = FindPluginByFile("cameras-and-drones.smx");
+	
+	if (hPlugin != null)
+	{
+		if (GetPluginStatus(hPlugin) == Plugin_Running)
+		{
+			SetFailState("TA-Grenade doesn't work currently with 'Cameras and Drones'!");
+		}
+	}
+	
 	if (g_bCPS)
 	{
 		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
 	}
-	else if (g_bCPS)
+	else if (!g_bCPS)
 	{
 		SetFailState("CustomPlayerSkins not loaded!");
 	}
-	else if (g_bGlow)
+	else if (!g_bGlow)
 	{
-		SetFailState("TTT-Glow not loaded!");
+		if (!LibraryExists("ttt_glow"))
+		{
+			SetFailState("TTT-Glow not loaded!");
+		}
+		else
+		{
+			g_bGlow = true;
+		}
 	}
 }
 

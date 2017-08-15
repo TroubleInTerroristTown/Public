@@ -4,10 +4,13 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <ttt>
-#include <ttt_wallhack>
-#include <ttt_tagrenade>
 #include <CustomPlayerSkins>
 #include <config_loader>
+
+#undef REQUIRE_PLUGIN
+#include <ttt_wallhack>
+#include <ttt_tagrenade>
+#define REQUIRE_PLUGIN
 
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
