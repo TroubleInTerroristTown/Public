@@ -103,6 +103,16 @@ public void OnPluginStart()
 	g_bGlow = LibraryExists("ttt_glow");
 }
 
+public void OnConfigsExecuted()
+{
+	ConVar UseTAGrenade = FindConVar("cd_usetagrenade");
+	
+	if (UseTAGrenade != null)
+	{
+		UseTAGrenade.SetBool(true);
+	}
+}
+
 public void OnLibraryAdded(const char[] name)
 {
 	if (StrEqual(name, "CustomPlayerSkins"))
@@ -131,16 +141,6 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnAllPluginsLoaded()
 {
-	Handle hPlugin = FindPluginByFile("cameras-and-drones.smx");
-	
-	if (hPlugin != null)
-	{
-		if (GetPluginStatus(hPlugin) == Plugin_Running)
-		{
-			SetFailState("TA-Grenade doesn't work currently with 'Cameras and Drones'!");
-		}
-	}
-	
 	if (g_bCPS)
 	{
 		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);

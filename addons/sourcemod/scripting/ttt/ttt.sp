@@ -316,7 +316,11 @@ public void OnConfigsExecuted()
 {
 	if (g_iConfig[bblockGrenadeMessage])
 	{
-		SetConVarBool(FindConVar("sv_ignoregrenaderadio"), true);
+		ConVar cIgnore = FindConVar("sv_ignoregrenaderadio");
+		if (cIgnore != null)
+		{
+			cIgnore.SetBool(true);
+		}
 	}
 
 	ConVar cHoliday = FindConVar("sv_holiday_mode");
