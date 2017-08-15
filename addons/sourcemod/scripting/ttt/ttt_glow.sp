@@ -24,6 +24,8 @@ bool g_bCPS = false;
 bool g_bWallhack = false;
 bool g_bTAGrenade = false;
 
+bool g_bDebug = false;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -131,7 +133,7 @@ void SetupGlowSkin(int client)
 		return;
 	}
 
-	if (IsFakeClient(client) || IsClientSourceTV(client))
+	if (!g_bDebug && (IsFakeClient(client) || IsClientSourceTV(client)))
 	{
 		return;
 	}
@@ -235,7 +237,7 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 			continue;
 		}
 
-		if (IsFakeClient(i))
+		if (!g_bDebug && IsFakeClient(i))
 		{
 			continue;
 		}
