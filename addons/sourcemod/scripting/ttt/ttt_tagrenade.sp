@@ -27,6 +27,7 @@ float g_fTagrenadeTime = 0.0;
 
 bool g_bShowPlayersBehindWalls = false;
 bool g_bSeePlayers[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHasGrenade[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -58,7 +59,7 @@ public int Native_CheckTAGrenade(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	int target = GetNativeCell(2);
 	
-	if (g_bSeePlayers[client] && GetGameTime() < g_fTaggingEndTime[target])
+	if (g_bSeePlayers[client] && g_bHasGrenade[client] && GetGameTime() < g_fTaggingEndTime[target])
 	{
 		return true;
 	}
@@ -179,6 +180,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 
 			GivePlayerItem(client, "weapon_tagrenade");
+			g_bHasGrenade[client] = true;
 
 			if (count)
 			{
@@ -192,12 +194,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 public void OnTagrenadeDetonate(Handle event, const char[] name, bool dontBroadcast)
 {
 	int userid = GetEventInt(event, "userid");
+	
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, userid);
 	WritePackCell(pack, GetEventInt(event, "entityid"));
 	WritePackFloat(pack, GetEventFloat(event, "x"));
 	WritePackFloat(pack, GetEventFloat(event, "y"));
 	WritePackFloat(pack, GetEventFloat(event, "z"));
+	
 	CreateTimer(0.0, OnGetTagrenadeTimes, pack);
 	CreateTimer(g_fTagrenadeTime, Timer_ResetTags, userid);
 }
@@ -209,6 +213,7 @@ public Action Timer_ResetTags(Handle timer, any userid)
 	if (TTT_IsClientValid(client))
 	{
 		g_bSeePlayers[client] = false;
+		g_bHasGrenade[client] = false;
 	}
 }
 
@@ -260,6 +265,11 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 		}
 
 		SetEntPropFloat(target, Prop_Send, "m_flDetectedByEnemySensorTime", 0.0);
+		
+		if (!g_bHasGrenade[client])
+		{
+			continue;
+		}
 
 		GetClientEyePosition(target, targetposition);
 		distance = GetVectorDistance(position, targetposition);
@@ -299,4 +309,5 @@ void ResetTAG(int client)
 	g_fTaggingEndTime[client] = 0.0;
 	g_bPlayerIsTagged[client] = false;
 	g_bSeePlayers[client] = false;
+	g_bHasGrenade[client] = false;
 }
