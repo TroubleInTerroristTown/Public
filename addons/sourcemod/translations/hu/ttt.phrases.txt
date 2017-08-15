@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:20 UTC
+// Date: 2017-08-15 17:58:37 UTC
 // Language: Hungarian (hu)
 // 
 // To view other translations for this plugin, please visit:

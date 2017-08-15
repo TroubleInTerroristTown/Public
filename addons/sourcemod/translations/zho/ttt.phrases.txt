@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:20 UTC
+// Date: 2017-08-15 17:58:37 UTC
 // Language: Chinese (Traditional) (zho)
 // 
 // To view other translations for this plugin, please visit:
@@ -398,11 +398,6 @@
 		"zho"		"{1} 選擇原諒你猜殺他!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"zho"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"zho"		"{orchid}{1} {lightgreen}現在是 {darkred}歹徒!"
@@ -561,6 +556,11 @@
 	"WM No"
 	{
 		"zho"		"否, 請告訴我遊戲規則!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"zho"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
 	}
 
 }

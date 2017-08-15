@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:18 UTC
+// Date: 2017-08-15 17:58:36 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -398,11 +398,6 @@
 		"chi"		"{1} 选择原谅你猜测杀他!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"chi"		"{orchid}{1} {lightgreen}现在是 {green}平民!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"chi"		"{orchid}{1} {lightgreen}现在是 {darkred}叛徒! "
@@ -591,6 +586,11 @@
 	"All karma has been updated"
 	{
 		"chi"		"人品值已更新!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"chi"		"{orchid}{1} {lightgreen}现在是 {green}平民!"
 	}
 
 }

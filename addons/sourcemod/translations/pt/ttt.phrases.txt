@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:21 UTC
+// Date: 2017-08-15 17:58:37 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -353,11 +353,6 @@
 		"pt"		"{1} escolheu perdoar você por fazer RDM nele."
 	}
 
-	"Player is Now Innocent"
-	{
-		"pt"		"{orchid}{1} {lightgreen}é agora {green}INOCENTE! "
-	}
-
 	"Player is Now Traitor"
 	{
 		"pt"		"{orchid}{1} {lightgreen}agora é {darkred}Traidor!"
@@ -646,6 +641,11 @@
 	"Reopen Shop activated"
 	{
 		"pt"		"Shop estará disponível após a compra de um item."
+	}
+
+	"Player is Now Innocent"
+	{
+		"pt"		"{orchid}{1} {lightgreen}é agora {green}INOCENTE! "
 	}
 
 }

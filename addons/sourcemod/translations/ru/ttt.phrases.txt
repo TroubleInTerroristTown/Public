@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:21 UTC
+// Date: 2017-08-15 17:58:37 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -393,11 +393,6 @@
 		"ru"		"{1} решил простить вам РДМ!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"ru"		"{orchid}{1} {green}НЕВИНОВНЫЙ"
-	}
-
 	"Player is Now Traitor"
 	{
 		"ru"		"{orchid}{1} {darkred}ПРЕДАТЕЛЬ"
@@ -591,6 +586,11 @@
 	"AlreadyTaser"
 	{
 		"ru"		"ArenasFull"
+	}
+
+	"Player is Now Innocent"
+	{
+		"ru"		"{orchid}{1} {green}НЕВИНОВНЫЙ"
 	}
 
 }

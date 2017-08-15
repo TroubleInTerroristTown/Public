@@ -1,5 +1,5 @@
-﻿// Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:21 UTC
+// Exported from SourceMod Translator
+// Date: 2017-08-15 17:58:37 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -443,12 +443,6 @@
 		"en"		"{1} has chosen to forgive you for RDMing them!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}is now {green}Innocent!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"#format"	"{1:N}"
@@ -827,60 +821,6 @@
 		"en"		"{1}"
 	}
 
-	"Hud PlayerName T-T"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
 	"You tased a Traitor"
 	{
 		"#format"	"{1:N},{2:N}"
@@ -925,48 +865,6 @@
 	"Traitor Voice Chat: Enabled!"
 	{
 		"en"		"Traitor Voice Chat: Enabled!"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"#format"	"{1:N}"
-		"en"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"#format"	"{1:N}"
-		"en"		"\"{1}\""
 	}
 
 	"ID: Cooldown"
@@ -1025,6 +923,108 @@
 	{
 		"#format"	"{1:N}"
 		"en"		"{green}{1} {default}is {darkred}alive {default}and watching logs of current round."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"#format"	"{1:N}"
+		"en"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"#format"	"{1:N}"
+		"en"		"\"{1}\""
+	}
+
+	"Player is Now Innocent"
+	{
+		"#format"	"{1:N}"
+		"en"		"{orchid}{1} {lightgreen}is now {green}Innocent!"
 	}
 
 }

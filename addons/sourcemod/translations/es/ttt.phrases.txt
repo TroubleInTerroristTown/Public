@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:18 UTC
+// Date: 2017-08-15 17:58:36 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -403,11 +403,6 @@
 		"es"		"{1} ha escogido perdonarte por hacer RDM!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"es"		"{orchid}{1} {lightgreen}és ahora {green}INOCENTE!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"es"		"{orchid}{1} {lightgreen}es ahora un {darkred}Traidor!"
@@ -758,26 +753,6 @@
 		"es"		"{1}"
 	}
 
-	"Hud PlayerName T-T"
-	{
-		"es"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"es"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"es"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"es"		"\"{1}\""
-	}
-
 	"Hud PlayerName D-D"
 	{
 		"es"		"<font color='#0000ff'>\"{1}\"</font>"
@@ -788,7 +763,7 @@
 		"es"		"\"{1}\""
 	}
 
-	"Hud PlayerName I-T"
+	"Hud PlayerName D-T"
 	{
 		"es"		"\"{1}\""
 	}
@@ -801,6 +776,31 @@
 	"Hud PlayerName I-I"
 	{
 		"es"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"es"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"es"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"es"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"es"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Player is Now Innocent"
+	{
+		"es"		"{orchid}{1} {lightgreen}és ahora {green}INOCENTE!"
 	}
 
 }

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:19 UTC
+// Date: 2017-08-15 17:58:37 UTC
 // Language: Korean (ko)
 // 
 // To view other translations for this plugin, please visit:
@@ -418,11 +418,6 @@
 		"ko"		"{1}님이 당신의 프리킬을 용서하기로 선택했습니다."
 	}
 
-	"Player is Now Innocent"
-	{
-		"ko"		"{orchid}{1}{lightgreen}님은 {green}이노센트{lightgreen}입니다!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"ko"		"{orchid}{1}{lightgreen}님은 이제 {darkred}트레이터{lightgreen}입니다!"
@@ -586,6 +581,11 @@
 	"WM No"
 	{
 		"ko"		"아니오, 규칙을 보여주세요!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"ko"		"{orchid}{1}{lightgreen}님은 {green}이노센트{lightgreen}입니다!"
 	}
 
 }

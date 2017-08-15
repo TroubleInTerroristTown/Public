@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:18 UTC
+// Date: 2017-08-15 17:58:36 UTC
 // Language: ua (ua)
 // 
 // To view other translations for this plugin, please visit:
@@ -398,11 +398,6 @@
 		"ua"		"{1} đã chấp nhận tha thứ cho bạn sau pha úp sọt nhầm!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"ua"		"{orchid}{1} {lightgreen}đã trở thành {green}INNOCENT!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"ua"		"{orchid}{1} {lightgreen}đã trở thành {darkred}Traitor!"
@@ -591,6 +586,11 @@
 	"All karma has been updated"
 	{
 		"ua"		"Đã update điểm Karma!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"ua"		"{orchid}{1} {lightgreen}đã trở thành {green}INNOCENT!"
 	}
 
 }

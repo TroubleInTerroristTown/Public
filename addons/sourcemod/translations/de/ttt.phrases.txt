@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:26:23 UTC
+// Date: 2017-08-15 17:58:35 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -398,11 +398,6 @@
 		"de"		"{1} vergibt Dir für dein RDM!"
 	}
 
-	"Player is Now Innocent"
-	{
-		"de"		"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"de"		"{orchid}{1} {lightgreen}ist jetzt {darkred}Traitor!"
@@ -753,51 +748,6 @@
 		"de"		"{2}"
 	}
 
-	"Hud PlayerName T-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"de"		"\"{1}\""
-	}
-
 	"You tased a Traitor"
 	{
 		"de"		"Der Spieler {lightgreen}{1} {green}benutzt einen Detektor am Spieler {lightgreen}{2} {green}und er ist ein TRAITOR!"
@@ -836,41 +786,6 @@
 	"Traitor Voice Chat: Enabled!"
 	{
 		"de"		"Traitor Sprachchat: Aktiviert!"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"de"		"\"{1}\""
 	}
 
 	"ID: Cooldown"
@@ -926,6 +841,91 @@
 	"watching logs alive"
 	{
 		"de"		"{green}{1} {default}betrachtet als {darkred}lebender {default}die Logs der aktuellen Runde."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"de"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"de"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"de"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"de"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"de"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"de"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"de"		"\"{1}\""
+	}
+
+	"Player is Now Innocent"
+	{
+		"de"		"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
 	}
 
 }

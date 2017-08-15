@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-14 14:19:19 UTC
+// Date: 2017-08-15 17:58:36 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -403,11 +403,6 @@
 		"cze"		"{1} se rozhodnul ze ti promine za nahodny zabiti !"
 	}
 
-	"Player is Now Innocent"
-	{
-		"cze"		"{orchid}{1} {lightgreen}je nyni {green}NEVINNY!"
-	}
-
 	"Player is Now Traitor"
 	{
 		"cze"		"{orchid}{1} {lightgreen}je nyni {darkred}Zradce!"
@@ -575,7 +570,7 @@
 
 	"WM No"
 	{
-		"cze"		"Ne, ukaz mi pravidla !"
+		"cze"		"Ne, ukaž mi pravidla !"
 	}
 
 	"WM No"
@@ -773,51 +768,6 @@
 		"cze"		"{1}"
 	}
 
-	"Hud PlayerName T-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
 	"You tased a Traitor"
 	{
 		"cze"		"Hrac {lightgreen}{1} pouzil detektor na hrace {darkred}{2} {lightgreen}, ktery je {darkred}ZRADCE!"
@@ -858,41 +808,6 @@
 		"cze"		"Chat Zdradcu: Zapnut !"
 	}
 
-	"Hud PlayerName T-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
 	"ID: Cooldown"
 	{
 		"cze"		"Musis pockat nez budes moci znovu pouzit tento prikaz."
@@ -931,6 +846,91 @@
 	"Reopen Shop activated"
 	{
 		"cze"		"Obchod bude znovu dostupny po zakoupeni predmetu."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"cze"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"cze"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"cze"		"\"{1}\""
+	}
+
+	"Player is Now Innocent"
+	{
+		"cze"		"{orchid}{1} {lightgreen}je nyni {green}NEVINNY!"
 	}
 
 }
