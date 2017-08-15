@@ -59,9 +59,12 @@ public int Native_CheckTAGrenade(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	int target = GetNativeCell(2);
 	
-	if (g_bSeePlayers[client] && g_bHasGrenade[client] && GetGameTime() < g_fTaggingEndTime[target])
+	if (g_bSeePlayers[client] && g_bHasGrenade[client])
 	{
-		return true;
+		if (target > 0 && GetGameTime() < g_fTaggingEndTime[target])
+		{
+			return true;
+		}
 	}
 	
 	return false;
@@ -244,12 +247,7 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 
 	LoopValidClients(target)
 	{
-		if (IsFakeClient(client))
-		{
-			continue;
-		}
-
-		if (!IsPlayerAlive(client))
+		if (target < 1)
 		{
 			continue;
 		}
@@ -258,8 +256,18 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 		{
 			continue;
 		}
+		
+		/* if (IsFakeClient(target))
+		{
+			continue;
+		} */
 
-		if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+		if (!IsPlayerAlive(target))
+		{
+			continue;
+		}
+
+		if (TTT_GetClientRole(target) < TTT_TEAM_INNOCENT)
 		{
 			continue;
 		}
@@ -282,8 +290,12 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 		if (g_bShowPlayersBehindWalls)
 		{
 			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);
+			
 			if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
+			{
 				g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;
+			}
+			
 			delete trace;
 		}
 		else
