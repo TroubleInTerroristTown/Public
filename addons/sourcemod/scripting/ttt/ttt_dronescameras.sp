@@ -79,46 +79,41 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if (StrEqual(itemshort, CAMERA_SHORT_NAME, false))
+		if (StrEqual(itemshort, CAMERA_SHORT_NAME, false) || StrEqual(itemshort, DRONE_SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_DETECTIVE)
+			if (role == TTT_TEAM_DETECTIVE)
+			{
+				OverridePlayerGear(client, 1);
+			}
+			else if (role == TTT_TEAM_DETECTIVE)
+			{
+				OverridePlayerGear(client, 2);
+			}
+			else
 			{
 				return Plugin_Stop;
 			}
-
-			OverridePlayerGear(client, 1);
-		}
-		else if (StrEqual(itemshort, DRONE_SHORT_NAME, false))
-		{
-			int role = TTT_GetClientRole(client);
-
-			if (role != TTT_TEAM_TRAITOR)
+			
+			for(int offset = 0; offset < 128; offset += 4)
 			{
-				return Plugin_Stop;
-			}
-
-			OverridePlayerGear(client, 2);
-		}
-
-		for(int offset = 0; offset < 128; offset += 4)
-		{
-			int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
-
-			if (IsValidEntity(weapon))
-			{
-				char sClass[32];
-				GetEntityClassname(weapon, sClass, sizeof(sClass));
-
-				if (StrEqual(sClass, "weapon_tagrenade", false))
+				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+	
+				if (IsValidEntity(weapon))
 				{
-					TTT_SafeRemoveWeapon(client, weapon);
+					char sClass[32];
+					GetEntityClassname(weapon, sClass, sizeof(sClass));
+	
+					if (StrEqual(sClass, "weapon_tagrenade", false))
+					{
+						TTT_SafeRemoveWeapon(client, weapon);
+					}
 				}
 			}
+	
+			GivePlayerItem(client, "weapon_tagrenade");
 		}
-
-		GivePlayerItem(client, "weapon_tagrenade");
 	}
 	return Plugin_Continue;
 }
