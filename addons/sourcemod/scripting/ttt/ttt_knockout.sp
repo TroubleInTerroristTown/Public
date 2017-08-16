@@ -101,6 +101,7 @@ public void OnAllPluginsLoaded()
 
 public void OnClientPutInServer(int client)
 {
+	SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
@@ -155,6 +156,21 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
+public Action OnWeaponCanUse(int client, int weapon)
+{
+	if(!IsClientInGame(client))
+	{
+		return Plugin_Continue;
+	}
+
+	if(g_bKnockout[client])
+	{
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
 	if (!TTT_IsRoundActive())
@@ -162,9 +178,9 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 		return Plugin_Continue;
 	}
 
-	if (TTT_IsClientValid(attacker))
+	if (TTT_IsClientValid(attacker) && TTT_IsClientValid(victim))
 	{
-		if (g_bHasKnockout[attacker])
+		if (g_bHasKnockout[attacker] && !g_bKnockout[victim])
 		{
 			char sWeapon[32];
 			GetClientWeapon(attacker, sWeapon, sizeof(sWeapon));
@@ -174,10 +190,14 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 				KnockoutPlayer(victim);
 				g_bHasKnockout[attacker] = false;
 
-				damage = 0.0;
-				return Plugin_Changed;
+				return Plugin_Handled;
 			}
 		}
+	}
+	
+	if(TTT_IsClientValid(victim) && g_bKnockout[victim])
+	{
+		return Plugin_Handled;
 	}
 
 	return Plugin_Continue;
@@ -195,19 +215,17 @@ void KnockoutPlayer(int client)
 
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel);
-	DispatchKeyValue(iEntity, "targetname", "fake_body");
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 	DispatchSpawn(iEntity);
 
 	pos[2] -= 16.0;
 	TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
-	SetNoblock(iEntity);
+	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
 
 	g_iRagdoll[client] = iEntity;
-	SetNoblock(client);
 	SetEntityRenderMode(client, RENDER_NONE);
-	DropAllWeapons(client);
+	StripPlayerWeapons(client);
 	SetNonMoveable(client);
 
 	CreateTimer(5.0, Timer_Delete, client, TIMER_FLAG_NO_MAPCHANGE);
@@ -217,40 +235,58 @@ void KnockoutPlayer(int client)
 	PerformBlind(client, 255);
 }
 
+stock void StripPlayerWeapons(int client)
+{
+	for(int offset = 0; offset < 128; offset += 4)
+	{
+		int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+
+		if (IsValidEntity(weapon))
+		{
+			char sClass[32];
+			GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+			if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
+			{
+				TTT_SafeRemoveWeapon(client, weapon);
+			}
+			else
+			{
+				CS_DropWeapon(client, weapon, true, true);
+			}
+		}
+	}
+}
+
 public Action Timer_Delete(Handle timer, any client)
 {
 	int entity = g_iRagdoll[client];
 
 	if (entity != -1 && IsValidEntity(entity))
 		AcceptEntityInput(entity, "kill");
-
+	
+	entity = EntRefToEntIndex(g_iCamera[client]);
+	if(entity != -1)
+		AcceptEntityInput(entity, "kill");
+	
+	g_iCamera[client] = -1;
 	g_iRagdoll[client] = -1;
 	g_bKnockout[client] = false;
 
-	if(IsClientInGame(client) && IsPlayerAlive(client))
+	if(IsClientInGame(client))
 	{
 		SetEntityRenderMode(client, RENDER_TRANSCOLOR);
-		SetBlock(client);
 		SetMoveable(client);
 		SetClientViewEntity(client, client);
 		g_iCamera[client] = false;
 		PerformBlind(client, 0);
+		GivePlayerItem(client, "weapon_knife");
 	}
 }
 
 void ResetKnockout(int client)
 {
 	g_bHasKnockout[client] = false;
-}
-
-void SetNoblock(int entity)
-{
-	SetEntData(entity, g_iCollisionGroup, 2, 4, true);
-}
-
-void SetBlock(int entity)
-{
-	SetEntData(entity, g_iCollisionGroup, 5, 4, true);
 }
 
 void SetMoveable(int entity)
@@ -261,19 +297,6 @@ void SetMoveable(int entity)
 void SetNonMoveable(int entity)
 {
 	SetEntData(entity, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
-}
-
-
-void DropAllWeapons(int client)
-{
-	for (int i = CS_SLOT_PRIMARY; i <= CS_SLOT_C4; i++)
-	{
-		int weapon = -1;
-		while ((weapon = GetPlayerWeaponSlot(client, i)) != -1)
-		{
-			SDKHooks_DropWeapon(client, weapon);
-		}
-	}
 }
 
 stock bool SpawnCamAndAttach(int client, int ragdoll)
@@ -319,7 +342,7 @@ stock bool SpawnCamAndAttach(int client, int ragdoll)
 	AcceptEntityInput(entity, "TurnOn");
 
 	SetClientViewEntity(client, entity);
-	g_iCamera[client] = entity;
+	g_iCamera[client] = EntIndexToEntRef(entity);
 
 	return true;
 }
