@@ -9,6 +9,14 @@
 #include <ttt_shop>
 #include <config_loader>
 
+
+#undef REQUIRE_PLUGIN
+#pragma newdecls optional
+#include <basecomm>
+#include <sourcecomms>
+#pragma newdecls required
+#define REQUIRE_PLUGIN
+
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Knockout"
 #define SHORT_NAME "knockout"
 
@@ -28,6 +36,9 @@ bool g_bKnockout[MAXPLAYERS + 1] =  { false, ... };
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 char g_sLongName[64];
+
+bool g_bSourceC = false;
+bool g_bBaseC = false;
 
 UserMsg g_uFade = view_as<UserMsg>(-1);
 
@@ -91,6 +102,35 @@ public void OnPluginStart()
 	LoopValidClients(i)
 	{
 		OnClientPutInServer(i);
+	}
+	
+	g_bSourceC = LibraryExists("sourcecomms");
+	g_bBaseC = LibraryExists("basecomm");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = true;
+	}
+	
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = false;
+	}
+	
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = false;
 	}
 }
 
@@ -233,6 +273,15 @@ void KnockoutPlayer(int client)
 	SpawnCamAndAttach(client, iEntity);
 
 	PerformBlind(client, 255);
+	
+	if (g_bSourceC)
+	{
+		SourceComms_SetClientMute(client, true, 1, false, "Knockout");
+	}
+	else if (g_bBaseC)
+	{
+		BaseComm_SetClientMute(client, true);
+	}
 }
 
 stock void StripPlayerWeapons(int client)
@@ -272,9 +321,18 @@ public Action Timer_Delete(Handle timer, any client)
 	g_iCamera[client] = -1;
 	g_iRagdoll[client] = -1;
 	g_bKnockout[client] = false;
-
+	
 	if(IsClientInGame(client))
 	{
+		if (g_bSourceC)
+		{
+			SourceComms_SetClientMute(client, false);
+		}
+		else if (g_bBaseC)
+		{
+			BaseComm_SetClientMute(client, false);
+		}
+		
 		SetEntityRenderMode(client, RENDER_TRANSCOLOR);
 		SetMoveable(client);
 		SetClientViewEntity(client, client);
