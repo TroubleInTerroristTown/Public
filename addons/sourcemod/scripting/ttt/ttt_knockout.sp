@@ -158,7 +158,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 public Action OnWeaponCanUse(int client, int weapon)
 {
-	if(!IsClientInGame(client))
+	if(!TTT_IsClientValid(client))
 	{
 		return Plugin_Continue;
 	}
