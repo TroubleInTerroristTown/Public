@@ -1,5 +1,3 @@
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Trouble in Terrorist Town"
-
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"

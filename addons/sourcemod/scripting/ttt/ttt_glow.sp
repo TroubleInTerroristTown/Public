@@ -263,22 +263,25 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 		target = i;
 	}
 	
-	if (g_bWallhack && TTT_HasActiveWallhack(client))
+	int iRole = TTT_GetClientRole(client);
+	int iTRole = TTT_GetClientRole(target);
+	
+	if ((iRole == TTT_TEAM_DETECTIVE || iRole == TTT_TEAM_TRAITOR) && g_bWallhack && TTT_HasActiveWallhack(client))
 	{
 		return Plugin_Continue;
 	}
 	
-	if (g_bTAGrenade && TTT_CheckTAGrenade(client, target))
+	if (iRole == TTT_TEAM_TRAITOR && g_bTAGrenade && TTT_CheckTAGrenade(client, target))
 	{
 		return Plugin_Continue;
 	}
 	
-	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+	if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
 	{
 		return Plugin_Continue;
 	}
 
-	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_GetClientRole(target))
+	if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
 	{
 		return Plugin_Continue;
 	}

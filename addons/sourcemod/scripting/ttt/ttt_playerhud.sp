@@ -54,7 +54,6 @@ public void OnPluginStart()
 
 public Action Timer_UpdateText(Handle timer)
 {
-
 	LoopValidClients(client)
 	{
 		if (IsPlayerAlive(client))

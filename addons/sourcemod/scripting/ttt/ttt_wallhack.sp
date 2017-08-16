@@ -79,7 +79,7 @@ public void OnPluginStart()
 	Config_Setup("TTT-Wallhack", g_sConfigFile);
 
 	g_iTraitorPrice = Config_LoadInt("wh_traitor_price", 9000, "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
-	g_iDetectivePrice = Config_LoadInt("wh_detective_price", 9000, "The amount of credits the Dective-Wallhack costs. 0 to disable.");
+	g_iDetectivePrice = Config_LoadInt("wh_detective_price", 0, "The amount of credits the Dective-Wallhack costs. 0 to disable.");
 
 	g_fTraitorCooldown = Config_LoadFloat("wh_traitor_cooldown", 15.0, "Time of the cooldown for Traitor-Wallhack (time in seconds)");
 	g_fDetectiveCooldown = Config_LoadFloat("wh_detective_cooldown", 15.0, "Time of the cooldown for Dective-Wallhack (time in seconds)");
