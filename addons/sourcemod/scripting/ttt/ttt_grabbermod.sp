@@ -6,6 +6,10 @@
 #include <ttt>
 #include <config_loader>
 
+#undef REQUIRE_PLUGIN
+#include <ttt_knockout>
+#define REQUIRE_PLUGIN
+
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
@@ -20,6 +24,8 @@ float g_fDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 char g_cConfigFile[PLATFORM_MAX_PATH];
+
+bool g_bKnockout = false;
 
 public Plugin myinfo =
 {
@@ -41,6 +47,24 @@ public void OnPluginStart()
 	Config_Done();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
+
+	g_bKnockout = LibraryExists("ttt_knockout");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "ttt_knockout"))
+	{
+		g_bKnockout = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "ttt_knockout"))
+	{
+		g_bKnockout = false;
+	}
 }
 
 public void OnMapStart()
@@ -95,6 +119,14 @@ stock void GrabSomething(int client)
 		if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
 		{
 			return;
+		}
+		
+		if (g_bKnockout && TTT_IsClientValid(ent))
+		{
+			if (TTT_IsClientKnockout(ent))
+			{
+				return;
+			}
 		}
 
 		char edictname[128];

@@ -51,6 +51,22 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	CreateNative("TTT_IsClientKnockout", Native_IsClientKnockout);
+	
+	RegPluginLibrary("ttt_knockout");
+
+	return APLRes_Success;
+}
+
+public int Native_IsClientKnockout(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	return g_bKnockout[client];
+}
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
