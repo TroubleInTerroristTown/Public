@@ -25,8 +25,6 @@ float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 char g_cConfigFile[PLATFORM_MAX_PATH];
 
-bool g_bKnockout = false;
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -47,24 +45,6 @@ public void OnPluginStart()
 	Config_Done();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
-
-	g_bKnockout = LibraryExists("ttt_knockout");
-}
-
-public void OnLibraryAdded(const char[] name)
-{
-	if (StrEqual(name, "ttt_knockout"))
-	{
-		g_bKnockout = true;
-	}
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-	if (StrEqual(name, "ttt_knockout"))
-	{
-		g_bKnockout = false;
-	}
 }
 
 public void OnMapStart()
@@ -120,14 +100,6 @@ stock void GrabSomething(int client)
 		return;
 	}
 	
-	if (g_bKnockout && TTT_IsClientValid(ent))
-	{
-		if (TTT_IsClientKnockout(ent))
-		{
-			return;
-		}
-	}
-	
 	char edictname[128];
 	GetEdictClassname(ent, edictname, sizeof(edictname));
 
@@ -146,16 +118,6 @@ stock void GrabSomething(int client)
 
 				SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
 				SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
-			}
-		}
-		else if (StrEqual(edictname, "prop_ragdoll", false))
-		{
-			char sTargetname[32];
-			GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
-			
-			if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
-			{
-				return;
 			}
 		}
 	}
