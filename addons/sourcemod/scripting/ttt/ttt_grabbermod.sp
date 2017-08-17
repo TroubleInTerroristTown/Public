@@ -129,14 +129,6 @@ stock void GrabSomething(int client)
 			}
 		}
 		
-		char sTargetname[64];
-		GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
-		
-		if (StrContains(sTargetname, "knockout_", false) != -1)
-		{
-			return;
-		}
-
 		char edictname[128];
 		GetEdictClassname(ent, edictname, sizeof(edictname));
 
@@ -155,6 +147,16 @@ stock void GrabSomething(int client)
 
 					SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
 					SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
+				}
+			}
+			else if (StrEqual(edictname, "prop_ragdoll", false))
+			{
+				char sTargetname[64];
+				GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
+				
+				if (StrContains(sTargetname, "knockout_", false) != -1)
+				{
+					return;
 				}
 			}
 		}
@@ -257,7 +259,7 @@ stock int ReplacePhysicsEntity(int ent)
 	float VecPos_Ent[3], VecAng_Ent[3];
 
 	char model[128];
-	GetEntPropString(ent, Prop_Data, "m_ModelName", model, 128);
+	GetEntPropString(ent, Prop_Data, "m_ModelName", model, sizeof(model));
 	GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
 	GetEntPropVector(ent, Prop_Send, "m_angRotation", VecAng_Ent);
 	AcceptEntityInput(ent, "Wake");
