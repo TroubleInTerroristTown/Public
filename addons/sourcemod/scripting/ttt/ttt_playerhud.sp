@@ -57,7 +57,7 @@ public void OnAllPluginsLoaded()
 	char sFile[] = "ttt_player_hud.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
-	if (GetPluginStatus(hPlugin) == Plugin_Running)
+	if (hPlugin != null && GetPluginStatus(hPlugin) == Plugin_Running)
 	{
 		SetFailState("Old player hud file found! Please delete '%s'", sFile);
 	}
