@@ -52,6 +52,17 @@ public void OnPluginStart()
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
+public void OnAllPluginsLoaded()
+{
+	char sFile[] = "ttt_player_hud.smx";
+	Handle hPlugin = FindPluginByFile(sFile);
+	
+	if (GetPluginStatus(hPlugin) == Plugin_Running)
+	{
+		SetFailState("Old player hud file found! Please delete '%s'", sFile);
+	}
+}
+
 public Action Timer_UpdateText(Handle timer)
 {
 	LoopValidClients(client)
