@@ -269,18 +269,22 @@ void KnockoutPlayer(int client)
 	float pos[3];
 	GetClientEyePosition(client, pos);
 	
-	char sTargetname[32];
-	Format(sTargetname, sizeof(sTargetname), "knockout_%d", GetClientUserId(client));
+	char sName[32];
+	Format(sName, sizeof(sName), "knock_out_%d", GetClientUserId(client));
 
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel);
-	DispatchKeyValue(iEntity, "targetname", sTargetname);
+	DispatchKeyValue(iEntity, "targetname", sName);
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 	DispatchSpawn(iEntity);
 
-	pos[2] -= 16.0;
-	TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+	if (DispatchSpawn(iEntity))
+	{
+		pos[2] -= 16.0;
+		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+	}
+
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
 
 	g_iRagdoll[client] = iEntity;
@@ -367,12 +371,12 @@ void ResetKnockout(int client)
 	g_bHasKnockout[client] = false;
 }
 
-void SetMoveable(int entity)
+stock void SetNonMoveable(int entity)
 {
 	SetEntData(entity, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
 }
 
-void SetNonMoveable(int entity)
+stock void SetMoveable(int entity)
 {
 	SetEntData(entity, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
 }
