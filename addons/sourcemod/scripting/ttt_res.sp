@@ -1,3 +1,6 @@
+#pragma semicolon 1
+#pragma newdecls required
+
 #include <sourcemod>
 #include <sdktools>
 #include <multicolors>
@@ -6,8 +9,7 @@
 #include <emitsoundany>
 #include <ttt>
 
-#pragma newdecls required // 2015 rules 
-#pragma semicolon 1
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Round End Sounds"
 
 //MapSounds Stuff
 int g_iSoundEnts[2048];
@@ -35,11 +37,11 @@ ArrayList innSound;
 
 public Plugin myinfo =
 {
-	name = "[Outbreak] Round End Sounds",
+	name = PLUGIN_NAME,
 	author = "Bara (& AbNeR_CSS)",
-	description = "",
-	version = "1.0.0",
-	url = "outbreak-community.de"
+	description = TTT_PLUGIN_DESCRIPTION,
+	version = TTT_PLUGIN_VERSION,
+	url = TTT_PLUGIN_URL
 }
 
 public void OnPluginStart()
@@ -116,8 +118,8 @@ public void TTT_OnRoundEnd(int winner)
 		}
 		else
 		{
-			PrintToServer("[Outbreak] TRA_SOUNDS ERROR: Sounds not loaded.");
-			CPrintToChatAll("{green}[Outbreak] {default}TRA_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] TRA_SOUNDS ERROR: Sounds not loaded.");
+			CPrintToChatAll("{green}[TTT] {default}TRA_SOUNDS ERROR: Sounds not loaded.");
 			return;
 		}
 	}
@@ -129,8 +131,8 @@ public void TTT_OnRoundEnd(int winner)
 		}
 		else
 		{
-			PrintToServer("[Outbreak] DET_SOUNDS ERROR: Sounds not loaded.");
-			CPrintToChatAll("{green}[Outbreak] {default}DET_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] DET_SOUNDS ERROR: Sounds not loaded.");
+			CPrintToChatAll("{green}[TTT] {default}DET_SOUNDS ERROR: Sounds not loaded.");
 			return;
 		}
 	}
@@ -142,8 +144,8 @@ public void TTT_OnRoundEnd(int winner)
 		}
 		else
 		{
-			PrintToServer("[Outbreak] INN_SOUNDS ERROR: Sounds not loaded.");
-			CPrintToChatAll("{green}[Outbreak] {default}INN_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] INN_SOUNDS ERROR: Sounds not loaded.");
+			CPrintToChatAll("{green}[TTT] {default}INN_SOUNDS ERROR: Sounds not loaded.");
 			return;
 		}
 	}
@@ -266,33 +268,33 @@ void RefreshSounds(int client)
 	SoundsDetSucess = (size > 0);
 	if(SoundsDetSucess)
 	{
-		ReplyToCommand(client, "[Outbreak] DET_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] DET_SOUNDS: %d sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[Outbreak] INVALID DET SOUND PATH.");
+		ReplyToCommand(client, "[TTT] INVALID DET SOUND PATH.");
 	}
 	
 	size = LoadSoundsTra();
 	SoundsTraSucess = (size > 0);
 	if(SoundsTraSucess)
 	{
-		ReplyToCommand(client, "[Outbreak] TRA_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] TRA_SOUNDS: %d sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[Outbreak] INVALID TRA SOUND PATH.");
+		ReplyToCommand(client, "[TTT] INVALID TRA SOUND PATH.");
 	}
 	
 	size = LoadSoundsInn();
 	SoundsInnSucess = (size > 0);
 	if(SoundsInnSucess)
 	{
-		ReplyToCommand(client, "[Outbreak] INN_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] INN_SOUNDS: %d sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[Outbreak] INVALID INN SOUND PATH.");
+		ReplyToCommand(client, "[TTT] INVALID INN SOUND PATH.");
 	}
 }
  
@@ -440,7 +442,7 @@ void PlayMusicAll(char[] szSound)
 	
 	if(GetConVarInt(g_PlayPrint) == 1)
 	{
-		CPrintToChatAll("{green}[Outbreak] {default}%t", "mp3 print", szSound);
+		CPrintToChatAll("{green}[TTT] {default}%t", "mp3 print", szSound);
 	}
 }
 
