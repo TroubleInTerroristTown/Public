@@ -338,9 +338,9 @@ public Action Timer_Delete(Handle timer, any client)
 	if (entity != -1 && IsValidEntity(entity))
 		AcceptEntityInput(entity, "kill");
 	
-	entity = EntRefToEntIndex(g_iCamera[client]);
-	if(entity != -1)
-		AcceptEntityInput(entity, "kill");
+	int entity2 = EntRefToEntIndex(g_iCamera[client]);
+	if(entity2 != -1)
+		AcceptEntityInput(entity2, "kill");
 	
 	g_iCamera[client] = -1;
 	g_iRagdoll[client] = -1;

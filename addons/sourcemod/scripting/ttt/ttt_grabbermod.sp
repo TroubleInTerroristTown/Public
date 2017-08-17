@@ -151,13 +151,22 @@ stock void GrabSomething(int client)
 			}
 			else if (StrEqual(edictname, "prop_ragdoll", false))
 			{
-				char sTargetname[64];
-				GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
+				char sTargetname[32];
 				
-				if (StrContains(sTargetname, "knockout_", false) != -1)
+				GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
+				PrintToChat(client, "%s", sTargetname);
+				
+				GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
+				PrintToChat(client, "%s", sTargetname);
+				
+				/* if (StrContains(sTargetname, "knockout_", false) != -1)
 				{
 					return;
-				}
+				} */
+				
+				
+				
+				return;
 			}
 		}
 
