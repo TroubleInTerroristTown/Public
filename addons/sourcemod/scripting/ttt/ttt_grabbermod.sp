@@ -128,6 +128,14 @@ stock void GrabSomething(int client)
 				return;
 			}
 		}
+		
+		char sTargetname[64];
+		GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
+		
+		if (StrContains(sTargetname, "knockout_", false) != -1)
+		{
+			return;
+		}
 
 		char edictname[128];
 		GetEdictClassname(ent, edictname, sizeof(edictname));

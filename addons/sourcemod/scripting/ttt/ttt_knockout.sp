@@ -271,6 +271,7 @@ void KnockoutPlayer(int client)
 
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel);
+	DispatchKeyValue(iEntity, "targetname", "knockout_%d", GetClientUserId(client));
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 	DispatchSpawn(iEntity);
