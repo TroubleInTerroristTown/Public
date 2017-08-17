@@ -18,15 +18,19 @@
 int g_iPriceT = -1;
 int g_iPriceD = -1;
 int g_iPriceI = -1;
+
 int g_iPriorityT = -1;
 int g_iPriorityD = -1;
 int g_iPriorityI = -1;
+
 int g_iMaxShotsT = -1;
 int g_iMaxShotsD = -1;
 int g_iMaxShotsI = -1;
+
 int g_iMinShotsT = -1;
 int g_iMinShotsD = -1;
 int g_iMinShotsI = -1;
+
 int g_iAmountT = -1;
 int g_iAmountD = -1;
 int g_iAmountI = -1;
@@ -35,6 +39,7 @@ char g_sConfigFile[PLATFORM_MAX_PATH];
 char g_sLongName[64];
 
 int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
+int g_iWeapon[MAXPLAYERS + 1] =  { -1, ... };
 
 bool g_bHasSilencer[MAXPLAYERS + 1] =  { false, ... };
 
@@ -137,8 +142,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				TTT_SafeRemoveWeapon(client, iWeapon);
 			}
 
-			iWeapon = GivePlayerItem(client, "weapon_awp");
-			EquipPlayerWeapon(client, iWeapon);
+			g_iWeapon[client] = GivePlayerItem(client, "weapon_awp");
+			EquipPlayerWeapon(client, g_iWeapon[client]);
 
 			int max = 0;
 			int min = 0;
@@ -159,8 +164,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 				min = g_iMinShotsI;
 			}
 
-			SetEntProp(iWeapon, Prop_Send, "m_iClip1", GetRandomInt(min, max));
-			SetEntProp(iWeapon, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
+			SetEntProp(g_iWeapon[client], Prop_Send, "m_iClip1", GetRandomInt(min, max));
+			SetEntProp(g_iWeapon[client], Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
 
 			g_bHasSilencer[client] = true;
 		}
@@ -177,12 +182,17 @@ public Action Hook_ShotgunShot(const char[] sample, const int[] Players, int num
 		return Plugin_Continue;
 	}
 
-	char sWeapon[32];
-	GetClientWeapon(client, sWeapon, sizeof(sWeapon));
+	int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 
-	if(StrEqual(sWeapon, "weapon_awp", false) && g_bHasSilencer[client])
+	if (g_iWeapon[client] == iWeapon)
 	{
-		return Plugin_Stop;
+		char sWeapon[32];
+		GetClientWeapon(client, sWeapon, sizeof(sWeapon));
+		
+		if(StrEqual(sWeapon, "weapon_awp", false) && g_bHasSilencer[client])
+		{
+			return Plugin_Stop;
+		}
 	}
 
 	return Plugin_Continue;
@@ -192,4 +202,5 @@ void ResetSilentAWP(int client)
 {
 	g_iPAmount[client] = 0;
 	g_bHasSilencer[client] = false;
+	g_iWeapon[client] = -1;
 }
