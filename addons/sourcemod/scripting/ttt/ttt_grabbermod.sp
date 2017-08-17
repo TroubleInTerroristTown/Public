@@ -96,92 +96,90 @@ stock void Command_UnGrab(int client)
 
 stock void GrabSomething(int client)
 {
+	int ent;
+	float VecPos_Ent[3], VecPos_Client[3];
 
-		int ent;
-		float VecPos_Ent[3], VecPos_Client[3];
+	ent = GetObject(client, false);
 
-		ent = GetObject(client, false);
+	if (ent == -1)
+	{
+		return;
+	}
 
-		if (ent == -1)
+	ent = EntRefToEntIndex(ent);
+
+	if (ent == INVALID_ENT_REFERENCE)
+	{
+		return;
+	}
+
+	GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
+	GetClientEyePosition(client, VecPos_Client);
+	if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+	{
+		return;
+	}
+	
+	if (g_bKnockout && TTT_IsClientValid(ent))
+	{
+		if (TTT_IsClientKnockout(ent))
 		{
 			return;
 		}
+	}
+	
+	char edictname[128];
+	GetEdictClassname(ent, edictname, sizeof(edictname));
 
-		ent = EntRefToEntIndex(ent);
-
-		if (ent == INVALID_ENT_REFERENCE)
+	if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
+	{
+		return;
+	}
+	else
+	{
+		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
 		{
-			return;
+
+			if (IsValidEdict(ent) && IsValidEntity(ent))
+			{
+				ent = ReplacePhysicsEntity(ent);
+
+				SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
+				SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
+			}
 		}
-
-		GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
-		GetClientEyePosition(client, VecPos_Client);
-		if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+		else if (StrEqual(edictname, "prop_ragdoll", false))
 		{
-			return;
-		}
-		
-		if (g_bKnockout && TTT_IsClientValid(ent))
-		{
-			if (TTT_IsClientKnockout(ent))
+			char sTargetname[32];
+			GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
+			
+			if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 			{
 				return;
 			}
 		}
-		
-		char edictname[128];
-		GetEdictClassname(ent, edictname, sizeof(edictname));
+	}
 
-		if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
+	if (GetEntityMoveType(ent) == MOVETYPE_NONE)
+	{
+		if (strncmp("player", edictname, 5, false) != 0)
 		{
-			return;
+			SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
+			PrintHintText(client, "Object ist now Unfreezed");
 		}
 		else
 		{
-			if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
-			{
-
-				if (IsValidEdict(ent) && IsValidEntity(ent))
-				{
-					ent = ReplacePhysicsEntity(ent);
-
-					SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
-					SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
-				}
-			}
-			else if (StrEqual(edictname, "prop_ragdoll", false))
-			{
-				char sTargetname[32];
-				GetEntPropString(ent, Prop_Data, "targetname", sTargetname, sizeof(sTargetname));
-				
-				if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
-				{
-					return;
-				}
-			}
+			SetEntityMoveType(ent, MOVETYPE_WALK);
+			return;
 		}
+	}
 
-		if (GetEntityMoveType(ent) == MOVETYPE_NONE)
-		{
-			if (strncmp("player", edictname, 5, false) != 0)
-			{
-				SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
-				PrintHintText(client, "Object ist now Unfreezed");
-			}
-			else
-			{
-				SetEntityMoveType(ent, MOVETYPE_WALK);
-				return;
-			}
-		}
+	g_iObject[client] = EntIndexToEntRef(ent);
 
-		g_iObject[client] = EntIndexToEntRef(ent);
+	g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
-		g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
-
-		float position[3];
-		TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
-
+	float position[3];
+	TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
 }
 
 stock bool ValidGrab(int client)
