@@ -88,7 +88,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 	int target = GetClientAimTarget(client, false);
 
-	if (!IsValidEntity(target))
+	if (!IsValidEntity(target) || !IsValidEdict(target))
 	{
 		return Plugin_Continue;
 	}
