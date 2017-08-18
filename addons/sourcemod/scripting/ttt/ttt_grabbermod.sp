@@ -120,6 +120,16 @@ stock void GrabSomething(int client)
 				SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
 			}
 		}
+		else if (StrEqual(edictname, "prop_ragdoll", false))
+		{
+			char sTargetname[32];
+			GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
+			
+			if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
+			{
+				return;
+			}
+		}
 	}
 
 	if (GetEntityMoveType(ent) == MOVETYPE_NONE)
