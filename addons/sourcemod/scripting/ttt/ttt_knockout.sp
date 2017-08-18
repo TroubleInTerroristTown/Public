@@ -282,7 +282,6 @@ void KnockoutPlayer(int client)
 	DispatchKeyValue(iEntity, "targetname", sName);
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
-	DispatchSpawn(iEntity);
 
 	if (DispatchSpawn(iEntity))
 	{
