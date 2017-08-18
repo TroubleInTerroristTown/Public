@@ -85,10 +85,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			if (role == TTT_TEAM_DETECTIVE)
 			{
-				OverridePlayerGear(client, 1);
+				BuyPlayerGear(client);
+				OverridePlayerGear(client, 1); // I'll override the gear, because detectives aren't always ct
 			}
 			else if (role == TTT_TEAM_TRAITOR)
 			{
+				BuyPlayerGear(client);
 				OverridePlayerGear(client, 2);
 			}
 			else
