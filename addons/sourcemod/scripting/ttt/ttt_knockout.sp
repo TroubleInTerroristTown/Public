@@ -42,8 +42,6 @@ bool g_bBaseC = false;
 
 UserMsg g_uFade = view_as<UserMsg>(-1);
 
-bool g_bDebug = false;
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -154,10 +152,7 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnAllPluginsLoaded()
 {
-	if (g_bDebug)
-	{
-		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
-	}
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
 }
 
 public void OnClientPutInServer(int client)
@@ -273,13 +268,9 @@ void KnockoutPlayer(int client)
 
 	float pos[3];
 	GetClientEyePosition(client, pos);
-	
-	char sName[32];
-	Format(sName, sizeof(sName), "knockout_%d", GetClientUserId(client));
 
 	int iEntity = CreateEntityByName("prop_ragdoll");
 	DispatchKeyValue(iEntity, "model", sModel);
-	DispatchKeyValue(iEntity, "targetname", sName);
 	SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 
