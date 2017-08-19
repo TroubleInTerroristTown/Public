@@ -3025,7 +3025,7 @@ public Action Command_SetKarma(int client, int args)
 			return Plugin_Handled;
 		}
 
-		if (g_bKarma[target])
+		if (!g_bKarma[target])
 		{
 			ReplyToCommand(client, "[SM] Player data not loaded yet.");
 			return Plugin_Handled;
