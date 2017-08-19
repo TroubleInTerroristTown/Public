@@ -14,6 +14,7 @@
 Database g_dDatabase = null;
 
 char g_sEntry[32];
+char g_sType[18];
 
 int g_cRetries = -1;
 int g_iRetries = -1;
@@ -26,6 +27,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
 	CreateNative("TTT_Query", Native_Query);
 	CreateNative("TTT_GetSQLConnection", Native_GetSQLConnection);
+	CreateNative("TTT_GetConnectionType", Native_GetConnectionType);
 
 	g_hOnConnect = CreateGlobalForward("TTT_OnSQLConnect", ET_Ignore, Param_Cell);
 
@@ -106,7 +108,9 @@ void SQL_Start()
 		else
 		{
 			LogMessage("(SQL_Start) We have a connection!");
-			CheckAndCreateTables("sqlite");
+			DBDriver iDriver = g_dDatabase.Driver;
+			iDriver.GetIdentifier(g_sType, sizeof(g_sType));
+			CheckAndCreateTables();
 			return;
 		}
 	}
@@ -130,7 +134,9 @@ void SQL_Start()
 		else
 		{
 			LogMessage("(SQL_Start) We have a connection!");
-			CheckAndCreateTables("sqlite");
+			DBDriver iDriver = g_dDatabase.Driver;
+			iDriver.GetIdentifier(g_sType, sizeof(g_sType));
+			CheckAndCreateTables();
 			return;
 		}
 	}
@@ -150,10 +156,9 @@ public void OnConnect(Database db, const char[] error, any data)
 	}
 
 	DBDriver iDriver = db.Driver;
-	char sDriver[16];
-	iDriver.GetIdentifier(sDriver, sizeof(sDriver));
+	iDriver.GetIdentifier(g_sType, sizeof(g_sType));
 
-	if (!StrEqual(sDriver, "mysql", false) && !StrEqual(sDriver, "sqlite", false))
+	if (!StrEqual(g_sType, "mysql", false) && !StrEqual(g_sType, "sqlite", false))
 	{
 		SetFailState("(OnConnect) TTT has only MySQL and SQLite support!");
 		return;
@@ -161,7 +166,7 @@ public void OnConnect(Database db, const char[] error, any data)
 
 	g_dDatabase = db;
 
-	CheckAndCreateTables(sDriver);
+	CheckAndCreateTables();
 }
 
 public Action Timer_Retry(Handle timer)
@@ -177,14 +182,14 @@ void Call_OnSQLConnect()
 	Call_Finish();
 }
 
-void CheckAndCreateTables(const char[] driver)
+void CheckAndCreateTables()
 {
 	char sQuery[256];
-	if (StrEqual(driver, "mysql", false))
+	if (StrEqual(g_sType, "mysql", false))
 	{
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 	}
-	else if (StrEqual(driver, "sqlite", false))
+	else if (StrEqual(g_sType, "sqlite", false))
 	{
 		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`));");
 	}
@@ -193,12 +198,12 @@ void CheckAndCreateTables(const char[] driver)
 
 	Call_OnSQLConnect();
 
-	SetCharsetAndCollate(driver);
+	SetCharsetAndCollate();
 }
 
-void SetCharsetAndCollate(const char[] driver)
+void SetCharsetAndCollate()
 {
-	if (StrEqual(driver, "mysql", false))
+	if (StrEqual(g_sType, "mysql", false))
 	{
 		g_dDatabase.SetCharset("utf8mb4");
 		TTT_Query("SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
@@ -227,6 +232,20 @@ public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, an
 		LogError("[TTT] (%s) Query failed: %s", sBuffer, error);
 		return;
 	}
+}
+
+public int Native_GetConnectionType(Handle plugin, int numParams)
+{
+	if (StrEqual(g_sType, "mysql", false))
+	{
+		return dMySQL;
+	}
+	else if (StrEqual(g_sType, "sqlite", false))
+	{
+		return dSQLite;
+	}
+	
+	return -1;
 }
 
 public int Native_GetSQLConnection(Handle plugin, int numParams)
