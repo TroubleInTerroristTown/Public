@@ -3265,9 +3265,14 @@ public Action Command_KarmaReset(int client, int args)
 {
 	LoopValidClients(i)
 	{
-		setKarma(g_iKarma[i], g_iConfig[istartKarma]);
-		LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[istartKarma]);
+		if (!IsFakeClient(i))
+		{
+			CPrintToChat(client, g_iConfig[spluginTag], "AdminSet", client, i, g_iConfig[istartKarma], "Karma");
+			setKarma(i, g_iConfig[istartKarma]);
+			LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[istartKarma]);
+		}
 	}
+	
 	return Plugin_Handled;
 }
 
