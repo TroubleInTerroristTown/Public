@@ -2,9 +2,8 @@
 
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
-VERSION=2.1.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
-FILE=ttt-$2-$1-$VERSION-$HASH.zip
+FILE=ttt-$2-$1-$COUNT-$HASH.zip
 LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
