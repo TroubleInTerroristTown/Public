@@ -2,9 +2,8 @@
 
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
-VERSION=2.1.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
-FILE=ttt-$2-$1-$VERSION-$HASH.zip
+FILE=ttt-$2-$1-$COUNT-$HASH.zip
 
 echo -e "Download und extract sourcemod\n"
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
@@ -16,7 +15,7 @@ chmod +x addons/sourcemod/scripting/spcomp
 echo -e "Set plugins version\n"
 for file in addons/sourcemod/scripting/include/ttt.inc
 do
-  sed -i "s/<VERSION>/$VERSION/g" $file > output.txt
+  sed -i "s/<ID>/$COUNT/g" $file > output.txt
   rm output.txt
 done
 
