@@ -29,6 +29,8 @@ bool SoundsDetSucess = false;
 bool SoundsTraSucess = false;
 bool SoundsInnSucess = false;
 
+bool g_bEnable = false;
+
 ArrayList detSound;
 ArrayList traSound;
 ArrayList innSound;
@@ -47,57 +49,51 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/res.cfg");
 	Config_Setup("TTT-Res", g_sConfigFile);
 	
-	Config_LoadString("res_traitor_path", "ttt/res/traitor", "Path off traitor sounds in /cstrike/sound", g_sTraPath, sizeof(g_sTraPath));
-	Config_LoadString("res_detective_path", "ttt/res/detective", "Path off detective sounds in /cstrike/sound", g_sDetPath, sizeof(g_sDetPath));
-	Config_LoadString("res_innocent_path", "ttt/res/innocent", "Path off innocent sounds in /cstrike/sound", g_sInnPath, sizeof(g_sInnPath));
+	g_bEnable = Config_LoadBool("res_enable", false, "Enable round end sounds plugin? (Default: false/0)");
 	
-	g_bPlayType = Config_LoadBool("res_play_type", false, "0 - Random, 1 - Play in queue");
-	g_bStop = Config_LoadBool("res_stop_map_music", true, "Stop map musics");	
-	g_bSettings = Config_LoadBool("res_client_preferences", true, "Enable/Disable client preferences");
+	if (g_bEnable)
+	{
+		Config_LoadString("res_traitor_path", "ttt/res/traitor", "Path off traitor sounds in /cstrike/sound", g_sTraPath, sizeof(g_sTraPath));
+		Config_LoadString("res_detective_path", "ttt/res/detective", "Path off detective sounds in /cstrike/sound", g_sDetPath, sizeof(g_sDetPath));
+		Config_LoadString("res_innocent_path", "ttt/res/innocent", "Path off innocent sounds in /cstrike/sound", g_sInnPath, sizeof(g_sInnPath));
+		
+		
+		g_bPlayType = Config_LoadBool("res_play_type", false, "0 - Random, 1 - Play in queue");
+		g_bStop = Config_LoadBool("res_stop_map_music", true, "Stop map musics");	
+		g_bSettings = Config_LoadBool("res_client_preferences", true, "Enable/Disable client preferences");
+		
+		g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
+		SetCookieMenuItem(Cookie_RoundEndSound, 0, "Round End Sounds");
+		
+		LoadTranslations("common.phrases");
+	
+		RegAdminCmd("sm_resrefresh", Command_ResRefresh, ADMFLAG_CONFIG);
+		
+		RegConsoleCmd("sm_res", Commamnd_RES);
+		
+		HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
+		
+		detSound = new ArrayList(512);
+		traSound = new ArrayList(512);
+		innSound = new ArrayList(512);
+	}
 	
 	Config_Done();
-	
-	g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
-	SetCookieMenuItem(SoundCookieHandler, 0, "Round End Sounds");
-	
-	LoadTranslations("common.phrases");
-	AutoExecConfig(true, "res2");
-
-	RegAdminCmd("res_refresh", CommandLoad, ADMFLAG_SLAY);
-	RegConsoleCmd("res", Commamnd_RES);
-	
-	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
-	
-	detSound = new ArrayList(512);
-	traSound = new ArrayList(512);
-	innSound = new ArrayList(512);
 }
 
-public void StopMapMusic()
+public void OnConfigsExecuted()
 {
-	char sSound[PLATFORM_MAX_PATH];
-	int entity = INVALID_ENT_REFERENCE;
-	LoopValidClients(i)
+	if (g_bEnable)
 	{
-		for (int u = 0; u < g_iNumSounds; u++)
-		{
-			entity = EntRefToEntIndex(g_iSoundEnts[u]);
-			if (entity != INVALID_ENT_REFERENCE)
-			{
-				GetEntPropString(entity, Prop_Data, "m_iszSound", sSound, sizeof(sSound));
-				Client_StopSound(i, entity, SNDCHAN_STATIC, sSound);
-			}
-		}
+		RefreshSounds(0);
 	}
-}
-
-stock void Client_StopSound(int client, int entity, int channel, const char[] name)
-{
-	EmitSoundToClientAny(client, name, entity, channel, SNDLEVEL_NONE, SND_STOP, 0.0, SNDPITCH_NORMAL, _, _, _, true);
 }
 
 public void TTT_OnRoundEnd(int winner)
 {
+	if (!g_bEnable)
+		return;
+	
 	if(winner == TTT_TEAM_TRAITOR)
 	{
 		if(SoundsTraSucess)
@@ -144,9 +140,32 @@ public void TTT_OnRoundEnd(int winner)
 	}
 }
 
+public void StopMapMusic()
+{
+	char sSound[PLATFORM_MAX_PATH];
+	int entity = INVALID_ENT_REFERENCE;
+	LoopValidClients(i)
+	{
+		for (int u = 0; u < g_iNumSounds; u++)
+		{
+			entity = EntRefToEntIndex(g_iSoundEnts[u]);
+			if (entity != INVALID_ENT_REFERENCE)
+			{
+				GetEntPropString(entity, Prop_Data, "m_iszSound", sSound, sizeof(sSound));
+				Client_StopSound(i, entity, SNDCHAN_STATIC, sSound);
+			}
+		}
+	}
+}
+
+stock void Client_StopSound(int client, int entity, int channel, const char[] name)
+{
+	EmitSoundToClientAny(client, name, entity, channel, SNDLEVEL_NONE, SND_STOP, 0.0, SNDPITCH_NORMAL, _, _, _, true);
+}
+
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	if(g_bStop)
+	if(g_bEnable && g_bStop)
 	{
 		g_iNumSounds = 0;
 		
@@ -166,7 +185,7 @@ public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast
 	}
 }
 
-public void SoundCookieHandler(int client, CookieMenuAction action, any info, char[] buffer, int maxlen)
+public void Cookie_RoundEndSound(int client, CookieMenuAction action, any info, char[] buffer, int maxlen)
 {
 	Commamnd_RES(client, 0);
 } 
@@ -202,6 +221,12 @@ public Action Commamnd_RES(int client, int args)
 	return Plugin_Continue;
 }
 
+public Action Command_ResRefresh(int client, int args)
+{   
+	RefreshSounds(client);
+	return Plugin_Handled;
+}
+
 public int MenuHandle(Handle menu, MenuAction action, int param1, int param2)
 {
 	Handle hMenu = CreateMenu(MenuHandle);
@@ -231,11 +256,6 @@ public int MenuHandle(Handle menu, MenuAction action, int param1, int param2)
 		CloseHandle(hMenu);
 	}
 	return 0;
-}
-
-public void OnConfigsExecuted()
-{
-	RefreshSounds(0);
 }
 
 void RefreshSounds(int client)
@@ -425,12 +445,6 @@ void PlayMusicAll(char[] szSound)
 			EmitSoundToClientAny(i, szSound, _, _, _, _, 0.5);
 		}
 	}
-}
-
-public Action CommandLoad(int client, int args)
-{   
-	RefreshSounds(client);
-	return Plugin_Handled;
 }
 
 int GetIntCookie(int client, Handle handle)

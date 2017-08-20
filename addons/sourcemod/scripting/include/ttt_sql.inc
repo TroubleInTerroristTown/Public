@@ -9,7 +9,9 @@ enum dConnection {
 };
 
 native void TTT_Query(const char[] debugname, const char[] query);
+
 native Database TTT_GetSQLConnection();
+
 native dConnection TTT_GetConnectionType();
 
 forward void TTT_OnSQLConnect(Database db);
