@@ -290,7 +290,7 @@ void KnockoutPlayer(int client)
 		SetEntProp(client, Prop_Data, "m_CollisionGroup", 2);
 		
 		DropWeapons(client);
-		SetEntData(iEntity, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
+		SetEntData(client, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
 		
 		SpawnCamAndAttach(client, iEntity);
 		PerformBlind(client, 255);
