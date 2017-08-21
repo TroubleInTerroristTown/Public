@@ -9,7 +9,6 @@
 #include <ttt_shop>
 #include <config_loader>
 
-
 #undef REQUIRE_PLUGIN
 #pragma newdecls optional
 #include <basecomm>
@@ -29,6 +28,9 @@ int g_iMyWeapons = -1;
 
 int g_iRagdoll[MAXPLAYERS + 1] =  { -1, ... };
 int g_iCamera[MAXPLAYERS + 1] =  { -1, ... };
+
+RenderMode g_rmRenderMode[MAXPLAYERS + 1] =  { RENDER_NORMAL, ... };
+int g_iCollision[MAXPLAYERS + 1] =  { -1, ... };
 
 bool g_bHasKnockout[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnockout[MAXPLAYERS + 1] =  { false, ... };
@@ -261,8 +263,6 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 
 void KnockoutPlayer(int client)
 {
-	g_bKnockout[client] = true;
-
 	char sModel[256];
 	GetClientModel(client, sModel, sizeof(sModel));
 
@@ -278,32 +278,57 @@ void KnockoutPlayer(int client)
 	{
 		pos[2] -= 16.0;
 		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
+
+		g_iRagdoll[client] = iEntity;
+		g_bKnockout[client] = true;
+
+		g_rmRenderMode[client] = GetEntityRenderMode(client);
+		CreateTimer(0.1, Timer_FixMode, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+
+		g_iCollision[client] = GetEntProp(client, Prop_Data, "m_CollisionGroup");
+		SetEntProp(client, Prop_Data, "m_CollisionGroup", 2);
+		
+		DropWeapons(client);
+		SetEntData(iEntity, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
+		
+		SpawnCamAndAttach(client, iEntity);
+		PerformBlind(client, 255);
+
+		CreateTimer(5.0, Timer_Delete, client, TIMER_FLAG_NO_MAPCHANGE);
+
+		if (g_bSourceC)
+		{
+			SourceComms_SetClientMute(client, true, 1, false, "Knockout");
+		}
+		else if (g_bBaseC)
+		{
+			BaseComm_SetClientMute(client, true);
+		}
+		else
+		{
+			LogError("[%s] (KnockoutPlayer) Can't mute client.", PLUGIN_NAME);
+		}
 	}
-
-	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
-
-	g_iRagdoll[client] = iEntity;
-	SetEntityRenderMode(client, RENDER_NONE);
-	StripPlayerWeapons(client);
-	SetNonMoveable(client);
-
-	CreateTimer(5.0, Timer_Delete, client, TIMER_FLAG_NO_MAPCHANGE);
-
-	SpawnCamAndAttach(client, iEntity);
-
-	PerformBlind(client, 255);
-	
-	if (g_bSourceC)
+	else
 	{
-		SourceComms_SetClientMute(client, true, 1, false, "Knockout");
-	}
-	else if (g_bBaseC)
-	{
-		BaseComm_SetClientMute(client, true);
+		LogError("[%s] (KnockoutPlayer) Can't spawn prop_ragdoll.", PLUGIN_NAME);
 	}
 }
 
-stock void StripPlayerWeapons(int client)
+public Action Timer_FixMode(Handle timer, any userid)
+{
+	int client = GetClientOfUserId(userid);
+	if (TTT_IsClientValid(client) && g_bKnockout[client])
+	{
+		SetEntityRenderMode(client, RENDER_NONE);
+		return Plugin_Continue;
+	}
+	
+	return Plugin_Stop;
+}
+
+stock void DropWeapons(int client)
 {
 	for(int offset = 0; offset < 128; offset += 4)
 	{
@@ -352,11 +377,12 @@ public Action Timer_Delete(Handle timer, any client)
 			BaseComm_SetClientMute(client, false);
 		}
 		
-		SetEntityRenderMode(client, RENDER_TRANSCOLOR);
-		SetMoveable(client);
+		SetEntData(entity, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
 		SetClientViewEntity(client, client);
 		g_iCamera[client] = false;
 		PerformBlind(client, 0);
+		SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
+		SetEntityRenderMode(client, g_rmRenderMode[client]);
 		GivePlayerItem(client, "weapon_knife");
 	}
 }
@@ -364,16 +390,6 @@ public Action Timer_Delete(Handle timer, any client)
 void ResetKnockout(int client)
 {
 	g_bHasKnockout[client] = false;
-}
-
-stock void SetNonMoveable(int entity)
-{
-	SetEntData(entity, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
-}
-
-stock void SetMoveable(int entity)
-{
-	SetEntData(entity, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
 }
 
 stock bool SpawnCamAndAttach(int client, int ragdoll)
@@ -408,8 +424,8 @@ stock bool SpawnCamAndAttach(int client, int ragdoll)
 	DispatchKeyValue(entity, "angles", CamTargetAngles);
 
 	SetEntityModel(entity, sModel);
-	DispatchSpawn(entity);
-
+	
+	DispatchSpawn(entity)
 	SetVariantString(sModelName);
 	AcceptEntityInput(entity, "SetParent", entity, entity, 0);
 
@@ -420,7 +436,7 @@ stock bool SpawnCamAndAttach(int client, int ragdoll)
 
 	SetClientViewEntity(client, entity);
 	g_iCamera[client] = EntIndexToEntRef(entity);
-
+	
 	return true;
 }
 
