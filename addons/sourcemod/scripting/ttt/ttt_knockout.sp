@@ -425,7 +425,7 @@ stock bool SpawnCamAndAttach(int client, int ragdoll)
 
 	SetEntityModel(entity, sModel);
 	
-	DispatchSpawn(entity)
+	DispatchSpawn(entity);
 	SetVariantString(sModelName);
 	AcceptEntityInput(entity, "SetParent", entity, entity, 0);
 
