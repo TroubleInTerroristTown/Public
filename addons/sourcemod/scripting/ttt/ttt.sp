@@ -2952,36 +2952,59 @@ public Action Command_SetRole(int client, int args)
 		return Plugin_Handled;
 	}
 
-	int role = StringToInt(arg2);
-	if (role < 1 || role > 3)
+	int iRole = StringToInt(arg2);
+	int iOld = TTT_GetClientRole(target);
+	
+	if (iRole < 1 || iRole > 3)
 	{
 		ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
 		return Plugin_Handled;
 	}
-	else if (role == 1)
+	else if (iRole == 1)
 	{
+		if (iOld == TTT_TEAM_INNOCENT)
+		{
+			return Plugin_Handled;
+		}
+		
 		g_iRole[target] = TTT_TEAM_INNOCENT;
+		
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Innocent", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
+		
 		return Plugin_Handled;
 	}
-	else if (role == 2)
+	else if (iRole == 2)
 	{
+		if (iOld == TTT_TEAM_TRAITOR)
+		{
+			return Plugin_Handled;
+		}
+		
 		g_iRole[target] = TTT_TEAM_TRAITOR;
+		
 		TeamInitialize(target);
 		CS_SetClientClanTag(target, " ");
 		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Traitor", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
+		
 		return Plugin_Handled;
 	}
-	else if (role == 3)
+	else if (iRole == 3)
 	{
+		if (iOld == TTT_TEAM_DETECTIVE)
+		{
+			return Plugin_Handled;
+		}
+		
 		g_iRole[target] = TTT_TEAM_DETECTIVE;
+		
 		TeamInitialize(target);
 		CPrintToChat(client, g_iConfig[spluginTag], "Player is Now Detective", client, target);
 		LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Detective");
+		
 		return Plugin_Handled;
 	}
 	return Plugin_Handled;
