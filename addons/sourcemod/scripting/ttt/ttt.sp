@@ -109,11 +109,12 @@ public void OnPluginStart()
 
 	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
-
-	RegAdminCmd("sm_setrole", Command_SetRole, ADMFLAG_ROOT);
-	RegAdminCmd("sm_karmareset", Command_KarmaReset, ADMFLAG_ROOT);
-	RegAdminCmd("sm_setkarma", Command_SetKarma, ADMFLAG_ROOT);
-	RegAdminCmd("sm_reloadcfg", Command_ReloadCFG, ADMFLAG_ROOT);
+	
+	// Admin commands
+	RegConsoleCmd("sm_setrole", Command_SetRole);
+	RegConsoleCmd("sm_karmareset", Command_KarmaReset);
+	RegConsoleCmd("sm_setkarma", Command_SetKarma);
+	RegConsoleCmd("sm_reloadcfg", Command_ReloadCFG);
 
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
@@ -300,6 +301,11 @@ void SetupConfig()
 	Config_LoadString("ttt_give_weaponsfail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
 	Config_LoadString("ttt_give_weaponsfail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
 	
+	Config_LoadString("ttt_command_access_setsole", "d", "Admin flags to access the \"setrole\" command.", g_iConfig[sSetRole], sizeof(g_iConfig[sSetRole]));
+	Config_LoadString("ttt_command_access_karmareset", "m", "Admin flags to access the \"karmareset\" command.", g_iConfig[sKarmaReset], sizeof(g_iConfig[sKarmaReset]));
+	Config_LoadString("ttt_command_access_setkarma", "m", "Admin flags to access the \"setkarma\" command.", g_iConfig[sSetKerma], sizeof(g_iConfig[sSetKerma]));
+	Config_LoadString("ttt_command_access_reloadcfg", "i", "Admin flags to access the \"reloadcfg\" command.", g_iConfig[sReloadCFG], sizeof(g_iConfig[sReloadCFG]));
+
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
 
 	Config_Done();
@@ -2918,6 +2924,11 @@ public Action Command_SetRole(int client, int args)
 		return Plugin_Handled;
 	}
 
+	if (!TTT_HasFlags(client, g_iConfig[sSetRole]))
+	{
+		return Plugin_Handled;
+	}
+
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
@@ -2983,6 +2994,11 @@ public Action Command_SetKarma(int client, int args)
 		return Plugin_Handled;
 	}
 
+	if (!TTT_HasFlags(client, g_iConfig[sKarmaReset]))
+	{
+		return Plugin_Handled;
+	}
+
 	if (args < 2 || args > 3)
 	{
 		ReplyToCommand(client, "[SM] Usage: sm_setkarma <#userid|name> <karma>");
@@ -3036,6 +3052,11 @@ public Action Command_SetKarma(int client, int args)
 public Action Command_ReloadCFG(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+
+	if (!TTT_HasFlags(client, g_iConfig[sReloadCFG]))
 	{
 		return Plugin_Handled;
 	}
@@ -3254,6 +3275,16 @@ public void OnWeaponPostSwitch(int client, int weapon)
 
 public Action Command_KarmaReset(int client, int args)
 {
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+
+	if (!TTT_HasFlags(client, g_iConfig[sKarmaReset]))
+	{
+		return Plugin_Handled;
+	}
+
 	LoopValidClients(i)
 	{
 		if (!IsFakeClient(i))

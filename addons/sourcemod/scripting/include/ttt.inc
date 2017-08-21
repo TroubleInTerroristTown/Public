@@ -118,7 +118,11 @@ enum eConfig
 	bool:bshowKarmaOnSpawn,
 	bool:bDebugMessages,
 	ifakeHealth,
-	ifakeLife
+	ifakeLife,
+	String:sSetRole[18],
+	String:sKarmaReset[18],
+	String:sSetKerma[18],
+	String:sReloadCFG[18]
 };
 
 enum Ragdolls
