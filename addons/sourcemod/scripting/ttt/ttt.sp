@@ -307,6 +307,8 @@ void SetupConfig()
 	Config_LoadString("ttt_command_access_reloadcfg", "i", "Admin flags to access the \"reloadcfg\" command.", g_iConfig[sReloadCFG], sizeof(g_iConfig[sReloadCFG]));
 
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
+	
+	Config_Remove("ttt_show_rules_menu");
 
 	Config_Done();
 
