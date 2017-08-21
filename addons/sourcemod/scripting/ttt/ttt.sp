@@ -65,6 +65,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
 	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
 	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
+	CreateNative("TTT_RemoveClientKarma", Native_RemoveClientKarma);
 
 	// Force roles
 	CreateNative("TTT_ForceTraitor", Native_ForceTraitor);
@@ -1406,7 +1407,7 @@ stock void BanBadPlayerKarma(int client)
 	char sReason[512];
 	Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
 
-	setKarma(client, g_iConfig[istartKarma]);
+	setKarma(client, g_iConfig[istartKarma], true);
 
 	if (g_bSourcebans)
 	{
@@ -2732,9 +2733,9 @@ stock int addKarma(int client, int karma, bool message = false)
 	return g_iKarma[client];
 }
 
-stock int setKarma(int client, int karma)
+stock int setKarma(int client, int karma, bool force = false)
 {
-	if (!g_bRoundStarted)
+	if (!force && !g_bRoundStarted)
 	{
 		return -1;
 	}
@@ -3023,7 +3024,7 @@ public Action Command_SetKarma(int client, int args)
 
 		int karma = StringToInt(arg2);
 
-		setKarma(target, karma);
+		setKarma(target, karma, true);
 
 		CPrintToChat(client, g_iConfig[spluginTag], "AdminSet", client, target, karma, "Karma");
 		LogAction(client, target, "\"%L\" set the karma of \"%L\" to \"%i\"", client, target, karma);
@@ -3258,7 +3259,7 @@ public Action Command_KarmaReset(int client, int args)
 		if (!IsFakeClient(i))
 		{
 			CPrintToChat(client, g_iConfig[spluginTag], "AdminSet", client, i, g_iConfig[istartKarma], "Karma");
-			setKarma(i, g_iConfig[istartKarma]);
+			setKarma(i, g_iConfig[istartKarma], true);
 			LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_iConfig[istartKarma]);
 		}
 	}

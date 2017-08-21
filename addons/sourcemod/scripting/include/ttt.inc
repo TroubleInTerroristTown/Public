@@ -266,14 +266,23 @@ native int TTT_SetClientRole(int client, int role);
  *
  * @param client            Client index.
  */
-native int TTT_SetClientKarma(int client, int karma);
+native int TTT_SetClientKarma(int client, int karma, bool force);
 
 /*
  * Add a client's karma (currentKarma+karma).
  *
  * @param client            Client index.
+ * @param client            Karma that will be added.
  */
-native int TTT_AddClientKarma(int client, int karma);
+native int TTT_AddClientKarma(int client, int karma, bool force);
+
+/*
+ * Add a client's karma (currentKarma-karma).
+ *
+ * @param client            Client index.
+ * @param client            Karma to remove.
+ */
+native int TTT_RemoveClientKarma(int client, int karma, bool force);
 
 /*
  * Determins whether a player's body was found (if dead).

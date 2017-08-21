@@ -83,10 +83,11 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int karma = GetNativeCell(2);
+	bool force = view_as<bool>(GetNativeCell(3));
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		return setKarma(client, karma);
+		return setKarma(client, karma, force);
 	}
 
 	return 0;
@@ -96,10 +97,25 @@ public int Native_AddClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int karma = GetNativeCell(2);
+	bool force = view_as<bool>(GetNativeCell(3));
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		return setKarma(client, g_iKarma[client] + karma);
+		return setKarma(client, g_iKarma[client] + karma, force);
+	}
+
+	return 0;
+}
+
+public int Native_RemoveClientKarma(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int karma = GetNativeCell(2);
+	bool force = view_as<bool>(GetNativeCell(3));
+
+	if (TTT_IsClientValid(client) && g_bKarma[client])
+	{
+		return setKarma(client, g_iKarma[client] - karma, force);
 	}
 
 	return 0;
