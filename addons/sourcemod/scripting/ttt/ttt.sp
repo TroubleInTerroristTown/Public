@@ -246,8 +246,8 @@ void SetupConfig()
 	g_iConfig[ipunishInnoKills] = Config_LoadInt("ttt_punish_innocent_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent/detective before being punished for RDM.");
 	g_iConfig[ipunishTraitorKills] = Config_LoadInt("ttt_punish_traitor_for_rdm_kils", 1, "The amount of times an traitor will be allowed to kill another traitor before being punished for RDM.");
 	g_iConfig[ipunishDetectiveKills] = Config_LoadInt("ttt_punish_detective_for_rdm_kils", 5, "The amount of times an detective will be allowed to kill another innocent/detective before being punished for RDM.");
-	Config_LoadString("ttt_kick_immunity", "bz", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[skickImmunity], sizeof(g_iConfig[skickImmunity]));
-	Config_LoadString("ttt_logsaccess", "bz", "Admin flags to view logs in a round.", g_iConfig[slogsAccess], sizeof(g_iConfig[slogsAccess]));
+	Config_LoadString("ttt_kick_immunity", "b", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[skickImmunity], sizeof(g_iConfig[skickImmunity]));
+	Config_LoadString("ttt_logsaccess", "b", "Admin flags to view logs in a round.", g_iConfig[slogsAccess], sizeof(g_iConfig[slogsAccess]));
 	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logsdead_only", false, "Access to logs only for dead admins?");
 	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logsnotify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
 	g_iConfig[bupdateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");

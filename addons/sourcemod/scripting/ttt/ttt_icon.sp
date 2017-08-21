@@ -50,7 +50,7 @@ public void OnPluginStart()
 	Config_Setup("TTT-Icons", g_sConfigFile);
 	Config_LoadString("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file", g_sTraitorIcon, sizeof(g_sTraitorIcon));
 	Config_LoadString("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file", g_sDetectiveIcon, sizeof(g_sDetectiveIcon));
-	Config_LoadString("ttt_icon_dead_admin", "bz", "Show traitor icon for dead admins? (Nothing to disable it)", g_sAdminImmunity, sizeof(g_sAdminImmunity));
+	Config_LoadString("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)", g_sAdminImmunity, sizeof(g_sAdminImmunity));
 	Config_Done();
 
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
