@@ -200,7 +200,7 @@ void SetupConfig()
 	// Karma settings
 	g_iConfig[bshowKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
 	g_iConfig[bshowEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[bshowLoseKarmaMessage] = Config_LoadBool("ttt_show__message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bshowLoseKarmaMessage] = Config_LoadBool("ttt_show_message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
 	g_iConfig[bpublicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	g_iConfig[bkarmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
 	g_iConfig[bkarmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
@@ -219,7 +219,7 @@ void SetupConfig()
 	g_iConfig[ikarmaBan] = Config_LoadInt("ttt_with_karma_ban", 75, "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)");
 	g_iConfig[ikarmaBanLength] = Config_LoadInt("ttt_with_karma_ban_length", 10080, "The length of a Bad Karma ban. (Default = 1 Week)");
 	g_iConfig[imaxKarma] = Config_LoadInt("ttt_max_karma", 150, "The maximum amount of karma a player can have.");
-	g_iConfig[irequiredPlayersD] = Config_LoadInt("ttt_required_playersdetective", 6, "The amount of players required to activate the detective role.");
+	g_iConfig[irequiredPlayersD] = Config_LoadInt("ttt_required_players_detective", 6, "The amount of players required to activate the detective role.");
 	g_iConfig[irequiredPlayers] = Config_LoadInt("ttt_required_player", 3, "The amount of players required to start the game.");
 	g_iConfig[imaxTraitors] = Config_LoadInt("ttt_traitor_max", 32, "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
 	g_iConfig[imaxDetectives] = Config_LoadInt("ttt_detective_max", 32, "Maximum number of detectives. Can be used to cap or disable detectives.");
@@ -240,21 +240,21 @@ void SetupConfig()
 	g_iConfig[ispawnHPT] = Config_LoadInt("ttt_spawn_t", 100, "The amount of health traitors spawn with. ( 0 = disabled )");
 	g_iConfig[ispawnHPD] = Config_LoadInt("ttt_spawn_d", 100, "The amount of health detectives spawn with. ( 0 = disabled )");
 	g_iConfig[ispawnHPI] = Config_LoadInt("ttt_spawn_i", 100, "The amount of health innocents spawn with. ( 0 = disabled )");
-	g_iConfig[irulesClosePunishment] = Config_LoadInt("ttt_rulesclose_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
+	g_iConfig[irulesClosePunishment] = Config_LoadInt("ttt_rules_close_punishment", 0, "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing");
 	g_iConfig[itimeToReadDetectiveRules] = Config_LoadInt("ttt_time_to_read_detective_rules", 15, "The time in seconds the detective rules menu will stay open.");
 	g_iConfig[itimeToReadRules] = Config_LoadInt("ttt_time_to_read_rules", 30, "The time in seconds the general rules menu will stay open.");
 	g_iConfig[bshowDetectiveMenu] = Config_LoadBool("ttt_show_detective_menu", true, "Show the detective menu. 1 = Show, 0 = Don't Show");
-	g_iConfig[bshowRulesMenu] = Config_LoadBool("ttt_show_rulesmenu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
+	g_iConfig[bshowRulesMenu] = Config_LoadBool("ttt_show_rules_menu", true, "Show the rules menu. 1 = Show, 0 Don't Show");
 	g_iConfig[ipunishInnoKills] = Config_LoadInt("ttt_punish_innocent_for_rdm_kils", 3, "The amount of times an innocent will be allowed to kill another innocent/detective before being punished for RDM.");
 	g_iConfig[ipunishTraitorKills] = Config_LoadInt("ttt_punish_traitor_for_rdm_kils", 1, "The amount of times an traitor will be allowed to kill another traitor before being punished for RDM.");
 	g_iConfig[ipunishDetectiveKills] = Config_LoadInt("ttt_punish_detective_for_rdm_kils", 5, "The amount of times an detective will be allowed to kill another innocent/detective before being punished for RDM.");
 	Config_LoadString("ttt_kick_immunity", "b", "Admin flags that won't be kicked for not reading the rules.", g_iConfig[skickImmunity], sizeof(g_iConfig[skickImmunity]));
 	Config_LoadString("ttt_logsaccess", "b", "Admin flags to view logs in a round.", g_iConfig[slogsAccess], sizeof(g_iConfig[slogsAccess]));
-	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logsdead_only", false, "Access to logs only for dead admins?");
-	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logsnotify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
+	g_iConfig[bLogsDeadOnly] = Config_LoadBool("ttt_logs_dead_only", false, "Access to logs only for dead admins?");
+	g_iConfig[bLogsNotifyAlive] = Config_LoadInt("ttt_logs_notify_alive", 1, "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only");
 	g_iConfig[bupdateClientModel] = Config_LoadBool("ttt_update_client_model", true, "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update");
 	g_iConfig[bremoveHostages] = Config_LoadBool("ttt_remove_hostages", true, "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iConfig[bremoveBomb] = Config_LoadBool("ttt_remove_bombon_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
+	g_iConfig[bremoveBomb] = Config_LoadBool("ttt_remove_bomb_on_spawn", true, "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iConfig[broleAgain] = Config_LoadBool("ttt_role_again", false, "Allow getting the same role twice in a row.");
 	g_iConfig[itraitorRatio] = Config_LoadInt("ttt_traitor_ratio", 25, "The chance of getting the traitor role.");
 	g_iConfig[idetectiveRatio] = Config_LoadInt("ttt_detective_ratio", 13, "The chance of getting the detective role.");
@@ -272,7 +272,7 @@ void SetupConfig()
 	g_iConfig[bnextRoundAlert] = Config_LoadBool("ttt_next_round_alert", false, "Tell players in chat when the next round will begin (when the round ends)");
 	g_iConfig[bignoreDeaths] = Config_LoadBool("ttt_ignore_deaths", false, "Ignore deaths (longer rounds)? 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[bignoreRDMMenu] = Config_LoadBool("ttt_ignore_rdm_slay", false, "Don't ask players to forgive/punish other players (rdm'd). 0 = Disabled (default). 1 = Enabled.");
-	g_iConfig[bdeadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_playerscan_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
+	g_iConfig[bdeadPlayersCanSeeOtherRules] = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
 	g_iConfig[btChatToDead] = Config_LoadBool("ttt_t_chat_to_dead", false, "Show traitor chat messages to dead players?");
 	g_iConfig[bdChatToDead] = Config_LoadBool("ttt_d_chat_to_dead", false, "Show detective chat messages to dead players?");
 	g_iConfig[bTranfserArmor] = Config_LoadBool("ttt_transfer_armor", false, "Save armor on round end for living players and re-set in the next round?");
@@ -297,9 +297,9 @@ void SetupConfig()
 	Config_LoadString("ttt_round_start_font_color", "ffA500", "Font color (hexcode without hastag!) of the text while the countdown runs", g_iConfig[sRoundStartFontColor], sizeof(g_iConfig[sRoundStartFontColor]));
 	g_iConfig[bShowTraitors] = Config_LoadBool("ttt_show_traitor_names", true, "Show traitor partners on team selection?");
 
-	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weaponson_failed_start", false, "Give player weapons on a fail start?");
-	Config_LoadString("ttt_give_weaponsfail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
-	Config_LoadString("ttt_give_weaponsfail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
+	g_iConfig[bGiveWeaponsOnFailStart] = Config_LoadBool("ttt_give_weapons_on_failed_start", false, "Give player weapons on a fail start?");
+	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
+	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
 	
 	Config_LoadString("ttt_command_access_setsole", "d", "Admin flags to access the \"setrole\" command.", g_iConfig[sSetRole], sizeof(g_iConfig[sSetRole]));
 	Config_LoadString("ttt_command_access_karmareset", "m", "Admin flags to access the \"karmareset\" command.", g_iConfig[sKarmaReset], sizeof(g_iConfig[sKarmaReset]));
@@ -308,7 +308,17 @@ void SetupConfig()
 
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
 	
-	Config_Remove("ttt_show_rules_menu");
+	Config_Remove("ttt_show_rulesmenu");
+	Config_Remove("ttt_show__message_lose_karmna");
+	Config_Remove("ttt_required_playersdetective");
+	Config_Remove("ttt_rulesclose_punishment");
+	Config_Remove("ttt_logsdead_only");
+	Config_Remove("ttt_logsnotify_alive");
+	Config_Remove("ttt_remove_bombon_spawn");
+	Config_Remove("ttt_dead_playerscan_see_other_roles");
+	Config_Remove("ttt_give_weaponson_failed_start");
+	Config_Remove("ttt_give_weaponsfail_start_primary");
+	Config_Remove("ttt_give_weaponsfail_start_secondary");
 
 	Config_Done();
 
