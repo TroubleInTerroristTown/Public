@@ -200,7 +200,7 @@ void SetupConfig()
 	// Karma settings
 	g_iConfig[bshowKarmaOnSpawn] = Config_LoadBool("ttt_show_karma_on_spawn", true, "Show players karma on spawn?");
 	g_iConfig[bshowEarnKarmaMessage] = Config_LoadBool("ttt_show_message_earn_karma", true, "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled");
-	g_iConfig[bshowLoseKarmaMessage] = Config_LoadBool("ttt_show_message_lose_karmna", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
+	g_iConfig[bshowLoseKarmaMessage] = Config_LoadBool("ttt_show_message_lose_karma", true, "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled");
 	g_iConfig[bpublicKarma] = Config_LoadBool("ttt_public_karma", false, "Show karma as points (or another way?)");
 	g_iConfig[bkarmaRound] = Config_LoadBool("ttt_private_karma_round_update", true, "If ttt_public_karma is not set to 1, enable this to update karma at end of round.");
 	g_iConfig[bkarmaDMG] = Config_LoadBool("ttt_karma_dmg", false, "Scale damage based off of karma? (damage *= (karma/startkarma))");
@@ -310,6 +310,7 @@ void SetupConfig()
 	
 	Config_Remove("ttt_show_rulesmenu");
 	Config_Remove("ttt_show__message_lose_karmna");
+	Config_Remove("ttt_show_message_lose_karmna");
 	Config_Remove("ttt_required_playersdetective");
 	Config_Remove("ttt_rulesclose_punishment");
 	Config_Remove("ttt_logsdead_only");
