@@ -377,7 +377,7 @@ public Action Timer_Delete(Handle timer, any client)
 			BaseComm_SetClientMute(client, false);
 		}
 		
-		SetEntData(entity, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
+		SetEntData(client, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
 		SetClientViewEntity(client, client);
 		g_iCamera[client] = false;
 		PerformBlind(client, 0);
