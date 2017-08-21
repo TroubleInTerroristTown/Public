@@ -196,13 +196,7 @@ public Action Hook_SetTransmitT(int entity, int client)
 			{
 				if (strlen(g_sAdminImmunity) > 1)
 				{
-					char sFlags[16];
-					AdminFlag aFlags[16];
-
-					Format(sFlags, sizeof(sFlags), g_sAdminImmunity);
-					FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
-
-					if (TTT_HasFlags(client, aFlags))
+					if (TTT_HasFlags(client, g_sAdminImmunity))
 					{
 						return Plugin_Continue;
 					}

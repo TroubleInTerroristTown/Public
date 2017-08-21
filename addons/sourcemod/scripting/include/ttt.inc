@@ -393,7 +393,15 @@ stock void TTT_IsGameCSGO()
 	}
 }
 
-stock bool TTT_HasFlags(int client, AdminFlag flags[16])
+stock bool TTT_HasFlags(int client, const char[] flags)
+{
+	AdminFlag aFlags[16];
+	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
+	
+	return tHasFlags(client, aFlags);
+}
+
+stock bool tHasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
 

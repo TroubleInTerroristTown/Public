@@ -332,24 +332,20 @@ public void OnConfigsExecuted()
 
 public Action Command_Logs(int client, int args)
 {
-	char sFlags[16];
-	AdminFlag aFlags[16];
-
-	Format(sFlags, sizeof(sFlags), g_iConfig[slogsAccess]);
-	FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
-
 	if (g_bRoundEnding || g_bRoundStarted)
 	{
 		if (client == 0)
 		{
 			ShowLogs(client);
 		}
-		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, aFlags))
+		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, g_iConfig[slogsAccess]))
 		{
 			if (g_iConfig[bLogsDeadOnly])
 			{
 				if (!IsPlayerAlive(client))
+				{
 					ShowLogs(client);
+				}
 			}
 			else
 			{
@@ -368,7 +364,7 @@ public Action Command_Logs(int client, int args)
 					{
 						LoopValidClients(j)
 						{
-							if (TTT_HasFlags(j, aFlags))
+							if (TTT_HasFlags(j, g_iConfig[slogsAccess]))
 							{
 								CPrintToChat(j, g_iConfig[spluginTag], "watching logs alive", j, client);
 							}
@@ -1887,13 +1883,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	{
 		if (TTT_IsClientValid(client) && g_iConfig[irulesClosePunishment] == 0)
 		{
-			char sFlags[16];
-			AdminFlag aFlags[16];
-
-			Format(sFlags, sizeof(sFlags), g_iConfig[skickImmunity]);
-			FlagBitsToArray(ReadFlagString(sFlags), aFlags, sizeof(aFlags));
-
-			if (!TTT_HasFlags(client, aFlags))
+			if (!TTT_HasFlags(client, g_iConfig[slogsAccess]))
 			{
 				char sMessage[128];
 				Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
