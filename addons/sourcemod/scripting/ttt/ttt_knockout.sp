@@ -113,6 +113,24 @@ public void OnPluginStart()
 	g_iPrice = Config_LoadInt("knockout_price", 9000, "The amount of credits a knockout costs as detective. 0 to disable.");
 	g_iPrio = Config_LoadInt("knockout_sort_prio", 0, "The sorting priority of the knockout in the shop menu.");
 
+	// Remove copy&paste fail...
+	// https://github.com/Bara20/TroubleinTerroristTown/commit/563626007015b5e0df99cc758778ef32bcf0ce19
+	Config_Remove("silent_awp_amount_t");
+	Config_Remove("silent_awp_min_t");
+	Config_Remove("silent_awp_max_t");
+	Config_Remove("silent_awp_priority_t");
+	Config_Remove("silent_awp_price_t");
+	Config_Remove("silent_awp_amount_d");
+	Config_Remove("silent_awp_min_d");
+	Config_Remove("silent_awp_max_d");
+	Config_Remove("silent_awp_priority_d");
+	Config_Remove("silent_awp_price_d");
+	Config_Remove("silent_awp_price_i");
+	Config_Remove("silent_awp_priority_i");
+	Config_Remove("silent_awp_max_i");
+	Config_Remove("silent_awp_min_i");
+	Config_Remove("silent_awp_amount_i");
+
 	Config_Done();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
