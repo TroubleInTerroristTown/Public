@@ -130,6 +130,7 @@ public void OnPluginStart()
 	Config_Remove("silent_awp_max_i");
 	Config_Remove("silent_awp_min_i");
 	Config_Remove("silent_awp_amount_i");
+	Config_Remove("silent_awp_name");
 
 	Config_Done();
 
