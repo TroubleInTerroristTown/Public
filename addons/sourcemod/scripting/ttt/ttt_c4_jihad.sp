@@ -33,7 +33,7 @@ int g_iPrice_J = 0;
 int g_iPrio_J = 0;
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasJ[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHasJihad[MAXPLAYERS + 1] =  { false, ... };
 bool g_bDetonate[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 
@@ -144,7 +144,7 @@ public void OnAllPluginsLoaded()
 
 public void ResetJihad(int client)
 {
-	g_bHasJ[client] = false;
+	g_bHasJihad[client] = false;
 	g_bDetonate[client] = false;
 	ClearTimer(g_hJihadBomb[client]);
 }
@@ -152,7 +152,7 @@ public void ResetJihad(int client)
 public void ResetGlobals(int client)
 {
 	g_bHasC4[client] = false;
-	g_bHasJ[client] = false;
+	g_bHasJihad[client] = false;
 	g_bDetonate[client] = false;
 	g_bHasActiveBomb[client] = false;
 	g_iDefusePlayerIndex[client] = -1;
@@ -192,7 +192,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_TRAITOR || g_bHasJ[client])
+			if (role != TTT_TEAM_TRAITOR || g_bHasJihad[client])
 			{
 				return Plugin_Stop;
 			}
@@ -200,7 +200,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			ClearTimer(g_hJihadBomb[client]);
 			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client));
-			g_bHasJ[client] = true;
+			g_bHasJihad[client] = true;
 
 			CPrintToChat(client, g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
 		}
@@ -243,7 +243,7 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 
 stock void RemoveC4(int client)
 {
-	if (!g_bHasC4[client] && !g_bHasJ[client])
+	if (!g_bHasC4[client] && !g_bHasJihad[client])
 	{
 		int weapon = -1;
 		while((weapon = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
@@ -293,7 +293,7 @@ stock void Detonate(int client)
 			ForcePlayerSuicide(client);
 		}
 	}
-	g_bHasJ[client] = false;
+	g_bHasJihad[client] = false;
 }
 
 public Action Command_Detonate(int client, int args)
@@ -303,7 +303,7 @@ public Action Command_Detonate(int client, int args)
 		return Plugin_Handled;
 	}
 
-	if (!g_bHasJ[client])
+	if (!g_bHasJihad[client])
 	{
 		CPrintToChat(client, g_sPluginTag, "You dont have it!", client);
 		return Plugin_Handled;
@@ -318,7 +318,7 @@ public Action Command_Detonate(int client, int args)
 	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
 	CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
-	g_bHasJ[client] = false;
+	g_bHasJihad[client] = false;
 
 	return Plugin_Handled;
 }
@@ -342,12 +342,12 @@ public Action Command_LAW(int client, const char[] command, int argc)
 		return Plugin_Continue;
 	}
 
-	if (IsPlayerAlive(client) && g_bHasJ[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
+	if (IsPlayerAlive(client) && g_bHasJihad[client] && g_hJihadBomb[client] == null && g_bDetonate[client])
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
 		CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
-		g_bHasJ[client] = false;
+		g_bHasJihad[client] = false;
 
 		return Plugin_Continue;
 	}
