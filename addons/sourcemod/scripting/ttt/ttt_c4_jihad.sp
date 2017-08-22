@@ -351,7 +351,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	return Plugin_Continue;
 }
 
-public Action Reset(Handle timer, any client)
+public Action Reset(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 
