@@ -40,6 +40,8 @@ Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 bool g_bCPS = false;
 bool g_bGlow = false;
 
+char g_sLongName[64];
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -77,6 +79,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/wh.cfg");
 
 	Config_Setup("TTT-Wallhack", g_sConfigFile);
+	Config_LoadString("wh_name", "Wallhack", "The name of the Wallhack in the Shop", g_sLongName, sizeof(g_sLongName));
 
 	g_iTraitorPrice = Config_LoadInt("wh_traitor_price", 9000, "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
 	g_iDetectivePrice = Config_LoadInt("wh_detective_price", 0, "The amount of credits the Dective-Wallhack costs. 0 to disable.");
@@ -130,8 +133,8 @@ public void OnAllPluginsLoaded()
 {
 	if (g_bCPS && g_bGlow)
 	{
-		TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
-		TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+		TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
+		TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
 	}
 	else if (!g_bCPS)
 	{
