@@ -93,8 +93,6 @@ public void OnPluginStart()
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
-
-	CreateTimer(1.5, Timer_CheckDistance, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -146,17 +144,14 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 	cleanupStation();
 }
 
-public Action Timer_CheckDistance(Handle timer)
+public void TTT_OnUpdate1(int i)
 {
-	LoopValidClients(i)
+	if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
 	{
-		if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
-		{
-			return;
-		}
-
-		checkDistanceFromStation(i);
+		return;
 	}
+
+	checkDistanceFromStation(i);
 }
 
 public void TTT_OnUpdate5(int i)
