@@ -38,6 +38,7 @@ bool g_bDetonate[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 
 bool g_bRemoveBomb = false;
+bool g_bSlayPlayer = true;
 
 Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
@@ -94,6 +95,7 @@ public void OnPluginStart()
 	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
 	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
 	g_iJihadDamageRadius = Config_LoadInt("jihad_damage_radius", 600, "The damage radius of the Jihad explosion.");
+	g_bSlayPlayer = Config_LoadBool("jihad_slay_player", true, "Slay player on own jihad explosion?");
 
 	g_iC4Magnitude = Config_LoadInt("c4_magnitude", 850, "The amount of damage done by the explosion. For C4");
 	g_iJihadMagnitude = Config_LoadInt("jihad_magnitude", 1000, "The amount of damage done by the explosion. For Jihad");
@@ -284,6 +286,12 @@ stock void Detonate(int client)
 		AcceptEntityInput(ExplosionIndex, "Explode");
 
 		AcceptEntityInput(ExplosionIndex, "Kill");
+		
+		// Slay players
+		if (g_bSlayPlayer && IsPlayerAlive(client))
+		{
+			ForcePlayerSuicide(client);
+		}
 	}
 	g_bHasJ[client] = false;
 }
@@ -346,12 +354,12 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	else
 	{
 		g_bDetonate[client] = true;
-		CreateTimer(2.0, Reset, GetClientUserId(client));
+		CreateTimer(2.0, Timer_Reset, GetClientUserId(client));
 	}
 	return Plugin_Continue;
 }
 
-public Action Reset(Handle timer, any userid)
+public Action Timer_Reset(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 
