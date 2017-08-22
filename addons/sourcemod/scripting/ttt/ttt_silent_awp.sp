@@ -58,8 +58,8 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/knockout.cfg");
-	Config_Setup("TTT-Knockout", g_sConfigFile);
+	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/silentawp.cfg");
+	Config_Setup("TTT-SilentAWP", g_sConfigFile);
 	Config_LoadString("silent_awp_name", "Silent AWP", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
 
 	g_iAmountT = Config_LoadInt("silent_awp_amount_t", 2, "How many AWPs can traitors buy?");
