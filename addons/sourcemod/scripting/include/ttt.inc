@@ -122,7 +122,9 @@ enum eConfig
 	String:sSetRole[18],
 	String:sKarmaReset[18],
 	String:sSetKerma[18],
-	String:sReloadCFG[18]
+	String:sReloadCFG[18],
+	bool:bAddSteamIDtoLogs,
+	iSteamIDLogFormat
 };
 
 enum Ragdolls

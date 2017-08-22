@@ -39,6 +39,9 @@ bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
 int g_iDamage = 0;
 int g_iCreditsTaserHurtTraitor;
 
+bool g_bAddSteamIDtoLogs;
+int g_iSteamIDLogFormat;
+
 bool g_bOnSpawn = false;
 
 bool g_bBroadcastTaserResult = false;
@@ -68,6 +71,8 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_sConfigFile);
 	g_iCreditsTaserHurtTraitor = Config_LoadInt("ttt_hurt_traitor_with_taser", 2000, "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
+	g_bAddSteamIDtoLogs = Config_LoadBool("ttt_steamid_add_to_logs", true, "Should we add steam id to all log actions? Prevent abusing with namefakers");
+	g_iSteamIDLogFormat = Config_LoadInt("ttt_steamid_log_format", 1, "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)");
 
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
 
@@ -282,9 +287,36 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
 	if (StrContains(sWeapon, "taser", false) != -1)
 	{
+		char sAttackerID[32], sVictimID[32];
+		
+		if (g_bAddSteamIDtoLogs)
+		{
+			if (g_iSteamIDLogFormat == 1)
+			{
+				GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(iVictim, AuthId_Steam2, sVictimID, sizeof(sVictimID));
+			}
+			else if (g_iSteamIDLogFormat == 2)
+			{
+				GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(iVictim, AuthId_Steam3, sVictimID, sizeof(sVictimID));
+			}
+			else if (g_iSteamIDLogFormat == 3)
+			{
+				GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
+			}
+			
+			if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
+			{
+				Format(sAttackerID, sizeof(sAttackerID), " [%s]", sAttackerID);
+				Format(sVictimID, sizeof(sVictimID), " [%s]", sVictimID);
+			}
+		}
+		
 		if (iRole == TTT_TEAM_TRAITOR)
 		{
-			TTT_LogString("-> [%N (Traitor) was tased by %N] - TRAITOR DETECTED", iVictim, iAttacker, iVictim);
+			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
 			if (g_bBroadcastTaserResult)
 			{
@@ -299,7 +331,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
-			TTT_LogString("-> [%N (Detective) was tased by %N]", iVictim, iAttacker, iVictim);
+			TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
 			if (g_bBroadcastTaserResult)
 			{
@@ -312,7 +344,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
-			TTT_LogString("-> [%N (Innocent) was tased by %N]", iVictim, iAttacker, iVictim);
+			TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
 			if (g_bBroadcastTaserResult)
 			{
