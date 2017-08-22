@@ -309,8 +309,8 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			
 			if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
 			{
-				Format(sAttackerID, sizeof(sAttackerID), " [%s]", sAttackerID);
-				Format(sVictimID, sizeof(sVictimID), " [%s]", sVictimID);
+				Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+				Format(sVictimID, sizeof(sVictimID), " (%s)", sVictimID);
 			}
 		}
 		

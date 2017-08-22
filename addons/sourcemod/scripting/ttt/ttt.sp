@@ -2197,8 +2197,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		
 		if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
 		{
-			Format(sAttackerID, sizeof(sAttackerID), " [%s]", sAttackerID);
-			Format(sClientID, sizeof(sClientID), " [%s]", sClientID);
+			Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+			Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
 		}
 	}
 
@@ -2448,8 +2448,8 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 		
 		if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
 		{
-			Format(sAttackerID, sizeof(sAttackerID), " [%s]", sAttackerID);
-			Format(sClientID, sizeof(sClientID), " [%s]", sClientID);
+			Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+			Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
 		}
 	}
 
