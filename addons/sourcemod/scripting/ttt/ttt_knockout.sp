@@ -295,7 +295,7 @@ void KnockoutPlayer(int client)
 		SpawnCamAndAttach(client, iEntity);
 		PerformBlind(client, 255);
 
-		CreateTimer(5.0, Timer_Delete, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(5.0, Timer_Delete, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
 		if (g_bSourceC)
 		{
@@ -319,6 +319,7 @@ void KnockoutPlayer(int client)
 public Action Timer_FixMode(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
+	
 	if (TTT_IsClientValid(client) && g_bKnockout[client])
 	{
 		SetEntityRenderMode(client, RENDER_NONE);
@@ -351,39 +352,44 @@ stock void DropWeapons(int client)
 	}
 }
 
-public Action Timer_Delete(Handle timer, any client)
+public Action Timer_Delete(Handle timer, any userid)
 {
-	int entity = g_iRagdoll[client];
-
-	if (entity != -1 && IsValidEntity(entity))
-		AcceptEntityInput(entity, "kill");
+	int client = GetClientOfUserId(userid);
 	
-	int entity2 = EntRefToEntIndex(g_iCamera[client]);
-	if(entity2 != -1)
-		AcceptEntityInput(entity2, "kill");
-	
-	g_iCamera[client] = -1;
-	g_iRagdoll[client] = -1;
-	g_bKnockout[client] = false;
-	
-	if(IsClientInGame(client))
+	if (TTT_IsClientValid(client))
 	{
-		if (g_bSourceC)
-		{
-			SourceComms_SetClientMute(client, false);
-		}
-		else if (g_bBaseC)
-		{
-			BaseComm_SetClientMute(client, false);
-		}
+		int entity = g_iRagdoll[client];
+	
+		if (entity != -1 && IsValidEntity(entity))
+			AcceptEntityInput(entity, "kill");
 		
-		SetEntData(client, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
-		SetClientViewEntity(client, client);
-		g_iCamera[client] = false;
-		PerformBlind(client, 0);
-		SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
-		SetEntityRenderMode(client, g_rmRenderMode[client]);
-		GivePlayerItem(client, "weapon_knife");
+		int entity2 = EntRefToEntIndex(g_iCamera[client]);
+		if(entity2 != -1)
+			AcceptEntityInput(entity2, "kill");
+		
+		g_iCamera[client] = -1;
+		g_iRagdoll[client] = -1;
+		g_bKnockout[client] = false;
+		
+		if(IsClientInGame(client))
+		{
+			if (g_bSourceC)
+			{
+				SourceComms_SetClientMute(client, false);
+			}
+			else if (g_bBaseC)
+			{
+				BaseComm_SetClientMute(client, false);
+			}
+			
+			SetEntData(client, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
+			SetClientViewEntity(client, client);
+			g_iCamera[client] = false;
+			PerformBlind(client, 0);
+			SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
+			SetEntityRenderMode(client, g_rmRenderMode[client]);
+			GivePlayerItem(client, "weapon_knife");
+		}
 	}
 }
 

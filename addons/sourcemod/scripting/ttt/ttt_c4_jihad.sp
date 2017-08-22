@@ -309,20 +309,21 @@ public Action Command_Detonate(int client, int args)
 
 	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-	CreateTimer(2.0, TimerCallback_Detonate, client);
+	CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
 	g_bHasJ[client] = false;
 
 	return Plugin_Handled;
 }
 
-public Action TimerCallback_Detonate(Handle timer, any client)
+public Action TimerCallback_Detonate(Handle timer, any userid)
 {
-	if (!client || !IsClientInGame(client) || !IsPlayerAlive(client))
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		return Plugin_Handled;
+		Detonate(client);
 	}
 
-	Detonate(client);
 	return Plugin_Handled;
 }
 
@@ -337,7 +338,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-		CreateTimer(2.0, TimerCallback_Detonate, client);
+		CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
 		g_bHasJ[client] = false;
 
 		return Plugin_Continue;
@@ -345,19 +346,20 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	else
 	{
 		g_bDetonate[client] = true;
-		CreateTimer(2.0, Reset, client);
+		CreateTimer(2.0, Reset, GetClientUserId(client));
 	}
 	return Plugin_Continue;
 }
 
 public Action Reset(Handle timer, any client)
 {
-	if (!client || !IsClientInGame(client))
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		return Plugin_Handled;
+		g_bDetonate[client] = false;
 	}
 
-	g_bDetonate[client] = false;
 	return Plugin_Handled;
 }
 
