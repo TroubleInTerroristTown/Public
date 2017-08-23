@@ -2,9 +2,9 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <sdktools>
 #include <clientprefs>
 #include <multicolors>
-#include <emitsoundany>
 #include <ttt>
 #include <config_loader>
 
@@ -92,18 +92,24 @@ public void OnConfigsExecuted()
 public void TTT_OnRoundEnd(int winner)
 {
 	if (!g_bEnable)
+	{
 		return;
+	}
+	
+	if(g_bStop)
+	{
+		StopMapMusic();
+	}
 	
 	if(winner == TTT_TEAM_TRAITOR)
 	{
 		if(SoundsTraSucess)
 		{
 			PlaySoundTra();
-			PrintToChatAll("TTT_TEAM_TRAITOR");
 		}
 		else
 		{
-			PrintToServer("[TTT] TRA_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] Can't find sounds for traitors.");
 			return;
 		}
 	}
@@ -112,11 +118,10 @@ public void TTT_OnRoundEnd(int winner)
 		if(SoundsDetSucess)
 		{
 			PlaySoundDet();
-			PrintToChatAll("TTT_TEAM_DETECTIVE");
 		}
 		else
 		{
-			PrintToServer("[TTT] DET_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] Can't find sounds for detectives.");
 			return;
 		}
 	}
@@ -125,18 +130,12 @@ public void TTT_OnRoundEnd(int winner)
 		if(SoundsInnSucess)
 		{
 			PlaySoundInn();
-			PrintToChatAll("TTT_TEAM_INNOCENT");
 		}
 		else
 		{
-			PrintToServer("[TTT] INN_SOUNDS ERROR: Sounds not loaded.");
+			PrintToServer("[TTT] Can't find sounds for innocents.");
 			return;
 		}
-	}
-	
-	if(g_bStop)
-	{
-		StopMapMusic();
 	}
 }
 
@@ -152,15 +151,15 @@ public void StopMapMusic()
 			if (entity != INVALID_ENT_REFERENCE)
 			{
 				GetEntPropString(entity, Prop_Data, "m_iszSound", sSound, sizeof(sSound));
-				Client_StopSound(i, entity, SNDCHAN_STATIC, sSound);
+				StopClientSound(i, entity, SNDCHAN_STATIC, sSound);
 			}
 		}
 	}
 }
 
-stock void Client_StopSound(int client, int entity, int channel, const char[] name)
+stock void StopClientSound(int client, int entity, int channel, const char[] name)
 {
-	EmitSoundToClientAny(client, name, entity, channel, SNDLEVEL_NONE, SND_STOP, 0.0, SNDPITCH_NORMAL, _, _, _, true);
+	EmitSoundToClient(client, name, entity, channel, SNDLEVEL_NONE, SND_STOP, 0.0, SNDPITCH_NORMAL, _, _, _, true);
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -264,33 +263,33 @@ void RefreshSounds(int client)
 	SoundsDetSucess = (size > 0);
 	if(SoundsDetSucess)
 	{
-		ReplyToCommand(client, "[TTT] DET_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] %d detective sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] INVALID DET SOUND PATH.");
+		ReplyToCommand(client, "[TTT] Invalid detectiv sound path.");
 	}
 	
 	size = LoadSoundsTra();
 	SoundsTraSucess = (size > 0);
 	if(SoundsTraSucess)
 	{
-		ReplyToCommand(client, "[TTT] TRA_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] %d traitor sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] INVALID TRA SOUND PATH.");
+		ReplyToCommand(client, "[TTT] Invalid traitor sound path.");
 	}
 	
 	size = LoadSoundsInn();
 	SoundsInnSucess = (size > 0);
 	if(SoundsInnSucess)
 	{
-		ReplyToCommand(client, "[TTT] INN_SOUNDS: %d sounds loaded.", size);
+		ReplyToCommand(client, "[TTT] %d innocent sounds loaded.", size);
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] INVALID INN SOUND PATH.");
+		ReplyToCommand(client, "[TTT] Invalid innocent sound path.");
 	}
 }
  
@@ -304,23 +303,23 @@ int LoadSoundsDet()
 	strcopy(soundpath, sizeof(soundpath), g_sDetPath);
 	
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-	Handle pluginsdir = OpenDirectory(soundpath2);
-	if(pluginsdir != INVALID_HANDLE)
+	Handle hDir = OpenDirectory(soundpath2);
+	if(hDir != null)
 	{
-		while(ReadDirEntry(pluginsdir,name,sizeof(name)))
+		while (ReadDirEntry(hDir, name, sizeof(name)))
 		{
 			int namelen = strlen(name) - 4;
-			if(StrContains(name,".mp3",false) == namelen)
+			if (StrContains(name, ".mp3", false) == namelen)
 			{
 				Format(soundname, sizeof(soundname), "sound/%s/%s", soundpath, name);
 				AddFileToDownloadsTable(soundname);
 				Format(soundname, sizeof(soundname), "%s/%s", soundpath, name);
-				PrecacheSoundAny(soundname);
+				PrecacheSound(soundname);
 				detSound.PushString(soundname);
 			}
 		}
 		
-		delete pluginsdir;
+		delete hDir;
 	}
 	
 	return detSound.Length;
@@ -336,23 +335,23 @@ int LoadSoundsTra()
 	strcopy(soundpath, sizeof(soundpath), g_sTraPath);
 	
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-	Handle pluginsdir = OpenDirectory(soundpath2);
-	if(pluginsdir != INVALID_HANDLE)
+	Handle hDir = OpenDirectory(soundpath2);
+	if(hDir != null)
 	{
-		while(ReadDirEntry(pluginsdir,name,sizeof(name)))
+		while (ReadDirEntry(hDir, name, sizeof(name)))
 		{
 			int namelen = strlen(name) - 4;
-			if(StrContains(name,".mp3",false) == namelen)
+			if (StrContains(name, ".mp3", false) == namelen)
 			{
 				Format(soundname, sizeof(soundname), "sound/%s/%s", soundpath, name);
 				AddFileToDownloadsTable(soundname);
 				Format(soundname, sizeof(soundname), "%s/%s", soundpath, name);
-				PrecacheSoundAny(soundname);
+				PrecacheSound(soundname);
 				traSound.PushString(soundname);
 			}
 		}
 		
-		delete pluginsdir;
+		delete hDir;
 	}
 	return traSound.Length;
 }
@@ -366,10 +365,10 @@ int LoadSoundsInn()
 	char soundpath2[PLATFORM_MAX_PATH];
 	strcopy(soundpath, sizeof(soundpath), g_sInnPath);
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-	Handle pluginsdir = OpenDirectory(soundpath2);
-	if(pluginsdir != INVALID_HANDLE)
+	Handle hDir = OpenDirectory(soundpath2);
+	if(hDir != null)
 	{
-		while (ReadDirEntry(pluginsdir, name, sizeof(name)))
+		while (ReadDirEntry(hDir, name, sizeof(name)))
 		{
 			int namelen = strlen(name) - 4;
 			if(StrContains(name,".mp3",false) == namelen)
@@ -377,12 +376,12 @@ int LoadSoundsInn()
 				Format(soundname, sizeof(soundname), "sound/%s/%s", soundpath, name);
 				AddFileToDownloadsTable(soundname);
 				Format(soundname, sizeof(soundname), "%s/%s", soundpath, name);
-				PrecacheSoundAny(soundname);
+				PrecacheSound(soundname);
 				innSound.PushString(soundname);
 			}
 		}
 		
-		delete pluginsdir;
+		delete hDir;
 	}
 	
 	return innSound.Length;
@@ -396,10 +395,10 @@ void PlaySoundDet()
 		soundToPlay = GetRandomInt(0, detSound.Length-1);
 	}
 	
-	char szSound[128];
-	detSound.GetString(soundToPlay, szSound, sizeof(szSound));
+	char sSound[128];
+	detSound.GetString(soundToPlay, sSound, sizeof(sSound));
 	detSound.Erase(soundToPlay);
-	PlayMusicAll(szSound);
+	PlayMusicAll(sSound);
 	if(detSound.Length == 0)
 		LoadSoundsDet();
 }
@@ -412,10 +411,10 @@ void PlaySoundTra()
 		soundToPlay = GetRandomInt(0, traSound.Length-1);
 	}
 	
-	char szSound[128];
-	traSound.GetString(soundToPlay, szSound, sizeof(szSound));
+	char sSound[128];
+	traSound.GetString(soundToPlay, sSound, sizeof(sSound));
 	traSound.Erase(soundToPlay);
-	PlayMusicAll(szSound);
+	PlayMusicAll(sSound);
 	if(traSound.Length == 0)
 		LoadSoundsTra();
 }
@@ -428,21 +427,22 @@ void PlaySoundInn()
 		soundToPlay = GetRandomInt(0, innSound.Length-1);
 	}
 	
-	char szSound[128];
-	innSound.GetString(soundToPlay, szSound, sizeof(szSound));
+	char sSound[128];
+	innSound.GetString(soundToPlay, sSound, sizeof(sSound));
 	innSound.Erase(soundToPlay);
-	PlayMusicAll(szSound);
+	PlayMusicAll(sSound);
 	if(innSound.Length == 0)
 		LoadSoundsInn();
 }
 
-void PlayMusicAll(char[] szSound)
+void PlayMusicAll(char[] sSound)
 {
 	LoopValidClients(i)
 	{
 		if((!g_bSettings || GetIntCookie(i, g_hCookie) == 0))
 		{
-			EmitSoundToClientAny(i, szSound, _, _, _, _, 0.5);
+			ClientCommand(i, "playgamesound Music.StopAllMusic");
+			ClientCommand(i, "play \"*%s\"", sSound);
 		}
 	}
 }
