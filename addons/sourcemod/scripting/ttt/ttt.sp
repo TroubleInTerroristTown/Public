@@ -301,10 +301,10 @@ void SetupConfig()
 	Config_LoadString("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSPrimary], sizeof(g_iConfig[sFSPrimary]));
 	Config_LoadString("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)", g_iConfig[sFSSecondary], sizeof(g_iConfig[sFSSecondary]));
 	
-	Config_LoadString("ttt_command_access_setsole", "d", "Admin flags to access the \"setrole\" command.", g_iConfig[sSetRole], sizeof(g_iConfig[sSetRole]));
-	Config_LoadString("ttt_command_access_karmareset", "m", "Admin flags to access the \"karmareset\" command.", g_iConfig[sKarmaReset], sizeof(g_iConfig[sKarmaReset]));
-	Config_LoadString("ttt_command_access_setkarma", "m", "Admin flags to access the \"setkarma\" command.", g_iConfig[sSetKerma], sizeof(g_iConfig[sSetKerma]));
-	Config_LoadString("ttt_command_access_reloadcfg", "i", "Admin flags to access the \"reloadcfg\" command.", g_iConfig[sReloadCFG], sizeof(g_iConfig[sReloadCFG]));
+	Config_LoadString("ttt_command_access_setsole", "d", "Admin flags to access the 'setrole' command.", g_iConfig[sSetRole], sizeof(g_iConfig[sSetRole]));
+	Config_LoadString("ttt_command_access_karmareset", "m", "Admin flags to access the 'karmareset' command.", g_iConfig[sKarmaReset], sizeof(g_iConfig[sKarmaReset]));
+	Config_LoadString("ttt_command_access_setkarma", "m", "Admin flags to access the 'setkarma' command.", g_iConfig[sSetKerma], sizeof(g_iConfig[sSetKerma]));
+	Config_LoadString("ttt_command_access_reloadcfg", "i", "Admin flags to access the 'reloadcfg' command.", g_iConfig[sReloadCFG], sizeof(g_iConfig[sReloadCFG]));
 	
 	g_iConfig[bAddSteamIDtoLogs] = Config_LoadBool("ttt_steamid_add_to_logs", true, "Should we add steam id to all log actions? Prevent abusing with namefakers");
 	g_iConfig[iSteamIDLogFormat] = Config_LoadInt("ttt_steamid_log_format", 1, "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)");
