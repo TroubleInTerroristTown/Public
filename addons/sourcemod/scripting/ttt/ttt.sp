@@ -1023,7 +1023,23 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			if (g_iConfig[bShowTraitors])
 			{
-				listTraitors(i);
+				CPrintToChat(client, g_iConfig[spluginTag], "Your Traitor Partners", client);
+				int iCount = 0;
+			
+				LoopValidClients(j)
+				{
+					if (!IsPlayerAlive(j) || client == j || g_iRole[j] != TTT_TEAM_TRAITOR)
+					{
+						continue;
+					}
+					CPrintToChat(client, g_iConfig[spluginTag], "Traitor List", client, j);
+					iCount++;
+				}
+			
+				if (iCount == 0)
+				{
+					CPrintToChat(client, g_iConfig[spluginTag], "No Traitor Partners", client);
+				}
 			}
 		}
 
@@ -1755,10 +1771,8 @@ stock void ShowRules(int client, int iItem)
 	}
 	while (kvRules.GotoNextKey());
 
-	if (kvRules != null)
-	{
-		delete kvRules;
-	}
+	delete kvRules;
+	delete hFile;
 
 	menu.AddItem("yes", sYes);
 	menu.ExitButton = false;
@@ -1890,6 +1904,8 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
 				return 0;
 			}
+			
+			delete hFile;
 		}
 		else
 		{
@@ -1930,10 +1946,7 @@ public int Menu_RulesPage(Menu menu, MenuAction action, int client, int param)
 	}
 	else if (action == MenuAction_End)
 	{
-		if (menu != null)
-		{
-			delete menu;
-		}
+		delete menu;
 	}
 	return 0;
 }
@@ -2513,7 +2526,7 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 	}
 
 	int button = -1;
-	for (int i = 0; i < 25; i++)
+	for (int i = 0; i < IN_ATTACK3; i++)
 	{
 		button = (1 << i);
 
@@ -2943,39 +2956,38 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 		return;
 	}
 
-	switch (action)
+	if (action == MenuAction_Select)
 	{
-		case MenuAction_Select:
-		{
-			char info[100];
-			GetMenuItem(menu, option, info, sizeof(info));
-			if (StrEqual(info, "Forgive", false))
-			{
-				CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
-				CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
-				g_iRDMAttacker[client] = -1;
-			}
-			if (StrEqual(info, "Punish", false))
-			{
-				LoopValidClients(i)
-					CPrintToChat(i, g_iConfig[spluginTag], "Choose Punish", i, client, iAttacker);
-				ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
-				g_iRDMAttacker[client] = -1;
-			}
-		}
-		case MenuAction_Cancel:
+		char info[100];
+		GetMenuItem(menu, option, info, sizeof(info));
+		if (StrEqual(info, "Forgive", false))
 		{
 			CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
 			CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
 			g_iRDMAttacker[client] = -1;
 		}
-		case MenuAction_End:
+		if (StrEqual(info, "Punish", false))
 		{
-			delete menu;
-			CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
-			CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
+			LoopValidClients(i)
+				CPrintToChat(i, g_iConfig[spluginTag], "Choose Punish", i, client, iAttacker);
+			ServerCommand("sm_slay #%i 2", GetClientUserId(iAttacker));
 			g_iRDMAttacker[client] = -1;
 		}
+	}
+	else if (action == MenuAction_Cancel)
+	{
+		CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
+		CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
+		g_iRDMAttacker[client] = -1;
+	}
+	else if (action == MenuAction_End)
+	{
+		delete menu;
+		CPrintToChat(client, g_iConfig[spluginTag], "Choose Forgive Victim", client, iAttacker);
+		CPrintToChat(iAttacker, g_iConfig[spluginTag], "Choose Forgive Attacker", iAttacker, client);
+		g_iRDMAttacker[client] = -1;
+		
+		delete menu;
 	}
 }
 
@@ -3007,8 +3019,10 @@ public Action Command_SetRole(int client, int args)
 	}
 	char arg1[32];
 	char arg2[32];
+	
 	GetCmdArg(1, arg1, sizeof(arg1));
 	GetCmdArg(2, arg2, sizeof(arg2));
+	
 	int target = FindTarget(client, arg1);
 
 	if (target == -1)
@@ -3263,6 +3277,7 @@ public void OnEntityCreated(int entity, const char[] name)
 	{
 		char targetName[128];
 		GetEntPropString(entity, Prop_Data, "m_iName", targetName, sizeof(targetName));
+		
 		if (StrEqual(targetName, "Destroy_Trigger", false))
 		{
 			SDKHook(entity, SDKHook_Use, OnUse);
@@ -3322,33 +3337,14 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
 	return Plugin_Continue;
 }
 
-stock void listTraitors(int client)
-{
-	CPrintToChat(client, g_iConfig[spluginTag], "Your Traitor Partners", client);
-	int iCount = 0;
-
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(i) || client == i || g_iRole[i] != TTT_TEAM_TRAITOR)
-		{
-			continue;
-		}
-		CPrintToChat(client, g_iConfig[spluginTag], "Traitor List", client, i);
-		iCount++;
-	}
-
-	if (iCount == 0)
-	{
-		CPrintToChat(client, g_iConfig[spluginTag], "No Traitor Partners", client);
-	}
-}
-
 stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 {
 	for (int i; i < g_iBadNameCount; i++)
-	if (StrContains(g_sBadNames[i], name, false) != -1)
 	{
-		KickClient(client, "%T", "Kick Bad Name", client, g_sBadNames[i]);
+		if (StrContains(g_sBadNames[i], name, false) != -1)
+		{
+			KickClient(client, "%T", "Kick Bad Name", client, g_sBadNames[i]);
+		}
 	}
 }
 
