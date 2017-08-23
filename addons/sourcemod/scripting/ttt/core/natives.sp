@@ -185,7 +185,7 @@ public int Native_LogString(Handle plugin, int numParams)
 	int bytes;
 
 	FormatNativeString(0, 1, 2, sizeof(message), bytes, message);
-	g_aLogs.PushString(message);
+	addArrayTime(message);
 
 	return 0;
 }
