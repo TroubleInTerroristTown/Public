@@ -2526,7 +2526,7 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 	}
 
 	int button = -1;
-	for (int i = 0; i < IN_ATTACK3; i++)
+	for (int i = 0; i < 25; i++)
 	{
 		button = (1 << i);
 
