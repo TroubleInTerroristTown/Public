@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-15 17:58:36 UTC
+// Date: 2017-08-24 13:15:08 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:

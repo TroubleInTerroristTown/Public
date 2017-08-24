@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-15 17:58:37 UTC
+// Date: 2017-08-24 13:15:10 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -583,9 +583,24 @@
 		"ru"		"Мертвые не могут покупать лазерные мины"
 	}
 
+	"Hud Health"
+	{
+		"ru"		"Здоровье"
+	}
+
+	"You tased a Detective"
+	{
+		"ru"		"Игрок {lightgreen}{1} использовал детектор на игроке{blue} {2} {lightgreen}и он{blue}ОБНАРУЖЕН!"
+	}
+
 	"AlreadyTaser"
 	{
 		"ru"		"ArenasFull"
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"ru"		" \"{1}\""
 	}
 
 	"Player is Now Innocent"
