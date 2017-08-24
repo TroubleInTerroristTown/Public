@@ -12,10 +12,9 @@
 #include <ttt_tagrenade>
 #define REQUIRE_PLUGIN
 
-int g_iColorInnocent[3] =  { 0, 255, 0 };
-int g_iColorTraitor[3] =  { 255, 0, 0 };
-int g_iColorDetective[3] =  { 0, 0, 255 };
-int g_iColorWhite[3] =  { 255, 255, 255 };
+int g_iColorInnocent[3] =  {0, 255, 0};
+int g_iColorTraitor[3] =  {255, 0, 0};
+int g_iColorDetective[3] =  {0, 0, 255};
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
@@ -269,23 +268,6 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 	
 	if ((iRole == TTT_TEAM_DETECTIVE || iRole == TTT_TEAM_TRAITOR) && g_bWallhack && TTT_HasActiveWallhack(client))
 	{
-		if (!TTT_SeeColorsWallhack(client))
-		{
-			int iOffset;
-
-			if ((iOffset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1)
-			{
-				return Plugin_Handled;
-			}
-			
-			SetEntData(skin, iOffset, g_iColorWhite[0], _, true);
-			SetEntData(skin, iOffset + 1, g_iColorWhite[1], _, true);
-			SetEntData(skin, iOffset + 2, g_iColorWhite[2], _, true);
-			SetEntData(skin, iOffset + 3, 255, _, true);
-			
-			return Plugin_Changed;
-		}
-
 		return Plugin_Continue;
 	}
 	

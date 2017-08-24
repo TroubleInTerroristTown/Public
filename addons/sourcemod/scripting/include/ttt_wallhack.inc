@@ -4,7 +4,6 @@
 #define _ttt_wallhack_included
 
 native bool TTT_HasActiveWallhack(int client);
-native bool TTT_SeeColorsWallhack(int client);
 
 public SharedPlugin __pl_ttt_wallhack = 
 {
