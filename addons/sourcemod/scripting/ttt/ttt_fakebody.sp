@@ -57,15 +57,10 @@ public void OnPluginStart()
 	Config_Setup("TTT-Fakebody", g_sConfigFile);
 
 	Config_LoadString("fb_name", "Fakebody", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
-
 	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
-
 	g_iCount = Config_LoadInt("fb_count", 1, "The amount of usages for fake bodys per round as traitor. 0 to disable.");
-
 	g_iPrio = Config_LoadInt("fb_sort_prio", 0, "The sorting priority of the fake body in the shop menu.");
-
 	g_bAllowProofByTraitors = Config_LoadBool("fb_allow_proof_by_all", true, "Allow fake body scan for traitors players?");
-
 	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
 	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
 
@@ -147,26 +142,28 @@ stock bool SpawnFakeBody(int client)
 	{
 		pos[2] -= 16.0;
 		TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+
+		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+	
+		int iRagdollC[Ragdolls];
+		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
+		iRagdollC[Victim] = client;
+		iRagdollC[VictimTeam] = TTT_GetClientRole(client);
+		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
+		iRagdollC[Scanned] = false;
+		iRagdollC[Attacker] = 0;
+		iRagdollC[AttackerTeam] = TTT_TEAM_TRAITOR;
+		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
+		iRagdollC[GameTime] = 0.0;
+		Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
+		iRagdollC[Found] = false;
+	
+		TTT_SetRagdoll(iRagdollC[0]);
+	
+		return true;
 	}
-
-	SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-
-	int iRagdollC[Ragdolls];
-	iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-	iRagdollC[Victim] = client;
-	iRagdollC[VictimTeam] = TTT_GetClientRole(client);
-	Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
-	iRagdollC[Scanned] = false;
-	iRagdollC[Attacker] = 0;
-	iRagdollC[AttackerTeam] = TTT_TEAM_TRAITOR;
-	Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
-	iRagdollC[GameTime] = 0.0;
-	Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
-	iRagdollC[Found] = false;
-
-	TTT_SetRagdoll(iRagdollC[0]);
-
-	return true;
+	
+	return false;
 }
 
 public Action TTT_OnBodyChecked(int client, int[] iRagdollC)

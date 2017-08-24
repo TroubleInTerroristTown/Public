@@ -87,6 +87,8 @@ public void OnMapStart()
 	{
 		PrecacheSound(g_sFreezeSound, true);
 	}
+	
+	delete hConfig;
 }
 
 public void OnClientPutInServer(int client)

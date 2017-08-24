@@ -57,6 +57,15 @@ float g_fC4KillRadius = 275.0;
 int g_iJihadDamageRadius = 600;
 int g_iJihadMagnitude = 1000;
 
+char g_sPlantSeconds[][] = {
+	"10",
+	"20",
+	"30",
+	"40",
+	"50",
+	"60"
+};
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -110,6 +119,22 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 
 	LoadTranslations("ttt.phrases");
+}
+
+public void OnMapStart()
+{
+	PrecacheSoundAny(SND_BLIP, true);
+	PrecacheSoundAny(SND_BURST, true);
+	PrecacheSoundAny(SND_BEEP, true);
+	PrecacheSoundAny(SND_DISARM, true);
+
+	PrecacheModel("weapons/w_c4_planted.mdl", true);
+
+	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
+	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
+
+	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
+	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 }
 
 public void OnClientDisconnect(int client)
@@ -526,25 +551,20 @@ stock void showPlantMenu(int client)
 		return;
 	}
 
-	char sTitle[128];
-	char s10[64], s20[64], s30[64], s40[64], s50[64], s60[64];
-
-	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
-	Format(s10, sizeof(s10), "%T", "Seconds", client, 10);
-	Format(s20, sizeof(s20), "%T", "Seconds", client, 20);
-	Format(s30, sizeof(s30), "%T", "Seconds", client, 30);
-	Format(s40, sizeof(s40), "%T", "Seconds", client, 40);
-	Format(s50, sizeof(s50), "%T", "Seconds", client, 50);
-	Format(s60, sizeof(s60), "%T", "Seconds", client, 60);
-
+	
 	Handle menuHandle = CreateMenu(plantBombMenu);
+	
+	char sTitle[128];
+	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
 	SetMenuTitle(menuHandle, sTitle);
-	AddMenuItem(menuHandle, "10", s10);
-	AddMenuItem(menuHandle, "20", s20);
-	AddMenuItem(menuHandle, "30", s30);
-	AddMenuItem(menuHandle, "40", s40);
-	AddMenuItem(menuHandle, "50", s50);
-	AddMenuItem(menuHandle, "60", s60);
+	
+	char sSeconds[64];
+	for(int i; i < sizeof(g_sPlantSeconds); i++)
+	{
+		Format(sSeconds, sizeof(sSeconds), "%T", "Seconds", client, StringToInt(g_sPlantSeconds[i]));
+		AddMenuItem(menuHandle, g_sPlantSeconds[i], sSeconds);
+	}
+	
 	SetMenuPagination(menuHandle, 6);
 	DisplayMenu(menuHandle, client, 10);
 }
@@ -582,49 +602,32 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 		return;
 	}
 
-	switch (action)
+	if (action == MenuAction_Select)
 	{
-		case MenuAction_Select:
+		char info[100];
+		GetMenuItem(menu, option, info, sizeof(info));
+		
+		for(int i; i < sizeof(g_sPlantSeconds); i++)
 		{
-			char info[100];
-			GetMenuItem(menu, option, info, sizeof(info));
-			if (StrEqual(info, "10"))
+			if (StrEqual(info, g_sPlantSeconds[i]))
 			{
-				plantBomb(client, 10.0);
+				plantBomb(client, StringToFloat(g_sPlantSeconds[i]));
+				break;
 			}
-			else if (StrEqual(info, "20"))
-			{
-				plantBomb(client, 20.0);
-			}
-			else if (StrEqual(info, "30"))
-			{
-				plantBomb(client, 30.0);
-			}
-			else if (StrEqual(info, "40"))
-			{
-				plantBomb(client, 40.0);
-			}
-			else if (StrEqual(info, "50"))
-			{
-				plantBomb(client, 50.0);
-			}
-			else if (StrEqual(info, "60"))
-			{
-				plantBomb(client, 60.0);
-			}
-			g_bHasC4[client] = false;
 		}
-		case MenuAction_End:
-		{
-			delete menu;
-			g_bHasActiveBomb[client] = false;
-			removeBomb(client);
-		}
-		case MenuAction_Cancel:
-		{
-			g_bHasActiveBomb[client] = false;
-			removeBomb(client);
-		}
+		
+		g_bHasC4[client] = false;
+	}
+	else if (action == MenuAction_End)
+	{
+		delete menu;
+		g_bHasActiveBomb[client] = false;
+		removeBomb(client);
+	}
+	else if (action == MenuAction_Cancel)
+	{
+		g_bHasActiveBomb[client] = false;
+		removeBomb(client);
 	}
 }
 
@@ -635,56 +638,53 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		return;
 	}
 
-	switch (action)
+	if (action == MenuAction_Select)
 	{
-		case MenuAction_Select:
-		{
-			char info[100];
-			int planter = g_iDefusePlayerIndex[client];
-			g_iDefusePlayerIndex[client] = -1;
+		char info[100];
+		int planter = g_iDefusePlayerIndex[client];
+		g_iDefusePlayerIndex[client] = -1;
 
-			if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
-			{
-				g_iDefusePlayerIndex[client] = -1;
-				return;
-			}
+		if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
+		{
+			g_iDefusePlayerIndex[client] = -1;
+			return;
+		}
 
-			int wire;
-			int correctWire;
-			int planterBombIndex = findBomb(planter);
-			float bombPos[3];
-			GetEntPropVector(planterBombIndex, Prop_Data, "m_vecOrigin", bombPos);
-			correctWire = g_iWire[planter];
-			GetMenuItem(menu, option, info, sizeof(info));
-			wire = StringToInt(info);
-			if (wire == correctWire)
+		int wire;
+		int correctWire;
+		int planterBombIndex = findBomb(planter);
+		float bombPos[3];
+		GetEntPropVector(planterBombIndex, Prop_Data, "m_vecOrigin", bombPos);
+		correctWire = g_iWire[planter];
+		GetMenuItem(menu, option, info, sizeof(info));
+		wire = StringToInt(info);
+		if (wire == correctWire)
+		{
+			if (1 <= planter <= MaxClients && IsClientInGame(planter))
 			{
-				if (1 <= planter <= MaxClients && IsClientInGame(planter))
-				{
-					CPrintToChat(client, g_sPluginTag, "You Defused Bomb", client, planter);
-					CPrintToChat(planter, g_sPluginTag, "Has Defused Bomb", planter, client);
-					EmitAmbientSoundAny(SND_DISARM, bombPos);
-					g_bHasActiveBomb[planter] = false;
-					ClearTimer(g_hExplosionTimer[planter]);
-					SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
-				}
-			}
-			else
-			{
-				CPrintToChat(client, g_sPluginTag, "Failed Defuse", client);
-				ForcePlayerSuicide(client);
-				g_iDefusePlayerIndex[client] = -1;
+				CPrintToChat(client, g_sPluginTag, "You Defused Bomb", client, planter);
+				CPrintToChat(planter, g_sPluginTag, "Has Defused Bomb", planter, client);
+				EmitAmbientSoundAny(SND_DISARM, bombPos);
+				g_bHasActiveBomb[planter] = false;
+				ClearTimer(g_hExplosionTimer[planter]);
+				SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
 			}
 		}
-		case MenuAction_End:
+		else
 		{
-			delete menu;
+			CPrintToChat(client, g_sPluginTag, "Failed Defuse", client);
+			ForcePlayerSuicide(client);
 			g_iDefusePlayerIndex[client] = -1;
 		}
-		case MenuAction_Cancel:
-		{
-			g_iDefusePlayerIndex[client] = -1;
-		}
+	}
+	else if (action == MenuAction_End)
+	{
+		delete menu;
+		g_iDefusePlayerIndex[client] = -1;
+	}
+	else if (action == MenuAction_Cancel)
+	{
+		g_iDefusePlayerIndex[client] = -1;
 	}
 }
 
@@ -871,22 +871,6 @@ stock void ClearTimer(Handle &timer)
 	if (timer != null)
 	{
 		KillTimer(timer);
-		timer = null;
+		delete timer;
 	}
-}
-
-public void OnMapStart()
-{
-	PrecacheSoundAny(SND_BLIP, true);
-	PrecacheSoundAny(SND_BURST, true);
-	PrecacheSoundAny(SND_BEEP, true);
-	PrecacheSoundAny(SND_DISARM, true);
-
-	PrecacheModel("weapons/w_c4_planted.mdl", true);
-
-	PrecacheSoundAny("ttt/jihad/explosion.mp3", true);
-	PrecacheSoundAny("ttt/jihad/jihad.mp3", true);
-
-	AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
-	AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
 }

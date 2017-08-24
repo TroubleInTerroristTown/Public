@@ -118,7 +118,7 @@ public Action Command_ID(int client, int args)
 
 public void OnClientDisconnect(int client)
 {
-	Reset(client);
+	ResetID(client);
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -127,7 +127,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 	if (TTT_IsClientValid(client))
 	{
-		Reset(client);
+		ResetID(client);
 	}
 }
 
@@ -158,7 +158,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
-void Reset(int client)
+void ResetID(int client)
 {
 	g_bHasID[client] = false;
 	g_fCooldownPlayer[client] = 0.0;

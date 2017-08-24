@@ -40,8 +40,10 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
 	Config_Setup("TTT", g_cConfigFile);
+	
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
+	
 	Config_Done();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
