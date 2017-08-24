@@ -30,6 +30,9 @@ float g_fDetectiveCooldown = -1.0;
 float g_fTraitorActive = -1.0;
 float g_fDetectiveActive = -1.0;
 
+bool g_bTraitorRoleColors = true;
+bool g_bDetectiveRoleColors = false;
+
 bool g_bOwnWH[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasWH[MAXPLAYERS + 1] =  { false, ... };
 
@@ -54,6 +57,7 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	CreateNative("TTT_HasActiveWallhack", Native_HasActiveWallhack);
+	CreateNative("TTT_SeeColorsWallhack", Native_SeeColorsWallhack);
 	
 	RegPluginLibrary("ttt_wallhack");
 
@@ -65,6 +69,23 @@ public int Native_HasActiveWallhack(Handle plugin, int numParams)
 	int client = GetNativeCell(1);
 	
 	if (g_bHasWH[client] && g_bOwnWH[client])
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+public int Native_SeeColorsWallhack(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int iRole = TTT_GetClientRole(client);
+	
+	if (iRole == TTT_TEAM_DETECTIVE && g_bDetectiveRoleColors)
+	{
+		return true;
+	}
+	else if (iRole == TTT_TEAM_TRAITOR && g_bTraitorRoleColors)
 	{
 		return true;
 	}
@@ -92,6 +113,9 @@ public void OnPluginStart()
 
 	g_iTraitor_Prio = Config_LoadInt("wh_traitor_sort_prio", 0, "The sorting priority of the Traitor - Wallhack in the shop menu.");
 	g_iDetective_Prio = Config_LoadInt("wh_detective_sort_prio", 0, "The sorting priority of the Detective - Wallhack in the shop menu.");
+	
+	g_bTraitorRoleColors = Config_LoadBool("wh_traitor_role_colors", true, "Show role colors to traitors with wallhack?");
+	g_bDetectiveRoleColors = Config_LoadBool("wh_detective_role_colors", true, "Show role colors to detectives with wallhack?");
 
 	Config_Done();
 	
