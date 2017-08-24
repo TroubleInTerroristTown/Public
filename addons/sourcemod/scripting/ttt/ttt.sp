@@ -1023,22 +1023,22 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			if (g_iConfig[bShowTraitors])
 			{
-				CPrintToChat(client, g_iConfig[spluginTag], "Your Traitor Partners", client);
+				CPrintToChat(i, g_iConfig[spluginTag], "Your Traitor Partners", i);
 				int iCount = 0;
 			
 				LoopValidClients(j)
 				{
-					if (!IsPlayerAlive(j) || client == j || g_iRole[j] != TTT_TEAM_TRAITOR)
+					if (!IsPlayerAlive(j) || i == j || g_iRole[j] != TTT_TEAM_TRAITOR)
 					{
 						continue;
 					}
-					CPrintToChat(client, g_iConfig[spluginTag], "Traitor List", client, j);
+					CPrintToChat(i, g_iConfig[spluginTag], "Traitor List", i, j);
 					iCount++;
 				}
 			
 				if (iCount == 0)
 				{
-					CPrintToChat(client, g_iConfig[spluginTag], "No Traitor Partners", client);
+					CPrintToChat(i, g_iConfig[spluginTag], "No Traitor Partners", i);
 				}
 			}
 		}
