@@ -263,33 +263,75 @@ void RefreshSounds(int client)
 	SoundsDetSucess = (size > 0);
 	if(SoundsDetSucess)
 	{
-		ReplyToCommand(client, "[TTT] %d detective sounds loaded.", size);
+		if (client == 0)
+		{
+			LogMessage("[TTT] %d detective sounds loaded.", size);
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] %d detective sounds loaded.", size);
+		}		
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] Invalid detectiv sound path.");
+		if (client == 0)
+		{
+			LogMessage("[TTT] Invalid detective sound path.");
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] Invalid detective sound path.");
+		}
 	}
 	
 	size = LoadSoundsTra();
 	SoundsTraSucess = (size > 0);
 	if(SoundsTraSucess)
 	{
-		ReplyToCommand(client, "[TTT] %d traitor sounds loaded.", size);
+		if (client == 0)
+		{
+			LogMessage("[TTT] %d traitor sounds loaded.", size);
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] %d traitor sounds loaded.", size);
+		}	
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] Invalid traitor sound path.");
+		if (client == 0)
+		{
+			LogMessage("[TTT] Invalid traitor sound path.");
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] Invalid traitor sound path.");
+		}
 	}
 	
 	size = LoadSoundsInn();
 	SoundsInnSucess = (size > 0);
 	if(SoundsInnSucess)
 	{
-		ReplyToCommand(client, "[TTT] %d innocent sounds loaded.", size);
+		if (client == 0)
+		{
+			LogMessage("[TTT] %d innocent sounds loaded.", size);
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] %d innocent sounds loaded.", size);
+		}	
 	}
 	else
 	{
-		ReplyToCommand(client, "[TTT] Invalid innocent sound path.");
+		if (client == 0)
+		{
+			LogMessage("[TTT] Invalid innocent sound path.");
+		}
+		else
+		{
+			ReplyToCommand(client, "[TTT] Invalid innocent sound path.");
+		}
 	}
 }
  
