@@ -18,10 +18,18 @@ public int Native_GetClientRole(Handle plugin, int numParams)
 public int Native_GetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
+	bool publicKarma = view_as<bool>(GetNativeCell(2));
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		return g_iKarma[client];
+		if (g_iConfig[bpublicKarma] || publicKarma)
+		{
+			return g_iKarma[client];
+		}
+		else
+		{
+			return g_iKarmaStart[client];
+		}
 	}
 
 	return 0;

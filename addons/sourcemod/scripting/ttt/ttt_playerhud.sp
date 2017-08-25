@@ -101,7 +101,7 @@ public Action Timer_UpdateText(Handle timer)
 public bool PrepareText(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength, char[] sHintText, int iHintTextLength)
 {
 	int iHealth = GetClientHealth(target);
-	int iKarma = TTT_GetClientKarma(target);
+	int iKarma = TTT_GetClientKarma(target, false);
 	
 	Format(sName, iNameLength, "%T", "Hud Name", client);
 	Format(sHealth, iHealthLength, "%T", "Hud Health", client);

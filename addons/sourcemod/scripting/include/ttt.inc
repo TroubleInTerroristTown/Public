@@ -243,7 +243,7 @@ native int TTT_GetClientRole(int client);
  *
  * @param client            Client index.
  */
-native int TTT_GetClientKarma(int client);
+native int TTT_GetClientKarma(int client, bool publicKarma = true);
 
 /*
  * Retrieve the Radgoll Info.
