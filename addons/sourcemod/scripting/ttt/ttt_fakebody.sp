@@ -20,6 +20,7 @@ int g_iPrice = 0;
 bool g_bShowFakeMessage = false;
 bool g_bDeleteFakeBodyAfterFound = false;
 bool g_bAllowProofByTraitors = false;
+bool g_bShowTraitorAsDead = true;
 
 int g_iCount = 0;
 int g_iPrio = 0;
@@ -63,6 +64,7 @@ public void OnPluginStart()
 	g_bAllowProofByTraitors = Config_LoadBool("fb_allow_proof_by_all", true, "Allow fake body scan for traitors players?");
 	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
 	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
+	g_bShowTraitorAsDead = Config_LoadBool("fb_show_traitor_as_dead", true, "Show traitor as dead after fakebody found?");
 
 	Config_Done();
 
@@ -197,6 +199,11 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 			{
 				return Plugin_Stop;
 			}
+		}
+
+		if (g_bShowTraitorAsDead)
+		{
+			TTT_SetFoundStatus(iRagdollC[Victim], true);
 		}
 
 		iRagdollC[Found] = true;
