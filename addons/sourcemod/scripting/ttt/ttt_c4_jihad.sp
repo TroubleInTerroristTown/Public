@@ -182,6 +182,7 @@ public void ResetGlobals(int client)
 	g_bHasActiveBomb[client] = false;
 	g_iDefusePlayerIndex[client] = -1;
 	g_iWire[client] = -1;
+	g_iPCount_C4[client] = 0;
 	ClearTimer(g_hExplosionTimer[client]);
 	ClearTimer(g_hJihadBomb[client]);
 }
