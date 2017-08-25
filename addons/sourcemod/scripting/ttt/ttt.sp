@@ -915,14 +915,20 @@ public Action Timer_Selection(Handle hTimer)
 		if (g_aForceTraitor.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceTraitor.Get(0));
-			iIndex = aPlayers.FindValue(client);
-			if (iIndex != -1)
+			
+			if (client > 0)
 			{
-				g_iRole[client] = TTT_TEAM_TRAITOR;
-				iTraitors++;
-				g_iLastRole[client] = TTT_TEAM_TRAITOR;
-				aPlayers.Erase(iIndex);
+				iIndex = aPlayers.FindValue(client);
+				
+				if (iIndex != -1)
+				{
+					g_iRole[client] = TTT_TEAM_TRAITOR;
+					iTraitors++;
+					g_iLastRole[client] = TTT_TEAM_TRAITOR;
+					aPlayers.Erase(iIndex);
+				}
 			}
+			
 			g_aForceTraitor.Erase(0);
 			continue;
 		}
@@ -945,14 +951,20 @@ public Action Timer_Selection(Handle hTimer)
 		if (g_aForceDetective.Length > 0)
 		{
 			client = GetClientOfUserId(g_aForceDetective.Get(0));
-			iIndex = aPlayers.FindValue(client);
-			if (iIndex != -1)
+			
+			if (client > 0)
 			{
-				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-				g_iRole[client] = TTT_TEAM_DETECTIVE;
-				iDetectives++;
-				aPlayers.Erase(iIndex);
+				iIndex = aPlayers.FindValue(client);
+				
+				if (iIndex != -1)
+				{
+					g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+					g_iRole[client] = TTT_TEAM_DETECTIVE;
+					iDetectives++;
+					aPlayers.Erase(iIndex);
+				}
 			}
+			
 			g_aForceDetective.Erase(0);
 			continue;
 		}

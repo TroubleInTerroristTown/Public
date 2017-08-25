@@ -243,17 +243,15 @@ public int Native_ReloadConfig(Handle plugin, int numParams)
 
 public int Native_ForceTraitor(Handle plugin, int numParams)
 {
-	int client = GetNativeCell(1);
-	if(TTT_IsClientValid(client))
+	int userid = GetClientUserId(GetNativeCell(1));
+	
+	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
 	{
-		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
-		{
-			g_aForceTraitor.Push(client);
-		}
-		else
-		{
-			return false;
-		}
+		g_aForceTraitor.Push(userid);
+	}
+	else
+	{
+		return false;
 	}
 
 	return true;
@@ -261,18 +259,15 @@ public int Native_ForceTraitor(Handle plugin, int numParams)
 
 public int Native_ForceDetective(Handle plugin, int numParams)
 {
-	int client = GetNativeCell(1);
+	int userid = GetClientUserId(GetNativeCell(1));
 	
-	if(TTT_IsClientValid(client))
+	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
 	{
-		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
-		{
-			g_aForceDetective.Push(client);
-		}
-		else
-		{
-			return false;
-		}
+		g_aForceDetective.Push(userid);
+	}
+	else
+	{
+		return false;
 	}
 
 	return true;
