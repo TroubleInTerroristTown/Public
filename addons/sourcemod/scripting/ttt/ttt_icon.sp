@@ -194,7 +194,7 @@ public Action Hook_SetTransmitT(int entity, int client)
 			}
 			else
 			{
-				if (strlen(g_sAdminImmunity) > 1)
+				if (strlen(g_sAdminImmunity) > 0)
 				{
 					if (TTT_HasFlags(client, g_sAdminImmunity))
 					{
