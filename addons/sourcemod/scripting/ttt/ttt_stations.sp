@@ -177,7 +177,7 @@ stock void ClearTimer(Handle &timer)
 	if (timer != null)
 	{
 		KillTimer(timer);
-		delete timer;
+		timer = null;
 	}
 }
 
