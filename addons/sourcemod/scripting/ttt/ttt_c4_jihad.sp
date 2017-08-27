@@ -155,6 +155,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	
 	if (TTT_IsClientValid(client))
 	{
 		ResetJihad(client);
@@ -171,6 +172,7 @@ public void ResetJihad(int client)
 {
 	g_bHasJihad[client] = false;
 	g_bDetonate[client] = false;
+	
 	ClearTimer(g_hJihadBomb[client]);
 }
 
@@ -180,9 +182,11 @@ public void ResetGlobals(int client)
 	g_bHasJihad[client] = false;
 	g_bDetonate[client] = false;
 	g_bHasActiveBomb[client] = false;
+	
 	g_iDefusePlayerIndex[client] = -1;
 	g_iWire[client] = -1;
 	g_iPCount_C4[client] = 0;
+	
 	ClearTimer(g_hExplosionTimer[client]);
 	ClearTimer(g_hJihadBomb[client]);
 }
@@ -225,7 +229,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 
 			ClearTimer(g_hJihadBomb[client]);
-			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client));
+			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			g_bHasJihad[client] = true;
 
 			CPrintToChat(client, g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
@@ -343,7 +347,7 @@ public Action Command_Detonate(int client, int args)
 
 	EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-	CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
+	CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	g_bHasJihad[client] = false;
 
 	return Plugin_Handled;
@@ -372,7 +376,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	{
 		EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-		CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client));
+		CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		g_bHasJihad[client] = false;
 
 		return Plugin_Continue;
@@ -380,7 +384,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 	else
 	{
 		g_bDetonate[client] = true;
-		CreateTimer(2.0, Timer_Reset, GetClientUserId(client));
+		CreateTimer(2.0, Timer_Reset, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 	return Plugin_Continue;
 }
@@ -723,11 +727,10 @@ stock float plantBomb(int client, float time)
 
 		Handle explosionPack;
 		Handle beepPack;
-		if (g_hExplosionTimer[client] != null)
-		{
-			KillTimer(g_hExplosionTimer[client]);
-		}
-		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack);
+		
+		ClearTimer(g_hExplosionTimer[client]);
+		
+		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
 		CreateDataTimer(1.0, bombBeep, beepPack);
 		WritePackCell(explosionPack, GetClientUserId(client));
 		WritePackCell(explosionPack, bombEnt);
