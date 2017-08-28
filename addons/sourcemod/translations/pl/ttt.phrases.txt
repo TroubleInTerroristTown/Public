@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-24 13:15:08 UTC
+// Date: 2017-08-28 23:45:31 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -730,7 +730,7 @@
 
 	"Hud Karma"
 	{
-		"pl"		"karma"
+		"pl"		"Karma"
 	}
 
 	"Hud PlayerKarma"

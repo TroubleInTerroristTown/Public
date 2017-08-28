@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-24 13:15:09 UTC
+// Date: 2017-08-28 23:45:32 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:
@@ -845,7 +845,7 @@
 
 	"Hud PlayerName D-D"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName D-I"
@@ -865,7 +865,7 @@
 
 	"Hud PlayerName I-D"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName I-I"
@@ -875,7 +875,7 @@
 
 	"Hud PlayerName I-T"
 	{
-		"sv"		"\ "{1}\""
+		"sv"		"\"{1}\""
 	}
 
 	"Hud PlayerName I-U"
@@ -885,17 +885,17 @@
 
 	"Hud PlayerName T-D"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName T-I"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#008000'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName T-T"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#ff0000'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName T-U"
@@ -905,7 +905,7 @@
 
 	"Hud PlayerName U-D"
 	{
-		"sv"		"\"{1}\""
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
 
 	"Hud PlayerName U-I"

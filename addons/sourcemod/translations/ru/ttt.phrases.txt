@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-24 13:15:10 UTC
+// Date: 2017-08-28 23:45:33 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -423,6 +423,11 @@
 		"ru"		"Вы {blue}ДЕТЕКТИВ"
 	}
 
+	"Triggered Falling Building"
+	{
+		"ru"		"{1} вызвал падение строени,как не-предатель."
+	}
+
 	"Bomb Detonated"
 	{
 		"ru"		"Ваша бомба взорвалась!"
@@ -508,6 +513,16 @@
 		"ru"		"Аптечка пока закончалась, подождите немного!"
 	}
 
+	"Welcome Menu"
+	{
+		"ru"		"Здравствуй {1},\nэто Trouble in Terrorist Town Сервер\nнапишите {2}\n\nВы ознакомлены с правилами?"
+	}
+
+	"AM Question"
+	{
+		"ru"		"Вы хотите играть за детектива?\nТогда вам понадобятся следующие вещи:\n\n-рабочий микрофон\n-разговаривать с другими игроками\n-активная Игра\n\nВы соглашаетесь с этим?"
+	}
+
 	"AM Yes"
 	{
 		"ru"		"Sorry, all the arenas are currently {PURPLE}full"
@@ -531,6 +546,11 @@
 	"You reached limit"
 	{
 		"ru"		"Привет"
+	}
+
+	"ID: Need to buy ID"
+	{
+		"ru"		"У вас нет ID. Купите его в магазине."
 	}
 
 	"Welcome Message 1"
@@ -583,6 +603,16 @@
 		"ru"		"Мертвые не могут покупать лазерные мины"
 	}
 
+	"TaserMax"
+	{
+		"ru"		"Вы достигли лимита для тазера! (Использований за раунд: {1})"
+	}
+
+	"YouAreDead"
+	{
+		"ru"		"Вы не можете использовать это,потому что вы мертвы"
+	}
+
 	"Hud Health"
 	{
 		"ru"		"Здоровье"
@@ -593,9 +623,34 @@
 		"ru"		"Игрок {lightgreen}{1} использовал детектор на игроке{blue} {2} {lightgreen}и он{blue}ОБНАРУЖЕН!"
 	}
 
+	"You tased an Innocent"
+	{
+		"ru"		"Игрок {lightgreen}{1} использовал детектор на Игроке{green} {2} {lightgreen}и он {green}НЕВИННЫЙ!"
+	}
+
 	"AlreadyTaser"
 	{
 		"ru"		"ArenasFull"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"ru"		"Traitor Голосовой Чат: Включен!"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"ru"		"Размутить живых игроков"
+	}
+
+	"Reopen Shop activated"
+	{
+		"ru"		"Shop будет снова открыт после покупки предмета."
+	}
+
+	"watching logs alive"
+	{
+		"ru"		"{green}{1} {darkred}живой {default}и смотрит логи текущего раунда."
 	}
 
 	"Hud PlayerName I-U"
