@@ -197,6 +197,7 @@ public void OnPluginStart()
 	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShowCmd);
 	RegConsoleCmd(sBuffer, Command_ShowItems);
 
+	LoadTranslations("common.phrases");
 	LoadTranslations("ttt.phrases");
 
 	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
