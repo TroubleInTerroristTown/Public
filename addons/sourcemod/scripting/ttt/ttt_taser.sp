@@ -266,12 +266,17 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	}
 
+	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+	{
+		return Plugin_Continue;
+	}
+
 	if (IsWorldDamage(iAttacker, damagetype))
 	{
 		return Plugin_Continue;
 	}
 
-	if (!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+	if (!g_bTaser)
 	{
 		return Plugin_Continue;
 	}
@@ -314,7 +319,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
-		if (iRole == TTT_TEAM_TRAITOR)
+		if (iRole == TTT_TEAM_TRAITOR && g_iTPrice > 0)
 		{
 			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
@@ -329,7 +334,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
-		else if (iRole == TTT_TEAM_DETECTIVE)
+		else if (iRole == TTT_TEAM_DETECTIVE && g_iDPrice > 0)
 		{
 			TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
@@ -342,7 +347,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
 			}
 		}
-		else if (iRole == TTT_TEAM_INNOCENT)
+		else if (iRole == TTT_TEAM_INNOCENT && g_iIPrice > 0)
 		{
 			TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
@@ -355,6 +360,8 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
 			}
 		}
+		
+		g_bTaser[iAttacker] = false;
 
 		if (iARole != TTT_TEAM_TRAITOR)
 		{
