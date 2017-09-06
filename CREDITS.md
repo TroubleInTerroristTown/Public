@@ -1,7 +1,7 @@
 - [Bara](http://steamcommunity.com/profiles/76561198041923231/)
 - [Franc1sco](http://steamcommunity.com/profiles/76561198011608644/) (original author)
 - [good_live](http://steamcommunity.com/profiles/76561198060485155/)
-- [whocodes](https://whocodes.pw/)
+- [whocodes](https://github.com/whocodes)
 - [Darkness](http://steamcommunity.com/profiles/76561198127839952/) (for C4, RDM Manager, Health Station and some fixes)
 - [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
 - [AdaM](http://steamcommunity.com/profiles/76561198134328733/)
@@ -11,7 +11,7 @@
 - [Painlessgaming](https://painlessgaming.eu/)
 - [PrestigeGaming](https://www.prestige-gaming.org/)
 - [Dream Community](http://dream-community.de/)
-- [Phoenix Gaming Network](https://www.pgn.site)
+- [FragHaven.net](https://fraghaven.net)
 - [Slayers Gaming](http://slayersgaming.com/)
 - [Allied Gaming](http://allied-gaming.com/)
 - ___
