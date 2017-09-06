@@ -1,18 +1,23 @@
-- [Bara](http://steamcommunity.com/profiles/76561198041923231/)
-- [Franc1sco](http://steamcommunity.com/profiles/76561198011608644/) (original author)
-- [good_live](http://steamcommunity.com/profiles/76561198060485155/)
+- [Bara](https://steamcommunity.com/profiles/76561198041923231/)
+- [Franc1sco](https://steamcommunity.com/profiles/76561198011608644/) (original author)
+- [good_live](https://steamcommunity.com/profiles/76561198060485155/)
 - [whocodes](https://github.com/whocodes)
-- [Darkness](http://steamcommunity.com/profiles/76561198127839952/) (for C4, RDM Manager, Health Station and some fixes)
-- [Zipcore](http://steamcommunity.com/profiles/76561198035410392/)
-- [AdaM](http://steamcommunity.com/profiles/76561198134328733/)
-- [Grey83](https://forums.alliedmods.net/member.php?u=256713) for Laser Mines (https://forums.alliedmods.net/showthread.php?p=2276217 )
-- [Purixi](https://forums.alliedmods.net/member.php?u=261590) for decoy teleporter (https://forums.alliedmods.net/showthread.php?p=2317390 )
-- ___
+- [Darkness](https://steamcommunity.com/profiles/76561198127839952/) (for C4, RDM Manager, Health Station and some fixes)
+- [Zipcore](https://steamcommunity.com/profiles/76561198035410392/)
+- [AdaM](https://steamcommunity.com/profiles/76561198134328733/)
+- [Purixi](https://forums.alliedmods.net/member.php?u=261590) for [Decoy Teleporter](https://forums.alliedmods.net/showthread.php?p=2317390 )
+- [Keplyx](https://github.com/Keplyx) for [Cameras and Drones](https://forums.alliedmods.net/showthread.php?p=2537127)
+- [Any contributors](https://github.com/Bara20/TroubleinTerroristTown/graphs/contributors)
+
+
+___
 - [Painlessgaming](https://painlessgaming.eu/)
 - [PrestigeGaming](https://www.prestige-gaming.org/)
-- [Dream Community](http://dream-community.de/)
+- [Dream Community](https://dream-community.de/)
 - [FragHaven.net](https://fraghaven.net)
-- [Slayers Gaming](http://slayersgaming.com/)
-- [Allied Gaming](http://allied-gaming.com/)
-- ___
+- [Slayers Gaming](https://www.slayersgaming.com//)
+- [Allied Gaming](https://allied-gaming.com/)
+- [SkynetGaming](https://skynetgaming.net/)
+
+___
 - Authors of [TroubleinTerroristTown.com](http://www.troubleinterroristtown.com/)
