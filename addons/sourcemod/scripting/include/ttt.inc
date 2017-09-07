@@ -50,7 +50,6 @@ enum eConfig
 	bool:bblockSuicide,
 	bool:ballowFlash,
 	bool:bblockLookAtWeapon,
-	bool:bblockGrenadeMessage,
 	bool:bblockRadioMessage,
 	bool:benableNoBlock,
 	String:spluginTag[250],

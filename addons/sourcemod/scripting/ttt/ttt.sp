@@ -226,7 +226,6 @@ void SetupConfig()
 	g_iConfig[iminKarmaDetective] = Config_LoadInt("ttt_detective_karma_min", 100, "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
 
 	g_iConfig[bblockSuicide] = Config_LoadBool("ttt_block_suicide", false, "Block players from suiciding with console. 1 = Block, 0 = Don't Block");
-	g_iConfig[bblockGrenadeMessage] = Config_LoadBool("ttt_block_grenade_message", true, "Block grenade messages in chat. 1 = Block, 0 = Don't Block");
 	g_iConfig[bblockRadioMessage] = Config_LoadBool("ttt_block_radio_message", true, "Block radio messages in chat. 1 = Block, 0 = Don't Block");
 	g_iConfig[bshowDeathMessage] = Config_LoadBool("ttt_show_death_message", true, "Display a message showing who killed you. 1 = Enabled, 0 = Disabled");
 	g_iConfig[bshowKillMessage] = Config_LoadBool("ttt_show_kill_message", true, "Display a message showing who you killed. 1 = Enabled, 0 = Disabled");
@@ -323,6 +322,7 @@ void SetupConfig()
 	Config_Remove("ttt_give_weaponson_failed_start");
 	Config_Remove("ttt_give_weaponsfail_start_primary");
 	Config_Remove("ttt_give_weaponsfail_start_secondary");
+	Config_Remove("ttt_block_grenade_message");
 
 	Config_Done();
 
@@ -333,24 +333,6 @@ void SetupConfig()
 
 	BuildPath(Path_SM, g_iConfig[slogFile], sizeof(g_iConfig[slogFile]), g_iConfig[slogFile]);
 	BuildPath(Path_SM, g_iConfig[serrFile], sizeof(g_iConfig[serrFile]), g_iConfig[serrFile]);
-}
-
-public void OnConfigsExecuted()
-{
-	if (g_iConfig[bblockGrenadeMessage])
-	{
-		ConVar cIgnore = FindConVar("sv_ignoregrenaderadio");
-		if (cIgnore != null)
-		{
-			cIgnore.SetBool(true);
-		}
-	}
-
-	ConVar cHoliday = FindConVar("sv_holiday_mode");
-	if (cHoliday != null)
-	{
-		cHoliday.SetInt(0); // 0 = OFF, 1 = Halloween, 2 = Winter
-	}
 }
 
 public Action Command_Logs(int client, int args)
