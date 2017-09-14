@@ -27,6 +27,7 @@ mp_afterroundmoney 0
 mp_startmoney 0
 mp_playercashawards 0
 mp_teamcashawards 0
+mp_weapons_allow_heavyassaultsuit 1
 
 sv_allow_votes 0
 sv_allow_wait_command 0
