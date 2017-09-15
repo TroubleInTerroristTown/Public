@@ -54,6 +54,7 @@ public void OnPluginStart()
 	Config_Done();
 
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
+	HookEvent("player_team", Event_PlayerTeamPre, EventHookMode_Pre);
 
 	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
@@ -116,6 +117,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroa
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	ClearIcon(client);
+}
+
+public Action Event_PlayerTeamPre(Event event, const char[] name, bool dontBroadcast)
+{
+	int client = GetClientOfUserId(event.GetInt("userid"));
+	if(event.GetInt("team") == CS_TEAM_SPECTATOR)
+		ClearIcon(client);
+	return Plugin_Continue;
 }
 
 stock void ApplyIcons()
