@@ -276,7 +276,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	}
 
-	if (!g_bTaser)
+	if (!g_bTaser[iAttacker])
 	{
 		return Plugin_Continue;
 	}
