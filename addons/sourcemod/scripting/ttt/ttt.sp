@@ -158,6 +158,13 @@ public void OnPluginStart()
 	{
 		LateLoadClients(true);
 	}
+	
+	g_uMessage = GetUserMessageId("TextMsg");
+	
+	if (g_uMessage)
+	{
+		HookUserMessage(g_uMessage, UserMessage_TextMsg, true);
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -278,6 +285,7 @@ void SetupConfig()
 	g_iConfig[bRespawnDeadPlayers] = Config_LoadBool("ttt_respawn_dead_players", true, "Respawn dead players on pre role selection?");
 	g_iConfig[bEnableDamage] = Config_LoadBool("ttt_prestart_damage", false, "Enable damage before round start (Default disabled to prevent kills)?");
 	g_iConfig[broundendDamage] = Config_LoadBool("ttt_roundend_dm", false, "Enable damage after a round until round end.");
+	g_iConfig[bHideTeamAttackMessage] = Config_LoadBool("ttt_hide_team_attack_message", true, "Hide team attack messages");
 
 	Config_LoadString("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.", g_iConfig[smodelCT], sizeof(g_iConfig[smodelCT]));
 	Config_LoadString("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.", g_iConfig[smodelT], sizeof(g_iConfig[smodelT]));
@@ -1375,6 +1383,23 @@ public void Frame_SlapPlayer(any userid)
 	{
 		ForcePlayerSuicide(client);
 	}
+}
+
+public Action UserMessage_TextMsg(UserMsg msg_id, Protobuf msg, const int[] players, int playersNum, bool reliable, bool init)
+{
+	if (g_iConfig[bHideTeamAttackMessage] && reliable)
+	{
+		char sMessage[MAX_MESSAGE_LENGTH];
+		
+		msg.ReadString("params", sMessage, sizeof(sMessage), 0);
+		
+		if (StrContains(sMessage, "teamate_attack") != -1)
+		{
+			return Plugin_Handled;
+		}
+	}
+	
+	return Plugin_Continue;
 }
 
 public void OnClientPutInServer(int client)

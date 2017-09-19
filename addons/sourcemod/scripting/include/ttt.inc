@@ -123,7 +123,8 @@ enum eConfig
 	String:sSetKerma[18],
 	String:sReloadCFG[18],
 	bool:bAddSteamIDtoLogs,
-	iSteamIDLogFormat
+	iSteamIDLogFormat,
+	bool:bHideTeamAttackMessage
 };
 
 enum Ragdolls

@@ -98,6 +98,8 @@ Handle g_hOnButtonRelease = null;
 
 bool g_bSourcebans = false;
 
+UserMsg g_uMessage;
+
 char g_sRadioCMDs[][] =  {
 	"coverme",
 	"takepoint",
