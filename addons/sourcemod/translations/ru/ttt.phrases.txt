@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-28 23:45:33 UTC
+// Date: 2017-09-20 19:00:30 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -363,6 +363,11 @@
 		"ru"		"Вы уже активировали аптечку!"
 	}
 
+	"The player who RDM'd you is no longer available"
+	{
+		"ru"		"Игор который совершил РДМ больше не доступен!"
+	}
+
 	"You were RDM'd"
 	{
 		"ru"		"Вы были заРДМлены игроком {1}!"
@@ -475,7 +480,7 @@
 
 	"Will Explode In"
 	{
-		"ru"		"{GREEN}You {NORMAL}(rating {GREEN}{1}, {LIGHT_RED}-{2}{NORMAL}) {NORMAL}lost to {PURPLE}{3} {NORMAL}(rating {PURPLE}{4}, {LIGHT_GREEN}+{5}{NORMAL})"
+		"ru"		"Место где C4 взорвреться через {orchid}{1} {lightgreen} секунд."
 	}
 
 	"Bomb Was Not Found"
@@ -485,7 +490,7 @@
 
 	"Your Traitor Partners"
 	{
-		"ru"		"Ваши товарищи по команде:"
+		"ru"		"Ваши Предатели по команде:"
 	}
 
 	"No Traitor Partners"
@@ -513,6 +518,11 @@
 		"ru"		"Аптечка пока закончалась, подождите немного!"
 	}
 
+	"Traitor List"
+	{
+		"ru"		"{darkred} {1}"
+	}
+
 	"Welcome Menu"
 	{
 		"ru"		"Здравствуй {1},\nэто Trouble in Terrorist Town Сервер\nнапишите {2}\n\nВы ознакомлены с правилами?"
@@ -525,7 +535,7 @@
 
 	"AM Yes"
 	{
-		"ru"		"Sorry, all the arenas are currently {PURPLE}full"
+		"ru"		"Да, я подтверждаю это."
 	}
 
 	"AM No"
@@ -538,6 +548,16 @@
 		"ru"		"Нет, покажи мне правила!"
 	}
 
+	"StartTimer"
+	{
+		"ru"		"Раунд начнется через {1} секунд"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"ru"		"Взрывная станция была установлена! Она ударит по ближним игрокам!"
+	}
+
 	"You reached limit"
 	{
 		"ru"		"Привет"
@@ -546,11 +566,31 @@
 	"You reached limit"
 	{
 		"ru"		"Привет"
+	}
+
+	"All karma has been updated"
+	{
+		"ru"		"КАРМА БЫЛА ОБНОВЛЕНА!"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"ru"		"Вы должны быть живы чтобы использовать эту команду."
 	}
 
 	"ID: Need to buy ID"
 	{
 		"ru"		"У вас нет ID. Купите его в магазине."
+	}
+
+	"ID: Shows ID"
+	{
+		"ru"		"{1} Невиновный"
+	}
+
+	"Found Fake"
+	{
+		"ru"		"{orchid}{1} {lightgreen}нашел поддельное тело!"
 	}
 
 	"Welcome Message 1"
@@ -608,14 +648,64 @@
 		"ru"		"Вы достигли лимита для тазера! (Использований за раунд: {1})"
 	}
 
+	"AdminSet"
+	{
+		"ru"		"Вы даете {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"ru"		"Пишите !id в чате чтобы показать что вы НЕВИНОВНЫЙ"
+	}
+
 	"YouAreDead"
 	{
 		"ru"		"Вы не можете использовать это,потому что вы мертвы"
 	}
 
+	"Bought All"
+	{
+		"ru"		"Вы достинги лимита на {1} в {orchid}{2} штук"
+	}
+
+	"DT: Invalid Position"
+	{
+		"ru"		"Позиция декоя не корестная. (Проблема застревания)"
+	}
+
+	"SpecMenu: Title"
+	{
+		"ru"		"Меню наблюдателя"
+	}
+
+	"Hud Name"
+	{
+		"ru"		"Имя"
+	}
+
 	"Hud Health"
 	{
 		"ru"		"Здоровье"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"ru"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"ru"		"Карма"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"ru"		"{1}"
+	}
+
+	"You tased a Traitor"
+	{
+		"ru"		"Игрок {lightgreen}{1} использовал детектора на Игроку {darkred}{2} {lightgreen}и он {darkred}ПРЕДАТЕЛЬ!"
 	}
 
 	"You tased a Detective"
@@ -630,12 +720,32 @@
 
 	"AlreadyTaser"
 	{
-		"ru"		"ArenasFull"
+		"ru"		"У вас в инвентаре уже есть тазер!"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"ru"		"{1} перестал говорить в голосовой чат Предателей"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"ru"		"Голосовой чат Предателей: Отключен!"
 	}
 
 	"Traitor Voice Chat: Enabled!"
 	{
 		"ru"		"Traitor Голосовой Чат: Включен!"
+	}
+
+	"ID: Cooldown"
+	{
+		"ru"		"Вы должны подождать, прежде использовать эту команду."
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"ru"		"Размутить мертвых игроков"
 	}
 
 	"SpecMenu: Unmute Alive"
@@ -648,9 +758,29 @@
 		"ru"		"Shop будет снова открыт после покупки предмета."
 	}
 
+	"You already have an active Station"
+	{
+		"ru"		"У вас уже есть активный Station!"
+	}
+
 	"watching logs alive"
 	{
 		"ru"		"{green}{1} {darkred}живой {default}и смотрит логи текущего раунда."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"ru"		"\"{1}\""
 	}
 
 	"Hud PlayerName I-U"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-08-28 23:45:30 UTC
+// Date: 2017-09-20 19:00:28 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -586,6 +586,56 @@
 	"All karma has been updated"
 	{
 		"chi"		"人品值已更新!"
+	}
+
+	"Can't plant, while dead"
+	{
+		"chi"		"当你死亡时，你不能够放置激光地雷"
+	}
+
+	"Can't buy, max amount"
+	{
+		"chi"		"你拥有的激光地雷已达到最大值"
+	}
+
+	"SpecMenu: Player"
+	{
+		"chi"		"玩家: {1}"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"chi"		"{1}"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"chi"		"{1}"
+	}
+
+	"You tased a Traitor"
+	{
+		"chi"		"玩家 {lightgreen}{1} 对 玩家 {darkred}{2} {lightgreen} 使用了电击枪，结果 {darkred}是一个叛徒! "
+	}
+
+	"ID: Cooldown"
+	{
+		"chi"		"在你再次使用这个指令前，请等待冷却结束"
+	}
+
+	"Item bought!"
+	{
+		"chi"		"你购买了 {2} ! 你当前金钱为 {1}"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"chi"		"取消对死亡玩家的禁言"
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"chi"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"
