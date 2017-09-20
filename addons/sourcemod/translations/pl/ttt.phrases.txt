@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-09-20 19:00:29 UTC
+// Date: 2017-09-20 20:00:17 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-09-20 19:00:30 UTC
+// Date: 2017-09-20 20:00:17 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -488,6 +488,11 @@
 		"ru"		"Ваша бомба не найдена!"
 	}
 
+	"Wire Is"
+	{
+		"ru"		"Проводящий провод {orchid}{1} {lightgreen}!"
+	}
+
 	"Your Traitor Partners"
 	{
 		"ru"		"Ваши Предатели по команде:"
@@ -528,6 +533,16 @@
 		"ru"		"Здравствуй {1},\nэто Trouble in Terrorist Town Сервер\nнапишите {2}\n\nВы ознакомлены с правилами?"
 	}
 
+	"WM Yes"
+	{
+		"ru"		"Да, я знаком с правилами!"
+	}
+
+	"WM Kick Message"
+	{
+		"ru"		"Вы были неактивны или закрыли меню правил!"
+	}
+
 	"AM Question"
 	{
 		"ru"		"Вы хотите играть за детектива?\nТогда вам понадобятся следующие вещи:\n\n-рабочий микрофон\n-разговаривать с другими игроками\n-активная Игра\n\nВы соглашаетесь с этим?"
@@ -551,6 +566,11 @@
 	"StartTimer"
 	{
 		"ru"		"Раунд начнется через {1} секунд"
+	}
+
+	"next round in"
+	{
+		"ru"		"Следующей раунд начнется через {1} секунд!"
 	}
 
 	"Hurt Station Deployed"
@@ -658,6 +678,16 @@
 		"ru"		"Пишите !id в чате чтобы показать что вы НЕВИНОВНЫЙ"
 	}
 
+	"RoundStartCenter"
+	{
+		"ru"		"Раунд начнется через {3} секунд"
+	}
+
+	"RoundStartedCenter"
+	{
+		"ru"		"GO GO GO !!!"
+	}
+
 	"YouAreDead"
 	{
 		"ru"		"Вы не можете использовать это,потому что вы мертвы"
@@ -676,6 +706,26 @@
 	"SpecMenu: Title"
 	{
 		"ru"		"Меню наблюдателя"
+	}
+
+	"SpecMenu: Player"
+	{
+		"ru"		"Игрок: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"ru"		"Следующий игрок"
+	}
+
+	"SpecMenu: Prev"
+	{
+		"ru"		"Предыдущий игрок"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"ru"		"Замутить этого игрока"
 	}
 
 	"Hud Name"
@@ -723,6 +773,11 @@
 		"ru"		"У вас в инвентаре уже есть тазер!"
 	}
 
+	"is now talking in Traitor Voice Chat"
+	{
+		"ru"		"{1} сейчас говорит в голосовой чат Предателей"
+	}
+
 	"stopped talking in Traitor Voice Chat"
 	{
 		"ru"		"{1} перестал говорить в голосовой чат Предателей"
@@ -743,14 +798,34 @@
 		"ru"		"Вы должны подождать, прежде использовать эту команду."
 	}
 
+	"Item bought!"
+	{
+		"ru"		"Предмет {2} куплен! Ваши кредиты: {1}"
+	}
+
 	"SpecMenu: Unmute Dead"
 	{
 		"ru"		"Размутить мертвых игроков"
 	}
 
+	"SpecMenu: Mute Dead"
+	{
+		"ru"		"Замутить мертвых игроков"
+	}
+
 	"SpecMenu: Unmute Alive"
 	{
 		"ru"		"Размутить живых игроков"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"ru"		"Замутить живых игроков"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"ru"		"После покупки товара магазин больше не открывается."
 	}
 
 	"Reopen Shop activated"
@@ -761,6 +836,11 @@
 	"You already have an active Station"
 	{
 		"ru"		"У вас уже есть активный Station!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"ru"		"Предмет {2} за {3} кредитов! Осталось кредитов: {1}"
 	}
 
 	"watching logs alive"
@@ -783,9 +863,74 @@
 		"ru"		"\"{1}\""
 	}
 
+	"Hud PlayerName D-U"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"ru"		"\"{1}\""
+	}
+
 	"Hud PlayerName I-U"
 	{
 		"ru"		" \"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"ru"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"ru"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"ru"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"ru"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"
