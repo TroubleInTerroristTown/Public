@@ -319,7 +319,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
-		if (iRole == TTT_TEAM_TRAITOR && g_iTPrice > 0)
+		if (iRole == TTT_TEAM_TRAITOR)
 		{
 			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
@@ -334,7 +334,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
 		}
-		else if (iRole == TTT_TEAM_DETECTIVE && g_iDPrice > 0)
+		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
 			TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
@@ -347,7 +347,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
 			}
 		}
-		else if (iRole == TTT_TEAM_INNOCENT && g_iIPrice > 0)
+		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
