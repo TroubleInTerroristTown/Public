@@ -1160,6 +1160,9 @@ stock void TeamInitialize(int client)
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 		{
 			GivePlayerItem(client, g_iConfig[sdefaultPriD]);
+		} else {
+			SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+			GivePlayerItem(client, g_iConfig[sdefaultPriD]);
 		}
 
 		CPrintToChat(client, g_iConfig[spluginTag], "Your Team is DETECTIVES", client);
