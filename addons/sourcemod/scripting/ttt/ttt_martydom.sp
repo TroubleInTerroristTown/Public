@@ -64,13 +64,13 @@ public void OnPluginStart() {
 
 	Config_LoadString("martydom_name", "Martydom", "The name of this item in the shop.", g_sLongName, sizeof(g_sLongName));
 	
-	g_iIPrice = Config_LoadInt("md_i_price", 2000, "The amount of credits martydom costs as traitor (Innocent). 0 to disable.");	
-	g_iTPrice = Config_LoadInt("md_t_price", 2000, "The amount of credits martydom costs as traitor (Traitor). 0 to disable.");
-	g_iDPrice = Config_LoadInt("md_d_price", 2000, "The amount of credits martydom costs as traitor (Detective). 0 to disable.");
+	g_iIPrice = Config_LoadInt("md_i_price", 2000, "The amount of credits martydom costs as traitor. 0 to disable.");	
+	//g_iTPrice = Config_LoadInt("md_t_price", 2000, "The amount of credits martydom costs as traitor (Traitor). 0 to disable.");
+	//g_iDPrice = Config_LoadInt("md_d_price", 2000, "The amount of credits martydom costs as traitor (Detective). 0 to disable.");
 	
-	g_iTPrio = Config_LoadInt("md_i_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Innocent).");
-	g_iIPrio = Config_LoadInt("md_t_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Traitor).");
-	g_iDPrio = Config_LoadInt("md_d_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Detective).");
+	g_iIPrio = Config_LoadInt("md_t_sort_prio", 0, "The sorting priority of the martydom in the shop menu .");
+	//g_iTPrio = Config_LoadInt("md_i_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Traitor).");
+	//g_iDPrio = Config_LoadInt("md_d_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Detective).");
 	
 	g_fGrenadeDelay = Config_LoadFloat("md_grenade_delay", 0.25, "The time delay it takes for the grenade to spawn after a player dies. Decimals allowed. (Def. 0.25)");
 	g_fDamage = Config_LoadFloat("md_grenade_damage", 99.0, "The damage the grenade does at the explosions center point. Decimals allowed. (Def. 99.0)");
