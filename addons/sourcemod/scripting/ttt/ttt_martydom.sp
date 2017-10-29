@@ -10,9 +10,12 @@
 #pragma newdecls required
 
 #define SHORT_NAME "md"
+#define SHORT_NAME_T "md_t"
+#define SHORT_NAME_D "md_d"
+
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Martydom"
 
-char g_sLongName[PLATFORM_MAX_PATH];
+char g_sLongName[PLATFORM_MAX_PATH] = "Martydom";
 char g_sPluginTag[PLATFORM_MAX_PATH];
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
@@ -88,9 +91,9 @@ public void OnClientDisconnect(int client) {
 
 public void OnAllPluginsLoaded() {
 
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
+	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, _, g_iIPrio);
+	//TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	//TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
 	
 }
 
