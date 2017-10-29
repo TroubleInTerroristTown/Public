@@ -105,13 +105,20 @@ public void OnPluginStart()
 	g_bInflictor = Config_LoadBool("ta_barrel_fix", true, "Prevent bug with taser and a explosive barrel");
 
 	Config_Done();
-	
-	g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("item_equip", Event_ItemEquip);
 
 	LateLoadAll();
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
+	
+	RegPluginLibrary("ttt_taser");
+
+	return APLRes_Success;
 }
 
 public void OnClientDisconnect(int client)
