@@ -6,30 +6,22 @@ public int Native_IsRoundActive(Handle plugin, int numParams)
 public int Native_GetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-
+	
 	if (TTT_IsClientValid(client))
 	{
 		return g_iRole[client];
 	}
-
+	
 	return 0;
 }
 
 public int Native_GetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	bool publicKarma = view_as<bool>(GetNativeCell(2));
-
+	
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		if (g_iConfig[bpublicKarma] || publicKarma)
-		{
-			return g_iKarma[client];
-		}
-		else
-		{
-			return g_iKarmaStart[client];
-		}
+		return g_iKarma[client];
 	}
 
 	return 0;
@@ -38,17 +30,17 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 public int Native_GetClientRagdoll(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-
-	int iBody[Ragdolls];
+	
+	int Body[Ragdolls];
 
 	if (TTT_IsClientValid(client))
 	{
 		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
-			g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
-			if (iBody[Victim] == client)
+			g_aRagdoll.GetArray(i, Body[0], sizeof(Body));
+			if (Body[Victim] == client)
 			{
-				SetNativeArray(2, iBody[0], sizeof(iBody));
+				SetNativeArray(2, Body[0], sizeof(Body));
 			}
 			return 1;
 		}
@@ -59,11 +51,11 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 
 public int Native_SetRagdoll(Handle plugin, int numParams)
 {
-	int iBody[Ragdolls];
+	int Body[Ragdolls];
 
-	GetNativeArray(1, iBody[0], sizeof(iBody));
+	GetNativeArray(1, Body[0], sizeof(Body));
 
-	g_aRagdoll.PushArray(iBody[0]);
+	g_aRagdoll.PushArray(Body[0]);
 
 	return 0;
 }
@@ -72,7 +64,7 @@ public int Native_SetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int role = GetNativeCell(2);
-
+	
 	if (TTT_IsClientValid(client))
 	{
 		g_iRole[client] = role;
@@ -91,11 +83,11 @@ public int Native_SetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
-
+	
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		return setKarma(client, karma, force);
+		setKarma(client, karma);
+		return g_iKarma[client];
 	}
 
 	return 0;
@@ -105,52 +97,38 @@ public int Native_AddClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
-
+	
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		return setKarma(client, g_iKarma[client] + karma, force);
+		setKarma(client, g_iKarma[client]+karma);
+		return g_iKarma[client];
 	}
-
-	return 0;
-}
-
-public int Native_RemoveClientKarma(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
-
-	if (TTT_IsClientValid(client) && g_bKarma[client])
-	{
-		return setKarma(client, g_iKarma[client] - karma, force);
-	}
-
+	
 	return 0;
 }
 
 public int Native_WasBodyFound(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-
+	
 	if (TTT_IsClientValid(client))
 	{
 		int iSize = g_aRagdoll.Length;
-
+		
 		if (iSize == 0)
 		{
 			return false;
 		}
-
-		int iRagdoll[Ragdolls];
-
+		
+		int Items[Ragdolls];
+		
 		for (int i = 0; i < iSize; i++)
 		{
-			g_aRagdoll.GetArray(i, iRagdoll[0]);
-
-			if (iRagdoll[Victim] == client)
+			g_aRagdoll.GetArray(i, Items[0]);
+			
+			if (Items[Victim] == client)
 			{
-				return iRagdoll[Found];
+				return Items[Found];
 			}
 		}
 	}
@@ -161,25 +139,25 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 public int Native_WasBodyScanned(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-
+	
 	if (TTT_IsClientValid(client))
 	{
 		int iSize = g_aRagdoll.Length;
-
+		
 		if (iSize == 0)
 		{
 			return false;
 		}
-
-		int iRagdoll[Ragdolls];
-
+		
+		int Items[Ragdolls];
+		
 		for (int i = 0; i < iSize; i++)
 		{
-			g_aRagdoll.GetArray(i, iRagdoll[0]);
-
-			if (iRagdoll[Victim] == client)
+			g_aRagdoll.GetArray(i, Items[0]);
+			
+			if (Items[Victim] == client)
 			{
-				return iRagdoll[Scanned];
+				return Items[Scanned];
 			}
 		}
 	}
@@ -191,10 +169,10 @@ public int Native_LogString(Handle plugin, int numParams)
 {
 	char message[512];
 	int bytes;
-
+	
 	FormatNativeString(0, 1, 2, sizeof(message), bytes, message);
-	addArrayTime(message);
-
+	g_aLogs.PushString(message);
+	
 	return 0;
 }
 
@@ -206,28 +184,28 @@ public int Native_GetFoundStatus(Handle plugin, int numParams)
 public int Native_SetFoundStatus(Handle plugin, int numParams)
 {
 	g_bFound[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
-
+	
 	return;
 }
 
 public int Native_OverrideConfigInt(Handle plugin, int numParams)
 {
 	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
+	
 	return;
 }
 
 public int Native_OverrideConfigBool(Handle plugin, int numParams)
 {
 	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
+	
 	return;
 }
 
 public int Native_OverrideConfigFloat(Handle plugin, int numParams)
 {
 	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
+	
 	return;
 }
 
@@ -238,45 +216,41 @@ public int Native_OverrideConfigString(Handle plugin, int numParams)
 
 	GetNativeString(2, buffer, size);
 	strcopy(view_as<char>(g_iConfig[GetNativeCell(1)]), size, buffer);
-
+	
 	return;
 }
 
 public int Native_ReloadConfig(Handle plugin, int numParams)
 {
 	SetupConfig();
-
+	
 	return;
 }
 
 public int Native_ForceTraitor(Handle plugin, int numParams)
 {
-	int userid = GetClientUserId(GetNativeCell(1));
-	
-	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
+	int client = GetNativeCell(1);
+	if(TTT_IsClientValid(client))
 	{
-		g_aForceTraitor.Push(userid);
+		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
+			g_aForceTraitor.Push(client);
+		else 
+			return false;
 	}
-	else
-	{
-		return false;
-	}
-
+		
 	return true;
 }
 
 public int Native_ForceDetective(Handle plugin, int numParams)
 {
-	int userid = GetClientUserId(GetNativeCell(1));
-	
-	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
+	int client = GetNativeCell(1);
+	if(TTT_IsClientValid(client))
 	{
-		g_aForceDetective.Push(userid);
+		if(g_aForceTraitor.FindValue(client) == -1 && g_aForceDetective.FindValue(client) == -1)
+			g_aForceDetective.Push(client);
+		else 
+			return false;
 	}
-	else
-	{
-		return false;
-	}
-
+		
 	return true;
 }

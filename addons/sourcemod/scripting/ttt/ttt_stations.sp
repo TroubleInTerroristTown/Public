@@ -1,18 +1,16 @@
-#pragma semicolon 1
-#pragma newdecls required
-
 #include <sourcemod>
 #include <cstrike>
 #include <sdkhooks>
 #include <sdktools>
 #include <multicolors>
 #include <emitsoundany>
+
 #include <ttt_shop>
 #include <ttt>
 #include <config_loader>
 
-#define HEALTH_ITEM_SHORT "healthstation"
-#define HURT_ITEM_SHORT "hurtstation"
+#define HEALTH_ITEM_SHORT "hlthstat"
+#define HURT_ITEM_SHORT "hurtstat"
 
 #define SND_WARNING "resource/warning.wav"
 
@@ -29,9 +27,9 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-int g_iStationCharges[MAXPLAYERS + 1] =  { 0, ... };
-int g_iStationHealth[MAXPLAYERS + 1] =  { 0, ... };
-bool g_bHasActiveStation[MAXPLAYERS + 1] =  { false, ... };
+int g_iHealthStationCharges[MAXPLAYERS + 1] =  { 0, ... };
+int g_iHealthStationHealth[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bHasActiveHealthStation[MAXPLAYERS + 1] =  { false, ... };
 bool g_bOnHealingCoolDown[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRemoveCoolDownTimer[MAXPLAYERS + 1] =  { null, ... };
 
@@ -60,7 +58,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
-
+	
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/config.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
@@ -68,9 +66,9 @@ public void OnPluginStart()
 
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/stations.cfg");
 	Config_Setup("TTT-Stations", g_cConfigFile);
-	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for detectives. 0 to disable.");
+	g_iHealthPrice = Config_LoadInt("health_station_price", 3000, "The price of the Health Station in the shop for traitors. 0 to disable.");
 	g_iHurtPrice = Config_LoadInt("hurt_station_price", 0, "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
-
+	
 	g_iHealthPrio = Config_LoadInt("health_sort_prio", 0, "The sorting priority of the Health Station in the shop menu.");
 	g_iHurtPrio = Config_LoadInt("hurt_sort_prio", 0, "The sorting priority of the Hurt Station in the shop menu.");
 
@@ -82,14 +80,14 @@ public void OnPluginStart()
 
 	g_fHealthDistance = Config_LoadFloat("health_station_distance", 200.0, "The distance that the health station should reach.");
 	g_fHurtDistance = Config_LoadFloat("hurt_station_distance", 200.0, "The distance that the hurt station should reach.");
-
+	
 	g_bHurtTraitors = Config_LoadBool("hurt_station_hurt_other_traitors", false, "Hurt other traitors with a hurtstation?");
-
-	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?");
-
+	
+	g_iMaxHealth = Config_LoadInt("health_station_max_health", 125, "What's the max health for a health station that the player can get?")
+	
 	Config_LoadString("health_station_name", "Health Station", "The name of the health station in the menu.", g_cHealth, sizeof(g_cHealth));
 	Config_LoadString("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.", g_cHurt, sizeof(g_cHurt));
-
+	
 	Config_Done();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -106,15 +104,21 @@ public void OnAllPluginsLoaded()
 	TTT_RegisterCustomItem(HURT_ITEM_SHORT, g_cHurt, g_iHurtPrice, TTT_TEAM_TRAITOR, g_iHurtPrio);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
 		bool hurt = (strcmp(itemshort, HURT_ITEM_SHORT, false) == 0);
 		bool health = (strcmp(itemshort, HEALTH_ITEM_SHORT, false) == 0);
-
+		
 		if (hurt || health)
 		{
+			if (g_bHasActiveHealthStation[client])
+			{
+				CPrintToChat(client, g_sPluginTag, "You already have an active Health Station", client);
+				return Plugin_Stop;
+			}
+
 			if (health && (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE))
 			{
 				return Plugin_Stop;
@@ -125,14 +129,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 
-			if (g_bHasActiveStation[client])
-			{
-				CPrintToChat(client, g_sPluginTag, "You already have an active Station", client);
-
-				return Plugin_Stop;
-			}
-
-			spawnStation(client);
+			spawnHealthStation(client);
 		}
 	}
 
@@ -141,17 +138,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
-	cleanupStation();
+	healthStation_cleanUp();
 }
 
 public void TTT_OnUpdate1(int i)
 {
-	if (!IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
+	if (!TTT_IsClientValid(i) || !IsPlayerAlive(i) || TTT_GetClientRole(i) < TTT_TEAM_INNOCENT)
 	{
 		return;
 	}
 
-	checkDistanceFromStation(i);
+	checkDistanceFromHealthStation(i);
 }
 
 public void TTT_OnUpdate5(int i)
@@ -161,9 +158,9 @@ public void TTT_OnUpdate5(int i)
 		return;
 	}
 
-	if (g_bHasActiveStation[i] && g_iStationCharges[i] < 9)
+	if (g_bHasActiveHealthStation[i] && g_iHealthStationCharges[i] < 9)
 	{
-		g_iStationCharges[i]++;
+		g_iHealthStationCharges[i]++;
 	}
 }
 
@@ -191,12 +188,12 @@ public Action removeCoolDown(Handle timer, any userid)
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-	cleanupStation();
+	healthStation_cleanUp();
 
 	return Plugin_Continue;
 }
 
-public Action OnTakeDamageStation(int stationIndex, int &iAttacker, int &inflictor, float &damage, int &damagetype)
+public Action OnTakeDamageHealthStation(int stationIndex, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
 	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || iAttacker < 1 || iAttacker > MaxClients || !IsClientInGame(iAttacker))
 	{
@@ -209,34 +206,34 @@ public Action OnTakeDamageStation(int stationIndex, int &iAttacker, int &inflict
 		return Plugin_Continue;
 	}
 
-	g_iStationHealth[owner]--;
+	g_iHealthStationHealth[owner]--;
 
-	if (g_iStationHealth[owner] <= 0)
+	if (g_iHealthStationHealth[owner] <= 0)
 	{
 		AcceptEntityInput(stationIndex, "Kill");
-		g_bHasActiveStation[owner] = false;
+		g_bHasActiveHealthStation[owner] = false;
 	}
 	return Plugin_Continue;
 }
 
-void checkDistanceFromStation(int client)
+void checkDistanceFromHealthStation(int client)
 {
-	if (!IsPlayerAlive(client))
+	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
 	{
 		return;
 	}
-
+	
 	float clientPos[3];
 	float stationPos[3];
 	int curHealth;
 	int newHealth;
 	int iEnt;
 	char sModelName[PLATFORM_MAX_PATH];
-
+	
 	while ((iEnt = FindEntityByClassname(iEnt, "prop_physics_multiplayer")) != -1)
 	{
 		int owner = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-		if (!TTT_IsClientValid(owner))
+		if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
 		{
 			continue;
 		}
@@ -262,20 +259,20 @@ void checkDistanceFromStation(int client)
 		{
 			continue;
 		}
-
+		
 		curHealth = GetClientHealth(client);
-
+		
 		if (!g_bHurtTraitors && hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 		{
 			continue;
 		}
-
+		
 		if ((!hurt) && (curHealth >= g_iMaxHealth))
 		{
 			continue;
 		}
 
-		if (g_iStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))
+		if (g_iHealthStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))
 		{
 			newHealth = (hurt ? (curHealth - g_iHurtDamage) : (curHealth + g_iHealthHeal));
 			if (newHealth >= 125)
@@ -297,7 +294,7 @@ void checkDistanceFromStation(int client)
 			}
 
 			EmitSoundToClientAny(client, SND_WARNING);
-			g_iStationCharges[owner]--;
+			g_iHealthStationCharges[owner]--;
 			g_bOnHealingCoolDown[client] = true;
 			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}
@@ -313,37 +310,37 @@ void checkDistanceFromStation(int client)
 	}
 }
 
-void spawnStation(int client)
+void spawnHealthStation(int client)
 {
 	if (!IsPlayerAlive(client))
 	{
 		return;
 	}
 
-	int iStation = CreateEntityByName("prop_physics_multiplayer");
-	if (iStation != -1)
+	int healthStationIndex = CreateEntityByName("prop_physics_multiplayer");
+	if (healthStationIndex != -1)
 	{
 		int role = TTT_GetClientRole(client);
 		float clientPos[3];
 		GetClientAbsOrigin(client, clientPos);
-		SetEntProp(iStation, Prop_Send, "m_hOwnerEntity", client);
-		DispatchKeyValue(iStation, "model", "models/props/cs_office/microwave.mdl");
-		DispatchSpawn(iStation);
-		SDKHook(iStation, SDKHook_OnTakeDamage, OnTakeDamageStation);
-		TeleportEntity(iStation, clientPos, NULL_VECTOR, NULL_VECTOR);
-		g_iStationHealth[client] = 10;
-		g_bHasActiveStation[client] = true;
-		g_iStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
-		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Hurt Station Deployed" : "Health Station Deployed"), client);
+		SetEntProp(healthStationIndex, Prop_Send, "m_hOwnerEntity", client);
+		DispatchKeyValue(healthStationIndex, "model", "models/props/cs_office/microwave.mdl");
+		DispatchSpawn(healthStationIndex);
+		SDKHook(healthStationIndex, SDKHook_OnTakeDamage, OnTakeDamageHealthStation);
+		TeleportEntity(healthStationIndex, clientPos, NULL_VECTOR, NULL_VECTOR);
+		g_iHealthStationHealth[client] = 10;
+		g_bHasActiveHealthStation[client] = true;
+		g_iHealthStationCharges[client] = ((role == TTT_TEAM_TRAITOR) ? g_iHurtCharges : g_iHealthCharges);
+		CPrintToChat(client, g_sPluginTag, ((role == TTT_TEAM_TRAITOR) ? "Health Station Deployed" : "Hurt Station Deployed"), client);
 	}
 }
 
-void cleanupStation()
+void healthStation_cleanUp()
 {
 	LoopValidClients(i)
 	{
-		g_iStationCharges[i] = 0;
-		g_bHasActiveStation[i] = false;
+		g_iHealthStationCharges[i] = 0;
+		g_bHasActiveHealthStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
 
 		ClearTimer(g_hRemoveCoolDownTimer[i]);

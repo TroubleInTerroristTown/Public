@@ -11,7 +11,7 @@
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License, version 3.0, as published by the
  * Free Software Foundation.
- *
+ * 
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
@@ -38,18 +38,18 @@
 
 #include <sdktools>
 
-static bool g_bCheckedEngine = false;
-static bool g_bNeedsFakePrecache = false;
+static bool:g_bCheckedEngine = false;
+static bool:g_bNeedsFakePrecache = false;
 
-stock static int EmitSoundCheckEngineVersion()
+stock static EmitSoundCheckEngineVersion()
 {
 	if (g_bCheckedEngine)
 	{
 		return;
 	}
 
-	EngineVersion engVersion = GetEngineVersion();
-
+	new EngineVersion:engVersion = GetEngineVersion();
+	
 	if (engVersion == Engine_CSGO || engVersion == Engine_DOTA)
 	{
 		g_bNeedsFakePrecache = true;
@@ -57,19 +57,19 @@ stock static int EmitSoundCheckEngineVersion()
 	g_bCheckedEngine = true;
 }
 
-stock static bool FakePrecacheSoundEx( const char[] szPath )
+stock static bool:FakePrecacheSoundEx( const String:szPath[] )
 {
-	char szPathStar[PLATFORM_MAX_PATH];
+	decl String:szPathStar[PLATFORM_MAX_PATH];
 	Format(szPathStar, sizeof(szPathStar), "*%s", szPath);
-
+	
 	AddToStringTable( FindStringTable( "soundprecache" ), szPathStar );
 	return true;
 }
 
-stock bool PrecacheSoundAny( const char[] szPath, bool preload=false)
+stock bool:PrecacheSoundAny( const String:szPath[], bool:preload=false)
 {
 	EmitSoundCheckEngineVersion();
-
+	
 	if (g_bNeedsFakePrecache)
 	{
 		return FakePrecacheSoundEx(szPath);
@@ -80,25 +80,25 @@ stock bool PrecacheSoundAny( const char[] szPath, bool preload=false)
 	}
 }
 
-stock void EmitSoundAny(const clients[],
-                 int numClients,
-                 const char[] sample,
-                 int entity = SOUND_FROM_PLAYER,
-                 int channel = SNDCHAN_AUTO,
-                 int level = SNDLEVEL_NORMAL,
-                 int flags = SND_NOFLAGS,
-                 float volume = SNDVOL_NORMAL,
-                 int pitch = SNDPITCH_NORMAL,
-                 int speakerentity = -1,
-                 const float origin[3] = NULL_VECTOR,
-                 const float dir[3] = NULL_VECTOR,
-                 bool updatePos = true,
-                 float soundtime = 0.0)
+stock EmitSoundAny(const clients[], 
+                 numClients, 
+                 const String:sample[], 
+                 entity = SOUND_FROM_PLAYER, 
+                 channel = SNDCHAN_AUTO, 
+                 level = SNDLEVEL_NORMAL, 
+                 flags = SND_NOFLAGS, 
+                 Float:volume = SNDVOL_NORMAL, 
+                 pitch = SNDPITCH_NORMAL, 
+                 speakerentity = -1, 
+                 const Float:origin[3] = NULL_VECTOR, 
+                 const Float:dir[3] = NULL_VECTOR, 
+                 bool:updatePos = true, 
+                 Float:soundtime = 0.0)
 {
 	EmitSoundCheckEngineVersion();
 
-	char szSound[PLATFORM_MAX_PATH];
-
+	decl String:szSound[PLATFORM_MAX_PATH];
+	
 	if (g_bNeedsFakePrecache)
 	{
 		Format(szSound, sizeof(szSound), "*%s", sample);
@@ -107,80 +107,80 @@ stock void EmitSoundAny(const clients[],
 	{
 		strcopy(szSound, sizeof(szSound), sample);
 	}
-
-	EmitSound(clients, numClients, szSound, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);
+	
+	EmitSound(clients, numClients, szSound, entity, channel, level, flags, volume, pitch, speakerentity, origin, dir, updatePos, soundtime);	
 }
 
-stock void EmitSoundToClientAny(int client,
-				 const char[] sample,
-				 int entity = SOUND_FROM_PLAYER,
-				 int channel = SNDCHAN_AUTO,
-				 int level = SNDLEVEL_NORMAL,
-				 int flags = SND_NOFLAGS,
-				 float volume = SNDVOL_NORMAL,
-				 int pitch = SNDPITCH_NORMAL,
-				 int speakerentity = -1,
-				 const float origin[3] = NULL_VECTOR,
-				 const float dir[3] = NULL_VECTOR,
-				 bool updatePos = true,
-				 float soundtime = 0.0)
+stock EmitSoundToClientAny(client,
+				 const String:sample[],
+				 entity = SOUND_FROM_PLAYER,
+				 channel = SNDCHAN_AUTO,
+				 level = SNDLEVEL_NORMAL,
+				 flags = SND_NOFLAGS,
+				 Float:volume = SNDVOL_NORMAL,
+				 pitch = SNDPITCH_NORMAL,
+				 speakerentity = -1,
+				 const Float:origin[3] = NULL_VECTOR,
+				 const Float:dir[3] = NULL_VECTOR,
+				 bool:updatePos = true,
+				 Float:soundtime = 0.0)
 {
-	int[] clients = new int[1];
+	new clients[1];
 	clients[0] = client;
 	/* Save some work for SDKTools and remove SOUND_FROM_PLAYER references */
 	entity = (entity == SOUND_FROM_PLAYER) ? client : entity;
-	EmitSoundAny(clients, 1, sample, entity, channel,
+	EmitSoundAny(clients, 1, sample, entity, channel, 
 	level, flags, volume, pitch, speakerentity,
 	origin, dir, updatePos, soundtime);
 }
 
-stock void EmitSoundToAllAny(const char[] sample,
-                 int entity = SOUND_FROM_PLAYER,
-                 int channel = SNDCHAN_AUTO,
-                 int level = SNDLEVEL_NORMAL,
-                 int flags = SND_NOFLAGS,
-                 float volume = SNDVOL_NORMAL,
-                 int pitch = SNDPITCH_NORMAL,
-                 int speakerentity = -1,
-                 const float origin[3] = NULL_VECTOR,
-                 const float dir[3] = NULL_VECTOR,
-                 bool updatePos = true,
-                 float soundtime = 0.0)
+stock EmitSoundToAllAny(const String:sample[], 
+                 entity = SOUND_FROM_PLAYER, 
+                 channel = SNDCHAN_AUTO, 
+                 level = SNDLEVEL_NORMAL, 
+                 flags = SND_NOFLAGS, 
+                 Float:volume = SNDVOL_NORMAL, 
+                 pitch = SNDPITCH_NORMAL, 
+                 speakerentity = -1, 
+                 const Float:origin[3] = NULL_VECTOR, 
+                 const Float:dir[3] = NULL_VECTOR, 
+                 bool:updatePos = true, 
+                 Float:soundtime = 0.0)
 {
-	int[] clients = new int[MaxClients];
-	int total = 0;
-
-	for (int i = 1; i <= MaxClients; i++)
+	new clients[MaxClients];
+	new total = 0;
+	
+	for (new i=1; i<=MaxClients; i++)
 	{
 		if (IsClientInGame(i))
 		{
 			clients[total++] = i;
 		}
 	}
-
+	
 	if (!total)
 	{
 		return;
 	}
-
-	EmitSoundAny(clients, total, sample, entity, channel,
+	
+	EmitSoundAny(clients, total, sample, entity, channel, 
 	level, flags, volume, pitch, speakerentity,
 	origin, dir, updatePos, soundtime);
 }
 
-stock void EmitAmbientSoundAny(const char[] sample,
-						const float pos[3],
-						int entity = SOUND_FROM_WORLD,
-						int level = SNDLEVEL_NORMAL,
-						int flags = SND_NOFLAGS,
-						float vol = SNDVOL_NORMAL,
-						int pitch = SNDPITCH_NORMAL,
-						float delay = 0.0)
+stock EmitAmbientSoundAny(const String:sample[],
+						const Float:pos[3],
+						entity = SOUND_FROM_WORLD,
+						level = SNDLEVEL_NORMAL,
+						flags = SND_NOFLAGS,
+						Float:vol = SNDVOL_NORMAL,
+						pitch = SNDPITCH_NORMAL,
+						Float:delay = 0.0)
 {
 	EmitSoundCheckEngineVersion();
-
-	char szSound[PLATFORM_MAX_PATH];
-
+	
+	decl String:szSound[PLATFORM_MAX_PATH];
+	
 	if (g_bNeedsFakePrecache)
 	{
 		Format(szSound, sizeof(szSound), "*%s", sample);
@@ -189,16 +189,16 @@ stock void EmitAmbientSoundAny(const char[] sample,
 	{
 		strcopy(szSound, sizeof(szSound), sample);
 	}
-
+	
 	EmitAmbientSound(szSound, pos, entity, level, flags, vol, pitch, delay);
 }
 
-stock void StopSoundAny(int entity, int channel, const char[] name)
+stock StopSoundAny(entity, channel, const String:name[])
 {
 	EmitSoundCheckEngineVersion();
-
-	char szSound[PLATFORM_MAX_PATH];
-
+	
+	decl String:szSound[PLATFORM_MAX_PATH];
+	
 	if (g_bNeedsFakePrecache)
 	{
 		Format(szSound, sizeof(szSound), "*%s", name);
@@ -207,6 +207,6 @@ stock void StopSoundAny(int entity, int channel, const char[] name)
 	{
 		strcopy(szSound, sizeof(szSound), name);
 	}
-
+	
 	StopSound(entity, channel, szSound);
 }

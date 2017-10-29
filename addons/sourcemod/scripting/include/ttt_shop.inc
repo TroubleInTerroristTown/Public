@@ -10,11 +10,8 @@
  *
  * @param client            The client who purchased the item.
  * @param itemshort         The short-tag for the item's name.
- * @param count             TODO
  */
-forward Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count);
-
-forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item);
+forward Action TTT_OnItemPurchased(int client, const char[] itemshort);
 
 /*
  * Registers a custom item in the menu/shop.

@@ -1,11 +1,9 @@
-#pragma semicolon 1
-#pragma newdecls required
-
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
 #include <multicolors>
+#include <smlib>
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Traitor Doors"
@@ -32,7 +30,7 @@ public void OnMapStart()
 public Action Event_OnRoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
 	SetupDoors();
-
+	
 	return Plugin_Continue;
 }
 
@@ -48,7 +46,7 @@ stock void SetupDoors()
 	{
 		ClearArray(g_aDoors);
 	}
-
+	
 	int maxent = GetMaxEntities();
 	char sClass[64];
 	char sName[64];
@@ -57,12 +55,12 @@ stock void SetupDoors()
 		if (IsValidEdict(i) && IsValidEntity(i))
 		{
 			GetEdictClassname(i, sClass, sizeof(sClass));
-			GetEntPropString(i, Prop_Data, "m_iName", sName, sizeof(sName));
-
+			Entity_GetName(i, sName, sizeof(sName));
+			
 			if (StrContains(sClass, "_door", false) != -1 && StrContains(sName, "traitor", false) != -1)
 			{
 				AcceptEntityInput(i, "Lock");
-
+				
 				HookSingleEntityOutput(i, "OnLockedUse", OnLockedUse);
 			}
 		}
@@ -75,36 +73,36 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	{
 		return Plugin_Continue;
 	}
-
+		
 	if (!(buttons & IN_USE))
 	{
 		return Plugin_Continue;
 	}
-
+	
 	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Continue;
 	}
-
+	
 	int target = GetClientAimTarget(client, false);
-
-	if (!IsValidEntity(target) || !IsValidEdict(target))
+	
+	if (!IsValidEntity(target))
 	{
 		return Plugin_Continue;
 	}
-
+	
 	char sClass[64];
 	char sName[64];
 	GetEdictClassname(target, sClass, sizeof(sClass));
-	GetEntPropString(target, Prop_Data, "m_iName", sName, sizeof(sName));
-
+	Entity_GetName(target, sName, sizeof(sName));
+	
 	if (StrContains(sClass, "_door", false) != -1 && StrContains(sName, "traitor", false) != -1)
 	{
 		AcceptEntityInput(target, "Unlock");
 		AcceptEntityInput(target, "Open");
 		AcceptEntityInput(target, "Lock");
 	}
-
+	
   	return Plugin_Continue;
 }
 
@@ -114,7 +112,7 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
 	{
 		return;
 	}
-
+	
 	AcceptEntityInput(caller, "Unlock");
 	AcceptEntityInput(caller, "Open");
 	AcceptEntityInput(caller, "Lock");

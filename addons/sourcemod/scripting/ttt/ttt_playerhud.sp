@@ -1,10 +1,11 @@
 #pragma semicolon 1
-#pragma newdecls required
 
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
 #include <config_loader>
+
+#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Hud"
 
@@ -29,9 +30,9 @@ Handle g_hOnHudSend_Pre = null;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
-
+	
 	RegPluginLibrary("ttt_playerhud");
-
+	
 	return APLRes_Success;
 }
 
@@ -46,39 +47,29 @@ public void OnPluginStart()
 	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextT, sizeof(g_sTextT));
 	Config_LoadString("hud_display_unassigned", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextU, sizeof(g_sTextU));
 	Config_Done();
-
-	LoadTranslations("ttt.phrases");
-
-	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
-}
-
-public void OnAllPluginsLoaded()
-{
-	char sFile[] = "ttt_player_hud.smx";
-	Handle hPlugin = FindPluginByFile(sFile);
 	
-	if (hPlugin != null && GetPluginStatus(hPlugin) == Plugin_Running)
-	{
-		SetFailState("Old player hud file found! Please delete '%s'", sFile);
-	}
+	LoadTranslations("ttt.phrases");
+	
+	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
 {
+	
 	LoopValidClients(client)
 	{
 		if (IsPlayerAlive(client))
 		{
 			int iTarget = TraceClientViewEntity(client);
 			if (iTarget != g_iTarget[client])
-			{
+			{	
 				g_iTarget[client] = iTarget;
-
+				
 				if (!TTT_IsClientValid(iTarget))
 				{
 					continue;
 				}
-
+				
 				char sName[32];
 				char sPlayerName[64];
 				char sHealth[32];
@@ -100,103 +91,92 @@ public Action Timer_UpdateText(Handle timer)
 
 public bool PrepareText(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength, char[] sHintText, int iHintTextLength)
 {
-	int iHealth = GetClientHealth(target);
-	int iKarma = TTT_GetClientKarma(target, false);
-	
 	Format(sName, iNameLength, "%T", "Hud Name", client);
 	Format(sHealth, iHealthLength, "%T", "Hud Health", client);
-	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, iHealth);
+	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, GetClientHealth(target));
 	Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
-	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, iKarma);
-	
-	int iRole = TTT_GetClientRole(client);
-	int iTRole = TTT_GetClientRole(target);
-	
-	if (iRole == TTT_TEAM_TRAITOR)
+	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, TTT_GetClientKarma(target));
+	if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextT);
-		
-		if (iTRole == TTT_TEAM_TRAITOR)
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-T", client, target);
 		}
-		else if (iTRole == TTT_TEAM_DETECTIVE)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-D", client, target);
 		}
-		else if (iTRole == TTT_TEAM_INNOCENT)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-I", client, target);
 		}
-		else if (iTRole == TTT_TEAM_UNASSIGNED)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-U", client, target);
 		}
 	}
-	else if (iRole == TTT_TEAM_DETECTIVE)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextD);
-		
-		if (iTRole == TTT_TEAM_TRAITOR)
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-T", client, target);
 		}
-		else if (iTRole == TTT_TEAM_DETECTIVE)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-D", client, target);
 		}
-		else if (iTRole == TTT_TEAM_INNOCENT)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-I", client, target);
 		}
-		else if (iTRole == TTT_TEAM_UNASSIGNED)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-U", client, target);
 		}
 	}
-	else if (iRole == TTT_TEAM_INNOCENT)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
 		strcopy(sHintText, iHintTextLength, g_sTextI);
-		
-		if (iTRole == TTT_TEAM_TRAITOR)
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-T", client, target);
 		}
-		else if (iTRole == TTT_TEAM_DETECTIVE)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-D", client, target);
 		}
-		else if (iTRole == TTT_TEAM_INNOCENT)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-I", client, target);
 		}
-		else if (iTRole == TTT_TEAM_UNASSIGNED)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-U", client, target);
 		}
 	}
-	else if (iRole == TTT_TEAM_UNASSIGNED)
+	else if (TTT_GetClientRole(client) == TTT_TEAM_UNASSIGNED)
 	{
-		strcopy(sHintText, iHintTextLength, g_sTextU);
-		
-		if (iTRole == TTT_TEAM_TRAITOR)
+		strcopy(sHintText, iHintTextLength, g_sTextI);
+		if (TTT_GetClientRole(target) == TTT_TEAM_TRAITOR)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-T", client, target);
 		}
-		else if (iTRole == TTT_TEAM_DETECTIVE)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_DETECTIVE)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-D", client, target);
 		}
-		else if (iTRole == TTT_TEAM_INNOCENT)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_INNOCENT)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-I", client, target);
 		}
-		else if (iTRole == TTT_TEAM_UNASSIGNED)
+		else if (TTT_GetClientRole(target) == TTT_TEAM_UNASSIGNED)
 		{
 			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-U", client, target);
 		}
 	}
-
+	
 	Action res = Plugin_Continue;
 	Call_StartForward(g_hOnHudSend_Pre);
 	Call_PushCell(client);
@@ -218,7 +198,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		return false;
 	}
-
+	
 	ReplaceString(sHintText, iHintTextLength, "{Name}", sName, false);
 	ReplaceString(sHintText, iHintTextLength, "{PlayerName}", sPlayerName, false);
 	ReplaceString(sHintText, iHintTextLength, "{Health}", sHealth, false);

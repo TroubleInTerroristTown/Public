@@ -1,3 +1,5 @@
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Trouble in Terrorist Town"
+
 #define SND_TCHAT "buttons/button18.wav"
 #define SND_FLASHLIGHT "items/flashlight1.wav"
 #define SND_BLIP "buttons/blip2.wav"
@@ -37,10 +39,9 @@ ArrayList g_aForceTraitor;
 ArrayList g_aForceDetective;
 
 bool g_bRoundStarted = false;
-bool g_bSelection = false;
 bool g_bCheckPlayers = false;
 
-int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
+int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...}; 
 bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRoundTimer = null;
@@ -61,7 +62,6 @@ bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIsChecking[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAlive = -1;
-int g_iHealth = -1;
 int g_iKills = -1;
 int g_iDeaths = -1;
 int g_iAssists = -1;
@@ -70,7 +70,7 @@ int g_iMVPs = -1;
 char g_sBadNames[256][MAX_NAME_LENGTH];
 int g_iBadNameCount = 0;
 
-Database g_dDB = null;
+Handle g_hDatabase = null;
 
 
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
@@ -92,50 +92,47 @@ Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
 Handle g_hOnUpdate5 = null;
+Handle g_hOnUpdate3 = null;
 Handle g_hOnUpdate1 = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 
 bool g_bSourcebans = false;
 
-UserMsg g_uMessage;
-
 char g_sRadioCMDs[][] =  {
-	"coverme",
-	"takepoint",
-	"holdpos",
-	"regroup",
-	"followme",
-	"takingfire",
-	"go",
-	"fallback",
-	"sticktog",
-	"getinpos",
-	"stormfront",
-	"report",
-	"roger",
-	"enemyspot",
-	"needbackup",
-	"sectorclear",
-	"inposition",
-	"reportingin",
-	"getout",
-	"negative",
-	"enemydown",
-	"compliment",
-	"thanks",
+	"coverme", 
+	"takepoint", 
+	"holdpos", 
+	"regroup", 
+	"followme", 
+	"takingfire", 
+	"go", 
+	"fallback", 
+	"sticktog", 
+	"getinpos", 
+	"stormfront", 
+	"report", 
+	"roger", 
+	"enemyspot", 
+	"needbackup", 
+	"sectorclear", 
+	"inposition", 
+	"reportingin", 
+	"getout", 
+	"negative", 
+	"enemydown", 
+	"compliment", 
+	"thanks", 
 	"cheer"
 };
 
 char g_sRemoveEntityList[][] =  {
-	"func_bomb_target",
-	"hostage_entity",
-	"func_hostage_rescue",
-	"info_hostage_spawn",
+	"func_bomb_target", 
+	"hostage_entity", 
+	"func_hostage_rescue", 
+	"info_hostage_spawn", 
 	"func_buyzone"
 };
 
 bool g_bRoundEnding = false;
 int g_iLastButtons[MAXPLAYERS + 1] =  { 0, ... };
-
-bool g_bDebug = false;

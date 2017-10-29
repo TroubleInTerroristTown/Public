@@ -8,13 +8,13 @@
 #define TTT_PLUGIN_NAME "Trouble in Terrorist Town"
 #define TTT_PLUGIN_AUTHOR "TTT-Contributors"
 #define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
-#define TTT_PLUGIN_VERSION "<VERSION>"
+#define TTT_PLUGIN_VERSION "2.1.<ID>"
 #define TTT_PLUGIN_URL "https://github.com/Bara20/TroubleinTerroristTown"
 
-#define TTT_TEAM_UNASSIGNED (1 << 0)
-#define TTT_TEAM_INNOCENT (1 << 1)
-#define TTT_TEAM_TRAITOR (1 << 2)
-#define TTT_TEAM_DETECTIVE (1 << 3)
+#define TTT_TEAM_UNASSIGNED 0
+#define TTT_TEAM_INNOCENT 1
+#define TTT_TEAM_TRAITOR 2
+#define TTT_TEAM_DETECTIVE 3
 
 #define MAX_CUSTOM_ITEMS 64
 
@@ -24,121 +24,107 @@
 
 enum eConfig
 {
-	irequiredPlayersD,
-	irequiredPlayers,
-	istartKarma,
-	ikarmaBan,
-	ikarmaBanLength,
-	imaxKarma,
-	ispawnHPT,
-	ispawnHPD,
-	ispawnHPI,
-	ikarmaII,
-	ikarmaIT,
-	ikarmaID,
-	ikarmaTI,
-	ikarmaTT,
-	ikarmaTD,
-	ikarmaDI,
-	ikarmaDT,
-	ikarmaDD,
-	bool:bshowDeathMessage,
-	bool:bshowKillMessage,
-	bool:bshowEarnKarmaMessage,
-	bool:bshowLoseKarmaMessage,
-	imessageTypKarma,
-	bool:bblockSuicide,
-	bool:ballowFlash,
-	bool:bblockLookAtWeapon,
-	bool:bblockRadioMessage,
-	bool:benableNoBlock,
-	String:spluginTag[250],
-	bool:bkadRemover,
-	irulesClosePunishment,
-	ipunishInnoKills,
-	ipunishTraitorKills,
-	ipunishDetectiveKills,
-	itimeToReadRules,
-	itimeToReadDetectiveRules,
-	bool:bshowRulesMenu,
-	bool:bshowDetectiveMenu,
-	String:skickImmunity[16],
-	String:slogsAccess[16],
+	i_requiredPlayersD, 
+	i_requiredPlayers, 
+	i_startKarma, 
+	i_karmaBan, 
+	i_karmaBanLength, 
+	i_maxKarma, 
+	i_spawnHPT, 
+	i_spawnHPD, 
+	i_spawnHPI, 
+	i_karmaII, 
+	i_karmaIT, 
+	i_karmaID, 
+	i_karmaTI, 
+	i_karmaTT, 
+	i_karmaTD, 
+	i_karmaDI, 
+	i_karmaDT, 
+	i_karmaDD, 
+	bool:b_showDeathMessage, 
+	bool:b_showKillMessage, 
+	bool:b_showEarnKarmaMessage, 
+	bool:b_showLoseKarmaMessage, 
+	i_messageTypKarma, 
+	bool:b_blockSuicide, 
+	bool:b_allowFlash, 
+	bool:b_blockLookAtWeapon, 
+	bool:b_blockGrenadeMessage, 
+	bool:b_blockRadioMessage, 
+	bool:b_enableNoBlock, 
+	String:s_pluginTag[250], 
+	bool:b_kadRemover, 
+	i_rulesClosePunishment, 
+	i_punishInnoKills, 
+	i_punishTraitorKills, 
+	i_punishDetectiveKills, 
+	i_timeToReadRules, 
+	i_timeToReadDetectiveRules, 
+	bool:b_showRulesMenu, 
+	bool:b_showDetectiveMenu, 
+	String:s_kickImmunity[16],
+	String:s_logsAccess[16],
 	bool:bLogsDeadOnly,
-	bLogsNotifyAlive,
-	bool:bupdateClientModel,
-	bool:bremoveHostages,
-	bool:bremoveBomb,
-	bool:broleAgain,
-	itraitorRatio,
-	idetectiveRatio,
-	bool:bdenyFire,
-	bool:bslayAfterStart,
-	bool:bremoveBuyzone,
-	bool:bforceTeams,
-	bool:brandomWinner,
-	bool:bforceModel,
-	String:smodelCT[PLATFORM_MAX_PATH],
-	String:smodelT[PLATFORM_MAX_PATH],
-	String:slogFile[PLATFORM_MAX_PATH],
-	String:serrFile[PLATFORM_MAX_PATH],
-	String:slogDateFormat[24],
-	String:sdefaultPriD[64],
-	String:sdefaultSec[64],
-	bool:bendwithD,
-	bool:bhideTeams,
-	bool:bpublicKarma,
-	bool:bkarmaRound,
-	bool:bstripWeapons,
-	bool:bkarmaDMG,
-	bool:bkarmaDMG_up,
-	Float:f_roundDelay,
-	bool:bnextRoundAlert,
-	bool:broundendDamage,
-	bool:bignoreDeaths,
-	bool:bignoreRDMMenu,
-	bool:bdeadPlayersCanSeeOtherRules,
-	iRoundStartedFontSize,
-	String:sRoundStartedFontColor[12],
-	iRoundStartFontSize,
-	String:sRoundStartFontColor[12],
-	bool:btChatToDead,
-	bool:bdChatToDead,
+	bool:b_updateClientModel, 
+	bool:b_removeHostages, 
+	bool:b_removeBomb, 
+	bool:b_roleAgain, 
+	i_traitorRatio, 
+	i_detectiveRatio, 
+	bool:b_denyFire, 
+	bool:b_slayAfterStart, 
+	bool:b_removeBuyzone, 
+	bool:b_forceTeams, 
+	bool:b_randomWinner, 
+	bool:b_forceModel, 
+	String:s_modelCT[PLATFORM_MAX_PATH], 
+	String:s_modelT[PLATFORM_MAX_PATH], 
+	String:s_logFile[PLATFORM_MAX_PATH], 
+	String:s_errFile[PLATFORM_MAX_PATH], 
+	String:s_defaultPri_D[64], 
+	String:s_defaultSec[64], 
+	bool:b_endwithD, 
+	bool:b_hideTeams, 
+	bool:b_publicKarma, 
+	bool:b_karmaRound, 
+	bool:b_stripWeapons, 
+	bool:b_karmaDMG, 
+	bool:b_karmaDMG_up, 
+	Float:f_roundDelay, 
+	bool:b_nextRoundAlert, 
+	bool:b_endroundDMG, 
+	bool:b_ignoreDeaths, 
+	bool:b_ignoreRDMMenu, 
+	bool:b_deadPlayersCanSeeOtherRules,
+	i_RoundStartedFontSize,
+	String:s_RoundStartedFontColor[12],
+	i_RoundStartFontSize,
+	String:s_RoundStartFontColor[12],
+	bool:tChatToDead,
+	bool:dChatToDead,
 	bool:bTranfserArmor,
 	bool:bShowTraitors,
 	bool:bRespawnDeadPlayers,
-	imaxTraitors,
-	imaxDetectives,
-	iminKarmaDetective,
+	i_maxTraitors,
+	i_maxDetectives,
+	i_minKarmaDetective,
 	bool:bEnableDamage,
 	bool:bGiveWeaponsOnFailStart,
 	String:sFSPrimary[32],
-	String:sFSSecondary[32],
-	bool:bshowKarmaOnSpawn,
-	bool:bDebugMessages,
-	ifakeHealth,
-	ifakeLife,
-	String:sSetRole[18],
-	String:sKarmaReset[18],
-	String:sSetKerma[18],
-	String:sReloadCFG[18],
-	bool:bAddSteamIDtoLogs,
-	iSteamIDLogFormat,
-	bool:bHideTeamAttackMessage
+	String:sFSSecondary[32]
 };
 
 enum Ragdolls
 {
-	Ent,
-	Victim,
-	Attacker,
-	VictimTeam,
-	AttackerTeam,
-	String:VictimName[MAX_NAME_LENGTH],
-	String:AttackerName[MAX_NAME_LENGTH],
-	bool:Scanned,
-	Float:GameTime,
-	String:Weaponused[32],
+	Ent, 
+	Victim, 
+	Attacker, 
+	String:VictimName[MAX_NAME_LENGTH], 
+	String:AttackerName[MAX_NAME_LENGTH], 
+	bool:Scanned, 
+	Float:GameTime, 
+	String:Weaponused[32], 
 	bool:Found
 }
 
@@ -148,6 +134,13 @@ enum Ragdolls
  * @param client            Client index.
  */
 forward void TTT_OnUpdate5(int client);
+
+/*
+ * Called every 3 seconds
+ *
+ * @param client            Client index.
+ */
+forward void TTT_OnUpdate3(int client);
 
 /*
  * Called every second
@@ -243,7 +236,7 @@ native int TTT_GetClientRole(int client);
  *
  * @param client            Client index.
  */
-native int TTT_GetClientKarma(int client, bool publicKarma = true);
+native int TTT_GetClientKarma(int client);
 
 /*
  * Retrieve the Radgoll Info.
@@ -268,27 +261,18 @@ native int TTT_SetRagdoll(int[] ragdoll);
 native int TTT_SetClientRole(int client, int role);
 
 /*
- * Sets the karma of a client.
+ * Set a client's karma.
  *
  * @param client            Client index.
  */
-native int TTT_SetClientKarma(int client, int karma, bool force);
+native int TTT_SetClientKarma(int client, int karma);
 
 /*
- * Add karma to a client (currentKarma+karma).
+ * Add a client's karma (currentKarma+karma).
  *
  * @param client            Client index.
- * @param client            Karma that will be added.
  */
-native int TTT_AddClientKarma(int client, int karma, bool force);
-
-/*
- * Remove karma from a client (currentKarma-karma).
- *
- * @param client            Client index.
- * @param client            Karma to remove.
- */
-native int TTT_RemoveClientKarma(int client, int karma, bool force);
+native int TTT_AddClientKarma(int client, int karma);
 
 /*
  * Determins whether a player's body was found (if dead).
@@ -408,62 +392,24 @@ stock void TTT_IsGameCSGO()
 	}
 }
 
-stock bool TTT_HasFlags(int client, const char[] flags)
-{
-	AdminFlag aFlags[16];
-	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
-	
-	return tHasFlags(client, aFlags);
-}
-
-stock bool tHasFlags(int client, AdminFlag flags[16])
+stock bool TTT_HasFlags(int client, AdminFlag flags[16])
 {
 	int iFlags = GetUserFlagBits(client);
-
+	
 	if (iFlags & ADMFLAG_ROOT)
 	{
 		return true;
 	}
-
-	for (int i = 0; i < sizeof(flags); i++)
+	
+	for (new i = 0; i < sizeof(flags); i++)
 	{
 		if (iFlags & FlagToBit(flags[i]))
 		{
 			return true;
 		}
 	}
-
+	
 	return false;
-}
-
-stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
-{
-	if (!IsValidEntity(iWeapon) || !IsValidEdict(iWeapon))
-		return false;
-
-	if (!HasEntProp(iWeapon, Prop_Send, "m_hOwnerEntity"))
-		return false;
-
-	int iOwnerEntity = GetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity");
-
-	if (iOwnerEntity != iClient)
-		SetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity", iClient);
-
-	CS_DropWeapon(iClient, iWeapon, false);
-
-	if (HasEntProp(iWeapon, Prop_Send, "m_hWeaponWorldModel"))
-	{
-		int iWorldModel = GetEntPropEnt(iWeapon, Prop_Send, "m_hWeaponWorldModel");
-
-		if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
-			if (!AcceptEntityInput(iWorldModel, "Kill"))
-				return false;
-	}
-
-	if (!AcceptEntityInput(iWeapon, "Kill"))
-		return false;
-
-	return true;
 }
 
 stock void ShowOverlayToClient(int client, const char[] overlaypath)
