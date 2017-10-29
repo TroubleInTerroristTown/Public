@@ -376,7 +376,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		Call_PushCell(iAttacker);
 		Call_PushCell(iVictim);
 		Call_Finish();
-		
+
 		g_bTaser[iAttacker] = false;
 
 		if (iARole != TTT_TEAM_TRAITOR)

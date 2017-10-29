@@ -1,19 +1,23 @@
+dist: trusty
+sudo: false
+
 addons:
   apt:
     packages:
     - lftp
     - lib32z1
     - lib32stdc++6
+    - rsync
 
 language: c
 
-sudo: false
-
 env:
-  - VERSION=1.7
   - VERSION=1.8
   - VERSION=1.9
 
-script:
+before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "stable" ]]; then bash ci/test.sh $VERSION "dev"; fi'
   - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS; fi'
+
+script:
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS; fi'

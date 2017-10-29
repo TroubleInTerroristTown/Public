@@ -1,0 +1,931 @@
+// Exported from SourceMod Translator
+// Date: 2017-09-20 20:00:17 UTC
+// Language: Swedish (sv)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your karma is"
+	{
+		"sv"		"Din KARMA är: {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"sv"		"LAGEN HAR BLIVIT VALDA!"
+	}
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"sv"		"MIN. SPELARE KRÄVDA FÖR ATT STARTA: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"sv"		"Du är en {blue}DETEKTIV"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"sv"		"Du är en {darkred}FÖRRÄDARE"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"sv"		"Du är en {green}OSKYLDIG!"
+	}
+
+	"Your credits is"
+	{
+		"sv"		"Dina KREDITER är: {orchid}{1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"sv"		"Din mördare var en {darkred}FÖRRÄDARE!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"sv"		"Din mördare var en {blue}DETEKTIV!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"sv"		"Din mördare var en {green}OSKYLDIG!"
+	}
+
+	"You killed a Traitor"
+	{
+		"sv"		"Du dödade en {darkred}FÖRRÄDARE!"
+	}
+
+	"You killed a Detective"
+	{
+		"sv"		"Du dödade en {blue}DETEKTIV!"
+	}
+
+	"You killed an Innocent"
+	{
+		"sv"		"Du dödade en {green}OSKYLDIG!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"sv"		"Du har använt en detektor på Spelare {darkred}{1} {lightgreen}och han är en {darkred}FÖRRÄDARE!"
+	}
+
+	"You hurt a Detective"
+	{
+		"sv"		"Du har använd en detektor på Spelare{blue} {1} {lightgreen}och han är en {blue}DETEKTIV!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"sv"		"Du har använt en detektor på Spelare{green} {1} {lightgreen}och han är {green}OSKYLDIG!"
+	}
+
+	"is possibly RDMing"
+	{
+		"sv"		"{darkred}{1} {lightgreen}håller möjligen på att RDM:a"
+	}
+
+	"Detective scan found body"
+	{
+		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, mördaren är spelare{darkred} {2} {lightgreen}med vapnen{orchid} {3}"
+	}
+
+	"Detective scan found body suicide"
+	{
+		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, spelaren har begått självmord"
+	}
+
+	"1 hit kill knife (only good for 1 shot)"
+	{
+		"sv"		"1-hit kniv (kan endast användas en gång) - {1}"
+	}
+
+	"FAKE ID card (type !id for show your innocence)"
+	{
+		"sv"		"FÖRFALSKAT ID kort (skriv !id i chatten för att använda) - {1}"
+	}
+
+	"Health Station"
+	{
+		"sv"		"Health Station - {1}"
+	}
+
+	"DNA scanner (scan a dead body and show who the killer is)"
+	{
+		"sv"		"DNA skannare (skanna en död kropp för att visa vem mördaren var) - {1}"
+	}
+
+	"Kevlar"
+	{
+		"sv"		"Kevlar - {1}"
+	}
+
+	"Buy rol Traitor"
+	{
+		"sv"		"Köp Förrädare roll - {1}"
+	}
+
+	"Buy rol Detective"
+	{
+		"sv"		"Köp Detektiv roll - {1}"
+	}
+
+	"ID card (type !id for show your innocence)"
+	{
+		"sv"		"ID kort (skriv !id i chatten för att att använda) - {1}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"sv"		"Vänligen vänta tills ditt lag är anvisat"
+	}
+
+	"Item bought! Your REAL money is"
+	{
+		"sv"		"Item {2} köpt! Dina CREDITS är nu {1}"
+	}
+
+	"You don't have enough money"
+	{
+		"sv"		"Du har inte tillräckligt med credits!"
+	}
+
+	"Traitors"
+	{
+		"sv"		"FÖRRADARE"
+	}
+
+	"Detectives"
+	{
+		"sv"		"DETEKTIVER"
+	}
+
+	"Innocents"
+	{
+		"sv"		"OSKYLDIGA"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"sv"		"Inspekterade kroppen. Extraherade data är följande: "
+	}
+
+	"Victim name"
+	{
+		"sv"		"Offrets namn: {1}"
+	}
+
+	"Team victim"
+	{
+		"sv"		"Lag: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"sv"		"Tid sedan hans död: {1} sekund(er)"
+	}
+
+	"The weapon used has been"
+	{
+		"sv"		"Vapnet som har använts: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"sv"		"Vapnet som har använts: Inget (självmord)"
+	}
+
+	"Killer is Player"
+	{
+		"sv"		"Mördaren är spelare: {1}"
+	}
+
+	"Player committed suicide"
+	{
+		"sv"		"Spelaren har begått självmord"
+	}
+
+	"Player Is an Innocent"
+	{
+		"sv"		"Spelare{green} {1} {lightgreen} är {green}OSKYLDIG!"
+	}
+
+	"T channel"
+	{
+		"sv"		"{darkred}*FÖRRÄDARE* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"sv"		" {blue}*DETEKTIV* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"sv"		"Du har den inte!"
+	}
+
+	"TTT Shop"
+	{
+		"sv"		"TTT Shop\nDina kredits är: {1}"
+	}
+
+	"credits earned"
+	{
+		"sv"		"Du vann {1} krediter\nDina nuvarande krediter är nu: {2}"
+	}
+
+	"lost credits"
+	{
+		"sv"		"Du förlorar {1} krediter\nResterande krediter: {2}"
+	}
+
+	"karma earned"
+	{
+		"sv"		"Du tjänar {1} karma\nDin karma är nu: {2}"
+	}
+
+	"lost karma"
+	{
+		"sv"		"Du förlorar {1} karma\nDin karma är nu: {2}"
+	}
+
+	"no logs yet"
+	{
+		"sv"		"Inga logs ännu"
+	}
+
+	"See your console"
+	{
+		"sv"		"Logs mottagna! Öppna konsolen för att se logs"
+	}
+
+	"you cant see logs"
+	{
+		"sv"		"Du kan inte se logs just nu, du måste vara död eller så måste rundan vara inaktiv."
+	}
+
+	"Receiving logs"
+	{
+		"sv"		"Hämtar logs... vänligen vänta"
+	}
+
+	"Taser"
+	{
+		"sv"		"Köp elpistol (Detektiv) - {1}"
+	}
+
+	"USPS"
+	{
+		"sv"		"Köp USP-S - {1}"
+	}
+
+	"M4S"
+	{
+		"sv"		"Köp M4A1-S - {1}"
+	}
+
+	"Found Innocent"
+	{
+		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {green}{2}. {lightgreen}Som var {green}OSKYLDIG!"
+	}
+
+	"Found Detective"
+	{
+		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {blue}{2}. {lightgreen}Som var en {blue}DETEKTIV!"
+	}
+
+	"Found Traitor"
+	{
+		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {darkred}{2}. {lightgreen}Som var en {darkred}Förrädare!"
+	}
+
+	"Buy c4"
+	{
+		"sv"		"Köp C4 - {1}"
+	}
+
+	"Buy jihadbomb"
+	{
+		"sv"		"Köp Jihad Bomb - {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"sv"		"Din bomb är inte armerad."
+	}
+
+	"Your bomb is now armed."
+	{
+		"sv"		"Din bomb är nu armerad."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"sv"		"Bomben kommer armeras inom 60 sekunder, dubbel klicka F för att spränga den"
+	}
+
+	"Your Karma is too low"
+	{
+		"sv"		"Du blev bannlyst från servern på grund av att din karma är för låg!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"sv"		"{darkred}{1} FÖRRÄDARE {lightgreen}HAR VALTS"
+	}
+
+	"Buy radar"
+	{
+		"sv"		"Köp radar - {1}"
+	}
+
+	"Suicide Blocked"
+	{
+		"sv"		"Självmord blockerades."
+	}
+
+	"Right click to plant the C4"
+	{
+		"sv"		"Höger klicka för att plantera C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"sv"		"Du har redan en aktiv Health Station!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"sv"		"Spelaren som har RDM:at dig finns inte längre!"
+	}
+
+	"You were RDM'd"
+	{
+		"sv"		"Du blev RDM:ad av {1}!"
+	}
+
+	"Forgive"
+	{
+		"sv"		"Förlåta"
+	}
+
+	"Punish"
+	{
+		"sv"		"Straffa"
+	}
+
+	"Choose Punish"
+	{
+		"sv"		"{1} har valt att straffa {2} för RDM!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"sv"		"Du har valt att förlåta {1} för RDM!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"sv"		"{1} har valt att förlåta dig för RDM!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"sv"		"{orchid}{1} {lightgreen}är nu en {darkred}Förrädare!"
+	}
+
+	"Player is Now Detective"
+	{
+		"sv"		"{orchid}{1} {lightgreen}är nu en {blue}Detektiv!"
+	}
+
+	"You Are Unassigned"
+	{
+		"sv"		"Din roll har inte tilldelats ännu!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"sv"		"Du är {green}Oskyldig!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"sv"		"Du är en {darkred}FÖRRÄDARE!"
+	}
+
+	"You Are Now Detective"
+	{
+		"sv"		"Du är en {blue}Detektiv!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"sv"		"{1} utlöste fallande byggnaden som en icke-förrädare."
+	}
+
+	"Bomb Detonated"
+	{
+		"sv"		"Din bomb har exploderat!"
+	}
+
+	"Set C4 Timer"
+	{
+		"sv"		"Sätt C4 nedräkningstid..."
+	}
+
+	"Seconds"
+	{
+		"sv"		"{1} sekunder"
+	}
+
+	"Defuse C4"
+	{
+		"sv"		"Desarmera bomben!"
+	}
+
+	"C4 Wire"
+	{
+		"sv"		"Tråd {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"sv"		"Du har desarmerat {orchid}{1}{lightgreen}s bomb!"
+	}
+
+	"Has Defused Bomb"
+	{
+		"sv"		"{orchid}{1} {lightgreen}har desarmerat bomben!"
+	}
+
+	"Failed Defuse"
+	{
+		"sv"		"Desarmeringen misslyckades!"
+	}
+
+	"Alive to Plant"
+	{
+		"sv"		"Du måste vara levande för att plantera en bomb!"
+	}
+
+	"Will Explode In"
+	{
+		"sv"		"Placerar ut en C4 som kommer explodera inom {orchid}{1} {lightgreen}sekund:er!"
+	}
+
+	"Bomb Was Not Found"
+	{
+		"sv"		"Din bomb kunde ej hittas!"
+	}
+
+	"Wire Is"
+	{
+		"sv"		"Desarmerings tråden är {orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"sv"		"Dina Förrädare kamrater är: "
+	}
+
+	"No Traitor Partners"
+	{
+		"sv"		"Du har ingen partner."
+	}
+
+	"Kick Bad Name"
+	{
+		"sv"		"Ta bort ordet {1} från ditt namn!"
+	}
+
+	"Health Station Deployed"
+	{
+		"sv"		"Health Station utplacerad. Stå nära den för att återfå HP!"
+	}
+
+	"Healing From"
+	{
+		"sv"		"Healar från {orchid}{1} {lightgreen}s Health Station!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"sv"		"Denna Health Station har slut på laddningar! Vänligen vänta på att den ska laddas!"
+	}
+
+	"Traitor List"
+	{
+		"sv"		"{darkred} {1}"
+	}
+
+	"Welcome Menu"
+	{
+		"sv"		"Hej, {1},\ndetta är en Trouble in Terrorist Town Server\nskriven av {2}\n\nÄr du bekant med reglerna?"
+	}
+
+	"WM Yes"
+	{
+		"sv"		"Ja, Jag kan reglerna!"
+	}
+
+	"WM Kick Message"
+	{
+		"sv"		"Du är inaktiv eller stäng regel menyn!"
+	}
+
+	"AM Question"
+	{
+		"sv"		"Vill du spela som en detektiv?\nDå behöver du kunna göra följande saker:\n\n-ha en fungerande mikrofon\n-kunna prata med andra spelare\n.Vara aktiv när du spelar\n\nMedger du till detta?"
+	}
+
+	"AM Yes"
+	{
+		"sv"		"Ja, Jag kan konfirmera detta."
+	}
+
+	"AM No"
+	{
+		"sv"		"Jag kan inte konfirmera detta."
+	}
+
+	"WM No"
+	{
+		"sv"		"Nej, visa mig reglerna!"
+	}
+
+	"StartTimer"
+	{
+		"sv"		"Rundan startar inom {1} sekund(er)"
+	}
+
+	"next round in"
+	{
+		"sv"		"Nästa runda börjar inom {1} sekund(er)!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"sv"		"Hurt station utplacerad! Den skadar alla spelare som är nära!"
+	}
+
+	"You reached limit"
+	{
+		"sv"		"Du kan endast köpa {1} av dessa per runda!"
+	}
+
+	"All karma has been updated"
+	{
+		"sv"		"DIN KARMA HAR UPPDATERATS!"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"sv"		"Du måste vara levande för att använda kommandot."
+	}
+
+	"ID: Need to buy ID"
+	{
+		"sv"		"Du har inget ID kort. Du kan köpa ett i !shop."
+	}
+
+	"ID: Shows ID"
+	{
+		"sv"		"{1} är Oskyldig!"
+	}
+
+	"Found Fake"
+	{
+		"sv"		"{orchid}{1} {lightgreen}har hittat en förfalskad kropp!"
+	}
+
+	"Welcome Message 1"
+	{
+		"sv"		"[{green}Laserminor{default}] {lightgreen}Skriv {green}!lm {lightgreen}i chatten för att plantera laser minorna"
+	}
+
+	"Welcome Message 2"
+	{
+		"sv"		"[{green}Laser minor{default}] {lightgreen}Skriv{green}!lm {lightgreen}i chatten för att plantera eller {green}!bm {lightgreen}för att köpa laser minor"
+	}
+
+	"Can't plant, while dead"
+	{
+		"sv"		"Du kan inte plantera laser minor när du är död"
+	}
+
+	"Can't use, while spec"
+	{
+		"sv"		"Du måste vara på ett lag för att använda laser minor"
+	}
+
+	"Infinity mines"
+	{
+		"sv"		"Du har ett oändligt belopp med laser minor"
+	}
+
+	"Mines"
+	{
+		"sv"		"Laser minor: {1}"
+	}
+
+	"Out of buy zone"
+	{
+		"sv"		"Du är utanför köp zonen"
+	}
+
+	"Can't buy, max amount"
+	{
+		"sv"		"Du har redan högsta mängden av laser minor"
+	}
+
+	"Can't buy, not enough money"
+	{
+		"sv"		"{1} minor. Du har inte tillräckligt med pengar för att köpa mera"
+	}
+
+	"Can't buy, while dead"
+	{
+		"sv"		"Du kan inte köpa laser minor när du är död"
+	}
+
+	"TaserMax"
+	{
+		"sv"		"Du har nått gränsen för elpistolerna! (Användning per runda: {1})"
+	}
+
+	"AdminSet"
+	{
+		"sv"		"Du ger {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"sv"		"Skriv !id för att bevisa dig oskyldig."
+	}
+
+	"RoundStartCenter"
+	{
+		"sv"		"Rundan startar inom {3} sekund(er)"
+	}
+
+	"RoundStartedCenter"
+	{
+		"sv"		"GÅ GÅ GÅ !!!"
+	}
+
+	"YouAreDead"
+	{
+		"sv"		"Du kan inte använda detta när du är död"
+	}
+
+	"Bought All"
+	{
+		"sv"		"Du har nått gränsen för {1}s {orchid}({2})"
+	}
+
+	"DT: Invalid Position"
+	{
+		"sv"		"Decoy positionen var inkorrekt. (Sitter fast)"
+	}
+
+	"SpecMenu: Title"
+	{
+		"sv"		"Åskådare meny"
+	}
+
+	"SpecMenu: Player"
+	{
+		"sv"		"Spelare: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"sv"		"Nästa spelare"
+	}
+
+	"SpecMenu: Prev"
+	{
+		"sv"		"Föregående spelare"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"sv"		"Muta spelaren"
+	}
+
+	"Hud Name"
+	{
+		"sv"		"Namn"
+	}
+
+	"Hud Health"
+	{
+		"sv"		"Hälsa"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"sv"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"sv"		"Karma"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"sv"		"{1}"
+	}
+
+	"You tased a Traitor"
+	{
+		"sv"		"Spelare {lightgreen}{1} använde en detektor på spelare{darkred}{2} {lightgreen}och han är en {darkred}FÖRRÄDARE!"
+	}
+
+	"You tased a Detective"
+	{
+		"sv"		"Spelare {lightgreen}{1} använde en detektor på spelare{blue} {2} {lightgreen}och han är en {blue}DETEKTIV!"
+	}
+
+	"You tased an Innocent"
+	{
+		"sv"		"Spelaren {lightgreen}{1} använde en detektor på spelare Player{green} {2} {lightgreen}och han är {green}OSKYLDIG!"
+	}
+
+	"AlreadyTaser"
+	{
+		"sv"		"Du har redan en elpistol!"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"sv"		"{1} Pratar nu i Förrädar Voice Chatt"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"sv"		"{1} slutade prata i Förrädar Voice Chatt"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"sv"		"Förrädare Röst Chatt: Avstängd!"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"sv"		"Förrädare Röst Chatt: Aktiverad!"
+	}
+
+	"ID: Cooldown"
+	{
+		"sv"		"Du måste vänta innan du kan använda kommandot igen."
+	}
+
+	"Item bought!"
+	{
+		"sv"		"Du har köpt {2}! Resterande krediter: {1}"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"sv"		"O-muta döda spelare"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"sv"		"Muta döda spelare"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"sv"		"O-muta levande spelare"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"sv"		"Muta levande spelare"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"sv"		"Shop kommer inte längre öppnas efter du har köpt."
+	}
+
+	"Reopen Shop activated"
+	{
+		"sv"		"Shop kommer öppnas igen efter du köper."
+	}
+
+	"You already have an active Station"
+	{
+		"sv"		"Du har redan en aktiv Station!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"sv"		"Du har köpt {2} för {3} krediter! Resterande krediter: {1}"
+	}
+
+	"watching logs alive"
+	{
+		"sv"		"{green}{1} {default}är {darkred}levande {default}och kollar på logs av nuvarande runda."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-I"
+	{
+		"sv"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"sv"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"sv"		"\"{1}\""
+	}
+
+	"Player is Now Innocent"
+	{
+		"sv"		"{orchid}{1} {lightgreen}är nu {green}Oskyldig!"
+	}
+
+}
