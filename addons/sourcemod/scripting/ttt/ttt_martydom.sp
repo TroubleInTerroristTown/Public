@@ -101,7 +101,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort) {
 
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client)) {
 	
-		if (StrEqual(itemshort, SHORT_NAME, false)) {
+		if (StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false)) {
 		
 			if(g_bHasMartydom[client]) {
 			
