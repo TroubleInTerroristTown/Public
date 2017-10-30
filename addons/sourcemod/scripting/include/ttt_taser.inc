@@ -1,7 +1,7 @@
-#if defined ttt_taser
+#if defined _ttt_taser_included
 	#endinput
 #endif
-#define _ttt_taser
+#define _ttt_taser_included
 
 /*
  * Called when a player is tased by another player.
