@@ -9,15 +9,15 @@
 
 #pragma newdecls required
 
-#define SHORT_NAME "md"
+#define SHORT_NAME_I "md_i"
 #define SHORT_NAME_T "md_t"
 #define SHORT_NAME_D "md_d"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Martydom"
 
-char g_sLongName[PLATFORM_MAX_PATH] = "Martydom";
+char g_sLongName[PLATFORM_MAX_PATH];
 char g_sPluginTag[PLATFORM_MAX_PATH];
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+char g_sConfigFile[PLATFORM_MAX_PATH];
 
 float g_fDeathPos[MAXPLAYERS+1][3];
 float g_fGrenadeDelay = 0.25;
@@ -64,13 +64,13 @@ public void OnPluginStart() {
 
 	Config_LoadString("martydom_name", "Martydom", "The name of this item in the shop.", g_sLongName, sizeof(g_sLongName));
 	
-	g_iIPrice = Config_LoadInt("md_i_price", 2000, "The amount of credits martydom costs as traitor. 0 to disable.");	
-	//g_iTPrice = Config_LoadInt("md_t_price", 2000, "The amount of credits martydom costs as traitor (Traitor). 0 to disable.");
-	//g_iDPrice = Config_LoadInt("md_d_price", 2000, "The amount of credits martydom costs as traitor (Detective). 0 to disable.");
+	g_iIPrice = Config_LoadInt("md_i_price", 2000, "The amount of credits martydom costs as innocent. 0 to disable.");	
+	g_iTPrice = Config_LoadInt("md_t_price", 2000, "The amount of credits martydom costs as traitor. 0 to disable.");
+	g_iDPrice = Config_LoadInt("md_d_price", 2000, "The amount of credits martydom costs as detective. 0 to disable.");
 	
-	g_iIPrio = Config_LoadInt("md_t_sort_prio", 0, "The sorting priority of the martydom in the shop menu .");
-	//g_iTPrio = Config_LoadInt("md_i_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Traitor).");
-	//g_iDPrio = Config_LoadInt("md_d_sort_prio", 0, "The sorting priority of the martydom in the shop menu (Detective).");
+	g_iIPrio = Config_LoadInt("md_i_sort_prio", 0, "The sorting priority of the martydom in the shop menu for innocents.");
+	g_iTPrio = Config_LoadInt("md_t_sort_prio", 0, "The sorting priority of the martydom in the shop menu for traitors.");
+	g_iDPrio = Config_LoadInt("md_d_sort_prio", 0, "The sorting priority of the martydom in the shop menu for detectives.");
 	
 	g_fGrenadeDelay = Config_LoadFloat("md_grenade_delay", 0.25, "The time delay it takes for the grenade to spawn after a player dies. Decimals allowed. (Def. 0.25)");
 	g_fDamage = Config_LoadFloat("md_grenade_damage", 99.0, "The damage the grenade does at the explosions center point. Decimals allowed. (Def. 99.0)");
@@ -91,9 +91,9 @@ public void OnClientDisconnect(int client) {
 
 public void OnAllPluginsLoaded() {
 
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iIPrice, _, g_iIPrio);
-	//TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
-	//TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_I, g_sLongName, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
 	
 }
 
