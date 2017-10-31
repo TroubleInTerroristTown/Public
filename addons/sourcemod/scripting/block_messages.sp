@@ -42,6 +42,8 @@ public Action UserMsg_TextMsg(UserMsg msg_id, Protobuf msg, const int[] players,
 				return Plugin_Handled;
 			}
 		}
+		
+		delete hFile;
 	}
 	return Plugin_Continue;
 }
