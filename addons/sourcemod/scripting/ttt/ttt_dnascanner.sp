@@ -14,6 +14,8 @@
 int g_iPrice = 0;
 int g_iPrio = 0;
 
+bool g_bPrintToAll = false;
+
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
@@ -48,7 +50,8 @@ public void OnPluginStart()
 	Config_LoadString("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("dna_price", 9000, "The amount of credits a dna scanner costs as detective. 0 to disable.");
 	g_iPrio = Config_LoadInt("dna_sort_prio", 0, "The sorting priority of the dna scanner in the shop menu.");
-
+	g_bPrintToAll = Config_LoadBool("dna_print_message_to_all", false, "Print scanner to all players? (Default: false)");
+	
 	Config_Done();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -117,16 +120,30 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 
 	if (iRagdollC[Attacker] > 0 && iRagdollC[Attacker] != iRagdollC[Victim])
 	{
-		LoopValidClients(j)
+		if (g_bPrintToAll)
 		{
-			CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			LoopValidClients(j)
+			{
+				CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			}
+		}
+		else
+		{
+			CPrintToChat(client, g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
 		}
 	}
 	else
 	{
-		LoopValidClients(j)
+		if (g_bPrintToAll)
 		{
-			CPrintToChat(j, g_sPluginTag, "Detective scan found body suicide", j, client);
+			LoopValidClients(j)
+			{
+				CPrintToChat(j, g_sPluginTag, "Detective scan found body suicide", j, client);
+			}
+		}
+		else
+		{
+			CPrintToChat(client, g_sPluginTag, "Detective scan found body suicide", client, client);
 		}
 	}
 

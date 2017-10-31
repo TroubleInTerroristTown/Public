@@ -461,7 +461,9 @@ stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
 	}
 
 	if (!AcceptEntityInput(iWeapon, "Kill"))
+	{
 		return false;
+	}
 
 	return true;
 }
