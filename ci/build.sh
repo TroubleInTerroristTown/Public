@@ -32,6 +32,8 @@ echo -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
 echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
 addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
+echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
+addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/block_messages.sp
 
 echo -e "Remove plugins folder if exists\n"
 if [ -d "addons/sourcemod/plugins" ]; then
