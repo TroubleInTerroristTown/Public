@@ -17,6 +17,8 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Taser"
 
+Handle g_hOnTased;
+
 int g_iDPrice = 0;
 int g_iIPrice = 0;
 int g_iTPrice = 0;
@@ -108,6 +110,15 @@ public void OnPluginStart()
 	HookEvent("item_equip", Event_ItemEquip);
 
 	LateLoadAll();
+}
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
+	
+	RegPluginLibrary("ttt_taser");
+
+	return APLRes_Success;
 }
 
 public void OnClientDisconnect(int client)
@@ -361,6 +372,11 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
+		Call_StartForward(g_hOnTased);
+		Call_PushCell(iAttacker);
+		Call_PushCell(iVictim);
+		Call_Finish();
+
 		g_bTaser[iAttacker] = false;
 
 		if (iARole != TTT_TEAM_TRAITOR)
