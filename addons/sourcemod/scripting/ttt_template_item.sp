@@ -44,7 +44,7 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/template.cfg");
 	Config_Setup("TTT-Template", g_sConfigFile);
 
-	Config_LoadString("template_name", "Tempalte", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
+	Config_LoadString("template_name", "Template", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
 	g_iPrice = Config_LoadInt("template_price", 9000, "The amount of credits TEMPLATE costs as detective. 0 to disable.");
 	g_iPrio = Config_LoadInt("template_sort_prio", 0, "The sorting priority of the TEMPLATE in the shop menu.");
 
