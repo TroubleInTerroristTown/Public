@@ -12,11 +12,11 @@
 #include <ttt_tagrenade>
 #define REQUIRE_PLUGIN
 
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
+
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
 int g_iColorDetective[3] =  {0, 0, 255};
-
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
 bool g_bDGlow = false;
 bool g_bTGlow = false;
@@ -26,6 +26,7 @@ char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 bool g_bCPS = false;
 bool g_bWallhack = false;
 bool g_bTAGrenade = false;
+bool g_bDWhite = false;
 
 bool g_bDebug = false;
 
@@ -55,12 +56,17 @@ public void OnPluginStart()
 
 	g_bDGlow = Config_LoadBool("glow_detective_enable", true, "Detectives see the glows of other detectives. 0 to disable.");
 	g_bTGlow = Config_LoadBool("glow_traitor_enable", true, "Traitors see the glows of other traitors. 0 to disable.");
+	g_bDWhite = Config_LoadBool("glow_detective_white_enable", true, "Detectives see only white outlines to prevent them from seeing enemy roles. 0 to disable.");
 
 	Config_Done();
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 	g_bWallhack = LibraryExists("ttt_wallhack");
 	g_bTAGrenade = LibraryExists("ttt_tagrenade");
+	
+	if(g_bDWhite)
+		g_iColorDetective = {255, 255, 255};
+	
 }
 
 public void OnLibraryAdded(const char[] name)
