@@ -223,6 +223,14 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  */
 forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
+/*
+ * Called on updated player models
+ * (if ttt_update_client_model is true)
+ *
+ * @param client		The client index after updated model
+ */
+forward void TTT_OnModelUpdate(int client);
+
 forward int TTT_OnButtonPress(int client, int button);
 forward int TTT_OnButtonRelease(int client, int button);
 

@@ -95,6 +95,7 @@ Handle g_hOnUpdate5 = null;
 Handle g_hOnUpdate1 = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
+Handle g_hOnModelUpdate = null;
 
 bool g_bSourcebans = false;
 

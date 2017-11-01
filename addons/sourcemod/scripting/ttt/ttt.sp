@@ -46,6 +46,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
 	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
+	
+	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell);
 
 	// Body / Status
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
@@ -1237,6 +1239,10 @@ stock void TeamInitialize(int client)
 	if (g_iConfig[bupdateClientModel])
 	{
 		CS_UpdateClientModel(client);
+		
+		Call_StartForward(g_hOnModelUpdate);
+		Call_PushCell(client);
+		Call_Finish();
 	}
 	else if (g_iConfig[bforceModel])
 	{
