@@ -74,8 +74,8 @@ public void OnAllPluginsLoaded()
 	}
 	
 	// All grenades
-	TTT_RegisterCustomItem(SHORT_NAME_FI, g_sLongName, g_iPriceFI, TTT_TEAM_DETECTIVE, g_iPrioFI);
-	TTT_RegisterCustomItem(SHORT_NAME_FT, g_sLongName, g_iPriceFT, TTT_TEAM_DETECTIVE, g_iPrioFT);
+	TTT_RegisterCustomItem(SHORT_NAME_FI, g_sLongName, g_iPriceFI, TTT_TEAM_INNOCENT, g_iPrioFI);
+	TTT_RegisterCustomItem(SHORT_NAME_FT, g_sLongName, g_iPriceFT, TTT_TEAM_TRAITOR, g_iPrioFT);
 	TTT_RegisterCustomItem(SHORT_NAME_FD, g_sLongName, g_iPriceFD, TTT_TEAM_DETECTIVE, g_iPrioFD);
 }
 
