@@ -278,6 +278,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 public Action FGrenades_OnSwitchMode(int client, DecoyMode previousmode, DecoyMode &newmode, int weapon)
 {
+	if (!g_bFuturistic[client] && g_iGMode[client] == DecoyMode_Normal && newmode != DecoyMode_Normal)
+	{
+		newmode = DecoyMode_Normal;
+		return Plugin_Continue;
+	}
+	
 	if (g_bFuturistic[client])
 	{
 		return Plugin_Continue;
