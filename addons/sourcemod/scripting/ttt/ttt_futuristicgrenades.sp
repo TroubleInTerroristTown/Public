@@ -69,7 +69,7 @@ public void OnAllPluginsLoaded()
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("Can't find \"%s\" or plugin failed to start", sFile);
+		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?p=2499362", sFile);
 		return;
 	}
 	
