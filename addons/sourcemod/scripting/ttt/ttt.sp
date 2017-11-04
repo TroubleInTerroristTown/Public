@@ -9,6 +9,7 @@
 #include <ttt>
 #include <ttt_sql>
 #include <config_loader>
+#include <webfix>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -1876,9 +1877,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				kvRules.GetString("url", sValue, sizeof(sValue));
 				if (strlen(sValue) > 0)
 				{
-					char sURL[512];
-					Format(sURL, sizeof(sURL), "https://csgottt.com/redirect.php?web=%s", sValue);
-					ShowMOTDPanel(client, "TTT Rules", sURL, MOTDPANEL_TYPE_URL);
+					WebFix_OpenUrl(client, "TTT Rules", sValue);
 
 					g_bKnowRules[client] = false;
 					g_bReadRules[client] = true;
