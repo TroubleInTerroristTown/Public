@@ -13,6 +13,7 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
+bool g_LogWhitelist = false;
 bool g_bColored = true;
 bool g_bBlockJump = true;
 
@@ -24,6 +25,8 @@ float g_fDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 char g_cConfigFile[PLATFORM_MAX_PATH];
+
+ArrayList g_aWhitelist = null;
 
 public Plugin myinfo =
 {
@@ -41,10 +44,13 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	
+	g_LogWhitelist = Config_LoadBool("gbm_log_whitelist", false, "Log whitelist?");
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
 	
 	Config_Done();
+	
+	LoadWhitelist();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
@@ -63,10 +69,10 @@ stock void Command_UnGrab(int client)
 {
 	if (ValidGrab(client))
 	{
-		char edictname[128];
-		GetEdictClassname(g_iObject[client], edictname, 128);
+		char sName[128];
+		GetEdictClassname(g_iObject[client], sName, 128);
 
-		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox") || StrEqual(edictname, "prop_physics"))
+		if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
 		{
 			SetEntPropEnt(g_iObject[client], Prop_Data, "m_hPhysicsAttacker", 0);
 		}
@@ -102,41 +108,62 @@ stock void GrabSomething(int client)
 		return;
 	}
 	
-	char edictname[128];
-	GetEdictClassname(ent, edictname, sizeof(edictname));
-
-	if (StrContains(edictname, "prop_", false) == -1 || StrContains(edictname, "door", false) != -1)
+	char sName[128];
+	GetEdictClassname(ent, sName, sizeof(sName));
+	
+	bool bFound = false;
+	char sBuffer[32];
+	
+	if (g_aWhitelist.Length > 0)
 	{
-		return;
+		for (int i = 0; i < g_aWhitelist.Length; i++)
+		{
+			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
+			
+			if (StrContains(sBuffer, sName, false) != -1)
+			{
+				bFound = true;
+				break;
+			}
+		}
 	}
 	else
 	{
-		if (StrEqual(edictname, "prop_physics") || StrEqual(edictname, "prop_physics_multiplayer") || StrEqual(edictname, "func_physbox"))
+		SetFailState("[GrabberMod] (GrabSomething) Whitelist is empty, we disable grabbermod to prevent bugs/crashes!");
+		return;
+	}
+	
+	if (!bFound)
+	{
+		return;
+	}
+	
+	if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
+	{
+
+		if (IsValidEdict(ent) && IsValidEntity(ent))
 		{
+			ent = ReplacePhysicsEntity(ent);
 
-			if (IsValidEdict(ent) && IsValidEntity(ent))
-			{
-				ent = ReplacePhysicsEntity(ent);
-
-				SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
-				SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
-			}
+			SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
+			SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
 		}
-		else if (StrEqual(edictname, "prop_ragdoll", false))
+	}
+	
+	if (StrEqual(sName, "prop_ragdoll", false))
+	{
+		char sTargetname[32];
+		GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
+		
+		if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 		{
-			char sTargetname[32];
-			GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
-			
-			if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
-			{
-				return;
-			}
+			return;
 		}
 	}
 
 	if (GetEntityMoveType(ent) == MOVETYPE_NONE)
 	{
-		if (strncmp("player", edictname, 5, false) != 0)
+		if (strncmp("player", sName, 5, false) != 0)
 		{
 			SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
 			PrintHintText(client, "Object ist now Unfreezed");
@@ -182,9 +209,9 @@ stock int GetObject(int client, bool hitSelf=true)
 
 		if (IsValidEntity(ent) && IsValidEdict(ent))
 		{
-			char edictname[64];
-			GetEdictClassname(ent, edictname, 64);
-			if (StrEqual(edictname, "worldspawn"))
+			char sName[64];
+			GetEdictClassname(ent, sName, 64);
+			if (StrEqual(sName, "worldspawn"))
 			{
 				if (hitSelf)
 				{
@@ -361,4 +388,43 @@ public void OnClientDisconnect(int client)
 {
 	g_iObject[client] = -1;
 	g_fTime[client] = 0.0;
+}
+
+void LoadWhitelist()
+{
+	if (g_aWhitelist != null)
+	{
+		g_aWhitelist.Clear();
+	}
+	else
+	{
+		g_aWhitelist = new ArrayList(32);
+	}
+	
+	char sPath[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/whitelist_grabbermod.ini");
+
+	Handle hFile = OpenFile(sPath, "rt");
+
+	if (!FileExists(sPath))
+	{
+		SetFailState("Can't find the following file: \"configs/ttt/whitelist_grabbermod.ini\"");
+		return;
+	}
+	
+	char sBuffer[32];
+	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+	{
+		if (strlen(sBuffer) > 2)
+		{
+			g_aWhitelist.PushString(sBuffer);
+			
+			if (g_LogWhitelist)
+			{
+				LogMessage("[GrabberMod] (LoadWhitelist) Add %s to array...", sBuffer);
+			}
+		}
+	}
+	
+	delete hFile;
 }
