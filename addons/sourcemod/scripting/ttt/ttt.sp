@@ -1485,6 +1485,11 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
+	if (g_bSelection)
+	{
+		return Plugin_Handled;
+	}
+	
 	if (IsDamageForbidden())
 	{
 		return Plugin_Handled;
