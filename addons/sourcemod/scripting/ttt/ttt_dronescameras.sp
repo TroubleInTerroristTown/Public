@@ -70,6 +70,21 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
+public void OnAllPluginsLoaded()
+{
+	char sFile[] = "cameras-and-drones.smx";
+	Handle hPlugin = FindPluginByFile(sFile);
+	
+	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
+	{
+		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?p=2537127", sFile);
+		return;
+	}
+	
+	TTT_RegisterCustomItem(CAMERA_SHORT_NAME, g_sCLongName, g_iCPrice, TTT_TEAM_DETECTIVE, g_iCPrio);
+	TTT_RegisterCustomItem(DRONE_SHORT_NAME, g_sDLongName, g_iDPrice, TTT_TEAM_TRAITOR, g_iDPrio);
+}
+
 public void OnClientDisconnect(int client)
 {
 	ResetCAD(client);
@@ -129,12 +144,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		ResetCAD(client);
 	}
-}
-
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(CAMERA_SHORT_NAME, g_sCLongName, g_iCPrice, TTT_TEAM_DETECTIVE, g_iCPrio);
-	TTT_RegisterCustomItem(DRONE_SHORT_NAME, g_sDLongName, g_iDPrice, TTT_TEAM_TRAITOR, g_iDPrio);
 }
 
 void ResetCAD(int client)
