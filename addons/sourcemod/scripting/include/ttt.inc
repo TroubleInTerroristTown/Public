@@ -124,7 +124,8 @@ enum eConfig
 	String:sReloadCFG[18],
 	bool:bAddSteamIDtoLogs,
 	iSteamIDLogFormat,
-	bool:bHideTeamAttackMessage
+	bool:bHideTeamAttackMessage,
+	bool:bDisableDamageSelection
 };
 
 enum Ragdolls

@@ -320,6 +320,7 @@ void SetupConfig()
 	g_iConfig[iSteamIDLogFormat] = Config_LoadInt("ttt_steamid_log_format", 1, "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)");
 
 	g_iConfig[bDebugMessages] = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
+	g_iConfig[bDisableDamageSelection] = Config_LoadBool("ttt_disable_damage_selection", true, "Disable damage during team selection? This could prevent some bugs.");
 	
 	Config_Remove("ttt_show_rulesmenu");
 	Config_Remove("ttt_show__message_lose_karmna");
@@ -1485,7 +1486,7 @@ stock void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-	if (g_bSelection)
+	if (g_iConfig[bDisableDamageSelection] && g_bSelection)
 	{
 		return Plugin_Handled;
 	}
