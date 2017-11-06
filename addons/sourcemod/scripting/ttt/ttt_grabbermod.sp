@@ -134,7 +134,7 @@ stock void GrabSomething(int client)
 		{
 			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
 			
-			if (StrContains(sBuffer, sName, false) != -1)
+			if (strlen(sBuffer) > 1 && StrContains(sBuffer, sName, false) != -1)
 			{
 				bFound = true;
 				break;
@@ -154,7 +154,6 @@ stock void GrabSomething(int client)
 	
 	if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
 	{
-
 		if (IsValidEdict(ent) && IsValidEntity(ent))
 		{
 			ent = ReplacePhysicsEntity(ent);
