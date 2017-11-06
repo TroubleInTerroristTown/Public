@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <multicolors>
 #include <config_loader>
 
 #undef REQUIRE_PLUGIN
@@ -16,6 +17,8 @@
 bool g_LogWhitelist = false;
 bool g_bColored = true;
 bool g_bBlockJump = true;
+bool g_bShowNames = false;
+char g_sFlags[16];
 
 int g_iSprite = -1;
 
@@ -47,6 +50,9 @@ public void OnPluginStart()
 	g_LogWhitelist = Config_LoadBool("gbm_log_whitelist", false, "Log whitelist?");
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
+	
+	g_bShowNames = Config_LoadBool("gbm_show_name", false, "Show names of entities? Useful to add this on whitelist.");
+	Config_LoadString("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name", g_sFlags, sizeof(g_sFlags));
 	
 	Config_Done();
 	
@@ -110,6 +116,14 @@ stock void GrabSomething(int client)
 	
 	char sName[128];
 	GetEdictClassname(ent, sName, sizeof(sName));
+	
+	if (g_bShowNames)
+	{
+		if (TTT_HasFlags(client, g_sFlags))
+		{
+			CPrintToChat(client, "Name of Entity: %s", sName);
+		}
+	}
 	
 	bool bFound = false;
 	char sBuffer[32];

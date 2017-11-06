@@ -21,8 +21,6 @@ float g_fSpeed = 0.0;
 float g_fTime = 0.0;
 float g_fCooldown = 0.0;
 
-bool g_bHasItem[MAXPLAYERS + 1] =  { false, ... };
-
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hCTimer[MAXPLAYERS + 1] =  { null, ... };
 
@@ -80,8 +78,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
-
-			g_bHasItem[client] = true;
 		}
 	}
 	return Plugin_Continue;
@@ -91,12 +87,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if (g_hCTimer[client] != null || g_hTimer[client] != null)
+		if (g_hTimer[client] == null)
 		{
+			if (GetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue") != g_fNormal)
+			{
+				SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_fNormal);
+			}
+			
 			return Plugin_Continue;
 		}
 		
-		if(buttons & IN_USE)
+		if(buttons & IN_USE && g_hTimer[client] == null && g_hCTimer[client] == null)
 		{
 			g_hTimer[client] = CreateTimer(g_fTime, Timer_Sprint, GetClientUserId(client));
 			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_fSpeed);
@@ -160,5 +161,4 @@ void ResetSprint(int client)
 {
 	g_hTimer[client] = null;
 	g_hCTimer[client] = null;
-	g_bHasItem[client] = false;
 }
