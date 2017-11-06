@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:50 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"sv"		"Du har använt en detektor på Spelare{green} {1} {lightgreen}och han är {green}OSKYLDIG!"
 	}
 
-	"is possibly RDMing"
-	{
-		"sv"		"{darkred}{1} {lightgreen}håller möjligen på att RDM:a"
-	}
-
 	"Detective scan found body"
 	{
 		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, mördaren är spelare{darkred} {2} {lightgreen}med vapnen{orchid} {3}"
@@ -103,54 +98,14 @@
 		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, spelaren har begått självmord"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"sv"		"1-hit kniv (kan endast användas en gång) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"sv"		"FÖRFALSKAT ID kort (skriv !id i chatten för att använda) - {1}"
-	}
-
 	"Health Station"
 	{
 		"sv"		"Health Station - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"sv"		"DNA skannare (skanna en död kropp för att visa vem mördaren var) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"sv"		"Kevlar - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"sv"		"Köp Förrädare roll - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"sv"		"Köp Detektiv roll - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"sv"		"ID kort (skriv !id i chatten för att att använda) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"sv"		"Vänligen vänta tills ditt lag är anvisat"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"sv"		"Item {2} köpt! Dina CREDITS är nu {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"sv"		"Vapnet som har använts: Inget (självmord)"
-	}
-
-	"Killer is Player"
-	{
-		"sv"		"Mördaren är spelare: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"sv"		"Spelaren har begått självmord"
-	}
-
-	"Player Is an Innocent"
-	{
-		"sv"		"Spelare{green} {1} {lightgreen} är {green}OSKYLDIG!"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"sv"		"Hämtar logs... vänligen vänta"
 	}
 
-	"Taser"
-	{
-		"sv"		"Köp elpistol (Detektiv) - {1}"
-	}
-
-	"USPS"
-	{
-		"sv"		"Köp USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"sv"		"Köp M4A1-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {green}{2}. {lightgreen}Som var {green}OSKYLDIG!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {darkred}{2}. {lightgreen}Som var en {darkred}Förrädare!"
-	}
-
-	"Buy c4"
-	{
-		"sv"		"Köp C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"sv"		"Köp Jihad Bomb - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"sv"		"{darkred}{1} FÖRRÄDARE {lightgreen}HAR VALTS"
-	}
-
-	"Buy radar"
-	{
-		"sv"		"Köp radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -563,11 +473,6 @@
 		"sv"		"Nej, visa mig reglerna!"
 	}
 
-	"StartTimer"
-	{
-		"sv"		"Rundan startar inom {1} sekund(er)"
-	}
-
 	"next round in"
 	{
 		"sv"		"Nästa runda börjar inom {1} sekund(er)!"
@@ -606,56 +511,6 @@
 	"Found Fake"
 	{
 		"sv"		"{orchid}{1} {lightgreen}har hittat en förfalskad kropp!"
-	}
-
-	"Welcome Message 1"
-	{
-		"sv"		"[{green}Laserminor{default}] {lightgreen}Skriv {green}!lm {lightgreen}i chatten för att plantera laser minorna"
-	}
-
-	"Welcome Message 2"
-	{
-		"sv"		"[{green}Laser minor{default}] {lightgreen}Skriv{green}!lm {lightgreen}i chatten för att plantera eller {green}!bm {lightgreen}för att köpa laser minor"
-	}
-
-	"Can't plant, while dead"
-	{
-		"sv"		"Du kan inte plantera laser minor när du är död"
-	}
-
-	"Can't use, while spec"
-	{
-		"sv"		"Du måste vara på ett lag för att använda laser minor"
-	}
-
-	"Infinity mines"
-	{
-		"sv"		"Du har ett oändligt belopp med laser minor"
-	}
-
-	"Mines"
-	{
-		"sv"		"Laser minor: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"sv"		"Du är utanför köp zonen"
-	}
-
-	"Can't buy, max amount"
-	{
-		"sv"		"Du har redan högsta mängden av laser minor"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"sv"		"{1} minor. Du har inte tillräckligt med pengar för att köpa mera"
-	}
-
-	"Can't buy, while dead"
-	{
-		"sv"		"Du kan inte köpa laser minor när du är död"
 	}
 
 	"TaserMax"
@@ -791,11 +646,6 @@
 	"ID: Cooldown"
 	{
 		"sv"		"Du måste vänta innan du kan använda kommandot igen."
-	}
-
-	"Item bought!"
-	{
-		"sv"		"Du har köpt {2}! Resterande krediter: {1}"
 	}
 
 	"SpecMenu: Unmute Dead"

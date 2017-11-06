@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:51 UTC
 // Language: Turkish (tr)
 // 
 // To view other translations for this plugin, please visit:
@@ -53,16 +53,6 @@
 		"tr"		"DEDEKTİF{blue} {1} {lightgreen}Bir bedeni taradı, katil{darkred} {2} {lightgreen}kullandığı silah{orchid} {3}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"tr"		"DNA arayıcı (ölü bir bedeni tara ve katilini göster)"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"tr"		"Kimlik kartı (masumluğunu kanıtlamak için !id yaz) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"tr"		"Lütfen takımın atanana kadar bekle"
@@ -113,24 +103,9 @@
 		"tr"		"Log alındı! Logları görmek için konsoluna göz at"
 	}
 
-	"Taser"
-	{
-		"tr"		"Taser satın al (takım bulucu) - {1}"
-	}
-
-	"M4S"
-	{
-		"tr"		"M4-S Satın al - {1}"
-	}
-
 	"Found Detective"
 	{
 		"tr"		"{orchid}{1} {lightgreen} adlı oyuncu, {blue}{2}. {lightgreen}adlı oyuncunun bedeninin buldu o bir{blue}DEDEKTİFTİ!"
-	}
-
-	"Buy c4"
-	{
-		"tr"		"C4 Satın Al - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -278,26 +253,6 @@
 		"tr"		"{orchid}{1} {lightgreen}adlı oyuncu sahte bir ceset buldu!"
 	}
 
-	"Welcome Message 2"
-	{
-		"tr"		"[{green}Lasermines{default}] {lightgreen}Lazer mayını kurmak için{green}!lm {lightgreen}yaz yada satın almak için{green}!bm {lightgreen}yaz"
-	}
-
-	"Infinity mines"
-	{
-		"tr"		"Sonsuz sayıda lazer mayının var"
-	}
-
-	"Mines"
-	{
-		"tr"		"Lazer mayınları: {1}"
-	}
-
-	"Can't buy, max amount"
-	{
-		"tr"		"Maksimum miktarda lazer mayının var"
-	}
-
 	"SpecMenu: Player"
 	{
 		"tr"		"Oyuncu: {1}"
@@ -306,11 +261,6 @@
 	"Hud PlayerKarma"
 	{
 		"tr"		"{1}"
-	}
-
-	"Item bought!"
-	{
-		"tr"		"{2} eşyası alındı! Kredilerin : {1}"
 	}
 
 	"Hud PlayerName T-I"

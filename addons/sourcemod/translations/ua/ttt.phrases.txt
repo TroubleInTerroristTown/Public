@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:45 UTC
 // Language: ua (ua)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"ua"		"Bạn đã xét nghiệm Player{green} {1} {lightgreen}và xác nhận họ là {green}INNOCENT!"
 	}
 
-	"is possibly RDMing"
-	{
-		"ua"		"{darkred}{1} {lightgreen}phát hiện nghi vấn úp sọt bừa bãi."
-	}
-
 	"Detective scan found body"
 	{
 		"ua"		"DETECTIVE{blue} {1} {lightgreen} đã scan một xác chết, thủ phạm là Player {darkred} {2} {lightgreen}sử dụng vũ khí {orchid} {3}"
@@ -103,54 +98,14 @@
 		"ua"		"DETECTIVE{blue} {1} {lightgreen}đã scan một xác chết, player đã tự sát."
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"ua"		"Dao đâm phát chết luôn (chỉ đâm được một lần) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"ua"		"Thẻ ID GIẢ (gõ !id để giả làm Innocent) - {1}"
-	}
-
 	"Health Station"
 	{
 		"ua"		"Trạm bơm máu - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"ua"		"Máy quét ADN (scan xác chết để tìm thủ phạm) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"ua"		"Kevlar - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"ua"		"Mua role TRAITOR - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"ua"		"Mua role DETECTIVE - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"ua"		"Thẻ ID (gõ !id để cho mọi người biết bạn là Innocent) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"ua"		"Xin chờ để được xếp team"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"ua"		"Đã xác nhận mua! Credits hiện tại: {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"ua"		"Nguyên nhân chết: tự đấm vào mặt (tự sát)"
-	}
-
-	"Killer is Player"
-	{
-		"ua"		"Thủ phạm: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"ua"		"Player đã tự sát"
-	}
-
-	"Player Is an Innocent"
-	{
-		"ua"		"Player{green} {1} {lightgreen}là {green}INNOCENT"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"ua"		"Đang nhận logs... xin đợi một lát"
 	}
 
-	"Taser"
-	{
-		"ua"		"Mua Zeus (dò team) - {1}"
-	}
-
-	"USPS"
-	{
-		"ua"		"Mua USP-Silenced - {1}"
-	}
-
-	"M4S"
-	{
-		"ua"		"Mua M4-Silenced - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"ua"		"{orchid}{1} {lightgreen}đã tìm thấy xác của {green}{2}. {lightgreen}Player đó là {green}INNOCENT!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"ua"		"{orchid}{1} {lightgreen} đã tìm thấy xác của {darkred}{2}. {lightgreen} Player này là {darkred}Traitor!"
-	}
-
-	"Buy c4"
-	{
-		"ua"		"Mua C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"ua"		"Mua Bom cảm tử - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"ua"		"{darkred}{1} TRAITORS {lightgreen}ĐÃ ĐƯỢC CHỌN"
-	}
-
-	"Buy radar"
-	{
-		"ua"		"Mua radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -561,11 +471,6 @@
 	"WM No"
 	{
 		"ua"		"Chưa hiểu, cho tôi đọc lại luật!"
-	}
-
-	"StartTimer"
-	{
-		"ua"		"Round bắt đầu trong {1} giây"
 	}
 
 	"next round in"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:48 UTC
 // Language: French (fr)
 // 
 // To view other translations for this plugin, please visit:
@@ -68,29 +68,9 @@
 		"fr"		"Station de santé - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"fr"		"Scanner d'ADN (scan un mort et montre qui étais le tueur) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"fr"		"Kevlar - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"fr"		"Acheter le role de DETECTIVE - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"fr"		"Attendez que votre équipe soit affectée"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"fr"		"Item achete ! Vous avez {1} CREDITS"
 	}
 
 	"You don't have enough money"
@@ -121,16 +101,6 @@
 	"The weapon used has been"
 	{
 		"fr"		"L'arme utilise a ete: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"fr"		"Le joueur s'est suicide"
-	}
-
-	"Player Is an Innocent"
-	{
-		"fr"		"Le joueur{green} {1} {lightgreen}est {green}INNOCENT"
 	}
 
 	"D channel"
@@ -168,16 +138,6 @@
 		"fr"		"Vous ne pouvez pas voir les logs maintenant, vous devez etre mort ou le round doit etre inactif"
 	}
 
-	"Taser"
-	{
-		"fr"		"Acheter Taser (detecte la team) - {1}"
-	}
-
-	"M4S"
-	{
-		"fr"		"Acheter M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {green}{2}. {lightgreen}C'etais un {green}INNOCENT!"
@@ -193,16 +153,6 @@
 		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {darkred}{2}. {lightgreen}C'etais un{darkred}Traitre !"
 	}
 
-	"Buy c4"
-	{
-		"fr"		"Acheter C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"fr"		"Acheter une Bombe Jihad - {1}"
-	}
-
 	"Your bomb is not armed."
 	{
 		"fr"		"Ta bombe n'est pas arme."
@@ -216,11 +166,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"fr"		"{darkred}{1} TRAITRES {lightgreen}ONT ETE SELECTIONNES"
-	}
-
-	"Buy radar"
-	{
-		"fr"		"Acheter radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -346,46 +291,6 @@
 	"WM No"
 	{
 		"fr"		"Non, montre moi les regles !"
-	}
-
-	"Can't plant, while dead"
-	{
-		"fr"		"Vous ne pouvez pas planter de mine laser quand vous êtes mort"
-	}
-
-	"Can't use, while spec"
-	{
-		"fr"		"Vous devez être dans une équipe pour utiliser des mines laser"
-	}
-
-	"Infinity mines"
-	{
-		"fr"		"Vous avez une quantité infinie de mines laser"
-	}
-
-	"Mines"
-	{
-		"fr"		"Mines laser: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"fr"		"Vous êtes hors de la zone d'achat"
-	}
-
-	"Can't buy, max amount"
-	{
-		"fr"		"Vous avez le maximum de mines laser"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"fr"		"{1} mines. Vous n'avez pas assez d'argent pour acheter plus"
-	}
-
-	"Can't buy, while dead"
-	{
-		"fr"		"Vous ne pouvez pas acheter de mine laser quand vous êtes mort"
 	}
 
 }

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:50 UTC
 // Language: Chinese (Traditional) (zho)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"zho"		"偵測器顯示玩家 {green}{1} {lightgreen}是 {green}一個平民!"
 	}
 
-	"is possibly RDMing"
-	{
-		"zho"		"{darkred}{1} {lightgreen}有可能在猜殺"
-	}
-
 	"Detective scan found body"
 	{
 		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 兇手是{darkred} {2} {lightgreen} 兇器是 {orchid} {3}"
@@ -103,54 +98,14 @@
 		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 玩家為自殺身亡"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"zho"		"一刀斃命 (只能使用一次) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"zho"		"假身分 (輸入 !id 來顯示你是無罪的) - {1}"
-	}
-
 	"Health Station"
 	{
 		"zho"		"補給站 - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"zho"		"DNA 掃描器 (掃描屍體來顯示誰是兇手) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"zho"		"防彈背心 - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"zho"		"購買叛徒腳色 - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"zho"		"購買偵探腳色 - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"zho"		"身分證 (輸入 !id 來顯示你是無罪的) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"zho"		"分配完隊伍才可使用"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"zho"		"購買完畢! 你的還剩 {1} 個點數"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"zho"		"凶器: 自殺"
-	}
-
-	"Killer is Player"
-	{
-		"zho"		"兇手: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"zho"		"玩家自殺"
-	}
-
-	"Player Is an Innocent"
-	{
-		"zho"		"玩家{green} {1} {lightgreen}是 {green}平民"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"zho"		"接收紀錄中... 請稍後"
 	}
 
-	"Taser"
-	{
-		"zho"		"購買電槍 (隊伍判斷器) - {1}"
-	}
-
-	"USPS"
-	{
-		"zho"		"購買 USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"zho"		"購買 M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"zho"		"{orchid}{1} {lightgreen}找到了 {green}{2}{lightgreen}的屍體. {lightgreen}他是一位 {green}平民!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"zho"		"{orchid}{1} {lightgreen}找到了 {darkred}{2}{lightgreen}的屍體. {lightgreen}他是一位 {darkred}叛徒!"
-	}
-
-	"Buy c4"
-	{
-		"zho"		"購買 C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"zho"		"購買炸彈背心 - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"zho"		"{lightgreen}以選擇好 {darkred}{1} 個叛徒 "
-	}
-
-	"Buy radar"
-	{
-		"zho"		"購買雷達 - {1}"
 	}
 
 	"Suicide Blocked"

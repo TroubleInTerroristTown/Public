@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:43 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"es"		"Has usado el detector en el Jugador{green} {1} {lightgreen}y es {green}INOCENTE!"
 	}
 
-	"is possibly RDMing"
-	{
-		"es"		"{darkred}{1} {lightgreen}posiblemente está haciendo RDM"
-	}
-
 	"Detective scan found body"
 	{
 		"es"		"El DETECTIVE{blue} {1} {lightgreen}ha Escaneado un cuerpo, el Asesino es el Jugador{darkred} {2} {lightgreen}con el arma{orchid} {3}"
@@ -103,54 +98,14 @@
 		"es"		"El DETECTIVE{blue} {1} {lightgreen} ha Escaneado el cuerpo, el jugador se suicidó"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"es"		"Muerte de un golpe de cuchillo (sólo se usa una vez) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"es"		"Tarjeta ID FALSA (escribe !id para mostrar tu inocencia) - {1}"
-	}
-
 	"Health Station"
 	{
 		"es"		"Puesto de Salud - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"es"		"Escáner de ADN (escanea un cuerpo y muestra quien fue el asesino) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"es"		"Chaleco - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"es"		"Comprar rol de TRAIDOR - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"es"		"Comprar el rol de DETECTIVE - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"es"		"Tarjeta ID (escribe !id para mostrar tu inocencia) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"es"		"Por favor espera hasta que tu equipo esté asignado"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"es"		"Item comprado! Tus CRÉDITOS son {1}"
 	}
 
 	"You don't have enough money"
@@ -206,21 +161,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"es"		"El arma que ha sido usada: el mismo (suicidio)"
-	}
-
-	"Killer is Player"
-	{
-		"es"		"El asesino es el Jugador: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"es"		"El jugador se ha suicidado"
-	}
-
-	"Player Is an Innocent"
-	{
-		"es"		"El jugador{green} {1} {lightgreen}es {green}INOCENTE"
 	}
 
 	"T channel"
@@ -283,21 +223,6 @@
 		"es"		"Reciviendo logs... por favor espera"
 	}
 
-	"Taser"
-	{
-		"es"		"Comprar Taser (Detector de equipo) - {1}"
-	}
-
-	"USPS"
-	{
-		"es"		"Comprar USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"es"		"Comprar M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"es"		"{orchid}{1} {lightgreen} ha encontrado el cuerpo de {green}{2}. {lightgreen} Era un {green} INOCENTE!"
@@ -311,16 +236,6 @@
 	"Found Traitor"
 	{
 		"es"		"{orchid}{1} {lightgreen}ha encontrado el cuerpo de {darkred}{2}. {lightgreen}Era un {darkred}Traidor!"
-	}
-
-	"Buy c4"
-	{
-		"es"		"Comprar C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"es"		"Compra una Bomba Jihad - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -346,11 +261,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"es"		"{darkred}{1} TRAIDORES{lightgreen}HAN SIDO ESCOGIDOS"
-	}
-
-	"Buy radar"
-	{
-		"es"		"Comprar radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -568,11 +478,6 @@
 		"es"		"No, muestrame las reglas!"
 	}
 
-	"StartTimer"
-	{
-		"es"		"<font size='32' color='00ff00'>La ronda empieza en {1} segundos</font>"
-	}
-
 	"next round in"
 	{
 		"es"		"La próxima ronda empezará en {1} segundos!"
@@ -611,56 +516,6 @@
 	"Found Fake"
 	{
 		"es"		"{orchid}{1} {lightgreen}ha encontrado un cuerpo falso!"
-	}
-
-	"Welcome Message 1"
-	{
-		"es"		"[{green}Minas Laser{default}] {lightgreen}Escribe {green}!lm {lightgreen}en el chat para colora las minas"
-	}
-
-	"Welcome Message 2"
-	{
-		"es"		"[{green}Minas Laser{default}] {lightgreen}Escribe {green}!lm {lightgreen}en el chat para plantar-las o {green}!bm {lightgreen} para comprar las Minas Laser"
-	}
-
-	"Can't plant, while dead"
-	{
-		"es"		"No puedes plantar minas laser cuando estas muerto"
-	}
-
-	"Can't use, while spec"
-	{
-		"es"		"Tienes que estar en un equipo para usar las minas laser"
-	}
-
-	"Infinity mines"
-	{
-		"es"		"Tienes una cantidad infinita de minas"
-	}
-
-	"Mines"
-	{
-		"es"		"Minas laser: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"es"		"Estas fuera de una zona de compra"
-	}
-
-	"Can't buy, max amount"
-	{
-		"es"		"Tienes el numero maximo de minas laser"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"es"		"{1} minas. No tienes suficiente dinero para comprar mas"
-	}
-
-	"Can't buy, while dead"
-	{
-		"es"		"No puedes comprar minas laser cuando estas muerto"
 	}
 
 	"TaserMax"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:24 UTC
+// Date: 2017-11-06 22:34:40 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"de"		"Du hast einen Tazer verwendet, Spieler{green} {1} {lightgreen}ist ein {green}INNOCENT!"
 	}
 
-	"is possibly RDMing"
-	{
-		"de"		"{darkred}{1} {lightgreen}begeht RDM"
-	}
-
 	"Detective scan found body"
 	{
 		"de"		"DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {orchid}{3}"
@@ -103,54 +98,14 @@
 		"de"		"DETEKTIV{blue} {1} {lightgreen}hat eine Leiche untersucht, es handelt sich um Selbstmord"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"de"		"1 Hit Messer Kill (Nur einmal verwendbar) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"de"		"Gefälschter Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
-	}
-
 	"Health Station"
 	{
 		"de"		"Heil Station - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"de"		"DNA Scanner (Untersuche eine Leiche um zu sehen wer der Mörder war) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"de"		"Kevlar - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"de"		"TRAITOR-Pass - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"de"		"DETEKTIV-Pass - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"de"		"Ausweis (Schreibe !id in den Chat um zu zeigen das du INNOCENT bist) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"de"		"Warte bis du einem Team zugeordnet wurdest"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"de"		"Gegenstand wurde erworben, deine Credits: {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"de"		"Die Waffe war: Erselbst (Selbstmord)"
-	}
-
-	"Killer is Player"
-	{
-		"de"		"Der Mörder ist: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"de"		"Der Spieler beging Suizid"
-	}
-
-	"Player Is an Innocent"
-	{
-		"de"		"Spieler{green} {1} {lightgreen} ist ein {green}INNOCENT"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"de"		"Empfange Logs... warte einen Moment"
 	}
 
-	"Taser"
-	{
-		"de"		"Kaufe Taser (Team Detektor) - {1}"
-	}
-
-	"USPS"
-	{
-		"de"		"Kaufe USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"de"		"Kaufe M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"de"		"{orchid}{1} {lightgreen}findet die Leiche von {green}{2}. {lightgreen}Er war ein {green}INNOCENT!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"de"		"{orchid}{1} {lightgreen}findet die Leiche von {darkred}{2}. {lightgreen}Er war ein {darkred}Traitor!"
-	}
-
-	"Buy c4"
-	{
-		"de"		"Kaufe C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"de"		"Kaufe Jihad Bombe - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"de"		"{darkred}{1} Traitors {lightgreen}wurden ausgewählt!"
-	}
-
-	"Buy radar"
-	{
-		"de"		"Kaufe Radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -563,11 +473,6 @@
 		"de"		"Nein, zeigen sie mir die Regeln!"
 	}
 
-	"StartTimer"
-	{
-		"de"		"Runde startet in {1} Sekunden"
-	}
-
 	"next round in"
 	{
 		"de"		"Nächste Runde startet in {1} Sekunden!"
@@ -606,56 +511,6 @@
 	"Found Fake"
 	{
 		"de"		"{orchid}{1} {lightgreen}hat eine gefälschte Leiche gefunden!"
-	}
-
-	"Welcome Message 1"
-	{
-		"de"		" [{green}Lasermines{default}] {lightgreen}Gib {green}!lm {lightgreen}im Chat ein um eine Mine zu platzieren."
-	}
-
-	"Welcome Message 2"
-	{
-		"de"		"[{green}Lasermines{default}] {lightgreen}Gibt {green}!lm {lightgreen}im Chat ein um eine Mine zu platzieren oder {green}!bm {lightgreen}um eine Mine zu kaufen."
-	}
-
-	"Can't plant, while dead"
-	{
-		"de"		"Tote können keine Laserminen stellen"
-	}
-
-	"Can't use, while spec"
-	{
-		"de"		"Du must in einem Team sein um Laserminen benutzen zu können"
-	}
-
-	"Infinity mines"
-	{
-		"de"		"Du hast unendlich Laseminen"
-	}
-
-	"Mines"
-	{
-		"de"		"Laserminen: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"de"		"Du bist außerhalb der Kaufzone"
-	}
-
-	"Can't buy, max amount"
-	{
-		"de"		"Du hast die maximale Anzahl an Laserminen"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"de"		"{1} Minen. Du hast nicht genug Geld um mehr zu kaufen"
-	}
-
-	"Can't buy, while dead"
-	{
-		"de"		"Als Toter kannst du keine Laserminen kaufen"
 	}
 
 	"TaserMax"
@@ -791,11 +646,6 @@
 	"ID: Cooldown"
 	{
 		"de"		"Sie müssen noch etwas warten um diesen Befehl wieder auszuführen."
-	}
-
-	"Item bought!"
-	{
-		"de"		"Gegenstand \"{2}\" gekauft! Sie haben nun {1} Credits."
 	}
 
 	"SpecMenu: Unmute Dead"

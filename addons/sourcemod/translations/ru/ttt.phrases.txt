@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:51 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"ru"		"Вы использовали детектор на {green}{1}{lightgreen}, и он оказался {green}НЕВИНОВНЫМ"
 	}
 
-	"is possibly RDMing"
-	{
-		"ru"		"{darkred}{1} {lightgreen}возможно РДМил"
-	}
-
 	"Detective scan found body"
 	{
 		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
@@ -103,54 +98,14 @@
 		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: игрок совершил самоубийство"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"ru"		"Нож, убийство с 1 удара (можно использовать 1 раз) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"ru"		"Поддельная ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
-	}
-
 	"Health Station"
 	{
 		"ru"		"Аптечка - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"ru"		"ДНК сканнер (сканирование трупа и показ, кто убийца) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"ru"		"Бронежилет - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"ru"		"Роль ПРЕДАТЕЛЯ - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"ru"		"Роль ДЕТЕКТИВА - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"ru"		"ID карта (введите !id и покажите, что вы НЕВИНОВНЫЙ) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"ru"		"Пожалуйста, подождите, пока ваша роль назначается"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"ru"		"Предмет куплен! Количество ваших КРЕДИТОВ {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"ru"		"Оружие убийства: самоубийство"
-	}
-
-	"Killer is Player"
-	{
-		"ru"		"Убийца: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"ru"		"Игрок покончил жизнь самоубийством"
-	}
-
-	"Player Is an Innocent"
-	{
-		"ru"		"Игрок{green} {1} {lightgreen}НЕВИНОВНЫЙ!"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"ru"		"Запись логов..."
 	}
 
-	"Taser"
-	{
-		"ru"		"Электрошокер (детектор ролей) - {1}"
-	}
-
-	"USPS"
-	{
-		"ru"		"USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"ru"		"M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"ru"		"{orchid}{1} {lightgreen}нашел тело {green}{2}{lightgreen}. Он был {green}НЕВИНОВНЫМ"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"ru"		"{orchid}{1} {lightgreen}нашел тело {darkred}{2}{lightgreen}. Он был {darkred}ПРЕДАТЕЛЕМ"
-	}
-
-	"Buy c4"
-	{
-		"ru"		"Бомба C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"ru"		"Джихад бомба - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"ru"		"БЫЛО ВЫБРАНО {darkred}{1} ПРЕДАТЕЛЕЙ"
-	}
-
-	"Buy radar"
-	{
-		"ru"		"Радар - {1}"
 	}
 
 	"Suicide Blocked"
@@ -563,11 +473,6 @@
 		"ru"		"Нет, покажи мне правила!"
 	}
 
-	"StartTimer"
-	{
-		"ru"		"Раунд начнется через {1} секунд"
-	}
-
 	"next round in"
 	{
 		"ru"		"Следующей раунд начнется через {1} секунд!"
@@ -611,56 +516,6 @@
 	"Found Fake"
 	{
 		"ru"		"{orchid}{1} {lightgreen}нашел поддельное тело!"
-	}
-
-	"Welcome Message 1"
-	{
-		"ru"		"[{green}Lasermines{default}] {lightgreen} Для установки лазерной мины напишите в чат {green}!lm"
-	}
-
-	"Welcome Message 2"
-	{
-		"ru"		"[{green}Lasermines{default}] {lightgreen}Напишите {green}!lm {lightgreen}в чат, чтобы установить лазерные мины или {green}!bm{lightgreen} для их покупки"
-	}
-
-	"Can't plant, while dead"
-	{
-		"ru"		"Мёртвые не могут устанавливать лазерные мины"
-	}
-
-	"Can't use, while spec"
-	{
-		"ru"		"Вы должны быть в команде, чтобы использовать лазерные мины"
-	}
-
-	"Infinity mines"
-	{
-		"ru"		"У вас бесконечное количество лазерных мин"
-	}
-
-	"Mines"
-	{
-		"ru"		"Лазерных мин: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"ru"		"Вы вне зоны покупки"
-	}
-
-	"Can't buy, max amount"
-	{
-		"ru"		"У вас максимальное количество лазерных мин"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"ru"		"{1} мин. У вас недостаточно денег, чтобы купить больше"
-	}
-
-	"Can't buy, while dead"
-	{
-		"ru"		"Мертвые не могут покупать лазерные мины"
 	}
 
 	"TaserMax"
@@ -796,11 +651,6 @@
 	"ID: Cooldown"
 	{
 		"ru"		"Вы должны подождать, прежде использовать эту команду."
-	}
-
-	"Item bought!"
-	{
-		"ru"		"Предмет {2} куплен! Ваши кредиты: {1}"
 	}
 
 	"SpecMenu: Unmute Dead"

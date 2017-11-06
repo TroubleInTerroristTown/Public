@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:48 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"cze"		"Pouzil jsi detektor na Hrace{green} {1} {lightgreen}a on je {green}NEVINNY !"
 	}
 
-	"is possibly RDMing"
-	{
-		"cze"		"{darkred}{1} {lightgreen} pravdepodobne zabiji nahodne"
-	}
-
 	"Detective scan found body"
 	{
 		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo, vrah je hrac{darkred} {2} {lightgreen}se zbrani{orchid} {3}"
@@ -103,54 +98,14 @@
 		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo. Hrac spachal sebevrazdu."
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"cze"		"One hit one kill nuz (jedno pouziti) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"cze"		"FALESNA ID karta (napis !id abys prokazal svoji nevinu) -  {1}"
-	}
-
 	"Health Station"
 	{
 		"cze"		"Uzdravovaci Stanice - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"cze"		"DNA skener (naskenuj telo a zjisti, kdo je vrah) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"cze"		"Vesta - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"cze"		"Koupit si roli ZRADCE - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"cze"		"Koupit roli DETEKTIV - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"cze"		"ID karta (napis !id pro prokazani sve neviny) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"cze"		"Prosim pockej nez je ti prirazen tym"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"cze"		"Koupil sis {2}! Stav tvych kreditu: {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"cze"		"Zbran kterou pouzil: sebevrazda"
-	}
-
-	"Killer is Player"
-	{
-		"cze"		"Vrah je: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"cze"		"Hrac spachal sebevrazdu"
-	}
-
-	"Player Is an Innocent"
-	{
-		"cze"		"Hrac{green} {1} {lightgree}je {green}NEVINNY"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"cze"		"Prijimam zapisy... pockej chvili "
 	}
 
-	"Taser"
-	{
-		"cze"		"Koupit Taser (detektor tymu) - {1}"
-	}
-
-	"USPS"
-	{
-		"cze"		"Koupit USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"cze"		"Koupit M4a1-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {green}NEVINNY!"
@@ -311,16 +236,6 @@
 	"Found Traitor"
 	{
 		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {darkred}ZRADCE!"
-	}
-
-	"Buy c4"
-	{
-		"cze"		"Koupit C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"cze"		"Koupit Jihad bombu - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -346,11 +261,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"cze"		"{darkred}ZRADCI {lightgreen}BYLI ZVOLENI! {default}Pocet zradcu: {darkred}{1}"
-	}
-
-	"Buy radar"
-	{
-		"cze"		"Koupit radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -578,11 +488,6 @@
 		"cze"		"Ne, ukaž mi pravidla !"
 	}
 
-	"StartTimer"
-	{
-		"cze"		"Kolo zacina v {1} sekundach"
-	}
-
 	"next round in"
 	{
 		"cze"		"Dalsi kolo zacne ve {1} sekundach !"
@@ -621,56 +526,6 @@
 	"Found Fake"
 	{
 		"cze"		"{orchid}{1} {lightgreen}nasel falesnou mrtvolu!"
-	}
-
-	"Welcome Message 1"
-	{
-		"cze"		"[{green}Laserove miny{default}] {lightgreen}Napis {green}!lm {lightgreen}do chatuu pro polozeni laserovych min"
-	}
-
-	"Welcome Message 2"
-	{
-		"cze"		"[{green}Laserove miny{default}] {lightgreen}Napis {green}!lm {lightgreen}do chatu pro polozeni nebo {green}!bm {lightgreen} pro koupeni laserovych min"
-	}
-
-	"Can't plant, while dead"
-	{
-		"cze"		"Nemuzes polozit laserovou minu kdyz jsi mrtvy"
-	}
-
-	"Can't use, while spec"
-	{
-		"cze"		"Musis byt v tymu, abys mohl pouzivat laserove miny"
-	}
-
-	"Infinity mines"
-	{
-		"cze"		"Mas neomezeny pocet laserovych min"
-	}
-
-	"Mines"
-	{
-		"cze"		"Laserove miny: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"cze"		"Jsi mimo nakupni zony"
-	}
-
-	"Can't buy, max amount"
-	{
-		"cze"		"Mas maximalni mnozstvi laserovych min"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"cze"		"{1} min. Nemas dostatek penez abys koupil dalsi"
-	}
-
-	"Can't buy, while dead"
-	{
-		"cze"		"Nemuzes si koupit laserove miny pokud jsi mrtvy"
 	}
 
 	"TaserMax"
@@ -811,11 +666,6 @@
 	"ID: Cooldown"
 	{
 		"cze"		"Musis pockat nez budes moci znovu pouzit tento prikaz."
-	}
-
-	"Item bought!"
-	{
-		"cze"		"Koupil sis {2}! Stav tvych kreditu: {1}"
 	}
 
 	"SpecMenu: Unmute Dead"

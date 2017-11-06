@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:44 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"chi"		"侦测器显示玩家{gre​​en}{1} {lightgreen}是{green}一个平民!"
 	}
 
-	"is possibly RDMing"
-	{
-		"chi"		"{darkred}{1} {lightgreen}有可能在猜测杀"
-	}
-
 	"Detective scan found body"
 	{
 		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 凶手是{darkred} {2} {lightgreen} 凶器是{orchid} {3}"
@@ -103,54 +98,14 @@
 		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 玩家为自杀身亡"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"chi"		"一刀毙命 (只能使用一次) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"chi"		"假的身份 (输入 !id 来证明你是无辜的)"
-	}
-
 	"Health Station"
 	{
 		"chi"		"补给站 - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"chi"		"DNA 扫描器(扫描尸体来显示谁是凶手) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"chi"		"防弹背心 - {1} "
-	}
-
-	"Buy rol Traitor"
-	{
-		"chi"		"购买叛徒角色 - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"chi"		"购买侦探角色 - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"chi"		"身份证 (输入 !id 显示你的身份)"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"chi"		"分配完队伍才可以使用"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"chi"		"购买完毕! 你的还剩 {1} 个点数"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"chi"		"使用的武器是：自己 (自杀)"
-	}
-
-	"Killer is Player"
-	{
-		"chi"		"凶手: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"chi"		"玩家自杀"
-	}
-
-	"Player Is an Innocent"
-	{
-		"chi"		"玩家{gre​​en} {1} {light green}是 {green}平民"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"chi"		"接收记录中... 请稍后"
 	}
 
-	"Taser"
-	{
-		"chi"		"购买电击枪 (队伍判断器) - {1}"
-	}
-
-	"USPS"
-	{
-		"chi"		"购买 USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"chi"		"购买 M4A1-S - {1} "
-	}
-
 	"Found Innocent"
 	{
 		"chi"		"{orchid}{1} {light green}找到了{green}{2}{light green}的尸体. {lightgreen}他是一位{green}平民!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"chi"		"{orchid}{1} {light green}找到了{dark red}{2}{light green}的尸体. {lightgreen}他是一位{darkred}叛徒!"
-	}
-
-	"Buy c4"
-	{
-		"chi"		"购买 C4"
-	}
-
-	"Buy jihadbomb"
-	{
-		"chi"		"购买炸弹 - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"chi"		"{lightgreen}己选择好 {darkred}{1} 个叛徒"
-	}
-
-	"Buy radar"
-	{
-		"chi"		"购买雷达 - {1}"
 	}
 
 	"Suicide Blocked"
@@ -563,11 +473,6 @@
 		"chi"		"否, 请告诉我游戏规则!"
 	}
 
-	"StartTimer"
-	{
-		"chi"		"在{1}秒内全面启动"
-	}
-
 	"next round in"
 	{
 		"chi"		"下一个回合将在 {1} 秒后开始!"
@@ -586,16 +491,6 @@
 	"All karma has been updated"
 	{
 		"chi"		"人品值已更新!"
-	}
-
-	"Can't plant, while dead"
-	{
-		"chi"		"当你死亡时，你不能够放置激光地雷"
-	}
-
-	"Can't buy, max amount"
-	{
-		"chi"		"你拥有的激光地雷已达到最大值"
 	}
 
 	"SpecMenu: Player"
@@ -621,11 +516,6 @@
 	"ID: Cooldown"
 	{
 		"chi"		"在你再次使用这个指令前，请等待冷却结束"
-	}
-
-	"Item bought!"
-	{
-		"chi"		"你购买了 {2} ! 你当前金钱为 {1}"
 	}
 
 	"SpecMenu: Unmute Dead"

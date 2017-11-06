@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:25 UTC
+// Date: 2017-11-06 22:34:49 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -88,11 +88,6 @@
 		"pl"		"Użyłeś detektora na graczu{green} {1} {lightgreen}i jest {green}NIEWINNY!"
 	}
 
-	"is possibly RDMing"
-	{
-		"pl"		"{darkred}{1} {lightgreen}prawdopodobnie RDM'uje"
-	}
-
 	"Detective scan found body"
 	{
 		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, Zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
@@ -103,54 +98,14 @@
 		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, gracz popełnił samobójstwo"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"pl"		"1 uderzenie zabijające nożem (tylko jedno użycie) - {1:d}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"pl"		"Fałszywe ID karty (wpisz !id aby zobaczyć swoją niewinność) - {1}"
-	}
-
 	"Health Station"
 	{
 		"pl"		"Stacja Medyczna - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"pl"		"Skaner DNA (skanuje zwloki i pokazuje kto jest zabojca) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"pl"		"Pancerz - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"pl"		"Kup rolę ZDRAJCY - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"pl"		"Kup rolę DETEKTYWA - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"pl"		"ID karty (wpisz !id aby zobaczyć swoją niewinność) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"pl"		"Proszę poczekaj do czasu aż twoja drużyna zostanie wybrana"
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"pl"		"Przedmiot kupiony! Twoje Kredyty wynoszą {1}"
 	}
 
 	"You don't have enough money"
@@ -201,21 +156,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"pl"		"Użyta broń została: własnoręcznie {zabita}"
-	}
-
-	"Killer is Player"
-	{
-		"pl"		"Zabójcą jest: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"pl"		"Gracz popełnił samobójstwo"
-	}
-
-	"Player Is an Innocent"
-	{
-		"pl"		"Gracz{green} {1} {lightgreen}jest {green}NIEWINNY!"
 	}
 
 	"T channel"
@@ -278,21 +218,6 @@
 		"pl"		"Odbieranie logów... proszę czekać"
 	}
 
-	"Taser"
-	{
-		"pl"		"Kup Paralizator (detektor drużyny) - {1}"
-	}
-
-	"USPS"
-	{
-		"pl"		"Kup USP-S - {1}"
-	}
-
-	"M4S"
-	{
-		"pl"		"Kup M4-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"pl"		"{orchid}{1} {lightgreen}znalazł ciało {green}{2}. {lightgreen}To był {green}NIEWINNY!"
@@ -306,16 +231,6 @@
 	"Found Traitor"
 	{
 		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkred}{2}. {lightgreen}To byl {darkred}Zdrajca!"
-	}
-
-	"Buy c4"
-	{
-		"pl"		"Kup C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"pl"		"Kup bombe Jihadu - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -341,11 +256,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"pl"		"{darkred}{1} ZDRAJCY {lightgreen}ZOSTALI WYBRANI"
-	}
-
-	"Buy radar"
-	{
-		"pl"		"Kup radar - {1}"
 	}
 
 	"Suicide Blocked"
@@ -553,11 +463,6 @@
 		"pl"		"Nie, pokaż mi zasady!"
 	}
 
-	"StartTimer"
-	{
-		"pl"		"Runda rozpocznie się za {1} sekund"
-	}
-
 	"next round in"
 	{
 		"pl"		"Następna runda rozpocznie się za {1} sekund!"
@@ -596,56 +501,6 @@
 	"Found Fake"
 	{
 		"pl"		"{orchid}{1} {lightgreen}znalazł fałszywe ciało!"
-	}
-
-	"Welcome Message 1"
-	{
-		"pl"		"[{green}Laserowe Miny{default}] {lightgreen}Wpisz {green}!lm {lightgreen}na czacie aby uzbroić laserową minę"
-	}
-
-	"Welcome Message 2"
-	{
-		"pl"		"[{green}Lasermines{default}] {lightgreen}Wpisz {green}!lm {lightgreen}na czacie aby podłożyć albo {green}!bm {lightgreen}by kupić laserowe miny"
-	}
-
-	"Can't plant, while dead"
-	{
-		"pl"		"Nie możesz podłożyć laserowej miny kiedy nie żyjesz"
-	}
-
-	"Can't use, while spec"
-	{
-		"pl"		"Musisz być w drużynie aby używać laserowych min"
-	}
-
-	"Infinity mines"
-	{
-		"pl"		"Masz nieskończoną ilość laserowych min"
-	}
-
-	"Mines"
-	{
-		"pl"		"Laserowe miny: {1}"
-	}
-
-	"Out of buy zone"
-	{
-		"pl"		"Jesteś poza zasięgiem strefy kupowania"
-	}
-
-	"Can't buy, max amount"
-	{
-		"pl"		"Masz wystarczającą ilość laserowych min"
-	}
-
-	"Can't buy, not enough money"
-	{
-		"pl"		"{1} min. Nie masz wystarczająco dużo kasy by kupić więcej"
-	}
-
-	"Can't buy, while dead"
-	{
-		"pl"		"Nie możesz kupić laserowych min kiedy jesteś martwy"
 	}
 
 	"TaserMax"

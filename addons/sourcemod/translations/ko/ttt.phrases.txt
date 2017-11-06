@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:50 UTC
 // Language: Korean (ko)
 // 
 // To view other translations for this plugin, please visit:
@@ -93,11 +93,6 @@
 		"ko"		"{green}{1}{lightgreen}님에게 직업 감별기를 사용했고, 그는 {green}이노센트{lightgreen}였습니다!"
 	}
 
-	"is possibly RDMing"
-	{
-		"ko"		"{darkred}{1}{lightgreen}님에게 프리킬 혐의가 있습니다."
-	}
-
 	"Detective scan found body"
 	{
 		"ko"		"탐정 {blue}{1}{lightgreen}님이 시체를 조사했습니다, 가해자는 {darkred}{2}{lightgreen}님이며, 흉기는 {orchid}{3}{lightgreen}입니다."
@@ -108,54 +103,14 @@
 		"ko"		"탐정 {blue}{1}{lightgreen}님이 시체를 조사했습니다, 플레이어는 자살했었습니다."
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"ko"		"즉살 단검 (한 번만 사용 가능) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"ko"		"위조 신분증 (가짜 신분을 나타내려면 !id) - {1}"
-	}
-
 	"Health Station"
 	{
 		"ko"		"치료기 - {1}"
 	}
 
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"ko"		"DNA 스캐너 (시체를 검사하여 가해자를 추적) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"ko"		"방탄복 - {1}"
-	}
-
-	"Buy rol Traitor"
-	{
-		"ko"		"트레이터 직업 구매 - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"ko"		"탐정 직업 구매 - {1}"
-	}
-
-	"ID card (type !id for show your innocence)"
-	{
-		"ko"		"신분증 (신분을 나타내려면 !id) - {1}"
-	}
-
 	"Please wait till your team is assigned"
 	{
 		"ko"		"직업이 결정될 때 까지 기다려주세요."
-	}
-
-	"Item bought! Your REAL money is"
-	{
-		"ko"		"아이템을 구입했습니다! {1}크레딧이 남았습니다."
 	}
 
 	"You don't have enough money"
@@ -206,21 +161,6 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"ko"		"사용된 무기: 자신 (자살)"
-	}
-
-	"Killer is Player"
-	{
-		"ko"		"가해자: {1}"
-	}
-
-	"Player committed suicide"
-	{
-		"ko"		"플레이어가 자살했습니다."
-	}
-
-	"Player Is an Innocent"
-	{
-		"ko"		"{green}{1}{lightgreen}님은 {green}이노센트{lightgreen}입니다."
 	}
 
 	"T channel"
@@ -283,21 +223,6 @@
 		"ko"		"로그 내용을 받아오는 중... 잠시만 기다려주세요."
 	}
 
-	"Taser"
-	{
-		"ko"		"테이저 구매 (직업 감별기) - {1}"
-	}
-
-	"USPS"
-	{
-		"ko"		"USP-S 구입 - {1}"
-	}
-
-	"M4S"
-	{
-		"ko"		"M4A1-S 구입 - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"ko"		"{orchid}{1}{lightgreen}님이 {green}{2}{lightgreen}님의 시체를 발견했습니다. {green}{2}{lightgreen}님은 {green}이노센트{lightgreen}였습니다!"
@@ -311,16 +236,6 @@
 	"Found Traitor"
 	{
 		"ko"		"{orchid}{1}{lightgreen}님이 {darkred}{2}{lightgreen}님의 시체를 발견했습니다. {darkred}{2}{lightgreen}님은 {darkred}트레이터{lightgreen}였습니다!"
-	}
-
-	"Buy c4"
-	{
-		"ko"		"C4 구입 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"ko"		"지하드 폭탄 구입 - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -346,11 +261,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"ko"		"{darkred}{1}명의 트레이터가{lightgreen}선택 되었습니다."
-	}
-
-	"Buy radar"
-	{
-		"ko"		"레이더 구입 - {1}"
 	}
 
 	"Suicide Blocked"

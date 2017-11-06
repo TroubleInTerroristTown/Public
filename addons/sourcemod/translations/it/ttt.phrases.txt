@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-03 12:23:26 UTC
+// Date: 2017-11-06 22:34:51 UTC
 // Language: Italian (it)
 // 
 // To view other translations for this plugin, please visit:
@@ -58,34 +58,9 @@
 		"it"		"Hai usato il rivelatore su {darkred}{1} {lightgreen}e' lui e' {darkred}TRADITORE!"
 	}
 
-	"1 hit kill knife (only good for 1 shot)"
-	{
-		"it"		"Uccisione Istantanea con il Coltello (monouso) - {1}"
-	}
-
-	"FAKE ID card (type !id for show your innocence)"
-	{
-		"it"		"Carta d'identita' falsa (digita !id per provare la tua innocenza)"
-	}
-
 	"Health Station"
 	{
 		"it"		"Stazione di Cura - {1}"
-	}
-
-	"DNA scanner (scan a dead body and show who the killer is)"
-	{
-		"it"		"DNA scanner (scannerizza il corpo e guarda chi è il killer) - {1}"
-	}
-
-	"Kevlar"
-	{
-		"it"		"Kevlar - {1}"
-	}
-
-	"Buy rol Detective"
-	{
-		"it"		"Compra il ruolo DETECTIVE  -  {1}"
 	}
 
 	"Please wait till your team is assigned"
@@ -106,21 +81,6 @@
 	"Inspected body. The extracted data are the following"
 	{
 		"it"		"Corpo Ispezionato. I dati estratti sono i seguenti:"
-	}
-
-	"Player committed suicide"
-	{
-		"it"		"Un giocatore si è suicidato"
-	}
-
-	"Player committed suicide"
-	{
-		"it"		"Un giocatore si è suicidato"
-	}
-
-	"Player Is an Innocent"
-	{
-		"it"		"Il Giocatore{green} {1} {lightgreen}è {green}INNOCENTE"
 	}
 
 	"D channel"
@@ -153,11 +113,6 @@
 		"it"		"Non puoi vedere i log ora, devi essere morto o il round inattivo"
 	}
 
-	"USPS"
-	{
-		"it"		"Compra USP-S - {1}"
-	}
-
 	"Found Innocent"
 	{
 		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {green}{2}. {lightgreen}Era un {green}INNOCENTE!"
@@ -171,16 +126,6 @@
 	"Found Traitor"
 	{
 		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {darkred}{2}. {lightgreen}Era un {darkred}Traditore!"
-	}
-
-	"Buy c4"
-	{
-		"it"		"Compra il C4 - {1}"
-	}
-
-	"Buy jihadbomb"
-	{
-		"it"		"Compra una Bomba Jihad - {1}"
 	}
 
 	"Your bomb is not armed."
@@ -201,16 +146,6 @@
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"it"		"{lightgreen}SONO STATI SCELTI {darkred}{1} TRADITORI."
-	}
-
-	"Buy radar"
-	{
-		"it"		"Compra il radar"
-	}
-
-	"Buy radar"
-	{
-		"it"		"Compra il radar"
 	}
 
 	"Suicide Blocked"
