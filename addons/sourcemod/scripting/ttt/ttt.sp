@@ -48,7 +48,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
 	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
 	
-	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell);
+	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
 
 	// Body / Status
 	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
@@ -1238,13 +1238,13 @@ stock void TeamInitialize(int client)
 
 	CheckClantag(client);
 
+	bool bUpdate = false;
+
 	if (g_iConfig[bupdateClientModel])
 	{
 		CS_UpdateClientModel(client);
 		
-		Call_StartForward(g_hOnModelUpdate);
-		Call_PushCell(client);
-		Call_Finish();
+		bUpdate = true;
 	}
 	else if (g_iConfig[bforceModel])
 	{
@@ -1259,6 +1259,20 @@ stock void TeamInitialize(int client)
 				SetEntityModel(client, g_iConfig[smodelCT]);
 			}
 		}
+		
+		bUpdate = true;
+	}
+	
+	if (bUpdate)
+	{
+		char sModel[PLATFORM_MAX_PATH + 1];
+		GetClientModel(client, sModel, sizeof(sModel));
+
+		Call_StartForward(g_hOnModelUpdate);
+		Call_PushCell(client);
+		Call_PushString(sModel);
+		Call_Finish();
+
 	}
 
 	Call_StartForward(g_hOnClientGetRole);
