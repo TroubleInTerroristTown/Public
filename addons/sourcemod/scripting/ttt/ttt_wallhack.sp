@@ -8,6 +8,7 @@
 
 #include <ttt_shop>
 #include <ttt>
+#include <ttt_glow>
 #include <config_loader>
 #include <CustomPlayerSkins>
 #include <multicolors>
@@ -50,27 +51,6 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	CreateNative("TTT_HasActiveWallhack", Native_HasActiveWallhack);
-	
-	RegPluginLibrary("ttt_wallhack");
-
-	return APLRes_Success;
-}
-
-public int Native_HasActiveWallhack(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	
-	if (g_bHasWH[client] && g_bOwnWH[client])
-	{
-		return true;
-	}
-	
-	return false;
-}
 
 public void OnPluginStart()
 {
@@ -240,4 +220,14 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	}
 
 	return Plugin_Stop;
+}
+
+public Action TTT_OnGlowCheck(int client, int target)
+{
+	if (g_bHasWH[client] && g_bOwnWH[client])
+	{
+		return Plugin_Continue;
+	}
+	
+	return Plugin_Handled;
 }

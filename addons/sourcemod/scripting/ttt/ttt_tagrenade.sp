@@ -6,6 +6,7 @@
 #include <sdkhooks>
 #include <ttt_shop>
 #include <ttt>
+#include <ttt_glow>
 #include <config_loader>
 #include <CustomPlayerSkins>
 #include <multicolors>
@@ -44,31 +45,6 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
-
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	CreateNative("TTT_CheckTAGrenade", Native_CheckTAGrenade);
-	
-	RegPluginLibrary("ttt_tagrenade");
-
-	return APLRes_Success;
-}
-
-public int Native_CheckTAGrenade(Handle plugin, int numParams)
-{
-	int client = GetNativeCell(1);
-	int target = GetNativeCell(2);
-	
-	if (g_bSeePlayers[client] && g_bHasGrenade[client])
-	{
-		if (target > 0 && GetGameTime() < g_fTaggingEndTime[target])
-		{
-			return true;
-		}
-	}
-	
-	return false;
-}
 
 public void OnPluginStart()
 {
@@ -339,4 +315,17 @@ void ResetTAG(int client)
 	g_bPlayerIsTagged[client] = false;
 	g_bSeePlayers[client] = false;
 	g_bHasGrenade[client] = false;
+}
+
+public Action TTT_OnGlowCheck(int client, int target)
+{
+	if (g_bSeePlayers[client] && g_bHasGrenade[client])
+	{
+		if (target > 0 && GetGameTime() < g_fTaggingEndTime[target])
+		{
+			return Plugin_Continue;
+		}
+	}
+	
+	return Plugin_Handled;
 }

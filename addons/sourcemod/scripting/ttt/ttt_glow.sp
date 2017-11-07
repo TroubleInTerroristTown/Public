@@ -7,11 +7,6 @@
 #include <CustomPlayerSkins>
 #include <config_loader>
 
-#undef REQUIRE_PLUGIN
-#include <ttt_wallhack>
-#include <ttt_tagrenade>
-#define REQUIRE_PLUGIN
-
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
 int g_iColorDetective[3] =  {0, 0, 255};
@@ -24,10 +19,10 @@ bool g_bTGlow = false;
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 bool g_bCPS = false;
-bool g_bWallhack = false;
-bool g_bTAGrenade = false;
 
 bool g_bDebug = false;
+
+Handle g_hOnGlowCheck = null;
 
 public Plugin myinfo =
 {
@@ -40,6 +35,8 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
+	g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell);
+	
 	RegPluginLibrary("ttt_glow");
 
 	return APLRes_Success;
@@ -59,8 +56,6 @@ public void OnPluginStart()
 	Config_Done();
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
-	g_bWallhack = LibraryExists("ttt_wallhack");
-	g_bTAGrenade = LibraryExists("ttt_tagrenade");
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -69,16 +64,6 @@ public void OnLibraryAdded(const char[] name)
 	{
 		g_bCPS = true;
 	}
-	
-	if (StrEqual(name, "ttt_wallhack"))
-	{
-		g_bWallhack = true;
-	}
-	
-	if (StrEqual(name, "ttt_tagrenade"))
-	{
-		g_bTAGrenade = true;
-	}
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -86,16 +71,6 @@ public void OnLibraryRemoved(const char[] name)
 	if (StrEqual(name, "CustomPlayerSkins"))
 	{
 		g_bCPS = false;
-	}
-	
-	if (StrEqual(name, "ttt_wallhack"))
-	{
-		g_bWallhack = false;
-	}
-	
-	if (StrEqual(name, "ttt_tagrenade"))
-	{
-		g_bTAGrenade = false;
 	}
 }
 
@@ -145,13 +120,20 @@ void SetupGlowSkin(int client)
 	{
 		return;
 	}
-
-	if (!g_bDGlow && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	
+	int role = TTT_GetClientRole(client);
+	
+	if (role != TTT_TEAM_DETECTIVE || role != TTT_TEAM_INNOCENT || role != TTT_TEAM_TRAITOR)
 	{
 		return;
 	}
 
-	if (!g_bTGlow && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	if (!g_bDGlow && role == TTT_TEAM_DETECTIVE)
+	{
+		return;
+	}
+
+	if (!g_bTGlow && role == TTT_TEAM_TRAITOR)
 	{
 		return;
 	}
@@ -164,6 +146,7 @@ void SetupGlowSkin(int client)
 	{
 		return;
 	}
+	
 	if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
 	{
 		SetupGlow(client, skin);
@@ -227,7 +210,8 @@ void SetupGlow(int client, int skin)
 
 public Action OnSetTransmit_GlowSkin(int skin, int client)
 {
-	int target = -1;
+	int iRole = TTT_GetClientRole(client);
+	
 	LoopValidClients(i)
 	{
 		if (i < 1)
@@ -259,32 +243,26 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 		{
 			continue;
 		}
-
-		target = i;
+		
+		int iTRole = TTT_GetClientRole(i);
+		
+		if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
+		{
+			return Plugin_Continue;
+		}
+	
+		if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
+		{
+			return Plugin_Continue;
+		}
+		
+		Action result = Plugin_Continue;
+		Call_StartForward(g_hOnGlowCheck);
+		Call_PushCell(client);
+		Call_PushCell(i);
+		Call_Finish(result);
+		return result;
 	}
 	
-	int iRole = TTT_GetClientRole(client);
-	int iTRole = TTT_GetClientRole(target);
-	
-	if ((iRole == TTT_TEAM_DETECTIVE || iRole == TTT_TEAM_TRAITOR) && g_bWallhack && TTT_HasActiveWallhack(client))
-	{
-		return Plugin_Continue;
-	}
-	
-	if (iRole == TTT_TEAM_TRAITOR && g_bTAGrenade && TTT_CheckTAGrenade(client, target))
-	{
-		return Plugin_Continue;
-	}
-	
-	if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
-	{
-		return Plugin_Continue;
-	}
-
-	if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
-	{
-		return Plugin_Continue;
-	}
-
 	return Plugin_Handled;
 }
