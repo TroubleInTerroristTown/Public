@@ -18,6 +18,9 @@ bool g_LogWhitelist = false;
 bool g_bColored = true;
 bool g_bBlockJump = true;
 bool g_bShowNames = false;
+bool g_bGrabAlive = false;
+bool g_bGrabNonMoveAlive = false;
+
 char g_sFlags[16];
 
 int g_iSprite = -1;
@@ -50,6 +53,8 @@ public void OnPluginStart()
 	g_LogWhitelist = Config_LoadBool("gbm_log_whitelist", false, "Log whitelist?");
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
+	g_bGrabAlive = Config_LoadBool("gbm_grab_alive", false, "Grab living players?");
+	g_bGrabNonMoveAlive = Config_LoadBool("gbm_grab_non_move_alive", false, "Grab living non moveable players?");
 	
 	g_bShowNames = Config_LoadBool("gbm_show_name", false, "Show names of entities? Useful to add this on whitelist.");
 	Config_LoadString("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name", g_sFlags, sizeof(g_sFlags));
@@ -171,6 +176,17 @@ stock void GrabSomething(int client)
 		if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 		{
 			return;
+		}
+	}
+	
+	if (!g_bGrabAlive)
+	{
+		if (TTT_IsClientValid(ent) && IsPlayerAlive(ent))
+		{
+			if (!g_bGrabNonMoveAlive || (g_bGrabNonMoveAlive && GetEntityMoveType(ent) != MOVETYPE_NONE))
+			{
+				return;
+			}
 		}
 	}
 

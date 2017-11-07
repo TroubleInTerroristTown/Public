@@ -15,12 +15,10 @@ int g_iColorDetective[3] =  {0, 0, 255};
 
 bool g_bDGlow = false;
 bool g_bTGlow = false;
+bool g_bCPS = false;
+bool g_bDebug = false;
 
 char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-
-bool g_bCPS = false;
-
-bool g_bDebug = false;
 
 Handle g_hOnGlowCheck = null;
 
