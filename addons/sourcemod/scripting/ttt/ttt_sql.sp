@@ -7,19 +7,16 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_sql>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - SQL Manager"
 
 Database g_dDatabase = null;
 
-char g_sEntry[32];
+ConVar g_cEntry = null;
+ConVar g_cRetries = null;
+
 char g_sType[18];
-
-int g_cRetries = -1;
 int g_iRetries = -1;
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 Handle g_hOnConnect = null;
 
@@ -49,39 +46,42 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/sql.cfg");
-
-	Config_Setup("TTT-SQL", g_sConfigFile);
-
-	g_cRetries = Config_LoadInt("sql_max_retries", 3, "The amount of retries after first failed connection");
-	Config_LoadString("sql_database_entry_name", "ttt", "The name of the entry in your databases.cfg", g_sEntry, sizeof(g_sEntry));
-	Config_Done();
+	StartConfig("ttt");
+	g_cRetries = AutoExecConfig_CreateConVar("sql_max_retries", "3", "The amount of retries after first failed connection");
+	g_cEntry = AutoExecConfig_CreateConVar("sql_database_entry_name", "ttt", "The name of the entry in your databases.cfg");
+	EndConfig();
 
 	g_iRetries = 0;
+}
 
+public void OnConfigsExecuted()
+{
 	SQL_Start();
 }
 
 void SQL_Start()
 {
+	char sEntry[32];
+	g_cEntry.GetString(sEntry, sizeof(sEntry));
+	
 	if (g_dDatabase != null)
 	{
-		LogError("%s is already connected! (Handle: %d)", g_sEntry, g_dDatabase);
+		LogError("%s is already connected! (Handle: %d)", sEntry, g_dDatabase);
 		return;
 	}
 
-	if (g_iRetries > g_cRetries)
+	if (g_iRetries > g_cRetries.IntValue)
 	{
 		LogError("Can't connect to a database after %d retries!", g_iRetries-1);
 		return;
 	}
 
-	if (g_iRetries >= 1 && g_iRetries <= g_cRetries)
+	if (g_iRetries >= 1 && g_iRetries <= g_cRetries.IntValue)
 	{
 		LogMessage("We try again to connect to a database (Retry #%d)!", g_iRetries);
 	}
 
-	if (g_iRetries == g_cRetries)
+	if (g_iRetries == g_cRetries.IntValue)
 	{
 		LogMessage("Last chance with sqlite. Let me try it!");
 
@@ -115,10 +115,10 @@ void SQL_Start()
 		}
 	}
 
-	if (!SQL_CheckConfig(g_sEntry) && g_iRetries < g_cRetries)
+	if (!SQL_CheckConfig(sEntry) && g_iRetries < g_cRetries.IntValue)
 	{
 		char sError[255];
-		g_dDatabase = SQL_Connect(g_sEntry, true, sError, sizeof(sError));
+		g_dDatabase = SQL_Connect(sEntry, true, sError, sizeof(sError));
 
 		if (strlen(sError) > 1)
 		{
@@ -127,7 +127,7 @@ void SQL_Start()
 
 		if (g_dDatabase == null)
 		{
-			LogError("(SQL_Start) Database failure: Couldn't connect to \"%s\"!", g_sEntry);
+			LogError("(SQL_Start) Database failure: Couldn't connect to \"%s\"!", sEntry);
 			CreateTimer(5.0, Timer_Retry);
 			return;
 		}
@@ -142,7 +142,7 @@ void SQL_Start()
 	}
 	else
 	{
-		Database.Connect(OnConnect, g_sEntry);
+		Database.Connect(OnConnect, sEntry);
 	}
 }
 
