@@ -17,10 +17,13 @@
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
 #define MAX_CUSTOM_ITEMS 64
+#define MAX_ITEM_LENGTH 64
 
 #define WEAPON_TASER 31
 
-#define TTT_ITEM_SIZE 512
+#define TTT_LOG_SIZE 512
+
+#include <autoexecconfig>
 
 enum eConfig
 {
@@ -526,4 +529,18 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		return true;
 	}
 	return false;
+}
+
+stock void StartConfig(char[] file, char[] directory = "ttt")
+{
+	AutoExecConfig_SetCreateDirectory(true);
+	AutoExecConfig_SetCreateFile(true);
+	AutoExecConfig_SetFile(file, directory);
+	AutoExecConfig_CacheConvars();
+}
+
+stock void EndConfig()
+{
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
 }

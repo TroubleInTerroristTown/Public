@@ -433,7 +433,7 @@ stock void ShowLogs(int client)
 		PrintToConsole(client, "---------------TTT LOGS---------------");
 	}
 
-	char iItem[TTT_ITEM_SIZE];
+	char iItem[TTT_LOG_SIZE];
 	int index = 5;
 	bool end = false;
 
@@ -522,7 +522,7 @@ public void OnCreate(any data)
 			index = (sizearray - 1);
 		}
 
-		char iItem[TTT_ITEM_SIZE];
+		char iItem[TTT_LOG_SIZE];
 
 		for (int i = old; i <= index; i++)
 		{
@@ -2228,7 +2228,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		}
 	}
 
-	char iItem[TTT_ITEM_SIZE];
+	char iItem[TTT_LOG_SIZE];
 	char sWeapon[32];
 	event.GetString("weapon", sWeapon, sizeof(sWeapon));
 	
@@ -2479,7 +2479,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 
 	int damage = event.GetInt("dmg_health");
 
-	char iItem[TTT_ITEM_SIZE];
+	char iItem[TTT_LOG_SIZE];
 	char sWeapon[32];
 	event.GetString("weapon", sWeapon, sizeof(sWeapon));
 	
@@ -2919,7 +2919,7 @@ stock void addArrayTime(char[] message)
 		int iMin = ((iTime / 60) % 60);
 		int iSec = (iTime % 60);
 
-		Format(message, TTT_ITEM_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
+		Format(message, TTT_LOG_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
 	}
 	g_aLogs.PushString(message);
 }
