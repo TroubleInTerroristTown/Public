@@ -45,6 +45,7 @@ public void OnPluginStart()
 	LoadTranslations("ttt.phrases");
 
 	StartConfig("ice_knife");
+	CreateConVar("ttt2_ice_knife_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("iceknife_name", "Ice Knife", "The name of the Ice Knife in the Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("iceknife_price", "9000", "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
 	g_cCount = AutoExecConfig_CreateConVar("iceknife_count", "1", "The amount of usages for Ice Knifes per round as traitor. 0 to disable.");
