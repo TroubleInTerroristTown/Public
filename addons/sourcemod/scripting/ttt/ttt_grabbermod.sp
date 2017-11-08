@@ -14,7 +14,6 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
-bool g_LogWhitelist = false;
 bool g_bColored = true;
 bool g_bBlockJump = true;
 bool g_bShowNames = false;
@@ -32,7 +31,12 @@ float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 char g_cConfigFile[PLATFORM_MAX_PATH];
 
+// Whitelist + Blacklist
 ArrayList g_aWhitelist = null;
+bool g_bLogWhitelist = false;
+
+ArrayList g_aBlacklist = null;
+bool g_bLogBlacklist = false;
 
 public Plugin myinfo =
 {
@@ -50,18 +54,19 @@ public void OnPluginStart()
 	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
 	Config_Setup("TTT", g_cConfigFile);
 	
-	g_LogWhitelist = Config_LoadBool("gbm_log_whitelist", false, "Log whitelist?");
+	g_bLogWhitelist = Config_LoadBool("gbm_log_whitelist", true, "Log whitelist?");
+	g_bLogBlacklist = Config_LoadBool("gbm_log_blacklist", true, "Log blacklist?");
 	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
 	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
 	g_bGrabAlive = Config_LoadBool("gbm_grab_alive", false, "Grab living players?");
 	g_bGrabNonMoveAlive = Config_LoadBool("gbm_grab_non_move_alive", false, "Grab living non moveable players?");
 	
-	g_bShowNames = Config_LoadBool("gbm_show_name", false, "Show names of entities? Useful to add this on whitelist.");
+	g_bShowNames = Config_LoadBool("gbm_show_name", false, "Show names of entities? Useful to add this on blacklist/whitelist.");
 	Config_LoadString("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name", g_sFlags, sizeof(g_sFlags));
 	
 	Config_Done();
 	
-	LoadWhitelist();
+	LoadLists();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
 }
@@ -130,29 +135,8 @@ stock void GrabSomething(int client)
 		}
 	}
 	
-	bool bFound = false;
-	char sBuffer[32];
-	
-	if (g_aWhitelist.Length > 0)
-	{
-		for (int i = 0; i < g_aWhitelist.Length; i++)
-		{
-			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
-			
-			if (strlen(sBuffer) > 1 && StrContains(sBuffer, sName, false) != -1)
-			{
-				bFound = true;
-				break;
-			}
-		}
-	}
-	else
-	{
-		SetFailState("[GrabberMod] (GrabSomething) Whitelist is empty, we disable grabbermod to prevent bugs/crashes!");
-		return;
-	}
-	
-	if (!bFound)
+	// true is a positive found on the blacklist or negative found on the whitelist 
+	if (CheckLists(sName))
 	{
 		return;
 	}
@@ -173,7 +157,8 @@ stock void GrabSomething(int client)
 		char sTargetname[32];
 		GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
 		
-		if (StrContains(sTargetname, "fpd_ragdoll", false) != -1)
+		// true is a positive found on the blacklist or negative found on the whitelist 
+		if (CheckLists(sTargetname))
 		{
 			return;
 		}
@@ -239,7 +224,7 @@ stock int GetObject(int client, bool hitSelf=true)
 		if (IsValidEntity(ent) && IsValidEdict(ent))
 		{
 			char sName[64];
-			GetEdictClassname(ent, sName, 64);
+			GetEdictClassname(ent, sName, sizeof(sName));
 			if (StrEqual(sName, "worldspawn"))
 			{
 				if (hitSelf)
@@ -419,6 +404,12 @@ public void OnClientDisconnect(int client)
 	g_fTime[client] = 0.0;
 }
 
+void LoadLists()
+{
+	LoadWhitelist();
+	LoadBlacklist();
+}
+
 void LoadWhitelist()
 {
 	if (g_aWhitelist != null)
@@ -448,7 +439,7 @@ void LoadWhitelist()
 		{
 			g_aWhitelist.PushString(sBuffer);
 			
-			if (g_LogWhitelist)
+			if (g_bLogWhitelist)
 			{
 				LogMessage("[GrabberMod] (LoadWhitelist) Add %s to array...", sBuffer);
 			}
@@ -456,4 +447,93 @@ void LoadWhitelist()
 	}
 	
 	delete hFile;
+}
+
+void LoadBlacklist()
+{
+	if (g_aBlacklist != null)
+	{
+		g_aBlacklist.Clear();
+	}
+	else
+	{
+		g_aBlacklist = new ArrayList(32);
+	}
+	
+	char sPath[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_grabbermod.ini");
+
+	Handle hFile = OpenFile(sPath, "rt");
+
+	if (!FileExists(sPath))
+	{
+		SetFailState("Can't find the following file: \"configs/ttt/blacklist_grabbermod.ini\"");
+		return;
+	}
+	
+	char sBuffer[32];
+	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+	{
+		if (strlen(sBuffer) > 2)
+		{
+			g_aBlacklist.PushString(sBuffer);
+			
+			if (g_bLogBlacklist)
+			{
+				LogMessage("[GrabberMod] (LoadBlacklist) Add %s to array...", sBuffer);
+			}
+		}
+	}
+	
+	delete hFile;
+}
+
+bool CheckBlacklist(const char[] name)
+{
+	char sBuffer[32];
+	
+	if (g_aBlacklist.Length > 0)
+	{
+		for (int i = 0; i < g_aBlacklist.Length; i++)
+		{
+			g_aBlacklist.GetString(i, sBuffer, sizeof(sBuffer));
+			
+			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+bool CheckWhitelist(const char[] name)
+{
+	char sBuffer[32];
+	
+	if (g_aWhitelist.Length > 0)
+	{
+		for (int i = 0; i < g_aWhitelist.Length; i++)
+		{
+			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
+			
+			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			{
+				return true;
+			}
+		}
+	}
+	
+	return false;
+}
+
+bool CheckLists(const char[] name)
+{
+	if (CheckBlacklist(name) && !CheckWhitelist(name))
+	{
+		return true;
+	}
+	
+	return false;
 }
