@@ -234,43 +234,6 @@ native void TTT_SetFoundStatus(int client, bool found);
 native void TTT_LogString(const char[] format, any ...);
 
 /*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigInt(int configIndex, int value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigBool(int configIndex, bool value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigFloat(int configIndex, float value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param buffer            String to set.
- */
-native void TTT_OverrideConfigString(int configIndex, char[] buffer);
-
-/*
- * Reloads the config.
- */
-native void TTT_ReloadConfig();
-
-/*
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.

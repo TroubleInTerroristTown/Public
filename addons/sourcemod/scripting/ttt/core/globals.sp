@@ -5,8 +5,10 @@
 
 #define COLLISION_GROUP_DEBRIS_TRIGGER 2
 
-char g_sConfigFile[PLATFORM_MAX_PATH + 1];
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
+char g_sErrorFile[PLATFORM_MAX_PATH + 1];
+char g_sLogFile[PLATFORM_MAX_PATH + 1];
+char g_sTag[64];
 
 bool g_bRoundEnded = false;
 
@@ -97,8 +99,6 @@ Handle g_hOnModelUpdate = null;
 
 bool g_bSourcebans = false;
 
-UserMsg g_uMessage;
-
 char g_sRadioCMDs[][] =  {
 	"coverme",
 	"takepoint",
@@ -185,7 +185,6 @@ ConVar g_cLogsNotifyAlive = null;
 ConVar g_cupdateClientModel = null;
 ConVar g_cremoveHostages = null;
 ConVar g_cremoveBomb = null;
-ConVar g_croleAgain = null;
 ConVar g_ctraitorRatio = null;
 ConVar g_cdetectiveRatio = null;
 ConVar g_cdenyFire = null;
@@ -208,12 +207,11 @@ ConVar g_ckarmaRound = null;
 ConVar g_cstripWeapons = null;
 ConVar g_ckarmaDMG = null;
 ConVar g_ckarmaDMG_up = null;
-ConVar g_c_roundDelay = null;
+ConVar g_croundDelay = null;
 ConVar g_cnextRoundAlert = null;
 ConVar g_croundendDamage = null;
 ConVar g_cignoreDeaths = null;
 ConVar g_cignoreRDMMenu = null;
-ConVar g_cdeadPlayersCanSeeOtherRules = null;
 ConVar g_cRoundStartedFontSize = null;
 ConVar g_cRoundStartedFontColor = null;
 ConVar g_cRoundStartFontSize = null;
@@ -236,9 +234,7 @@ ConVar g_cfakeHealth = null;
 ConVar g_cfakeLife = null;
 ConVar g_cSetRole = null;
 ConVar g_cKarmaReset = null;
-ConVar g_cSetKerma = null;
-ConVar g_cReloadCFG = null;
+ConVar g_cSetKarma = null;
 ConVar g_cAddSteamIDtoLogs = null;
 ConVar g_cSteamIDLogFormat = null;
-ConVar g_cHideTeamAttackMessage = null;
 ConVar g_cDisableDamageSelection = null;

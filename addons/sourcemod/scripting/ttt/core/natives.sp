@@ -22,7 +22,7 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		if (g_iConfig[bpublicKarma] || publicKarma)
+		if (g_cpublicKarma.BoolValue || publicKarma)
 		{
 			return g_iKarma[client];
 		}
@@ -206,45 +206,6 @@ public int Native_GetFoundStatus(Handle plugin, int numParams)
 public int Native_SetFoundStatus(Handle plugin, int numParams)
 {
 	g_bFound[GetNativeCell(1)] = view_as<bool>(GetNativeCell(2));
-
-	return;
-}
-
-public int Native_OverrideConfigInt(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigBool(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigFloat(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigString(Handle plugin, int numParams)
-{
-	int size = GetNativeCell(3);
-	char[] buffer = new char[size];
-
-	GetNativeString(2, buffer, size);
-	strcopy(view_as<char>(g_iConfig[GetNativeCell(1)]), size, buffer);
-
-	return;
-}
-
-public int Native_ReloadConfig(Handle plugin, int numParams)
-{
-	SetupConfig();
 
 	return;
 }

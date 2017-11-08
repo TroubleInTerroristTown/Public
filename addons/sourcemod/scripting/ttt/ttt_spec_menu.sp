@@ -16,10 +16,10 @@
 int g_iMenuTime = 0;
 
 bool g_bAutoOpen = true;
-bool g_bMutedAlive[MAXPLAYERS + 1];
-bool g_bMutedDead[MAXPLAYERS + 1];
+bool g_bMutedAlive[MAXPLAYERS + 1] =  { false, ... };
+bool g_bMutedDead[MAXPLAYERS + 1] =  { false, ... };
 
-ArrayList g_aAlivePlayers;
+ArrayList g_aAlivePlayers = null;
 
 public Plugin myinfo =
 {
@@ -160,15 +160,7 @@ void ShowSpecMenu(int client)
 	menu.AddItem("dead", sItem);
 
 	menu.ExitButton = true;
-
-	if (g_iMenuTime == 0)
-	{
-		menu.Display(client, MENU_TIME_FOREVER);
-	}
-	else if (g_iMenuTime > 0)
-	{
-		menu.Display(client, g_iMenuTime);
-	}
+	menu.Display(client, g_iMenuTime);
 }
 
 public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)

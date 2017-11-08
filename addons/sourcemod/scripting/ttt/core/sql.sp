@@ -2,7 +2,7 @@ public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any us
 {
 	if (hndl == null || strlen(error) > 0)
 	{
-		LogToFileEx(g_iConfig[serrFile], "(Callback_Karma) Query failed: %s", error);
+		LogToFileEx(g_sErrorFile, "(Callback_Karma) Query failed: %s", error);
 		return;
 	}
 }
@@ -11,7 +11,7 @@ public void Callback_UpdatePlayer(Handle owner, Handle hndl, const char[] error,
 {
 	if (hndl == null || strlen(error) > 0)
 	{
-		LogToFileEx(g_iConfig[serrFile], "(Callback_UpdatePlayer) Query failed: %s", error);
+		LogToFileEx(g_sErrorFile, "(Callback_UpdatePlayer) Query failed: %s", error);
 		return;
 	}
 	else
@@ -36,14 +36,14 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 
 	if (hndl == null || strlen(error) > 0)
 	{
-		LogToFileEx(g_iConfig[serrFile], "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+		LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
 		return;
 	}
 	else
 	{
 		if (!SQL_FetchRow(hndl))
 		{
-			g_iKarma[client] = g_iConfig[istartKarma];
+			g_iKarma[client] = g_cstartKarma.IntValue;
 			UpdatePlayer(client);
 		}
 		else
@@ -52,7 +52,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 
 			if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 			{
-				LogToFileEx(g_iConfig[serrFile], "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+				LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
 				return;
 			}
 
@@ -60,12 +60,12 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 
 			if (g_bDebug)
 			{
-				LogToFileEx(g_iConfig[slogFile], "Name: %L has %d karma", client, karma);
+				LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
 			}
 
 			if (karma == 0)
 			{
-				g_iKarma[client] = g_iConfig[istartKarma];
+				g_iKarma[client] = g_cstartKarma.IntValue;
 			}
 			else
 			{
