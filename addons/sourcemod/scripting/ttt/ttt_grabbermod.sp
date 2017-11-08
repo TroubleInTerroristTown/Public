@@ -199,8 +199,8 @@ stock void GrabSomething(int client)
 
 stock bool ValidGrab(int client)
 {
-	int obj = g_iObject[client];
-	if (obj != -1 && IsValidEntity(obj) && IsValidEdict(obj))
+	int iObject = g_iObject[client];
+	if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
 	{
 		return (true);
 	}
@@ -209,57 +209,57 @@ stock bool ValidGrab(int client)
 
 stock int GetObject(int client, bool hitSelf=true)
 {
-	int ent = -1;
+	int iEntity = -1;
 
 	if (IsClientInGame(client))
 	{
 		if (ValidGrab(client))
 		{
-			ent = EntRefToEntIndex(g_iObject[client]);
-			return (ent);
+			iEntity = EntRefToEntIndex(g_iObject[client]);
+			return (iEntity);
 		}
 
-		ent = TraceToEntity(client);
+		iEntity = TraceToEntity(client);
 
-		if (IsValidEntity(ent) && IsValidEdict(ent))
+		if (IsValidEntity(iEntity) && IsValidEdict(iEntity))
 		{
 			char sName[64];
-			GetEdictClassname(ent, sName, sizeof(sName));
+			GetEdictClassname(iEntity, sName, sizeof(sName));
 			if (StrEqual(sName, "worldspawn"))
 			{
 				if (hitSelf)
 				{
-					ent = client;
+					iEntity = client;
 				}
 				else
 				{
-					ent = -1;
+					iEntity = -1;
 				}
 			}
 		}
 		else
 		{
-			ent = -1;
+			iEntity = -1;
 		}
 	}
 
-	return (ent);
+	return iEntity;
 }
 
 public int TraceToEntity(int client)
 {
-	float vecClientEyePos[3], vecClientEyeAng[3];
-	GetClientEyePosition(client, vecClientEyePos);
-	GetClientEyeAngles(client, vecClientEyeAng);
+	float fEyePos[3], fEyeAngle[3];
+	GetClientEyePosition(client, fEyePos);
+	GetClientEyeAngles(client, fEyeAngle);
 
-	TR_TraceRayFilter(vecClientEyePos, vecClientEyeAng, MASK_PLAYERSOLID, RayType_Infinite, TraceASDF, client);
+	TR_TraceRayFilter(fEyePos, fEyeAngle, MASK_PLAYERSOLID, RayType_Infinite, TraceASDF, client);
 
 	if (TR_DidHit(null))
 	{
 		return (TR_GetEntityIndex(null));
 	}
 
-	return (-1);
+	return -1;
 }
 
 public bool TraceASDF(int entity, int mask, any data)
@@ -267,23 +267,23 @@ public bool TraceASDF(int entity, int mask, any data)
 	return (data != entity);
 }
 
-stock int ReplacePhysicsEntity(int ent)
+stock int ReplacePhysicsEntity(int iEntity)
 {
-	float VecPos_Ent[3], VecAng_Ent[3];
+	float fOrigin[3], fAngle[3];
 
 	char model[128];
-	GetEntPropString(ent, Prop_Data, "m_ModelName", model, sizeof(model));
-	GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
-	GetEntPropVector(ent, Prop_Send, "m_angRotation", VecAng_Ent);
-	AcceptEntityInput(ent, "Wake");
-	AcceptEntityInput(ent, "EnableMotion");
-	AcceptEntityInput(ent, "EnableDamageForces");
-	DispatchKeyValue(ent, "physdamagescale", "0.0");
+	GetEntPropString(iEntity, Prop_Data, "m_ModelName", model, sizeof(model));
+	GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fOrigin);
+	GetEntPropVector(iEntity, Prop_Send, "m_angRotation", fAngle);
+	AcceptEntityInput(iEntity, "Wake");
+	AcceptEntityInput(iEntity, "EnableMotion");
+	AcceptEntityInput(iEntity, "EnableDamageForces");
+	DispatchKeyValue(iEntity, "physdamagescale", "0.0");
 
-	TeleportEntity(ent, VecPos_Ent, VecAng_Ent, NULL_VECTOR);
-	SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
+	TeleportEntity(iEntity, fOrigin, fAngle, NULL_VECTOR);
+	SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
 
-	return (ent);
+	return iEntity;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
