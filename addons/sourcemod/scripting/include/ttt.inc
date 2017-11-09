@@ -250,6 +250,26 @@ native bool TTT_ForceTraitor(int client);
 native bool TTT_ForceDetective(int client);
 
 /*
+ * NO DESCRIPTION
+ *
+ * @param client             The client index.
+ * @param rounds             The amount of rounds to add.
+ * @param force             Begin directly if client is alive.
+ * @return Returns the amount of rounds, otherwise the client index is invalid
+ */
+native int TTT_AddRoundSlays(int client, int rounds, bool force);
+
+/*
+ * NO DESCRIPTION
+ *
+ * @param client             The client index.
+ * @param rounds             The amount of rounds.
+ * @param force             Begin directly if client is alive.
+ * @return Returns the amount of rounds, otherwise the client index is invalid
+ */
+native int TTT_SetRoundSlays(int client, int rounds, bool force);
+
+/*
  * Check if TTT plugin is loaded and running.
  */
 stock bool TTT_IsLoaded()

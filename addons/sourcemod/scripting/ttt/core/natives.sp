@@ -241,3 +241,54 @@ public int Native_ForceDetective(Handle plugin, int numParams)
 
 	return true;
 }
+
+public int Native_AddRoundSlays(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if (TTT_IsClientValid(client))
+	{
+		int rounds = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+		
+		g_iRoundSlays[client] += rounds;
+		
+		if (g_bRoundStarted && force && IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
+		{
+			ForcePlayerSuicide(client);
+			g_iRoundSlays[client]--;
+		}
+		
+		UpdateRoundSlaysCookie(client);
+		
+		return g_iRoundSlays[client];
+	}
+	
+	return -1;
+}
+
+public int Native_SetRoundSlays(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if (TTT_IsClientValid(client))
+	{
+		int rounds = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+		
+		g_iRoundSlays[client] = rounds;
+		
+		if (g_bRoundStarted && force && IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
+		{
+			ForcePlayerSuicide(client);
+			g_iRoundSlays[client]--;
+		}
+		
+		UpdateRoundSlaysCookie(client);
+		
+		return rounds;
+	}
+	
+	return -1;
+}
+

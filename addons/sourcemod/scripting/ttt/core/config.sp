@@ -98,6 +98,11 @@ void SetupConfig()
 	g_cSteamIDLogFormat = AutoExecConfig_CreateConVar("ttt_steamid_log_format", "1", "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)", _, true, 0.0, true, 3.0);
 	g_cDebugMessages = AutoExecConfig_CreateConVar("ttt_show_debug_messages", "0", "Show debug messages to all root admins?", _, true, 0.0, true, 1.0);
 	g_cDisableDamageSelection = AutoExecConfig_CreateConVar("ttt_disable_damage_selection", "1", "Disable damage during team selection? This could prevent some bugs.", _, true, 0.0, true, 1.0);
+	g_cRoundSlayInno = AutoExecConfig_CreateConVar("ttt_round_slays_innocent", "5", "How much round slays for innocents after rdm punishment? (ttt_punish_innocent_for_rdm_kils)");
+	g_cRoundSlayTraitor = AutoExecConfig_CreateConVar("ttt_round_slays_traitor", "5", "How much round slays for traitores after rdm punishment? (ttt_punish_traitor_for_rdm_kils)");
+	g_cRoundSlayDetective = AutoExecConfig_CreateConVar("ttt_round_slays_detective", "5", "How much round slays for detectives after rdm punishment? (ttt_punish_detective_for_rdm_kils)");
+	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "2", "How much round slays for the players by a player punishment?");
+	g_cRoundSlayDestroyTrigger = AutoExecConfig_CreateConVar("ttt_round_slays_destroy_trigger", "2", "How much round slays for players there try to enter a destroy trigger? (?)");
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 }
