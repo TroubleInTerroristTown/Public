@@ -1513,12 +1513,12 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		GetClientName(client, name, sizeof(name));
 		int iRagdollC[Ragdolls];
 		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-		iRagdollC[Victim] = client;
+		iRagdollC[Victim] = GetClientUserId(client);
 		iRagdollC[VictimTeam] = g_iRole[client];
 		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, name);
 		iRagdollC[Scanned] = false;
 		GetClientName(iAttacker, name, sizeof(name));
-		iRagdollC[Attacker] = iAttacker;
+		iRagdollC[Attacker] = GetClientUserId(iAttacker);
 		iRagdollC[AttackerTeam] = g_iRole[iAttacker];
 		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, name);
 		iRagdollC[GameTime] = GetGameTime();
@@ -2014,12 +2014,12 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 	{
 		g_aRagdoll.GetArray(i, iRagdollC[0]);
 
-		if (client == iRagdollC[Attacker])
+		if (client == GetClientOfUserId(iRagdollC[Attacker]))
 		{
 			Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, userName);
 			g_aRagdoll.SetArray(i, iRagdollC[0]);
 		}
-		else if (client == iRagdollC[Victim])
+		else if (client == GetClientOfUserId(iRagdollC[Victim]))
 		{
 			Format(iRagdollC[VictimName], MAX_NAME_LENGTH, userName);
 			g_aRagdoll.SetArray(i, iRagdollC[0]);
@@ -2567,16 +2567,19 @@ public int TTT_OnButtonPress(int client, int button)
 							g_aRagdoll.SetArray(i, iRagdollC[0]);
 							return;
 						}
-
-						InspectBody(client, iRagdollC[Victim], iRagdollC[Attacker], RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
+						
+						int victim = GetClientOfUserId(iRagdollC[Victim]);
+						int attacker = GetClientOfUserId(iRagdollC[Attacker]);
+						
+						InspectBody(client, victim, attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
 							iRagdollC[Found] = true;
 
-							if (IsClientInGame(iRagdollC[Victim]))
+							if (IsClientInGame(victim))
 							{
-								g_bFound[iRagdollC[Victim]] = true;
+								g_bFound[victim] = true;
 							}
 
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
@@ -2598,11 +2601,11 @@ public int TTT_OnButtonPress(int client, int button)
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 							}
 
-							TeamTag(iRagdollC[Victim]);
+							TeamTag(victim);
 
 							Call_StartForward(g_hOnBodyFound);
 							Call_PushCell(client);
-							Call_PushCell(iRagdollC[Victim]);
+							Call_PushCell(victim);
 							Call_PushString(iRagdollC[VictimName]);
 							Call_Finish();
 						}
