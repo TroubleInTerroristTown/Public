@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-06 22:34:52 UTC
+// Date: 2017-11-10 21:35:40 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -854,6 +854,12 @@
 	{
 		"#format"	"{1:N}"
 		"en"		"{orchid}{1} {lightgreen}is now {green}Innocent!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"#format"	"{1:N},{2:N},{3:d}"
+		"en"		"{orchid}{1} {lightgreen}was slayed by {orchid}{2} {lightgreen}for {orchid}{3} {lightgreen}rounds!"
 	}
 
 }

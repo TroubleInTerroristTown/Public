@@ -5,7 +5,6 @@
 #include <sdktools>
 #include <ttt>
 #include <multicolors>
-#include <config_loader>
 
 #undef REQUIRE_PLUGIN
 #include <ttt_knockout>
@@ -14,13 +13,14 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
-bool g_bColored = true;
-bool g_bBlockJump = true;
-bool g_bShowNames = false;
-bool g_bGrabAlive = false;
-bool g_bGrabNonMoveAlive = false;
-
-char g_sFlags[16];
+ConVar g_cColored = null;
+ConVar g_cBlockJump = null;
+ConVar g_cShowNames = null;
+ConVar g_cGrabAlive = null;
+ConVar g_cGrabNonMoveAlive = null;
+ConVar g_cLogBlacklist = null;
+ConVar g_cLogWhitelist = null;
+ConVar g_cFlags = null;
 
 int g_iSprite = -1;
 
@@ -29,14 +29,9 @@ int g_iObject[MAXPLAYERS + 1] =  { 0, ... };
 float g_fDistance[MAXPLAYERS + 1] =  { 0.0, ... };
 float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
-char g_cConfigFile[PLATFORM_MAX_PATH];
-
-// Whitelist + Blacklist
 ArrayList g_aWhitelist = null;
-bool g_bLogWhitelist = false;
-
 ArrayList g_aBlacklist = null;
-bool g_bLogBlacklist = false;
+
 
 public Plugin myinfo =
 {
@@ -51,20 +46,17 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_cConfigFile, sizeof(g_cConfigFile), "configs/ttt/grabbermod.cfg");
-	Config_Setup("TTT", g_cConfigFile);
-	
-	g_bLogWhitelist = Config_LoadBool("gbm_log_whitelist", true, "Log whitelist?");
-	g_bLogBlacklist = Config_LoadBool("gbm_log_blacklist", true, "Log blacklist?");
-	g_bColored = Config_LoadBool("gbm_colored", true, "Colored laser beam for grab (new color every second)?");
-	g_bBlockJump = Config_LoadBool("gbm_block_jump", true, "Block jump on \"grabbed\" entities to prevent abusing?");
-	g_bGrabAlive = Config_LoadBool("gbm_grab_alive", false, "Grab living players?");
-	g_bGrabNonMoveAlive = Config_LoadBool("gbm_grab_non_move_alive", false, "Grab living non moveable players?");
-	
-	g_bShowNames = Config_LoadBool("gbm_show_name", false, "Show names of entities? Useful to add this on blacklist/whitelist.");
-	Config_LoadString("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name", g_sFlags, sizeof(g_sFlags));
-	
-	Config_Done();
+	StartConfig("grabbermod");
+	CreateConVar("ttt2_grabbermod_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLogWhitelist = AutoExecConfig_CreateConVar("gbm_log_whitelist", "1", "Log whitelist?", _, true, 0.0, true, 1.0);
+	g_cLogBlacklist = AutoExecConfig_CreateConVar("gbm_log_blacklist", "1", "Log blacklist?", _, true, 0.0, true, 1.0);
+	g_cColored = AutoExecConfig_CreateConVar("gbm_colored", "1", "Colored laser beam for grab (new color every second)?", _, true, 0.0, true, 1.0);
+	g_cBlockJump = AutoExecConfig_CreateConVar("gbm_block_jump", "1", "Block jump on \"grabbed\" entities to prevent abusing?", _, true, 0.0, true, 1.0);
+	g_cGrabAlive = AutoExecConfig_CreateConVar("gbm_grab_alive", "0", "Grab living players?", _, true, 0.0, true, 1.0);
+	g_cGrabNonMoveAlive = AutoExecConfig_CreateConVar("gbm_grab_non_move_alive", "0", "Grab living non moveable players?", _, true, 0.0, true, 1.0);
+	g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist/whitelist.", _, true, 0.0, true, 1.0);
+	g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
+	EndConfig();
 	
 	LoadLists();
 
@@ -127,9 +119,12 @@ stock void GrabSomething(int client)
 	char sName[128];
 	GetEdictClassname(ent, sName, sizeof(sName));
 	
-	if (g_bShowNames)
+	if (g_cShowNames.BoolValue)
 	{
-		if (TTT_HasFlags(client, g_sFlags))
+		char sAccess[16];
+		g_cFlags.GetString(sAccess, sizeof(sAccess));
+		
+		if (TTT_HasFlags(client, sAccess))
 		{
 			CPrintToChat(client, "Name of Entity: %s", sName);
 		}
@@ -164,11 +159,11 @@ stock void GrabSomething(int client)
 		}
 	}
 	
-	if (!g_bGrabAlive)
+	if (!g_cGrabAlive.BoolValue)
 	{
 		if (TTT_IsClientValid(ent) && IsPlayerAlive(ent))
 		{
-			if (!g_bGrabNonMoveAlive || (g_bGrabNonMoveAlive && GetEntityMoveType(ent) != MOVETYPE_NONE))
+			if (!g_cGrabNonMoveAlive.BoolValue || (g_cGrabNonMoveAlive.BoolValue && GetEntityMoveType(ent) != MOVETYPE_NONE))
 			{
 				return;
 			}
@@ -295,7 +290,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 	if (buttons & IN_JUMP)
 	{
-		if (g_bBlockJump)
+		if (g_cBlockJump.BoolValue)
 		{
 			int iEnt = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
 
@@ -359,7 +354,7 @@ public Action Adjust(Handle timer)
 
 				int color[4];
 
-				if (g_bColored)
+				if (g_cColored.BoolValue)
 				{
 					if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
 					{
@@ -439,7 +434,7 @@ void LoadWhitelist()
 		{
 			g_aWhitelist.PushString(sBuffer);
 			
-			if (g_bLogWhitelist)
+			if (g_cLogWhitelist.BoolValue)
 			{
 				LogMessage("[GrabberMod] (LoadWhitelist) Add %s to array...", sBuffer);
 			}
@@ -478,7 +473,7 @@ void LoadBlacklist()
 		{
 			g_aBlacklist.PushString(sBuffer);
 			
-			if (g_bLogBlacklist)
+			if (g_cLogBlacklist.BoolValue)
 			{
 				LogMessage("[GrabberMod] (LoadBlacklist) Add %s to array...", sBuffer);
 			}

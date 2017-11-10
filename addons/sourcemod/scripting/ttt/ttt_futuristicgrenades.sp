@@ -5,78 +5,65 @@
 #include <sdktools>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 #include <futuristicgrenades>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Futuristic Grenades"
 
-// General
-bool g_bOneTime = true;
-bool g_bGiveDecoy = true;
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-
-// All grenades
-#define FUTURISTIC_I "futuristic_i"
-#define FUTURISTIC_T "futuristic_t"
-#define FUTURISTIC_D "futuristic_d"
-char g_sLongNameF[64];
-int g_iPriceFI = 0;
-int g_iPriceFT = 0;
-int g_iPriceFD = 0;
-int g_iPrioFI = 0;
-int g_iPrioFT = 0;
-int g_iPrioFD = 0;
-bool g_bFuturistic[MAXPLAYERS + 1] =  { false, ... };
-
-// Blackhole
 #define BH_SNAME_I "blackhole_i"
 #define BH_SNAME_T "blackhole_t"
 #define BH_SNAME_D "blackhole_d"
-char g_sLongNameBH[64];
-int g_iPriceBHI = 0;
-int g_iPriceBHT = 0;
-int g_iPriceBHD = 0;
-int g_iPrioBHI = 0;
-int g_iPrioBHT = 0;
-int g_iPrioBHD = 0;
-
-// Forcefield
 #define FF_SNAME_I "forcefield_i"
 #define FF_SNAME_T "forcefield_t"
 #define FF_SNAME_D "forcefield_d"
-char g_sLongNameFF[64];
-int g_iPriceFFI = 0;
-int g_iPriceFFT = 0;
-int g_iPriceFFD = 0;
-int g_iPrioFFI = 0;
-int g_iPrioFFT = 0;
-int g_iPrioFFD = 0;
-
-// Explosion
 #define FE_SNAME_I "explosion_i"
 #define FE_SNAME_T "explosion_t"
 #define FE_SNAME_D "explosion_d"
-char g_sLongNameFE[64];
-int g_iPriceFEI = 0;
-int g_iPriceFET = 0;
-int g_iPriceFED = 0;
-int g_iPrioFEI = 0;
-int g_iPrioFET = 0;
-int g_iPrioFED = 0;
-
-// Implosion
 #define FI_SNAME_I "implosion_i"
 #define FI_SNAME_T "implosion_t"
 #define FI_SNAME_D "implosion_d"
-char g_sLongNameFI[64];
-int g_iPriceFII = 0;
-int g_iPriceFIT = 0;
-int g_iPriceFID = 0;
-int g_iPrioFII = 0;
-int g_iPrioFIT = 0;
-int g_iPrioFID = 0;
+#define FUTURISTIC_I "futuristic_i"
+#define FUTURISTIC_T "futuristic_t"
+#define FUTURISTIC_D "futuristic_d"
 
+ConVar g_cOneTime = null;
+ConVar g_cGiveDecoy = null;
+ConVar g_cLongNameF = null;
+ConVar g_cPriceFI = null;
+ConVar g_cPriceFT = null;
+ConVar g_cPriceFD = null;
+ConVar g_cPrioFI = null;
+ConVar g_cPrioFT = null;
+ConVar g_cPrioFD = null;
+ConVar g_cLongNameBH = null;
+ConVar g_cPriceBHI = null;
+ConVar g_cPriceBHT = null;
+ConVar g_cPriceBHD = null;
+ConVar g_cPrioBHI = null;
+ConVar g_cPrioBHT = null;
+ConVar g_cPrioBHD = null;
+ConVar g_cLongNameFF = null;
+ConVar g_cPriceFFI = null;
+ConVar g_cPriceFFT = null;
+ConVar g_cPriceFFD = null;
+ConVar g_cPrioFFI = null;
+ConVar g_cPrioFFT = null;
+ConVar g_cPrioFFD = null;
+ConVar g_cLongNameFE = null;
+ConVar g_cPriceFEI = null;
+ConVar g_cPriceFET = null;
+ConVar g_cPriceFED = null;
+ConVar g_cPrioFEI = null;
+ConVar g_cPrioFET = null;
+ConVar g_cPrioFED = null;
+ConVar g_cLongNameFI = null;
+ConVar g_cPriceFII = null;
+ConVar g_cPriceFIT = null;
+ConVar g_cPriceFID = null;
+ConVar g_cPrioFII = null;
+ConVar g_cPrioFIT = null;
+ConVar g_cPrioFID = null;
+
+bool g_bFuturistic[MAXPLAYERS + 1] =  { false, ... };
 DecoyMode g_iGMode[MAXPLAYERS + 1] =  { DecoyMode_Normal, ... };
 
 public Plugin myinfo =
@@ -94,63 +81,51 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/futuristicgrenades.cfg");
-	Config_Setup("TTT-FuturisticGrenades", g_sConfigFile);
-	
-	g_bOneTime = Config_LoadBool("futuristic_one_time", true, "Effect for just one grenade?");
-	g_bGiveDecoy = Config_LoadBool("futuristic_give_decoy", true, "Give decoy on purchase?");
-	
-	// All grenades
-	Config_LoadString("futuristic_name", "Futuristic Grenades", "The name of this in Shop", g_sLongNameF, sizeof(g_sLongNameF));
-	g_iPriceFI = Config_LoadInt("futuristic_price_innocent", 20000, "The amount of credits futuristic grenades costs as innocent. 0 to disable.");
-	g_iPriceFT = Config_LoadInt("futuristic_price_traitor", 20000, "The amount of credits futuristic grenades costs as traitor. 0 to disable.");
-	g_iPriceFD = Config_LoadInt("futuristic_price_detective", 20000, "The amount of credits futuristic grenades costs as detective. 0 to disable.");
-	g_iPrioFI = Config_LoadInt("futuristic_sort_prio_innocent", 0, "The sorting priority of the futuristic grenades in the shop menu for innocents.");
-	g_iPrioFT = Config_LoadInt("futuristic_sort_prio_traitor", 0, "The sorting priority of the futuristic grenades in the shop menu for traitors.");
-	g_iPrioFD = Config_LoadInt("futuristic_sort_prio_detective", 0, "The sorting priority of the futuristic grenades in the shop menu for detectives.");
-	
-	// Forcefield
-	Config_LoadString("forcefield_name", "Force Field", "The name of this in Shop", g_sLongNameFF, sizeof(g_sLongNameFF));
-	g_iPriceFFI = Config_LoadInt("forcefield_price_innocent", 8000, "The amount of credits forcefield grenades costs as innocent. 0 to disable.");
-	g_iPriceFFT = Config_LoadInt("forcefield_price_traitor", 8000, "The amount of credits forcefield grenades costs as traitor. 0 to disable.");
-	g_iPriceFFD = Config_LoadInt("forcefield_price_detective", 8000, "The amount of credits forcefield grenades costs as detective. 0 to disable.");
-	g_iPrioFFI = Config_LoadInt("forcefield_sort_prio_innocent", 0, "The sorting priority of the forcefield grenades in the shop menu for innocents.");
-	g_iPrioFFT = Config_LoadInt("forcefield_sort_prio_traitor", 0, "The sorting priority of the forcefield grenades in the shop menu for traitors.");
-	g_iPrioFFD = Config_LoadInt("forcefield_sort_prio_detective", 0, "The sorting priority of the forcefield grenades in the shop menu for detectives.");
-	
-	// Blackhole
-	Config_LoadString("blackhole_name", "Blackhole", "The name of this in Shop", g_sLongNameBH, sizeof(g_sLongNameBH));
-	g_iPriceBHI = Config_LoadInt("blackhole_price_innocent", 8000, "The amount of credits blackhole grenades costs as innocent. 0 to disable.");
-	g_iPriceBHT = Config_LoadInt("blackhole_price_traitor", 8000, "The amount of credits blackhole grenades costs as traitor. 0 to disable.");
-	g_iPriceBHD = Config_LoadInt("blackhole_price_detective", 8000, "The amount of credits blackhole grenades costs as detective. 0 to disable.");
-	g_iPrioBHI = Config_LoadInt("blackhole_sort_prio_innocent", 0, "The sorting priority of the blackhole grenades in the shop menu for innocents.");
-	g_iPrioBHT = Config_LoadInt("blackhole_sort_prio_traitor", 0, "The sorting priority of the blackhole grenades in the shop menu for traitors.");
-	g_iPrioBHD = Config_LoadInt("blackhole_sort_prio_detective", 0, "The sorting priority of the blackhole grenades in the shop menu for detectives.");
-	
-	// Explosion
-	Config_LoadString("explosion_name", "Force Explosion", "The name of this in Shop", g_sLongNameFE, sizeof(g_sLongNameFE));
-	g_iPriceFEI = Config_LoadInt("explosion_price_innocent", 8000, "The amount of credits explosion grenades costs as innocent. 0 to disable.");
-	g_iPriceFET = Config_LoadInt("explosion_price_traitor", 8000, "The amount of credits explosion grenades costs as traitor. 0 to disable.");
-	g_iPriceFED = Config_LoadInt("explosion_price_detective", 8000, "The amount of credits explosion grenades costs as detective. 0 to disable.");
-	g_iPrioFEI = Config_LoadInt("explosion_sort_prio_innocent", 0, "The sorting priority of the explosion grenades in the shop menu for innocents.");
-	g_iPrioFET = Config_LoadInt("explosion_sort_prio_traitor", 0, "The sorting priority of the explosion grenades in the shop menu for traitors.");
-	g_iPrioFED = Config_LoadInt("explosion_sort_prio_detective", 0, "The sorting priority of the explosion grenades in the shop menu for detectives.");
-	
-	// Implosion
-	Config_LoadString("implosion_name", "Force Implosion", "The name of this in Shop", g_sLongNameFI, sizeof(g_sLongNameFI));
-	g_iPriceFII = Config_LoadInt("implosion_price_innocent", 8000, "The amount of credits implosion grenades costs as innocent. 0 to disable.");
-	g_iPriceFIT = Config_LoadInt("implosion_price_traitor", 8000, "The amount of credits implosion grenades costs as traitor. 0 to disable.");
-	g_iPriceFID = Config_LoadInt("implosion_price_detective", 8000, "The amount of credits implosion grenades costs as detective. 0 to disable.");
-	g_iPrioFII = Config_LoadInt("implosion_sort_prio_innocent", 0, "The sorting priority of the implosion grenades in the shop menu for innocents.");
-	g_iPrioFIT = Config_LoadInt("implosion_sort_prio_traitor", 0, "The sorting priority of the implosion grenades in the shop menu for traitors.");
-	g_iPrioFID = Config_LoadInt("implosion_sort_prio_detective", 0, "The sorting priority of the implosion grenades in the shop menu for detectives.");
-
-	Config_Done();
+	StartConfig("futuristicgrenades");
+	CreateConVar("ttt2_futuristic_grenades_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cOneTime = AutoExecConfig_CreateConVar("futuristic_one_time", "1", "Effect for just one grenade?", _, true, 0.0, true, 1.0);
+	g_cGiveDecoy = AutoExecConfig_CreateConVar("futuristic_give_decoy", "1", "Give decoy on purchase?", _, true, 0.0, true, 1.0);
+	g_cLongNameF = AutoExecConfig_CreateConVar("futuristic_name", "Futuristic Grenades", "The name of this in Shop");
+	g_cPriceFI = AutoExecConfig_CreateConVar("futuristic_price_innocent", "20000", "The amount of credits futuristic grenades costs as innocent. 0 to disable.");
+	g_cPriceFT = AutoExecConfig_CreateConVar("futuristic_price_traitor", "20000", "The amount of credits futuristic grenades costs as traitor. 0 to disable.");
+	g_cPriceFD = AutoExecConfig_CreateConVar("futuristic_price_detective", "20000", "The amount of credits futuristic grenades costs as detective. 0 to disable.");
+	g_cPrioFI = AutoExecConfig_CreateConVar("futuristic_sort_prio_innocent", "0", "The sorting priority of the futuristic grenades in the shop menu for innocents.");
+	g_cPrioFT = AutoExecConfig_CreateConVar("futuristic_sort_prio_traitor", "0", "The sorting priority of the futuristic grenades in the shop menu for traitors.");
+	g_cPrioFD = AutoExecConfig_CreateConVar("futuristic_sort_prio_detective", "0", "The sorting priority of the futuristic grenades in the shop menu for detectives.");
+	g_cLongNameFF = AutoExecConfig_CreateConVar("forcefield_name", "Force Field", "The name of this in Shop");
+	g_cPriceFFI = AutoExecConfig_CreateConVar("forcefield_price_innocent", "8000", "The amount of credits forcefield grenades costs as innocent. 0 to disable.");
+	g_cPriceFFT = AutoExecConfig_CreateConVar("forcefield_price_traitor", "8000", "The amount of credits forcefield grenades costs as traitor. 0 to disable.");
+	g_cPriceFFD = AutoExecConfig_CreateConVar("forcefield_price_detective", "8000", "The amount of credits forcefield grenades costs as detective. 0 to disable.");
+	g_cPrioFFI = AutoExecConfig_CreateConVar("forcefield_sort_prio_innocent", "0", "The sorting priority of the forcefield grenades in the shop menu for innocents.");
+	g_cPrioFFT = AutoExecConfig_CreateConVar("forcefield_sort_prio_traitor", "0", "The sorting priority of the forcefield grenades in the shop menu for traitors.");
+	g_cPrioFFD = AutoExecConfig_CreateConVar("forcefield_sort_prio_detective", "0", "The sorting priority of the forcefield grenades in the shop menu for detectives.");
+	g_cLongNameBH = AutoExecConfig_CreateConVar("blackhole_name", "Blackhole", "The name of this in Shop");
+	g_cPriceBHI = AutoExecConfig_CreateConVar("blackhole_price_innocent", "8000", "The amount of credits blackhole grenades costs as innocent. 0 to disable.");
+	g_cPriceBHT = AutoExecConfig_CreateConVar("blackhole_price_traitor", "8000", "The amount of credits blackhole grenades costs as traitor. 0 to disable.");
+	g_cPriceBHD = AutoExecConfig_CreateConVar("blackhole_price_detective", "8000", "The amount of credits blackhole grenades costs as detective. 0 to disable.");
+	g_cPrioBHI = AutoExecConfig_CreateConVar("blackhole_sort_prio_innocent", "0", "The sorting priority of the blackhole grenades in the shop menu for innocents.");
+	g_cPrioBHT = AutoExecConfig_CreateConVar("blackhole_sort_prio_traitor", "0", "The sorting priority of the blackhole grenades in the shop menu for traitors.");
+	g_cPrioBHD = AutoExecConfig_CreateConVar("blackhole_sort_prio_detective", "0", "The sorting priority of the blackhole grenades in the shop menu for detectives.");
+	g_cLongNameFE = AutoExecConfig_CreateConVar("explosion_name", "Force Explosion", "The name of this in Shop");
+	g_cPriceFEI = AutoExecConfig_CreateConVar("explosion_price_innocent", "8000", "The amount of credits explosion grenades costs as innocent. 0 to disable.");
+	g_cPriceFET = AutoExecConfig_CreateConVar("explosion_price_traitor", "8000", "The amount of credits explosion grenades costs as traitor. 0 to disable.");
+	g_cPriceFED = AutoExecConfig_CreateConVar("explosion_price_detective", "8000", "The amount of credits explosion grenades costs as detective. 0 to disable.");
+	g_cPrioFEI = AutoExecConfig_CreateConVar("explosion_sort_prio_innocent", "0", "The sorting priority of the explosion grenades in the shop menu for innocents.");
+	g_cPrioFET = AutoExecConfig_CreateConVar("explosion_sort_prio_traitor", "0", "The sorting priority of the explosion grenades in the shop menu for traitors.");
+	g_cPrioFED = AutoExecConfig_CreateConVar("explosion_sort_prio_detective", "0", "The sorting priority of the explosion grenades in the shop menu for detectives.");
+	g_cLongNameFI = AutoExecConfig_CreateConVar("implosion_name", "Force Implosion", "The name of this in Shop");
+	g_cPriceFII = AutoExecConfig_CreateConVar("implosion_price_innocent", "8000", "The amount of credits implosion grenades costs as innocent. 0 to disable.");
+	g_cPriceFIT = AutoExecConfig_CreateConVar("implosion_price_traitor", "8000", "The amount of credits implosion grenades costs as traitor. 0 to disable.");
+	g_cPriceFID = AutoExecConfig_CreateConVar("implosion_price_detective", "8000", "The amount of credits implosion grenades costs as detective. 0 to disable.");
+	g_cPrioFII = AutoExecConfig_CreateConVar("implosion_sort_prio_innocent", "0", "The sorting priority of the implosion grenades in the shop menu for innocents.");
+	g_cPrioFIT = AutoExecConfig_CreateConVar("implosion_sort_prio_traitor", "0", "The sorting priority of the implosion grenades in the shop menu for traitors.");
+	g_cPrioFID = AutoExecConfig_CreateConVar("implosion_sort_prio_detective", "0", "The sorting priority of the implosion grenades in the shop menu for detectives.");
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	char sFile[] = "futuristicgrenades.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
@@ -161,30 +136,32 @@ public void OnAllPluginsLoaded()
 		return;
 	}
 	
-	// All grenades
-	TTT_RegisterCustomItem(FUTURISTIC_I, g_sLongNameF, g_iPriceFI, TTT_TEAM_INNOCENT, g_iPrioFI);
-	TTT_RegisterCustomItem(FUTURISTIC_T, g_sLongNameF, g_iPriceFT, TTT_TEAM_TRAITOR, g_iPrioFT);
-	TTT_RegisterCustomItem(FUTURISTIC_D, g_sLongNameF, g_iPriceFD, TTT_TEAM_DETECTIVE, g_iPrioFD);
+	char sBuffer[MAX_ITEM_LENGTH];
 	
-	// Forcefield
-	TTT_RegisterCustomItem(FF_SNAME_I, g_sLongNameFF, g_iPriceFFI, TTT_TEAM_INNOCENT, g_iPrioFFI);
-	TTT_RegisterCustomItem(FF_SNAME_T, g_sLongNameFF, g_iPriceFFT, TTT_TEAM_TRAITOR, g_iPrioFFT);
-	TTT_RegisterCustomItem(FF_SNAME_D, g_sLongNameFF, g_iPriceFFD, TTT_TEAM_DETECTIVE, g_iPrioFFD);
+	g_cLongNameF.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(FUTURISTIC_I, sBuffer, g_cPriceFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFI.IntValue);
+	TTT_RegisterCustomItem(FUTURISTIC_T, sBuffer, g_cPriceFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFT.IntValue);
+	TTT_RegisterCustomItem(FUTURISTIC_D, sBuffer, g_cPriceFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFD.IntValue);
 	
-	// Blackhole
-	TTT_RegisterCustomItem(BH_SNAME_I, g_sLongNameBH, g_iPriceBHI, TTT_TEAM_INNOCENT, g_iPrioBHI);
-	TTT_RegisterCustomItem(BH_SNAME_T, g_sLongNameBH, g_iPriceBHT, TTT_TEAM_TRAITOR, g_iPrioBHT);
-	TTT_RegisterCustomItem(BH_SNAME_D, g_sLongNameBH, g_iPriceBHD, TTT_TEAM_DETECTIVE, g_iPrioBHD);
+	g_cLongNameFF.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(FF_SNAME_I, sBuffer, g_cPriceFFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFFI.IntValue);
+	TTT_RegisterCustomItem(FF_SNAME_T, sBuffer, g_cPriceFFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFFT.IntValue);
+	TTT_RegisterCustomItem(FF_SNAME_D, sBuffer, g_cPriceFFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFFD.IntValue);
 	
-	// Explosion
-	TTT_RegisterCustomItem(FE_SNAME_I, g_sLongNameFE, g_iPriceFEI, TTT_TEAM_INNOCENT, g_iPrioFEI);
-	TTT_RegisterCustomItem(FE_SNAME_T, g_sLongNameFE, g_iPriceFET, TTT_TEAM_TRAITOR, g_iPrioFET);
-	TTT_RegisterCustomItem(FE_SNAME_D, g_sLongNameFE, g_iPriceFED, TTT_TEAM_DETECTIVE, g_iPrioFED);
+	g_cLongNameBH.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(BH_SNAME_I, sBuffer, g_cPriceBHI.IntValue, TTT_TEAM_INNOCENT, g_cPrioBHI.IntValue);
+	TTT_RegisterCustomItem(BH_SNAME_T, sBuffer, g_cPriceBHT.IntValue, TTT_TEAM_TRAITOR, g_cPrioBHT.IntValue);
+	TTT_RegisterCustomItem(BH_SNAME_D, sBuffer, g_cPriceBHD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioBHD.IntValue);
 	
-	// Implosion
-	TTT_RegisterCustomItem(FI_SNAME_I, g_sLongNameFI, g_iPriceFII, TTT_TEAM_INNOCENT, g_iPrioFII);
-	TTT_RegisterCustomItem(FI_SNAME_T, g_sLongNameFI, g_iPriceFIT, TTT_TEAM_TRAITOR, g_iPrioFIT);
-	TTT_RegisterCustomItem(FI_SNAME_D, g_sLongNameFI, g_iPriceFID, TTT_TEAM_DETECTIVE, g_iPrioFID);
+	g_cLongNameFE.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(FE_SNAME_I, sBuffer, g_cPriceFEI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFEI.IntValue);
+	TTT_RegisterCustomItem(FE_SNAME_T, sBuffer, g_cPriceFET.IntValue, TTT_TEAM_TRAITOR, g_cPrioFET.IntValue);
+	TTT_RegisterCustomItem(FE_SNAME_D, sBuffer, g_cPriceFED.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFED.IntValue);
+	
+	g_cLongNameFI.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(FI_SNAME_I, sBuffer, g_cPriceFII.IntValue, TTT_TEAM_INNOCENT, g_cPrioFII.IntValue);
+	TTT_RegisterCustomItem(FI_SNAME_T, sBuffer, g_cPriceFIT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFIT.IntValue);
+	TTT_RegisterCustomItem(FI_SNAME_D, sBuffer, g_cPriceFID.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFID.IntValue);
 }
 
 public void OnClientDisconnect(int client)
@@ -215,7 +192,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			g_bFuturistic[client] = true;
 			
-			if (g_bGiveDecoy)
+			if (g_cGiveDecoy.BoolValue)
 			{
 				GivePlayerItem(client, "weapon_decoy");
 			}
@@ -228,7 +205,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			g_iGMode[client] = DecoyMode_Forcefield;
 			
-			if (g_bGiveDecoy)
+			if (g_cGiveDecoy.BoolValue)
 			{
 				GivePlayerItem(client, "weapon_decoy");
 			}
@@ -241,7 +218,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			g_iGMode[client] = DecoyMode_Blackhole;
 			
-			if (g_bGiveDecoy)
+			if (g_cGiveDecoy.BoolValue)
 			{
 				GivePlayerItem(client, "weapon_decoy");
 			}
@@ -254,7 +231,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			g_iGMode[client] = DecoyMode_ForceExplosion;
 			
-			if (g_bGiveDecoy)
+			if (g_cGiveDecoy.BoolValue)
 			{
 				GivePlayerItem(client, "weapon_decoy");
 			}
@@ -267,7 +244,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			g_iGMode[client] = DecoyMode_ForceImplosion;
 			
-			if (g_bGiveDecoy)
+			if (g_cGiveDecoy.BoolValue)
 			{
 				GivePlayerItem(client, "weapon_decoy");
 			}
@@ -304,7 +281,7 @@ public Action FGrenades_OnSwitchMode(int client, DecoyMode previousmode, DecoyMo
 
 public void FGrenades_OnGrenadeStart(int owner, int &particle, float pos[3], DecoyMode mode, int duration)
 {
-	if (g_bOneTime && (g_bFuturistic[owner] || g_iGMode[owner] != DecoyMode_Normal))
+	if (g_cOneTime.BoolValue && (g_bFuturistic[owner] || g_iGMode[owner] != DecoyMode_Normal))
 	{
 		ResetFuturistic(owner);
 	}

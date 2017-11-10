@@ -44,6 +44,7 @@ public void OnPluginStart()
 	LoadTranslations("ttt.phrases");
 
 	StartConfig("fakebody");
+	CreateConVar("ttt2_fakebody_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("fb_name", "Fakebody", "The name of the Fakebody in the Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("fb_price", "9000", "The amount of credits a fake body costs as traitor. 0 to disable.");
 	g_cCount = AutoExecConfig_CreateConVar("fb_count", "1", "The amount of usages for fake bodys per round as traitor. 0 to disable.");
@@ -95,7 +96,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				char sBuffer[MAX_ITEM_LENGTH];
 				g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 				
-				CPrintToChat(client, g_sPluginTag, "Bought All", client, sBuffer, g_cCount.IntValue);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -183,11 +184,11 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		{
 			if (g_cShowFakeMessage.BoolValue&& !iRagdollC[Found])
 			{
-				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Found Fake", j, client);
 			}
 			else if (!g_cShowFakeMessage.BoolValue && !iRagdollC[Found])
 			{
-				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
 			}
 			else if (iRagdollC[Found])
 			{

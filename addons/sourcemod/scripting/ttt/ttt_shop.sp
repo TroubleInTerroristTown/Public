@@ -277,7 +277,7 @@ public Action Command_Shop(int client, int args)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
 	}
 

@@ -103,6 +103,7 @@ void SetupConfig()
 	g_cRoundSlayDetective = AutoExecConfig_CreateConVar("ttt_round_slays_detective", "5", "How much round slays for detectives after rdm punishment? (ttt_punish_detective_for_rdm_kils)");
 	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "2", "How much round slays for the players by a player punishment?");
 	g_cRoundSlayDestroyTrigger = AutoExecConfig_CreateConVar("ttt_round_slays_destroy_trigger", "2", "How much round slays for players there try to enter a destroy trigger? (?)");
+	g_cRoundSlayAccess = AutoExecConfig_CreateConVar("ttt_round_slays_admin_access", "b", "Admin flags to access round slays command.");
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 }

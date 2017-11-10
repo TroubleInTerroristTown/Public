@@ -124,6 +124,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_trules", Command_TRules);
 	RegConsoleCmd("sm_drules", Command_DetectiveRules);
 	
+	RegConsoleCmd("sm_rslays", Command_RSlays);
+	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_SayTeam, "say_team");
@@ -1661,6 +1663,69 @@ public Action Command_DetectiveRules(int client, int args)
 
 	AskClientForMicrophone(client);
 	return Plugin_Handled;
+}
+
+public Action Command_RSlays(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+	
+	char sAccess[18];
+	g_cRoundSlayAccess.GetString(sAccess, sizeof(sAccess));
+	
+	if (!TTT_HasFlags(client, sAccess))
+	{
+		return Plugin_Handled;
+	}
+
+	if (args < 2 || args > 3)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_rslays <#userid|name> <rounds>");
+
+		return Plugin_Handled;
+	}
+
+	char arg1[32];
+	char arg2[32];
+	GetCmdArg(1, arg1, sizeof(arg1));
+	GetCmdArg(2, arg2, sizeof(arg2));
+
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
+
+	if ((target_count = ProcessTargetString(arg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_NO_MULTI, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	for (int i = 0; i < target_count; i++)
+	{
+		int target = target_list[i];
+
+		if (target == -1)
+		{
+			ReplyToCommand(client, "[SM] Invalid target.");
+			return Plugin_Handled;
+		}
+
+		int rounds = StringToInt(arg2);
+
+		TTT_SetRoundSlays(target, rounds, true);
+
+		LoopValidClients(j)
+		{
+			CPrintToChat(j, "%s %T", g_sTag, "AdminSetRoundSlays", j, target, client, rounds);
+		}
+		
+		LogAction(client, target, "\"%L\" slayed \"%L\" for \"%i\" rounds", client, target, rounds);
+	}
+
+	return Plugin_Continue;
 }
 
 public void Frame_ShowWelcomeMenu(any userid)

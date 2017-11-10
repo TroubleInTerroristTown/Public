@@ -5,7 +5,6 @@
 #include <sdkhooks>
 #include <ttt>
 #include <CustomPlayerSkins>
-#include <config_loader>
 
 int g_iColorInnocent[3] =  {0, 255, 0};
 int g_iColorTraitor[3] =  {255, 0, 0};
@@ -13,12 +12,11 @@ int g_iColorDetective[3] =  {0, 0, 255};
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
-bool g_bDGlow = false;
-bool g_bTGlow = false;
+ConVar g_cDGlow = null;
+ConVar g_cTGlow = null;
+
 bool g_bCPS = false;
 bool g_bDebug = false;
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 
 Handle g_hOnGlowCheck = null;
 
@@ -44,14 +42,11 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/glow.cfg");
-
-	Config_Setup("TTT-Glow", g_sConfigFile);
-
-	g_bDGlow = Config_LoadBool("glow_detective_enable", true, "Detectives see the glows of other detectives. 0 to disable.");
-	g_bTGlow = Config_LoadBool("glow_traitor_enable", true, "Traitors see the glows of other traitors. 0 to disable.");
-
-	Config_Done();
+	StartConfig("glow");
+	CreateConVar("ttt2_glow_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cDGlow = AutoExecConfig_CreateConVar("glow_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
+	g_cTGlow = AutoExecConfig_CreateConVar("glow_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 }
@@ -126,12 +121,12 @@ void SetupGlowSkin(int client)
 		return;
 	}
 
-	if (!g_bDGlow && role == TTT_TEAM_DETECTIVE)
+	if (!g_cDGlow.BoolValue && role == TTT_TEAM_DETECTIVE)
 	{
 		return;
 	}
 
-	if (!g_bTGlow && role == TTT_TEAM_TRAITOR)
+	if (!g_cTGlow.BoolValue && role == TTT_TEAM_TRAITOR)
 	{
 		return;
 	}

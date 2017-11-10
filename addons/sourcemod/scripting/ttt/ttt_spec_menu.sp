@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Spec Menu"
 
@@ -13,9 +12,9 @@
 #define SPECMODE_3RDPERSON 5
 #define SPECMODE_FREELOOK 6
 
-int g_iMenuTime = 0;
+ConVar g_cMenuTime = null;
+ConVar g_cAutoOpen = null;
 
-bool g_bAutoOpen = true;
 bool g_bMutedAlive[MAXPLAYERS + 1] =  { false, ... };
 bool g_bMutedDead[MAXPLAYERS + 1] =  { false, ... };
 
@@ -30,20 +29,17 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-char g_sConfig[PLATFORM_MAX_PATH + 1];
-
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
 	g_aAlivePlayers = new ArrayList(1);
 
-	BuildPath(Path_SM, g_sConfig, sizeof(g_sConfig), "configs/ttt/specmenu.cfg");
-
-	Config_Setup("TTT-SpecMenu", g_sConfig);
-	g_bAutoOpen = Config_LoadBool("specmenu_auto_open", true, "Show spec menu automatically after death?");
-	g_iMenuTime = Config_LoadInt("specmenu_menu_time", 0, "Time (in seconds) to autoclose the menu (0 - FOREVER)");
-	Config_Done();
+	StartConfig("spec_menu");
+	CreateConVar("ttt2_spec_menu_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cAutoOpen = AutoExecConfig_CreateConVar("specmenu_auto_open", "1", "Show spec menu automatically after death?", _, true, 0.0, true, 1.0);
+	g_cMenuTime = AutoExecConfig_CreateConVar("specmenu_menu_time", "0", "Time (in seconds) to autoclose the menu (0 - FOREVER)");
+	EndConfig();
 
 	LoadTranslations("ttt.phrases");
 
@@ -98,7 +94,7 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 			g_aAlivePlayers.Erase(iIndex);
 		}
 
-		if (g_bAutoOpen)
+		if (g_cAutoOpen.BoolValue)
 		{
 			ShowSpecMenu(client);
 		}
@@ -160,7 +156,7 @@ void ShowSpecMenu(int client)
 	menu.AddItem("dead", sItem);
 
 	menu.ExitButton = true;
-	menu.Display(client, g_iMenuTime);
+	menu.Display(client, g_cMenuTime.IntValue);
 }
 
 public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)

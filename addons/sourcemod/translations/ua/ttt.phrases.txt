@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-06 22:34:45 UTC
+// Date: 2017-11-10 21:35:39 UTC
 // Language: ua (ua)
 // 
 // To view other translations for this plugin, please visit:

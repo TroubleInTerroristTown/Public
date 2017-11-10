@@ -9,7 +9,6 @@
 #include <ttt_shop>
 #include <ttt>
 #include <ttt_glow>
-#include <config_loader>
 #include <CustomPlayerSkins>
 #include <multicolors>
 
@@ -19,29 +18,23 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
 
-int g_iTraitorPrice = -1;
-int g_iDetectivePrice = -1;
-
-int g_iTraitor_Prio = -1;
-int g_iDetective_Prio = -1;
-
-float g_fTraitorCooldown = -1.0;
-float g_fDetectiveCooldown = -1.0;
-
-float g_fTraitorActive = -1.0;
-float g_fDetectiveActive = -1.0;
+ConVar g_cTraitorPrice = null;
+ConVar g_cDetectivePrice = null;
+ConVar g_cTraitor_Prio = null;
+ConVar g_cDetective_Prio = null;
+ConVar g_cTraitorCooldown = null;
+ConVar g_cDetectiveCooldown = null;
+ConVar g_cTraitorActive = null;
+ConVar g_cDetectiveActive = null;
+ConVar g_cLongName = null;
 
 bool g_bOwnWH[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasWH[MAXPLAYERS + 1] =  { false, ... };
-
-char g_sConfigFile[PLATFORM_MAX_PATH];
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 
 bool g_bCPS = false;
 bool g_bGlow = false;
-
-char g_sLongName[64];
 
 public Plugin myinfo =
 {
@@ -56,24 +49,18 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/wh.cfg");
-
-	Config_Setup("TTT-Wallhack", g_sConfigFile);
-	Config_LoadString("wh_name", "Wallhack", "The name of the Wallhack in the Shop", g_sLongName, sizeof(g_sLongName));
-
-	g_iTraitorPrice = Config_LoadInt("wh_traitor_price", 9000, "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
-	g_iDetectivePrice = Config_LoadInt("wh_detective_price", 0, "The amount of credits the Dective-Wallhack costs. 0 to disable.");
-
-	g_fTraitorCooldown = Config_LoadFloat("wh_traitor_cooldown", 15.0, "Time of the cooldown for Traitor-Wallhack (time in seconds)");
-	g_fDetectiveCooldown = Config_LoadFloat("wh_detective_cooldown", 15.0, "Time of the cooldown for Dective-Wallhack (time in seconds)");
-
-	g_fTraitorActive = Config_LoadFloat("wh_traitor_active", 3.0, "Active time for Traitor-Wallhack (time in seconds)");
-	g_fDetectiveActive = Config_LoadFloat("wh_detective_active", 3.0, "Active time for Dective-Wallhack (time in seconds)");
-
-	g_iTraitor_Prio = Config_LoadInt("wh_traitor_sort_prio", 0, "The sorting priority of the Traitor - Wallhack in the shop menu.");
-	g_iDetective_Prio = Config_LoadInt("wh_detective_sort_prio", 0, "The sorting priority of the Detective - Wallhack in the shop menu.");
-
-	Config_Done();
+	StartConfig("wallhack");
+	CreateConVar("ttt2_wallhack_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("wh_name", "Wallhack", "The name of the Wallhack in the Shop");
+	g_cTraitorPrice = AutoExecConfig_CreateConVar("wh_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
+	g_cDetectivePrice = AutoExecConfig_CreateConVar("wh_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.");
+	g_cTraitorCooldown = AutoExecConfig_CreateConVar("wh_traitor_cooldown", "15.0", "Time of the cooldown for Traitor-Wallhack (time in seconds)");
+	g_cDetectiveCooldown = AutoExecConfig_CreateConVar("wh_detective_cooldown", "15.0", "Time of the cooldown for Dective-Wallhack (time in seconds)");
+	g_cTraitorActive = AutoExecConfig_CreateConVar("wh_traitor_active", "3.0", "Active time for Traitor-Wallhack (time in seconds)");
+	g_cDetectiveActive = AutoExecConfig_CreateConVar("wh_detective_active", "3.0", "Active time for Dective-Wallhack (time in seconds)");
+	g_cTraitor_Prio = AutoExecConfig_CreateConVar("wh_traitor_sort_prio", "0", "The sorting priority of the Traitor - Wallhack in the shop menu.");
+	g_cDetective_Prio = AutoExecConfig_CreateConVar("wh_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
+	EndConfig();
 	
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
@@ -109,12 +96,14 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	if (g_bCPS && g_bGlow)
 	{
-		TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iTraitorPrice, TTT_TEAM_TRAITOR, g_iTraitor_Prio);
-		TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iDetectivePrice, TTT_TEAM_DETECTIVE, g_iDetective_Prio);
+		char sBuffer[MAX_ITEM_LENGTH];
+		g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+		TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTraitorPrice.IntValue, TTT_TEAM_TRAITOR, g_cTraitor_Prio.IntValue);
+		TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDetectivePrice.IntValue, TTT_TEAM_DETECTIVE, g_cDetective_Prio.IntValue);
 	}
 	else if (!g_bCPS)
 	{
@@ -167,11 +156,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
-				g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
+				g_hTimer[client] = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
 			}
 			else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 			{
-				g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
+				g_hTimer[client] = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
 			}
 		}
 	}
@@ -189,11 +178,11 @@ public Action Timer_WHActive(Handle timer, any userid)
 
 		if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 		{
-			g_hTimer[client] = CreateTimer(g_fTraitorCooldown, Timer_WHCooldown, GetClientUserId(client));
+			g_hTimer[client] = CreateTimer(g_cTraitorCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
 		}
 		else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 		{
-			g_hTimer[client] = CreateTimer(g_fDetectiveCooldown, Timer_WHCooldown, GetClientUserId(client));
+			g_hTimer[client] = CreateTimer(g_cDetectiveCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
 		}
 	}
 
@@ -211,11 +200,11 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 
 		if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 		{
-			g_hTimer[client] = CreateTimer(g_fTraitorActive, Timer_WHActive, GetClientUserId(client));
+			g_hTimer[client] = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
 		}
 		else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 		{
-			g_hTimer[client] = CreateTimer(g_fDetectiveActive, Timer_WHActive, GetClientUserId(client));
+			g_hTimer[client] = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
 		}
 	}
 

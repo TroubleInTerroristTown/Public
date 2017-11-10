@@ -6,30 +6,25 @@
 #include <clientprefs>
 #include <multicolors>
 #include <ttt>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Round End Sounds"
 
 int g_iSoundEnts[2048];
 int g_iNumSounds;
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-
-char g_sDetPath[PLATFORM_MAX_PATH + 1];
-char g_sTraPath[PLATFORM_MAX_PATH + 1];
-char g_sInnPath[PLATFORM_MAX_PATH + 1];
-
-bool g_bPlayType = false;
-bool g_bStop = true;
-bool g_bSettings = true;
+ConVar g_cEnable = null;
+ConVar g_cDetPath = null;
+ConVar g_cTraPath = null;
+ConVar g_cInnPath = null;
+ConVar g_cPlayType = null;
+ConVar g_cStop = null;
+ConVar g_cSettings = null;
 
 Handle g_hCookie;
 
 bool SoundsDetSucess = false;
 bool SoundsTraSucess = false;
 bool SoundsInnSucess = false;
-
-bool g_bEnable = false;
 
 ArrayList detSound;
 ArrayList traSound;
@@ -46,44 +41,36 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {  
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/res.cfg");
-	Config_Setup("TTT-Res", g_sConfigFile);
+	StartConfig("res");
+	CreateConVar("ttt2_res_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cEnable = AutoExecConfig_CreateConVar("res_enable", "0", "Enable round end sounds plugin? (Default: false/0)", _, true, 0.0, true, 1.0);
+	g_cTraPath = AutoExecConfig_CreateConVar("res_traitor_path", "ttt/res/traitor", "Path off traitor sounds in /cstrike/sound");
+	g_cDetPath = AutoExecConfig_CreateConVar("res_detective_path", "ttt/res/detective", "Path off detective sounds in /cstrike/sound");
+	g_cInnPath = AutoExecConfig_CreateConVar("res_innocent_path", "ttt/res/innocent", "Path off innocent sounds in /cstrike/sound");
+	g_cPlayType = AutoExecConfig_CreateConVar("res_play_type", "0", "0 - Random, 1 - Play in queue", _, true, 0.0, true, 1.0);
+	g_cStop = AutoExecConfig_CreateConVar("res_stop_map_music", "1", "Stop map musics", _, true, 0.0, true, 1.0);	
+	g_cSettings = AutoExecConfig_CreateConVar("res_client_preferences", "1", "Enable/Disable client preferences", _, true, 0.0, true, 1.0);
+	EndConfig();
 	
-	g_bEnable = Config_LoadBool("res_enable", false, "Enable round end sounds plugin? (Default: false/0)");
+	g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
+	SetCookieMenuItem(Cookie_RoundEndSound, 0, "Round End Sounds");
 	
-	if (g_bEnable)
-	{
-		Config_LoadString("res_traitor_path", "ttt/res/traitor", "Path off traitor sounds in /cstrike/sound", g_sTraPath, sizeof(g_sTraPath));
-		Config_LoadString("res_detective_path", "ttt/res/detective", "Path off detective sounds in /cstrike/sound", g_sDetPath, sizeof(g_sDetPath));
-		Config_LoadString("res_innocent_path", "ttt/res/innocent", "Path off innocent sounds in /cstrike/sound", g_sInnPath, sizeof(g_sInnPath));
-		
-		
-		g_bPlayType = Config_LoadBool("res_play_type", false, "0 - Random, 1 - Play in queue");
-		g_bStop = Config_LoadBool("res_stop_map_music", true, "Stop map musics");	
-		g_bSettings = Config_LoadBool("res_client_preferences", true, "Enable/Disable client preferences");
-		
-		g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
-		SetCookieMenuItem(Cookie_RoundEndSound, 0, "Round End Sounds");
-		
-		LoadTranslations("common.phrases");
+	LoadTranslations("common.phrases");
+
+	RegAdminCmd("sm_resrefresh", Command_ResRefresh, ADMFLAG_CONFIG);
 	
-		RegAdminCmd("sm_resrefresh", Command_ResRefresh, ADMFLAG_CONFIG);
-		
-		RegConsoleCmd("sm_res", Commamnd_RES);
-		
-		HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
-		
-		detSound = new ArrayList(512);
-		traSound = new ArrayList(512);
-		innSound = new ArrayList(512);
-	}
+	RegConsoleCmd("sm_res", Commamnd_RES);
 	
-	Config_Done();
+	HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
+	
+	detSound = new ArrayList(512);
+	traSound = new ArrayList(512);
+	innSound = new ArrayList(512);
 }
 
 public void OnConfigsExecuted()
 {
-	if (g_bEnable)
+	if (g_cEnable.BoolValue)
 	{
 		RefreshSounds(0);
 	}
@@ -91,12 +78,12 @@ public void OnConfigsExecuted()
 
 public void TTT_OnRoundEnd(int winner)
 {
-	if (!g_bEnable)
+	if (!g_cEnable.BoolValue)
 	{
 		return;
 	}
 	
-	if(g_bStop)
+	if(g_cStop.BoolValue)
 	{
 		StopMapMusic();
 	}
@@ -164,7 +151,7 @@ stock void StopClientSound(int client, int entity, int channel, const char[] nam
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
 {
-	if(g_bEnable && g_bStop)
+	if(g_cEnable.BoolValue && g_cStop.BoolValue)
 	{
 		g_iNumSounds = 0;
 		
@@ -191,7 +178,7 @@ public void Cookie_RoundEndSound(int client, CookieMenuAction action, any info, 
 
 public Action Commamnd_RES(int client, int args)
 {
-	if(g_bSettings)
+	if(g_cSettings.BoolValue)
 	{
 		return Plugin_Handled;
 	}
@@ -342,7 +329,7 @@ int LoadSoundsDet()
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];
 	char soundpath2[PLATFORM_MAX_PATH];
-	strcopy(soundpath, sizeof(soundpath), g_sDetPath);
+	g_cDetPath.GetString(soundpath, sizeof(soundpath));
 	
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
 	Handle hDir = OpenDirectory(soundpath2);
@@ -374,7 +361,7 @@ int LoadSoundsTra()
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];
 	char soundpath2[PLATFORM_MAX_PATH];
-	strcopy(soundpath, sizeof(soundpath), g_sTraPath);
+	g_cTraPath.GetString(soundpath, sizeof(soundpath));
 	
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
 	Handle hDir = OpenDirectory(soundpath2);
@@ -405,7 +392,7 @@ int LoadSoundsInn()
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];
 	char soundpath2[PLATFORM_MAX_PATH];
-	strcopy(soundpath, sizeof(soundpath), g_sInnPath);
+	g_cInnPath.GetString(soundpath, sizeof(soundpath));
 	Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
 	Handle hDir = OpenDirectory(soundpath2);
 	if(hDir != null)
@@ -432,7 +419,7 @@ int LoadSoundsInn()
 void PlaySoundDet()
 {
 	int soundToPlay = 0;
-	if(g_bPlayType)
+	if(g_cPlayType.BoolValue)
 	{
 		soundToPlay = GetRandomInt(0, detSound.Length-1);
 	}
@@ -448,7 +435,7 @@ void PlaySoundDet()
 void PlaySoundTra()
 {
 	int soundToPlay = 0;
-	if(g_bPlayType)
+	if(g_cPlayType.BoolValue)
 	{
 		soundToPlay = GetRandomInt(0, traSound.Length-1);
 	}
@@ -464,7 +451,7 @@ void PlaySoundTra()
 void PlaySoundInn()
 {
 	int soundToPlay = 0;
-	if(g_bPlayType)
+	if(g_cPlayType.BoolValue)
 	{
 		soundToPlay = GetRandomInt(0, innSound.Length-1);
 	}
@@ -481,7 +468,7 @@ void PlayMusicAll(char[] sSound)
 {
 	LoopValidClients(i)
 	{
-		if((!g_bSettings || GetIntCookie(i, g_hCookie) == 0))
+		if((!g_cSettings.BoolValue || GetIntCookie(i, g_hCookie) == 0))
 		{
 			ClientCommand(i, "playgamesound Music.StopAllMusic");
 			ClientCommand(i, "play \"*%s\"", sSound);

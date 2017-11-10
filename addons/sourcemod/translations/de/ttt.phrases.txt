@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-06 22:34:40 UTC
+// Date: 2017-11-10 21:35:38 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -776,6 +776,11 @@
 	"Player is Now Innocent"
 	{
 		"de"		"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"de"		"{orchid}[1} {lightgreen}wird von {orchid}{2} {orchid}{3} {lightgreen}Runden erschlagen!"
 	}
 
 }

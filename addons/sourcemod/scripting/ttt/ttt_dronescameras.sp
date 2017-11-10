@@ -6,25 +6,21 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 #include <camerasanddrones>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Cameras and Drones"
 
 #define CAMERA_SHORT_NAME "camera"
-char g_sCLongName[64];
-int g_iCPrice = 0;
-int g_iCPrio = 0;
-
 #define DRONE_SHORT_NAME "drone"
-char g_sDLongName[64];
-int g_iDPrice = 0;
-int g_iDPrio = 0;
+
+ConVar g_cCLongName = null;
+ConVar g_cCPrice = null;
+ConVar g_cCPrio = null;
+ConVar g_cDLongName = null;
+ConVar g_cDPrice = null;
+ConVar g_cDPrio = null;
 
 int g_iMyWeapons = -1;
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo =
 {
@@ -47,30 +43,20 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/camerasanddrones.cfg");
-	Config_Setup("TTT-CAD", g_sConfigFile);
-
-	Config_LoadString("cad_camera_name", "Camera", "The name of this in Shop", g_sCLongName, sizeof(g_sCLongName));
-	g_iCPrice = Config_LoadInt("cad_camera_price", 9000, "The amount of credits a camera costs as detective. 0 to disable.");
-	g_iCPrio = Config_LoadInt("cad_camera_sort_prio", 0, "The sorting priority of the TEMPLATE in the shop menu.");
-
-	Config_LoadString("cad_drone_name", "Drone", "The name of this in Shop", g_sDLongName, sizeof(g_sDLongName));
-	g_iDPrice = Config_LoadInt("cad_drone_price", 9000, "The amount of credits a drone costs as detective. 0 to disable.");
-	g_iDPrio = Config_LoadInt("cad_drone_sort_prio", 0, "The sorting priority of the drone in the shop menu.");
-
-	Config_Done();
+	StartConfig("dronesandcameras");
+	CreateConVar("ttt2_drones_and_cameras_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cCLongName = AutoExecConfig_CreateConVar("cad_camera_name", "Camera", "The name of this in Shop");
+	g_cCPrice = AutoExecConfig_CreateConVar("cad_camera_price", "9000", "The amount of credits a camera costs as detective. 0 to disable.");
+	g_cCPrio = AutoExecConfig_CreateConVar("cad_camera_sort_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
+	g_cDLongName = AutoExecConfig_CreateConVar("cad_drone_name", "Drone", "The name of this in Shop");
+	g_cDPrice = AutoExecConfig_CreateConVar("cad_drone_price", "9000", "The amount of credits a drone costs as detective. 0 to disable.");
+	g_cDPrio = AutoExecConfig_CreateConVar("cad_drone_sort_prio", "0", "The sorting priority of the drone in the shop menu.");
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	char sFile[] = "cameras-and-drones.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
@@ -81,8 +67,13 @@ public void OnAllPluginsLoaded()
 		return;
 	}
 	
-	TTT_RegisterCustomItem(CAMERA_SHORT_NAME, g_sCLongName, g_iCPrice, TTT_TEAM_DETECTIVE, g_iCPrio);
-	TTT_RegisterCustomItem(DRONE_SHORT_NAME, g_sDLongName, g_iDPrice, TTT_TEAM_TRAITOR, g_iDPrio);
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cCLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(CAMERA_SHORT_NAME, sBuffer, g_cCPrice.IntValue, TTT_TEAM_DETECTIVE, g_cCPrio.IntValue);
+	
+	g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(DRONE_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_TRAITOR, g_cDPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)

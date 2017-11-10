@@ -7,53 +7,40 @@
 #include <cstrike>
 #include <ttt_shop>
 #include <ttt>
-#include <config_loader>
 #include <multicolors>
 
 #define SHORT_NAME "taser"
 #define SHORT_NAME_T "taser_t"
 #define SHORT_NAME_D "taser_d"
-#define LONG_NAME "Taser"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Taser"
 
 Handle g_hOnTased;
 
-int g_iDPrice = 0;
-int g_iIPrice = 0;
-int g_iTPrice = 0;
+ConVar g_cDPrice = null;
+ConVar g_cIPrice = null;
+ConVar g_cTPrice = null;
+ConVar g_cDPrio = null;
+ConVar g_cIPrio = null;
+ConVar g_cTPrio = null;
+ConVar g_cDCount = null;
+ConVar g_cICount = null;
+ConVar g_cTCount = null;
+ConVar g_cDamage = null;
+ConVar g_cOnSpawn = null;
+ConVar g_cBroadcastTaserResult = null;
+ConVar g_cTDamage = null;
+ConVar g_cInflictor = null;
+ConVar g_cLongName = null;
 
-int g_iDPrio = 0;
-int g_iIPrio = 0;
-int g_iTPrio = 0;
-
-int g_iDCount = 0;
-int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iICount = 0;
-int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iTCount = 0;
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
-
-int g_iDamage = 0;
-int g_iCreditsTaserHurtTraitor;
-
-bool g_bAddSteamIDtoLogs;
-int g_iSteamIDLogFormat;
-
-bool g_bOnSpawn = false;
-
-bool g_bBroadcastTaserResult = false;
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
-int g_iTDamage = 100;
+int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
+int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
+int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
 
-bool g_bInflictor = true;
+
 
 public Plugin myinfo =
 {
@@ -64,54 +51,6 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-public void OnPluginStart()
-{
-	TTT_IsGameCSGO();
-
-	LoadTranslations("ttt.phrases");
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-	g_iCreditsTaserHurtTraitor = Config_LoadInt("ttt_hurt_traitor_with_taser", 2000, "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
-	g_bAddSteamIDtoLogs = Config_LoadBool("ttt_steamid_add_to_logs", true, "Should we add steam id to all log actions? Prevent abusing with namefakers");
-	g_iSteamIDLogFormat = Config_LoadInt("ttt_steamid_log_format", 1, "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)");
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/taser.cfg");
-	Config_Setup("TTT-Taser", g_sConfigFile);
-
-	g_iDPrice = Config_LoadInt("ta_detective_price", 9000, "The amount of credits a taser costs as detective. 0 to disable.");
-	g_iIPrice = Config_LoadInt("ta_innocent_price", 9000, "The amount of credits a taser costs as innocent. 0 to disable.");
-	g_iTPrice = Config_LoadInt("ta_traitor_price", 0, "The amount of credits a taser costs as traitor. 0 to disable.");
-
-	g_iDPrio = Config_LoadInt("ta_detective_sort_prio", 0, "The sorting priority of the taser (Detective) in the shop menu.");
-	g_iIPrio = Config_LoadInt("ta_innocent_sort_prio", 0, "The sorting priority of the taser (Innocent) in the shop menu.");
-	g_iTPrio = Config_LoadInt("ta_traitor_sort_prio", 0, "The sorting priority of the taser (Traitor) in the shop menu.");
-
-	g_iDCount = Config_LoadInt("ta_detective_count", 1, "The amount of usages for tasers per round as detective. 0 to disable.");
-	g_iICount = Config_LoadInt("ta_innocent_count", 1, "The amount of usages for tasers per round as innocent. 0 to disable.");
-	g_iTCount = Config_LoadInt("ta_traitor_count", 1, "The amount of usages for tasers per round as traitor. 0 to disable.");
-
-	g_iDamage = Config_LoadInt("ta_damage", 0, "The amount of damage a taser deals for detectives and innocents");
-	g_iTDamage = Config_LoadInt("ta_traitor_damage", 0, "The amount of damage a taser deals for traitors");
-
-	g_bOnSpawn = Config_LoadBool("ta_give_taser_spawn", true, "Give the Detective a taser when he spawns?");
-
-	g_bBroadcastTaserResult = Config_LoadBool("ta_broadcast_taser_result", false, "When set to true the results of the taser message will be printed to everyone instead of the client that tased");
-
-	g_bInflictor = Config_LoadBool("ta_barrel_fix", true, "Prevent bug with taser and a explosive barrel");
-
-	Config_Done();
-
-	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("item_equip", Event_ItemEquip);
-
-	LateLoadAll();
-}
-
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
@@ -119,6 +58,50 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	RegPluginLibrary("ttt_taser");
 
 	return APLRes_Success;
+}
+
+public void OnPluginStart()
+{
+	TTT_IsGameCSGO();
+
+	LoadTranslations("ttt.phrases");
+
+	StartConfig("taser");
+	CreateConVar("ttt2_taser_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cDPrice = AutoExecConfig_CreateConVar("ta_detective_price", "9000", "The amount of credits a taser costs as detective. 0 to disable.");
+	g_cIPrice = AutoExecConfig_CreateConVar("ta_innocent_price", "9000", "The amount of credits a taser costs as innocent. 0 to disable.");
+	g_cTPrice = AutoExecConfig_CreateConVar("ta_traitor_price", "0", "The amount of credits a taser costs as traitor. 0 to disable.");
+	g_cDPrio = AutoExecConfig_CreateConVar("ta_detective_sort_prio", "0", "The sorting priority of the taser (Detective) in the shop menu.");
+	g_cIPrio = AutoExecConfig_CreateConVar("ta_innocent_sort_prio", "0", "The sorting priority of the taser (Innocent) in the shop menu.");
+	g_cTPrio = AutoExecConfig_CreateConVar("ta_traitor_sort_prio", "0", "The sorting priority of the taser (Traitor) in the shop menu.");
+	g_cDCount = AutoExecConfig_CreateConVar("ta_detective_count", "1", "The amount of usages for tasers per round as detective. 0 to disable.");
+	g_cICount = AutoExecConfig_CreateConVar("ta_innocent_count", "1", "The amount of usages for tasers per round as innocent. 0 to disable.");
+	g_cTCount = AutoExecConfig_CreateConVar("ta_traitor_count", "1", "The amount of usages for tasers per round as traitor. 0 to disable.");
+	g_cDamage = AutoExecConfig_CreateConVar("ta_damage", "0", "The amount of damage a taser deals for detectives and innocents");
+	g_cTDamage = AutoExecConfig_CreateConVar("ta_traitor_damage", "0", "The amount of damage a taser deals for traitors");
+	g_cOnSpawn = AutoExecConfig_CreateConVar("ta_give_taser_spawn", "1", "Give the Detective a taser when he spawns?", _, true, 0.0, true, 1.0);
+	g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
+	g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
+	g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
+	EndConfig();
+
+	HookEvent("player_spawn", Event_PlayerSpawn);
+	HookEvent("item_equip", Event_ItemEquip);
+
+	LateLoadAll();
+}
+
+public void OnConfigsExecuted()
+{
+	ConVar hTag = FindConVar("ttt_plugin_tag");
+	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)
@@ -151,7 +134,7 @@ public void HookClient(int client)
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if (role == TTT_TEAM_DETECTIVE && g_bOnSpawn)
+	if (role == TTT_TEAM_DETECTIVE && g_cOnSpawn.BoolValue)
 	{
 		if (g_bTaser[client])
 		{
@@ -201,13 +184,6 @@ public Action OnWeaponDrop(int client, int weapon)
 	}
 }
 
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(SHORT_NAME_D, LONG_NAME, g_iDPrice, TTT_TEAM_DETECTIVE, g_iDPrio);
-	TTT_RegisterCustomItem(SHORT_NAME, LONG_NAME, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
-	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
-}
-
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
@@ -216,25 +192,25 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			int role = TTT_GetClientRole(client);
 
-			if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_iDCount)
+			if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iDCount);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cDCount.IntValue);
 				return Plugin_Stop;
 			}
-			else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_iICount)
+			else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_cICount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iICount);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cICount.IntValue);
 				return Plugin_Stop;
 			}
-			else if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			else if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "TaserMax", client, g_iTCount);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cTCount.IntValue);
 				return Plugin_Stop;
 			}
 
 			if (g_bTaser[client])
 			{
-				CPrintToChat(client, g_sPluginTag, "AlreadyTaser", client);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "AlreadyTaser", client);
 				return Plugin_Stop;
 			}
 
@@ -292,7 +268,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	}
 
-	if (g_bInflictor && iAttacker != inflictor)
+	if (g_cInflictor.BoolValue && iAttacker != inflictor)
 	{
 		return Plugin_Continue;
 	}
@@ -305,19 +281,21 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 	{
 		char sAttackerID[32], sVictimID[32];
 		
-		if (g_bAddSteamIDtoLogs)
+		ConVar hTag = FindConVar("ttt_steamid_add_to_logs");
+		if (hTag.BoolValue)
 		{
-			if (g_iSteamIDLogFormat == 1)
+			hTag = FindConVar("ttt_steamid_log_format");
+			if (hTag.IntValue == 1)
 			{
 				GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
 				GetClientAuthId(iVictim, AuthId_Steam2, sVictimID, sizeof(sVictimID));
 			}
-			else if (g_iSteamIDLogFormat == 2)
+			else if (hTag.IntValue == 2)
 			{
 				GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
 				GetClientAuthId(iVictim, AuthId_Steam3, sVictimID, sizeof(sVictimID));
 			}
-			else if (g_iSteamIDLogFormat == 3)
+			else if (hTag.IntValue == 3)
 			{
 				GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
 				GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
@@ -334,41 +312,42 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
-			if (g_bBroadcastTaserResult)
+			if (g_cBroadcastTaserResult.BoolValue)
 			{
-				CPrintToChatAll(g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
+				CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
 			}
 			else
 			{
-				CPrintToChat(iAttacker, g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
+				CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
 			}
-
-			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_iCreditsTaserHurtTraitor);
+			
+			hTag = FindConVar("ttt_hurt_traitor_with_taser");
+			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + hTag.IntValue);
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
 			TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
-			if (g_bBroadcastTaserResult)
+			if (g_cBroadcastTaserResult.BoolValue)
 			{
-				CPrintToChatAll(g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
+				CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
 			}
 			else
 			{
-				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+				CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
 			}
 		}
 		else if (iRole == TTT_TEAM_INNOCENT)
 		{
 			TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
-			if (g_bBroadcastTaserResult)
+			if (g_cBroadcastTaserResult.BoolValue)
 			{
-				CPrintToChatAll(g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
+				CPrintToChatAll("%s %T", g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
 			}
 			else
 			{
-				CPrintToChat(iAttacker,  g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+				CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
 			}
 		}
 		
@@ -381,19 +360,19 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 		if (iARole != TTT_TEAM_TRAITOR)
 		{
-			if (g_iDamage == 0)
+			if (g_cDamage.IntValue == 0)
 			{
 				return Plugin_Handled;
 			}
-			else if (g_iDamage > 0)
+			else if (g_cDamage.IntValue > 0)
 			{
-				damage = g_iDamage + 0.0;
+				damage = g_cDamage.IntValue + 0.0;
 				return Plugin_Changed;
 			}
 		}
 		else
 		{
-			damage = g_iTDamage + 0.0;
+			damage = g_cTDamage.IntValue + 0.0;
 			return Plugin_Changed;
 		}
 	}

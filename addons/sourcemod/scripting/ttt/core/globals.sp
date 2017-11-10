@@ -242,6 +242,7 @@ ConVar g_cRoundSlayTraitor = null;
 ConVar g_cRoundSlayDetective = null;
 ConVar g_cRoundSlayPlayerRDM = null;
 ConVar g_cRoundSlayDestroyTrigger = null;
+ConVar g_cRoundSlayAccess = null;
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };

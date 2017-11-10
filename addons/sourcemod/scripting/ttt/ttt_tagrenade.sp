@@ -7,35 +7,32 @@
 #include <ttt_shop>
 #include <ttt>
 #include <ttt_glow>
-#include <config_loader>
 #include <CustomPlayerSkins>
 #include <multicolors>
 
 #define SHORT_NAME "tagrenade"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
-int g_iTPrice = 0;
-int g_iTCount = 0;
-int g_iTPrio = 0;
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-bool g_bPlayerIsTagged[MAXPLAYERS + 1] = { false, ... };
-
-float g_fTaggingEndTime[MAXPLAYERS + 1] = { 0.0, ... };
-
-float g_fTagrenadeRange = 0.0;
-float g_fTagrenadeTime = 0.0;
-
-bool g_bShowPlayersBehindWalls = false;
-bool g_bSeePlayers[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasGrenade[MAXPLAYERS + 1] =  { false, ... };
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
+ConVar g_cTPrice = null;
+ConVar g_cTCount = null;
+ConVar g_cTPrio = null;
+ConVar g_cTagrenadeRange = null;
+ConVar g_cTagrenadeTime = null;
+ConVar g_cLongName = null;
+ConVar g_cShowPlayersBehindWalls = null;
 
 bool g_bCPS = false;
 bool g_bGlow = false;
+
+int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
+
+bool g_bPlayerIsTagged[MAXPLAYERS + 1] = { false, ... };
+bool g_bSeePlayers[MAXPLAYERS + 1] =  { false, ... };
+bool g_bHasGrenade[MAXPLAYERS + 1] =  { false, ... };
+
+float g_fTaggingEndTime[MAXPLAYERS + 1] = { 0.0, ... };
+
+
 
 public Plugin myinfo =
 {
@@ -52,23 +49,16 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/tagrenade.cfg");
-	Config_Setup("TTT-TAGrenade", g_sConfigFile);
-
-	Config_LoadString("tag_name", "TA-Grenade", "The name of the TA-Grenade in the Shop", g_sLongName, sizeof(g_sLongName));
-	g_iTPrice = Config_LoadInt("tag_traitor_price", 9000, "The amount of credits for tagrenade costs as traitor. 0 to disable.");
-	g_iTCount = Config_LoadInt("tag_traitor_count", 1, "The amount of usages for tagrenade per round as innocent. 0 to disable.");
-	g_iTPrio = Config_LoadInt("tag_traitor_sort_prio", 0, "The sorting priority of the tagrenade (Traitor) in the shop menu.");
-	g_fTagrenadeRange = Config_LoadFloat("tag_tagrenade_distance", 1000.0, "Sets the proximity in which the tactical grenade will tag an opponent.");
-	g_fTagrenadeTime = Config_LoadFloat("tag_tagrenade_time", 3.5, "How long a player is tagged for in seconds.");
-	g_bShowPlayersBehindWalls = Config_LoadBool("tag_players_behind_walls", true, "Tag players behind a wall?");
-
-	Config_Done();
+	StartConfig("tagrenade");
+	CreateConVar("ttt2_tagrenade_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("tag_name", "TA-Grenade", "The name of the TA-Grenade in the Shop");
+	g_cTPrice = AutoExecConfig_CreateConVar("tag_traitor_price", "9000", "The amount of credits for tagrenade costs as traitor. 0 to disable.");
+	g_cTCount = AutoExecConfig_CreateConVar("tag_traitor_count", "1", "The amount of usages for tagrenade per round as innocent. 0 to disable.");
+	g_cTPrio = AutoExecConfig_CreateConVar("tag_traitor_sort_prio", "0", "The sorting priority of the tagrenade (Traitor) in the shop menu.");
+	g_cTagrenadeRange = AutoExecConfig_CreateConVar("tag_tagrenade_distance", "1000.0", "Sets the proximity in which the tactical grenade will tag an opponent.");
+	g_cTagrenadeTime = AutoExecConfig_CreateConVar("tag_tagrenade_time", "3.5", "How long a player is tagged for in seconds.");
+	g_cShowPlayersBehindWalls = AutoExecConfig_CreateConVar("tag_players_behind_walls", "1", "Tag players behind a wall?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);
@@ -77,16 +67,6 @@ public void OnPluginStart()
 
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 	g_bGlow = LibraryExists("ttt_glow");
-}
-
-public void OnConfigsExecuted()
-{
-	ConVar UseTAGrenade = FindConVar("cd_usetagrenade");
-	
-	if (UseTAGrenade != null)
-	{
-		UseTAGrenade.SetBool(true);
-	}
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -115,11 +95,20 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
+	ConVar UseTAGrenade = FindConVar("cd_usetagrenade");
+	
+	if (UseTAGrenade != null)
+	{
+		UseTAGrenade.SetBool(true);
+	}
+	
 	if (g_bCPS)
 	{
-		TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
+		char sBuffer[MAX_ITEM_LENGTH];
+		g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+		TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
 	}
 	else if (!g_bCPS)
 	{
@@ -169,9 +158,16 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 		{
 			int role = TTT_GetClientRole(client);
 
-			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_iTCount)
+			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iTCount);
+				char sPluginTag[128];
+				char sBuffer[MAX_ITEM_LENGTH];
+				ConVar hTag = FindConVar("ttt_plugin_tag");
+				
+				hTag.GetString(sPluginTag, sizeof(sPluginTag));
+				g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+				
+				CPrintToChat(client, "%s %T", sPluginTag, "Bought All", client, sBuffer, g_cTCount.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -199,7 +195,7 @@ public void OnTagrenadeDetonate(Handle event, const char[] name, bool dontBroadc
 	WritePackFloat(pack, GetEventFloat(event, "z"));
 	
 	CreateTimer(0.0, OnGetTagrenadeTimes, pack);
-	CreateTimer(g_fTagrenadeTime, Timer_ResetTags, userid);
+	CreateTimer(g_cTagrenadeTime.FloatValue, Timer_ResetTags, userid);
 }
 
 public Action Timer_ResetTags(Handle timer, any userid)
@@ -275,25 +271,25 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 		GetClientEyePosition(target, targetposition);
 		distance = GetVectorDistance(position, targetposition);
 
-		if (distance > g_fTagrenadeRange)
+		if (distance > g_cTagrenadeRange.FloatValue)
 		{
 			continue;
 		}
 
-		if (g_bShowPlayersBehindWalls)
+		if (g_cShowPlayersBehindWalls.BoolValue)
 		{
 			Handle trace = TR_TraceRayFilterEx(position, targetposition, MASK_VISIBLE, RayType_EndPoint, OnTraceForTagrenade, entity);
 			
 			if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
 			{
-				g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;
+				g_fTaggingEndTime[target] = GetGameTime() + g_cTagrenadeTime.FloatValue;
 			}
 			
 			delete trace;
 		}
 		else
 		{
-			g_fTaggingEndTime[target] = GetGameTime() + g_fTagrenadeTime;
+			g_fTaggingEndTime[target] = GetGameTime() + g_cTagrenadeTime.FloatValue;
 		}
 	}
 	return Plugin_Continue;

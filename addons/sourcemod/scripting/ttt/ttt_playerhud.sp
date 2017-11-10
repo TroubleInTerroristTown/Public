@@ -4,9 +4,16 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Hud"
+
+ConVar g_cTextD = null;
+ConVar g_cTextI = null;
+ConVar g_cTextT = null;
+ConVar g_cTextU = null;
+
+int g_iTarget[MAXPLAYERS + 1] = {0, ...};
+Handle g_hOnHudSend_Pre = null;
 
 public Plugin myinfo =
 {
@@ -16,15 +23,6 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
-
-char g_sTextD[512];
-char g_sTextI[512];
-char g_sTextT[512];
-char g_sTextU[512];
-char g_sCFile[PLATFORM_MAX_PATH + 1];
-
-int g_iTarget[MAXPLAYERS + 1] = {0, ...};
-Handle g_hOnHudSend_Pre = null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -39,20 +37,20 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sCFile, sizeof(g_sCFile), "configs/ttt/hud.cfg");
-	Config_Setup("TTT - HUD", g_sCFile);
-	Config_LoadString("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextD, sizeof(g_sTextD));
-	Config_LoadString("hud_display_innocent", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextI, sizeof(g_sTextI));
-	Config_LoadString("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextT, sizeof(g_sTextT));
-	Config_LoadString("hud_display_unassigned", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)", g_sTextU, sizeof(g_sTextU));
-	Config_Done();
+	StartConfig("playerhud");
+	CreateConVar("ttt2_playerhud_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cTextD = AutoExecConfig_CreateConVar("hud_display_detective", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a detective. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	g_cTextI = AutoExecConfig_CreateConVar("hud_display_innocent", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	g_cTextT = AutoExecConfig_CreateConVar("hud_display_traitor", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	g_cTextU = AutoExecConfig_CreateConVar("hud_display_unassigned", "{NAME}: {PLAYERNAME}\n{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	EndConfig();
 
 	LoadTranslations("ttt.phrases");
 
 	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	char sFile[] = "ttt_player_hud.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
@@ -112,9 +110,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	int iRole = TTT_GetClientRole(client);
 	int iTRole = TTT_GetClientRole(target);
 	
+	char sText[512];
+	
 	if (iRole == TTT_TEAM_TRAITOR)
 	{
-		strcopy(sHintText, iHintTextLength, g_sTextT);
+		g_cTextT.GetString(sText, sizeof(sText));
+		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
@@ -135,7 +136,8 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	}
 	else if (iRole == TTT_TEAM_DETECTIVE)
 	{
-		strcopy(sHintText, iHintTextLength, g_sTextD);
+		g_cTextD.GetString(sText, sizeof(sText));
+		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
@@ -156,7 +158,8 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	}
 	else if (iRole == TTT_TEAM_INNOCENT)
 	{
-		strcopy(sHintText, iHintTextLength, g_sTextI);
+		g_cTextI.GetString(sText, sizeof(sText));
+		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
@@ -177,7 +180,8 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	}
 	else if (iRole == TTT_TEAM_UNASSIGNED)
 	{
-		strcopy(sHintText, iHintTextLength, g_sTextU);
+		g_cTextU.GetString(sText, sizeof(sText));
+		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{

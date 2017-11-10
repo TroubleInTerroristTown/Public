@@ -8,35 +8,29 @@
 #include <multicolors>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Silent AWP"
 #define SHORT_NAME_T "silentawp_t"
 #define SHORT_NAME_D "silentawp_d"
 #define SHORT_NAME_I "silentawp_i"
 
-int g_iPriceT = -1;
-int g_iPriceD = -1;
-int g_iPriceI = -1;
+ConVar g_cPriceT = null;
+ConVar g_cPriceD = null;
+ConVar g_cPriceI = null;
+ConVar g_cPriorityT = null;
+ConVar g_cPriorityD = null;
+ConVar g_cPriorityI = null;
+ConVar g_cMaxShotsT = null;
+ConVar g_cMaxShotsD = null;
+ConVar g_cMaxShotsI = null;
+ConVar g_cMinShotsT = null;
+ConVar g_cMinShotsD = null;
+ConVar g_cMinShotsI = null;
+ConVar g_cAmountT = null;
+ConVar g_cAmountD = null;
+ConVar g_cAmountI = null;
+ConVar g_cLongName = null;
 
-int g_iPriorityT = -1;
-int g_iPriorityD = -1;
-int g_iPriorityI = -1;
-
-int g_iMaxShotsT = -1;
-int g_iMaxShotsD = -1;
-int g_iMaxShotsI = -1;
-
-int g_iMinShotsT = -1;
-int g_iMinShotsD = -1;
-int g_iMinShotsI = -1;
-
-int g_iAmountT = -1;
-int g_iAmountD = -1;
-int g_iAmountI = -1;
-
-char g_sConfigFile[PLATFORM_MAX_PATH];
-char g_sLongName[64];
 
 int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iWeapon[MAXPLAYERS + 1] =  { -1, ... };
@@ -58,40 +52,39 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/silentawp.cfg");
-	Config_Setup("TTT-SilentAWP", g_sConfigFile);
-	Config_LoadString("silent_awp_name", "Silent AWP", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
-
-	g_iAmountT = Config_LoadInt("silent_awp_amount_t", 2, "How many AWPs can traitors buy?");
-	g_iMinShotsT = Config_LoadInt("silent_awp_min_t", 1, "Minimum shots for the AWP for Traitors");
-	g_iMaxShotsT = Config_LoadInt("silent_awp_max_t", 2, "Maximum shots for the AWP for Traitors");
-	g_iPriorityT = Config_LoadInt("silent_awp_priority_t", 0, "Priority in shop list for Traitors");
-	g_iPriceT = Config_LoadInt("silent_awp_price_t", 10000, "Price for the silenced AWP for Traitors");
-
-	g_iAmountD = Config_LoadInt("silent_awp_amount_d", 0, "How many AWPs can detectives buy?");
-	g_iMinShotsD = Config_LoadInt("silent_awp_min_d", 1, "Minimum shots for the AWP for Detectives");
-	g_iMaxShotsD = Config_LoadInt("silent_awp_max_d", 2, "Maximum shots for the AWP for Detectives");
-	g_iPriorityD = Config_LoadInt("silent_awp_priority_d", 0, "Priority in shop list for Detectives");
-	g_iPriceD = Config_LoadInt("silent_awp_price_d", 0, "Price for the silenced AWP for Detectives");
-
-	g_iPriceI = Config_LoadInt("silent_awp_price_i", 0, "Price for the silenced AWP for Innos");
-	g_iPriorityI = Config_LoadInt("silent_awp_priority_i", 0, "Priority in shop list for Innos");
-	g_iMaxShotsI = Config_LoadInt("silent_awp_max_i", 2, "Maximum shots for the AWP for Innos");
-	g_iMinShotsI = Config_LoadInt("silent_awp_min_i", 1, "Minimum shots for the AWP for Innos");
-	g_iAmountI = Config_LoadInt("silent_awp_amount_i", 0, "How many AWPs can innocents buy?");
-
-	Config_Done();
+	StartConfig("silent_awp");
+	CreateConVar("ttt2_silent_awp_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("silent_awp_name", "Silent AWP", "The name of this in Shop");
+	g_cAmountT = AutoExecConfig_CreateConVar("silent_awp_amount_t", "2", "How many AWPs can traitors buy?");
+	g_cMinShotsT = AutoExecConfig_CreateConVar("silent_awp_min_t", "1", "Minimum shots for the AWP for Traitors");
+	g_cMaxShotsT = AutoExecConfig_CreateConVar("silent_awp_max_t", "2", "Maximum shots for the AWP for Traitors");
+	g_cPriorityT = AutoExecConfig_CreateConVar("silent_awp_priority_t", "0", "Priority in shop list for Traitors");
+	g_cPriceT = AutoExecConfig_CreateConVar("silent_awp_price_t", "10000", "Price for the silenced AWP for Traitors");
+	g_cAmountD = AutoExecConfig_CreateConVar("silent_awp_amount_d", "0", "How many AWPs can detectives buy?");
+	g_cMinShotsD = AutoExecConfig_CreateConVar("silent_awp_min_d", "1", "Minimum shots for the AWP for Detectives");
+	g_cMaxShotsD = AutoExecConfig_CreateConVar("silent_awp_max_d", "2", "Maximum shots for the AWP for Detectives");
+	g_cPriorityD = AutoExecConfig_CreateConVar("silent_awp_priority_d", "0", "Priority in shop list for Detectives");
+	g_cPriceD = AutoExecConfig_CreateConVar("silent_awp_price_d", "0", "Price for the silenced AWP for Detectives");
+	g_cPriceI = AutoExecConfig_CreateConVar("silent_awp_price_i", "0", "Price for the silenced AWP for Innos");
+	g_cPriorityI = AutoExecConfig_CreateConVar("silent_awp_priority_i", "0", "Priority in shop list for Innos");
+	g_cMaxShotsI = AutoExecConfig_CreateConVar("silent_awp_max_i", "2", "Maximum shots for the AWP for Innos");
+	g_cMinShotsI = AutoExecConfig_CreateConVar("silent_awp_min_i", "1", "Minimum shots for the AWP for Innos");
+	g_cAmountI = AutoExecConfig_CreateConVar("silent_awp_amount_i", "0", "How many AWPs can innocents buy?");
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
 	AddTempEntHook("Shotgun Shot", Hook_ShotgunShot);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iPriceT, TTT_TEAM_TRAITOR, g_iPriorityT);
-	TTT_RegisterCustomItem(SHORT_NAME_I, g_sLongName, g_iPriceD, TTT_TEAM_DETECTIVE, g_iPriorityD);
-	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iPriceI, TTT_TEAM_INNOCENT, g_iPriorityI);
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue);
 
 }
 
@@ -114,25 +107,25 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
-		if ((StrEqual(itemshort, SHORT_NAME_T, false) && g_iPAmount[client] < g_iAmountT) ||
-		(StrEqual(itemshort, SHORT_NAME_D, false) && g_iPAmount[client] < g_iAmountD) ||
-		(StrEqual(itemshort, SHORT_NAME_I, false) && g_iPAmount[client] < g_iAmountI))
+		if ((StrEqual(itemshort, SHORT_NAME_T, false) && g_iPAmount[client] < g_cAmountT.IntValue) ||
+		(StrEqual(itemshort, SHORT_NAME_D, false) && g_iPAmount[client] < g_cAmountD.IntValue) ||
+		(StrEqual(itemshort, SHORT_NAME_I, false) && g_iPAmount[client] < g_cAmountI.IntValue))
 		{
 			int iRole = TTT_GetClientRole(client);
 
-			if (iRole == TTT_TEAM_TRAITOR && g_iPAmount[client] >= g_iAmountT)
+			if (iRole == TTT_TEAM_TRAITOR && g_iPAmount[client] >= g_cAmountT.IntValue)
 			{
-				CPrintToChat(client, "%T", "You reached limit", client, g_iAmountT);
+				CPrintToChat(client, "%T", "You reached limit", client, g_cAmountT.IntValue);
 				return Plugin_Stop;
 			}
-			else if (iRole == TTT_TEAM_DETECTIVE && g_iPAmount[client] >= g_iAmountD)
+			else if (iRole == TTT_TEAM_DETECTIVE && g_iPAmount[client] >= g_cAmountD.IntValue)
 			{
-				CPrintToChat(client, "%T", "You reached limit", client, g_iAmountD);
+				CPrintToChat(client, "%T", "You reached limit", client, g_cAmountD.IntValue);
 				return Plugin_Stop;
 			}
-			else if (iRole == TTT_TEAM_INNOCENT && g_iPAmount[client] >= g_iAmountI)
+			else if (iRole == TTT_TEAM_INNOCENT && g_iPAmount[client] >= g_cAmountI.IntValue)
 			{
-				CPrintToChat(client, "%T", "You reached limit", client, g_iAmountI);
+				CPrintToChat(client, "%T", "You reached limit", client, g_cAmountI.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -150,18 +143,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 
 			if (iRole == TTT_TEAM_TRAITOR)
 			{
-				max = g_iMaxShotsT;
-				min = g_iMinShotsT;
+				max = g_cMaxShotsT.IntValue;
+				min = g_cMinShotsT.IntValue;
 			}
 			else if (iRole == TTT_TEAM_DETECTIVE)
 			{
-				max = g_iMaxShotsD;
-				min = g_iMinShotsD;
+				max = g_cMaxShotsD.IntValue;
+				min = g_cMinShotsD.IntValue;
 			}
 			else if (iRole == TTT_TEAM_INNOCENT)
 			{
-				max = g_iMaxShotsI;
-				min = g_iMinShotsI;
+				max = g_cMaxShotsI.IntValue;
+				min = g_cMinShotsI.IntValue;
 			}
 
 			SetEntProp(g_iWeapon[client], Prop_Send, "m_iClip1", GetRandomInt(min, max));
