@@ -104,6 +104,7 @@ void SetupConfig()
 	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "2", "How much round slays for the players by a player punishment?");
 	g_cRoundSlayDestroyTrigger = AutoExecConfig_CreateConVar("ttt_round_slays_destroy_trigger", "2", "How much round slays for players there try to enter a destroy trigger? (?)");
 	g_cRoundSlayAccess = AutoExecConfig_CreateConVar("ttt_round_slays_admin_access", "b", "Admin flags to access round slays command.");
+	g_cDebug = AutoExecConfig_CreateConVar("ttt_debug_mode", "0", "Enable or disable debug mode for ttt? Could by useful for one player tests", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 }

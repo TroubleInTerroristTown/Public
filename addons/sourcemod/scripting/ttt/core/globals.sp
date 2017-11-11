@@ -137,8 +137,6 @@ char g_sRemoveEntityList[][] =  {
 bool g_bRoundEnding = false;
 int g_iLastButtons[MAXPLAYERS + 1] =  { 0, ... };
 
-bool g_bDebug = false;
-
 // Convars...
 ConVar g_crequiredPlayersD = null;
 ConVar g_crequiredPlayers = null;
@@ -243,6 +241,7 @@ ConVar g_cRoundSlayDetective = null;
 ConVar g_cRoundSlayPlayerRDM = null;
 ConVar g_cRoundSlayDestroyTrigger = null;
 ConVar g_cRoundSlayAccess = null;
+ConVar g_cDebug = null;
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
