@@ -119,6 +119,18 @@ stock void GrabSomething(int client)
 	char sName[128];
 	GetEdictClassname(ent, sName, sizeof(sName));
 	
+	// We block doors and buttons by default
+	if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1)
+	{
+		return;
+	}
+	
+	// true is a positive found on the blacklist or negative found on the whitelist 
+	if (CheckLists(sName))
+	{
+		return;
+	}
+	
 	if (g_cShowNames.BoolValue)
 	{
 		char sAccess[16];
@@ -128,12 +140,6 @@ stock void GrabSomething(int client)
 		{
 			CPrintToChat(client, "Name of Entity: %s", sName);
 		}
-	}
-	
-	// true is a positive found on the blacklist or negative found on the whitelist 
-	if (CheckLists(sName))
-	{
-		return;
 	}
 	
 	if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
@@ -430,6 +436,8 @@ void LoadWhitelist()
 	char sBuffer[32];
 	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
 	{
+		TrimString(sBuffer);
+		
 		if (strlen(sBuffer) > 2)
 		{
 			g_aWhitelist.PushString(sBuffer);
@@ -469,6 +477,8 @@ void LoadBlacklist()
 	char sBuffer[32];
 	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
 	{
+		TrimString(sBuffer);
+		
 		if (strlen(sBuffer) > 2)
 		{
 			g_aBlacklist.PushString(sBuffer);
