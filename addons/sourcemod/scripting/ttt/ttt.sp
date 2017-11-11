@@ -140,6 +140,8 @@ public void OnPluginStart()
 	HookEvent("player_hurt", Event_PlayerHurt);
 
 	g_hGraceTime = FindConVar("mp_join_grace_time");
+	
+	SetRandomSeed(GetTime());
 
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
@@ -901,9 +903,6 @@ public Action Timer_Selection(Handle hTimer)
 	int client;
 	int iIndex;
 
-	int counter = 0;
-	int iCurrentTime = GetTime();
-
 	while (iTraitors < iTCount)
 	{
 		if (g_aForceTraitor.Length > 0)
@@ -927,7 +926,6 @@ public Action Timer_Selection(Handle hTimer)
 			continue;
 		}
 
-		SetRandomSeed(iCurrentTime*++counter);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
@@ -974,7 +972,6 @@ public Action Timer_Selection(Handle hTimer)
 			break;
 		}
 
-		SetRandomSeed(iCurrentTime*++counter);
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
