@@ -58,7 +58,7 @@ public void OnPluginStart()
 	EndConfig();
 }
 
-public void .IntValue()
+public void OnConfigsExecuted()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	
