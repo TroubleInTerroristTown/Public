@@ -67,7 +67,8 @@ void SQL_Start()
 	
 	if (g_dDatabase != null)
 	{
-		LogError("%s is already connected! (Handle: %d)", sEntry, g_dDatabase);
+		LogMessage("%s is already connected! (Handle: %d)", sEntry, g_dDatabase);
+		Call_OnSQLConnect();
 		return;
 	}
 

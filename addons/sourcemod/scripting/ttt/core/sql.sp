@@ -58,7 +58,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
 
 			int karma = SQL_FetchInt(hndl, 0);
 
-			if (g_bDebug)
+			if (g_cDebug.BoolValue)
 			{
 				LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
 			}
