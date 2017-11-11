@@ -91,8 +91,8 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("futuristicgrenades");
-	CreateConVar("ttt2_futuristic_grenades_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	StartConfig("weapons");
+	CreateConVar("ttt2_weapons_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cKev_Type = AutoExecConfig_CreateConVar("kevlar_type", "1", "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_cKev_Price = AutoExecConfig_CreateConVar("kevlar_price", "3000", "The amount of credits the kevlar costs. 0 to disable.");
 	g_cKev_Max = AutoExecConfig_CreateConVar("kevlar_max", "5", "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
