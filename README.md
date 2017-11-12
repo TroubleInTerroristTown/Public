@@ -1,5 +1,5 @@
 # [TroubleinTerroristTown](http://csgottt.com/)
-**Status**: Aborted for new features, we'll just fix bugs. New version (3.X) coming soon ( maybe this year :) ).
+**Status**: Active again...
 
 [![Build Status](https://travis-ci.org/Bara20/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
 ---
