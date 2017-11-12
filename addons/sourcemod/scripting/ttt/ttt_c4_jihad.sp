@@ -3,6 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <cstrike>
 #include <ttt>
 #include <ttt_shop>
 #include <multicolors>
@@ -286,8 +287,7 @@ stock void RemoveC4(int client)
 
 			if (StrContains(sWeapon, "weapon_c4", false) != -1)
 			{
-				RemovePlayerItem(client, weapon);
-				AcceptEntityInput(weapon, "Kill");
+				TTT_SafeRemoveWeapon(client, weapon);
 
 				break;
 			}
