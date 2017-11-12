@@ -3264,11 +3264,11 @@ public Action Timer_5(Handle timer)
 			continue;
 		}
 		
-		int iKarma;
+		int iKarma = g_iKarma[i];
 		
-		if (g_iKarma[i] < 0)
+		if (iKarma < 0)
 		{
-			iKarma = g_iKarma[i] * -1;
+			iKarma *= -1;
 		}
 
 		if (g_bKarma[i] && g_iConfig[ikarmaBan] != 0 && iKarma <= g_iConfig[ikarmaBan])
