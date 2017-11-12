@@ -10,6 +10,8 @@
 #define SHORT_NAME_D "sprint_d"
 #define SHORT_NAME_T "sprint_t"
 
+ConVar g_cDebug = null;
+
 ConVar g_cPriceD = null;
 ConVar g_cPriceT = null;
 ConVar g_cPrioD = null;
@@ -22,8 +24,8 @@ ConVar g_cLongName = null;
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hCTimer[MAXPLAYERS + 1] =  { null, ... };
-bool g_bSprint[MAXPLAYERS + 1] =  { false, ... };
 
+bool g_bSprint[MAXPLAYERS + 1] =  { false, ... };
 
 public Plugin myinfo =
 {
@@ -62,6 +64,8 @@ public void OnConfigsExecuted()
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue);
 	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue);
+	
+	g_cDebug = FindConVar("ttt_debug_mode");
 }
 
 public void OnClientDisconnect(int client)
@@ -82,7 +86,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 			
-			PrintToChat(client, "Test");
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Test");
+			}
 			
 			g_bSprint[client] = true;
 		}
@@ -101,20 +108,31 @@ public int TTT_OnButtonPress(int client, int button)
 	{
 		if (g_hCTimer[client] != null)
 		{
-			PrintToChat(client, "Cooldown is active...");
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Cooldown is active...");
+			}
+			
 			return;
 		}
 		
 		if (g_hTimer[client] != null)
 		{
-			PrintToChat(client, "Sprint is active...");
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Sprint is active...");
+			}
+			
 			return;
 		}
 		
 		g_hTimer[client] = CreateTimer(g_cTime.FloatValue, Timer_Sprint, GetClientUserId(client));
 		SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cSpeed.FloatValue);
 		
-		PrintToChat(client, "Yea!");
+		if (g_cDebug.BoolValue)
+		{
+			PrintToChat(client, "Yea!");
+		}
 	}
 }
 
@@ -133,7 +151,10 @@ public Action Timer_Sprint(Handle timer, any userid)
 				g_hCTimer[client] = CreateTimer(g_cCooldown.FloatValue, Timer_Cooldown, GetClientUserId(client));
 			}
 			
-			PrintToChat(client, "Sprint over");
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Sprint over");
+			}
 		}
 		
 		g_hTimer[client] = null;
@@ -149,7 +170,11 @@ public Action Timer_Cooldown(Handle timer, any userid)
 	if(TTT_IsClientValid(client))
 	{
 		g_hCTimer[client] = null;
-		PrintToChat(client, "Cooldown over");
+		
+		if (g_cDebug.BoolValue)
+		{
+			PrintToChat(client, "Cooldown over");
+		}
 	}
 	
 	return Plugin_Stop;
