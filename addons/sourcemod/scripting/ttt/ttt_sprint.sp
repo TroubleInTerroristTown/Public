@@ -8,7 +8,7 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Sprint"
 #define SHORT_NAME_D "sprint_d"
-#define SHORT_NAME_T "sprint_d"
+#define SHORT_NAME_T "sprint_t"
 
 ConVar g_cPriceD = null;
 ConVar g_cPriceT = null;
@@ -22,6 +22,7 @@ ConVar g_cLongName = null;
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hCTimer[MAXPLAYERS + 1] =  { null, ... };
+bool g_bSprint[MAXPLAYERS + 1] =  { false, ... };
 
 
 public Plugin myinfo =
@@ -80,33 +81,41 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
+			
+			PrintToChat(client, "Test");
+			
+			g_bSprint[client] = true;
 		}
 	}
 	return Plugin_Continue;
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+public int TTT_OnButtonPress(int client, int button)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (!g_bSprint[client])
 	{
-		if (g_hTimer[client] == null)
-		{
-			if (GetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue") != g_cNormal.FloatValue)
-			{
-				SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cNormal.FloatValue);
-			}
-			
-			return Plugin_Continue;
-		}
-		
-		if(buttons & IN_USE && g_hTimer[client] == null && g_hCTimer[client] == null)
-		{
-			g_hTimer[client] = CreateTimer(g_cTime.FloatValue, Timer_Sprint, GetClientUserId(client));
-			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cSpeed.FloatValue);
-		}
+		return;
 	}
 	
-	return Plugin_Continue;
+	if (button & IN_USE)
+	{
+		if (g_hCTimer[client] != null)
+		{
+			PrintToChat(client, "Cooldown is active...");
+			return;
+		}
+		
+		if (g_hTimer[client] != null)
+		{
+			PrintToChat(client, "Sprint is active...");
+			return;
+		}
+		
+		g_hTimer[client] = CreateTimer(g_cTime.FloatValue, Timer_Sprint, GetClientUserId(client));
+		SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cSpeed.FloatValue);
+		
+		PrintToChat(client, "Yea!");
+	}
 }
 
 public Action Timer_Sprint(Handle timer, any userid)
@@ -123,6 +132,8 @@ public Action Timer_Sprint(Handle timer, any userid)
 			{
 				g_hCTimer[client] = CreateTimer(g_cCooldown.FloatValue, Timer_Cooldown, GetClientUserId(client));
 			}
+			
+			PrintToChat(client, "Sprint over");
 		}
 		
 		g_hTimer[client] = null;
@@ -138,6 +149,7 @@ public Action Timer_Cooldown(Handle timer, any userid)
 	if(TTT_IsClientValid(client))
 	{
 		g_hCTimer[client] = null;
+		PrintToChat(client, "Cooldown over");
 	}
 	
 	return Plugin_Stop;
@@ -155,6 +167,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 void ResetSprint(int client)
 {
+	g_bSprint[client] = false;
 	g_hTimer[client] = null;
 	g_hCTimer[client] = null;
 }
