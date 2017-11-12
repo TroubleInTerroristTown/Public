@@ -17,6 +17,7 @@ ConVar g_cLongName = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 public Plugin myinfo =
@@ -47,13 +48,22 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	ConVar hTag = FindConVar("ttt_plugin_tag");
-	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	
 	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnClientDisconnect(int client)

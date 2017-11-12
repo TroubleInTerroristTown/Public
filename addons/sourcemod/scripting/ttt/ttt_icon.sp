@@ -16,6 +16,8 @@ ConVar g_cSeeRoles = null;
 ConVar g_cTraitorIcon = null;
 ConVar g_cDetectiveIcon = null;
 
+char g_sAdminImmunity[18];
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -45,11 +47,22 @@ public void OnPluginStart()
 	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file");
 	g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
 	EndConfig();
+	
+	g_cAdminImmunity.AddChangeHook(OnConVarChanged);
+	g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
 
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeamPre, EventHookMode_Pre);
 
 	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cAdminImmunity)
+	{
+		g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
+	}
 }
 
 public void OnConfigsExecuted()
@@ -202,12 +215,9 @@ public Action Hook_SetTransmitT(int entity, int client)
 			}
 			else
 			{
-				char sAccess[18];
-				g_cAdminImmunity.GetString(sAccess, sizeof(sAccess));
-				
-				if (strlen(sAccess) > 0)
+				if (strlen(g_sAdminImmunity) > 0)
 				{
-					if (TTT_HasFlags(client, sAccess))
+					if (TTT_HasFlags(client, g_sAdminImmunity))
 					{
 						return Plugin_Continue;
 					}

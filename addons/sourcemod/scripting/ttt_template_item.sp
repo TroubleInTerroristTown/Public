@@ -15,7 +15,11 @@ ConVar g_cLongName = null;
 
 bool g_bHasItem[MAXPLAYERS + 1] =  { false, ... };
 
-// char g_sPluginTag[64];
+
+/*
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
+*/
 
 public Plugin myinfo =
 {
@@ -44,11 +48,29 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
+	/*
+				
+	If you want the plugin tag from ttt
+	
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
+	
+	*/
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
 }
+
+/* public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
+} */
 
 public void OnClientDisconnect(int client)
 {
@@ -67,16 +89,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
-			
-			/*
-				
-				If you want the plugin tag from ttt
-				
-				ConVar hTag = FindConVar("ttt_plugin_tag");
-				hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-				CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
-			
-			*/
 			
 			g_bHasItem[client] = true;
 		}

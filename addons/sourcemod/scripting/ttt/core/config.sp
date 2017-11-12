@@ -107,4 +107,79 @@ void SetupConfig()
 	g_cDebug = AutoExecConfig_CreateConVar("ttt_debug_mode", "0", "Enable or disable debug mode for ttt? Could by useful for one player tests", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
+	g_ckickImmunity.AddChangeHook(OnConVarChanged);
+	g_clogsAccess.AddChangeHook(OnConVarChanged);
+	g_cdefaultPriD.AddChangeHook(OnConVarChanged);
+	g_cdefaultSec.AddChangeHook(OnConVarChanged);
+	g_cRoundStartedFontColor.AddChangeHook(OnConVarChanged);
+	g_cRoundStartFontColor.AddChangeHook(OnConVarChanged);
+	g_cFSPrimary.AddChangeHook(OnConVarChanged);
+	g_cFSSecondary.AddChangeHook(OnConVarChanged);
+	g_cSetRole.AddChangeHook(OnConVarChanged);
+	g_cKarmaReset.AddChangeHook(OnConVarChanged);
+	g_cSetKarma.AddChangeHook(OnConVarChanged);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cpluginTag)
+	{
+		g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
+	}
+
+	if (convar == g_ckickImmunity)
+	{
+		g_ckickImmunity.GetString(g_sKickImmunity, sizeof(g_sKickImmunity));
+	}
+
+	if (convar == g_clogsAccess)
+	{
+		g_clogsAccess.GetString(g_sLogAccess, sizeof(g_sLogAccess));
+	}
+
+	if (convar == g_cdefaultPriD)
+	{
+		g_cdefaultPriD.GetString(g_sDefaultPrimary, sizeof(g_sDefaultPrimary));
+	}
+
+	if (convar == g_cdefaultSec)
+	{
+		g_cdefaultSec.GetString(g_sDefaultSecondary, sizeof(g_sDefaultSecondary));
+	}
+
+	if (convar == g_cRoundStartedFontColor)
+	{
+		g_cRoundStartedFontColor.GetString(g_sRoundStartedFontColor, sizeof(g_sRoundStartedFontColor));
+	}
+
+	if (convar == g_cRoundStartFontColor)
+	{
+		g_cRoundStartFontColor.GetString(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor));
+	}
+
+	if (convar == g_cFSPrimary)
+	{
+		g_cFSPrimary.GetString(g_sFSPrimary, sizeof(g_sFSPrimary));
+	}
+
+	if (convar == g_cFSSecondary)
+	{
+		g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
+	}
+
+	if (convar == g_cSetRole)
+	{
+		g_cSetRole.GetString(g_sSetRole, sizeof(g_sSetRole));
+	}
+
+	if (convar == g_cKarmaReset)
+	{
+		g_cKarmaReset.GetString(g_sKarmaReset, sizeof(g_sKarmaReset));
+	}
+
+	if (convar == g_cSetKarma)
+	{
+		g_cSetKarma.GetString(g_sSetKarma, sizeof(g_sSetKarma));
+	}
+
 }

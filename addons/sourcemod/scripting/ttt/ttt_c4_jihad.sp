@@ -20,6 +20,7 @@
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 ConVar g_cRemoveBomb = null;
@@ -146,8 +147,9 @@ public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadca
 
 public void OnConfigsExecuted()
 {
-	ConVar hTag = FindConVar("ttt_plugin_tag");
-	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
 	char sBuffer[MAX_ITEM_LENGTH];
 	
@@ -156,6 +158,14 @@ public void OnConfigsExecuted()
 	
 	g_cLongName_J.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void ResetJihad(int client)

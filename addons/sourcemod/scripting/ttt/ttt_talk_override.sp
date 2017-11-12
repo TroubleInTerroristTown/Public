@@ -12,6 +12,7 @@ ConVar g_cEnableTVoice = null;
 
 bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[128];
 
 public Plugin myinfo =
@@ -46,8 +47,17 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	ConVar hTag = FindConVar("ttt_plugin_tag");
-	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public Action Command_TVoice(int client, int args)

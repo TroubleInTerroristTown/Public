@@ -55,6 +55,7 @@ ConVar g_cCreditsMin = null;
 ConVar g_cCreditsMax = null;
 ConVar g_cCreditsInterval = null;
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 Handle g_hOnItemPurchased = null;
@@ -189,8 +190,9 @@ public void OnPluginStart()
 public void OnConfigsExecuted()
 {
 	// Get some values from ttt.config
-	ConVar cCVar = FindConVar("ttt_plugin_tag");
-	cCVar.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
 	char sBuffer[32];
 	g_cCredits.GetString(sBuffer, sizeof(sBuffer));
@@ -204,6 +206,14 @@ public void OnConfigsExecuted()
 	g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
 	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
 	RegConsoleCmd(sBuffer, Command_ShowItems);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnClientCookiesCached(int client)

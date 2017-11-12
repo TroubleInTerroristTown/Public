@@ -9,6 +9,17 @@ char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
 char g_sTag[64];
+char g_sKickImmunity[18];
+char g_sLogAccess[18];
+char g_sDefaultPrimary[32];
+char g_sDefaultSecondary[32];
+char g_sRoundStartedFontColor[12];
+char g_sRoundStartFontColor[12];
+char g_sFSSecondary[32];
+char g_sFSPrimary[32];
+char g_sSetRole[18];
+char g_sKarmaReset[18];
+char g_sSetKarma[18];
 
 bool g_bRoundEnded = false;
 

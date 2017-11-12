@@ -27,6 +27,7 @@ int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 
@@ -68,13 +69,22 @@ public void OnClientDisconnect(int client)
 
 public void OnConfigsExecuted()
 {
-	ConVar hTag = FindConVar("ttt_plugin_tag");
-	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
 	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)

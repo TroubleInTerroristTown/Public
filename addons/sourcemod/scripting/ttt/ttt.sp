@@ -240,14 +240,6 @@ public void OnConfigsExecuted()
 	PrecacheModel(sModel, true);
 }
 
-public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (convar == g_cpluginTag)
-	{
-		g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
-	}
-}
-
 public void TTT_OnSQLConnect(Database db)
 {
 	g_dDB = db;
@@ -259,14 +251,11 @@ public Action Command_Logs(int client, int args)
 {
 	if (g_bRoundEnding || g_bRoundStarted)
 	{
-		char sAccess[18];
-		g_clogsAccess.GetString(sAccess, sizeof(sAccess));
-		
 		if (client == 0)
 		{
 			ShowLogs(client);
 		}
-		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, sAccess))
+		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, g_sLogAccess))
 		{
 			if (g_cLogsDeadOnly.BoolValue)
 			{
@@ -292,7 +281,7 @@ public Action Command_Logs(int client, int args)
 					{
 						LoopValidClients(j)
 						{
-							if (TTT_HasFlags(j, sAccess))
+							if (TTT_HasFlags(j, g_sLogAccess))
 							{
 								CPrintToChat(j, "%s %T", g_sTag, "watching logs alive", j, client);
 							}
@@ -697,7 +686,6 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 {
 	int timeLeft = RoundToFloor(g_fRealRoundStart - GetGameTime());
 	char centerText[512];
-	char sColor[32];
 
 	if (g_fRealRoundStart <= 0.0 || timeLeft <= 0)
 	{
@@ -705,8 +693,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 		{
 			LoopValidClients(i)
 			{
-				g_cRoundStartedFontColor.GetString(sColor, sizeof(sColor));
-				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, sColor);
+				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
 				PrintHintText(i, centerText);
 			}
 		}
@@ -717,8 +704,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
 	LoopValidClients(i)
 	{
-		g_cRoundStartFontColor.GetString(sColor, sizeof(sColor));
-		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, sColor, timeLeft);
+		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
 		PrintHintText(i, centerText);
 	}
 
@@ -1073,8 +1059,6 @@ stock void TeamInitialize(int client)
 	
 	g_bFound[client] = false;
 	
-	char sBuffer[32];
-	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		if (g_cforceTeams.BoolValue)
@@ -1087,8 +1071,7 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
 		{
-			g_cdefaultPriD.GetString(sBuffer, sizeof(sBuffer));
-			GivePlayerItem(client, sBuffer);
+			GivePlayerItem(client, g_sDefaultPrimary);
 		}
 
 		CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
@@ -1105,8 +1088,7 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			g_cdefaultSec.GetString(sBuffer, sizeof(sBuffer));
-			GivePlayerItem(client, sBuffer);
+			GivePlayerItem(client, g_sDefaultSecondary);
 		}
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -1132,8 +1114,7 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			g_cdefaultSec.GetString(sBuffer, sizeof(sBuffer));
-			GivePlayerItem(client, sBuffer);
+			GivePlayerItem(client, g_sDefaultSecondary);
 		}
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
@@ -1159,8 +1140,7 @@ stock void TeamInitialize(int client)
 
 		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
 		{
-			g_cdefaultSec.GetString(sBuffer, sizeof(sBuffer));
-			GivePlayerItem(client, sBuffer);
+			GivePlayerItem(client, g_sDefaultSecondary);
 		}
 	}
 
@@ -1280,12 +1260,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 				char sWeapon[32];
 				
-				g_cFSSecondary.GetString(sWeapon, sizeof(sWeapon));
-				Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSSecondary);
 				GivePlayerItem(client, sWeapon);
 				
-				g_cFSPrimary.GetString(sWeapon, sizeof(sWeapon));
-				Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSPrimary);
 				GivePlayerItem(client, sWeapon);
 			}
 		}
@@ -1953,9 +1931,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	{
 		if (TTT_IsClientValid(client) && g_crulesClosePunishment.IntValue == 0)
 		{
-			char sAccess[18];
-			g_ckickImmunity.GetString(sAccess, sizeof(sAccess));
-			if (!TTT_HasFlags(client, sAccess))
+			if (!TTT_HasFlags(client, g_sKickImmunity))
 			{
 				char sMessage[128];
 				Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
@@ -3050,10 +3026,7 @@ public Action Command_SetRole(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	char sAccess[18];
-	g_cSetRole.GetString(sAccess, sizeof(sAccess));
-	
-	if (!TTT_HasFlags(client, sAccess))
+	if (!TTT_HasFlags(client, g_sSetRole))
 	{
 		return Plugin_Handled;
 	}
@@ -3148,10 +3121,7 @@ public Action Command_SetKarma(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	char sAccess[18];
-	g_cSetKarma.GetString(sAccess, sizeof(sAccess));
-	
-	if (!TTT_HasFlags(client, sAccess))
+	if (!TTT_HasFlags(client, g_sSetKarma))
 	{
 		return Plugin_Handled;
 	}
@@ -3409,10 +3379,7 @@ public Action Command_KarmaReset(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	char sAccess[18];
-	g_cKarmaReset.GetString(sAccess, sizeof(sAccess));
-
-	if (!TTT_HasFlags(client, sAccess))
+	if (!TTT_HasFlags(client, g_sKarmaReset))
 	{
 		return Plugin_Handled;
 	}
@@ -3661,8 +3628,6 @@ void GiveWeaponsOnFailStart()
 {
 	if (g_cGiveWeaponsOnFailStart.BoolValue && g_cEnableDamage.BoolValue)
 	{
-		char sWeapon[32];
-
 		LoopValidClients(i)
 		{
 			if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || IsFakeClient(i))
@@ -3674,12 +3639,12 @@ void GiveWeaponsOnFailStart()
 			{
 				GivePlayerItem(i, "weapon_knife");
 
-				g_cFSSecondary.GetString(sWeapon, sizeof(sWeapon));
-				Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+				char sWeapon[32];
+				
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSSecondary);
 				GivePlayerItem(i, sWeapon);
 				
-				g_cFSPrimary.GetString(sWeapon, sizeof(sWeapon));
-				Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+				Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSPrimary);
 				GivePlayerItem(i, sWeapon);
 			}
 		}
