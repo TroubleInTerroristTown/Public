@@ -24,11 +24,7 @@ public void OnPluginStart()
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
-    for (int i = 1; i <= MaxClients; i++)
-    {
-        if(!TTT_IsClientValid(i))
-            continue;
-            
+    TTT_LoopValidClients(i) {
         switch(TTT_GetClientRole(i))
         {
             case TTT_TEAM_TRAITOR:
