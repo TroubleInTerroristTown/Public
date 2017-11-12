@@ -3,6 +3,8 @@
 #endif
 #define _ttt_shop_included
 
+#define SHOP_ITEM_4ALL 1
+
 /*
  * Called when an item is purchased in the menu. Return Plugin_Stop
  * to prevent us subtracting credits and informing the player that
