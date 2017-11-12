@@ -34,8 +34,8 @@ public void OnPluginStart()
 	StartConfig("parachute");
 	CreateConVar("ttt2_parachute_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("parachute_name", "Parachute", "The name of this in Shop");
-	g_cPrice = AutoExecConfig_CreateConVar("parachute_price", "9000", "The amount of credits TEMPLATE costs as detective. 0 to disable.");
-	g_cPrio = AutoExecConfig_CreateConVar("parachute_sort_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
+	g_cPrice = AutoExecConfig_CreateConVar("parachute_price", "3000", "The amount of credits parachutes costs as detective. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("parachute_sort_prio", "0", "The sorting priority of the parachutes in the shop menu.");
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
