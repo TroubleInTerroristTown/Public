@@ -20,9 +20,20 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+	CreateTimer(0.5, Timer_AssignValues, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);	
+}
+
+public Action Timer_AssignValues(Handle timer) 
+{
+	AssignValues();
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+{
+	AssignValues();
+}
+
+public void AssignValues() 
 {
 	LoopValidClients(i) {
 		switch(TTT_GetClientRole(i))
@@ -33,6 +44,9 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 				DispatchKeyValue(i, "targetname", "DETECTIVE");
 			case TTT_TEAM_INNOCENT:
 				DispatchKeyValue(i, "targetname", "INNOCENT");
+			case TTT_TEAM_UNASSIGNED:
+				DispatchKeyValue(i, "targetname", "UNASSIGNED");
+				
 		}
 	}
 }
