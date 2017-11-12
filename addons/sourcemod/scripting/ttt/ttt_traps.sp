@@ -24,15 +24,15 @@ public void OnPluginStart()
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
-    TTT_LoopValidClients(i) {
-        switch(TTT_GetClientRole(i))
-        {
-            case TTT_TEAM_TRAITOR:
-                DispatchKeyValue(i, "targetname", "TRAITOR");
-            case TTT_TEAM_DETECTIVE:
-                DispatchKeyValue(i, "targetname", "DETECTIVE");
-            case TTT_TEAM_INNOCENT:
-                DispatchKeyValue(i, "targetname", "INNOCENT");
-        }
-    }
+	LoopValidClients(i) {
+		switch(TTT_GetClientRole(i))
+		{
+			case TTT_TEAM_TRAITOR:
+				DispatchKeyValue(i, "targetname", "TRAITOR");
+			case TTT_TEAM_DETECTIVE:
+				DispatchKeyValue(i, "targetname", "DETECTIVE");
+			case TTT_TEAM_INNOCENT:
+				DispatchKeyValue(i, "targetname", "INNOCENT");
+		}
+	}
 }
