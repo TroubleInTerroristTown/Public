@@ -861,5 +861,11 @@
 		"#format"	"{1:N},{2:N},{3:d}"
 		"en"		"{orchid}{1} {lightgreen}was slayed by {orchid}{2} {lightgreen}for {orchid}{3} {lightgreen}rounds!"
 	}
+	
+	"RS - Slayed"
+	{
+		"#format"	"{1:d}"
+		"en"		"You was slayed! Remaining rounds: {orchid}{1}"
+	}
 
 }
