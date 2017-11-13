@@ -96,7 +96,6 @@ public void OnPluginStart()
 	g_cJihadMagnitude = AutoExecConfig_CreateConVar("jihad_magnitude", "1000", "The amount of damage done by the explosion. For Jihad");
 	g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
 
-
 	AddCommandListener(Command_LAW, "+lookatweapon");
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
