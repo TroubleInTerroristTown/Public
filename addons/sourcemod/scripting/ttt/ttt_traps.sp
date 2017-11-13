@@ -22,17 +22,31 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 }
 
+// Re-assign values on round start to make sure if a traitor needs to open a door or use a trap, they can.
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
-	LoopValidClients(i) {
-		switch(TTT_GetClientRole(i))
-		{
-			case TTT_TEAM_TRAITOR:
-				DispatchKeyValue(i, "targetname", "TRAITOR");
-			case TTT_TEAM_DETECTIVE:
-				DispatchKeyValue(i, "targetname", "DETECTIVE");
-			case TTT_TEAM_INNOCENT:
-				DispatchKeyValue(i, "targetname", "INNOCENT");
-		}
+	LoopValidClients(client) {
+		AssignValues(client);
+	}
+}
+
+public void TTT_OnUpdate1(int client) 
+{
+	AssignValues(client);
+}
+
+public void AssignValues(int client) 
+{
+	switch(TTT_GetClientRole(client))
+	{
+		case TTT_TEAM_TRAITOR:
+			DispatchKeyValue(client, "targetname", "TRAITOR");
+		case TTT_TEAM_DETECTIVE:
+			DispatchKeyValue(client, "targetname", "DETECTIVE");
+		case TTT_TEAM_INNOCENT:
+			DispatchKeyValue(client, "targetname", "INNOCENT");
+		case TTT_TEAM_UNASSIGNED:
+			DispatchKeyValue(client, "targetname", "UNASSIGNED");
+				
 	}
 }
