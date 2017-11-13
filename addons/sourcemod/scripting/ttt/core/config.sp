@@ -37,7 +37,7 @@ void SetupConfig()
 	g_ckadRemover = AutoExecConfig_CreateConVar("ttt_kad_remover", "1", "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "TODO: Add description");
 	g_cfakeLife = AutoExecConfig_CreateConVar("ttt_fake_life", "0", "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)", _, true, 0.0, true, 2.0);
-	g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')");
+	g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen}", "The prefix used in all plugin messages");
 	g_cspawnHPT = AutoExecConfig_CreateConVar("ttt_spawn_t", "100", "The amount of health traitors spawn with. ( 0 = disabled )", _, true, 0.0);
 	g_cspawnHPD = AutoExecConfig_CreateConVar("ttt_spawn_d", "100", "The amount of health detectives spawn with. ( 0 = disabled )", _, true, 0.0);
 	g_cspawnHPI = AutoExecConfig_CreateConVar("ttt_spawn_i", "100", "The amount of health innocents spawn with. ( 0 = disabled )", _, true, 0.0);
@@ -81,7 +81,6 @@ void SetupConfig()
 	g_cmodelT = AutoExecConfig_CreateConVar("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.");
 	g_clogFile = AutoExecConfig_CreateConVar("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
 	g_cerrFile = AutoExecConfig_CreateConVar("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
-	g_clogDateFormat = AutoExecConfig_CreateConVar("ttt_log_date_format", "%y-%m-%d", "Date format for the log files");
 	g_cdefaultPriD = AutoExecConfig_CreateConVar("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).");
 	g_cdefaultSec = AutoExecConfig_CreateConVar("ttt_default_secondary", "weapon_glock", "The default secondary gun to give players when they get their role (if they have no secondary).");
 	g_cRoundStartedFontSize = AutoExecConfig_CreateConVar("ttt_round_started_font_size", "32", "Font size of the text if round started");
@@ -99,4 +98,6 @@ void SetupConfig()
 	g_cSteamIDLogFormat = AutoExecConfig_CreateConVar("ttt_steamid_log_format", "1", "Which steam id format to you prefer? 1 - SteamID2 (STEAM_1:1:40828751), 2 - SteamID3 ([U:1:81657503]) or 3 - SteamID64/CommunityID (76561198041923231)", _, true, 0.0, true, 3.0);
 	g_cDebugMessages = AutoExecConfig_CreateConVar("ttt_show_debug_messages", "0", "Show debug messages to all root admins?", _, true, 0.0, true, 1.0);
 	g_cDisableDamageSelection = AutoExecConfig_CreateConVar("ttt_disable_damage_selection", "1", "Disable damage during team selection? This could prevent some bugs.", _, true, 0.0, true, 1.0);
+	
+	g_cpluginTag.AddChangeHook(OnConVarChanged);
 }

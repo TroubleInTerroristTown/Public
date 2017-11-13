@@ -46,7 +46,8 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("ttt");
+	StartConfig("sql");
+	CreateConVar("ttt2_sql_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cRetries = AutoExecConfig_CreateConVar("sql_max_retries", "3", "The amount of retries after first failed connection");
 	g_cEntry = AutoExecConfig_CreateConVar("sql_database_entry_name", "ttt", "The name of the entry in your databases.cfg");
 	EndConfig();

@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <config_loader>
 #include <ttt_shop>
 #include <multicolors>
 #include <emitsoundany>
@@ -21,41 +20,38 @@
 
 #define MDL_C4 "models/weapons/w_c4_planted.mdl"
 
-int g_iPrice_C4 = 0;
-int g_iPrio_C4 = 0;
-int g_iCount_C4 = 0;
+char g_sPluginTag[64];
+
+ConVar g_cRemoveBomb = null;
+ConVar g_cSlayPlayer = null;
+ConVar g_cPrice_C4 = null;
+ConVar g_cPrio_C4 = null;
+ConVar g_cCount_C4 = null;
+ConVar g_cC4ShakeRadius = null;
+ConVar g_cPrice_J = null;
+ConVar g_cPrio_J = null;
+ConVar g_cLongName_C4 = null;
+ConVar g_cLongName_J = null;
+ConVar g_cJihadPreparingTime = null;
+ConVar g_cC4DamageRadius = null;
+ConVar g_cC4Magnitude = null;
+ConVar g_cC4KillRadius = null;
+ConVar g_cJihadDamageRadius = null;
+ConVar g_cJihadMagnitude = null;
+
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
-int g_iC4ShakeRadius = 0;
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
 int g_iWire[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iPrice_J = 0;
-int g_iPrio_J = 0;
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasJihad[MAXPLAYERS + 1] =  { false, ... };
 bool g_bDetonate[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 
-bool g_bRemoveBomb = false;
-bool g_bSlayPlayer = true;
-
 Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName_C4[64];
-char g_sLongName_J[64];
 
-float g_fJihadPreparingTime = 60.0;
-
-int g_iC4DamageRadius = 850;
-int g_iC4Magnitude = 850;
-float g_fC4KillRadius = 275.0;
-
-int g_iJihadDamageRadius = 600;
-int g_iJihadMagnitude = 1000;
 
 char g_sPlantSeconds[][] = {
 	"10",
@@ -81,37 +77,23 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
+	g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
+	g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
+	g_cPrio_C4 = AutoExecConfig_CreateConVar("c4_sort_prio", "0", "The sorting priority of the C4 in the shop menu.");
+	g_cCount_C4 = AutoExecConfig_CreateConVar("c4_count", "9000", "The amount of c4's a traitor can buy.");
+	g_cC4ShakeRadius = AutoExecConfig_CreateConVar("c4_shake_radius", "5000", "The 'shake' radius of the C4 explosion.");
+	g_cC4DamageRadius = AutoExecConfig_CreateConVar("c4_damage_radius", "850", "The damage radius of the C4 explosion.");
+	g_cLongName_J = AutoExecConfig_CreateConVar("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop");
+	g_cPrice_J = AutoExecConfig_CreateConVar("jihad_price", "9000", "The amount of credits a jihad costs as traitor. 0 to disable.");
+	g_cPrio_J = AutoExecConfig_CreateConVar("jihad_sort_prio", "0", "The sorting priority of the Jihad in the shop menu.");
+	g_cJihadPreparingTime = AutoExecConfig_CreateConVar("jihad_preparing_time", "60.0", "The amount of time in seconds until the jihad bomb is ready after buying it.");
+	g_cRemoveBomb = AutoExecConfig_CreateConVar("remove_bomb_on_spawn", "1", "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
+	g_cJihadDamageRadius = AutoExecConfig_CreateConVar("jihad_damage_radius", "600", "The damage radius of the Jihad explosion.");
+	g_cSlayPlayer = AutoExecConfig_CreateConVar("jihad_slay_player", "1", "Slay player on own jihad explosion?", _, true, 0.0, true, 1.0);
+	g_cC4Magnitude = AutoExecConfig_CreateConVar("c4_magnitude", "850", "The amount of damage done by the explosion. For C4");
+	g_cJihadMagnitude = AutoExecConfig_CreateConVar("jihad_magnitude", "1000", "The amount of damage done by the explosion. For Jihad");
+	g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
 
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/c4_jihad.cfg");
-	Config_Setup("TTT-Bomb", g_sConfigFile);
-
-	Config_LoadString("c4_name", "C4", "The name of the C4 in the Shop", g_sLongName_C4, sizeof(g_sLongName_C4));
-	g_iPrice_C4 = Config_LoadInt("c4_price", 9000, "The amount of credits a c4 costs as traitor. 0 to disable.");
-	g_iPrio_C4 = Config_LoadInt("c4_sort_prio", 0, "The sorting priority of the C4 in the shop menu.");
-	g_iCount_C4 = Config_LoadInt("c4_count", 9000, "The amount of c4's a traitor can buy.");
-	g_iC4ShakeRadius = Config_LoadInt("c4_shake_radius", 5000, "The 'shake' radius of the C4 explosion.");
-	g_iC4DamageRadius = Config_LoadInt("c4_damage_radius", 850, "The damage radius of the C4 explosion.");
-
-	Config_LoadString("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop", g_sLongName_J, sizeof(g_sLongName_J));
-	g_iPrice_J = Config_LoadInt("jihad_price", 9000, "The amount of credits a jihad costs as traitor. 0 to disable.");
-	g_iPrio_J = Config_LoadInt("jihad_sort_prio", 0, "The sorting priority of the Jihad in the shop menu.");
-	g_fJihadPreparingTime = Config_LoadFloat("jihad_preparing_time", 60.0, "The amount of time in seconds until the jihad bomb is ready after buying it.");
-	g_bRemoveBomb = Config_LoadBool("remove_bomb_on_spawn", true, "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove");
-	g_iJihadDamageRadius = Config_LoadInt("jihad_damage_radius", 600, "The damage radius of the Jihad explosion.");
-	g_bSlayPlayer = Config_LoadBool("jihad_slay_player", true, "Slay player on own jihad explosion?");
-
-	g_iC4Magnitude = Config_LoadInt("c4_magnitude", 850, "The amount of damage done by the explosion. For C4");
-	g_iJihadMagnitude = Config_LoadInt("jihad_magnitude", 1000, "The amount of damage done by the explosion. For Jihad");
-
-	g_fC4KillRadius = Config_LoadFloat("c4_kill_radius", 275.0, "The kill radius of the C4 explosion.");
-
-	Config_Done();
 
 	AddCommandListener(Command_LAW, "+lookatweapon");
 
@@ -162,10 +144,18 @@ public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadca
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_C4, g_sLongName_C4, g_iPrice_C4, TTT_TEAM_TRAITOR, g_iPrio_C4);
-	TTT_RegisterCustomItem(SHORT_NAME_J, g_sLongName_J, g_iPrice_J, TTT_TEAM_TRAITOR, g_iPrio_J);
+	ConVar hTag = FindConVar("ttt_plugin_tag");
+	hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cLongName_C4.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_C4, sBuffer, g_cPrice_C4.IntValue, TTT_TEAM_TRAITOR, g_cPrio_C4.IntValue);
+	
+	g_cLongName_J.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue);
 }
 
 public void ResetJihad(int client)
@@ -203,9 +193,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
-			if(g_iPCount_C4[client] >= g_iCount_C4)
+			if(g_iPCount_C4[client] >= g_cCount_C4.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName_C4, g_iCount_C4);
+				char sBuffer[MAX_ITEM_LENGTH];
+				g_cLongName_C4.GetString(sBuffer, sizeof(sBuffer));
+				
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cCount_C4.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -216,7 +209,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				g_iPCount_C4[client]++;
 			}
 
-			CPrintToChat(client, g_sPluginTag, "Right click to plant the C4", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Right click to plant the C4", client);
 		}
 		else if (StrEqual(itemshort, SHORT_NAME_J, false))
 		{
@@ -229,10 +222,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 
 			ClearTimer(g_hJihadBomb[client]);
-			g_hJihadBomb[client] = CreateTimer(g_fJihadPreparingTime, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+			g_hJihadBomb[client] = CreateTimer(g_cJihadPreparingTime.FloatValue, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			g_bHasJihad[client] = true;
 
-			CPrintToChat(client, g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
 		}
 	}
 	return Plugin_Continue;
@@ -247,7 +240,7 @@ public Action Timer_JihadPreparing(Handle timer, any userid)
 		return Plugin_Stop;
 	}
 
-	CPrintToChat(client, g_sPluginTag, "Your bomb is now armed.", client);
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Your bomb is now armed.", client);
 	EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
 	g_hJihadBomb[client] = null;
 	return Plugin_Stop;
@@ -255,7 +248,7 @@ public Action Timer_JihadPreparing(Handle timer, any userid)
 
 public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
 {
-	if (!g_bRemoveBomb)
+	if (!g_cRemoveBomb.BoolValue)
 	{
 		return Plugin_Continue;
 	}
@@ -298,8 +291,8 @@ stock void Detonate(int client)
 	if (ExplosionIndex != -1)
 	{
 		SetEntProp(ExplosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_iJihadMagnitude);
-		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_iJihadDamageRadius);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iMagnitude", g_cJihadMagnitude.IntValue);
+		SetEntProp(ExplosionIndex, Prop_Data, "m_iRadiusOverride", g_cJihadDamageRadius.IntValue);
 
 		DispatchSpawn(ExplosionIndex);
 		ActivateEntity(ExplosionIndex);
@@ -318,7 +311,7 @@ stock void Detonate(int client)
 		AcceptEntityInput(ExplosionIndex, "Kill");
 		
 		// Slay players
-		if (g_bSlayPlayer && IsPlayerAlive(client))
+		if (g_cSlayPlayer.BoolValue&& IsPlayerAlive(client))
 		{
 			ForcePlayerSuicide(client);
 		}
@@ -335,13 +328,13 @@ public Action Command_Detonate(int client, int args)
 
 	if (!g_bHasJihad[client])
 	{
-		CPrintToChat(client, g_sPluginTag, "You dont have it!", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "You dont have it!", client);
 		return Plugin_Handled;
 	}
 
 	if (g_hJihadBomb[client] != null)
 	{
-		CPrintToChat(client, g_sPluginTag, "Your bomb is not armed.", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Your bomb is not armed.", client);
 		return Plugin_Handled;
 	}
 
@@ -421,7 +414,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	{
 		g_bHasActiveBomb[client] = false;
 		g_hExplosionTimer[client] = null;
-		CPrintToChat(client, g_sPluginTag, "Bomb Detonated", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Bomb Detonated", client);
 	}
 	else
 	{
@@ -434,7 +427,7 @@ public Action explodeC4(Handle timer, Handle pack)
 	if (explosionIndex != -1 && particleIndex != -1 && shakeIndex != -1)
 	{
 		char sShakeRadius[8];
-		IntToString(g_iC4ShakeRadius, sShakeRadius, sizeof(sShakeRadius));
+		IntToString(g_cC4ShakeRadius.IntValue, sShakeRadius, sizeof(sShakeRadius));
 
 		DispatchKeyValue(shakeIndex, "amplitude", "4");
 		DispatchKeyValue(shakeIndex, "duration", "1");
@@ -442,8 +435,8 @@ public Action explodeC4(Handle timer, Handle pack)
 		DispatchKeyValue(shakeIndex, "radius", sShakeRadius);
 		DispatchKeyValue(particleIndex, "effect_name", "explosion_c4_500");
 		SetEntProp(explosionIndex, Prop_Data, "m_spawnflags", 16384);
-		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", g_iC4DamageRadius);
-		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_iC4Magnitude);
+		SetEntProp(explosionIndex, Prop_Data, "m_iRadiusOverride", g_cC4DamageRadius.IntValue);
+		SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_cC4Magnitude.IntValue);
 		SetEntPropEnt(explosionIndex, Prop_Send, "m_hOwnerEntity", client);
 		DispatchSpawn(particleIndex);
 		DispatchSpawn(explosionIndex);
@@ -470,7 +463,7 @@ public Action explodeC4(Handle timer, Handle pack)
 			float clientOrigin[3];
 			GetEntPropVector(i, Prop_Data, "m_vecOrigin", clientOrigin);
 
-			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_fC4KillRadius)
+			if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_cC4KillRadius.FloatValue)
 			{
 				Handle killEvent = CreateEvent("player_death", true);
 				SetEventInt(killEvent, "userid", GetClientUserId(i));
@@ -667,8 +660,8 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		{
 			if (1 <= planter <= MaxClients && IsClientInGame(planter))
 			{
-				CPrintToChat(client, g_sPluginTag, "You Defused Bomb", client, planter);
-				CPrintToChat(planter, g_sPluginTag, "Has Defused Bomb", planter, client);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "You Defused Bomb", client, planter);
+				CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, client);
 				EmitAmbientSoundAny(SND_DISARM, bombPos);
 				g_bHasActiveBomb[planter] = false;
 				ClearTimer(g_hExplosionTimer[planter]);
@@ -677,7 +670,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "Failed Defuse", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Failed Defuse", client);
 			ForcePlayerSuicide(client);
 			g_iDefusePlayerIndex[client] = -1;
 		}
@@ -702,11 +695,11 @@ stock float plantBomb(int client, float time)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "Alive to Plant", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Alive to Plant", client);
 		return;
 	}
 
-	CPrintToChat(client, g_sPluginTag, "Will Explode In", client, time);
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Will Explode In", client, time);
 
 	bool bombFound;
 	int bombEnt;
@@ -742,11 +735,11 @@ stock float plantBomb(int client, float time)
 
 	if (!bombFound)
 	{
-		CPrintToChat(client, g_sPluginTag, "Bomb Was Not Found", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Bomb Was Not Found", client);
 	}
 
 	g_iWire[client] = GetRandomInt(1, 4);
-	CPrintToChat(client, g_sPluginTag, "Wire Is", client, g_iWire[client]);
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Wire Is", client, g_iWire[client]);
 }
 
 stock int findBombPlanter(int &bomb)

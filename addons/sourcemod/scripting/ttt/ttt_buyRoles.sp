@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <config_loader>
 #include <ttt_shop>
 #include <multicolors>
 
@@ -16,26 +15,18 @@
 #define D_SHORT_NAME "buyCTRole"
 #define DI_SHORT_NAME "buyCTiRole"
 
-int g_iTPrice = 0;
-int g_iTPrio = 0;
-
-int g_iTiPrice = 0;
-int g_iTiPrio = 0;
-
-int g_iDPrice = 0;
-int g_iDPrio = 0;
-
-int g_iDiPrice = 0;
-int g_iDiPrio = 0;
-
-char g_sTLongName[64];
-char g_sTiLongName[64];
-char g_sDLongName[64];
-char g_sDiLongName[64];
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-
+ConVar g_cTPrice = null;
+ConVar g_cTPrio = null;
+ConVar g_cTiPrice = null;
+ConVar g_cTiPrio = null;
+ConVar g_cDPrice = null;
+ConVar g_cDPrio = null;
+ConVar g_cDiPrice = null;
+ConVar g_cDiPrio = null;
+ConVar g_cTLongName = null;
+ConVar g_cTiLongName = null;
+ConVar g_cDLongName = null;
+ConVar g_cDiLongName = null;
 
 public Plugin myinfo =
 {
@@ -50,43 +41,38 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/buyRoles.cfg");
-	Config_Setup("TTT-BuyRoles", g_sConfigFile);
-
-	Config_LoadString("broles_traitor_name", "Buy Traitor Role", "The name of the buy traitor role in the Shop", g_sTLongName, sizeof(g_sTLongName));
-	Config_LoadString("broles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop", g_sTiLongName, sizeof(g_sTiLongName));
-	Config_LoadString("broles_detective_name", "Buy Detective Role", "The name of the buy detective role in the Shop", g_sDLongName, sizeof(g_sDLongName));
-	Config_LoadString("broles_detective_instantly_name", "Buy Detective Role Instantly", "The name of the buy detective role in the Shop", g_sDiLongName, sizeof(g_sDiLongName));
-
-	g_iTPrice = Config_LoadInt("broles_traitor_price", 9000, "The amount of credits that cost to buy the traitor role. 0 to disable.");
-	g_iTiPrice = Config_LoadInt("broles_traitor_instantly_price", 40000, "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
-
-	g_iDPrice = Config_LoadInt("broles_detective_price", 9000, "The amount of credits that cost to buy the detective role. 0 to disable.");
-	g_iDiPrice = Config_LoadInt("broles_detective_instantly_price", 10000, "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
-
-	g_iTPrio = Config_LoadInt("broles_traitor_prio", 0, "The sorting priority of the buy traitor role in the shop menu.");
-	g_iTiPrio = Config_LoadInt("broles_traitor_instantly_prio", 0, "The sorting priority of the buy traitor instantly role in the shop menu.");
-
-	g_iDPrio = Config_LoadInt("broles_detective_prio", 0, "The sorting priority of the buy detective role in the shop menu.");
-	g_iDiPrio = Config_LoadInt("broles_detective_instantly_prio", 0, "The sorting priority of the buy detective instantly role in the shop menu.");
-
-	Config_Done();
+	StartConfig("buyroles");
+	CreateConVar("ttt2_buy_roles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cTLongName = AutoExecConfig_CreateConVar("buyroles_traitor_name", "Buy Traitor Role", "The name of the buy traitor role in the Shop");
+	g_cTiLongName = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop");
+	g_cDLongName = AutoExecConfig_CreateConVar("buyroles_detective_name", "Buy Detective Role", "The name of the buy detective role in the Shop");
+	g_cDiLongName = AutoExecConfig_CreateConVar("buyroles_detective_instantly_name", "Buy Detective Role Instantly", "The name of the buy detective role in the Shop");
+	g_cTPrice = AutoExecConfig_CreateConVar("buyroles_traitor_price", "9000", "The amount of credits that cost to buy the traitor role. 0 to disable.");
+	g_cTiPrice = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_price", "40000", "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
+	g_cDPrice = AutoExecConfig_CreateConVar("buyroles_detective_price", "9000", "The amount of credits that cost to buy the detective role. 0 to disable.");
+	g_cDiPrice = AutoExecConfig_CreateConVar("buyroles_detective_instantly_price", "10000", "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
+	g_cTPrio = AutoExecConfig_CreateConVar("buyroles_traitor_prio", "0", "The sorting priority of the buy traitor role in the shop menu.");
+	g_cTiPrio = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_prio", "0", "The sorting priority of the buy traitor instantly role in the shop menu.");
+	g_cDPrio = AutoExecConfig_CreateConVar("buyroles_detective_prio", "0", "The sorting priority of the buy detective role in the shop menu.");
+	g_cDiPrio = AutoExecConfig_CreateConVar("buyroles_detective_instantly_prio", "0", "The sorting priority of the buy detective instantly role in the shop menu.");
+	EndConfig();
 }
 
-public void OnAllPluginsLoaded()
+public void .IntValue()
 {
-	TTT_RegisterCustomItem(T_SHORT_NAME, g_sTLongName, g_iTPrice, TTT_TEAM_INNOCENT, g_iTPrio);
-	TTT_RegisterCustomItem(TI_SHORT_NAME, g_sTiLongName, g_iTiPrice, TTT_TEAM_INNOCENT, g_iTiPrio);
-
-	TTT_RegisterCustomItem(D_SHORT_NAME, g_sDLongName, g_iDPrice, TTT_TEAM_INNOCENT, g_iDPrio);
-	TTT_RegisterCustomItem(DI_SHORT_NAME, g_sDiLongName, g_iDiPrice, TTT_TEAM_INNOCENT, g_iDiPrio);
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cTLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue);
+	
+	g_cTiLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue);
+	
+	g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue);
+	
+	g_cDiLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue);
 }
 
 

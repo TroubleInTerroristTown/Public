@@ -74,6 +74,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				
 				ConVar hTag = FindConVar("ttt_plugin_tag");
 				hTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
 			
 			*/
 			

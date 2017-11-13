@@ -197,7 +197,6 @@ ConVar g_cmodelCT = null;
 ConVar g_cmodelT = null;
 ConVar g_clogFile = null;
 ConVar g_cerrFile = null;
-ConVar g_clogDateFormat = null;
 ConVar g_cdefaultPriD = null;
 ConVar g_cdefaultSec = null;
 ConVar g_cendwithD = null;

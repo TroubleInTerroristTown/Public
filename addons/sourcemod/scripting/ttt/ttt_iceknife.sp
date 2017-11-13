@@ -139,7 +139,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				ConVar hTag = FindConVar("ttt_plugin_tag");
 				hTag.GetString(sTag, sizeof(sTag));
 				
-				CPrintToChat(client, sTag, "Bought All", client, sName, g_cCount.IntValue);
+				CPrintToChat(client, "%s %T", sTag, "Bought All", client, sName, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
 

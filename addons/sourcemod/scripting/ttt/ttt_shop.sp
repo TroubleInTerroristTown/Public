@@ -231,7 +231,7 @@ public Action Command_Buy(int client, int args)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
 	}
 
@@ -308,7 +308,7 @@ public Action Command_Shop(int client, int args)
 	}
 	else
 	{
-		CPrintToChat(client, g_sPluginTag, "Please wait till your team is assigned", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Please wait till your team is assigned", client);
 	}
 
 	return Plugin_Handled;
@@ -326,7 +326,7 @@ public Action Command_ReopenShop(int client, int args)
 	{
 		g_bReopen[client] = false;
 
-		CPrintToChat(client, g_sPluginTag, "Reopen Shop deactivated", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Reopen Shop deactivated", client);
 
 		char sBuffer[4];
 		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
@@ -336,7 +336,7 @@ public Action Command_ReopenShop(int client, int args)
 	{
 		g_bReopen[client] = true;
 
-		CPrintToChat(client, g_sPluginTag, "Reopen Shop activated", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Reopen Shop activated", client);
 
 		char sBuffer[4];
 		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
@@ -352,7 +352,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	{
 		if (!IsPlayerAlive(client))
 		{
-			CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 			return;
 		}
 
@@ -418,13 +418,13 @@ bool ClientBuyItem(int client, char[] item)
 				if (res < Plugin_Stop)
 				{
 					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - price));
-					CPrintToChat(client, g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
+					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
 					return true;
 				}
 			}
 			else
 			{
-				CPrintToChat(client, g_sPluginTag, "You don't have enough money", client);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "You don't have enough money", client);
 				return false;
 			}
 		}
@@ -618,7 +618,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		if (TTT_IsRoundActive())
 		{
-			CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
 		}
 	}
 
@@ -649,7 +649,7 @@ public Action Command_Credits(int client, int args)
 		return Plugin_Handled;
 	}
 
-	CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
 
 	return Plugin_Handled;
 }
@@ -795,7 +795,7 @@ stock void addCredits(int client, int credits, bool message = false)
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
 		}
 	}
 
@@ -839,7 +839,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "lost credits", client, credits, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "lost credits", client, credits, g_iCredits[client]);
 		}
 	}
 
@@ -899,7 +899,7 @@ public Action Command_SetCredits(int client, int args)
 
 		setCredits(target_list[i], credits);
 
-		CPrintToChat(client, g_sPluginTag, "AdminSet", client, target_list[i], credits, "Credits");
+		CPrintToChat(client, "%s %T", g_sPluginTag, "AdminSet", client, target_list[i], credits, "Credits");
 	}
 
 	return Plugin_Continue;
