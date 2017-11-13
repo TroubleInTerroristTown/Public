@@ -1,5 +1,5 @@
 # [TroubleinTerroristTown](http://csgottt.com/)
-**Status**: Active again...
+**Status**: Active again, until I've got new work.
 
 [![Build Status](https://travis-ci.org/Bara20/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
 ---
