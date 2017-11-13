@@ -148,7 +148,19 @@ public void OnPluginStart()
 
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 	
+
 	g_hRSCookie = RegClientCookie("ttt2_round_slays", "Round Slays Cookie", CookieAccess_Private);
+
+	SetRandomSeed(GetTime());
+
+	AddCommandListener(Command_LAW, "+lookatweapon");
+	AddCommandListener(Command_Say, "say");
+	AddCommandListener(Command_SayTeam, "say_team");
+	AddCommandListener(Command_InterceptSuicide, "kill");
+	AddCommandListener(Command_InterceptSuicide, "explode");
+	AddCommandListener(Command_InterceptSuicide, "spectate");
+	AddCommandListener(Command_InterceptSuicide, "jointeam");
+	AddCommandListener(Command_InterceptSuicide, "joinclass");
 
 	for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
 	{
