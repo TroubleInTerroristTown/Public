@@ -409,7 +409,6 @@ stock void StartConfig(char[] file, char[] directory = "ttt")
 	AutoExecConfig_SetCreateDirectory(true);
 	AutoExecConfig_SetCreateFile(true);
 	AutoExecConfig_SetFile(file, directory);
-	AutoExecConfig_CacheConvars();
 }
 
 stock void EndConfig()
