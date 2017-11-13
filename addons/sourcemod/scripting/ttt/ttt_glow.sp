@@ -14,9 +14,9 @@ int g_iColorDetective[3] =  {0, 0, 255};
 
 ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
+ConVar g_cDebug = null;
 
 bool g_bCPS = false;
-bool g_bDebug = false;
 
 Handle g_hOnGlowCheck = null;
 
@@ -51,6 +51,21 @@ public void OnPluginStart()
 	g_bCPS = LibraryExists("CustomPlayerSkins");
 }
 
+public void OnPluginEnd()
+{
+	LoopValidClients(i)
+	{
+		UnHookSkin(i);
+		CPS_RemoveSkin(i);
+	}
+}
+
+public void OnClientDisconnect(int client)
+{
+	UnHookSkin(client);
+	CPS_RemoveSkin(client);
+}
+
 public void OnLibraryAdded(const char[] name)
 {
 	if (StrEqual(name, "CustomPlayerSkins"))
@@ -67,8 +82,10 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
+	g_cDebug = FindConVar("ttt_debug_mode");
+	
 	if (!g_bCPS)
 	{
 		SetFailState("CustomPlayerSkins not loaded!");
@@ -104,7 +121,7 @@ void SetupGlowSkin(int client)
 		return;
 	}
 
-	if (!g_bDebug && (IsFakeClient(client) || IsClientSourceTV(client)))
+	if (!g_cDebug.BoolValue && (IsFakeClient(client) || IsClientSourceTV(client)))
 	{
 		return;
 	}
@@ -116,11 +133,11 @@ void SetupGlowSkin(int client)
 	
 	int role = TTT_GetClientRole(client);
 	
-	if (role != TTT_TEAM_DETECTIVE || role != TTT_TEAM_INNOCENT || role != TTT_TEAM_TRAITOR)
+	if (role != TTT_TEAM_DETECTIVE && role != TTT_TEAM_INNOCENT && role != TTT_TEAM_TRAITOR)
 	{
 		return;
 	}
-
+	
 	if (!g_cDGlow.BoolValue && role == TTT_TEAM_DETECTIVE)
 	{
 		return;
@@ -175,7 +192,7 @@ void SetupGlow(int client, int skin)
 	int iRed = 255;
 	int iGreen = 255;
 	int iBlue = 255;
-
+	
 	if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
 		iRed = g_iColorDetective[0];
@@ -205,6 +222,8 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 {
 	int iRole = TTT_GetClientRole(client);
 	
+	int target = -1;
+	
 	LoopValidClients(i)
 	{
 		if (i < 1)
@@ -217,7 +236,7 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 			continue;
 		}
 
-		if (!g_bDebug && IsFakeClient(i))
+		if (!g_cDebug.BoolValue && IsFakeClient(i))
 		{
 			continue;
 		}
@@ -237,25 +256,25 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 			continue;
 		}
 		
-		int iTRole = TTT_GetClientRole(i);
-		
-		if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
-		{
-			return Plugin_Continue;
-		}
-	
-		if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
-		{
-			return Plugin_Continue;
-		}
-		
-		Action result = Plugin_Continue;
-		Call_StartForward(g_hOnGlowCheck);
-		Call_PushCell(client);
-		Call_PushCell(i);
-		Call_Finish(result);
-		return result;
+		target = i;
 	}
 	
-	return Plugin_Handled;
+	int iTRole = TTT_GetClientRole(target);
+		
+	if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
+	{
+		return Plugin_Continue;
+	}
+
+	if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
+	{
+		return Plugin_Continue;
+	}
+	
+	Action result = Plugin_Handled;
+	Call_StartForward(g_hOnGlowCheck);
+	Call_PushCell(client);
+	Call_PushCell(target);
+	Call_Finish(result);
+	return result;
 }
