@@ -156,7 +156,9 @@ void ShowSpecMenu(int client)
 	menu.AddItem("dead", sItem);
 
 	menu.ExitButton = true;
+
 	menu.Display(client, g_cMenuTime.IntValue);
+
 }
 
 public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)

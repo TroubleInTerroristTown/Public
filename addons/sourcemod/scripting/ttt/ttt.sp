@@ -147,7 +147,6 @@ public void OnPluginStart()
 	HookEvent("player_hurt", Event_PlayerHurt);
 
 	g_hGraceTime = FindConVar("mp_join_grace_time");
-	
 
 	g_hRSCookie = RegClientCookie("ttt2_round_slays", "Round Slays Cookie", CookieAccess_Private);
 
@@ -3247,9 +3246,6 @@ public Action Timer_5(Handle timer)
 	{
 		CheckPlayers();
 	}
-
-	Call_StartForward(g_hOnUpdate5);
-	Call_Finish();
 }
 
 void CheckPlayers()
