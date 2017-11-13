@@ -40,6 +40,8 @@ ConVar g_cC4Magnitude = null;
 ConVar g_cC4KillRadius = null;
 ConVar g_cJihadDamageRadius = null;
 ConVar g_cJihadMagnitude = null;
+ConVar g_cDiscountC4 = null;
+ConVar g_cDiscountJ = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
@@ -52,8 +54,6 @@ bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
-
-
 
 char g_sPlantSeconds[][] = {
 	"10",
@@ -79,6 +79,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
+	StartConfig("c4_jihad");
 	g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
 	g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
 	g_cPrio_C4 = AutoExecConfig_CreateConVar("c4_sort_prio", "0", "The sorting priority of the C4 in the shop menu.");
@@ -95,7 +96,10 @@ public void OnPluginStart()
 	g_cC4Magnitude = AutoExecConfig_CreateConVar("c4_magnitude", "850", "The amount of damage done by the explosion. For C4");
 	g_cJihadMagnitude = AutoExecConfig_CreateConVar("jihad_magnitude", "1000", "The amount of damage done by the explosion. For Jihad");
 	g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
-
+	g_cDiscountC4 = AutoExecConfig_CreateConVar("c4_discount_traitor", "0", "Should c4 discountable?", _, true, 0.0, true, 1.0);
+	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
+	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -154,10 +158,10 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName_C4.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME_C4, sBuffer, g_cPrice_C4.IntValue, TTT_TEAM_TRAITOR, g_cPrio_C4.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_C4, sBuffer, g_cPrice_C4.IntValue, TTT_TEAM_TRAITOR, g_cPrio_C4.IntValue, g_cDiscountC4.BoolValue);
 	
 	g_cLongName_J.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue, g_cDiscountJ.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

@@ -30,7 +30,9 @@ ConVar g_cAmountT = null;
 ConVar g_cAmountD = null;
 ConVar g_cAmountI = null;
 ConVar g_cLongName = null;
-
+ConVar g_cDiscountT = null;
+ConVar g_cDiscountD = null;
+ConVar g_cDiscountI = null;
 
 int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iWeapon[MAXPLAYERS + 1] =  { -1, ... };
@@ -70,6 +72,9 @@ public void OnPluginStart()
 	g_cMaxShotsI = AutoExecConfig_CreateConVar("silent_awp_max_i", "2", "Maximum shots for the AWP for Innos");
 	g_cMinShotsI = AutoExecConfig_CreateConVar("silent_awp_min_i", "1", "Minimum shots for the AWP for Innos");
 	g_cAmountI = AutoExecConfig_CreateConVar("silent_awp_amount_i", "0", "How many AWPs can innocents buy?");
+	g_cDiscountT = AutoExecConfig_CreateConVar("silent_awp_discount_traitor", "0", "Should silent awp discountable for traitors?", _, true, 0.0, true, 1.0);
+	g_cDiscountD = AutoExecConfig_CreateConVar("silent_awp_discount_detective", "0", "Should silent awp discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cDiscountI = AutoExecConfig_CreateConVar("silent_awp_discount_innocents", "0", "Should silent awp discountable for innocents?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -82,9 +87,9 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue);
-	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue);
-	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue, g_cDiscountT.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue, g_cDiscountD.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue, g_cDiscountI.BoolValue);
 
 }
 

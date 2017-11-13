@@ -24,17 +24,29 @@ public Plugin myinfo =
 };
 
 ConVar g_cKev_Long = null;
+ConVar g_cKev_Discount = null;
 ConVar g_cKevHelm_Long = null;
+ConVar g_cKevHelm_Discount = null;
 ConVar g_cHeavy_Long = null;
+ConVar g_cHeavy_Discount = null;
 ConVar g_cHelm_Long = null;
+ConVar g_cHelm_Discount = null;
 ConVar g_cUSP_Long = null;
+ConVar g_cUSP_Discount = null;
 ConVar g_cM4_Long = null;
+ConVar g_cM4_Discount = null;
 ConVar g_cAWP_Long = null;
+ConVar g_cAWP_Discount = null;
 ConVar g_cKF_Long = null;
+ConVar g_cKF_Discount = null;
 ConVar g_cAK_Long = null;
+ConVar g_cAK_Discount = null;
 ConVar g_cDeagle_Long = null;
+ConVar g_cDeagle_Discount = null;
 ConVar g_cRevolver_Long = null;
+ConVar g_cRevolver_Discount = null;
 ConVar g_cScout_Long = null;
+ConVar g_cScout_Discount = null;
 ConVar g_cKev_Type = null;
 ConVar g_cKev_Price = null;
 ConVar g_cHeavy_Type = null;
@@ -141,6 +153,18 @@ public void OnPluginStart()
 	g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
 	g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
 	g_cKF_Long = AutoExecConfig_CreateConVar("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
+	g_cKev_Discount = AutoExecConfig_CreateConVar("kevlar_discount", "0", "Should kevlar discountable?", _, true, 0.0, true, 1.0);
+	g_cHeavy_Discount = AutoExecConfig_CreateConVar("heavy_discount", "0", "Should heavy discountable?", _, true, 0.0, true, 1.0);
+	g_cHelm_Discount = AutoExecConfig_CreateConVar("helm_discount", "0", "Should helm discountable?", _, true, 0.0, true, 1.0);
+	g_cKevHelm_Discount = AutoExecConfig_CreateConVar("kevhelm_discount", "0", "Should kevlar+helm discountable?", _, true, 0.0, true, 1.0);
+	g_cUSP_Discount = AutoExecConfig_CreateConVar("usp_discount", "0", "Should USP-S discountable?", _, true, 0.0, true, 1.0);
+	g_cAK_Discount = AutoExecConfig_CreateConVar("ak47_discount", "0", "Should AK47 discountable?", _, true, 0.0, true, 1.0);
+	g_cDeagle_Discount = AutoExecConfig_CreateConVar("deagle_discount", "0", "Should Deagle discountable?", _, true, 0.0, true, 1.0);
+	g_cRevolver_Discount = AutoExecConfig_CreateConVar("revolver_discount", "0", "Should Revolver discountable?", _, true, 0.0, true, 1.0);
+	g_cScout_Discount = AutoExecConfig_CreateConVar("scout_discount", "0", "Should Scout discountable?", _, true, 0.0, true, 1.0);
+	g_cM4_Discount = AutoExecConfig_CreateConVar("m4a1_discount", "0", "Should M4A1-S discountable?", _, true, 0.0, true, 1.0);
+	g_cAWP_Discount = AutoExecConfig_CreateConVar("awp_discount", "0", "Should AWP discountable?", _, true, 0.0, true, 1.0);
+	g_cKF_Discount = AutoExecConfig_CreateConVar("1knife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	LoadTranslations("ttt.phrases");
@@ -163,87 +187,87 @@ public void OnAllPluginsLoaded()
 	g_cKev_Long.GetString(sBuffer, sizeof(sBuffer));
 	if(g_cKev_Type.IntValue == 0)
 	{
-		TTT_RegisterCustomItem(KEV_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cKev_Prio.IntValue);
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
 	}
 	else if(g_cKev_Type.IntValue == 1)
 	{
-		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue);
-		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_DETECTIVE, g_cKev_Prio.IntValue);
+		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
+		TTT_RegisterCustomItem(KEV_D_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_DETECTIVE, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
 	}
 	else if(g_cKev_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(KEV_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue);
+		TTT_RegisterCustomItem(KEV_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
 	}
 
 
 	g_cHeavy_Long.GetString(sBuffer, sizeof(sBuffer));
 	if(g_cHeavy_Type.IntValue == 0)
 	{
-		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cHeavy_Prio.IntValue);
+		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
 	}
 	else if(g_cHeavy_Type.IntValue == 1)
 	{
-		TTT_RegisterCustomItem(HEAVY_T_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue);
-		TTT_RegisterCustomItem(HEAVY_D_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_DETECTIVE, g_cHeavy_Prio.IntValue);
+		TTT_RegisterCustomItem(HEAVY_T_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
+		TTT_RegisterCustomItem(HEAVY_D_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_DETECTIVE, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
 	}
 	else if(g_cHeavy_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue);
+		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
 	}
 
 	g_cHelm_Long.GetString(sBuffer, sizeof(sBuffer));
 	if(g_cHelm_Type.IntValue == 0)
 	{
-		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
 	}
 	else if(g_cHelm_Type.IntValue == 1)
 	{
-		TTT_RegisterCustomItem(HELM_T_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue);
-		TTT_RegisterCustomItem(HELM_D_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_DETECTIVE, g_cHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(HELM_T_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
+		TTT_RegisterCustomItem(HELM_D_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_DETECTIVE, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
 	}
 	else if(g_cHelm_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
 	}
 
 	g_cKevHelm_Long.GetString(sBuffer, sizeof(sBuffer));
 	if(g_cKevHelm_Type.IntValue == 0)
 	{
-		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cKevHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 	else if(g_cKevHelm_Type.IntValue == 1)
 	{
-		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue);
-		TTT_RegisterCustomItem(KEVHELM_D_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_DETECTIVE, g_cKevHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
+		TTT_RegisterCustomItem(KEVHELM_D_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_DETECTIVE, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 	else if(g_cKevHelm_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue);
+		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 
 	g_cKF_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKF_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue);
+	TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKF_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue, g_cKF_Discount.BoolValue);
 
 	g_cM4_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(M4_ITEM_SHORT, sBuffer, g_cM4_Price.IntValue, TTT_TEAM_TRAITOR, g_cM4_Prio.IntValue);
+	TTT_RegisterCustomItem(M4_ITEM_SHORT, sBuffer, g_cM4_Price.IntValue, TTT_TEAM_TRAITOR, g_cM4_Prio.IntValue, g_cM4_Discount.BoolValue);
 
 	g_cAWP_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(AWP_ITEM_SHORT, sBuffer, g_cAWP_Price.IntValue, TTT_TEAM_TRAITOR, g_cAWP_Prio.IntValue);
+	TTT_RegisterCustomItem(AWP_ITEM_SHORT, sBuffer, g_cAWP_Price.IntValue, TTT_TEAM_TRAITOR, g_cAWP_Prio.IntValue, g_cAWP_Discount.BoolValue);
 
 	g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue);
+	TTT_RegisterCustomItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue, g_cUSP_Discount.BoolValue);
 
 	g_cAK_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(AK_ITEM_SHORT, sBuffer, g_cAK_Price.IntValue, TTT_TEAM_TRAITOR, g_cAK_Prio.IntValue);
+	TTT_RegisterCustomItem(AK_ITEM_SHORT, sBuffer, g_cAK_Price.IntValue, TTT_TEAM_TRAITOR, g_cAK_Prio.IntValue, g_cAK_Discount.BoolValue);
 
 	g_cDeagle_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(DEAGLE_ITEM_SHORT, sBuffer, g_cDeagle_Price.IntValue, TTT_TEAM_TRAITOR, g_cDeagle_Prio.IntValue);
+	TTT_RegisterCustomItem(DEAGLE_ITEM_SHORT, sBuffer, g_cDeagle_Price.IntValue, TTT_TEAM_TRAITOR, g_cDeagle_Prio.IntValue, g_cDeagle_Discount.BoolValue);
 
 	g_cRevolver_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(REVOLVER_ITEM_SHORT, sBuffer, g_cRevolver_Price.IntValue, TTT_TEAM_TRAITOR, g_cRevolver_Prio.IntValue);
+	TTT_RegisterCustomItem(REVOLVER_ITEM_SHORT, sBuffer, g_cRevolver_Price.IntValue, TTT_TEAM_TRAITOR, g_cRevolver_Prio.IntValue, g_cRevolver_Discount.BoolValue);
 
 	g_cScout_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SCOUT_ITEM_SHORT, sBuffer, g_cScout_Price.IntValue, TTT_TEAM_TRAITOR, g_cScout_Prio.IntValue);
+	TTT_RegisterCustomItem(SCOUT_ITEM_SHORT, sBuffer, g_cScout_Price.IntValue, TTT_TEAM_TRAITOR, g_cScout_Prio.IntValue, g_cScout_Discount.BoolValue);
 
 }
 

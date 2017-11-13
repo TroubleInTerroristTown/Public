@@ -867,5 +867,11 @@
 		"#format"	"{1:d}"
 		"en"		"You was slayed! Remaining rounds: {orchid}{1}"
 	}
+	
+	"Shop Discount Price"
+	{
+		"#format"	"{1:d}"
+		"en"		"({1}%% OFF)"
+	}
 
 }

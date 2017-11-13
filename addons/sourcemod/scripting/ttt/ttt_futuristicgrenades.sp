@@ -28,6 +28,7 @@
 ConVar g_cOneTime = null;
 ConVar g_cGiveDecoy = null;
 ConVar g_cLongNameF = null;
+ConVar g_cDiscountF = null;
 ConVar g_cPriceFI = null;
 ConVar g_cPriceFT = null;
 ConVar g_cPriceFD = null;
@@ -35,6 +36,7 @@ ConVar g_cPrioFI = null;
 ConVar g_cPrioFT = null;
 ConVar g_cPrioFD = null;
 ConVar g_cLongNameBH = null;
+ConVar g_cDiscountBH = null;
 ConVar g_cPriceBHI = null;
 ConVar g_cPriceBHT = null;
 ConVar g_cPriceBHD = null;
@@ -42,6 +44,7 @@ ConVar g_cPrioBHI = null;
 ConVar g_cPrioBHT = null;
 ConVar g_cPrioBHD = null;
 ConVar g_cLongNameFF = null;
+ConVar g_cDiscountFF = null;
 ConVar g_cPriceFFI = null;
 ConVar g_cPriceFFT = null;
 ConVar g_cPriceFFD = null;
@@ -49,6 +52,7 @@ ConVar g_cPrioFFI = null;
 ConVar g_cPrioFFT = null;
 ConVar g_cPrioFFD = null;
 ConVar g_cLongNameFE = null;
+ConVar g_cDiscountFE = null;
 ConVar g_cPriceFEI = null;
 ConVar g_cPriceFET = null;
 ConVar g_cPriceFED = null;
@@ -56,6 +60,7 @@ ConVar g_cPrioFEI = null;
 ConVar g_cPrioFET = null;
 ConVar g_cPrioFED = null;
 ConVar g_cLongNameFI = null;
+ConVar g_cDiscountFI = null;
 ConVar g_cPriceFII = null;
 ConVar g_cPriceFIT = null;
 ConVar g_cPriceFID = null;
@@ -86,6 +91,7 @@ public void OnPluginStart()
 	g_cOneTime = AutoExecConfig_CreateConVar("futuristic_one_time", "1", "Effect for just one grenade?", _, true, 0.0, true, 1.0);
 	g_cGiveDecoy = AutoExecConfig_CreateConVar("futuristic_give_decoy", "1", "Give decoy on purchase?", _, true, 0.0, true, 1.0);
 	g_cLongNameF = AutoExecConfig_CreateConVar("futuristic_name", "Futuristic Grenades", "The name of this in Shop");
+	g_cDiscountF = AutoExecConfig_CreateConVar("futuristic_discount", "0", "Should futuristic grenades discountable?", _, true, 0.0, true, 1.0);
 	g_cPriceFI = AutoExecConfig_CreateConVar("futuristic_price_innocent", "20000", "The amount of credits futuristic grenades costs as innocent. 0 to disable.");
 	g_cPriceFT = AutoExecConfig_CreateConVar("futuristic_price_traitor", "20000", "The amount of credits futuristic grenades costs as traitor. 0 to disable.");
 	g_cPriceFD = AutoExecConfig_CreateConVar("futuristic_price_detective", "20000", "The amount of credits futuristic grenades costs as detective. 0 to disable.");
@@ -93,6 +99,7 @@ public void OnPluginStart()
 	g_cPrioFT = AutoExecConfig_CreateConVar("futuristic_sort_prio_traitor", "0", "The sorting priority of the futuristic grenades in the shop menu for traitors.");
 	g_cPrioFD = AutoExecConfig_CreateConVar("futuristic_sort_prio_detective", "0", "The sorting priority of the futuristic grenades in the shop menu for detectives.");
 	g_cLongNameFF = AutoExecConfig_CreateConVar("forcefield_name", "Force Field", "The name of this in Shop");
+	g_cDiscountFF = AutoExecConfig_CreateConVar("forcefield_discount", "0", "Should forcefield discountable?", _, true, 0.0, true, 1.0);
 	g_cPriceFFI = AutoExecConfig_CreateConVar("forcefield_price_innocent", "8000", "The amount of credits forcefield grenades costs as innocent. 0 to disable.");
 	g_cPriceFFT = AutoExecConfig_CreateConVar("forcefield_price_traitor", "8000", "The amount of credits forcefield grenades costs as traitor. 0 to disable.");
 	g_cPriceFFD = AutoExecConfig_CreateConVar("forcefield_price_detective", "8000", "The amount of credits forcefield grenades costs as detective. 0 to disable.");
@@ -100,6 +107,7 @@ public void OnPluginStart()
 	g_cPrioFFT = AutoExecConfig_CreateConVar("forcefield_sort_prio_traitor", "0", "The sorting priority of the forcefield grenades in the shop menu for traitors.");
 	g_cPrioFFD = AutoExecConfig_CreateConVar("forcefield_sort_prio_detective", "0", "The sorting priority of the forcefield grenades in the shop menu for detectives.");
 	g_cLongNameBH = AutoExecConfig_CreateConVar("blackhole_name", "Blackhole", "The name of this in Shop");
+	g_cDiscountBH = AutoExecConfig_CreateConVar("blackhole_discount", "0", "Should blackhole discountable?", _, true, 0.0, true, 1.0);
 	g_cPriceBHI = AutoExecConfig_CreateConVar("blackhole_price_innocent", "8000", "The amount of credits blackhole grenades costs as innocent. 0 to disable.");
 	g_cPriceBHT = AutoExecConfig_CreateConVar("blackhole_price_traitor", "8000", "The amount of credits blackhole grenades costs as traitor. 0 to disable.");
 	g_cPriceBHD = AutoExecConfig_CreateConVar("blackhole_price_detective", "8000", "The amount of credits blackhole grenades costs as detective. 0 to disable.");
@@ -107,6 +115,7 @@ public void OnPluginStart()
 	g_cPrioBHT = AutoExecConfig_CreateConVar("blackhole_sort_prio_traitor", "0", "The sorting priority of the blackhole grenades in the shop menu for traitors.");
 	g_cPrioBHD = AutoExecConfig_CreateConVar("blackhole_sort_prio_detective", "0", "The sorting priority of the blackhole grenades in the shop menu for detectives.");
 	g_cLongNameFE = AutoExecConfig_CreateConVar("explosion_name", "Force Explosion", "The name of this in Shop");
+	g_cDiscountFE = AutoExecConfig_CreateConVar("explosion_discount", "0", "Should explosion discountable?", _, true, 0.0, true, 1.0);
 	g_cPriceFEI = AutoExecConfig_CreateConVar("explosion_price_innocent", "8000", "The amount of credits explosion grenades costs as innocent. 0 to disable.");
 	g_cPriceFET = AutoExecConfig_CreateConVar("explosion_price_traitor", "8000", "The amount of credits explosion grenades costs as traitor. 0 to disable.");
 	g_cPriceFED = AutoExecConfig_CreateConVar("explosion_price_detective", "8000", "The amount of credits explosion grenades costs as detective. 0 to disable.");
@@ -114,6 +123,7 @@ public void OnPluginStart()
 	g_cPrioFET = AutoExecConfig_CreateConVar("explosion_sort_prio_traitor", "0", "The sorting priority of the explosion grenades in the shop menu for traitors.");
 	g_cPrioFED = AutoExecConfig_CreateConVar("explosion_sort_prio_detective", "0", "The sorting priority of the explosion grenades in the shop menu for detectives.");
 	g_cLongNameFI = AutoExecConfig_CreateConVar("implosion_name", "Force Implosion", "The name of this in Shop");
+	g_cDiscountFI = AutoExecConfig_CreateConVar("implosion_discount", "0", "Should implosion discountable?", _, true, 0.0, true, 1.0);
 	g_cPriceFII = AutoExecConfig_CreateConVar("implosion_price_innocent", "8000", "The amount of credits implosion grenades costs as innocent. 0 to disable.");
 	g_cPriceFIT = AutoExecConfig_CreateConVar("implosion_price_traitor", "8000", "The amount of credits implosion grenades costs as traitor. 0 to disable.");
 	g_cPriceFID = AutoExecConfig_CreateConVar("implosion_price_detective", "8000", "The amount of credits implosion grenades costs as detective. 0 to disable.");
@@ -139,29 +149,29 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongNameF.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(FUTURISTIC_I, sBuffer, g_cPriceFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFI.IntValue);
-	TTT_RegisterCustomItem(FUTURISTIC_T, sBuffer, g_cPriceFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFT.IntValue);
-	TTT_RegisterCustomItem(FUTURISTIC_D, sBuffer, g_cPriceFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFD.IntValue);
+	TTT_RegisterCustomItem(FUTURISTIC_I, sBuffer, g_cPriceFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFI.IntValue, g_cDiscountF.BoolValue);
+	TTT_RegisterCustomItem(FUTURISTIC_T, sBuffer, g_cPriceFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFT.IntValue, g_cDiscountF.BoolValue);
+	TTT_RegisterCustomItem(FUTURISTIC_D, sBuffer, g_cPriceFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFD.IntValue, g_cDiscountF.BoolValue);
 	
 	g_cLongNameFF.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(FF_SNAME_I, sBuffer, g_cPriceFFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFFI.IntValue);
-	TTT_RegisterCustomItem(FF_SNAME_T, sBuffer, g_cPriceFFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFFT.IntValue);
-	TTT_RegisterCustomItem(FF_SNAME_D, sBuffer, g_cPriceFFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFFD.IntValue);
+	TTT_RegisterCustomItem(FF_SNAME_I, sBuffer, g_cPriceFFI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFFI.IntValue, g_cDiscountFF.BoolValue);
+	TTT_RegisterCustomItem(FF_SNAME_T, sBuffer, g_cPriceFFT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFFT.IntValue, g_cDiscountFF.BoolValue);
+	TTT_RegisterCustomItem(FF_SNAME_D, sBuffer, g_cPriceFFD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFFD.IntValue, g_cDiscountFF.BoolValue);
 	
 	g_cLongNameBH.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(BH_SNAME_I, sBuffer, g_cPriceBHI.IntValue, TTT_TEAM_INNOCENT, g_cPrioBHI.IntValue);
-	TTT_RegisterCustomItem(BH_SNAME_T, sBuffer, g_cPriceBHT.IntValue, TTT_TEAM_TRAITOR, g_cPrioBHT.IntValue);
-	TTT_RegisterCustomItem(BH_SNAME_D, sBuffer, g_cPriceBHD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioBHD.IntValue);
+	TTT_RegisterCustomItem(BH_SNAME_I, sBuffer, g_cPriceBHI.IntValue, TTT_TEAM_INNOCENT, g_cPrioBHI.IntValue, g_cDiscountBH.BoolValue);
+	TTT_RegisterCustomItem(BH_SNAME_T, sBuffer, g_cPriceBHT.IntValue, TTT_TEAM_TRAITOR, g_cPrioBHT.IntValue, g_cDiscountBH.BoolValue);
+	TTT_RegisterCustomItem(BH_SNAME_D, sBuffer, g_cPriceBHD.IntValue, TTT_TEAM_DETECTIVE, g_cPrioBHD.IntValue, g_cDiscountBH.BoolValue);
 	
 	g_cLongNameFE.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(FE_SNAME_I, sBuffer, g_cPriceFEI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFEI.IntValue);
-	TTT_RegisterCustomItem(FE_SNAME_T, sBuffer, g_cPriceFET.IntValue, TTT_TEAM_TRAITOR, g_cPrioFET.IntValue);
-	TTT_RegisterCustomItem(FE_SNAME_D, sBuffer, g_cPriceFED.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFED.IntValue);
+	TTT_RegisterCustomItem(FE_SNAME_I, sBuffer, g_cPriceFEI.IntValue, TTT_TEAM_INNOCENT, g_cPrioFEI.IntValue, g_cDiscountFE.BoolValue);
+	TTT_RegisterCustomItem(FE_SNAME_T, sBuffer, g_cPriceFET.IntValue, TTT_TEAM_TRAITOR, g_cPrioFET.IntValue, g_cDiscountFE.BoolValue);
+	TTT_RegisterCustomItem(FE_SNAME_D, sBuffer, g_cPriceFED.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFED.IntValue, g_cDiscountFE.BoolValue);
 	
 	g_cLongNameFI.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(FI_SNAME_I, sBuffer, g_cPriceFII.IntValue, TTT_TEAM_INNOCENT, g_cPrioFII.IntValue);
-	TTT_RegisterCustomItem(FI_SNAME_T, sBuffer, g_cPriceFIT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFIT.IntValue);
-	TTT_RegisterCustomItem(FI_SNAME_D, sBuffer, g_cPriceFID.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFID.IntValue);
+	TTT_RegisterCustomItem(FI_SNAME_I, sBuffer, g_cPriceFII.IntValue, TTT_TEAM_INNOCENT, g_cPrioFII.IntValue, g_cDiscountFI.BoolValue);
+	TTT_RegisterCustomItem(FI_SNAME_T, sBuffer, g_cPriceFIT.IntValue, TTT_TEAM_TRAITOR, g_cPrioFIT.IntValue, g_cDiscountFI.BoolValue);
+	TTT_RegisterCustomItem(FI_SNAME_D, sBuffer, g_cPriceFID.IntValue, TTT_TEAM_DETECTIVE, g_cPrioFID.IntValue, g_cDiscountFI.BoolValue);
 }
 
 public void OnClientDisconnect(int client)

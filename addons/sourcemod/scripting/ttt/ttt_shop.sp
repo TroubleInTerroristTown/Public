@@ -82,15 +82,16 @@ enum Item
 	String:Short[16],
 	Price,
 	Role,
-	Sort
+	Sort,
+	bool:Discount
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
-	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_Cell, Param_String);
+	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
 
-	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
@@ -122,7 +123,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_reshop", Command_ReopenShop);
 	RegConsoleCmd("sm_rshop", Command_ReopenShop);
 
-	g_aCustomItems = new ArrayList(83);
+	g_aCustomItems = new ArrayList(84);
 
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
@@ -265,14 +266,14 @@ public Action Command_ShowItems(int client, int args)
 
 	int temp_item[Item];
 
-	PrintToConsole(client, "ShortName - LongName, Team", temp_item[Short], temp_item[Long], temp_item[Role]);
+	PrintToConsole(client, "ShortName - LongName, Team, Discount");
 
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if (strlen(temp_item[Short]) > 1)
 		{
-			PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
+			PrintToConsole(client, "%s - %s, %i, %d", temp_item[Short], temp_item[Long], temp_item[Role], temp_item[Discount]);
 		}
 	}
 	return Plugin_Handled;
@@ -307,7 +308,37 @@ public Action Command_Shop(int client, int args)
 			{
 				if ((temp_item[Role] == 1) || (temp_item[Role] == team))
 				{
-					Format(display, sizeof(display), "%s - %d", temp_item[Long], temp_item[Price]);
+					int price = temp_item[Price];
+					
+					bool bDiscount = false;
+					int iPercents = 0;
+					ConVar cDEnable = FindConVar("shop_discount_enable");
+					
+					if (cDEnable != null && temp_item[Discount])
+					{
+						ConVar g_cFlags = FindConVar("shop_discount_flags");
+						char sAccess[18];
+						g_cFlags.GetString(sAccess, sizeof(sAccess));
+						
+						if (TTT_HasFlags(client, sAccess))
+						{
+							ConVar cDPercents = FindConVar("shop_discount_percents");
+							iPercents = cDPercents.IntValue;
+							float fPercents = 1.0 + cDPercents.FloatValue / 100;
+							int newPrice = RoundToCeil(price / fPercents);
+							price = newPrice;
+							bDiscount = true;
+						}
+					}
+					
+					if (bDiscount)
+					{
+						Format(display, sizeof(display), "%s - %d %T", temp_item[Long], price, "Shop Discount Price", client, iPercents);
+					}
+					else
+					{
+						Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
+					}
 					AddMenuItem(menu, temp_item[Short], display);
 				}
 			}
@@ -389,16 +420,16 @@ bool ClientBuyItem(int client, char[] item)
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
-		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0))
+		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
 		{
 			int price = temp_item[Price];
-			int count = true;
+			bool count = true;
 
 			Action result = Plugin_Continue;
 			Call_StartForward(g_hOnItemPurchase);
 			Call_PushCell(client);
-			Call_PushCell(price);
-			Call_PushCell(count);
+			Call_PushCellRef(price);
+			Call_PushCellRef(count);
 			Call_PushString(temp_item[Short]);
 			Call_Finish(result);
 
@@ -407,16 +438,22 @@ bool ClientBuyItem(int client, char[] item)
 				return false;
 			}
 			
+			// Reset price if item non discountable
+			if (!temp_item[Discount] && temp_item[Price] != price)
+			{
+				price = temp_item[Price];
+			}
+			
 			ConVar cCVar = FindConVar("ttt_show_debug_messages");
-			if (cCVar.BoolValue && temp_item[Price] != price)
+			if (cCVar.BoolValue)
 			{
 				if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
 				{
-					PrintToChat(client, "Item: %s Price: %d New Price: %d", temp_item[Long], temp_item[Price], price);
+					PrintToChat(client, "Item: %s Discount: %d Shop Price: %d Price: %d", temp_item[Long], temp_item[Discount], temp_item[Price], price);
 				}
 			}
 
-			if ((TTT_GetClientCredits(client) >= price) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
+			if (TTT_GetClientCredits(client) >= price)
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
@@ -488,6 +525,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
 	int temp_sort = GetNativeCell(5);
+	bool temp_discount = view_as<bool>(GetNativeCell(6));
 	int temp_item[Item];
 
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
@@ -509,6 +547,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Price] = temp_price;
 	temp_item[Role] = temp_role;
 	temp_item[Sort] = temp_sort;
+	temp_item[Discount] = temp_discount;
 	g_aCustomItems.PushArray(temp_item[0]);
 
 
@@ -784,7 +823,7 @@ stock void addCredits(int client, int credits, bool message = false)
 	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
+	Call_PushCellRef(newcredits);
 	Call_Finish(res);
 
 	if (res > Plugin_Changed)
@@ -823,7 +862,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
+	Call_PushCellRef(newcredits);
 	Call_Finish(res);
 
 	if (res > Plugin_Changed)

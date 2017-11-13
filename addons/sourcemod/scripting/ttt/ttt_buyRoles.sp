@@ -27,6 +27,10 @@ ConVar g_cTLongName = null;
 ConVar g_cTiLongName = null;
 ConVar g_cDLongName = null;
 ConVar g_cDiLongName = null;
+ConVar g_cTDiscount = null;
+ConVar g_cTiDiscount = null;
+ConVar g_cDDiscount = null;
+ConVar g_cDiDiscount = null;
 
 public Plugin myinfo =
 {
@@ -55,6 +59,10 @@ public void OnPluginStart()
 	g_cTiPrio = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_prio", "0", "The sorting priority of the buy traitor instantly role in the shop menu.");
 	g_cDPrio = AutoExecConfig_CreateConVar("buyroles_detective_prio", "0", "The sorting priority of the buy detective role in the shop menu.");
 	g_cDiPrio = AutoExecConfig_CreateConVar("buyroles_detective_instantly_prio", "0", "The sorting priority of the buy detective instantly role in the shop menu.");
+	g_cTDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor", "0", "Should traitor role discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cTiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor_instantly", "0", "Should traitor role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cDDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cDiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective_instantly", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
 	EndConfig();
 }
 
@@ -63,16 +71,16 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cTLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue);
+	TTT_RegisterCustomItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue, g_cTDiscount.BoolValue);
 	
 	g_cTiLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue);
+	TTT_RegisterCustomItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue, g_cTiDiscount.BoolValue);
 	
 	g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue);
+	TTT_RegisterCustomItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue, g_cDDiscount.BoolValue);
 	
 	g_cDiLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue);
+	TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue, g_cDiDiscount.BoolValue);
 }
 
 

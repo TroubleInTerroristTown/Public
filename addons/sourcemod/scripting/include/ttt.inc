@@ -16,11 +16,7 @@
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
-#define MAX_CUSTOM_ITEMS 64
 #define MAX_ITEM_LENGTH 64
-
-#define WEAPON_TASER 31
-
 #define TTT_LOG_SIZE 512
 
 #include <autoexecconfig>

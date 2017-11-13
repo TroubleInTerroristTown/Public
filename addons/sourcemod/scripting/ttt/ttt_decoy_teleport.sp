@@ -21,6 +21,8 @@ ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cRefund = null;
 ConVar g_cLongName = null;
+ConVar g_cDiscountT = null;
+ConVar g_cDiscountD = null;
 
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -56,6 +58,8 @@ public void OnPluginStart()
 	g_cTCount = AutoExecConfig_CreateConVar("dt_traitor_count", "1", "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
 	g_cDCount = AutoExecConfig_CreateConVar("dt_detective_count", "1", "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
 	g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Money back, 2 = New decoy");
+	g_cDiscountT = AutoExecConfig_CreateConVar("dt_discount_traitor", "0", "Should decoy teleporter discountable for traitors?", _, true, 0.0, true, 1.0);
+	g_cDiscountD = AutoExecConfig_CreateConVar("dt_discount_detective", "0", "Should decoy teleporter discountable for detectives?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -75,8 +79,8 @@ public void OnConfigsExecuted()
 	
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
-	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

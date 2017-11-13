@@ -20,6 +20,7 @@ ConVar g_cTagrenadeRange = null;
 ConVar g_cTagrenadeTime = null;
 ConVar g_cLongName = null;
 ConVar g_cShowPlayersBehindWalls = null;
+ConVar g_cDiscount = null;
 
 bool g_bCPS = false;
 bool g_bGlow = false;
@@ -31,8 +32,6 @@ bool g_bSeePlayers[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasGrenade[MAXPLAYERS + 1] =  { false, ... };
 
 float g_fTaggingEndTime[MAXPLAYERS + 1] = { 0.0, ... };
-
-
 
 public Plugin myinfo =
 {
@@ -58,6 +57,7 @@ public void OnPluginStart()
 	g_cTagrenadeRange = AutoExecConfig_CreateConVar("tag_tagrenade_distance", "1000.0", "Sets the proximity in which the tactical grenade will tag an opponent.");
 	g_cTagrenadeTime = AutoExecConfig_CreateConVar("tag_tagrenade_time", "3.5", "How long a player is tagged for in seconds.");
 	g_cShowPlayersBehindWalls = AutoExecConfig_CreateConVar("tag_players_behind_walls", "1", "Tag players behind a wall?", _, true, 0.0, true, 1.0);
+	g_cDiscount = AutoExecConfig_CreateConVar("tagrenade_discount", "0", "Should tagrenade discountable?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerReset);
@@ -108,7 +108,7 @@ public void OnConfigsExecuted()
 	{
 		char sBuffer[MAX_ITEM_LENGTH];
 		g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-		TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+		TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscount.BoolValue);
 	}
 	else if (!g_bCPS)
 	{

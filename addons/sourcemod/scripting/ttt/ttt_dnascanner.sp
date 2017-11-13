@@ -14,6 +14,7 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cPrintToAll = null;
 ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
@@ -41,6 +42,7 @@ public void OnPluginStart()
 	g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
 	g_cPrintToAll = AutoExecConfig_CreateConVar("dna_print_message_to_all", "0", "Print scanner to all players? (Default: false)", _, true, 0.0, true, 1.0);
+	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -55,7 +57,7 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	
-	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

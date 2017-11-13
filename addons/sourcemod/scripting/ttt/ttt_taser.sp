@@ -32,6 +32,9 @@ ConVar g_cBroadcastTaserResult = null;
 ConVar g_cTDamage = null;
 ConVar g_cInflictor = null;
 ConVar g_cLongName = null;
+ConVar g_cDiscountT = null;
+ConVar g_cDiscountD = null;
+ConVar g_cDiscountI = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -84,6 +87,9 @@ public void OnPluginStart()
 	g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
 	g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
 	g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
+	g_cDiscountT = AutoExecConfig_CreateConVar("ta_discount_traitor", "0", "Should taser discountable for traitors?", _, true, 0.0, true, 1.0);
+	g_cDiscountD = AutoExecConfig_CreateConVar("ta_discount_detective", "0", "Should taser discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cDiscountI = AutoExecConfig_CreateConVar("ta_discount_innocent", "0", "Should taser discountable for innocents?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -101,9 +107,9 @@ public void OnConfigsExecuted()
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
-	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
-	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
