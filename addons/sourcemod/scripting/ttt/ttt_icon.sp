@@ -57,6 +57,14 @@ public void OnPluginStart()
 	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
+public void OnPluginEnd()
+{
+	LoopValidClients(i)
+	{
+		ClearIcon(i);
+	}
+}
+
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (convar == g_cAdminImmunity)
@@ -176,12 +184,12 @@ stock int CreateIcon(int client, int role)
 
 	if (role == TTT_TEAM_DETECTIVE)
 	{
-		g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+		g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
 	}
 	else if (role == TTT_TEAM_TRAITOR)
 	{
-		g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+		g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
 		Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
 	}
 
