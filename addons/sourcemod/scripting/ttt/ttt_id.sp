@@ -8,29 +8,26 @@
 #include <multicolors>
 #include <ttt_shop>
 #include <ttt>
-#include <config_loader>
 
 #define SHORT_NAME_I "id"
 #define SHORT_NAME_T "id_t"
-#define LONG_NAME_I "ID"
-#define LONG_NAME_T "(Fake) ID"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: ID"
 
-int g_iTPrice = 0;
-int g_iIPrice = 0;
-
-int g_iTPrio = 0;
-int g_iIPrio = 0;
-
-
+ConVar g_cTPrice = null;
+ConVar g_cIPrice = null;
+ConVar g_cTPrio = null;
+ConVar g_cIPrio = null;
+ConVar g_cLongNameT = null;
+ConVar g_cLongNameI = null;
+ConVar g_cCooldown = null;
+ConVar g_cDiscountI = null;
+ConVar g_cDiscountT = null;
 
 bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
 
-float g_fCooldown;
 float g_fCooldownPlayer[MAXPLAYERS + 1] = {0.0, ...};
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
 char g_sPluginTag[512] = "";
 
 public Plugin myinfo =
@@ -46,24 +43,18 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	Config_Done();
-
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/id.cfg");
-	Config_Setup("TTT-ID", g_sConfigFile);
-
-	g_iTPrice = Config_LoadInt("id_traitor_price", 1000, "The amount of credits for fake ID costs as traitor. 0 to disable.");
-	g_iIPrice = Config_LoadInt("id_innocent_price", 1000, "The amount of credits for ID costs as innocent. 0 to disable.");
-
-	g_iTPrio = Config_LoadInt("id_traitor_sort_prio", 0, "The sorting priority of the fake ID in the shop menu.");
-	g_iIPrio = Config_LoadInt("id_innocent_sort_prio", 0, "The sorting priority of the ID in the shop menu.");
-
-	g_fCooldown = Config_LoadFloat("id_cooldown_time", 0.0, "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
-
-	Config_Done();
+	StartConfig("id");
+	CreateConVar("ttt2_id_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "1000", "The amount of credits for fake ID costs as traitor. 0 to disable.");
+	g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "1000", "The amount of credits for ID costs as innocent. 0 to disable.");
+	g_cTPrio = AutoExecConfig_CreateConVar("id_traitor_sort_prio", "0", "The sorting priority of the fake ID in the shop menu.");
+	g_cIPrio = AutoExecConfig_CreateConVar("id_innocent_sort_prio", "0", "The sorting priority of the ID in the shop menu.");
+	g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "0.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
+	g_cLongNameT = AutoExecConfig_CreateConVar("id_name_innocent", "ID", "The name of this in Innocent Shop");
+	g_cLongNameI = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
+	g_cDiscountT = AutoExecConfig_CreateConVar("id_discount_traitor", "0", "Should fake id discountable for traitors?", _, true, 0.0, true, 1.0);
+	g_cDiscountI = AutoExecConfig_CreateConVar("id_discount_innocent", "0", "Should id discountable for innocents?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
 
@@ -79,11 +70,11 @@ public Action Command_ID(int client, int args)
 		return Plugin_Handled;
 	}
 
-	if (g_fCooldown > 0.0)
+	if (g_cCooldown.FloatValue > 0.0)
 	{
-		if (g_fCooldownPlayer[client] != 0.0 && ((GetEngineTime() - g_fCooldownPlayer[client]) < g_fCooldown))
+		if (g_fCooldownPlayer[client] != 0.0 && ((GetEngineTime() - g_fCooldownPlayer[client]) < g_cCooldown.FloatValue))
 		{
-			CPrintToChat(client, g_sPluginTag, "ID: Cooldown", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Cooldown", client);
 			return Plugin_Handled;
 		}
 		g_fCooldownPlayer[client] = GetEngineTime();
@@ -92,13 +83,13 @@ public Action Command_ID(int client, int args)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "ID: Need to be Alive", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Need to be Alive", client);
 		return Plugin_Handled;
 	}
 
 	if (!g_bHasID[client])
 	{
-		CPrintToChat(client, g_sPluginTag, "ID: Need to buy ID", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Need to buy ID", client);
 		return Plugin_Handled;
 	}
 
@@ -110,7 +101,7 @@ public Action Command_ID(int client, int args)
 
 	LoopValidClients(i)
 	{
-		CPrintToChat(i, g_sPluginTag, "ID: Shows ID", i, sName);
+		CPrintToChat(i, "%s %T", g_sPluginTag, "ID: Shows ID", i, sName);
 	}
 
 	return Plugin_Handled;
@@ -131,10 +122,15 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME_T, LONG_NAME_T, g_iTPrice, TTT_TEAM_TRAITOR, g_iTPrio);
-	TTT_RegisterCustomItem(SHORT_NAME_I, LONG_NAME_I, g_iIPrice, TTT_TEAM_INNOCENT, g_iIPrio);
+	char sBuffer[MAX_ITEM_LENGTH];
+	
+	g_cLongNameT.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
+	
+	g_cLongNameI.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -150,7 +146,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 
-			CPrintToChat(client, g_sPluginTag, "ID: Buy Message", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Buy Message", client);
 
 			g_bHasID[client] = true;
 		}

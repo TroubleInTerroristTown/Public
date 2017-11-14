@@ -6,18 +6,17 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <ttt>
-#include <config_loader>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Icons"
 
 int g_iIcon[MAXPLAYERS + 1] =  { -1, ... };
 
-char g_sAdminImmunity[16];
-bool g_bSeeRoles = false;
+ConVar g_cAdminImmunity = null;
+ConVar g_cSeeRoles = null;
+ConVar g_cTraitorIcon = null;
+ConVar g_cDetectiveIcon = null;
 
-char g_sTraitorIcon[PLATFORM_MAX_PATH] = "";
-char g_sDetectiveIcon[PLATFORM_MAX_PATH] = "";
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+char g_sAdminImmunity[18];
 
 public Plugin myinfo =
 {
@@ -40,18 +39,17 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-	g_bSeeRoles = Config_LoadBool("ttt_dead_players_can_see_other_roles", false, "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.");
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/icon.cfg");
-	Config_Setup("TTT-Icons", g_sConfigFile);
-	Config_LoadString("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file", g_sTraitorIcon, sizeof(g_sTraitorIcon));
-	Config_LoadString("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file", g_sDetectiveIcon, sizeof(g_sDetectiveIcon));
-	Config_LoadString("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)", g_sAdminImmunity, sizeof(g_sAdminImmunity));
-	Config_Done();
+	
+	StartConfig("icon");
+	CreateConVar("ttt2_icon_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_roles", "0", "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
+	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file");
+	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file");
+	g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
+	EndConfig();
+	
+	g_cAdminImmunity.AddChangeHook(OnConVarChanged);
+	g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
 
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeamPre, EventHookMode_Pre);
@@ -59,21 +57,41 @@ public void OnPluginStart()
 	CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
-public void OnMapStart()
+public void OnPluginEnd()
+{
+	LoopValidClients(i)
+	{
+		ClearIcon(i);
+	}
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cAdminImmunity)
+	{
+		g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
+	}
+}
+
+public void OnConfigsExecuted()
 {
 	char sBuffer[PLATFORM_MAX_PATH];
-
-	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sTraitorIcon);
+	
+	g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
 	AddFileToDownloadsTable(sBuffer);
 
-	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sTraitorIcon);
+	g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
 	AddFileToDownloadsTable(sBuffer);
 	PrecacheModel(sBuffer);
 
-	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", g_sDetectiveIcon);
+	g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
 	AddFileToDownloadsTable(sBuffer);
 
-	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", g_sDetectiveIcon);
+	g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
 	AddFileToDownloadsTable(sBuffer);
 	PrecacheModel(sBuffer);
 }
@@ -166,11 +184,13 @@ stock int CreateIcon(int client, int role)
 
 	if (role == TTT_TEAM_DETECTIVE)
 	{
-		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sDetectiveIcon);
+		g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+		Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
 	}
 	else if (role == TTT_TEAM_TRAITOR)
 	{
-		Format(sBuffer, sizeof(sBuffer), "%s.vmt", g_sTraitorIcon);
+		g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+		Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
 	}
 
 	DispatchKeyValue(ent, "model", sBuffer);
@@ -197,7 +217,7 @@ public Action Hook_SetTransmitT(int entity, int client)
 	{
 		if (!IsPlayerAlive(client))
 		{
-			if (g_bSeeRoles)
+			if (g_cSeeRoles.BoolValue)
 			{
 				return Plugin_Continue;
 			}

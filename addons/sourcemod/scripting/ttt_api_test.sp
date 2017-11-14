@@ -24,6 +24,8 @@ public Plugin myinfo = {
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+	
+	CreateConVar("ttt2_api_test_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 
 	HookEvent("weapon_fire", Event_WeaponFire);
 }

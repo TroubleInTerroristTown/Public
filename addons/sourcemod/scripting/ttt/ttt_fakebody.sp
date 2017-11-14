@@ -7,7 +7,6 @@
 #include <cstrike>
 #include <ttt_shop>
 #include <ttt>
-#include <config_loader>
 #include <multicolors>
 
 #define SHORT_NAME "fakebody"
@@ -15,20 +14,20 @@
 
 #define COLLISION_GROUP_DEBRIS_TRIGGER 2
 
-int g_iPrice = 0;
+ConVar g_cPrice = null;
+ConVar g_cShowFakeMessage = null;
+ConVar g_cDeleteFakeBodyAfterFound = null;
+ConVar g_cAllowProofByTraitors = null;
+ConVar g_cShowTraitorAsDead = null;
+ConVar g_cCount = null;
+ConVar g_cPrio = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
-bool g_bShowFakeMessage = false;
-bool g_bDeleteFakeBodyAfterFound = false;
-bool g_bAllowProofByTraitors = false;
-bool g_bShowTraitorAsDead = true;
-
-int g_iCount = 0;
-int g_iPrio = 0;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
 
 int g_iCollisionGroup = -1;
 
@@ -47,26 +46,18 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/fakebody.cfg");
-	Config_Setup("TTT-Fakebody", g_sConfigFile);
-
-	Config_LoadString("fb_name", "Fakebody", "The name of the Fakebody in the Shop", g_sLongName, sizeof(g_sLongName));
-	g_iPrice = Config_LoadInt("fb_price", 9000, "The amount of credits a fake body costs as traitor. 0 to disable.");
-	g_iCount = Config_LoadInt("fb_count", 1, "The amount of usages for fake bodys per round as traitor. 0 to disable.");
-	g_iPrio = Config_LoadInt("fb_sort_prio", 0, "The sorting priority of the fake body in the shop menu.");
-	g_bAllowProofByTraitors = Config_LoadBool("fb_allow_proof_by_all", true, "Allow fake body scan for traitors players?");
-	g_bShowFakeMessage = Config_LoadBool("fb_show_fake_message", false, "Show the fake message (XXX has found a fake body)?");
-	g_bDeleteFakeBodyAfterFound = Config_LoadBool("fb_delete_fakebody_after_found", false, "Delete fake body after found?");
-	g_bShowTraitorAsDead = Config_LoadBool("fb_show_traitor_as_dead", true, "Show traitor as dead after fakebody found?");
-
-	Config_Done();
+	StartConfig("fakebody");
+	CreateConVar("ttt2_fakebody_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("fb_name", "Fakebody", "The name of the Fakebody in the Shop");
+	g_cPrice = AutoExecConfig_CreateConVar("fb_price", "9000", "The amount of credits a fake body costs as traitor. 0 to disable.");
+	g_cCount = AutoExecConfig_CreateConVar("fb_count", "1", "The amount of usages for fake bodys per round as traitor. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("fb_sort_prio", "0", "The sorting priority of the fake body in the shop menu.");
+	g_cAllowProofByTraitors = AutoExecConfig_CreateConVar("fb_allow_proof_by_all", "1", "Allow fake body scan for traitors players?");
+	g_cShowFakeMessage = AutoExecConfig_CreateConVar("fb_show_fake_message", "0", "Show the fake message (XXX has found a fake body)?");
+	g_cDeleteFakeBodyAfterFound = AutoExecConfig_CreateConVar("fb_delete_fakebody_after_found", "0", "Delete fake body after found?");
+	g_cShowTraitorAsDead = AutoExecConfig_CreateConVar("fb_show_traitor_as_dead", "1", "Show traitor as dead after fakebody found?");
+	g_cDiscount = AutoExecConfig_CreateConVar("fb_discount", "0", "Should fake body discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
@@ -88,9 +79,23 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	
+	char sBuffer[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -99,9 +104,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	{
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
-			if (g_iPCount[client] >= g_iCount)
+			if (g_iPCount[client] >= g_cCount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iCount);
+				char sBuffer[MAX_ITEM_LENGTH];
+				g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+				
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -149,9 +157,9 @@ stock bool SpawnFakeBody(int client)
 	
 		int iRagdollC[Ragdolls];
 		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-		iRagdollC[Victim] = client;
+		iRagdollC[Victim] = GetClientUserId(client);
 		iRagdollC[VictimTeam] = TTT_GetClientRole(client);
-		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, "%N", client);
+		GetClientName(client, iRagdollC[VictimName], MAX_NAME_LENGTH);
 		iRagdollC[Scanned] = false;
 		iRagdollC[Attacker] = 0;
 		iRagdollC[AttackerTeam] = TTT_TEAM_TRAITOR;
@@ -177,7 +185,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 
 	if (StrEqual(iRagdollC[Weaponused], "Fake!", false))
 	{
-		if (!g_bAllowProofByTraitors)
+		if (!g_cAllowProofByTraitors.BoolValue)
 		{
 			if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 			{
@@ -187,13 +195,13 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 
 		LoopValidClients(j)
 		{
-			if (g_bShowFakeMessage && !iRagdollC[Found])
+			if (g_cShowFakeMessage.BoolValue&& !iRagdollC[Found])
 			{
-				CPrintToChat(j, g_sPluginTag, "Found Fake", j, client);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Found Fake", j, client);
 			}
-			else if (!g_bShowFakeMessage && !iRagdollC[Found])
+			else if (!g_cShowFakeMessage.BoolValue && !iRagdollC[Found])
 			{
-				CPrintToChat(j, g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
 			}
 			else if (iRagdollC[Found])
 			{
@@ -201,19 +209,19 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 			}
 		}
 
-		if (g_bShowTraitorAsDead)
+		if (g_cShowTraitorAsDead.BoolValue)
 		{
 			TTT_SetFoundStatus(iRagdollC[Victim], true);
 		}
 
 		iRagdollC[Found] = true;
 
-		if (g_bDeleteFakeBodyAfterFound)
+		if (g_cDeleteFakeBodyAfterFound.BoolValue)
 		{
 			AcceptEntityInput(iRagdollC[Ent], "Kill");
 		}
 
-		if (!g_bDeleteFakeBodyAfterFound && !g_bShowFakeMessage)
+		if (!g_cDeleteFakeBodyAfterFound .BoolValue&& !g_cShowFakeMessage.BoolValue)
 		{
 			SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
 		}

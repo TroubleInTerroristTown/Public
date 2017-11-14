@@ -22,7 +22,7 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
 
 	if (TTT_IsClientValid(client) && g_bKarma[client])
 	{
-		if (g_iConfig[bpublicKarma] || publicKarma)
+		if (g_cpublicKarma.BoolValue || publicKarma)
 		{
 			return g_iKarma[client];
 		}
@@ -210,45 +210,6 @@ public int Native_SetFoundStatus(Handle plugin, int numParams)
 	return;
 }
 
-public int Native_OverrideConfigInt(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigBool(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigFloat(Handle plugin, int numParams)
-{
-	g_iConfig[GetNativeCell(1)] = GetNativeCell(2);
-
-	return;
-}
-
-public int Native_OverrideConfigString(Handle plugin, int numParams)
-{
-	int size = GetNativeCell(3);
-	char[] buffer = new char[size];
-
-	GetNativeString(2, buffer, size);
-	strcopy(view_as<char>(g_iConfig[GetNativeCell(1)]), size, buffer);
-
-	return;
-}
-
-public int Native_ReloadConfig(Handle plugin, int numParams)
-{
-	SetupConfig();
-
-	return;
-}
-
 public int Native_ForceTraitor(Handle plugin, int numParams)
 {
 	int userid = GetClientUserId(GetNativeCell(1));
@@ -280,3 +241,66 @@ public int Native_ForceDetective(Handle plugin, int numParams)
 
 	return true;
 }
+
+public int Native_AddRoundSlays(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if (TTT_IsClientValid(client))
+	{
+		int rounds = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+		
+		g_iRoundSlays[client] += rounds;
+		
+		if (g_bRoundStarted && force && IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
+		{
+			ForcePlayerSuicide(client);
+			g_iRoundSlays[client]--;
+			
+			if (g_iRoundSlays[client] > 0)
+			{
+				CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
+				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", g_iRoundSlays[client]);
+			}
+		}
+		
+		UpdateRoundSlaysCookie(client);
+		
+		return g_iRoundSlays[client];
+	}
+	
+	return -1;
+}
+
+public int Native_SetRoundSlays(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	if (TTT_IsClientValid(client))
+	{
+		int rounds = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+		
+		g_iRoundSlays[client] = rounds;
+		
+		if (g_bRoundStarted && force && IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
+		{
+			ForcePlayerSuicide(client);
+			g_iRoundSlays[client]--;
+			
+			if (g_iRoundSlays[client] > 0)
+			{
+				CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
+				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", g_iRoundSlays[client]);
+			}
+		}
+		
+		UpdateRoundSlaysCookie(client);
+		
+		return rounds;
+	}
+	
+	return -1;
+}
+

@@ -4,23 +4,22 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <config_loader>
 #include <ttt_shop>
 #include <multicolors>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Dna Scanner"
 #define SHORT_NAME "dnascanner"
 
-int g_iPrice = 0;
-int g_iPrio = 0;
-
-bool g_bPrintToAll = false;
+ConVar g_cPrice = null;
+ConVar g_cPrio = null;
+ConVar g_cPrintToAll = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
+ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
 
 public Plugin myinfo =
 {
@@ -36,25 +35,37 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 
 	LoadTranslations("ttt.phrases");
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/dnascanner.cfg");
-	Config_Setup("TTT-Scanner", g_sConfigFile);
-
-	Config_LoadString("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop", g_sLongName, sizeof(g_sLongName));
-	g_iPrice = Config_LoadInt("dna_price", 9000, "The amount of credits a dna scanner costs as detective. 0 to disable.");
-	g_iPrio = Config_LoadInt("dna_sort_prio", 0, "The sorting priority of the dna scanner in the shop menu.");
-	g_bPrintToAll = Config_LoadBool("dna_print_message_to_all", false, "Print scanner to all players? (Default: false)");
 	
-	Config_Done();
+	StartConfig("dnascanner");
+	CreateConVar("ttt2_dna_scanner_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop");
+	g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
+	g_cPrintToAll = AutoExecConfig_CreateConVar("dna_print_message_to_all", "0", "Print scanner to all players? (Default: false)", _, true, 0.0, true, 1.0);
+	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
+}
+
+public void OnConfigsExecuted()
+{
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	
+	char sBuffer[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -70,11 +81,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		ResetScanner(client);
 	}
-}
-
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE, g_iPrio);
 }
 
 void ResetScanner(int client)
@@ -117,33 +123,36 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	{
 		return Plugin_Continue;
 	}
+	
+	int attacker = GetClientOfUserId(iRagdollC[Attacker]);
+	int victim = GetClientOfUserId(iRagdollC[Victim]);
 
-	if (iRagdollC[Attacker] > 0 && iRagdollC[Attacker] != iRagdollC[Victim])
+	if (attacker > 0 && attacker != victim)
 	{
-		if (g_bPrintToAll)
+		if (g_cPrintToAll.BoolValue)
 		{
 			LoopValidClients(j)
 			{
-				CPrintToChat(j, g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
 			}
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
 		}
 	}
 	else
 	{
-		if (g_bPrintToAll)
+		if (g_cPrintToAll.BoolValue)
 		{
 			LoopValidClients(j)
 			{
-				CPrintToChat(j, g_sPluginTag, "Detective scan found body suicide", j, client);
+				CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body suicide", j, client);
 			}
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "Detective scan found body suicide", client, client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body suicide", client, client);
 		}
 	}
 

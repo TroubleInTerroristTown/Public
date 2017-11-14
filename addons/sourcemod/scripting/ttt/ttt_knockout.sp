@@ -7,7 +7,6 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 
 #undef REQUIRE_PLUGIN
 #pragma newdecls optional
@@ -19,8 +18,10 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Knockout"
 #define SHORT_NAME "knockout"
 
-int g_iPrice = -1;
-int g_iPrio = -1;
+ConVar g_cPrice = null;
+ConVar g_cPrio = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
 int g_iCollisionGroup = -1;
 int g_iFreeze = -1;
@@ -34,10 +35,6 @@ int g_iCollision[MAXPLAYERS + 1] =  { -1, ... };
 
 bool g_bHasKnockout[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnockout[MAXPLAYERS + 1] =  { false, ... };
-
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
 
 bool g_bSourceC = false;
 bool g_bBaseC = false;
@@ -99,40 +96,13 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/knockout.cfg");
-	Config_Setup("TTT-Knockout", g_sConfigFile);
-
-	Config_LoadString("knockout_name", "Knockout", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
-	g_iPrice = Config_LoadInt("knockout_price", 9000, "The amount of credits a knockout costs as detective. 0 to disable.");
-	g_iPrio = Config_LoadInt("knockout_sort_prio", 0, "The sorting priority of the knockout in the shop menu.");
-
-	// Remove copy&paste fail...
-	// https://github.com/Bara20/TroubleinTerroristTown/commit/563626007015b5e0df99cc758778ef32bcf0ce19
-	Config_Remove("silent_awp_amount_t");
-	Config_Remove("silent_awp_min_t");
-	Config_Remove("silent_awp_max_t");
-	Config_Remove("silent_awp_priority_t");
-	Config_Remove("silent_awp_price_t");
-	Config_Remove("silent_awp_amount_d");
-	Config_Remove("silent_awp_min_d");
-	Config_Remove("silent_awp_max_d");
-	Config_Remove("silent_awp_priority_d");
-	Config_Remove("silent_awp_price_d");
-	Config_Remove("silent_awp_price_i");
-	Config_Remove("silent_awp_priority_i");
-	Config_Remove("silent_awp_max_i");
-	Config_Remove("silent_awp_min_i");
-	Config_Remove("silent_awp_amount_i");
-	Config_Remove("silent_awp_name");
-
-	Config_Done();
+	StartConfig("knockout");
+	CreateConVar("ttt2_knockout_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("knockout_name", "Knockout", "The name of this in Shop");
+	g_cPrice = AutoExecConfig_CreateConVar("knockout_price", "9000", "The amount of credits a knockout costs as detective. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("knockout_sort_prio", "0", "The sorting priority of the knockout in the shop menu.");
+	g_cDiscount = AutoExecConfig_CreateConVar("knockout_discount", "0", "Should knockout discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
@@ -171,9 +141,11 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
+	char sBuffer[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
 public void OnClientPutInServer(int client)

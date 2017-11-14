@@ -6,7 +6,6 @@
 #include <sdkhooks>
 #include <cstrike>
 #include <ttt>
-#include <config_loader>
 #include <multicolors>
 #include <clientprefs>
 #include <ttt_shop>
@@ -26,53 +25,50 @@ public Plugin myinfo =
 
 ArrayList g_aCustomItems;
 
-bool g_bDebugMessages = false;
+ConVar g_cCredits = null;
+ConVar g_cBuyCmd = null;
+ConVar g_cShowCmd = null;
+ConVar g_cSortItems = null;
+ConVar g_cShowEarnCreditsMessage = null;
+ConVar g_cShowLoseCreditsMessage = null;
+ConVar g_cResetCreditsEachRound = null;
+ConVar g_cCreditsTimer = null;
+ConVar g_cCreditsMessage = null;
+ConVar g_cReopenMenu = null;
+ConVar g_cCreditsII = null;
+ConVar g_cCreditsIT = null;
+ConVar g_cCreditsID = null;
+ConVar g_cCreditsTI = null;
+ConVar g_cCreditsTT = null;
+ConVar g_cCreditsTD = null;
+ConVar g_cCreditsDI = null;
+ConVar g_cCreditsDT = null;
+ConVar g_cCreditsDD = null;
+ConVar g_cTraitorloseAliveNonTraitors = null;
+ConVar g_cTraitorloseDeadNonTraitors = null;
+ConVar g_cTraitorwinAliveTraitors = null;
+ConVar g_cTraitorwinDeadTraitors = null;
+ConVar g_cCreditsFoundBody = null;
+ConVar g_cMessageTypCredits = null;
+ConVar g_cStartCredits = null;
+ConVar g_cCreditsMin = null;
+ConVar g_cCreditsMax = null;
+ConVar g_cCreditsInterval = null;
 
-char g_sPluginTag[128];
-char g_sConfigFile[PLATFORM_MAX_PATH];
-char g_sCreditsName[32];
-char g_sBuyCmd[32];
-char g_sShowCmd[32];
-
-bool g_bSortItems = false;
-bool g_bShowEarnCreditsMessage = false;
-bool g_bShowLoseCreditsMessage = false;
-bool g_bResetCreditsEachRound = false;
-bool g_bCreditsTimer = false;
-bool g_bCreditsMessage = false;
-bool g_bReopenMenu = false;
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
 
 Handle g_hOnItemPurchased = null;
 Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
-Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
+Handle g_hReopenCookie = null;
 
-int g_iCreditsII = 0;
-int g_iCreditsIT = 0;
-int g_iCreditsID = 0;
-int g_iCreditsTI = 0;
-int g_iCreditsTT = 0;
-int g_iCreditsTD = 0;
-int g_iCreditsDI = 0;
-int g_iCreditsDT = 0;
-int g_iCreditsDD = 0;
-int g_iTraitorloseAliveNonTraitors = 0;
-int g_iTraitorloseDeadNonTraitors = 0;
-int g_iTraitorwinAliveTraitors = 0;
-int g_iTraitorwinDeadTraitors = 0;
-int g_iCreditsFoundBody = 0;
-int g_iMessageTypCredits = 0;
-int g_iStartCredits = 0;
-int g_iCreditsMin = 0;
-int g_iCreditsMax = 0;
+Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
-float g_fCreditsInterval = 0.0;
-
 bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
-Handle g_hReopenCookie = null;
 
 
 char g_sShopCMDs[][] =  {
@@ -86,15 +82,16 @@ enum Item
 	String:Short[16],
 	Price,
 	Role,
-	Sort
+	Sort,
+	bool:Discount
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
-	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Hook, Param_Cell, Param_Cell, Param_Cell, Param_String);
+	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
 
-	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Hook, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
@@ -113,7 +110,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-
+	
 	for (int i = 0; i < sizeof(g_sShopCMDs); i++)
 	{
 		char sBuffer[64];
@@ -126,7 +123,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_reshop", Command_ReopenShop);
 	RegConsoleCmd("sm_rshop", Command_ReopenShop);
 
-	g_aCustomItems = new ArrayList(83);
+	g_aCustomItems = new ArrayList(84);
 
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
@@ -138,64 +135,44 @@ public void OnPluginStart()
 
 	HookEvent("player_death", Event_PlayerDeath);
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-	g_bDebugMessages = Config_LoadBool("ttt_show_debug_messages", false, "Show debug messages to all root admins?");
-	Config_Done();
+	StartConfig("shop");
+	CreateConVar("ttt2_shop_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cSortItems = AutoExecConfig_CreateConVar("ttt_sort_items", "1", "Sort shop items? 0 = Disabled. 1 = Enabled (default).", _, true, 0.0, true, 1.0);
+	g_cCreditsII = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500", "The amount of credits an innocent will lose for killing an innocent.");
+	g_cCreditsIT = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000", "The amount of credits an innocent will recieve when killing a traitor.");
+	g_cCreditsID = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200", "The amount of credits an innocent will lose for killing a detective.");
+	g_cCreditsTI = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600", "The amount of credits a traitor will recieve for killing an innocent.");
+	g_cCreditsTT = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000", "The amount of credits a traitor will lose for killing a traitor.");
+	g_cCreditsTD = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200", "The amount of credits a traitor will recieve for killing a detective.");
+	g_cCreditsDI = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300", "The amount of credits a detective will lose for killing an innocent.");
+	g_cCreditsDT = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100", "The amount of credits a detective will recieve for killing a traitor.");
+	g_cCreditsDD = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300", "The amount of credits a detective will lose for killing a detective.");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/shop.cfg");
-	Config_Setup("Shop", g_sConfigFile);
-	g_bSortItems = Config_LoadBool("ttt_sort_items", true, "Sort shop items? 0 = Disabled. 1 = Enabled (default).");
-	g_iCreditsII = Config_LoadInt("ttt_credits_killer_innocent_victim_innocent_subtract", 1500, "The amount of credits an innocent will lose for killing an innocent.");
-	g_iCreditsIT = Config_LoadInt("ttt_credits_killer_innocent_victim_traitor_add", 3000, "The amount of credits an innocent will recieve when killing a traitor.");
-	g_iCreditsID = Config_LoadInt("ttt_credits_killer_innocent_victim_detective_subtract", 4200, "The amount of credits an innocent will lose for killing a detective.");
-	g_iCreditsTI = Config_LoadInt("ttt_credits_killer_traitor_victim_innocent_add", 600, "The amount of credits a traitor will recieve for killing an innocent.");
-	g_iCreditsTT = Config_LoadInt("ttt_credits_killer_traitor_victim_traitor_subtract", 3000, "The amount of credits a traitor will lose for killing a traitor.");
-	g_iCreditsTD = Config_LoadInt("ttt_credits_killer_traitor_victim_detective_add", 4200, "The amount of credits a traitor will recieve for killing a detective.");
-	g_iCreditsDI = Config_LoadInt("ttt_credits_killer_detective_victim_innocent_subtract", 300, "The amount of credits a detective will lose for killing an innocent.");
-	g_iCreditsDT = Config_LoadInt("ttt_credits_killer_detective_victim_traitor_add", 2100, "The amount of credits a detective will recieve for killing a traitor.");
-	g_iCreditsDD = Config_LoadInt("ttt_credits_killer_detective_victim_detective_subtract", 300, "The amount of credits a detective will lose for killing a detective.");
+	g_cTraitorloseAliveNonTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800", "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
+	g_cTraitorloseDeadNonTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200", "The amount of credits an innocent or detective will recieve for winning the round if they died.");
+	g_cTraitorwinAliveTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800", "The amount of credits a traitor will recieve for winning the round if they survived.");
+	g_cTraitorwinDeadTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200", "The amount of credits a traitor will recieve for winning the round if they died.");
+	g_cCreditsFoundBody = AutoExecConfig_CreateConVar("ttt_credits_found_body_add", "1200", "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
 
-	g_iTraitorloseAliveNonTraitors = Config_LoadInt("ttt_credits_roundend_traitorlose_alive_nontraitors", 4800, "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
-	g_iTraitorloseDeadNonTraitors = Config_LoadInt("ttt_credits_roundend_traitorlose_dead_nontraitors", 1200, "The amount of credits an innocent or detective will recieve for winning the round if they died.");
-	g_iTraitorwinAliveTraitors = Config_LoadInt("ttt_credits_roundend_traitorwin_alive_traitors", 4800, "The amount of credits a traitor will recieve for winning the round if they survived.");
-	g_iTraitorwinDeadTraitors = Config_LoadInt("ttt_credits_roundend_traitorwin_dead_traitors", 1200, "The amount of credits a traitor will recieve for winning the round if they died.");
-	g_iCreditsFoundBody = Config_LoadInt("ttt_credits_found_body_add", 1200, "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
+	g_cShowEarnCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_earn_credits", "1", "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
+	g_cShowLoseCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_lose_credits", "1", "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
+	g_cMessageTypCredits = AutoExecConfig_CreateConVar("ttt_message_typ_credits", "1", "The credit message type. 1 = Hint Text, 2 = Chat Message", _, true, 1.0, true, 2.0);
 
-	g_bShowEarnCreditsMessage = Config_LoadBool("ttt_show_message_earn_credits", true, "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled");
-	g_bShowLoseCreditsMessage = Config_LoadBool("ttt_show_message_lose_credits", true, "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled");
-	g_iMessageTypCredits = Config_LoadInt("ttt_message_typ_credits", 1, "The credit message type. 1 = Hint Text, 2 = Chat Message");
+	g_cStartCredits = AutoExecConfig_CreateConVar("ttt_start_credits", "800", "The amount of credits players will recieve when they join for the first time.");
+	g_cResetCreditsEachRound = AutoExecConfig_CreateConVar("ttt_credits_reset_each_round", "0", "Reset credits for all players each round?. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
 
-	g_iStartCredits = Config_LoadInt("ttt_start_credits", 800, "The amount of credits players will recieve when they join for the first time.");
-	g_bResetCreditsEachRound = Config_LoadBool("ttt_credits_reset_each_round", false, "Reset credits for all players each round?. 0 = Disabled (default). 1 = Enabled.");
+	g_cCreditsTimer = AutoExecConfig_CreateConVar("ttt_credits_timer", "1", "Players earn every minute (configurable) credits", _, true, 0.0, true, 1.0);
+	g_cCreditsMessage = AutoExecConfig_CreateConVar("ttt_credits_show_message", "1", "Show a message when player earn credits (ttt_credits_timer must be true)", _, true, 0.0, true, 1.0);
+	g_cCreditsInterval = AutoExecConfig_CreateConVar("ttt_credits_interval", "60.0", "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)", _, true, 60.0);
+	g_cCreditsMin = AutoExecConfig_CreateConVar("ttt_credits_amount_min", "30", "How much credits the player can get (min)");
+	g_cCreditsMax = AutoExecConfig_CreateConVar("ttt_credits_amount_max", "90", "How much credits the player can get (max)");
 
-	g_bCreditsTimer = Config_LoadBool("ttt_credits_timer", true, "Players earn every minute (configurable) credits");
-	g_bCreditsMessage = Config_LoadBool("ttt_credits_show_message", true, "Show a message when player earn credits (ttt_credits_timer must be true)");
-	g_fCreditsInterval = Config_LoadFloat("ttt_credits_interval", 60.0, "Interval for earning credits - TIME IN SECONDS - MINIMUM: 60.0 - (ttt_credits_timer must be true)");
-	g_iCreditsMin = Config_LoadInt("ttt_credits_amount_min", 30, "How much credits the player can get (min)");
-	g_iCreditsMax = Config_LoadInt("ttt_credits_amount_max", 90, "How much credits the player can get (max)");
+	g_cReopenMenu = AutoExecConfig_CreateConVar("ttt_menu_reopen", "1", "Reopen the shop menu, after buying something.", _, true, 0.0, true, 1.0);
 
-	g_bReopenMenu = Config_LoadBool("ttt_menu_reopen", true, "Reopen the shop menu, after buying something.");
-
-	Config_LoadString("ttt_credits_command", "credits", "The command to show the credits", g_sCreditsName, sizeof(g_sCreditsName));
-	Config_LoadString("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly", g_sBuyCmd, sizeof(g_sBuyCmd));
-	Config_LoadString("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)", g_sShowCmd, sizeof(g_sShowCmd));
-
-	Config_Remove("ttt_sort_items_price");
-	Config_Remove("ttt_sort_items_price_order");
-	Config_Done();
-
-	char sBuffer[32];
-
-	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sCreditsName);
-	RegConsoleCmd(sBuffer, Command_Credits);
-
-	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sBuyCmd);
-	RegConsoleCmd(sBuffer, Command_Buy);
-
-	Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShowCmd);
-	RegConsoleCmd(sBuffer, Command_ShowItems);
+	g_cCredits = AutoExecConfig_CreateConVar("ttt_credits_command", "credits", "The command to show the credits");
+	g_cBuyCmd = AutoExecConfig_CreateConVar("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly");
+	g_cShowCmd = AutoExecConfig_CreateConVar("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)");
+	EndConfig();
 
 	LoadTranslations("common.phrases");
 	LoadTranslations("ttt.phrases");
@@ -208,6 +185,35 @@ public void OnPluginStart()
 		{
 			OnClientCookiesCached(i);
 		}
+	}
+}
+
+public void OnConfigsExecuted()
+{
+	// Get some values from ttt.config
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	
+	char sBuffer[32];
+	g_cCredits.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
+	RegConsoleCmd(sBuffer, Command_Credits);
+
+	g_cBuyCmd.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
+	RegConsoleCmd(sBuffer, Command_Buy);
+
+	g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
+	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
+	RegConsoleCmd(sBuffer, Command_ShowItems);
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	}
 }
 
@@ -236,7 +242,7 @@ public Action Command_Buy(int client, int args)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
 	}
 
@@ -260,14 +266,14 @@ public Action Command_ShowItems(int client, int args)
 
 	int temp_item[Item];
 
-	PrintToConsole(client, "ShortName - LongName, Team", temp_item[Short], temp_item[Long], temp_item[Role]);
+	PrintToConsole(client, "ShortName - LongName, Team, Discount");
 
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if (strlen(temp_item[Short]) > 1)
 		{
-			PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
+			PrintToConsole(client, "%s - %s, %i, %d", temp_item[Short], temp_item[Long], temp_item[Role], temp_item[Discount]);
 		}
 	}
 	return Plugin_Handled;
@@ -282,7 +288,7 @@ public Action Command_Shop(int client, int args)
 
 	if (!IsPlayerAlive(client))
 	{
-		CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 		return Plugin_Handled;
 	}
 
@@ -302,7 +308,37 @@ public Action Command_Shop(int client, int args)
 			{
 				if ((temp_item[Role] == 1) || (temp_item[Role] == team))
 				{
-					Format(display, sizeof(display), "%s - %d", temp_item[Long], temp_item[Price]);
+					int price = temp_item[Price];
+					
+					bool bDiscount = false;
+					int iPercents = 0;
+					ConVar cDEnable = FindConVar("shop_discount_enable");
+					
+					if (cDEnable != null && temp_item[Discount])
+					{
+						ConVar g_cFlags = FindConVar("shop_discount_flags");
+						char sAccess[18];
+						g_cFlags.GetString(sAccess, sizeof(sAccess));
+						
+						if (TTT_HasFlags(client, sAccess))
+						{
+							ConVar cDPercents = FindConVar("shop_discount_percents");
+							iPercents = cDPercents.IntValue;
+							float fPercents = 1.0 + cDPercents.FloatValue / 100;
+							int newPrice = RoundToCeil(price / fPercents);
+							price = newPrice;
+							bDiscount = true;
+						}
+					}
+					
+					if (bDiscount)
+					{
+						Format(display, sizeof(display), "%s - %d %T", temp_item[Long], price, "Shop Discount Price", client, iPercents);
+					}
+					else
+					{
+						Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
+					}
 					AddMenuItem(menu, temp_item[Short], display);
 				}
 			}
@@ -313,7 +349,7 @@ public Action Command_Shop(int client, int args)
 	}
 	else
 	{
-		CPrintToChat(client, g_sPluginTag, "Please wait till your team is assigned", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Please wait till your team is assigned", client);
 	}
 
 	return Plugin_Handled;
@@ -331,7 +367,7 @@ public Action Command_ReopenShop(int client, int args)
 	{
 		g_bReopen[client] = false;
 
-		CPrintToChat(client, g_sPluginTag, "Reopen Shop deactivated", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Reopen Shop deactivated", client);
 
 		char sBuffer[4];
 		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
@@ -341,7 +377,7 @@ public Action Command_ReopenShop(int client, int args)
 	{
 		g_bReopen[client] = true;
 
-		CPrintToChat(client, g_sPluginTag, "Reopen Shop activated", client);
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Reopen Shop activated", client);
 
 		char sBuffer[4];
 		IntToString(view_as<int>(g_bReopen[client]), sBuffer, sizeof(sBuffer));
@@ -357,7 +393,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	{
 		if (!IsPlayerAlive(client))
 		{
-			CPrintToChat(client, g_sPluginTag, "YouAreDead", client);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
 			return;
 		}
 
@@ -366,7 +402,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 
 		ClientBuyItem(client, info);
 
-		if (g_bReopenMenu && g_bReopen[client])
+		if (g_cReopenMenu.BoolValue && g_bReopen[client])
 		{
 			Command_Shop(client, 0);
 		}
@@ -384,16 +420,16 @@ bool ClientBuyItem(int client, char[] item)
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
 		g_aCustomItems.GetArray(i, temp_item[0]);
-		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0))
+		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
 		{
 			int price = temp_item[Price];
-			int count = true;
+			bool count = true;
 
 			Action result = Plugin_Continue;
 			Call_StartForward(g_hOnItemPurchase);
 			Call_PushCell(client);
-			Call_PushCell(price);
-			Call_PushCell(count);
+			Call_PushCellRef(price);
+			Call_PushCellRef(count);
 			Call_PushString(temp_item[Short]);
 			Call_Finish(result);
 
@@ -401,16 +437,23 @@ bool ClientBuyItem(int client, char[] item)
 			{
 				return false;
 			}
-
-			if (g_bDebugMessages && temp_item[Price] != price)
+			
+			// Reset price if item non discountable
+			if (!temp_item[Discount] && temp_item[Price] != price)
+			{
+				price = temp_item[Price];
+			}
+			
+			ConVar cCVar = FindConVar("ttt_show_debug_messages");
+			if (cCVar.BoolValue)
 			{
 				if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
 				{
-					PrintToChat(client, "Item: %s Price: %d New Price: %d", temp_item[Long], temp_item[Price], price);
+					PrintToChat(client, "Item: %s Discount: %d Shop Price: %d Price: %d", temp_item[Long], temp_item[Discount], temp_item[Price], price);
 				}
 			}
 
-			if ((TTT_GetClientCredits(client) >= price) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
+			if (TTT_GetClientCredits(client) >= price)
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
@@ -422,13 +465,13 @@ bool ClientBuyItem(int client, char[] item)
 				if (res < Plugin_Stop)
 				{
 					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - price));
-					CPrintToChat(client, g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
+					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
 					return true;
 				}
 			}
 			else
 			{
-				CPrintToChat(client, g_sPluginTag, "You don't have enough money", client);
+				CPrintToChat(client, "%s %T", g_sPluginTag, "You don't have enough money", client);
 				return false;
 			}
 		}
@@ -482,6 +525,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	int temp_price = GetNativeCell(3);
 	int temp_role = GetNativeCell(4);
 	int temp_sort = GetNativeCell(5);
+	bool temp_discount = view_as<bool>(GetNativeCell(6));
 	int temp_item[Item];
 
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
@@ -503,10 +547,11 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	temp_item[Price] = temp_price;
 	temp_item[Role] = temp_role;
 	temp_item[Sort] = temp_sort;
+	temp_item[Discount] = temp_discount;
 	g_aCustomItems.PushArray(temp_item[0]);
 
 
-	if (g_bSortItems)
+	if (g_cSortItems.IntValue)
 	{
 		SortADTArrayCustom(g_aCustomItems, Sorting);
 	}
@@ -573,11 +618,11 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if (g_bCreditsTimer)
+	if (g_cCreditsTimer.BoolValue)
 	{
-		if (g_fCreditsInterval >= 60.0)
+		if (g_cCreditsInterval.FloatValue >= 60.0)
 		{
-			g_hCreditsTimer[client] = CreateTimer(g_fCreditsInterval, Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+			g_hCreditsTimer[client] = CreateTimer(g_cCreditsInterval.FloatValue, Timer_CreditsTimer, GetClientUserId(client), TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 		}
 	}
 }
@@ -590,8 +635,8 @@ public Action Timer_CreditsTimer(Handle timer, any userid)
 	{
 		if (IsPlayerAlive(client))
 		{
-			int iCredits = GetRandomInt(g_iCreditsMin, g_iCreditsMax);
-			addCredits(client, iCredits, g_bCreditsMessage);
+			int iCredits = GetRandomInt(g_cCreditsMin.IntValue, g_cCreditsMax.IntValue);
+			addCredits(client, iCredits, g_cCreditsMessage.BoolValue);
 			return Plugin_Continue;
 		}
 	}
@@ -606,9 +651,9 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 
 	if (TTT_IsClientValid(client))
 	{
-		if (g_bResetCreditsEachRound)
+		if (g_cResetCreditsEachRound.BoolValue)
 		{
-			g_iCredits[client] = g_iStartCredits;
+			g_iCredits[client] = g_cStartCredits.IntValue;
 		}
 	}
 	return Plugin_Continue;
@@ -622,7 +667,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		if (TTT_IsRoundActive())
 		{
-			CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
 		}
 	}
 
@@ -631,7 +676,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnClientPutInServer(int client)
 {
-	g_iCredits[client] = g_iStartCredits;
+	g_iCredits[client] = g_cStartCredits.IntValue;
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
@@ -653,7 +698,7 @@ public Action Command_Credits(int client, int args)
 		return Plugin_Handled;
 	}
 
-	CPrintToChat(client, g_sPluginTag, "Your credits is", client, g_iCredits[client]);
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
 
 	return Plugin_Handled;
 }
@@ -675,39 +720,39 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 	if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
-		subtractCredits(iAttacker, g_iCreditsII, true);
+		subtractCredits(iAttacker, g_cCreditsII.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
-		addCredits(iAttacker, g_iCreditsIT, true);
+		addCredits(iAttacker, g_cCreditsIT.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
-		subtractCredits(iAttacker, g_iCreditsID, true);
+		subtractCredits(iAttacker, g_cCreditsID.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
-		addCredits(iAttacker, g_iCreditsTI, true);
+		addCredits(iAttacker, g_cCreditsTI.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
-		subtractCredits(iAttacker, g_iCreditsTT, true);
+		subtractCredits(iAttacker, g_cCreditsTT.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
-		addCredits(iAttacker, g_iCreditsTD, true);
+		addCredits(iAttacker, g_cCreditsTD.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
 	{
-		subtractCredits(iAttacker, g_iCreditsDI, true);
+		subtractCredits(iAttacker, g_cCreditsDI.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 	{
-		addCredits(iAttacker, g_iCreditsDT, true);
+		addCredits(iAttacker, g_cCreditsDT.IntValue, true);
 	}
 	else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
 	{
-		subtractCredits(iAttacker, g_iCreditsDD, true);
+		subtractCredits(iAttacker, g_cCreditsDD.IntValue, true);
 	}
 }
 
@@ -724,11 +769,11 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				{
 					if (IsPlayerAlive(client))
 					{
-						addCredits(client, g_iTraitorloseAliveNonTraitors);
+						addCredits(client, g_cTraitorloseAliveNonTraitors.IntValue);
 					}
 					else
 					{
-						addCredits(client, g_iTraitorloseDeadNonTraitors);
+						addCredits(client, g_cTraitorloseDeadNonTraitors.IntValue);
 					}
 				}
 
@@ -739,11 +784,11 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				{
 					if (IsPlayerAlive(client))
 					{
-						addCredits(client, g_iTraitorloseAliveNonTraitors);
+						addCredits(client, g_cTraitorloseAliveNonTraitors.IntValue);
 					}
 					else
 					{
-						addCredits(client, g_iTraitorloseDeadNonTraitors);
+						addCredits(client, g_cTraitorloseDeadNonTraitors.IntValue);
 					}
 				}
 			}
@@ -753,11 +798,11 @@ public void TTT_OnRoundEnd(int WinningTeam)
 				{
 					if (IsPlayerAlive(client))
 					{
-						addCredits(client, g_iTraitorwinAliveTraitors);
+						addCredits(client, g_cTraitorwinAliveTraitors.IntValue);
 					}
 					else
 					{
-						addCredits(client, g_iTraitorwinDeadTraitors);
+						addCredits(client, g_cTraitorwinDeadTraitors.IntValue);
 					}
 				}
 			}
@@ -767,7 +812,7 @@ public void TTT_OnRoundEnd(int WinningTeam)
 
 public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
 {
-	addCredits(client, g_iCreditsFoundBody);
+	addCredits(client, g_cCreditsFoundBody.IntValue);
 }
 
 stock void addCredits(int client, int credits, bool message = false)
@@ -778,7 +823,7 @@ stock void addCredits(int client, int credits, bool message = false)
 	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
+	Call_PushCellRef(newcredits);
 	Call_Finish(res);
 
 	if (res > Plugin_Changed)
@@ -788,9 +833,9 @@ stock void addCredits(int client, int credits, bool message = false)
 
 	g_iCredits[client] = newcredits;
 
-	if (g_bShowEarnCreditsMessage && message)
+	if (g_cShowEarnCreditsMessage.BoolValue && message)
 	{
-		if (g_iMessageTypCredits == 1)
+		if (g_cMessageTypCredits.IntValue == 1)
 		{
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
@@ -799,7 +844,7 @@ stock void addCredits(int client, int credits, bool message = false)
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
 		}
 	}
 
@@ -817,7 +862,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 	Call_StartForward(g_hOnCreditsGiven_Pre);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
-	Call_PushCell(newcredits);
+	Call_PushCellRef(newcredits);
 	Call_Finish(res);
 
 	if (res > Plugin_Changed)
@@ -832,9 +877,9 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		g_iCredits[client] = 0;
 	}
 
-	if (g_bShowLoseCreditsMessage && message)
+	if (g_cShowLoseCreditsMessage.BoolValue && message)
 	{
-		if (g_iMessageTypCredits == 1)
+		if (g_cMessageTypCredits.IntValue == 1)
 		{
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
@@ -843,7 +888,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		}
 		else
 		{
-			CPrintToChat(client, g_sPluginTag, "lost credits", client, credits, g_iCredits[client]);
+			CPrintToChat(client, "%s %T", g_sPluginTag, "lost credits", client, credits, g_iCredits[client]);
 		}
 	}
 
@@ -903,7 +948,7 @@ public Action Command_SetCredits(int client, int args)
 
 		setCredits(target_list[i], credits);
 
-		CPrintToChat(client, g_sPluginTag, "AdminSet", client, target_list[i], credits, "Credits");
+		CPrintToChat(client, "%s %T", g_sPluginTag, "AdminSet", client, target_list[i], credits, "Credits");
 	}
 
 	return Plugin_Continue;

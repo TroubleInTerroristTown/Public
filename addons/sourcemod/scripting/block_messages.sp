@@ -14,6 +14,8 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+	CreateConVar("block_messages_version", "1.0.0", "Plugin to block some usermessage messages", FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	
 	HookUserMessage(GetUserMessageId("TextMsg"), UserMsg_TextMsg, true);
 }
 

@@ -7,31 +7,28 @@
 #include <cstrike>
 #include <ttt_shop>
 #include <ttt>
-#include <config_loader>
 #include <multicolors>
 
 #define SHORT_NAME "iceknife"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
 
-int g_iPrice = 0;
-int g_iDamage = 0;
-int g_iCount = 0;
-int g_iPrio = 0;
-int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
+ConVar g_cPrice = null;
+ConVar g_cDamage = null;
+ConVar g_cCount = null;
+ConVar g_cPrio = null;
+ConVar g_cFreezeTime = null;
+ConVar g_cFreezeTraitors = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
+int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iOldColors[MAXPLAYERS + 1][4];
 
-float g_fFreezeTime = 0.0;
-
-bool g_bFreezeTraitors = false;
 bool g_bFreezed[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIceKnife[MAXPLAYERS + 1] = { false, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 char g_sFreezeSound[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64] = "";
 
 public Plugin myinfo =
 {
@@ -48,28 +45,18 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/iceknife.cfg");
-	Config_Setup("TTT-IceKnife", g_sConfigFile);
-
-	Config_LoadString("icek_name", "Ice Knife", "The name of the Ice Knife in the Shop", g_sLongName, sizeof(g_sLongName));
-
-	g_iPrice = Config_LoadInt("icek_price", 9000, "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
-	g_iCount = Config_LoadInt("icek_count", 1, "The amount of usages for Ice Knifes per round as traitor. 0 to disable.");
-	g_iPrio = Config_LoadInt("icek_sort_prio", 0, "The sorting priority of the Ice Knife in the shop menu.");
-	g_iDamage = Config_LoadInt("icek_damage", 0, "Amount of damage with a ice knife. 0 to disable.");
-	g_bFreezeTraitors = Config_LoadBool("icek_freeze_traitors", false, "Allow to freeze other traitors?");
-	g_fFreezeTime = Config_LoadFloat("icek_freeze_time", 5.0, "Length of the freeze time.");
-
-
-	Config_Done();
-
+	StartConfig("ice_knife");
+	CreateConVar("ttt2_ice_knife_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("iceknife_name", "Ice Knife", "The name of the Ice Knife in the Shop");
+	g_cPrice = AutoExecConfig_CreateConVar("iceknife_price", "9000", "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
+	g_cCount = AutoExecConfig_CreateConVar("iceknife_count", "1", "The amount of usages for Ice Knifes per round as traitor. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("iceknife_sort_prio", "0", "The sorting priority of the Ice Knife in the shop menu.");
+	g_cDamage = AutoExecConfig_CreateConVar("iceknife_damage", "0", "Amount of damage with a ice knife. 0 to disable.");
+	g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
+	g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
+	g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
+	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
 }
@@ -132,9 +119,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_TRAITOR, g_iPrio);
+	char sName[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sName, sizeof(sName));
+	
+	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -143,9 +133,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	{
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
-			if (g_iPCount[client] >= g_iCount)
+			if (g_iPCount[client] >= g_cCount.IntValue)
 			{
-				CPrintToChat(client, g_sPluginTag, "Bought All", client, g_sLongName, g_iCount);
+				char sName[MAX_ITEM_LENGTH], sTag[64];
+				g_cLongName.GetString(sName, sizeof(sName));
+				
+				ConVar hTag = FindConVar("ttt_plugin_tag");
+				hTag.GetString(sTag, sizeof(sTag));
+				
+				CPrintToChat(client, "%s %T", sTag, "Bought All", client, sName, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
 
@@ -194,7 +190,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	}
 
-	if (!g_bFreezeTraitors && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
+	if (!g_cFreezeTraitors.BoolValue && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
 	{
 		return Plugin_Continue;
 	}
@@ -214,18 +210,18 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 		PlayFreezeSound(iVictim);
 
-		if (g_fFreezeTime > 0.0)
+		if (g_cFreezeTime.FloatValue > 0.0)
 		{
-			CreateTimer(g_fFreezeTime, Timer_FreezeEnd, GetClientUserId(iVictim));
+			CreateTimer(g_cFreezeTime.FloatValue, Timer_FreezeEnd, GetClientUserId(iVictim));
 		}
 
-		if (g_iDamage == 0)
+		if (g_cDamage.IntValue == 0)
 		{
 			return Plugin_Handled;
 		}
-		else if (g_iDamage > 0)
+		else if (g_cDamage.IntValue > 0)
 		{
-			damage = view_as<float>(g_iDamage);
+			damage = view_as<float>(g_cDamage.IntValue);
 			return Plugin_Changed;
 		}
 	}

@@ -3,29 +3,31 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 
 #pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Sprint"
 #define SHORT_NAME_D "sprint_d"
-#define SHORT_NAME_T "sprint_d"
+#define SHORT_NAME_T "sprint_t"
 
-int g_iPriceD = 0;
-int g_iPriceT = 0;
-int g_iPrioD = 0;
-int g_iPrioT = 0;
+ConVar g_cDebug = null;
 
-float g_fNormal = 0.0;
-float g_fSpeed = 0.0;
-float g_fTime = 0.0;
-float g_fCooldown = 0.0;
+ConVar g_cPriceD = null;
+ConVar g_cPriceT = null;
+ConVar g_cPrioD = null;
+ConVar g_cPrioT = null;
+ConVar g_cNormal = null;
+ConVar g_cSpeed = null;
+ConVar g_cTime = null;
+ConVar g_cCooldown = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscountT = null;
+ConVar g_cDiscountD = null;
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hCTimer[MAXPLAYERS + 1] =  { null, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
+bool g_bSprint[MAXPLAYERS + 1] =  { false, ... };
 
 public Plugin myinfo =
 {
@@ -42,23 +44,32 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/sprint.cfg");
-	Config_Setup("TTT-Sprint", g_sConfigFile);
-
-	Config_LoadString("sprint_name", "Sprint", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
-	g_iPriceD = Config_LoadInt("sprint_price_detective", 9000, "The amount of credits sprint costs as detective. 0 to disable.");
-	g_iPriceT = Config_LoadInt("sprint_price_traitor", 9000, "The amount of credits sprint costs as traitor. 0 to disable.");
-	g_iPrioD = Config_LoadInt("sprint_sort_prio_detective", 0, "The sorting priority of the sprint in the shop menu for detectives.");
-	g_iPrioT = Config_LoadInt("sprint_sort_prio_traitor", 0, "The sorting priority of the sprint in the shop menu for traitors.");
-	
-	g_fNormal = Config_LoadFloat("sprint_normal_speed", 1.0, "Float value of default speed");
-	g_fSpeed = Config_LoadFloat("sprint_speed", 1.33, "Float value of sprint speed (X.33 = 33%)");
-	g_fTime = Config_LoadFloat("sprint_speed_time", 3.0, "Time in seconds with speed");
-	g_fCooldown = Config_LoadFloat("sprint_cooldown_time", 7.0, "Time in seconds until next speed boost");
-
-	Config_Done();
+	StartConfig("sprint");
+	CreateConVar("ttt2_sprint_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("sprint_name", "Sprint", "The name of this in Shop");
+	g_cPriceD = AutoExecConfig_CreateConVar("sprint_price_detective", "9000", "The amount of credits sprint costs as detective. 0 to disable.");
+	g_cPriceT = AutoExecConfig_CreateConVar("sprint_price_traitor", "9000", "The amount of credits sprint costs as traitor. 0 to disable.");
+	g_cPrioD = AutoExecConfig_CreateConVar("sprint_sort_prio_detective", "0", "The sorting priority of the sprint in the shop menu for detectives.");
+	g_cPrioT = AutoExecConfig_CreateConVar("sprint_sort_prio_traitor", "0", "The sorting priority of the sprint in the shop menu for traitors.");
+	g_cNormal = AutoExecConfig_CreateConVar("sprint_normal_speed", "1.0", "Float value of default speed");
+	g_cSpeed = AutoExecConfig_CreateConVar("sprint_speed", "1.33", "Float value of sprint speed (X.33 = 33%)");
+	g_cTime = AutoExecConfig_CreateConVar("sprint_speed_time", "3.0", "Time in seconds with speed");
+	g_cCooldown = AutoExecConfig_CreateConVar("sprint_cooldown_time", "7.0", "Time in seconds until next speed boost");
+	g_cDiscountT = AutoExecConfig_CreateConVar("sprint_discount_traitor", "0", "Should sprint discountable for traitors?", _, true, 0.0, true, 1.0);
+	g_cDiscountD = AutoExecConfig_CreateConVar("sprint_discount_detective", "0", "Should sprint discountable for detectives?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
+}
+
+public void OnConfigsExecuted()
+{
+	char sBuffer[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue, g_cDiscountD.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue, g_cDiscountT.BoolValue);
+	
+	g_cDebug = FindConVar("ttt_debug_mode");
 }
 
 public void OnClientDisconnect(int client)
@@ -78,33 +89,50 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
+			
+			g_bSprint[client] = true;
 		}
 	}
 	return Plugin_Continue;
 }
 
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+public int TTT_OnButtonPress(int client, int button)
 {
-	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+	if (!g_bSprint[client])
 	{
-		if (g_hTimer[client] == null)
-		{
-			if (GetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue") != g_fNormal)
-			{
-				SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_fNormal);
-			}
-			
-			return Plugin_Continue;
-		}
-		
-		if(buttons & IN_USE && g_hTimer[client] == null && g_hCTimer[client] == null)
-		{
-			g_hTimer[client] = CreateTimer(g_fTime, Timer_Sprint, GetClientUserId(client));
-			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_fSpeed);
-		}
+		return;
 	}
 	
-	return Plugin_Continue;
+	if (button & IN_USE)
+	{
+		if (g_hCTimer[client] != null)
+		{
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Cooldown is active...");
+			}
+			
+			return;
+		}
+		
+		if (g_hTimer[client] != null)
+		{
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Sprint is active...");
+			}
+			
+			return;
+		}
+		
+		g_hTimer[client] = CreateTimer(g_cTime.FloatValue, Timer_Sprint, GetClientUserId(client));
+		SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cSpeed.FloatValue);
+		
+		if (g_cDebug.BoolValue)
+		{
+			PrintToChat(client, "Yea!");
+		}
+	}
 }
 
 public Action Timer_Sprint(Handle timer, any userid)
@@ -115,11 +143,16 @@ public Action Timer_Sprint(Handle timer, any userid)
 	{
 		if (IsPlayerAlive(client))
 		{
-			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_fNormal);
+			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cNormal.FloatValue);
 			
 			if(g_hCTimer[client] == null)
 			{
-				g_hCTimer[client] = CreateTimer(g_fCooldown, Timer_Cooldown, GetClientUserId(client));
+				g_hCTimer[client] = CreateTimer(g_cCooldown.FloatValue, Timer_Cooldown, GetClientUserId(client));
+			}
+			
+			if (g_cDebug.BoolValue)
+			{
+				PrintToChat(client, "Sprint over");
 			}
 		}
 		
@@ -136,6 +169,11 @@ public Action Timer_Cooldown(Handle timer, any userid)
 	if(TTT_IsClientValid(client))
 	{
 		g_hCTimer[client] = null;
+		
+		if (g_cDebug.BoolValue)
+		{
+			PrintToChat(client, "Cooldown over");
+		}
 	}
 	
 	return Plugin_Stop;
@@ -151,14 +189,9 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(SHORT_NAME_D, g_sLongName, g_iPriceT, TTT_TEAM_DETECTIVE, g_iPrioD);
-	TTT_RegisterCustomItem(SHORT_NAME_T, g_sLongName, g_iPriceD, TTT_TEAM_TRAITOR, g_iPrioT);
-}
-
 void ResetSprint(int client)
 {
+	g_bSprint[client] = false;
 	g_hTimer[client] = null;
 	g_hCTimer[client] = null;
 }

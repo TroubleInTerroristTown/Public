@@ -3,21 +3,24 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
-#include <config_loader>
 
 #pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Template"
 #define SHORT_NAME "template"
 
-int g_iPrice = 0;
-int g_iPrio = 0;
+ConVar g_cPrice = null;
+ConVar g_cPrio = null;
+ConVar g_cLongName = null;
+ConVar g_cDiscount = null;
 
 bool g_bHasItem[MAXPLAYERS + 1] =  { false, ... };
 
-char g_sConfigFile[PLATFORM_MAX_PATH] = "";
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-char g_sLongName[64];
+
+/*
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
+*/
 
 public Plugin myinfo =
 {
@@ -33,25 +36,43 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 
 	LoadTranslations("ttt.phrases");
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/config.cfg");
-	Config_Setup("TTT", g_sConfigFile);
-
-	Config_LoadString("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen} %T", "The prefix used in all plugin messages (DO NOT DELETE '%T')", g_sPluginTag, sizeof(g_sPluginTag));
-
-	Config_Done();
-
-	BuildPath(Path_SM, g_sConfigFile, sizeof(g_sConfigFile), "configs/ttt/template.cfg");
-	Config_Setup("TTT-Template", g_sConfigFile);
-
-	Config_LoadString("template_name", "Template", "The name of this in Shop", g_sLongName, sizeof(g_sLongName));
-	g_iPrice = Config_LoadInt("template_price", 9000, "The amount of credits TEMPLATE costs as detective. 0 to disable.");
-	g_iPrio = Config_LoadInt("template_sort_prio", 0, "The sorting priority of the TEMPLATE in the shop menu.");
-
-	Config_Done();
+	
+	StartConfig("template_item");
+	CreateConVar("ttt2_template_item_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cLongName = AutoExecConfig_CreateConVar("template_name", "Template", "The name of this in Shop");
+	g_cPrice = AutoExecConfig_CreateConVar("template_price", "9000", "The amount of credits TEMPLATE costs as detective. 0 to disable.");
+	g_cPrio = AutoExecConfig_CreateConVar("template_sort_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
+	g_cDiscount = AutoExecConfig_CreateConVar("template_discount", "0", "Should TEMPLATE discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
+
+public void OnConfigsExecuted()
+{
+	/*
+				
+	If you want the plugin tag from ttt
+	
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
+	
+	*/
+	char sName[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sName, sizeof(sName));
+	
+	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
+}
+
+/* public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
+} */
 
 public void OnClientDisconnect(int client)
 {
@@ -70,7 +91,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
-
+			
 			g_bHasItem[client] = true;
 		}
 	}
@@ -85,11 +106,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	{
 		ResetTemplate(client);
 	}
-}
-
-public void OnAllPluginsLoaded()
-{
-	TTT_RegisterCustomItem(SHORT_NAME, g_sLongName, g_iPrice, TTT_TEAM_DETECTIVE, g_iPrio);
 }
 
 void ResetTemplate(int client)

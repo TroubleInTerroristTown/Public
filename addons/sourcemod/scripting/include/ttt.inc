@@ -16,117 +16,10 @@
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
-#define MAX_CUSTOM_ITEMS 64
+#define MAX_ITEM_LENGTH 64
+#define TTT_LOG_SIZE 512
 
-#define WEAPON_TASER 31
-
-#define TTT_ITEM_SIZE 512
-
-enum eConfig
-{
-	irequiredPlayersD,
-	irequiredPlayers,
-	istartKarma,
-	ikarmaBan,
-	ikarmaBanLength,
-	imaxKarma,
-	ispawnHPT,
-	ispawnHPD,
-	ispawnHPI,
-	ikarmaII,
-	ikarmaIT,
-	ikarmaID,
-	ikarmaTI,
-	ikarmaTT,
-	ikarmaTD,
-	ikarmaDI,
-	ikarmaDT,
-	ikarmaDD,
-	bool:bshowDeathMessage,
-	bool:bshowKillMessage,
-	bool:bshowEarnKarmaMessage,
-	bool:bshowLoseKarmaMessage,
-	imessageTypKarma,
-	bool:bblockSuicide,
-	bool:ballowFlash,
-	bool:bblockLookAtWeapon,
-	bool:bblockRadioMessage,
-	bool:benableNoBlock,
-	String:spluginTag[250],
-	bool:bkadRemover,
-	irulesClosePunishment,
-	ipunishInnoKills,
-	ipunishTraitorKills,
-	ipunishDetectiveKills,
-	itimeToReadRules,
-	itimeToReadDetectiveRules,
-	bool:bshowRulesMenu,
-	bool:bshowDetectiveMenu,
-	String:skickImmunity[16],
-	String:slogsAccess[16],
-	bool:bLogsDeadOnly,
-	bLogsNotifyAlive,
-	bool:bupdateClientModel,
-	bool:bremoveHostages,
-	bool:bremoveBomb,
-	bool:broleAgain,
-	itraitorRatio,
-	idetectiveRatio,
-	bool:bdenyFire,
-	bool:bslayAfterStart,
-	bool:bremoveBuyzone,
-	bool:bforceTeams,
-	bool:brandomWinner,
-	bool:bforceModel,
-	String:smodelCT[PLATFORM_MAX_PATH],
-	String:smodelT[PLATFORM_MAX_PATH],
-	String:slogFile[PLATFORM_MAX_PATH],
-	String:serrFile[PLATFORM_MAX_PATH],
-	String:slogDateFormat[24],
-	String:sdefaultPriD[64],
-	String:sdefaultSec[64],
-	bool:bendwithD,
-	bool:bhideTeams,
-	bool:bpublicKarma,
-	bool:bkarmaRound,
-	bool:bstripWeapons,
-	bool:bkarmaDMG,
-	bool:bkarmaDMG_up,
-	Float:f_roundDelay,
-	bool:bnextRoundAlert,
-	bool:broundendDamage,
-	bool:bignoreDeaths,
-	bool:bignoreRDMMenu,
-	bool:bdeadPlayersCanSeeOtherRules,
-	iRoundStartedFontSize,
-	String:sRoundStartedFontColor[12],
-	iRoundStartFontSize,
-	String:sRoundStartFontColor[12],
-	bool:btChatToDead,
-	bool:bdChatToDead,
-	bool:bTranfserArmor,
-	bool:bShowTraitors,
-	bool:bRespawnDeadPlayers,
-	imaxTraitors,
-	imaxDetectives,
-	iminKarmaDetective,
-	bool:bEnableDamage,
-	bool:bGiveWeaponsOnFailStart,
-	String:sFSPrimary[32],
-	String:sFSSecondary[32],
-	bool:bshowKarmaOnSpawn,
-	bool:bDebugMessages,
-	ifakeHealth,
-	ifakeLife,
-	String:sSetRole[18],
-	String:sKarmaReset[18],
-	String:sSetKerma[18],
-	String:sReloadCFG[18],
-	bool:bAddSteamIDtoLogs,
-	iSteamIDLogFormat,
-	bool:bHideTeamAttackMessage,
-	bool:bDisableDamageSelection
-};
+#include <autoexecconfig>
 
 enum Ragdolls
 {
@@ -337,43 +230,6 @@ native void TTT_SetFoundStatus(int client, bool found);
 native void TTT_LogString(const char[] format, any ...);
 
 /*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigInt(int configIndex, int value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigBool(int configIndex, bool value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param value             Value to set.
- */
-native void TTT_OverrideConfigFloat(int configIndex, float value);
-
-/*
- * Overrides a config setting.
- *
- * @param configIndex       The config index to change. Use eConfig for this.
- * @param buffer            String to set.
- */
-native void TTT_OverrideConfigString(int configIndex, char[] buffer);
-
-/*
- * Reloads the config.
- */
-native void TTT_ReloadConfig();
-
-/*
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.
@@ -388,6 +244,26 @@ native bool TTT_ForceTraitor(int client);
  * @return False if the client's role is already forced for the next round.
  */
 native bool TTT_ForceDetective(int client);
+
+/*
+ * NO DESCRIPTION
+ *
+ * @param client             The client index.
+ * @param rounds             The amount of rounds to add.
+ * @param force             Begin directly if client is alive.
+ * @return Returns the amount of rounds, otherwise the client index is invalid
+ */
+native int TTT_AddRoundSlays(int client, int rounds, bool force);
+
+/*
+ * NO DESCRIPTION
+ *
+ * @param client             The client index.
+ * @param rounds             The amount of rounds.
+ * @param force             Begin directly if client is alive.
+ * @return Returns the amount of rounds, otherwise the client index is invalid
+ */
+native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
 /*
  * Check if TTT plugin is loaded and running.
@@ -526,4 +402,17 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		return true;
 	}
 	return false;
+}
+
+stock void StartConfig(char[] file, char[] directory = "ttt")
+{
+	AutoExecConfig_SetCreateDirectory(true);
+	AutoExecConfig_SetCreateFile(true);
+	AutoExecConfig_SetFile(file, directory);
+}
+
+stock void EndConfig()
+{
+	AutoExecConfig_ExecuteFile();
+	AutoExecConfig_CleanFile();
 }
