@@ -1455,10 +1455,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
-	g_iInnoKills[client] = 0;
-	g_iTraitorKills[client] = 0;
-	g_iDetectiveKills[client] = 0;
-
 	int iRagdoll = 0;
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
