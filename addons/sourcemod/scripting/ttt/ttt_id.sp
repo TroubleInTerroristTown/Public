@@ -50,8 +50,8 @@ public void OnPluginStart()
 	g_cTPrio = AutoExecConfig_CreateConVar("id_traitor_sort_prio", "0", "The sorting priority of the fake ID in the shop menu.");
 	g_cIPrio = AutoExecConfig_CreateConVar("id_innocent_sort_prio", "0", "The sorting priority of the ID in the shop menu.");
 	g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "0.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
-	g_cLongNameT = AutoExecConfig_CreateConVar("id_name_innocent", "ID", "The name of this in Innocent Shop");
-	g_cLongNameI = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
+	g_cLongNameI = AutoExecConfig_CreateConVar("id_name_innocent", "ID", "The name of this in Innocent Shop");
+	g_cLongNameT = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
 	g_cDiscountT = AutoExecConfig_CreateConVar("id_discount_traitor", "0", "Should fake id discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("id_discount_innocent", "0", "Should id discountable for innocents?", _, true, 0.0, true, 1.0);
 	EndConfig();
