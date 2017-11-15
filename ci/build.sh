@@ -42,6 +42,7 @@ fi
 
 echo -e "Create clean plugins folder\n"
 mkdir addons/sourcemod/plugins
+mkdir addons/sourcemod/plugins/disabled
 mkdir addons/sourcemod/plugins/ttt
 
 echo -e "Move all ttt binary files to plugins folder\n"
@@ -55,6 +56,11 @@ for file in *.smx
 do
   mv $file addons/sourcemod/plugins
 done
+
+echo -e "Move optinal plugins into disabled folder\n"
+mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/disabled
+mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
+mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled
 
 echo -e "Remove api test plugin\n"
 rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
@@ -81,14 +87,6 @@ rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
-
-
-echo -e "Create gamedata/cameras-and-drones dir."
-mkdir build/addons/sourcemod/gamedata
-mkdir build/addons/sourcemod/gamedata/cameras-and-drones
-
-echo -e "Download custom_models.txt for cameras and drones"
-wget "https://github.com/Keplyx/cameras-and-drones/raw/master/gamedata/cameras-and-drones/custom_models.txt" -O build/addons/sourcemod/gamedata/cameras-and-drones/custom_models.txt
 
 echo -e "Add LICENSE to build package\n"
 cp LICENSE CVARS.txt build/
