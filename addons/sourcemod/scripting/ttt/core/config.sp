@@ -20,6 +20,7 @@ void SetupConfig()
 	g_ckarmaDD = AutoExecConfig_CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7", "The amount of karma a detective will lose for killing a detective.");
 	g_cstartKarma = AutoExecConfig_CreateConVar("ttt_start_karma", "100", "The amount of karma new players and players who were karma banned will start with.");
 	g_ckarmaBan = AutoExecConfig_CreateConVar("ttt_with_karma_ban", "75", "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)", _, true, 0.0);
+	g_cBanKarmaDead = AutoExecConfig_CreateConVar("ttt_with_karma_dead", "0", "Ban dead players for bad karma?", _, true, 0.0, true, 1.0);
 	g_ckarmaBanLength = AutoExecConfig_CreateConVar("ttt_with_karma_ban_length", "10080", "The length (time in minutes) of a Bad Karma ban. (Default = 1 Week)");
 	g_cmaxKarma = AutoExecConfig_CreateConVar("ttt_max_karma", "150", "The maximum amount of karma a player can have.");
 	g_crequiredPlayersD = AutoExecConfig_CreateConVar("ttt_required_players_detective", "6", "The amount of players required to activate the detective role.");

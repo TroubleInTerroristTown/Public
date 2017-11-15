@@ -3240,7 +3240,7 @@ public Action Timer_5(Handle timer)
 			continue;
 		}
 
-		if (!IsPlayerAlive(i))
+		if (!g_cBanKarmaDead.BoolValue && !IsPlayerAlive(i))
 		{
 			continue;
 		}
