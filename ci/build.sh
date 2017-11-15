@@ -62,9 +62,6 @@ mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/d
 mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled
 
-echo -e "Remove api test plugin\n"
-rm addons/sourcemod/plugins/ttt/ttt_api_test.smx
-
 echo -e "Remove build folder if exists\n"
 if [ -d "build" ]; then
   rm -r build
