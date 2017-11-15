@@ -57,7 +57,8 @@ do
   mv $file addons/sourcemod/plugins
 done
 
-echo -e "Move optinal plugins into disabled folder\n"
+echo -e "Move optional plugins into disabled folder\n"
+mv addons/sourcemod/scripting/README addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled
