@@ -35,6 +35,7 @@ ConVar g_cLongName = null;
 ConVar g_cDiscountT = null;
 ConVar g_cDiscountD = null;
 ConVar g_cDiscountI = null;
+ConVar g_cTKDamage = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -90,6 +91,7 @@ public void OnPluginStart()
 	g_cDiscountT = AutoExecConfig_CreateConVar("ta_discount_traitor", "0", "Should taser discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("ta_discount_detective", "0", "Should taser discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("ta_discount_innocent", "0", "Should taser discountable for innocents?", _, true, 0.0, true, 1.0);
+	g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -337,8 +339,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 				CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
 			}
 			
-			hTag = FindConVar("ttt_hurt_traitor_with_taser");
-			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + hTag.IntValue);
+			TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
 		}
 		else if (iRole == TTT_TEAM_DETECTIVE)
 		{
