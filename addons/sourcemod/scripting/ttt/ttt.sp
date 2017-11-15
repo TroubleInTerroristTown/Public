@@ -209,8 +209,19 @@ public void OnLibraryRemoved(const char[] library)
 
 public void OnConfigsExecuted()
 {
-	// Get plugin tag
+	// Save configs in strings
 	g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
+	g_ckickImmunity.GetString(g_sKickImmunity, sizeof(g_sKickImmunity));
+	g_clogsAccess.GetString(g_sLogAccess, sizeof(g_sLogAccess));
+	g_cdefaultPriD.GetString(g_sDefaultPrimary, sizeof(g_sDefaultPrimary));
+	g_cdefaultSec.GetString(g_sDefaultSecondary, sizeof(g_sDefaultSecondary));
+	g_cRoundStartedFontColor.GetString(g_sRoundStartedFontColor, sizeof(g_sRoundStartedFontColor));
+	g_cRoundStartFontColor.GetString(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor));
+	g_cFSPrimary.GetString(g_sFSPrimary, sizeof(g_sFSPrimary));
+	g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
+	g_cSetRole.GetString(g_sSetRole, sizeof(g_sSetRole));
+	g_cKarmaReset.GetString(g_sKarmaReset, sizeof(g_sKarmaReset));
+	g_cSetKarma.GetString(g_sSetKarma, sizeof(g_sSetKarma));
 	
 	// Prepare & Format log files
 	char sDate[12];
