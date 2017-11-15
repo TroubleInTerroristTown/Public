@@ -1502,19 +1502,32 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
 		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
 
-		int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
-		char name[MAX_NAME_LENGTH];
-		GetClientName(client, name, sizeof(name));
+		int iUAttacker = event.GetInt("attacker");
+		int iAttacker = GetClientOfUserId(iUAttacker);
+		int iARole = 0;
+		char sName[MAX_NAME_LENGTH];
+		GetClientName(client, sName, sizeof(sName));
 		int iRagdollC[Ragdolls];
 		iRagdollC[Ent] = EntIndexToEntRef(iEntity);
 		iRagdollC[Victim] = GetClientUserId(client);
 		iRagdollC[VictimTeam] = g_iRole[client];
-		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, name);
+		Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sName);
 		iRagdollC[Scanned] = false;
-		GetClientName(iAttacker, name, sizeof(name));
-		iRagdollC[Attacker] = GetClientUserId(iAttacker);
-		iRagdollC[AttackerTeam] = g_iRole[iAttacker];
-		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, name);
+		
+		if (TTT_IsClientValid(iAttacker))
+		{
+			GetClientName(iAttacker, sName, sizeof(sName));
+			iARole = g_iRole[iAttacker];
+		}
+		else
+		{
+			Format(sName, sizeof(sName), "Unknown attacker");
+			iUAttacker = 0;
+		}
+		
+		iRagdollC[Attacker] = iUAttacker;
+		iRagdollC[AttackerTeam] = iARole;
+		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sName);
 		iRagdollC[GameTime] = GetGameTime();
 		event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
 
@@ -2785,7 +2798,7 @@ stock void InspectBody(int client, int victim, int attacker, int time, const cha
 		Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, time);
 		AddMenuItem(menu, "", sBuffer);
 
-		if (attacker > 0 && attacker != victim)
+		if (TTT_IsClientValid(attacker) && attacker != victim)
 		{
 			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been", client, weapon);
 			AddMenuItem(menu, "", sBuffer);
