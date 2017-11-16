@@ -60,12 +60,6 @@ public void OnPluginEnd()
 	}
 }
 
-public void OnClientDisconnect(int client)
-{
-	UnHookSkin(client);
-	CPS_RemoveSkin(client);
-}
-
 public void OnLibraryAdded(const char[] name)
 {
 	if (StrEqual(name, "CustomPlayerSkins"))
