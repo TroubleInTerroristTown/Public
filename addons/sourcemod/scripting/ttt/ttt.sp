@@ -1465,16 +1465,22 @@ bool IsDamageForbidden()
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
+	
+	if (!TTT_IsClientValid)
+	{
+		event.BroadcastDisabled = true;
+		return Plugin_Changed;
+	}
 
-	int iRagdoll = 0;
+	int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
+	
+	if (iRagdoll > 0)
+	{
+		AcceptEntityInput(iRagdoll, "Kill");
+	}
+	
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
-		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-		if (iRagdoll > 0)
-		{
-			AcceptEntityInput(iRagdoll, "Kill");
-		}
-
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
 
@@ -1604,18 +1610,9 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			}
 		}
 	}
-	else
-	{
-		iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-		if (iRagdoll > 0)
-		{
-			AcceptEntityInput(iRagdoll, "Kill");
-		}
-	}
 
 	event.BroadcastDisabled = true;
-
-	return Plugin_Handled;
+	return Plugin_Changed;
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -2554,6 +2551,11 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 
 public Action OnPlayerRunCmd(int client, int &buttons)
 {
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Continue;
+	}
+	
 	if (g_cdenyFire.BoolValue && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
 	{
 		buttons &= ~IN_ATTACK;
