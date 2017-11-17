@@ -7,7 +7,7 @@
 - [AdaM](https://steamcommunity.com/profiles/76561198134328733/)
 - [Purixi](https://forums.alliedmods.net/member.php?u=261590) for [Decoy Teleporter](https://forums.alliedmods.net/showthread.php?p=2317390 )
 - [Keplyx](https://github.com/Keplyx) for [Cameras and Drones](https://forums.alliedmods.net/showthread.php?p=2537127)
-- [Any contributors](https://github.com/Bara20/TroubleinTerroristTown/graphs/contributors)
+- [Any contributors](https://github.com/Bara/TroubleinTerroristTown/graphs/contributors)
 
 
 ___
