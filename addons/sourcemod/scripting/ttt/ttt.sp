@@ -99,7 +99,7 @@ public void OnPluginStart()
 
 	LoadBadNames();
 
-	g_aRagdoll = new ArrayList(104);
+	g_aRagdoll = new ArrayList(105);
 	g_aLogs = new ArrayList(512);
 
 	g_aForceTraitor = new ArrayList();
@@ -1547,7 +1547,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sName);
 		iRagdollC[GameTime] = GetGameTime();
 		event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
-
+		
 		g_aRagdoll.PushArray(iRagdollC[0]);
 
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
@@ -2690,17 +2690,24 @@ public int TTT_OnButtonPress(int client, int button)
 						int victim = GetClientOfUserId(iRagdollC[Victim]);
 						int attacker = GetClientOfUserId(iRagdollC[Attacker]);
 						
-						InspectBody(client, victim, attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
+						InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
 							iRagdollC[Found] = true;
 
-							if (IsClientInGame(victim))
+							bool bValid = false;
+
+							if (TTT_IsClientValid(victim))
+							{
+								bValid = false;
+							}
+							
+							if (bValid)
 							{
 								g_bFound[victim] = true;
 							}
-
+							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
@@ -2720,11 +2727,23 @@ public int TTT_OnButtonPress(int client, int button)
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 							}
 
-							TeamTag(victim);
+							if (bValid)
+							{
+								TeamTag(victim);
+							}
 
 							Call_StartForward(g_hOnBodyFound);
 							Call_PushCell(client);
-							Call_PushCell(victim);
+							
+							if (bValid)
+							{
+								Call_PushCell(victim);
+							}
+							else
+							{
+								Call_PushCell(-1);
+							}
+							
 							Call_PushString(iRagdollC[VictimName]);
 							Call_Finish();
 						}
@@ -2817,18 +2836,18 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
 	return Plugin_Handled;
 }
 
-stock void InspectBody(int client, int victim, int attacker, int time, const char[] weapon, const char[] victimName, const char[] attackerName)
+stock void InspectBody(int client, int victim, int victimRole, int attacker, int time, const char[] weapon, const char[] victimName, const char[] attackerName)
 {
 	char team[32];
-	if (g_iRole[victim] == TTT_TEAM_TRAITOR)
+	if (victimRole == TTT_TEAM_TRAITOR)
 	{
 		Format(team, sizeof(team), "%T", "Traitors", client);
 	}
-	else if (g_iRole[victim] == TTT_TEAM_DETECTIVE)
+	else if (victimRole == TTT_TEAM_DETECTIVE)
 	{
 		Format(team, sizeof(team), "%T", "Detectives", client);
 	}
-	else if (g_iRole[victim] == TTT_TEAM_INNOCENT)
+	else if (victimRole == TTT_TEAM_INNOCENT)
 	{
 		Format(team, sizeof(team), "%T", "Innocents", client);
 	}

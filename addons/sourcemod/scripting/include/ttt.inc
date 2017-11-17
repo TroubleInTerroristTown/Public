@@ -104,7 +104,7 @@ forward void TTT_OnClientDeath(int victim, int attacker);
  * Called when a body is found.
  *
  * @param client            The client who identified the body.
- * @param victim            The client whom the body belongs to.
+ * @param victim            The client whom the body belongs to. (-1 for invalid index)
  * @param deadPlayer        The name of the victim.
  */
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
