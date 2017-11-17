@@ -1069,11 +1069,13 @@ stock void TeamInitialize(int client)
 	
 	g_bFound[client] = false;
 	
+	int iTeam = GetClientTeam(client);
+	
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		if (g_cforceTeams.BoolValue)
 		{
-			if (GetClientTeam(client) != CS_TEAM_CT)
+			if (iTeam == CS_TEAM_T || (g_cSwitchSpec.BoolValue && iTeam == CS_TEAM_SPECTATOR))
 			{
 				CS_SwitchTeam(client, CS_TEAM_CT);
 			}
@@ -1112,7 +1114,7 @@ stock void TeamInitialize(int client)
 
 		if (g_cforceTeams.BoolValue)
 		{
-			if (GetClientTeam(client) != CS_TEAM_T)
+			if (iTeam == CS_TEAM_CT || (g_cSwitchSpec.BoolValue && iTeam == CS_TEAM_SPECTATOR))
 			{
 				CS_SwitchTeam(client, CS_TEAM_T);
 			}
@@ -1138,7 +1140,7 @@ stock void TeamInitialize(int client)
 
 		if (g_cforceTeams.BoolValue)
 		{
-			if (GetClientTeam(client) != CS_TEAM_T)
+			if ((iTeam == CS_TEAM_T || iTeam == CS_TEAM_CT) || (g_cSwitchSpec.BoolValue && iTeam == CS_TEAM_SPECTATOR))
 			{
 				CS_SwitchTeam(client, CS_TEAM_T);
 			}

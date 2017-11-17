@@ -254,6 +254,7 @@ ConVar g_cRoundSlayDestroyTrigger = null;
 ConVar g_cRoundSlayAccess = null;
 ConVar g_cDebug = null;
 ConVar g_cBanKarmaDead = null;
+ConVar g_cSwitchSpec = null;
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
