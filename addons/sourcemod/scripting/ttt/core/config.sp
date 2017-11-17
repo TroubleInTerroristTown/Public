@@ -107,6 +107,8 @@ void SetupConfig()
 	g_cRoundSlayAccess = AutoExecConfig_CreateConVar("ttt_round_slays_admin_access", "b", "Admin flags to access round slays command.");
 	g_cDebug = AutoExecConfig_CreateConVar("ttt_debug_mode", "0", "Enable or disable debug mode for ttt? Could by useful for one player tests", _, true, 0.0, true, 1.0);
 	g_cSwitchSpec = AutoExecConfig_CreateConVar("ttt_move_spectators", "0", "Move spectators to ct (or t) on round start?", _, true, 0.0, true, 1.0);
+	g_cRulesMenu = AutoExecConfig_CreateConVar("ttt_save_rules_choice", "0", "Save choise from rules menu per player? Players must accept this one time (instead of every time) if it's enabled", _, true, 0.0, true, 1.0);
+	g_cDRulesMenu = AutoExecConfig_CreateConVar("ttt_save_detective_rules_choice", "0", "Save choise from detective (rules) menu per player? Players must accept this one time (instead of every time) if it's enabled", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);

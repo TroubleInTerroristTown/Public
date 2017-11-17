@@ -149,6 +149,8 @@ public void OnPluginStart()
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 
 	g_hRSCookie = RegClientCookie("ttt2_round_slays", "Round Slays Cookie", CookieAccess_Private);
+	g_hRules = RegClientCookie("ttt2_rules_menu", "Show rules", CookieAccess_Private);
+	g_hDRules = RegClientCookie("ttt2_detective_menu", "Show detectives menu", CookieAccess_Private);
 
 	SetRandomSeed(GetTime());
 
@@ -1671,7 +1673,7 @@ public Action Command_DetectiveRules(int client, int args)
 	{
 		return Plugin_Handled;
 	}
-
+	
 	AskClientForMicrophone(client);
 	return Plugin_Handled;
 }
@@ -1761,6 +1763,11 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 
 stock void ShowRules(int client, int iItem)
 {
+	if (g_cRulesMenu.BoolValue && g_bRules[client])
+	{
+		return;
+	}
+	
 	char sText[512], sYes[64];
 	Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
 	Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
@@ -1936,6 +1943,17 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 		}
 		else
 		{
+			if (g_cRulesMenu.BoolValue)
+			{
+				g_bRules[client] = true;
+				
+				char sBuffer[12];
+				IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
+				SetClientCookie(client, g_hRules, sBuffer);
+				
+				return 0;
+			}
+			
 			g_bKnowRules[client] = true;
 			g_bReadRules[client] = false;
 		}
@@ -1990,6 +2008,11 @@ public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
 
 stock void AskClientForMicrophone(int client)
 {
+	if (g_cDRulesMenu.BoolValue && g_bDRules[client])
+	{
+		return;
+	}
+	
 	char sText[512], sYes[64], sNo[64];
 	Format(sText, sizeof(sText), "%T", "AM Question", client);
 	Format(sYes, sizeof(sYes), "%T", "AM Yes", client);
@@ -2019,6 +2042,17 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 		else
 		{
 			g_bAvoidDetective[client] = false;
+			
+			if (g_cDRulesMenu.BoolValue)
+			{
+				g_bDRules[client] = true;
+				
+				char sBuffer[12];
+				IntToString(g_bDRules[client], sBuffer, sizeof(sBuffer));
+				SetClientCookie(client, g_hDRules, sBuffer);
+				
+				return 0;
+			}
 		}
 	}
 	else if (action == MenuAction_Cancel)
@@ -2038,6 +2072,12 @@ public void OnClientCookiesCached(int client)
 	char sBuffer[12];
 	GetClientCookie(client, g_hRSCookie, sBuffer, sizeof(sBuffer));
 	g_iRoundSlays[client] = StringToInt(sBuffer);
+	
+	GetClientCookie(client, g_hRules, sBuffer, sizeof(sBuffer));
+	g_bRules[client] = view_as<bool>(StringToInt(sBuffer));
+	
+	GetClientCookie(client, g_hDRules, sBuffer, sizeof(sBuffer));
+	g_bDRules[client] = view_as<bool>(StringToInt(sBuffer));
 }
 
 public void OnClientDisconnect(int client)

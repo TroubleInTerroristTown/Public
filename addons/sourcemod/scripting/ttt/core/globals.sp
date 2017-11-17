@@ -255,6 +255,14 @@ ConVar g_cRoundSlayAccess = null;
 ConVar g_cDebug = null;
 ConVar g_cBanKarmaDead = null;
 ConVar g_cSwitchSpec = null;
+ConVar g_cRulesMenu = null;
+ConVar g_cDRulesMenu = null;
+
+Handle g_hRules = null;
+bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
+
+Handle g_hDRules = null;
+bool g_bDRules[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
