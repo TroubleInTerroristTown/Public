@@ -1662,6 +1662,12 @@ public Action Command_TRules(int client, int args)
 	{
 		return Plugin_Handled;
 	}
+	
+	g_bRules[client] = false;
+	
+	char sBuffer[12];
+	IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
+	SetClientCookie(client, g_hRules, sBuffer);
 
 	ShowRules(client, g_iSite[client]);
 	return Plugin_Handled;
@@ -1673,6 +1679,12 @@ public Action Command_DetectiveRules(int client, int args)
 	{
 		return Plugin_Handled;
 	}
+	
+	g_bDRules[client] = false;
+	
+	char sBuffer[12];
+	IntToString(g_bDRules[client], sBuffer, sizeof(sBuffer));
+	SetClientCookie(client, g_hDRules, sBuffer);
 	
 	AskClientForMicrophone(client);
 	return Plugin_Handled;
