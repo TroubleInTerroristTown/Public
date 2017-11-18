@@ -92,7 +92,7 @@ void SetupConfig()
 	g_cGiveWeaponsOnFailStart = AutoExecConfig_CreateConVar("ttt_give_weapons_on_failed_start", "0", "Give player weapons on a fail start?", _, true, 0.0, true, 1.0);
 	g_cFSPrimary = AutoExecConfig_CreateConVar("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)");
 	g_cFSSecondary = AutoExecConfig_CreateConVar("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)");
-	g_cSetRole = AutoExecConfig_CreateConVar("ttt_command_access_setsole", "d", "Admin flags to access the 'setrole' command.");
+	g_cSetRole = AutoExecConfig_CreateConVar("ttt_command_access_setrole", "d", "Admin flags to access the 'setrole' command.");
 	g_cKarmaReset = AutoExecConfig_CreateConVar("ttt_command_access_karmareset", "m", "Admin flags to access the 'karmareset' command.");
 	g_cSetKarma = AutoExecConfig_CreateConVar("ttt_command_access_setkarma", "m", "Admin flags to access the 'setkarma' command.");
 	g_cAddSteamIDtoLogs = AutoExecConfig_CreateConVar("ttt_steamid_add_to_logs", "1", "Should we add steam id to all log actions? Prevent abusing with namefakers", _, true, 0.0, true, 1.0);
