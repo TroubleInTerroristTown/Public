@@ -83,7 +83,7 @@ public void OnPluginStart()
 	g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
 	g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
 	g_cPrio_C4 = AutoExecConfig_CreateConVar("c4_sort_prio", "0", "The sorting priority of the C4 in the shop menu.");
-	g_cCount_C4 = AutoExecConfig_CreateConVar("c4_count", "9000", "The amount of c4's a traitor can buy.");
+	g_cCount_C4 = AutoExecConfig_CreateConVar("c4_count", "3", "The amount of c4's a traitor can buy.");
 	g_cC4ShakeRadius = AutoExecConfig_CreateConVar("c4_shake_radius", "5000", "The 'shake' radius of the C4 explosion.");
 	g_cC4DamageRadius = AutoExecConfig_CreateConVar("c4_damage_radius", "850", "The damage radius of the C4 explosion.");
 	g_cLongName_J = AutoExecConfig_CreateConVar("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop");
