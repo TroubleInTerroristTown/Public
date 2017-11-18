@@ -46,7 +46,7 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
 			g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
-			if (iBody[Victim] == client)
+			if (iBody[Victim] == GetClientUserId(client))
 			{
 				SetNativeArray(2, iBody[0], sizeof(iBody));
 			}
@@ -148,7 +148,7 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 		{
 			g_aRagdoll.GetArray(i, iRagdoll[0]);
 
-			if (iRagdoll[Victim] == client)
+			if (iRagdoll[Victim] == GetClientUserId(client))
 			{
 				return iRagdoll[Found];
 			}
@@ -177,7 +177,7 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		{
 			g_aRagdoll.GetArray(i, iRagdoll[0]);
 
-			if (iRagdoll[Victim] == client)
+			if (iRagdoll[Victim] == GetClientUserId(client))
 			{
 				return iRagdoll[Scanned];
 			}
