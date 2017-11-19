@@ -180,7 +180,7 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	char sBuffer[128];
 	

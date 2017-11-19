@@ -30,7 +30,7 @@ public void OnPluginStart()
 	HookEvent("weapon_fire", Event_WeaponFire);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	if (TTT_IsLoaded())
 	{

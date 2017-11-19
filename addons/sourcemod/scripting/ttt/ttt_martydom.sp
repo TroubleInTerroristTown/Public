@@ -76,7 +76,7 @@ public void OnClientDisconnect(int client)
 	g_bHasMartydom[client] = false;
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
