@@ -564,13 +564,29 @@ public Action Command_Karma(int client, int args)
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 1 (Warmup: %d)", TTT_IsWarmUp());
+	}
+	
 	if (g_aRagdoll != null)
 	{
 		g_aRagdoll.Clear();
 	}
 
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 2 (g_aRagdoll: %d)", g_aRagdoll.Length);
+	}
+
 	g_bInactive = false;
 	g_bRoundEnded = false;
+	
+
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 3 (g_bInactive: %d - g_bRoundEnded: %d)", g_bInactive, g_bRoundEnded);
+	}
 
 	LoopValidClients(i)
 	{
@@ -582,6 +598,12 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_bImmuneRDMManager[i] = false;
 
 		CS_SetClientClanTag(i, " ");
+		
+
+		if (g_cDebugMessages.BoolValue)
+		{
+			LogMessage("Event_RoundStartPre - 4 (Player: %N)", i);
+		}
 	}
 
 	if (g_hStartTimer != null)
@@ -589,27 +611,61 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		TTT_ClearTimer(g_hStartTimer);
 	}
 
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 5 (g_hStartTimer: %d)", g_hStartTimer);
+	}
+
 	if (g_hCountdownTimer != null)
 	{
 		TTT_ClearTimer(g_hCountdownTimer);
 	}
 
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 6 (g_hCountdownTimer: %d)", g_hCountdownTimer);
+	}
+
 	float warmupTime = GetConVarFloat(g_hGraceTime) + 5.0;
 	g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
+
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 7 (g_hStartTimer: %d - Time: %f)", g_hStartTimer, warmupTime);
+	}
 
 	g_fRealRoundStart = GetGameTime() + warmupTime;
 	g_hCountdownTimer = CreateTimer(0.5, Timer_SelectionCountdown, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 8 (g_hCountdownTimer: %d)", g_hCountdownTimer);
+	}
+
 	g_bRoundStarted = false;
+
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 9 (g_bRoundStarted: %d)", g_bRoundStarted);
+	}
 
 	if (g_hRoundTimer != null)
 	{
 		TTT_ClearTimer(g_hRoundTimer);
 	}
+
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d)", g_hRoundTimer);
+	}
 	
 	float fTime = GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0);
-
 	g_hRoundTimer = CreateTimer(fTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
+
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d - Time: %f)", g_hRoundTimer, fTime);
+	}
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -3242,6 +3298,7 @@ public Action Command_Status(int client, int args)
 
 public Action Timer_5(Handle timer)
 {
+	LogMessage("Timer_5");
 	LoopValidClients(i)
 	{
 		Call_StartForward(g_hOnUpdate5);
@@ -3275,12 +3332,17 @@ public Action Timer_5(Handle timer)
 			BanBadPlayerKarma(i);
 		}
 	}
-
+	
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("g_bRoundStarted: %d - g_bRoundEnding: %d - g_bInactive: %d - g_hStartTimer: %d - g_hCountdownTimer: %d - g_hRoundTimer: %d", g_bRoundStarted, g_bRoundEnding, g_bInactive, g_hStartTimer, g_hCountdownTimer, g_hRoundTimer);
+	}
+	
 	if (g_bRoundStarted)
 	{
 		CheckTeams();
 	}
-	else if (g_bCheckPlayers)
+	else if (g_bCheckPlayers ||(g_cCheckPlayers.BoolValue && (!g_bRoundStarted && !g_bRoundEnding && !g_bInactive && g_hStartTimer == null && g_hCountdownTimer == null && g_hRoundTimer == null)))
 	{
 		CheckPlayers();
 	}
@@ -3288,30 +3350,42 @@ public Action Timer_5(Handle timer)
 
 void CheckPlayers()
 {
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("CheckPlayers - 1 ()");
+	}
+	
 	int iCount = 0;
 	LoopValidClients(i)
 	{
-		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
+		if (!g_cDebug.BoolValue && (IsFakeClient(i) || IsClientSourceTV(i)))
 		{
 			continue;
 		}
-
-		if (IsFakeClient(i))
+		
+		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 		{
 			continue;
 		}
 
 		iCount++;
 	}
-
+	
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("CheckPlayers - 2 (iCount: %d - Required: %d)", iCount, g_crequiredPlayers.IntValue);
+	}
+	
 	if (iCount >= g_crequiredPlayers.IntValue)
 	{
 		g_bCheckPlayers = false;
-
-		if (!g_cDebug.BoolValue)
+		
+		if (g_cDebugMessages.BoolValue)
 		{
-			CS_TerminateRound(3.0, CSRoundEnd_Draw);
+			LogMessage("CheckPlayers - 3 (CS_TerminateRound)");
 		}
+
+		CS_TerminateRound(3.0, CSRoundEnd_Draw);
 	}
 }
 

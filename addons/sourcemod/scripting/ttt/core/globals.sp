@@ -257,6 +257,7 @@ ConVar g_cBanKarmaDead = null;
 ConVar g_cSwitchSpec = null;
 ConVar g_cRulesMenu = null;
 ConVar g_cDRulesMenu = null;
+ConVar g_cCheckPlayers = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

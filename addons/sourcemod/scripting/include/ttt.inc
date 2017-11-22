@@ -418,3 +418,8 @@ stock void EndConfig()
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();
 }
+
+bool TTT_IsWarmUp()
+{
+	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
+}
