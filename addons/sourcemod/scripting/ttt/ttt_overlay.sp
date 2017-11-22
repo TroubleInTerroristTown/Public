@@ -76,7 +76,7 @@ public void OnPluginStart()
 	g_hSyncI = CreateHudSynchronizer();
 	g_hSyncT = CreateHudSynchronizer();
 
-	CreateTimer(3.0, Timer_HUD, _, TIMER_REPEAT);
+	CreateTimer(2.0, Timer_HUD, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -193,27 +193,24 @@ public void TTT_OnClientGetRole(int client, int role)
 	AssignOverlay(client, role);
 }
 
-public void TTT_OnUpdate1(int client)
-{
-	if (!g_bEndOverlay)
-	{
-		AssignOverlay(client, TTT_GetClientRole(client));
-	}
-}
-
 public Action Timer_HUD(Handle timer)
 {
 	if (!TTT_IsRoundActive())
 	{
 		return;
 	}
-
+	
 	int iDet = 0;
 	int iInn = 0;
 	int iTra = 0;
 
 	LoopValidClients(i)
 	{
+		if (!g_bEndOverlay)
+		{
+			AssignOverlay(i, TTT_GetClientRole(i));
+		}
+		
 		if (!TTT_WasBodyFound(i))
 		{
 			if (TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
