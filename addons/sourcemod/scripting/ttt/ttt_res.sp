@@ -239,7 +239,7 @@ public int MenuHandle(Handle menu, MenuAction action, int param1, int param2)
 				Commamnd_RES(param1, 0);
 			}
 		}
-		CloseHandle(hMenu);
+		delete hMenu;
 	}
 	return 0;
 }

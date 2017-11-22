@@ -683,12 +683,12 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
-	ClearTimer(g_hCreditsTimer[client]);
+	TTT_ClearTimer(g_hCreditsTimer[client]);
 }
 
 public void OnClientDisconnect(int client)
 {
-	ClearTimer(g_hCreditsTimer[client]);
+	TTT_ClearTimer(g_hCreditsTimer[client]);
 }
 
 public Action Command_Credits(int client, int args)
@@ -760,7 +760,7 @@ public void TTT_OnRoundEnd(int WinningTeam)
 {
 	LoopValidClients(client)
 	{
-		ClearTimer(g_hCreditsTimer[client]);
+		TTT_ClearTimer(g_hCreditsTimer[client]);
 		switch (WinningTeam)
 		{
 			case TTT_TEAM_DETECTIVE:
@@ -989,13 +989,4 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 		return g_iCredits[client];
 	}
 	return 0;
-}
-
-stock void ClearTimer(Handle &timer)
-{
-	if (timer != null)
-	{
-		KillTimer(timer);
-		timer = null;
-	}
 }

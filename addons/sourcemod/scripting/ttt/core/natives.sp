@@ -1,3 +1,42 @@
+void InitForwards()
+{
+	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
+	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
+	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
+	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
+	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
+	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
+	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
+}
+
+void InitNatives()
+{
+	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
+	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
+	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
+	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
+	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
+	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
+	CreateNative("TTT_GetClientRole", Native_GetClientRole);
+	CreateNative("TTT_SetClientRole", Native_SetClientRole);
+	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
+	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
+	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
+	CreateNative("TTT_RemoveClientKarma", Native_RemoveClientKarma);
+	CreateNative("TTT_ForceTraitor", Native_ForceTraitor);
+	CreateNative("TTT_ForceDetective", Native_ForceDetective);
+	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
+	CreateNative("TTT_LogString", Native_LogString);
+	CreateNative("TTT_AddRoundSlays", Native_AddRoundSlays);
+	CreateNative("TTT_SetRoundSlays", Native_SetRoundSlays);
+}
+
 public int Native_IsRoundActive(Handle plugin, int numParams)
 {
 	return g_bRoundStarted;

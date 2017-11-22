@@ -160,16 +160,7 @@ public void TTT_OnUpdate5(int i)
 
 public void OnClientDisconnect(int client)
 {
-	ClearTimer(g_hRemoveCoolDownTimer[client]);
-}
-
-stock void ClearTimer(Handle &timer)
-{
-	if (timer != null)
-	{
-		KillTimer(timer);
-		timer = null;
-	}
+	TTT_ClearTimer(g_hRemoveCoolDownTimer[client]);
 }
 
 public Action removeCoolDown(Handle timer, any userid)
@@ -337,6 +328,6 @@ void cleanupStation()
 		g_bHasActiveStation[i] = false;
 		g_bOnHealingCoolDown[i] = false;
 
-		ClearTimer(g_hRemoveCoolDownTimer[i]);
+		TTT_ClearTimer(g_hRemoveCoolDownTimer[i]);
 	}
 }

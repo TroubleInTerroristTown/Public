@@ -177,7 +177,7 @@ public void ResetJihad(int client)
 	g_bHasJihad[client] = false;
 	g_bDetonate[client] = false;
 	
-	ClearTimer(g_hJihadBomb[client]);
+	TTT_ClearTimer(g_hJihadBomb[client]);
 }
 
 public void ResetGlobals(int client)
@@ -191,8 +191,8 @@ public void ResetGlobals(int client)
 	g_iWire[client] = -1;
 	g_iPCount_C4[client] = 0;
 	
-	ClearTimer(g_hExplosionTimer[client]);
-	ClearTimer(g_hJihadBomb[client]);
+	TTT_ClearTimer(g_hExplosionTimer[client]);
+	TTT_ClearTimer(g_hJihadBomb[client]);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -235,7 +235,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 
 
-			ClearTimer(g_hJihadBomb[client]);
+			TTT_ClearTimer(g_hJihadBomb[client]);
 			g_hJihadBomb[client] = CreateTimer(g_cJihadPreparingTime.FloatValue, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			g_bHasJihad[client] = true;
 
@@ -677,7 +677,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 				CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, client);
 				EmitAmbientSoundAny(SND_DISARM, bombPos);
 				g_bHasActiveBomb[planter] = false;
-				ClearTimer(g_hExplosionTimer[planter]);
+				TTT_ClearTimer(g_hExplosionTimer[planter]);
 				SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
 			}
 		}
@@ -734,7 +734,7 @@ stock float plantBomb(int client, float time)
 		Handle explosionPack;
 		Handle beepPack;
 		
-		ClearTimer(g_hExplosionTimer[client]);
+		TTT_ClearTimer(g_hExplosionTimer[client]);
 		
 		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
 		CreateDataTimer(1.0, bombBeep, beepPack);
@@ -873,14 +873,5 @@ stock void removeBomb(int client)
 		}
 
 		AcceptEntityInput(iEnt, "Kill");
-	}
-}
-
-stock void ClearTimer(Handle &timer)
-{
-	if (timer != null)
-	{
-		KillTimer(timer);
-		timer = null;
 	}
 }

@@ -30,58 +30,8 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	// Round forwards
-	g_hOnRoundStart_Pre = CreateGlobalForward("TTT_OnRoundStart_Pre", ET_Event);
-	g_hOnRoundStart = CreateGlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
-
-	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
-
-	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
-
-	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
-	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
-
-	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
-
-	g_hOnUpdate5 = CreateGlobalForward("TTT_OnUpdate5", ET_Ignore, Param_Cell);
-	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
-	
-	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
-
-	// Body / Status
-	CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
-	CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
-	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
-	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
-
-	// Ragdoll
-	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
-	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
-
-	// Roles
-	CreateNative("TTT_GetClientRole", Native_GetClientRole);
-	CreateNative("TTT_SetClientRole", Native_SetClientRole);
-
-	// Karma
-	CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
-	CreateNative("TTT_SetClientKarma", Native_SetClientKarma);
-	CreateNative("TTT_AddClientKarma", Native_AddClientKarma);
-	CreateNative("TTT_RemoveClientKarma", Native_RemoveClientKarma);
-
-	// Force roles
-	CreateNative("TTT_ForceTraitor", Native_ForceTraitor);
-	CreateNative("TTT_ForceDetective", Native_ForceDetective);
-
-	// Others
-	CreateNative("TTT_IsRoundActive", Native_IsRoundActive);
-	CreateNative("TTT_LogString", Native_LogString);
-	
-	// Round slays
-	CreateNative("TTT_AddRoundSlays", Native_AddRoundSlays);
-	CreateNative("TTT_SetRoundSlays", Native_SetRoundSlays);
+	InitForwards();
+	InitNatives();
 
 	RegPluginLibrary("ttt");
 
@@ -636,12 +586,12 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	if (g_hStartTimer != null)
 	{
-		KillTimer(g_hStartTimer);
+		TTT_ClearTimer(g_hStartTimer);
 	}
 
 	if (g_hCountdownTimer != null)
 	{
-		KillTimer(g_hCountdownTimer);
+		TTT_ClearTimer(g_hCountdownTimer);
 	}
 
 	float warmupTime = GetConVarFloat(g_hGraceTime) + 5.0;
@@ -654,10 +604,12 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
 	if (g_hRoundTimer != null)
 	{
-		delete g_hRoundTimer;
+		TTT_ClearTimer(g_hRoundTimer);
 	}
+	
+	float fTime = GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0);
 
-	g_hRoundTimer = CreateTimer(GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0), Timer_OnRoundEnd);
+	g_hRoundTimer = CreateTimer(fTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -1558,7 +1510,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			{
 				if (g_hRDMTimer[client] != null)
 				{
-					KillTimer(g_hRDMTimer[client]);
+					TTT_ClearTimer(g_hRDMTimer[client]);
 				}
 
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
@@ -1568,7 +1520,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			{
 				if (g_hRDMTimer[client] != null)
 				{
-					KillTimer(g_hRDMTimer[client]);
+					TTT_ClearTimer(g_hRDMTimer[client]);
 				}
 
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
@@ -1578,7 +1530,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			{
 				if (g_hRDMTimer[client] != null)
 				{
-					KillTimer(g_hRDMTimer[client]);
+					TTT_ClearTimer(g_hRDMTimer[client]);
 				}
 
 				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
@@ -2106,7 +2058,7 @@ public void OnClientDisconnect(int client)
 			g_iArmor[client] = 0;
 		}
 
-		ClearTimer(g_hRDMTimer[client]);
+		TTT_ClearTimer(g_hRDMTimer[client]);
 
 		g_bReceivingLogs[client] = false;
 		g_bImmuneRDMManager[client] = false;
@@ -2992,15 +2944,6 @@ stock void addArrayTime(char[] message)
 		Format(message, TTT_LOG_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
 	}
 	g_aLogs.PushString(message);
-}
-
-stock void ClearTimer(Handle &timer)
-{
-	if (timer != null)
-	{
-		KillTimer(timer);
-		timer = null;
-	}
 }
 
 public Action Command_LAW(int client, const char[] command, int argc)

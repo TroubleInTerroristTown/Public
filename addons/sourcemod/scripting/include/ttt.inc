@@ -37,13 +37,6 @@ enum Ragdolls
 }
 
 /*
- * Called every 5 seconds
- *
- * @param client            Client index.
- */
-forward void TTT_OnUpdate5(int client);
-
-/*
  * Called every second
  *
  * @param client            Client index.
@@ -402,6 +395,15 @@ stock bool IsWorldDamage(int iAttacker, int damagetype)
 		return true;
 	}
 	return false;
+}
+
+stock void TTT_ClearTimer(Handle &timer)
+{
+	if (timer != null)
+	{
+		KillTimer(timer);
+		timer = null;
+	}
 }
 
 stock void StartConfig(char[] file, char[] directory = "ttt")
