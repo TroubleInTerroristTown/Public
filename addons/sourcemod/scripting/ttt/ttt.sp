@@ -3305,10 +3305,6 @@ public Action Timer_5(Handle timer)
 	
 	LoopValidClients(i)
 	{
-		Call_StartForward(g_hOnUpdate5);
-		Call_PushCell(i);
-		Call_Finish();
-
 		if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
 		{
 			continue;

@@ -16,8 +16,8 @@ done
 
 echo -e "\nCompile 3rd-party-plugins"
 echo -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
-addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/CustomPlayerSkins.sp
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/CustomPlayerSkins.sp
 echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
-addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/no_weapon_fix.sp
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/no_weapon_fix.sp
 echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
-addons/sourcemod/scripting/spcomp -E -v0 addons/sourcemod/scripting/block_messages.sp
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/block_messages.sp

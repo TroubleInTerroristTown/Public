@@ -41,6 +41,7 @@ enum Ragdolls
  *
  * @param client            Client index.
  */
+#pragma deprecated TTT_OnUpdate1 will be removed in the near future
 forward void TTT_OnUpdate1(int client);
 
 /*
