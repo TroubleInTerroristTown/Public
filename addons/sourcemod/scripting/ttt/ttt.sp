@@ -3298,7 +3298,11 @@ public Action Command_Status(int client, int args)
 
 public Action Timer_5(Handle timer)
 {
-	LogMessage("Timer_5");
+	if (g_cDebugMessages.BoolValue)
+	{
+		LogMessage("Timer_5");
+	}
+	
 	LoopValidClients(i)
 	{
 		Call_StartForward(g_hOnUpdate5);
