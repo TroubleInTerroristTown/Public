@@ -1,6 +1,6 @@
 # [TroubleinTerroristTown](http://csgottt.com/)
 
-[![Build Status](https://travis-ci.org/Bara20/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
+[![Build Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RJ34N338RTZDN)
 ---
