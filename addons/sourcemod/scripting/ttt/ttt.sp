@@ -596,7 +596,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_iTraitorKills[i] = 0;
 		g_iDetectiveKills[i] = 0;
 		g_bImmuneRDMManager[i] = false;
-
+		
+		DispatchKeyValue(i, "targetname", "UNASSIGNED");
 		CS_SetClientClanTag(i, " ");
 		
 
@@ -1097,6 +1098,8 @@ stock void TeamInitialize(int client)
 		}
 
 		CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
+		
+		DispatchKeyValue(client, "targetname", "DETECTIVE");
 
 		if (g_cspawnHPD.IntValue > 0)
 		{
@@ -1116,6 +1119,8 @@ stock void TeamInitialize(int client)
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 	{
 		CPrintToChat(client, "%s %T", g_sTag, "Your Team is TRAITORS", client);
+		
+		DispatchKeyValue(client, "targetname", "TRAITOR");
 
 		if (g_cspawnHPT.IntValue > 0)
 		{
@@ -1142,6 +1147,8 @@ stock void TeamInitialize(int client)
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
 	{
 		CPrintToChat(client, "%s %T", g_sTag, "Your Team is INNOCENTS", client);
+		
+		DispatchKeyValue(client, "targetname", "INNOCENT");
 
 		if (g_cspawnHPI.IntValue > 0)
 		{
@@ -1268,8 +1275,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 			if (g_cslayAfterStart.BoolValue)
 			{
 				g_iRole[client] = TTT_TEAM_UNASSIGNED;
+				
 				RequestFrame(Frame_SlapPlayer, GetClientUserId(client));
+				
 				CS_SetClientClanTag(client, "UNASSIGNED");
+				DispatchKeyValue(client, "targetname", "UNASSIGNED");
 			}
 		}
 		else
@@ -1637,6 +1647,8 @@ public void OnClientPostAdminCheck(int client)
 	g_bFound[client] = true;
 
 	g_iRole[client] = TTT_TEAM_UNASSIGNED;
+	
+	DispatchKeyValue(client, "targetname", "UNASSIGNED");
 	CS_SetClientClanTag(client, "UNASSIGNED");
 
 	if (TTT_GetSQLConnection() != null)
