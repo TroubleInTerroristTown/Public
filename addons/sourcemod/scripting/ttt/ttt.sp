@@ -2722,6 +2722,11 @@ public int TTT_OnButtonPress(int client, int button)
 						int victim = GetClientOfUserId(iRagdollC[Victim]);
 						int attacker = GetClientOfUserId(iRagdollC[Attacker]);
 						
+						if (g_cDebugMessages.BoolValue)
+						{
+							LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, iRagdollC[Victim], attacker, iRagdollC[Attacker]);
+						}
+						
 						InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
 
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
@@ -2732,7 +2737,7 @@ public int TTT_OnButtonPress(int client, int button)
 
 							if (TTT_IsClientValid(victim))
 							{
-								bValid = false;
+								bValid = true;
 							}
 							
 							if (bValid)
