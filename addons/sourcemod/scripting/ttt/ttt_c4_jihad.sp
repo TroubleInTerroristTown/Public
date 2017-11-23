@@ -278,23 +278,11 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
 	return Plugin_Continue;
 }
 
-stock void RemoveC4(int client)
+stock bool RemoveC4(int client)
 {
 	if (!g_bHasC4[client] && !g_bHasJihad[client])
 	{
-		int weapon = -1;
-		while((weapon = GetPlayerWeaponSlot(client, CS_SLOT_C4)) != -1)
-		{
-			char sWeapon[128];
-			GetEdictClassname(weapon, sWeapon, sizeof(sWeapon));
-
-			if (StrContains(sWeapon, "weapon_c4", false) != -1)
-			{
-				TTT_SafeRemoveWeapon(client, weapon);
-
-				break;
-			}
-		}
+		return TTT_RemoveWeaponByClassname(client, "weapon_c4");
 	}
 }
 

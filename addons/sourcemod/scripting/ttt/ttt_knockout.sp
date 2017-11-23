@@ -25,7 +25,6 @@ ConVar g_cDiscount = null;
 
 int g_iCollisionGroup = -1;
 int g_iFreeze = -1;
-int g_iMyWeapons = -1;
 
 int g_iRagdoll[MAXPLAYERS + 1] =  { -1, ... };
 int g_iCamera[MAXPLAYERS + 1] =  { -1, ... };
@@ -80,12 +79,6 @@ public void OnPluginStart()
 	if (g_iFreeze == -1)
 	{
 		SetFailState("m_fFlags not found...");
-	}
-
-	g_iMyWeapons = FindSendPropInfo("CBasePlayer", "m_hMyWeapons");
-	if (g_iMyWeapons == -1)
-	{
-		SetFailState("m_hMyWeapons not found...");
 	}
 
 	g_uFade = GetUserMessageId("Fade");
@@ -184,21 +177,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			g_bHasKnockout[client] = true;
 
-			for(int offset = 0; offset < 128; offset += 4)
-			{
-				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
-
-				if (IsValidEntity(weapon))
-				{
-					char sClass[32];
-					GetEntityClassname(weapon, sClass, sizeof(sClass));
-
-					if (StrEqual(sClass, "weapon_taser", false))
-					{
-						TTT_SafeRemoveWeapon(client, weapon);
-					}
-				}
-			}
+			TTT_RemoveWeaponByClassname(client, "weapon_taser");
+			
 			GivePlayerItem(client, "weapon_taser");
 		}
 	}

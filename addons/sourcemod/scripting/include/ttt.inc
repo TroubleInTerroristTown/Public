@@ -316,6 +316,27 @@ stock bool tHasFlags(int client, AdminFlag flags[16])
 	return false;
 }
 
+stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
+{
+	for(int offset = 0; offset < 128; offset += 4)
+	{
+		int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+		if (IsValidEntity(weapon))
+		{
+			char sClass[32];
+			GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+			if (StrEqual(sClass, classname, false))
+			{
+				return TTT_SafeRemoveWeapon(client, weapon);
+			}
+		}
+	}
+	
+	return false;
+}
+
 stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
 {
 	if (!IsValidEntity(iWeapon) || !IsValidEdict(iWeapon))

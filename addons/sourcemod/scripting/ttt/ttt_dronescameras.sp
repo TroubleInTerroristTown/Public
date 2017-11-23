@@ -22,8 +22,6 @@ ConVar g_cDPrio = null;
 ConVar g_cDiscountD = null;
 ConVar g_cDiscountC = null;
 
-int g_iMyWeapons = -1;
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -36,12 +34,6 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
-
-	g_iMyWeapons = FindSendPropInfo("CBasePlayer", "m_hMyWeapons");
-	if (g_iMyWeapons == -1)
-	{
-		SetFailState("m_hMyWeapons not found...");
-	}
 
 	LoadTranslations("ttt.phrases");
 
@@ -108,21 +100,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 			
-			for(int offset = 0; offset < 128; offset += 4)
-			{
-				int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
-	
-				if (IsValidEntity(weapon))
-				{
-					char sClass[32];
-					GetEntityClassname(weapon, sClass, sizeof(sClass));
-	
-					if (StrEqual(sClass, "weapon_tagrenade", false))
-					{
-						TTT_SafeRemoveWeapon(client, weapon);
-					}
-				}
-			}
+			TTT_RemoveWeaponByClassname(client, "weapon_tagrenade");
 	
 			GivePlayerItem(client, "weapon_tagrenade");
 		}
