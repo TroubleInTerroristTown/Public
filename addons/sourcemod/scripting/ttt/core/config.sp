@@ -110,6 +110,7 @@ void SetupConfig()
 	g_cRulesMenu = AutoExecConfig_CreateConVar("ttt_save_rules_choice", "0", "Save choise from rules menu per player? Players must accept this one time (instead of every time) if it's enabled", _, true, 0.0, true, 1.0);
 	g_cDRulesMenu = AutoExecConfig_CreateConVar("ttt_save_detective_rules_choice", "0", "Save choise from detective (rules) menu per player? Players must accept this one time (instead of every time) if it's enabled", _, true, 0.0, true, 1.0);
 	g_cCheckPlayers = AutoExecConfig_CreateConVar("ttt_check_always_players", "1", "This always check players outside from a valid round and outside round ending (this should prevent a unreasonable 'deathmatch' round)", _, true, 0.0, true, 1.0);
+	g_cCheckDuringWarmup = AutoExecConfig_CreateConVar("ttt_check_players_during_warmup", "0", "Check players during warmup?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);

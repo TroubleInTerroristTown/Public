@@ -3359,7 +3359,9 @@ public Action Timer_5(Handle timer)
 	{
 		CheckTeams();
 	}
-	else if (g_bCheckPlayers ||(g_cCheckPlayers.BoolValue && (!g_bRoundStarted && !g_bRoundEnding && !g_bInactive && g_hStartTimer == null && g_hCountdownTimer == null && g_hRoundTimer == null)))
+	else if (g_bCheckPlayers ||
+			(g_cCheckDuringWarmup.BoolValue && TTT_IsWarmUp()) ||
+			(g_cCheckPlayers.BoolValue && (!TTT_IsWarmUp() && !g_bRoundStarted && !g_bRoundEnding && !g_bInactive && g_hStartTimer == null && g_hCountdownTimer == null && g_hRoundTimer == null)))
 	{
 		CheckPlayers();
 	}
