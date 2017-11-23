@@ -284,6 +284,8 @@ stock bool RemoveC4(int client)
 	{
 		return TTT_RemoveWeaponByClassname(client, "weapon_c4");
 	}
+	
+	return false;
 }
 
 stock void Detonate(int client)

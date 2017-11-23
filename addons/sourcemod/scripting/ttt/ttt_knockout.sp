@@ -304,7 +304,7 @@ stock void DropWeapons(int client)
 {
 	for(int offset = 0; offset < 128; offset += 4)
 	{
-		int weapon = GetEntDataEnt2(client, g_iMyWeapons + offset);
+		int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
 
 		if (IsValidEntity(weapon))
 		{
