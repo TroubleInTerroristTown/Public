@@ -1091,10 +1091,25 @@ stock void TeamInitialize(int client)
 				CS_SwitchTeam(client, CS_TEAM_CT);
 			}
 		}
+		
+		int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
 
-		if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) == -1)
+		if (iWeapon == -1)
 		{
 			GivePlayerItem(client, g_sDefaultPrimary);
+		}
+		else
+		{
+			if (g_cPrimaryWeaponUpdate.IntValue == 1)
+			{
+				SDKHooks_DropWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultPrimary);
+			}
+			else if (g_cPrimaryWeaponUpdate.IntValue == 2)
+			{
+				TTT_SafeRemoveWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultPrimary);
+			}
 		}
 
 		CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
@@ -1111,9 +1126,24 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_knife");
 		}
 
-		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+		iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+
+		if (iWeapon == -1)
 		{
 			GivePlayerItem(client, g_sDefaultSecondary);
+		}
+		else
+		{
+			if (g_cSecondaryWeaponUpdate.IntValue == 1)
+			{
+				SDKHooks_DropWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
+			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+			{
+				TTT_SafeRemoveWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
 		}
 	}
 	else if (g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -1139,9 +1169,24 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_knife");
 		}
 
-		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+		int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+
+		if (iWeapon == -1)
 		{
 			GivePlayerItem(client, g_sDefaultSecondary);
+		}
+		else
+		{
+			if (g_cSecondaryWeaponUpdate.IntValue == 1)
+			{
+				SDKHooks_DropWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
+			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+			{
+				TTT_SafeRemoveWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
 		}
 	}
 	else if (g_iRole[client] == TTT_TEAM_INNOCENT)
@@ -1167,9 +1212,24 @@ stock void TeamInitialize(int client)
 			GivePlayerItem(client, "weapon_knife");
 		}
 
-		if (GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY) == -1)
+		int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+
+		if (iWeapon == -1)
 		{
 			GivePlayerItem(client, g_sDefaultSecondary);
+		}
+		else
+		{
+			if (g_cSecondaryWeaponUpdate.IntValue == 1)
+			{
+				SDKHooks_DropWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
+			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+			{
+				TTT_SafeRemoveWeapon(client, iWeapon);
+				GivePlayerItem(client, g_sDefaultSecondary);
+			}
 		}
 	}
 
