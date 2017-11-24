@@ -3,7 +3,7 @@
 #endif
 #define _ttt_glow_included
 
-forward Action TTT_OnGlowCheck(int client, int target);
+forward Action TTT_OnGlowCheck(int client, int target, bool &seeTarget);
 
 public SharedPlugin __pl_ttt_glow = 
 {

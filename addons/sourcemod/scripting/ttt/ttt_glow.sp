@@ -31,7 +31,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell);
+	g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	
 	RegPluginLibrary("ttt_glow");
 
@@ -265,10 +265,20 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 		return Plugin_Continue;
 	}
 	
-	Action result = Plugin_Handled;
+	bool result = false;
+	
 	Call_StartForward(g_hOnGlowCheck);
 	Call_PushCell(client);
 	Call_PushCell(target);
-	Call_Finish(result);
-	return result;
+	Call_PushCellRef(result);
+	Call_Finish();
+	
+	if (!result)
+	{
+		return Plugin_Handled;
+	}
+	else
+	{
+		return Plugin_Continue;
+	}
 }

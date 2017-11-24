@@ -215,11 +215,12 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action TTT_OnGlowCheck(int client, int target)
+public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
 {
 	if (g_bHasWH[client] && g_bOwnWH[client])
 	{
-		return Plugin_Continue;
+		seeTarget = true;
+		return Plugin_Changed;
 	}
 	
 	return Plugin_Handled;

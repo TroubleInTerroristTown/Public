@@ -313,13 +313,14 @@ void ResetTAG(int client)
 	g_bHasGrenade[client] = false;
 }
 
-public Action TTT_OnGlowCheck(int client, int target)
+public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
 {
 	if (g_bSeePlayers[client] && g_bHasGrenade[client])
 	{
 		if (target > 0 && GetGameTime() < g_fTaggingEndTime[target])
 		{
-			return Plugin_Continue;
+			seeTarget = true;
+			return Plugin_Changed;
 		}
 	}
 	
