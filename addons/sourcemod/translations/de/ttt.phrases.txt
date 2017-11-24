@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-10 21:35:38 UTC
+// Date: 2017-11-24 01:29:53 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -781,6 +781,31 @@
 	"AdminSetRoundSlays"
 	{
 		"de"		"{orchid}[1} {lightgreen}wird von {orchid}{2} {orchid}{3} {lightgreen}Runden erschlagen!"
+	}
+
+	"RS - Slayed"
+	{
+		"de"		"Du wurdest erschlagen! Verbleibende Runden: {orchid}{1}"
+	}
+
+	"Shop Discount Price"
+	{
+		"de"		"({1}%% RABATT)"
+	}
+
+	"Sprint active"
+	{
+		"de"		"Sprint ist für {1} Sekunden aktiv!"
+	}
+
+	"Sprint cooldown"
+	{
+		"de"		"Sprint ist in {1} Sekunden wieder verfügbar..."
+	}
+
+	"Sprint available"
+	{
+		"de"		"Sprint ist jetzt verfügbar!"
 	}
 
 }

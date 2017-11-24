@@ -1,6 +1,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <multicolors>
 #include <ttt>
 #include <ttt_shop>
 
@@ -11,6 +12,8 @@
 #define SHORT_NAME_T "sprint_t"
 
 ConVar g_cDebug = null;
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
 
 ConVar g_cPriceD = null;
 ConVar g_cPriceT = null;
@@ -70,6 +73,17 @@ public void OnConfigsExecuted()
 	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue, g_cDiscountT.BoolValue);
 	
 	g_cDebug = FindConVar("ttt_debug_mode");
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnClientDisconnect(int client)
@@ -89,6 +103,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				return Plugin_Stop;
 			}
+			
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Sprint available", client);
 			
 			g_bSprint[client] = true;
 		}
@@ -128,10 +144,7 @@ public int TTT_OnButtonPress(int client, int button)
 		g_hTimer[client] = CreateTimer(g_cTime.FloatValue, Timer_Sprint, GetClientUserId(client));
 		SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cSpeed.FloatValue);
 		
-		if (g_cDebug.BoolValue)
-		{
-			PrintToChat(client, "Yea!");
-		}
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Sprint active", client, g_cTime.FloatValue);
 	}
 }
 
@@ -144,6 +157,8 @@ public Action Timer_Sprint(Handle timer, any userid)
 		if (IsPlayerAlive(client))
 		{
 			SetEntPropFloat(client, Prop_Send, "m_flLaggedMovementValue", g_cNormal.FloatValue);
+			
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Sprint cooldown", client, g_cCooldown.FloatValue);
 			
 			if(g_hCTimer[client] == null)
 			{
@@ -169,6 +184,8 @@ public Action Timer_Cooldown(Handle timer, any userid)
 	if(TTT_IsClientValid(client))
 	{
 		g_hCTimer[client] = null;
+		
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Sprint available", client);
 		
 		if (g_cDebug.BoolValue)
 		{

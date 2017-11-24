@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-10 21:35:40 UTC
+// Date: 2017-11-24 01:29:55 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -861,17 +861,34 @@
 		"#format"	"{1:N},{2:N},{3:d}"
 		"en"		"{orchid}{1} {lightgreen}was slayed by {orchid}{2} {lightgreen}for {orchid}{3} {lightgreen}rounds!"
 	}
-	
+
 	"RS - Slayed"
 	{
 		"#format"	"{1:d}"
 		"en"		"You was slayed! Remaining rounds: {orchid}{1}"
 	}
-	
+
 	"Shop Discount Price"
 	{
 		"#format"	"{1:d}"
 		"en"		"({1}%% OFF)"
+	}
+
+	"Sprint active"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"Sprint is for {1} seconds active!"
+	}
+
+	"Sprint cooldown"
+	{
+		"#format"	"{1:.2f}"
+		"en"		"Sprint is in {1} seconds available again..."
+	}
+
+	"Sprint available"
+	{
+		"en"		"Sprint is now available!"
 	}
 
 }
