@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 04:19:28 UTC
+// Date: 2017-11-24 17:41:21 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:

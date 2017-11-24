@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 04:19:28 UTC
+// Date: 2017-11-24 17:41:23 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -912,6 +912,17 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"{darkblue}{1} Detectives"
+	}
+
+	"Location Saved"
+	{
+		"en"		"Location saved! Type '{orchid}!tele{lightgreen}' in chat to teleport you."
+	}
+
+	"Teleport Max"
+	{
+		"#format"	"{1:d}"
+		"en"		"You've reached the limit! {orchid}({1})"
 	}
 
 }

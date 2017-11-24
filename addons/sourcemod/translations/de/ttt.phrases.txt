@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 04:19:27 UTC
+// Date: 2017-11-24 17:41:18 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -826,6 +826,16 @@
 	"TAGrenade Detectives"
 	{
 		"de"		"{darkblue}{1} Detectives"
+	}
+
+	"Location Saved"
+	{
+		"de"		"Position gespeichert! Gib'{orchid}!tele{lightgreen}' ein um dich zu teleportieren."
+	}
+
+	"Teleport Max"
+	{
+		"de"		"Sie haben das Limit erreicht! {orchid}({1})"
 	}
 
 }
