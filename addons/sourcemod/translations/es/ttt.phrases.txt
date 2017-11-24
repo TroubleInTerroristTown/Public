@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"es"		"Eres un {blue}DETECTIVE"
+		"es"		"Eres un {darkblue}DETECTIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"es"		"Tu asesino fué un {blue}DETECTIVE!"
+		"es"		"Tu asesino fué un {darkblue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"es"		"Has asesinado un {blue}DETECTIVE!"
+		"es"		"Has asesinado un {darkblue}DETECTIVE!"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"es"		"Has usado el detector en el Jugador{blue} {1} {lightgreen} y es un {blue}DETECTIVE!"
+		"es"		"Has usado el detector en el Jugador{darkblue} {1} {lightgreen} y es un {darkblue}DETECTIVE!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"es"		"El DETECTIVE{blue} {1} {lightgreen}ha Escaneado un cuerpo, el Asesino es el Jugador{darkred} {2} {lightgreen}con el arma{orchid} {3}"
+		"es"		"El DETECTIVE{darkblue} {1} {lightgreen}ha Escaneado un cuerpo, el Asesino es el Jugador{darkred} {2} {lightgreen}con el arma{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"es"		"El DETECTIVE{blue} {1} {lightgreen} ha Escaneado el cuerpo, el jugador se suicidó"
+		"es"		"El DETECTIVE{darkblue} {1} {lightgreen} ha Escaneado el cuerpo, el jugador se suicidó"
 	}
 
 	"Health Station"
@@ -170,7 +170,7 @@
 
 	"D channel"
 	{
-		"es"		"{blue}*DETECTIVES* {1}:{green} {2}"
+		"es"		"{darkblue}*DETECTIVES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -230,7 +230,7 @@
 
 	"Found Detective"
 	{
-		"es"		"{orchid}{1} {lightgreen}ha econtrado el cuerpo de {blue}{2}. {lightgreen}Era un {blue}DETECTIVE!"
+		"es"		"{orchid}{1} {lightgreen}ha econtrado el cuerpo de {darkblue}{2}. {lightgreen}Era un {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
@@ -320,7 +320,7 @@
 
 	"Player is Now Detective"
 	{
-		"es"		"{orchid}{1} {lightgreen}es ahora un {blue}Detective!"
+		"es"		"{orchid}{1} {lightgreen}es ahora un {darkblue}Detective!"
 	}
 
 	"You Are Unassigned"
@@ -340,7 +340,7 @@
 
 	"You Are Now Detective"
 	{
-		"es"		"Eres un {blue}Detective!"
+		"es"		"Eres un {darkblue}Detective!"
 	}
 
 	"Triggered Falling Building"

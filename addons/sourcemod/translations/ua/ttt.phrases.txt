@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: ua (ua)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"ua"		"Bạn là {blue}DETECTIVE"
+		"ua"		"Bạn là {darkblue}DETECTIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"ua"		"Bạn bị giết bởi một {blue}DETECTIVE!"
+		"ua"		"Bạn bị giết bởi một {darkblue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"ua"		"Bạn đã hạ sát một {blue}THÁM TỬ!"
+		"ua"		"Bạn đã hạ sát một {darkblue}THÁM TỬ!"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"ua"		"Bạn đã xét nghiệm Player{green} {1} {lightgreen}và xác nhận họ là {blue}DETECTIVE!"
+		"ua"		"Bạn đã xét nghiệm Player{green} {1} {lightgreen}và xác nhận họ là {darkblue}DETECTIVE!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"ua"		"DETECTIVE{blue} {1} {lightgreen} đã scan một xác chết, thủ phạm là Player {darkred} {2} {lightgreen}sử dụng vũ khí {orchid} {3}"
+		"ua"		"DETECTIVE{darkblue} {1} {lightgreen} đã scan một xác chết, thủ phạm là Player {darkred} {2} {lightgreen}sử dụng vũ khí {orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"ua"		"DETECTIVE{blue} {1} {lightgreen}đã scan một xác chết, player đã tự sát."
+		"ua"		"DETECTIVE{darkblue} {1} {lightgreen}đã scan một xác chết, player đã tự sát."
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"ua"		"{blue}*DETECTIVES* {1}:{green} {2}"
+		"ua"		"{darkblue}*DETECTIVES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"ua"		"{orchid}{1} {lightgreen} đã tìm thấy xác của {blue}{2}. {lightgreen}Đó là xác của một {blue}DETECTIVE!"
+		"ua"		"{orchid}{1} {lightgreen} đã tìm thấy xác của {darkblue}{2}. {lightgreen}Đó là xác của một {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"ua"		"{orchid}{1} {lightgreen}đã trở thành {blue}Detective!"
+		"ua"		"{orchid}{1} {lightgreen}đã trở thành {darkblue}Detective!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"ua"		"Bạn là {blue}DETECTIVE!"
+		"ua"		"Bạn là {darkblue}DETECTIVE!"
 	}
 
 	"Triggered Falling Building"

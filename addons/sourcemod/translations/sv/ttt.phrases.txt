@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"sv"		"Du är en {blue}DETEKTIV"
+		"sv"		"Du är en {darkblue}DETEKTIV"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"sv"		"Din mördare var en {blue}DETEKTIV!"
+		"sv"		"Din mördare var en {darkblue}DETEKTIV!"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"sv"		"Du dödade en {blue}DETEKTIV!"
+		"sv"		"Du dödade en {darkblue}DETEKTIV!"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"sv"		"Du har använd en detektor på Spelare{blue} {1} {lightgreen}och han är en {blue}DETEKTIV!"
+		"sv"		"Du har använd en detektor på Spelare{darkblue} {1} {lightgreen}och han är en {darkblue}DETEKTIV!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, mördaren är spelare{darkred} {2} {lightgreen}med vapnen{orchid} {3}"
+		"sv"		"DETEKTIV{darkblue} {1} {lightgreen}Skannade en kropp, mördaren är spelare{darkred} {2} {lightgreen}med vapnen{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"sv"		"DETEKTIV{blue} {1} {lightgreen}Skannade en kropp, spelaren har begått självmord"
+		"sv"		"DETEKTIV{darkblue} {1} {lightgreen}Skannade en kropp, spelaren har begått självmord"
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"sv"		" {blue}*DETEKTIV* {1}:{green} {2}"
+		"sv"		" {darkblue}*DETEKTIV* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {blue}{2}. {lightgreen}Som var en {blue}DETEKTIV!"
+		"sv"		"{orchid}{1} {lightgreen}har hittat kroppen av {darkblue}{2}. {lightgreen}Som var en {darkblue}DETEKTIV!"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"sv"		"{orchid}{1} {lightgreen}är nu en {blue}Detektiv!"
+		"sv"		"{orchid}{1} {lightgreen}är nu en {darkblue}Detektiv!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"sv"		"Du är en {blue}Detektiv!"
+		"sv"		"Du är en {darkblue}Detektiv!"
 	}
 
 	"Triggered Falling Building"
@@ -610,7 +610,7 @@
 
 	"You tased a Detective"
 	{
-		"sv"		"Spelare {lightgreen}{1} använde en detektor på spelare{blue} {2} {lightgreen}och han är en {blue}DETEKTIV!"
+		"sv"		"Spelare {lightgreen}{1} använde en detektor på spelare{darkblue} {2} {lightgreen}och han är en {darkblue}DETEKTIV!"
 	}
 
 	"You tased an Innocent"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Chinese (Traditional) (zho)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"zho"		"你是 {blue}偵探"
+		"zho"		"你是 {darkblue}偵探"
 	}
 
 	"Your Team is TRAITORS"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"zho"		"偵測器顯示玩家 {blue}{1} {lightgreen}是 {blue}一個偵探!"
+		"zho"		"偵測器顯示玩家 {darkblue}{1} {lightgreen}是 {darkblue}一個偵探!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 兇手是{darkred} {2} {lightgreen} 兇器是 {orchid} {3}"
+		"zho"		"偵探{darkblue} {1} {lightgreen}掃描屍體, 兇手是{darkred} {2} {lightgreen} 兇器是 {orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"zho"		"偵探{blue} {1} {lightgreen}掃描屍體, 玩家為自殺身亡"
+		"zho"		"偵探{darkblue} {1} {lightgreen}掃描屍體, 玩家為自殺身亡"
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"zho"		"{blue}*警察* {1}:{green} {2}"
+		"zho"		"{darkblue}*警察* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"zho"		"{orchid}{1} {lightgreen}找到了 {blue}{2}{lightgreen}的屍體. {lightgreen}他是一位 {blue}偵探!"
+		"zho"		"{orchid}{1} {lightgreen}找到了 {darkblue}{2}{lightgreen}的屍體. {lightgreen}他是一位 {darkblue}偵探!"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"zho"		"{orchid}{1} {lightgreen}現在是 {blue}偵探!"
+		"zho"		"{orchid}{1} {lightgreen}現在是 {darkblue}偵探!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"zho"		"你現在是 {blue}偵探!"
+		"zho"		"你現在是 {darkblue}偵探!"
 	}
 
 	"Triggered Falling Building"

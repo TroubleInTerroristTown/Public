@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:55 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"ru"		"Ваша роль - {blue}ДЕТЕКТИВ"
+		"ru"		"Ваша роль - {darkblue}ДЕТЕКТИВ"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"ru"		"Вас убил {blue}ДЕТЕКТИВ"
+		"ru"		"Вас убил {darkblue}ДЕТЕКТИВ"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"ru"		"Вы убили {blue}ДЕТЕКТИВА"
+		"ru"		"Вы убили {darkblue}ДЕТЕКТИВА"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"ru"		"Вы использовали детектор на {blue}{1}{lightgreen}, и он оказался {blue}ДЕТЕКТИВОМ"
+		"ru"		"Вы использовали детектор на {darkblue}{1}{lightgreen}, и он оказался {darkblue}ДЕТЕКТИВОМ"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
+		"ru"		"ДЕТЕКТИВ{darkblue} {1} {lightgreen}просканировал тело: убийца {darkred}{2} {lightgreen}с оружием{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"ru"		"ДЕТЕКТИВ{blue} {1} {lightgreen}просканировал тело: игрок совершил самоубийство"
+		"ru"		"ДЕТЕКТИВ{darkblue} {1} {lightgreen}просканировал тело: игрок совершил самоубийство"
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"ru"		"{blue}*ДЕТЕКТИВЫ* {1}:{green} {2}"
+		"ru"		"{darkblue}*ДЕТЕКТИВЫ* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"ru"		"{orchid}{1} {lightgreen}нашел тело {blue}{2}{lightgreen}. Он был {blue}ДЕТЕКТИВОМ"
+		"ru"		"{orchid}{1} {lightgreen}нашел тело {darkblue}{2}{lightgreen}. Он был {darkblue}ДЕТЕКТИВОМ"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"ru"		"{orchid}{1} {blue}ДЕТЕКТИВ!"
+		"ru"		"{orchid}{1} {darkblue}ДЕТЕКТИВ!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"ru"		"Вы {blue}ДЕТЕКТИВ"
+		"ru"		"Вы {darkblue}ДЕТЕКТИВ"
 	}
 
 	"Triggered Falling Building"
@@ -615,7 +615,7 @@
 
 	"You tased a Detective"
 	{
-		"ru"		"Игрок {lightgreen}{1} использовал детектор на игроке{blue} {2} {lightgreen}и он{blue}ОБНАРУЖЕН!"
+		"ru"		"Игрок {lightgreen}{1} использовал детектор на игроке{darkblue} {2} {lightgreen}и он{darkblue}ОБНАРУЖЕН!"
 	}
 
 	"You tased an Innocent"

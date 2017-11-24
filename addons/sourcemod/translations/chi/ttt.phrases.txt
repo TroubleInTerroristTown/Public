@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"chi"		"你是 {blue}侦探"
+		"chi"		"你是 {darkblue}侦探"
 	}
 
 	"Your Team is TRAITORS"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"chi"		"侦测器显示玩家{blue}{1} {lightgreen}是{bleu}一个侦探!"
+		"chi"		"侦测器显示玩家{darkblue}{1} {lightgreen}是{bleu}一个侦探!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 凶手是{darkred} {2} {lightgreen} 凶器是{orchid} {3}"
+		"chi"		"侦探{darkblue} {1} {lightgreen}扫描尸体, 凶手是{darkred} {2} {lightgreen} 凶器是{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"chi"		"侦探{blue} {1} {lightgreen}扫描尸体, 玩家为自杀身亡"
+		"chi"		"侦探{darkblue} {1} {lightgreen}扫描尸体, 玩家为自杀身亡"
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"chi"		"{blue}*侦探* {1}:{green} {2}"
+		"chi"		"{darkblue}*侦探* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"chi"		"{orchid}{1} {lightgray}找到了{blue}{2}{lightgray}的尸体. {lightgreen}他是一位{blue}侦探!"
+		"chi"		"{orchid}{1} {lightgray}找到了{darkblue}{2}{lightgray}的尸体. {lightgreen}他是一位{darkblue}侦探!"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"chi"		"{orchid}{1} {lightgreen}现在是 {blue}侦探!"
+		"chi"		"{orchid}{1} {lightgreen}现在是 {darkblue}侦探!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"chi"		"你现在是 {blue}侦探!"
+		"chi"		"你现在是 {darkblue}侦探!"
 	}
 
 	"Triggered Falling Building"

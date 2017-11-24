@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -20,7 +20,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"pt"		"Você é um {blue}DETETIVE"
+		"pt"		"Você é um {darkblue}DETETIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -40,7 +40,7 @@
 
 	"Your killer is a Detective"
 	{
-		"pt"		"Seu assassino era um {blue}DETETIVE!"
+		"pt"		"Seu assassino era um {darkblue}DETETIVE!"
 	}
 
 	"Your killer is an Innocent"
@@ -55,7 +55,7 @@
 
 	"You killed a Detective"
 	{
-		"pt"		"Você matou um {blue}DETETIVE!"
+		"pt"		"Você matou um {darkblue}DETETIVE!"
 	}
 
 	"You killed an Innocent"
@@ -70,7 +70,7 @@
 
 	"You hurt a Detective"
 	{
-		"pt"		"Você usou um detector no jogador{blue} {1} {lightgreen} e ele é um {blue}DETETIVE!"
+		"pt"		"Você usou um detector no jogador{darkblue} {1} {lightgreen} e ele é um {darkblue}DETETIVE!"
 	}
 
 	"You hurt an Innocent"
@@ -80,12 +80,12 @@
 
 	"Detective scan found body"
 	{
-		"pt"		"DETETIVE{blue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"pt"		"DETETIVE{blue} {1} {lightgreen}escaneou o corpo, jogador cometeu suicido"
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen}escaneou o corpo, jogador cometeu suicido"
 	}
 
 	"Please wait till your team is assigned"
@@ -190,7 +190,7 @@
 
 	"Found Detective"
 	{
-		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {blue}{2}. {lightgreen}Isso era um {blue}DETETIVE!"
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkblue}{2}. {lightgreen}Isso era um {darkblue}DETETIVE!"
 	}
 
 	"Found Traitor"
@@ -295,7 +295,7 @@
 
 	"You Are Now Detective"
 	{
-		"pt"		"Você é um {blue}detetive!"
+		"pt"		"Você é um {darkblue}detetive!"
 	}
 
 	"Bomb Detonated"
@@ -495,7 +495,7 @@
 
 	"You tased a Detective"
 	{
-		"pt"		"Jogador {lightgreen}{1} usou o detector em {blue} {2} {lightgreen}e ele era um {blue}DETETIVE!"
+		"pt"		"Jogador {lightgreen}{1} usou o detector em {darkblue} {2} {lightgreen}e ele era um {darkblue}DETETIVE!"
 	}
 
 	"AlreadyTaser"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Turkish (tr)
 // 
 // To view other translations for this plugin, please visit:
@@ -15,7 +15,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"tr"		"{blue}DEDEKTİFSİN!"
+		"tr"		"{darkblue}DEDEKTİFSİN!"
 	}
 
 	"Your Team is TRAITORS"
@@ -35,7 +35,7 @@
 
 	"Your killer is a Detective"
 	{
-		"tr"		"Katilin bir {blue}DEDEKTİFTİ!"
+		"tr"		"Katilin bir {darkblue}DEDEKTİFTİ!"
 	}
 
 	"Your killer is an Innocent"
@@ -50,7 +50,7 @@
 
 	"Detective scan found body"
 	{
-		"tr"		"DEDEKTİF{blue} {1} {lightgreen}Bir bedeni taradı, katil{darkred} {2} {lightgreen}kullandığı silah{orchid} {3}"
+		"tr"		"DEDEKTİF{darkblue} {1} {lightgreen}Bir bedeni taradı, katil{darkred} {2} {lightgreen}kullandığı silah{orchid} {3}"
 	}
 
 	"Please wait till your team is assigned"
@@ -80,7 +80,7 @@
 
 	"D channel"
 	{
-		"tr"		"{blue}*DEDEKTİFLER* {1}:{green} {2}"
+		"tr"		"{darkblue}*DEDEKTİFLER* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -105,7 +105,7 @@
 
 	"Found Detective"
 	{
-		"tr"		"{orchid}{1} {lightgreen} adlı oyuncu, {blue}{2}. {lightgreen}adlı oyuncunun bedeninin buldu o bir{blue}DEDEKTİFTİ!"
+		"tr"		"{orchid}{1} {lightgreen} adlı oyuncu, {darkblue}{2}. {lightgreen}adlı oyuncunun bedeninin buldu o bir{darkblue}DEDEKTİFTİ!"
 	}
 
 	"Your bomb is not armed."
@@ -160,7 +160,7 @@
 
 	"Player is Now Detective"
 	{
-		"tr"		"{orchid}{1} {lightgreen}adlı oyuncu {blue}Dedektif!"
+		"tr"		"{orchid}{1} {lightgreen}adlı oyuncu {darkblue}Dedektif!"
 	}
 
 	"You Are Now Innocent"
@@ -175,7 +175,7 @@
 
 	"You Are Now Detective"
 	{
-		"tr"		"Sen bir {blue}Dedektifsin!"
+		"tr"		"Sen bir {darkblue}Dedektifsin!"
 	}
 
 	"Seconds"

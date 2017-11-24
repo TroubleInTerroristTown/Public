@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Korean (ko)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"ko"		"당신은 {blue}탐정입니다."
+		"ko"		"당신은 {darkblue}탐정입니다."
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"ko"		"당신을 죽인 사람은 {blue}탐정{lightgreen}이었습니다."
+		"ko"		"당신을 죽인 사람은 {darkblue}탐정{lightgreen}이었습니다."
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"ko"		"당신을 죽인 사람은 {blue}탐정{lightgreen}이었습니다!"
+		"ko"		"당신을 죽인 사람은 {darkblue}탐정{lightgreen}이었습니다!"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"ko"		"{blue}{1}{lightgreen}님에게 직업 감별기를 사용했고, 그는 {blue}탐정{lightgreen}이었습니다!"
+		"ko"		"{darkblue}{1}{lightgreen}님에게 직업 감별기를 사용했고, 그는 {darkblue}탐정{lightgreen}이었습니다!"
 	}
 
 	"You hurt an Innocent"
@@ -95,12 +95,12 @@
 
 	"Detective scan found body"
 	{
-		"ko"		"탐정 {blue}{1}{lightgreen}님이 시체를 조사했습니다, 가해자는 {darkred}{2}{lightgreen}님이며, 흉기는 {orchid}{3}{lightgreen}입니다."
+		"ko"		"탐정 {darkblue}{1}{lightgreen}님이 시체를 조사했습니다, 가해자는 {darkred}{2}{lightgreen}님이며, 흉기는 {orchid}{3}{lightgreen}입니다."
 	}
 
 	"Detective scan found body suicide"
 	{
-		"ko"		"탐정 {blue}{1}{lightgreen}님이 시체를 조사했습니다, 플레이어는 자살했었습니다."
+		"ko"		"탐정 {darkblue}{1}{lightgreen}님이 시체를 조사했습니다, 플레이어는 자살했었습니다."
 	}
 
 	"Health Station"
@@ -170,7 +170,7 @@
 
 	"D channel"
 	{
-		"ko"		"{blue}*탐정* {1}:{green} {2}"
+		"ko"		"{darkblue}*탐정* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -230,7 +230,7 @@
 
 	"Found Detective"
 	{
-		"ko"		"{orchid}{1}{lightgreen}님이 {blue}{2}{lightgreen}님의 시체를 찾았습니다. 그는 {blue}탐정{lightgreen}이었습니다."
+		"ko"		"{orchid}{1}{lightgreen}님이 {darkblue}{2}{lightgreen}님의 시체를 찾았습니다. 그는 {darkblue}탐정{lightgreen}이었습니다."
 	}
 
 	"Found Traitor"
@@ -335,7 +335,7 @@
 
 	"Player is Now Detective"
 	{
-		"ko"		"{orchid}{1}{lightgreen}님은 이제 {blue}탐정{lightgreen}입니다."
+		"ko"		"{orchid}{1}{lightgreen}님은 이제 {darkblue}탐정{lightgreen}입니다."
 	}
 
 	"You Are Unassigned"
@@ -355,7 +355,7 @@
 
 	"You Are Now Detective"
 	{
-		"ko"		"당신은 {blue}탐정{lightgreen}입니다."
+		"ko"		"당신은 {darkblue}탐정{lightgreen}입니다."
 	}
 
 	"Triggered Falling Building"

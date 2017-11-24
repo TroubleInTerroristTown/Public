@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Italian (it)
 // 
 // To view other translations for this plugin, please visit:
@@ -15,7 +15,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"it"		"Sei un {blue}DETECTIVE"
+		"it"		"Sei un {darkblue}DETECTIVE"
 	}
 
 	"Your Team is INNOCENTS"
@@ -30,7 +30,7 @@
 
 	"Your killer is a Detective"
 	{
-		"it"		"Il tuo killer era un {blue}DETECTIVE!"
+		"it"		"Il tuo killer era un {darkblue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
@@ -45,7 +45,7 @@
 
 	"You killed a Detective"
 	{
-		"it"		"Hai ucciso un {blue}DETECTIVE!"
+		"it"		"Hai ucciso un {darkblue}DETECTIVE!"
 	}
 
 	"You killed an Innocent"
@@ -85,7 +85,7 @@
 
 	"D channel"
 	{
-		"it"		"{blue}*DETECTIVE* {1}:{green} {2}"
+		"it"		"{darkblue}*DETECTIVE* {1}:{green} {2}"
 	}
 
 	"credits earned"
@@ -120,7 +120,7 @@
 
 	"Found Detective"
 	{
-		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {blue}{2}. {lightgreen}Era un {blue}DETECTIVE!"
+		"it"		"{orchid}{1} {lightgreen}ha trovato il corpo di {darkblue}{2}. {lightgreen}Era un {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
@@ -175,7 +175,7 @@
 
 	"Player is Now Detective"
 	{
-		"it"		"{orchid}{1} {lightgreen}è ora un {blue}Detective!"
+		"it"		"{orchid}{1} {lightgreen}è ora un {darkblue}Detective!"
 	}
 
 	"You Are Now Innocent"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:55 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -27,7 +27,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"en"		"You are a {blue}DETECTIVE"
+		"en"		"You are a {darkblue}DETECTIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -53,7 +53,7 @@
 
 	"Your killer is a Detective"
 	{
-		"en"		"Your killer was a {blue}DETECTIVE!"
+		"en"		"Your killer was a {darkblue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
@@ -68,7 +68,7 @@
 
 	"You killed a Detective"
 	{
-		"en"		"You killed a {blue}DETECTIVE!"
+		"en"		"You killed a {darkblue}DETECTIVE!"
 	}
 
 	"You killed an Innocent"
@@ -85,7 +85,7 @@
 	"You hurt a Detective"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have used a detector on Player{blue} {1} {lightgreen}and he is a {blue}DETECTIVE!"
+		"en"		"You have used a detector on Player{darkblue} {1} {lightgreen}and he is a {darkblue}DETECTIVE!"
 	}
 
 	"You hurt an Innocent"
@@ -97,13 +97,13 @@
 	"Detective scan found body"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{blue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
 		"#format"	"{1:N}"
-		"en"		"DETECTIVE{blue} {1} {lightgreen}Scanned a body, player committed suicide"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, player committed suicide"
 	}
 
 	"Health Station"
@@ -180,7 +180,7 @@
 	"D channel"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{blue}*DETECTIVES* {1}:{green} {2}"
+		"en"		"{darkblue}*DETECTIVES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -247,7 +247,7 @@
 	"Found Detective"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {blue}{2}. {lightgreen}That was a {blue}DETECTIVE!"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {darkblue}{2}. {lightgreen}That was a {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
@@ -345,7 +345,7 @@
 	"Player is Now Detective"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}is now {blue}Detective!"
+		"en"		"{orchid}{1} {lightgreen}is now {darkblue}Detective!"
 	}
 
 	"You Are Unassigned"
@@ -365,7 +365,7 @@
 
 	"You Are Now Detective"
 	{
-		"en"		"You are a {blue}Detective!"
+		"en"		"You are a {darkblue}Detective!"
 	}
 
 	"Triggered Falling Building"
@@ -665,7 +665,7 @@
 	"You tased a Detective"
 	{
 		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player{blue} {2} {lightgreen}and he is a {blue}DETECTIVE!"
+		"en"		"Player {lightgreen}{1} used a detector on Player{darkblue} {2} {lightgreen}and he is a {darkblue}DETECTIVE!"
 	}
 
 	"You tased an Innocent"
@@ -889,6 +889,29 @@
 	"Sprint available"
 	{
 		"en"		"Sprint is now available!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"en"		"We found:"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"#format"	"{1:d}"
+		"en"		"{green}{1} Innocents"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"#format"	"{1:d}"
+		"en"		"{darkred}{1} Traitors"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"#format"	"{1:d}"
+		"en"		"{darkblue}{1} Detectives"
 	}
 
 }

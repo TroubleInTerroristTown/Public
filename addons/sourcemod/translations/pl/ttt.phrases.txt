@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"pl"		"Jesteś {blue}DETEKTYWEM"
+		"pl"		"Jesteś {darkblue}DETEKTYWEM"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"pl"		"Zostales zabity przez {blue}DETEKTYWA!"
+		"pl"		"Zostales zabity przez {darkblue}DETEKTYWA!"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"pl"		"Zabiłeś {blue}DETEKTYWA!"
+		"pl"		"Zabiłeś {darkblue}DETEKTYWA!"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"pl"		"Użyłeś detektora na graczu{blue} {1} {lightgreen}i jest {blue}DETEKTYWEM!"
+		"pl"		"Użyłeś detektora na graczu{darkblue} {1} {lightgreen}i jest {darkblue}DETEKTYWEM!"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, Zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
+		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}Przeszukał ciało, Zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"pl"		"DETEKTYW{blue} {1} {lightgreen}Przeszukał ciało, gracz popełnił samobójstwo"
+		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}Przeszukał ciało, gracz popełnił samobójstwo"
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"pl"		"{blue}*DETEKTYWI* {1}:{green} {2}"
+		"pl"		"{darkblue}*DETEKTYWI* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -225,7 +225,7 @@
 
 	"Found Detective"
 	{
-		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {blue}{2}. {lightgreen}To byl {blue}DETEKTYW!"
+		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkblue}{2}. {lightgreen}To byl {darkblue}DETEKTYW!"
 	}
 
 	"Found Traitor"
@@ -315,7 +315,7 @@
 
 	"Player is Now Detective"
 	{
-		"pl"		"{orchid}{1} {lightgreen}zostal {blue}Detektywem!"
+		"pl"		"{orchid}{1} {lightgreen}zostal {darkblue}Detektywem!"
 	}
 
 	"You Are Unassigned"
@@ -335,7 +335,7 @@
 
 	"You Are Now Detective"
 	{
-		"pl"		"Jesteś {blue}Detektywem!"
+		"pl"		"Jesteś {darkblue}Detektywem!"
 	}
 
 	"Triggered Falling Building"

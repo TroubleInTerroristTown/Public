@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:28 UTC
 // Language: Hungarian (hu)
 // 
 // To view other translations for this plugin, please visit:
@@ -15,7 +15,7 @@
 
 	"Detective scan found body"
 	{
-		"hu"		"DETEKTÍV{blue} {1} {lightgreen}Megvizsgált egy testet, A gyilkos:{darkred} {2} {lightgreen}Ezzel a fegyverrel:{orchid} {3}"
+		"hu"		"DETEKTÍV{darkblue} {1} {lightgreen}Megvizsgált egy testet, A gyilkos:{darkred} {2} {lightgreen}Ezzel a fegyverrel:{orchid} {3}"
 	}
 
 	"Detectives"
@@ -30,7 +30,7 @@
 
 	"D channel"
 	{
-		"hu"		"{blue}*DETEKTÍV* {1}:{green} {2}"
+		"hu"		"{darkblue}*DETEKTÍV* {1}:{green} {2}"
 	}
 
 	"Found Traitor"

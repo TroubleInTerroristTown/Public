@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -25,7 +25,7 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"cze"		"Jsi {blue}DETEKTIV"
+		"cze"		"Jsi {darkblue}DETEKTIV"
 	}
 
 	"Your Team is TRAITORS"
@@ -50,7 +50,7 @@
 
 	"Your killer is a Detective"
 	{
-		"cze"		"Tvuj vrah byl {blue}DETEKTIV!"
+		"cze"		"Tvuj vrah byl {darkblue}DETEKTIV!"
 	}
 
 	"Your killer is an Innocent"
@@ -65,7 +65,7 @@
 
 	"You killed a Detective"
 	{
-		"cze"		"Zabil jsi {blue}DETEKTIVA !"
+		"cze"		"Zabil jsi {darkblue}DETEKTIVA !"
 	}
 
 	"You killed an Innocent"
@@ -80,7 +80,7 @@
 
 	"You hurt a Detective"
 	{
-		"cze"		"Pouzil jsi detektor na Hrace{blue} {1} {lightgreen}a on je {blue}DETEKTIV !"
+		"cze"		"Pouzil jsi detektor na Hrace{darkblue} {1} {lightgreen}a on je {darkblue}DETEKTIV !"
 	}
 
 	"You hurt an Innocent"
@@ -90,12 +90,12 @@
 
 	"Detective scan found body"
 	{
-		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo, vrah je hrac{darkred} {2} {lightgreen}se zbrani{orchid} {3}"
+		"cze"		"DETEKTIV{darkblue} {1} {lightgreen}oskenoval telo, vrah je hrac{darkred} {2} {lightgreen}se zbrani{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"cze"		"DETEKTIV{blue} {1} {lightgreen}oskenoval telo. Hrac spachal sebevrazdu."
+		"cze"		"DETEKTIV{darkblue} {1} {lightgreen}oskenoval telo. Hrac spachal sebevrazdu."
 	}
 
 	"Health Station"
@@ -165,7 +165,7 @@
 
 	"D channel"
 	{
-		"cze"		"{blue}*DETEKTIVOVE* {1}:{green} {2}"
+		"cze"		"{darkblue}*DETEKTIVOVE* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -230,7 +230,7 @@
 
 	"Found Detective"
 	{
-		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {blue}DETEKTIV!"
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {darkblue}DETEKTIV!"
 	}
 
 	"Found Traitor"
@@ -320,7 +320,7 @@
 
 	"Player is Now Detective"
 	{
-		"cze"		"{orchid}{1} {lightgreen}je ted {blue}Detektiv !"
+		"cze"		"{orchid}{1} {lightgreen}je ted {darkblue}Detektiv !"
 	}
 
 	"You Are Unassigned"
@@ -340,7 +340,7 @@
 
 	"You Are Now Detective"
 	{
-		"cze"		"Ty jsi {blue}Detektiv !"
+		"cze"		"Ty jsi {darkblue}Detektiv !"
 	}
 
 	"Triggered Falling Building"
@@ -630,7 +630,7 @@
 
 	"You tased a Detective"
 	{
-		"cze"		"Hrac {lightgreen}{1} pouzil detektor na Hrace{blue} {2} {lightgreen}a on je {blue}DETEKTIV !"
+		"cze"		"Hrac {lightgreen}{1} pouzil detektor na Hrace{darkblue} {2} {lightgreen}a on je {darkblue}DETEKTIV !"
 	}
 
 	"You tased an Innocent"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 01:29:54 UTC
+// Date: 2017-11-24 04:19:27 UTC
 // Language: French (fr)
 // 
 // To view other translations for this plugin, please visit:
@@ -30,7 +30,7 @@
 
 	"Your killer is a Detective"
 	{
-		"fr"		"Celui qui ta tué étais un {blue}DETECTIVE"
+		"fr"		"Celui qui ta tué étais un {darkblue}DETECTIVE"
 	}
 
 	"Your killer is an Innocent"
@@ -45,7 +45,7 @@
 
 	"You killed a Detective"
 	{
-		"fr"		"Tu as tue un {blue}DETECTIVE !"
+		"fr"		"Tu as tue un {darkblue}DETECTIVE !"
 	}
 
 	"You killed an Innocent"
@@ -60,7 +60,7 @@
 
 	"Detective scan found body suicide"
 	{
-		"fr"		"DETECTIVE{blue} {1} {lightgreen}a scanne un corps, le joueur c'est suicide"
+		"fr"		"DETECTIVE{darkblue} {1} {lightgreen}a scanne un corps, le joueur c'est suicide"
 	}
 
 	"Health Station"
@@ -105,7 +105,7 @@
 
 	"D channel"
 	{
-		"fr"		"{blue}*DETECTIVES* {1}:{green} {2}"
+		"fr"		"{darkblue}*DETECTIVES* {1}:{green} {2}"
 	}
 
 	"You dont have it!"
@@ -145,7 +145,7 @@
 
 	"Found Detective"
 	{
-		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {blue}{2}. {lightgreen}C'etais un {blue}DETECTIVE!"
+		"fr"		"{orchid}{1} {lightgreen}a trouve le corps de {darkblue}{2}. {lightgreen}C'etais un {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
@@ -200,7 +200,7 @@
 
 	"Player is Now Detective"
 	{
-		"fr"		"{orchid}{1} {lightgreen}est maintenant un {blue}Detective!"
+		"fr"		"{orchid}{1} {lightgreen}est maintenant un {darkblue}Detective!"
 	}
 
 	"You Are Unassigned"
@@ -220,7 +220,7 @@
 
 	"You Are Now Detective"
 	{
-		"fr"		"Tu es un {blue}Detective"
+		"fr"		"Tu es un {darkblue}Detective"
 	}
 
 	"Bomb Detonated"
