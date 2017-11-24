@@ -13,6 +13,7 @@
 #define SHORT_NAME "tagrenade"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
+ConVar g_cDebug = null;
 ConVar g_cTPrice = null;
 ConVar g_cTCount = null;
 ConVar g_cTPrio = null;
@@ -97,6 +98,7 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnConfigsExecuted()
 {
+	g_cDebug = FindConVar("ttt_debug_mode");
 	ConVar UseTAGrenade = FindConVar("cd_usetagrenade");
 	
 	if (UseTAGrenade != null)
@@ -246,10 +248,10 @@ public Action OnGetTagrenadeTimes(Handle timer, any data)
 			continue;
 		}
 		
-		/* if (IsFakeClient(target))
+		if (!g_cDebug.BoolValue && IsFakeClient(target))
 		{
 			continue;
-		} */
+		}
 
 		if (!IsPlayerAlive(target))
 		{
