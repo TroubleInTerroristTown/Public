@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 17:41:23 UTC
+// Date: 2017-11-24 22:09:40 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -923,6 +923,11 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"en"		"Radar updated!"
 	}
 
 }

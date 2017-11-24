@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 17:41:18 UTC
+// Date: 2017-11-24 22:09:35 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -836,6 +836,11 @@
 	"Teleport Max"
 	{
 		"de"		"Sie haben das Limit erreicht! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"de"		"Radar aktualisiert!"
 	}
 
 }
