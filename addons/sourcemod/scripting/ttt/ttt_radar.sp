@@ -18,11 +18,19 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cDiscount = null;
 ConVar g_cInterval = null;
+ConVar g_cRed = null;
+ConVar g_cGreen = null;
+ConVar g_cBlue = null;
+ConVar g_cAlpha = null;
 
 ConVar g_cTPrice = null;
 ConVar g_cTPrio = null;
 ConVar g_cTDiscount = null;
 ConVar g_cTInterval = null;
+ConVar g_cTRed = null;
+ConVar g_cTGreen = null;
+ConVar g_cTBlue = null;
+ConVar g_cTAlpha = null;
 
 bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
 
@@ -55,11 +63,19 @@ public void OnPluginStart()
 	g_cPrio = AutoExecConfig_CreateConVar("radar_sort_prio", "0", "The sorting priority of the Radar in the detective shop menu.");
 	g_cDiscount = AutoExecConfig_CreateConVar("radar_discount", "0", "Should detective Radar discountable?", _, true, 0.0, true, 1.0);
 	g_cInterval = AutoExecConfig_CreateConVar("radar_update_interval", "30", "Time in seconds to update player locations for detective radar");
+	g_cRed = AutoExecConfig_CreateConVar("radar_player_color_red", "255", "Red colors for detective radar", _, true, 0.0, true, 255.0);
+	g_cGreen = AutoExecConfig_CreateConVar("radar_player_color_green", "0", "Green colors for detective radar", _, true, 0.0, true, 255.0);
+	g_cBlue = AutoExecConfig_CreateConVar("radar_player_color_blue", "255", "Blue colors for detective radar", _, true, 0.0, true, 255.0);
+	g_cAlpha = AutoExecConfig_CreateConVar("radar_player_color_alpha", "255", "Visibility for detective radar", _, true, 0.0, true, 255.0);
 	
 	g_cTPrice = AutoExecConfig_CreateConVar("radar_price_traitor", "9000", "The amount of credits Radar costs as traitor. 0 to disable.");
 	g_cTPrio = AutoExecConfig_CreateConVar("radar_sort_prio_traitor", "0", "The sorting priority of the Radar in the traitor shop menu.");
 	g_cTDiscount = AutoExecConfig_CreateConVar("radar_discount_traitor", "0", "Should traitor Radar discountable?", _, true, 0.0, true, 1.0);
 	g_cTInterval = AutoExecConfig_CreateConVar("radar_update_interval_traitor", "30", "Time in seconds to update player locations for traitor radar");
+	g_cTRed = AutoExecConfig_CreateConVar("radar_player_color_traitor_red", "255", "Red colors for traitor radar", _, true, 0.0, true, 255.0);
+	g_cTGreen = AutoExecConfig_CreateConVar("radar_player_color_traitor_green", "0", "Green colors for traitor radar", _, true, 0.0, true, 255.0);
+	g_cTBlue = AutoExecConfig_CreateConVar("radar_player_color_traitor_blue", "255", "Blue colors for traitor radar", _, true, 0.0, true, 255.0);
+	g_cTAlpha = AutoExecConfig_CreateConVar("radar_player_color_traitor_alpha", "255", "Visibility for traitor radar", _, true, 0.0, true, 255.0);
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -154,13 +170,24 @@ void SetBeam(int client)
 			
 			GetClientAbsOrigin(i, fPos);
 			
+			int iColor[4];
+			
 			if (role == TTT_TEAM_TRAITOR)
 			{
-				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cTInterval.FloatValue, 5.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
+				iColor[0] = g_cRed.IntValue;
+				iColor[1] = g_cGreen.IntValue;
+				iColor[2] = g_cBlue.IntValue;
+				iColor[3] = g_cAlpha.IntValue;
+				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cTInterval.FloatValue, 5.0, 0.0, iColor, 10, 0);
 			}
 			else if (role == TTT_TEAM_DETECTIVE)
 			{
-				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cInterval.FloatValue, 5.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
+				
+				iColor[0] = g_cTRed.IntValue;
+				iColor[1] = g_cTGreen.IntValue;
+				iColor[2] = g_cTBlue.IntValue;
+				iColor[3] = g_cTAlpha.IntValue;
+				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cInterval.FloatValue, 5.0, 0.0, iColor, 10, 0);
 			}
 
 			TE_SendToClient(client);
