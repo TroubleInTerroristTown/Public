@@ -1610,6 +1610,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	
 	if (fDamage != damage)
 	{
+		damage = fDamage;
 		return Plugin_Changed;
 	}
 
