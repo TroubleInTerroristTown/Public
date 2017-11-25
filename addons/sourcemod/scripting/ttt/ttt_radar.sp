@@ -178,21 +178,20 @@ void SetBeam(int client)
 				iColor[1] = g_cGreen.IntValue;
 				iColor[2] = g_cBlue.IntValue;
 				iColor[3] = g_cAlpha.IntValue;
+
 				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cTInterval.FloatValue, 5.0, 0.0, iColor, 10, 0);
 			}
 			else if (role == TTT_TEAM_DETECTIVE)
 			{
-				
 				iColor[0] = g_cTRed.IntValue;
 				iColor[1] = g_cTGreen.IntValue;
 				iColor[2] = g_cTBlue.IntValue;
 				iColor[3] = g_cTAlpha.IntValue;
+
 				TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cInterval.FloatValue, 5.0, 0.0, iColor, 10, 0);
 			}
 
 			TE_SendToClient(client);
-			
-			
 		}
 	}
 
