@@ -25,7 +25,7 @@
 
 #include <sourcemod>
 
-#define AUTOEXECCONFIG_VERSION "0.1.3"
+#define AUTOEXECCONFIG_VERSION "0.1.4"
 #define AUTOEXECCONFIG_URL     "https://forums.alliedmods.net/showthread.php?t=204254"
 
 // Append
@@ -67,9 +67,6 @@
 static char g_sConfigFile[PLATFORM_MAX_PATH];
 static char g_sRawFileName[PLATFORM_MAX_PATH];
 static char g_sFolderPath[PLATFORM_MAX_PATH];
-
-static StringMap g_hConvarTrie = null;
-static bool g_bCacheEnabled = false;
 
 static bool g_bCreateFile = false;
 static Handle g_hPluginHandle = null;
@@ -505,20 +502,6 @@ stock int AutoExecConfig_FindValue(const char[] cvar, char[] value, int size, bo
 		return AUTOEXEC_NO_CONFIG;
 	}
 	
-	if (g_bCacheEnabled)
-	{
-		char sTrieValue[64];
-		
-		if (g_hConvarTrie.GetString(cvar, sTrieValue, sizeof(sTrieValue)))
-		{
-			strcopy(value, size, sTrieValue);
-			
-			return AUTOEXEC_FIND_SUCCESS;
-		}
-		
-		return AUTOEXEC_FIND_NOT_FOUND;
-	}
-	
 	
 	char filebuffer[PLATFORM_MAX_PATH];
 	strcopy(filebuffer, sizeof(filebuffer), g_sConfigFile);
@@ -558,7 +541,7 @@ stock int AutoExecConfig_FindValue(const char[] cvar, char[] value, int size, bo
 		while (!fFile.EndOfFile() && fFile.ReadLine(readbuffer, sizeof(readbuffer)))
 		{
 			// Is a comment or not valid
-			if (IsCharSpace(readbuffer[0]) || readbuffer[0] == '/' || !IsCharAlpha(readbuffer[0]))
+			if (IsCharSpace(readbuffer[0]) || readbuffer[0] == '/' || (!IsCharNumeric(readbuffer[0]) && !IsCharAlpha(readbuffer[0])) )
 			{
 				continue;
 			}
@@ -781,140 +764,8 @@ stock static int GetCharCountInStr(int character, const char[] str)
 
 
 
-/**
- * Reads the existing config file and caches any convars and values that were found.
- *
- * @return        True when config existed and could be read, false otherwise.
-*/
+#pragma deprecated
 stock bool AutoExecConfig_CacheConvars()
 {
-	if (g_hConvarTrie == null)
-	{
-		g_hConvarTrie = new StringMap();
-	}
-		
-	// No config set
-	if (strlen(g_sConfigFile) < 1)
-	{
-		return false;
-	}
-	
-	
-	char filebuffer[PLATFORM_MAX_PATH];
-	strcopy(filebuffer, sizeof(filebuffer), g_sConfigFile);
-	
-	
-	
-	//PrintToServer("pathbuffer: %s", filebuffer);
-	
-	bool bFileExists = FileExists(filebuffer);
-	
-	// We want to create the config file and it doesn't exist yet.
-	if (!bFileExists)
-	{
-		return false;
-	}
-	
-	
-	
-	File fFile = OpenFile(filebuffer, "r");
-	int valuestart;
-	int valueend;
-	int cvarend;
-	
-	// Just an reminder to self, leave the values that high
-	char sConvar[64];
-	char sValue[64];
-	char readbuffer[2048];
-	char copybuffer[2048];
-	
-	if (fFile == null)
-	{
-		return false;
-	}
-	
-	
-	while (!fFile.EndOfFile() && fFile.ReadLine(readbuffer, sizeof(readbuffer)))
-	{
-		// Is a comment or not valid
-		if (IsCharSpace(readbuffer[0]) || readbuffer[0] == '/' || !IsCharAlpha(readbuffer[0]))
-		{
-			continue;
-		}
-		
-		
-		// Has not enough spaces, must have at least 1
-		if (GetCharCountInStr(' ', readbuffer) < 1)
-		{
-			continue;
-		}
-
-		
-		// Ignore cvars which aren't quoted
-		if (GetCharCountInStr('"', readbuffer) != 2)
-		{
-			continue;
-		}
-		
-		
-		
-		// Get the start of the value
-		if ( (valuestart = StrContains(readbuffer, "\"")) == -1 )
-		{
-			continue;
-		}
-		
-		
-		// Get the end of the value
-		if ( (valueend = StrContains(readbuffer[valuestart+1], "\"")) == -1 )
-		{
-			continue;
-		}
-		
-		
-		// Get the start of the cvar, 
-		if ( (cvarend = StrContains(readbuffer, " ")) == -1 || cvarend >= valuestart)
-		{
-			continue;
-		}
-		
-		
-		// Skip if cvarendindex is before valuestartindex
-		if (cvarend >= valuestart)
-		{
-			continue;
-		}
-		
-		
-		// Convar
-		// Tempcopy for security
-		strcopy(copybuffer, sizeof(copybuffer), readbuffer);
-		copybuffer[cvarend] = '\0';
-		
-		strcopy(sConvar, sizeof(sConvar), copybuffer);
-		
-
-		// Value
-		// Tempcopy for security
-		strcopy(copybuffer, sizeof(copybuffer), readbuffer[valuestart+1]);
-		copybuffer[valueend] = '\0';
-		
-		strcopy(sValue, sizeof(sValue), copybuffer);
-		
-		
-		//PrintToServer("Cvar %s has a value of %s", sConvar, sValue);
-		
-		char sTrieValue[64];
-		if (!g_hConvarTrie.GetString(sConvar, sTrieValue, sizeof(sTrieValue)))
-		{
-			//PrintToServer("Adding convar %s to trie", sConvar);
-			g_hConvarTrie.SetString(sConvar, sValue);
-		}					
-	}
-	
-	fFile.Close();	
-	
-	g_bCacheEnabled = true;
-	
-	return true;
+	return false;
 }
