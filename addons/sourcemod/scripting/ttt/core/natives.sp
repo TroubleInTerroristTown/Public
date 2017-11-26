@@ -299,7 +299,7 @@ public int Native_AddRoundSlays(Handle plugin, int numParams)
 			if (g_iRoundSlays[client] > 0)
 			{
 				CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
-				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", g_iRoundSlays[client]);
+				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", client, g_iRoundSlays[client]);
 			}
 		}
 		
@@ -330,7 +330,7 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
 			if (g_iRoundSlays[client] > 0)
 			{
 				CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
-				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", g_iRoundSlays[client]);
+				LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", client, g_iRoundSlays[client]);
 			}
 		}
 		
