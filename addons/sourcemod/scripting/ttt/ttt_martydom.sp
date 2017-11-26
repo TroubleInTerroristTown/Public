@@ -143,7 +143,6 @@ public Action Event_PlayerDeath(Handle event, const char[] name, bool inrestart)
 
 public void CreateGrenade(int client)
 {
-	
 	int entity = CreateEntityByName("hegrenade_projectile");
 	DispatchSpawn(entity);
 	

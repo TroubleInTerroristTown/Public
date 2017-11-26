@@ -1526,6 +1526,11 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 		}
 	}
 	
+	if (!TTT_IsClientValid(iAttacker) || !TTT_IsClientValid(iVictim))
+	{
+		return Plugin_Continue;
+	}
+	
 	char iItem[TTT_LOG_SIZE];
 	int iWeapon = GetEntPropEnt(iAttacker, Prop_Send, "m_hActiveWeapon");
 	
