@@ -57,7 +57,7 @@ public void OnPluginStart()
 	StartConfig("decoy_body");
 	CreateConVar("ttt2_decoy_body_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("decoy_body_name", "Decoy Body", "The name of this in Shop");
-	g_cPrice = AutoExecConfig_CreateConVar("decoy_body_price", "9000", "The amount of credits decoy body costs as detective. 0 to disable.");
+	g_cPrice = AutoExecConfig_CreateConVar("decoy_body_price", "9000", "The amount of credits decoy body costs as traitor. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("decoy_body_sort_prio", "0", "The sorting priority of the decoy body in the shop menu.");
 	g_cDiscount = AutoExecConfig_CreateConVar("decoy_body_discount", "0", "Should decoy body discountable?", _, true, 0.0, true, 1.0);
 	g_cDamage = AutoExecConfig_CreateConVar("decoy_body_grenade_damage", "99", "The damage the grenade does at the explosions center point. (Def. 99)");
