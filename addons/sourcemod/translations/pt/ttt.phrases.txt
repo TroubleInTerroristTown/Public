@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-24 22:09:39 UTC
+// Date: 2017-11-26 04:58:41 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -36,6 +36,11 @@
 	"Your credits is"
 	{
 		"pt"		"Seus CRÉDITOS são: {orchid} {1}"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"pt"		"Seu assassino foi um {darkred}TRAIDOR!"
 	}
 
 	"Your killer is a Detective"
@@ -86,6 +91,11 @@
 	"Detective scan found body suicide"
 	{
 		"pt"		"DETETIVE{darkblue} {1} {lightgreen}escaneou o corpo, jogador cometeu suicido"
+	}
+
+	"Health Station"
+	{
+		"pt"		"Health Station - {1}"
 	}
 
 	"Please wait till your team is assigned"
@@ -148,9 +158,19 @@
 		"pt"		"{darkred}*TRAIDORES* {1}:{green} {2}"
 	}
 
+	"D channel"
+	{
+		"pt"		"{darkblue}*DETETIVES* {1}: {green}{2}"
+	}
+
 	"You dont have it!"
 	{
 		"pt"		"Você não tem isso!"
+	}
+
+	"credits earned"
+	{
+		"pt"		"Você ganhou {1} créditos\nSeus créditos atuais são: {2}"
 	}
 
 	"lost credits"
@@ -171,6 +191,11 @@
 	"no logs yet"
 	{
 		"pt"		"Sem logs ainda"
+	}
+
+	"See your console"
+	{
+		"pt"		"Logs Recebidos! Verifique o seu console para ver os registros"
 	}
 
 	"you cant see logs"
@@ -278,6 +303,11 @@
 		"pt"		"{orchid}{1} {lightgreen}agora é {darkred}Traidor!"
 	}
 
+	"Player is Now Detective"
+	{
+		"pt"		"{orchid}{1} {lightgreen}agora é o {darkblue}detetive!"
+	}
+
 	"You Are Unassigned"
 	{
 		"pt"		"Sua função ainda não foi atribuída!"
@@ -296,6 +326,11 @@
 	"You Are Now Detective"
 	{
 		"pt"		"Você é um {darkblue}detetive!"
+	}
+
+	"Triggered Falling Building"
+	{
+		"pt"		"{1} desencadeou o edifício que cai como um não traidor."
 	}
 
 	"Bomb Detonated"
@@ -388,6 +423,11 @@
 		"pt"		"Esta estação da saúde está descarregada! Espere pela recarga!"
 	}
 
+	"Traitor List"
+	{
+		"pt"		"{darkred} {1}"
+	}
+
 	"Welcome Menu"
 	{
 		"pt"		"Olá {1},\nesse é um servidor Trouble in Terrorist Town \ndesenvolvido by {2}\n\nVocê já conhece as regras?"
@@ -406,6 +446,11 @@
 	"AM Question"
 	{
 		"pt"		"Você quer jogar como detetive? \nEntão você precisa das seguintes coisas:\n\n-microfone funcionando\n-fale com outros jogadores\n-jogo ativo\n\nVocê pode confirmar isso?"
+	}
+
+	"AM Yes"
+	{
+		"pt"		"Sim, confirmo isso."
 	}
 
 	"AM No"
@@ -428,6 +473,11 @@
 		"pt"		"Hurt station foi ativada! Ela irá causar dano nos jogadores que estiverem próximos!"
 	}
 
+	"You reached limit"
+	{
+		"pt"		"Você só pode comprar {1} destes por round!"
+	}
+
 	"All karma has been updated"
 	{
 		"pt"		"KARMA ATUALIZADO!"
@@ -436,6 +486,21 @@
 	"ID: Need to be Alive"
 	{
 		"pt"		"Você precisa estar vivo para utilizar esse comando."
+	}
+
+	"ID: Need to buy ID"
+	{
+		"pt"		"Você não possui um ID. Compre um na loja."
+	}
+
+	"ID: Shows ID"
+	{
+		"pt"		"{1} é Inocente"
+	}
+
+	"Found Fake"
+	{
+		"pt"		"{orchid}{1} {lightgreen}encontrou um corpo falso!"
 	}
 
 	"TaserMax"
@@ -463,9 +528,19 @@
 		"pt"		"Você precisa estar vivo para utilizar isso"
 	}
 
+	"Bought All"
+	{
+		"pt"		"Você atingiu o limite de {1}'s {orchid}({2})"
+	}
+
 	"DT: Invalid Position"
 	{
 		"pt"		"Posição da Decoy incorreta. (Problema de travamento)"
+	}
+
+	"SpecMenu: Title"
+	{
+		"pt"		"Spec Menu"
 	}
 
 	"SpecMenu: Player"
@@ -478,6 +553,16 @@
 		"pt"		"Próximo jogador"
 	}
 
+	"SpecMenu: Prev"
+	{
+		"pt"		"Jogador anterior"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"pt"		"Mute este jogador"
+	}
+
 	"Hud Name"
 	{
 		"pt"		"Nome"
@@ -486,6 +571,16 @@
 	"Hud Health"
 	{
 		"pt"		"Vida"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"pt"		"{1}"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"pt"		"{1}"
 	}
 
 	"You tased a Traitor"
@@ -498,14 +593,39 @@
 		"pt"		"Jogador {lightgreen}{1} usou o detector em {darkblue} {2} {lightgreen}e ele era um {darkblue}DETETIVE!"
 	}
 
+	"You tased an Innocent"
+	{
+		"pt"		"O jogador {lightgreen}{1} usou um detector no player {green}{2} {lightgreen}e ele é {green}INOCENTE!"
+	}
+
 	"AlreadyTaser"
 	{
 		"pt"		"Você já possui uma taser em seu inventário!"
 	}
 
+	"is now talking in Traitor Voice Chat"
+	{
+		"pt"		"{1} agora está falando em Traitor Voice Chat"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"pt"		"{1} interrompeu a conversa no Traitor Voice Chat"
+	}
+
 	"Traitor Voice Chat: Disabled!"
 	{
 		"pt"		"Chat de voz dos Traidores: Desativado!"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"pt"		"Traitor Voice Chat: Habilitado!"
+	}
+
+	"ID: Cooldown"
+	{
+		"pt"		"Você precisa esperar, antes de poder usar esse comando novamente."
 	}
 
 	"SpecMenu: Unmute Dead"
@@ -528,9 +648,139 @@
 		"pt"		"Shop estará disponível após a compra de um item."
 	}
 
+	"You already have an active Station"
+	{
+		"pt"		"Você já possui uma Station ativa!"
+	}
+
+	"watching logs alive"
+	{
+		"pt"		"{green}{1} {default}é {darkred}vivo {default}e observando registros do round atual."
+	}
+
+	"Hud PlayerName D-D"
+	{
+		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName D-I"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-T"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName D-U"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-D"
+	{
+		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName I-I"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-T"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName I-U"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName T-D"
+	{
+		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-T"
+	{
+		"pt"		"<font color='#ff0000'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName T-U"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-D"
+	{
+		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-T"
+	{
+		"pt"		"\"{1}\""
+	}
+
+	"Hud PlayerName U-U"
+	{
+		"pt"		"\"{1}\""
+	}
+
 	"Player is Now Innocent"
 	{
 		"pt"		"{orchid}{1} {lightgreen}é agora {green}INOCENTE! "
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"pt"		"{orchid}{1} {lightgreen}foi assassinado por {orchid}{2} {lightgreen}para {orchid}{3} {lightgreen}rounds!"
+	}
+
+	"RS - Slayed"
+	{
+		"pt"		"Você foi assassinado! Rounds restantes: {orchid}{1}"
+	}
+
+	"Sprint active"
+	{
+		"pt"		"Sprint é para {1} segundos ativo!"
+	}
+
+	"Sprint available"
+	{
+		"pt"		"Sprint está agora disponível!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"pt"		"Nós achamos:"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"pt"		"{green}{1} Inocentes"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"pt"		"{darkred}{1} Traidores"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"pt"		"{darkblue}{1} Detetives"
+	}
+
+	"Location Saved"
+	{
+		"pt"		"Local salvo! Digite: '{orchid}!tele{lightgreen}' no chat para se teletransportar."
+	}
+
+	"Radar Updated"
+	{
+		"pt"		"Radar atualizado!"
 	}
 
 }
