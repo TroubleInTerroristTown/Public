@@ -41,8 +41,8 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("teleporter_item");
-	CreateConVar("ttt2_teleporter_item_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	StartConfig("teleporter");
+	CreateConVar("ttt2_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("teleporter_name", "Teleporter", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("teleporter_price", "9000", "The amount of credits Teleporter costs as traitor. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("teleporter_sort_prio", "0", "The sorting priority of the Teleporter in the shop menu.");

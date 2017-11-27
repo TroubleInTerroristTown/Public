@@ -55,8 +55,8 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("radar_item");
-	CreateConVar("ttt2_radar_item_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	StartConfig("radar");
+	CreateConVar("ttt2_radar_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("radar_name", "Radar", "The name of this in Shop");
 	
 	g_cPrice = AutoExecConfig_CreateConVar("radar_price", "9000", "The amount of credits Radar costs as detective. 0 to disable.");
