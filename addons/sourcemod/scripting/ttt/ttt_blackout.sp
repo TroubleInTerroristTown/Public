@@ -49,7 +49,7 @@ public void OnPluginStart()
 	g_cDiscount = AutoExecConfig_CreateConVar("blackout_discount", "0", "Should blackout discountable?", _, true, 0.0, true, 1.0);
 	g_cStart = AutoExecConfig_CreateConVar("blackout_fog_start", "0", "0 Should be the middle of player(?))");
 	g_cEnd = AutoExecConfig_CreateConVar("blackout_fog_end", "150", "Distance from fog_start until the end (visible field for players)");
-	g_cDensity = AutoExecConfig_CreateConVar("blackout_fog_density", "0.999", "Destiny of the fog", _, true, 0.0);
+	g_cDensity = AutoExecConfig_CreateConVar("blackout_fog_density", "0.999", "Density of the fog", _, true, 0.0);
 	g_cTime = AutoExecConfig_CreateConVar("blackout_time", "10", "How long persists the blackout?", _, true, 1.0);
 	g_cDelay = AutoExecConfig_CreateConVar("blackout_delay", "3", "Time in seconds until the blackout starts (from purchase).");
 	EndConfig();
