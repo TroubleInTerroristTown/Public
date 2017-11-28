@@ -267,9 +267,6 @@ public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &ove
 				alpha = g_cDefaultAlpha.IntValue;
 			}
 		}
-		
-		seeTarget = true;
-		return Plugin_Changed;
 	}
 	
 	return Plugin_Handled;
