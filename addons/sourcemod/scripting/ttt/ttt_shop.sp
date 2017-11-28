@@ -97,6 +97,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
+	CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
 
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
@@ -551,6 +552,35 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	}
 
 	return true;
+}
+
+public int Native_UpdateCustomItem(Handle plugin, int numParams)
+{
+	int temp_item[Item];
+	char temp_short[16];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if (StrEqual(temp_item[Short], temp_short, false))
+		{
+			PrintToChatAll("Found: %s", temp_short);
+			
+			temp_item[Price] = GetNativeCell(2);
+			// temp_item[Role] = GetNativeCell(3);
+			temp_item[Sort] = GetNativeCell(4);
+			temp_item[Discount] = view_as<bool>(GetNativeCell(5));
+			
+			PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d, Discount: %d", temp_item[Price], temp_item[Role], temp_item[Sort], temp_item[Discount]);
+			
+			g_aCustomItems.SetArray(i, temp_item[0]);
+			
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 public int Sorting(int i, int j, Handle array, Handle hndl)

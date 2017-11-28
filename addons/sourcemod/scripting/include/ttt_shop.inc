@@ -29,6 +29,18 @@ forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const cha
  * @param discount			Item discountable for special players? (Required: ttt_shop_discount)
  */
 native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, bool discount = false);
+
+/*
+ * Update shop item.
+ *
+ * @param itemshort         The short-tag identifier to find the item.
+ * @param price             The price of the item.
+ * @param role              The optional role to restrict the item to. (Currently unsupported)
+ * @param sort				The priority in Sorting. Buy menu is sorted from high to low.
+ * @param discount			Item discountable for special players? (Required: ttt_shop_discount)
+ */
+native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int role = 0, int sort = 0, bool discount = false);
+
 /*
  * Retrieve a custom item's price.
  *
