@@ -235,38 +235,31 @@ public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &ove
 		
 		if (role == TTT_TEAM_TRAITOR)
 		{
-			if (g_cColorsT.BoolValue)
+			if (!g_cColorsT.BoolValue)
 			{
-				seeTarget = true;
-				return Plugin_Changed;
-			}
-			else
-			{
-				seeTarget = true;
 				overrideColor = true;
 				red = g_cDefaultRed.IntValue;
 				green = g_cDefaultGreen.IntValue;
 				blue = g_cDefaultBlue.IntValue;
 				alpha = g_cDefaultAlpha.IntValue;
+				return Plugin_Changed;
 			}
 		}
 		else if (role == TTT_TEAM_DETECTIVE)
 		{
-			if (g_cColorsD.BoolValue)
+			if (!g_cColorsD.BoolValue)
 			{
-				seeTarget = true;
-				return Plugin_Changed;
-			}
-			else
-			{
-				seeTarget = true;
 				overrideColor = true;
 				red = g_cDefaultRed.IntValue;
 				green = g_cDefaultGreen.IntValue;
 				blue = g_cDefaultBlue.IntValue;
 				alpha = g_cDefaultAlpha.IntValue;
+				return Plugin_Changed;
 			}
 		}
+		
+		seeTarget = true;
+		return Plugin_Changed;
 	}
 	
 	return Plugin_Handled;
