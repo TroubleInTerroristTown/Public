@@ -29,6 +29,12 @@ ConVar g_cDetectiveActive = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscountT = null;
 ConVar g_cDiscountD = null;
+ConVar g_cColorsT = null;
+ConVar g_cColorsD = null;
+ConVar g_cDefaultRed = null;
+ConVar g_cDefaultGreen = null;
+ConVar g_cDefaultBlue = null;
+ConVar g_cDefaultAlpha = null;
 
 bool g_bOwnWH[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasWH[MAXPLAYERS + 1] =  { false, ... };
@@ -64,6 +70,12 @@ public void OnPluginStart()
 	g_cDetective_Prio = AutoExecConfig_CreateConVar("wh_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
 	g_cDiscountT = AutoExecConfig_CreateConVar("wh_discount_traitor", "0", "Should wallhack discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("wh_discount_detective", "0", "Should wallhack discountable for detectives?", _, true, 0.0, true, 1.0);
+	g_cColorsT = AutoExecConfig_CreateConVar("wh_show_roles_traitor", "1", "Show glows as role colors for traitors?", _, true, 0.0, true, 1.0);
+	g_cColorsD = AutoExecConfig_CreateConVar("wh_show_roles_detective", "0", "Show glows as role colors for detectives?", _, true, 0.0, true, 1.0);
+	g_cDefaultRed = AutoExecConfig_CreateConVar("wh_default_color_red", "255", "Red color of default glow");
+	g_cDefaultGreen = AutoExecConfig_CreateConVar("wh_default_color_green", "255", "Green color of default glow");
+	g_cDefaultBlue = AutoExecConfig_CreateConVar("wh_default_color_blue", "255", "Blue color of default glow");
+	g_cDefaultAlpha = AutoExecConfig_CreateConVar("wh_default_color_alpha", "255", "Alpha of default glow");
 	EndConfig();
 	
 	HookEvent("player_spawn", Event_PlayerReset);
@@ -215,10 +227,47 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
+public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &overrideColor, int &red, int &green, int &blue, int &alpha)
 {
 	if (g_bHasWH[client] && g_bOwnWH[client])
 	{
+		int role = TTT_GetClientRole(client);
+		
+		if (role == TTT_TEAM_TRAITOR)
+		{
+			if (g_cColorsT.BoolValue)
+			{
+				seeTarget = true;
+				return Plugin_Changed;
+			}
+			else
+			{
+				seeTarget = true;
+				overrideColor = true;
+				red = g_cDefaultRed.IntValue;
+				green = g_cDefaultGreen.IntValue;
+				blue = g_cDefaultBlue.IntValue;
+				alpha = g_cDefaultAlpha.IntValue;
+			}
+		}
+		else if (role == TTT_TEAM_DETECTIVE)
+		{
+			if (g_cColorsD.BoolValue)
+			{
+				seeTarget = true;
+				return Plugin_Changed;
+			}
+			else
+			{
+				seeTarget = true;
+				overrideColor = true;
+				red = g_cDefaultRed.IntValue;
+				green = g_cDefaultGreen.IntValue;
+				blue = g_cDefaultBlue.IntValue;
+				alpha = g_cDefaultAlpha.IntValue;
+			}
+		}
+		
 		seeTarget = true;
 		return Plugin_Changed;
 	}

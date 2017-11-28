@@ -31,7 +31,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
+	g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef);
 	
 	RegPluginLibrary("ttt_glow");
 
@@ -265,15 +265,45 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 		return Plugin_Continue;
 	}
 	
-	bool result = false;
+	bool seeTarget = false;
+	bool override = false;
+	int red = 255;
+	int green = 255;
+	int blue = 255;
+	int alpha = 255;
 	
 	Call_StartForward(g_hOnGlowCheck);
 	Call_PushCell(client);
 	Call_PushCell(target);
-	Call_PushCellRef(result);
+	Call_PushCellRef(seeTarget);
+	Call_PushCellRef(override);
+	Call_PushCellRef(red);
+	Call_PushCellRef(green);
+	Call_PushCellRef(blue);
+	Call_PushCellRef(alpha);
 	Call_Finish();
 	
-	if (!result)
+	if (seeTarget && override)
+	{
+		int iSkin = EntRefToEntIndex(CPS_GetSkin(target));
+
+		if(IsValidEntity(iSkin))
+		{
+			int iOffset;
+	
+			if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+			{
+				return Plugin_Handled;
+			}
+			
+			SetEntData(iSkin, iOffset, red, _, true);
+			SetEntData(iSkin, iOffset + 1, green, _, true);
+			SetEntData(iSkin, iOffset + 2, blue, _, true);
+			SetEntData(iSkin, iOffset + 3, alpha, _, true);
+		}
+	}
+	
+	if (!seeTarget)
 	{
 		return Plugin_Handled;
 	}
