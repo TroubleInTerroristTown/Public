@@ -1329,6 +1329,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 	if (TTT_IsClientValid(client))
 	{
+		if (g_cAdvert.BoolValue)
+		{
+			CPrintToChat(client, "%s %T", g_sTag, "Player Spawn TTT Version", client, TTT_PLUGIN_VERSION);
+		}
+		
 		if (g_bRoundStarted)
 		{
 			if (g_cslayAfterStart.BoolValue)

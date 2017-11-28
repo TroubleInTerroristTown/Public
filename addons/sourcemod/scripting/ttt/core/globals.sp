@@ -260,6 +260,7 @@ ConVar g_cCheckPlayers = null;
 ConVar g_cCheckDuringWarmup = null;
 ConVar g_cPrimaryWeaponUpdate = null;
 ConVar g_cSecondaryWeaponUpdate = null;
+ConVar g_cAdvert = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

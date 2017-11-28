@@ -934,5 +934,11 @@
 	{
 		"en"		"You found a decoy body! RUN!"
 	}
+	
+	"Player Spawn TTT Version"
+	{
+		"#fomart"	"{1:s}"
+		"en"		"Trouble in Terrorist Town - Version: {1}"
+	}
 
 }
