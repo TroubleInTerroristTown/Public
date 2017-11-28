@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:37 UTC
+// Date: 2017-11-28 03:59:56 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:
@@ -691,86 +691,6 @@
 	"watching logs alive"
 	{
 		"sv"		"{green}{1} {default}är {darkred}levande {default}och kollar på logs av nuvarande runda."
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"sv"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"sv"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"sv"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"sv"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"sv"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"

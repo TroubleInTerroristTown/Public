@@ -119,19 +119,19 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-T", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#ff0000'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_DETECTIVE)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-D", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#0000ff'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_INNOCENT)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-I", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#008000'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_UNASSIGNED)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName T-U", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 	}
 	else if (iRole == TTT_TEAM_DETECTIVE)
@@ -141,19 +141,19 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-T", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_DETECTIVE)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-D", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#0000ff'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_INNOCENT)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-I", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_UNASSIGNED)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName D-U", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 	}
 	else if (iRole == TTT_TEAM_INNOCENT)
@@ -163,19 +163,19 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-T", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_DETECTIVE)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-D", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#0000ff'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_INNOCENT)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-I", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_UNASSIGNED)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName I-U", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 	}
 	else if (iRole == TTT_TEAM_UNASSIGNED)
@@ -185,19 +185,19 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-T", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_DETECTIVE)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-D", client, target);
+			Format(sPlayerName, iPlayerNameLength, "<font color='#0000ff'>%N</font>", target);
 		}
 		else if (iTRole == TTT_TEAM_INNOCENT)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-I", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 		else if (iTRole == TTT_TEAM_UNASSIGNED)
 		{
-			Format(sPlayerName, iPlayerNameLength, "%T", "Hud PlayerName U-U", client, target);
+			GetClientName(target, sPlayerName, iPlayerNameLength);
 		}
 	}
 

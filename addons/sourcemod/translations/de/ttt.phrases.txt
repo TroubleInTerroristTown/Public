@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:36 UTC
+// Date: 2017-11-28 03:59:54 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -693,86 +693,6 @@
 		"de"		"{green}{1} {default}betrachtet als {darkred}lebender {default}die Logs der aktuellen Runde."
 	}
 
-	"Hud PlayerName D-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"de"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"de"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"de"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"de"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"de"		"\"{1}\""
-	}
-
 	"Player is Now Innocent"
 	{
 		"de"		"{orchid}{1} {lightgreen}ist jetzt {green}Innocent!"
@@ -841,6 +761,11 @@
 	"Radar Updated"
 	{
 		"de"		"Radar aktualisiert!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"de"		"Trouble in Terrorist Town - Version: {1}"
 	}
 
 }

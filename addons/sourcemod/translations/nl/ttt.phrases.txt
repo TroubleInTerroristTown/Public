@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:37 UTC
+// Date: 2017-11-28 03:59:56 UTC
 // Language: Dutch (nl)
 // 
 // To view other translations for this plugin, please visit:

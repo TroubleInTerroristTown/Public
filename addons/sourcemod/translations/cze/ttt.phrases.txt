@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:37 UTC
+// Date: 2017-11-28 03:59:55 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -696,86 +696,6 @@
 	"Reopen Shop activated"
 	{
 		"cze"		"Obchod bude znovu dostupny po zakoupeni predmetu."
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"cze"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"cze"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"cze"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"cze"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"cze"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"

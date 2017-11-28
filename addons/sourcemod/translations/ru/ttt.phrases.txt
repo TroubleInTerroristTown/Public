@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:38 UTC
+// Date: 2017-11-28 03:59:57 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -696,91 +696,6 @@
 	"watching logs alive"
 	{
 		"ru"		"{green}{1} {darkred}живой {default}и смотрит логи текущего раунда."
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"ru"		" \"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"ru"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"ru"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"ru"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"ru"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"ru"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"

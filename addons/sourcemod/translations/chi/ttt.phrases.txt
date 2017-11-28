@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:36 UTC
+// Date: 2017-11-28 03:59:55 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -521,11 +521,6 @@
 	"SpecMenu: Unmute Dead"
 	{
 		"chi"		"取消对死亡玩家的禁言"
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"chi"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:38 UTC
+// Date: 2017-11-28 03:59:57 UTC
 // Language: Turkish (tr)
 // 
 // To view other translations for this plugin, please visit:
@@ -261,11 +261,6 @@
 	"Hud PlayerKarma"
 	{
 		"tr"		"{1}"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"tr"		"<font color='#008000'>\"{1}\"</font>"
 	}
 
 	"Player is Now Innocent"

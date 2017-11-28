@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:38 UTC
+// Date: 2017-11-28 03:59:57 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -691,86 +691,6 @@
 	"watching logs alive"
 	{
 		"pt"		"{green}{1} {default}é {darkred}vivo {default}e observando registros do round atual."
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-U"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-U"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"pt"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"pt"		"<font color='#ff0000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-U"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-D"
-	{
-		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName U-I"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-T"
-	{
-		"pt"		"\"{1}\""
-	}
-
-	"Hud PlayerName U-U"
-	{
-		"pt"		"\"{1}\""
 	}
 
 	"Player is Now Innocent"

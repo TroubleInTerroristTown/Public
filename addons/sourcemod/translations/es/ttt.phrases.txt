@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 03:26:36 UTC
+// Date: 2017-11-28 03:59:55 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -606,51 +606,6 @@
 	"Hud PlayerKarma"
 	{
 		"es"		"{1}"
-	}
-
-	"Hud PlayerName D-D"
-	{
-		"es"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName D-I"
-	{
-		"es"		"\"{1}\""
-	}
-
-	"Hud PlayerName D-T"
-	{
-		"es"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-D"
-	{
-		"es"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName I-I"
-	{
-		"es"		"\"{1}\""
-	}
-
-	"Hud PlayerName I-T"
-	{
-		"es"		"\"{1}\""
-	}
-
-	"Hud PlayerName T-D"
-	{
-		"es"		"<font color='#0000ff'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-I"
-	{
-		"es"		"<font color='#008000'>\"{1}\"</font>"
-	}
-
-	"Hud PlayerName T-T"
-	{
-		"es"		"<font color='#ff0000'>\"{1}\"</font>"
 	}
 
 	"Player is Now Innocent"
