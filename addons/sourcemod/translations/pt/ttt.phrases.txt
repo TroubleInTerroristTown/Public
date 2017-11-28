@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-26 04:58:41 UTC
+// Date: 2017-11-28 03:26:38 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -7,6 +7,11 @@
 //
 "Phrases"
 {
+
+	"Your karma is"
+	{
+		"pt"		"Seu KARMA é: {orchid}{1}"
+	}
 
 	"TEAMS HAS BEEN SELECTED"
 	{
@@ -166,6 +171,11 @@
 	"You dont have it!"
 	{
 		"pt"		"Você não tem isso!"
+	}
+
+	"TTT Shop"
+	{
+		"pt"		"TTT Shop\nSeus créditos: {1}"
 	}
 
 	"credits earned"
@@ -523,6 +533,11 @@
 		"pt"		"Round começará em {3} segundos"
 	}
 
+	"RoundStartedCenter"
+	{
+		"pt"		"GO GO GO!!!"
+	}
+
 	"YouAreDead"
 	{
 		"pt"		"Você precisa estar vivo para utilizar isso"
@@ -576,6 +591,11 @@
 	"Hud PlayerHealth"
 	{
 		"pt"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"pt"		"Karma"
 	}
 
 	"Hud PlayerKarma"
@@ -633,9 +653,19 @@
 		"pt"		"Desmutar jogadores mortos"
 	}
 
+	"SpecMenu: Mute Dead"
+	{
+		"pt"		"Mute Players Mortos"
+	}
+
 	"SpecMenu: Unmute Alive"
 	{
 		"pt"		"Desmutar jogadores vivos"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"pt"		"Mute Players Vivos"
 	}
 
 	"Reopen Shop deactivated"
@@ -651,6 +681,11 @@
 	"You already have an active Station"
 	{
 		"pt"		"Você já possui uma Station ativa!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"pt"		"Item {2} comprado por {3} créditos! Créditos restantes: {1}"
 	}
 
 	"watching logs alive"
@@ -703,6 +738,11 @@
 		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
 	}
 
+	"Hud PlayerName T-I"
+	{
+		"pt"		"<font color='#008000'>\"{1}\"</font>"
+	}
+
 	"Hud PlayerName T-T"
 	{
 		"pt"		"<font color='#ff0000'>\"{1}\"</font>"
@@ -716,6 +756,11 @@
 	"Hud PlayerName U-D"
 	{
 		"pt"		"<font color='#0000ff'>\"{1}\"</font>"
+	}
+
+	"Hud PlayerName U-I"
+	{
+		"pt"		"\"{1}\""
 	}
 
 	"Hud PlayerName U-T"
@@ -743,9 +788,19 @@
 		"pt"		"Você foi assassinado! Rounds restantes: {orchid}{1}"
 	}
 
+	"Shop Discount Price"
+	{
+		"pt"		"({1}%% OFF)"
+	}
+
 	"Sprint active"
 	{
 		"pt"		"Sprint é para {1} segundos ativo!"
+	}
+
+	"Sprint cooldown"
+	{
+		"pt"		"Sprint está em {1} segundos disponível novamente..."
 	}
 
 	"Sprint available"
@@ -778,9 +833,19 @@
 		"pt"		"Local salvo! Digite: '{orchid}!tele{lightgreen}' no chat para se teletransportar."
 	}
 
+	"Teleport Max"
+	{
+		"pt"		"Você atingiu o limite! {orchid}({1})"
+	}
+
 	"Radar Updated"
 	{
 		"pt"		"Radar atualizado!"
+	}
+
+	"Decoy Body Active"
+	{
+		"pt"		"Você encontrou um corpo de chamariz! CORRE!"
 	}
 
 }
