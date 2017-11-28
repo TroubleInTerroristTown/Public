@@ -35,11 +35,10 @@ native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong
  *
  * @param itemshort         The short-tag identifier to find the item.
  * @param price             The price of the item.
- * @param role              The optional role to restrict the item to. (Currently unsupported)
  * @param sort				The priority in Sorting. Buy menu is sorted from high to low.
  * @param discount			Item discountable for special players? (Required: ttt_shop_discount)
  */
-native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int role = 0, int sort = 0, bool discount = false);
+native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0, bool discount = false);
 
 /*
  * Retrieve a custom item's price.

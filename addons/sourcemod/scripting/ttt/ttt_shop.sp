@@ -568,9 +568,8 @@ public int Native_UpdateCustomItem(Handle plugin, int numParams)
 			PrintToChatAll("Found: %s", temp_short);
 			
 			temp_item[Price] = GetNativeCell(2);
-			// temp_item[Role] = GetNativeCell(3);
-			temp_item[Sort] = GetNativeCell(4);
-			temp_item[Discount] = view_as<bool>(GetNativeCell(5));
+			temp_item[Sort] = GetNativeCell(3);
+			temp_item[Discount] = view_as<bool>(GetNativeCell(4));
 			
 			PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d, Discount: %d", temp_item[Price], temp_item[Role], temp_item[Sort], temp_item[Discount]);
 			
