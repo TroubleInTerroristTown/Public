@@ -64,17 +64,14 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_setrole", Command_SetRole);
 	RegConsoleCmd("sm_karmareset", Command_KarmaReset);
 	RegConsoleCmd("sm_setkarma", Command_SetKarma);
-
 	RegConsoleCmd("sm_status", Command_Status);
 	RegConsoleCmd("sm_karma", Command_Karma);
-
 	RegConsoleCmd("sm_logs", Command_Logs);
 	RegConsoleCmd("sm_log", Command_Logs);
-
 	RegConsoleCmd("sm_trules", Command_TRules);
 	RegConsoleCmd("sm_drules", Command_DetectiveRules);
-	
 	RegConsoleCmd("sm_rslays", Command_RSlays);
+	RegConsoleCmd("sm_tttversion", Command_TTTVersion);
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
@@ -1929,6 +1926,11 @@ public Action Command_RSlays(int client, int args)
 	}
 
 	return Plugin_Continue;
+}
+
+public Action Command_TTTVersion(int client, int args)
+{
+	ReplyToCommand(client, "TTT Version: %s", TTT_PLUGIN_VERSION);
 }
 
 public void Frame_ShowWelcomeMenu(any userid)
