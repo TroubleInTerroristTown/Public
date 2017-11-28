@@ -815,7 +815,7 @@ public Action Timer_Selection(Handle hTimer)
 			if (g_iRoundSlays[i] > 0)
 			{
 				CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
-				LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", g_iRoundSlays[i]);
+				LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
 			}
 			UpdateRoundSlaysCookie(i);
 		}
