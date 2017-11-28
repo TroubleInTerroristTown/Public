@@ -242,7 +242,6 @@ public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &ove
 				green = g_cDefaultGreen.IntValue;
 				blue = g_cDefaultBlue.IntValue;
 				alpha = g_cDefaultAlpha.IntValue;
-				return Plugin_Changed;
 			}
 		}
 		else if (role == TTT_TEAM_DETECTIVE)
@@ -254,7 +253,6 @@ public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &ove
 				green = g_cDefaultGreen.IntValue;
 				blue = g_cDefaultBlue.IntValue;
 				alpha = g_cDefaultAlpha.IntValue;
-				return Plugin_Changed;
 			}
 		}
 		
