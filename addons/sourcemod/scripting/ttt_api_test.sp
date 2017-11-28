@@ -28,6 +28,26 @@ public void OnPluginStart()
 	CreateConVar("ttt2_api_test_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 
 	HookEvent("weapon_fire", Event_WeaponFire);
+	
+	RegAdminCmd("sm_uitem", Command_UItem, ADMFLAG_ROOT);
+}
+
+public Action Command_UItem(int client, int args)
+{
+	if (args != 2)
+	{
+		ReplyToCommand(client, "sm_uitem <item name (short)> <price>");
+		return Plugin_Handled;
+	}
+	
+	char arg1[MAX_NAME_LENGTH], arg2[5];
+	
+	GetCmdArg(1, arg1, sizeof(arg1));
+	GetCmdArg(2, arg2, sizeof(arg2));
+	
+	TTT_UpdateCustomItem(arg1, StringToInt(arg2));
+	
+	return Plugin_Continue;
 }
 
 public void OnConfigsExecuted()
