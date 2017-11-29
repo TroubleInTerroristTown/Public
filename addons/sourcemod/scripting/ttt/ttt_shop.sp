@@ -193,15 +193,27 @@ public void OnConfigsExecuted()
 	char sBuffer[32];
 	g_cCredits.GetString(sBuffer, sizeof(sBuffer));
 	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-	RegConsoleCmd(sBuffer, Command_Credits);
+	
+	if(!CommandExists(sBuffer))
+	{
+		RegConsoleCmd(sBuffer, Command_Credits);
+	}
 
 	g_cBuyCmd.GetString(sBuffer, sizeof(sBuffer));
 	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-	RegConsoleCmd(sBuffer, Command_Buy);
+	
+	if(!CommandExists(sBuffer))
+	{
+		RegConsoleCmd(sBuffer, Command_Buy);
+	}
 
 	g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
 	Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-	RegConsoleCmd(sBuffer, Command_ShowItems);
+	
+	if(!CommandExists(sBuffer))
+	{
+		RegConsoleCmd(sBuffer, Command_ShowItems);
+	}
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
