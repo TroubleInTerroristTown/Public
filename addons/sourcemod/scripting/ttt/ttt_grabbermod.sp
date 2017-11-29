@@ -153,13 +153,13 @@ stock void GrabSomething(int client)
 		}
 	}
 	
-	if (StrEqual(sName, "prop_ragdoll", false))
+	if (StrContains(sName, "ragdoll", false) != -1 || StrContains(sName, "player", false) != -1)
 	{
 		char sTargetname[32];
 		GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
 		
 		// true is a positive found on the blacklist or negative found on the whitelist 
-		if (CheckLists(sTargetname))
+		if (CheckLists(sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 		{
 			return;
 		}
