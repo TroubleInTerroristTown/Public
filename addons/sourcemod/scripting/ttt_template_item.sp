@@ -92,6 +92,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 			
+			if (g_bHasItem[client])
+			{
+				return Plugin_Stop;
+			}
+			
 			g_bHasItem[client] = true;
 		}
 	}
