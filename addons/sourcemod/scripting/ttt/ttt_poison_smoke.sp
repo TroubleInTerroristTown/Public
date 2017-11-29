@@ -15,6 +15,11 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
+ConVar g_cOwnDamage = null;
+ConVar g_cTraitorDamage = null;
+ConVar g_cDistance = null;
+ConVar g_cDamageInterval = null;
+ConVar g_cDamage = null;
 
 bool g_bPoison[MAXPLAYERS + 1] =  { false, ... };
 bool g_bActivePoison[MAXPLAYERS + 1] =  { false, ... };
@@ -40,6 +45,11 @@ public void OnPluginStart()
 	g_cPrice = AutoExecConfig_CreateConVar("posion_smoke_price", "9000", "The amount of credits poison smoke costs as traitor. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("posion_smoke_sort_prio", "0", "The sorting priority of the poison smoke in the shop menu.");
 	g_cDiscount = AutoExecConfig_CreateConVar("posion_smoke_discount", "0", "Should poison smoke discountable?", _, true, 0.0, true, 1.0);
+	g_cOwnDamage = AutoExecConfig_CreateConVar("poison_smoke_own_damange", "0", "Allow damage to the owner of poison smoke?", _, true, 0.0, true, 1.0);
+	g_cTraitorDamage = AutoExecConfig_CreateConVar("poison_smoke_traitor_damange", "1", "Allow damage to other traitors?", _, true, 0.0, true, 1.0);
+	g_cDistance = AutoExecConfig_CreateConVar("poison_smoke_distance", "145", "Distance from the middle which should do damage");
+	g_cDamageInterval = AutoExecConfig_CreateConVar("poison_smoke_damage_interval", "1.0", "Damage interval in seconds", _, true, 1.0);
+	g_cDamage = AutoExecConfig_CreateConVar("poison_smoke_damage_per_interval", "10", "Damage per interval by poison smoke");
 	EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -119,7 +129,7 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
 	g_bActivePoison[client] = true;
 	
 	DataPack pack = new DataPack();
-	CreateDataTimer(1.0, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
+	CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
 	pack.WriteCell(GetClientUserId(client));
 	pack.WriteCell(EntIndexToEntRef(entity));
 	
@@ -150,15 +160,25 @@ public Action Timer_CheckPlayers(Handle timer, any pack)
 				GetClientAbsOrigin(victim, fCOrigin);
 				fDistance = GetVectorDistance(fEOrigin, fCOrigin);
 				
-				if (fDistance <= 150)
+				if (!g_cOwnDamage.BoolValue && victim == attacker)
 				{
-					SDKHooks_TakeDamage(victim, entity, attacker, 1.0, DMG_POISON, entity);
+					continue;
+				}
+				
+				if (!g_cTraitorDamage.BoolValue && TTT_GetClientRole(victim) == TTT_TEAM_TRAITOR)
+				{
+					continue;
+				}
+				
+				if (fDistance <= g_cDistance.FloatValue)
+				{
+					SDKHooks_TakeDamage(victim, entity, attacker, g_cDamage.FloatValue, DMG_POISON, entity);
 				}
 			}
 		}
 		
 		DataPack pack2 = new DataPack();
-		CreateDataTimer(1.0, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
+		CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
 		pack2.WriteCell(GetClientUserId(attacker));
 		pack2.WriteCell(EntIndexToEntRef(entity));
 	}
