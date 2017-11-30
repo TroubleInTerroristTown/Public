@@ -81,6 +81,11 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
 	AddCommandListener(Command_InterceptSuicide, "joinclass");
+	
+	for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
+	{
+		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
+	}
 
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -99,20 +104,6 @@ public void OnPluginStart()
 	g_hDRules = RegClientCookie("ttt2_detective_menu", "Show detectives menu", CookieAccess_Private);
 
 	SetRandomSeed(GetTime());
-
-	AddCommandListener(Command_LAW, "+lookatweapon");
-	AddCommandListener(Command_Say, "say");
-	AddCommandListener(Command_SayTeam, "say_team");
-	AddCommandListener(Command_InterceptSuicide, "kill");
-	AddCommandListener(Command_InterceptSuicide, "explode");
-	AddCommandListener(Command_InterceptSuicide, "spectate");
-	AddCommandListener(Command_InterceptSuicide, "jointeam");
-	AddCommandListener(Command_InterceptSuicide, "joinclass");
-
-	for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
-	{
-		AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
-	}
 	
 	StartConfig("ttt");
 	SetupConfig();
