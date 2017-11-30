@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-28 05:08:10 UTC
+// Date: 2017-11-30 21:20:14 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -37,7 +37,7 @@
 
 	"Your Team is INNOCENTS"
 	{
-		"en"		"You are {green}INNOCENT"
+		"en"		"You are an {green}INNOCENT"
 	}
 
 	"Your credits is"
@@ -58,7 +58,7 @@
 
 	"Your killer is an Innocent"
 	{
-		"en"		"Your killer was {green}INNOCENT!"
+		"en"		"Your killer was an {green}INNOCENT!"
 	}
 
 	"You killed a Traitor"
@@ -73,7 +73,7 @@
 
 	"You killed an Innocent"
 	{
-		"en"		"You killed a {green}INNOCENT!"
+		"en"		"You killed an {green}INNOCENT!"
 	}
 
 	"You hurt a Traitor"
@@ -114,7 +114,7 @@
 
 	"Please wait till your team is assigned"
 	{
-		"en"		"Please wait till your team is assigned"
+		"en"		"Please wait until your team is assigned"
 	}
 
 	"You don't have enough money"
@@ -139,7 +139,7 @@
 
 	"Inspected body. The extracted data are the following"
 	{
-		"en"		"Inspected body. The extracted data were the following:"
+		"en"		"Inspected body. The extracted data was the following:"
 	}
 
 	"Victim name"
@@ -157,7 +157,7 @@
 	"Elapsed since his death"
 	{
 		"#format"	"{1:i}"
-		"en"		"Elapsed since his death: {1} seconds"
+		"en"		"Time elapsed since his death: {1} seconds"
 	}
 
 	"The weapon used has been"
@@ -185,7 +185,7 @@
 
 	"You dont have it!"
 	{
-		"en"		"You dont have it!"
+		"en"		"You don't have it!"
 	}
 
 	"TTT Shop"
@@ -230,7 +230,7 @@
 
 	"you cant see logs"
 	{
-		"en"		"You can´t see the logs now, you need be dead or round has to be inactive"
+		"en"		"You can´t see the logs now, you need be dead or the round has to be inactive"
 	}
 
 	"Receiving logs"
@@ -241,19 +241,19 @@
 	"Found Innocent"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}That was a {green}INNOCENT!"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}It was a {green}INNOCENT!"
 	}
 
 	"Found Detective"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {darkblue}{2}. {lightgreen}That was a {darkblue}DETECTIVE!"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {darkblue}{2}. {lightgreen}It was a {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}That was a {darkred}Traitor!"
+		"en"		"{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}It was a {darkred}Traitor!"
 	}
 
 	"Your bomb is not armed."
@@ -268,12 +268,12 @@
 
 	"bomb will arm in 60 seconds, double tab F to explode"
 	{
-		"en"		"bomb will arm in 60 seconds, double tab F to explode"
+		"en"		"Bomb will arm in 60 seconds, press F twice to explode"
 	}
 
 	"Your Karma is too low"
 	{
-		"en"		"You were banned, because your karma is too low!"
+		"en"		"You were banned because your karma is too low!"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"
@@ -289,7 +289,7 @@
 
 	"Right click to plant the C4"
 	{
-		"en"		"Right click to plant the C4!"
+		"en"		"Right-click to plant the C4!"
 	}
 
 	"You already have an active Health Station"
@@ -350,7 +350,7 @@
 
 	"You Are Unassigned"
 	{
-		"en"		"You role has not been assigned yet!"
+		"en"		"Your role has not been assigned yet!"
 	}
 
 	"You Are Now Innocent"
@@ -376,7 +376,7 @@
 
 	"Bomb Detonated"
 	{
-		"en"		"Your bomb has been detonated!"
+		"en"		"Your bomb has detonated!"
 	}
 
 	"Set C4 Timer"
@@ -453,7 +453,7 @@
 	"Kick Bad Name"
 	{
 		"#format"	"{1:s}"
-		"en"		"Remove the word {1} form your name!"
+		"en"		"Remove the word {1} from your name!"
 	}
 
 	"Health Station Deployed"
@@ -491,12 +491,12 @@
 
 	"WM Kick Message"
 	{
-		"en"		"You are inactive or close rules menu!"
+		"en"		"You are inactive or you closed the rules menu!"
 	}
 
 	"AM Question"
 	{
-		"en"		"You want to play as detective?\nThen you need the following stuff:\n\n-working microphone\n-talk to other players\n-active Playing\n\nYou can confirm this?"
+		"en"		"You want to play as a detective?\nThen you need the following stuff:\n\n-working microphone\n-talking to other players\n-active playing\n\nCan you confirm this?"
 	}
 
 	"AM Yes"
@@ -522,7 +522,7 @@
 
 	"Hurt Station Deployed"
 	{
-		"en"		"Hurt station has been deployed! It will damage any near-by players!"
+		"en"		"Hurt station has been deployed! It will damage any nearby players!"
 	}
 
 	"You reached limit"
@@ -543,7 +543,7 @@
 
 	"ID: Need to buy ID"
 	{
-		"en"		"You dont have a ID. Buy one in the Shop."
+		"en"		"You don't have an ID. Buy one in the Shop."
 	}
 
 	"ID: Shows ID"
@@ -589,7 +589,7 @@
 
 	"YouAreDead"
 	{
-		"en"		"You can't use this as dead player"
+		"en"		"You can't use this as a dead player"
 	}
 
 	"Bought All"
@@ -677,7 +677,7 @@
 	"AlreadyTaser"
 	{
 		"#format"	"{1:d}"
-		"en"		"You've already a taser in your inventory!"
+		"en"		"You already have a taser in your inventory!"
 	}
 
 	"is now talking in Traitor Voice Chat"
@@ -704,7 +704,7 @@
 
 	"ID: Cooldown"
 	{
-		"en"		"You need to wait, before you can use that command again."
+		"en"		"You need to wait before using that command again."
 	}
 
 	"SpecMenu: Unmute Dead"
@@ -729,12 +729,12 @@
 
 	"Reopen Shop deactivated"
 	{
-		"en"		"Shop will no longer open after buy a item."
+		"en"		"Shop will no longer open after buying an item."
 	}
 
 	"Reopen Shop activated"
 	{
-		"en"		"Shop will open again after buy a item."
+		"en"		"Shop will open again after buying an item."
 	}
 
 	"You already have an active Station"
@@ -769,7 +769,7 @@
 	"RS - Slayed"
 	{
 		"#format"	"{1:d}"
-		"en"		"You was slayed! Remaining rounds: {orchid}{1}"
+		"en"		"You were slayed! Remaining rounds: {orchid}{1}"
 	}
 
 	"Shop Discount Price"
@@ -781,13 +781,13 @@
 	"Sprint active"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Sprint is for {1} seconds active!"
+		"en"		"Sprint is active for {1} seconds!"
 	}
 
 	"Sprint cooldown"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Sprint is in {1} seconds available again..."
+		"en"		"Sprint is available in {1} seconds."
 	}
 
 	"Sprint available"
