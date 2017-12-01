@@ -370,7 +370,7 @@ public Action Timer_Delete(Handle timer, any userid)
 			{
 				GivePlayerItem(client, "weapon_knife");
 			}
-			else
+			else if (TTT_GetClientRole(client) != TTT_TEAM_INNOCENT)
 			{
 				GivePlayerItem(client, "weapon_knife");
 			}
