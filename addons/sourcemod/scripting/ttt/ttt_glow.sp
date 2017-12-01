@@ -283,32 +283,33 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 	Call_PushCellRef(alpha);
 	Call_Finish();
 	
-	if (seeTarget && override)
+	if (TTT_IsClientValid(target))
 	{
-		int iSkin = EntRefToEntIndex(CPS_GetSkin(target));
-
-		if(IsValidEntity(iSkin))
+		if (seeTarget && override)
 		{
-			int iOffset;
+			int iSkin = EntRefToEntIndex(CPS_GetSkin(target));
 	
-			if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+			if(IsValidEntity(iSkin))
 			{
-				return Plugin_Handled;
+				int iOffset;
+		
+				if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+				{
+					return Plugin_Handled;
+				}
+				
+				SetEntData(iSkin, iOffset, red, _, true);
+				SetEntData(iSkin, iOffset + 1, green, _, true);
+				SetEntData(iSkin, iOffset + 2, blue, _, true);
+				SetEntData(iSkin, iOffset + 3, alpha, _, true);
 			}
-			
-			SetEntData(iSkin, iOffset, red, _, true);
-			SetEntData(iSkin, iOffset + 1, green, _, true);
-			SetEntData(iSkin, iOffset + 2, blue, _, true);
-			SetEntData(iSkin, iOffset + 3, alpha, _, true);
+		}
+		
+		if (seeTarget)
+		{
+			return Plugin_Continue;
 		}
 	}
 	
-	if (!seeTarget)
-	{
-		return Plugin_Handled;
-	}
-	else
-	{
-		return Plugin_Continue;
-	}
+	return Plugin_Handled;
 }
