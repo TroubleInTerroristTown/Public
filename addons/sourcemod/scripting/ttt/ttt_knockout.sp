@@ -363,7 +363,17 @@ public Action Timer_Delete(Handle timer, any userid)
 			PerformBlind(client, 0);
 			SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
 			SetEntityRenderMode(client, g_rmRenderMode[client]);
-			GivePlayerItem(client, "weapon_knife");
+			
+			ConVar g_cInnocentKnife = FindConVar("ttt_give_innocent_knife");
+			
+			if (g_cInnocentKnife.BoolValue && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+			{
+				GivePlayerItem(client, "weapon_knife");
+			}
+			else
+			{
+				GivePlayerItem(client, "weapon_knife");
+			}
 		}
 	}
 }

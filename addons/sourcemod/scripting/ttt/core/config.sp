@@ -114,6 +114,7 @@ void SetupConfig()
 	g_cPrimaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_primary_weapon_update", "0", "What should happen on round start with the primary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
 	g_cSecondaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_secondary_weapon_update", "0", "What should happen on round start with the secondary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
 	g_cAdvert = AutoExecConfig_CreateConVar("ttt_show_advert_message", "1", "Print a message on player spawn with some ttt details (like \"Trouble in Terrorist Town Version X.X.XXXX\")", _, true, 0.0, true, 1.0);
+	g_cInnocentKnife = AutoExecConfig_CreateConVar("ttt_give_innocent_knife", "1", "Give innocent a knife?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
