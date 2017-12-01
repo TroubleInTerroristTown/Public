@@ -272,8 +272,18 @@ stock bool TTT_IsLoaded()
  */
 stock bool TTT_IsClientValid(int client)
 {
-	if (client > 0 && client <= MaxClients && IsClientInGame(client) && !IsClientSourceTV(client))
+	if (client > 0 && client <= MaxClients)
 	{
+		if (IsClientInGame(client))
+		{
+			return false;
+		}
+		
+		if (!IsClientSourceTV(client))
+		{
+			return false;
+		}
+		
 		return true;
 	}
 	return false;
