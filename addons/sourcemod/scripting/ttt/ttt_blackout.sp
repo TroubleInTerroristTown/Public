@@ -72,7 +72,7 @@ public void OnMapStart()
 	int iEnt = -1;
 	iEnt = FindEntityByClassname(-1, "env_fog_controller");
 	
-	if (iEnt != -1) 
+	if (IsValidEntity(iEnt)) 
 	{
 		g_iFog = iEnt;
 	}
@@ -116,7 +116,7 @@ void ResetBlackout()
 
 void SetupBlackout()
 {
-	if(g_iFog != -1)
+	if(IsValidEntity(g_iFog))
 	{
 		DispatchKeyValue(g_iFog, "fogblend", "0");
 		DispatchKeyValue(g_iFog, "fogcolor", "0 0 0");
