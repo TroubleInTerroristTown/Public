@@ -73,7 +73,6 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_rslays", Command_RSlays);
 	RegConsoleCmd("sm_tttversion", Command_TTTVersion);
 	
-	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_SayTeam, "say_team");
 	AddCommandListener(Command_InterceptSuicide, "kill");
@@ -3074,27 +3073,6 @@ stock void addArrayTime(char[] message)
 		Format(message, TTT_LOG_SIZE, "[%02i:%02i] %s", iMin, iSec, message);
 	}
 	g_aLogs.PushString(message);
-}
-
-public Action Command_LAW(int client, const char[] command, int argc)
-{
-	if (!TTT_IsClientValid(client))
-	{
-		return Plugin_Continue;
-	}
-
-	if (g_callowFlash.BoolValue && IsPlayerAlive(client))
-	{
-		EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
-		SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
-	}
-
-	if (g_cblockLookAtWeapon.BoolValue)
-	{
-		return Plugin_Handled;
-	}
-
-	return Plugin_Continue;
 }
 
 stock void manageRDM(int client)
