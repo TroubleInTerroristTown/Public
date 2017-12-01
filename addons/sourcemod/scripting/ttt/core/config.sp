@@ -32,6 +32,8 @@ void SetupConfig()
 	g_cblockRadioMessage = AutoExecConfig_CreateConVar("ttt_block_radio_message", "1", "Block radio messages in chat. 1 = Block, 0 = Don't Block", _, true, 0.0, true, 1.0);
 	g_cshowDeathMessage = AutoExecConfig_CreateConVar("ttt_show_death_message", "1", "Display a message showing who killed you. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cshowKillMessage = AutoExecConfig_CreateConVar("ttt_show_kill_message", "1", "Display a message showing who you killed. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
+	g_callowFlash = AutoExecConfig_CreateConVar("ttt_allow_flash", "1", "Enable Flashlight (+lookatweapon). 1 = Enabled, 0 Disabled", _, true, 0.0, true, 1.0);
+	g_cblockLookAtWeapon = AutoExecConfig_CreateConVar("ttt_block_look_at_weapon", "1", "Block weapon inspecting. 1 = Block, 0 = Don't Block)", _, true, 0.0, true, 1.0);
 	g_cenableNoBlock = AutoExecConfig_CreateConVar("ttt_enable_noblock", "0", "Enable No Block. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_ckadRemover = AutoExecConfig_CreateConVar("ttt_kad_remover", "1", "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "TODO: Add description");
