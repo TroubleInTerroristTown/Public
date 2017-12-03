@@ -1543,6 +1543,11 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	char iItem[TTT_LOG_SIZE];
 	int iWeapon = GetEntPropEnt(iAttacker, Prop_Send, "m_hActiveWeapon");
 	
+	if (!IsValidEntity(iWeapon))
+	{
+		return Plugin_Continue;
+	}
+	
 	char sWeapon[32];
 	GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
 	
