@@ -36,8 +36,12 @@ ConVar g_cColorR = null;
 ConVar g_cColorD = null;
 ConVar g_cColorI = null;
 ConVar g_cColorT = null;
+ConVar g_cUpdateTeamScore = null;
 
 bool g_bEndOverlay = false;
+
+int g_iCTWin = 0;
+int g_iTWin = 0;
 
 Handle g_hSyncR = null;
 Handle g_hSyncD = null;
@@ -67,6 +71,7 @@ public void OnPluginStart()
 	g_cColorD = AutoExecConfig_CreateConVar("ttt_hud_text_detective_color", "0;0;255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorI = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorT = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
+	g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -148,6 +153,8 @@ public void OnMapStart()
 
 	PrecacheDecal(sBuffer, true);
 
+	g_iCTWin = 0;
+	g_iTWin = 0;
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
@@ -168,18 +175,30 @@ public void TTT_OnRoundEnd(int winner)
 	char sBuffer[PLATFORM_MAX_PATH];
 	if (winner == TTT_TEAM_TRAITOR)
 	{
+		g_iTWin++;
+		
 		g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
 		ShowOverlayToAll(sBuffer);
 	}
 	else if (winner == TTT_TEAM_INNOCENT)
 	{
+		g_iCTWin++;
+		
 		g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
 		ShowOverlayToAll(sBuffer);
 	}
 	else if (winner == TTT_TEAM_DETECTIVE)
 	{
+		g_iCTWin++;
+		
 		g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
 		ShowOverlayToAll(sBuffer);
+	}
+	
+	if (g_cUpdateTeamScore.BoolValue)
+	{
+		CS_SetTeamScore(CS_TEAM_CT, g_iCTWin);
+		CS_SetTeamScore(CS_TEAM_T, g_iTWin);
 	}
 }
 
