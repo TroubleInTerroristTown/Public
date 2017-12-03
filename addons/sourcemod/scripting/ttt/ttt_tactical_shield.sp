@@ -38,7 +38,7 @@ public void OnPluginStart()
 	g_cLongName = AutoExecConfig_CreateConVar("tactical_shield_name", "Tactical Shield", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("tactical_shield_price", "9000", "The amount of credits a tactical shield costs as detective. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("tactical_shield_sort_prio", "0", "The sorting priority of the tactical shield in the shop menu.");
-	g_cDiscount = AutoExecConfig_CreateConVar("tactical_shield_discount_drone", "0", "Should tactical shield discountable?", _, true, 0.0, true, 1.0);
+	g_cDiscount = AutoExecConfig_CreateConVar("tactical_shield_discountable", "0", "Should tactical shield discountable?", _, true, 0.0, true, 1.0);
 	g_cForce = AutoExecConfig_CreateConVar("tactical_shield_force", "0", "Force shield?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
