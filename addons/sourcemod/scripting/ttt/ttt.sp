@@ -96,6 +96,9 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("player_changename", Event_ChangeName);
 	HookEvent("player_death", Event_PlayerDeath);
+	HookEvent("cs_win_panel_round", Event_WinPanel);
+	HookEvent("cs_win_panel_match", Event_WinPanel);
+	HookEvent("cs_match_end_restart", Event_WinPanel);
 
 	g_hGraceTime = FindConVar("mp_join_grace_time");
 
@@ -688,6 +691,11 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 		delete g_hRoundTimer;
 		g_hRoundTimer = null;
 	}
+}
+
+public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
+{
+	g_bRoundEnding = true;
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)
