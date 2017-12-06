@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-30 21:20:12 UTC
+// Date: 2017-12-06 11:40:15 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -363,6 +363,11 @@
 		"pl"		"Rozbrój C4!"
 	}
 
+	"C4 Wire"
+	{
+		"pl"		"Kabelek {1}"
+	}
+
 	"You Defused Bomb"
 	{
 		"pl"		"Rozbroiłeś {orchid}{1}{lightgreen} bombe!"
@@ -391,6 +396,11 @@
 	"Bomb Was Not Found"
 	{
 		"pl"		"Twoja bomba nie została znaleziona!"
+	}
+
+	"Wire Is"
+	{
+		"pl"		"Kabelek do rozbrojenia to {orchid}{1} {lightgreen}!"
 	}
 
 	"Your Traitor Partners"
@@ -591,6 +601,176 @@
 	"Hud PlayerKarma"
 	{
 		"pl"		"{1}"
+	}
+
+	"You tased a Traitor"
+	{
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkred}{2} {lightgreen}i okazał się {darkred}ZDRAJCĄ!"
+	}
+
+	"You tased a Detective"
+	{
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkblue} {2} {lightgreen} i okazał się {darkblue}DETEKTYWEM!"
+	}
+
+	"You tased an Innocent"
+	{
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu{green} {2} {lightgreen}i okazał się być {green}NIEWINNY!"
+	}
+
+	"AlreadyTaser"
+	{
+		"pl"		"Masz już paralizator w ekwipunku!"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"pl"		"{1} jest teraz w czacie głosowym Zdrajców"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"pl"		"{1} przestał mówić w czacie głosowym Zdrajców"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"pl"		"Czat głosowy Zdrajców: Włączony!"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"pl"		"Chat głosowy zdrajcy: Włączony!"
+	}
+
+	"ID: Cooldown"
+	{
+		"pl"		"Musisz poczekac przed użyciem tej komendy ponownie."
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"pl"		"Odcisz martwych graczy"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"pl"		"Wycisz martwych graczy"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"pl"		"Odcisz żywych graczy"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"pl"		"Wycisz żywych graczy"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"pl"		"Sklep nie będzie otwierany po zakupie przedmiotów."
+	}
+
+	"Reopen Shop activated"
+	{
+		"pl"		"Sklep zostanie otwarty ponownie po kupnie przedmiotu."
+	}
+
+	"You already have an active Station"
+	{
+		"pl"		"Masz już aktywną stacje!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"pl"		"Item {2} zakupiony za {3} credits! Jeszcze kredytów: {1}"
+	}
+
+	"watching logs alive"
+	{
+		"pl"		"{green}{1} {default}jest{darkred} żywy {default}i sprawdza logi tej rundy."
+	}
+
+	"Player is Now Innocent"
+	{
+		"pl"		"{orchid}{1} {lightgreen}jest teraz {green}Niewinny!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"pl"		"{orchid}{1} {lightgreen}dostał Auto-Slaye{orchid}{2} {lightgreen}na {orchid}{3} {lightgreen}rund!"
+	}
+
+	"RS - Slayed"
+	{
+		"pl"		"Dostałeś auto-slaya! Jeszcze {orchid}{1}{default} rundy"
+	}
+
+	"Shop Discount Price"
+	{
+		"pl"		"({1}%% OFF)"
+	}
+
+	"Sprint active"
+	{
+		"pl"		"Spriny został włączony na {1} sekund."
+	}
+
+	"Sprint cooldown"
+	{
+		"pl"		"Spriny jest dostępny na {1} sekund."
+	}
+
+	"Sprint available"
+	{
+		"pl"		"Sprint jest teraz włączony!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"pl"		"My znaleźliśmy:"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"pl"		"{green}{1} Niewinni"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"pl"		"{darkred}{1} Zdrajcy"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"pl"		"{darkblue}{1} DETEKTYWI"
+	}
+
+	"Location Saved"
+	{
+		"pl"		"Lokacja zapisana! Wpisz '{orchid}!tele{lightgreen}' na chacie do przeteleportowania się."
+	}
+
+	"Teleport Max"
+	{
+		"pl"		"Osiągnąłeś limit! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"pl"		"Radar zaktualizowany!"
+	}
+
+	"Decoy Body Active"
+	{
+		"pl"		"Znalazłeś ciało-wabik! UCIEKAJ!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"pl"		"TTT - Wersja: {1}"
 	}
 
 }

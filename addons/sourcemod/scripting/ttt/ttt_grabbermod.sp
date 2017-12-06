@@ -32,7 +32,6 @@ float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 ArrayList g_aWhitelist = null;
 ArrayList g_aBlacklist = null;
 
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,

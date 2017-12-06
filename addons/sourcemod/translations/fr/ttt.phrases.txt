@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-11-30 21:20:12 UTC
+// Date: 2017-12-06 11:40:15 UTC
 // Language: French (fr)
 // 
 // To view other translations for this plugin, please visit:
@@ -8,9 +8,24 @@
 "Phrases"
 {
 
+	"Your karma is"
+	{
+		"fr"		"Votre KARMA est : {orchid}{1}"
+	}
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"fr"		"LES ÉQUIPES ONT ÉTÉ SÉLECTIONNÉES ! "
+	}
+
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
 		"fr"		"MIN. JOUEURS REQUIS POUR JOUER: {orchid}{1}"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"fr"		"Vous êtes un {darkblue}DÉTECTIVE"
 	}
 
 	"Your Team is TRAITORS"
@@ -21,6 +36,11 @@
 	"Your Team is INNOCENTS"
 	{
 		"fr"		"Tu es {green}INNOCENT."
+	}
+
+	"Your credits is"
+	{
+		"fr"		"Vos CRÉDITS sont : {orchid}{1} "
 	}
 
 	"Your killer is a Traitor"
@@ -58,6 +78,21 @@
 		"fr"		"Tu as utilise un detecteur sur le joueur {darkred}{1} {lightgreen} et c'est un {darkred}TRAITRE !"
 	}
 
+	"You hurt a Detective"
+	{
+		"fr"		"Vous avez utilisé un détecteur sur le joueur {darkblue} {1} {lightgreen} et c'est un {darkblue}DÉTECTIVE ! "
+	}
+
+	"You hurt an Innocent"
+	{
+		"fr"		"Vous avez utilisé un détecteur sur le joueur{green} {1} {lightgreen} et il est {green} INNOCENT! "
+	}
+
+	"Detective scan found body"
+	{
+		"fr"		"Le DÉTECTIVE{darkblue} {1} {lightgreen} a scanné un corps, le tueur est le joueur{darkred} {2} {lightgreen}avec l'arme{orchid} {3}"
+	}
+
 	"Detective scan found body suicide"
 	{
 		"fr"		"DETECTIVE{darkblue} {1} {lightgreen}a scanne un corps, le joueur c'est suicide"
@@ -88,9 +123,19 @@
 		"fr"		"DETECTIVES"
 	}
 
+	"Innocents"
+	{
+		"fr"		"INNOCENTS"
+	}
+
 	"Inspected body. The extracted data are the following"
 	{
 		"fr"		"Corps inspecte. Les donnees extraites sont les suivantes :"
+	}
+
+	"Victim name"
+	{
+		"fr"		"Nom de la victime : {1}"
 	}
 
 	"Team victim"
@@ -98,9 +143,24 @@
 		"fr"		"Equipe: {1}"
 	}
 
+	"Elapsed since his death"
+	{
+		"fr"		"Temps écoulé depuis sa mort : {1} secondes"
+	}
+
 	"The weapon used has been"
 	{
 		"fr"		"L'arme utilise a ete: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"fr"		"L'arme utilisé a été : lui même (suicide) "
+	}
+
+	"T channel"
+	{
+		"fr"		"{darkred}*TRAÎTRES* {1} : {green} {2} "
 	}
 
 	"D channel"
@@ -111,6 +171,11 @@
 	"You dont have it!"
 	{
 		"fr"		"Tu n'a pas sa !"
+	}
+
+	"TTT Shop"
+	{
+		"fr"		"Magasin TTT\nVos Crédits : {1} "
 	}
 
 	"credits earned"
@@ -133,9 +198,24 @@
 		"fr"		"Tu as perdu {1} karma\nTu as actuellement {2} karma."
 	}
 
+	"no logs yet"
+	{
+		"fr"		"Pas encore de journaux "
+	}
+
+	"See your console"
+	{
+		"fr"		"Journaux reçus ! Ouvrez votre console pour les voir"
+	}
+
 	"you cant see logs"
 	{
 		"fr"		"Vous ne pouvez pas voir les logs maintenant, vous devez etre mort ou le round doit etre inactif"
+	}
+
+	"Receiving logs"
+	{
+		"fr"		"Réception des journaux... veuillez attendre un instant "
 	}
 
 	"Found Innocent"
@@ -163,6 +243,16 @@
 		"fr"		"Votre bombe est maintenant armé."
 	}
 
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"fr"		"La bombe sera armée dans 60 seconds, appuyez deux fois sur F pour exploser"
+	}
+
+	"Your Karma is too low"
+	{
+		"fr"		"Vous avez été banni car votre karma est trop faible ! "
+	}
+
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"fr"		"{darkred}{1} TRAITRES {lightgreen}ONT ETE SELECTIONNES"
@@ -183,6 +273,26 @@
 		"fr"		"Vous avez déjà une station de santé active!"
 	}
 
+	"The player who RDM'd you is no longer available"
+	{
+		"fr"		"Le joueur qui vous a RDM n'est plus disponible ! "
+	}
+
+	"You were RDM'd"
+	{
+		"fr"		"Vous avez été RDM par {1} ! "
+	}
+
+	"Forgive"
+	{
+		"fr"		"Pardonner"
+	}
+
+	"Punish"
+	{
+		"fr"		"Punir"
+	}
+
 	"Choose Punish"
 	{
 		"fr"		"{1} a été choisis pour punir {2} pour les avoir RDM"
@@ -191,6 +301,11 @@
 	"Choose Forgive Victim"
 	{
 		"fr"		"Vous avez choisi de pardonner {1} Pour RDMing vous!"
+	}
+
+	"Choose Forgive Attacker"
+	{
+		"fr"		"{1} a choisi de vous pardonner pour l'avoir RDM ! "
 	}
 
 	"Player is Now Traitor"
@@ -223,9 +338,19 @@
 		"fr"		"Tu es un {darkblue}Detective"
 	}
 
+	"Triggered Falling Building"
+	{
+		"fr"		"{1} a déclenché la chute du bâtiment en tant que non traître "
+	}
+
 	"Bomb Detonated"
 	{
 		"fr"		"Votre bombe a explose !"
+	}
+
+	"Set C4 Timer"
+	{
+		"fr"		"Régler le minuteur du C4... "
 	}
 
 	"Seconds"
@@ -233,9 +358,19 @@
 		"fr"		"{1} secondes"
 	}
 
+	"Defuse C4"
+	{
+		"fr"		"Désamorce le C4 ! "
+	}
+
 	"C4 Wire"
 	{
 		"fr"		"Fil {1}"
+	}
+
+	"You Defused Bomb"
+	{
+		"fr"		"Vous avez désamorcé la bombe de {orchid}{1} {lightgreen}! "
 	}
 
 	"Has Defused Bomb"
@@ -243,9 +378,19 @@
 		"fr"		"{orchid}{1} {lightgreen}a desamorcee votre bombe !"
 	}
 
+	"Failed Defuse"
+	{
+		"fr"		"Échec du désamorçage ! "
+	}
+
 	"Alive to Plant"
 	{
 		"fr"		"Tu dois etre vivant pour planter une bombe"
+	}
+
+	"Will Explode In"
+	{
+		"fr"		"Amorçage du C4. Explosion dans {orchid}{1} {lightgreen} secondes. "
 	}
 
 	"Bomb Was Not Found"
@@ -273,6 +418,36 @@
 		"fr"		"Enleve le mot {1} de ton nom !"
 	}
 
+	"Health Station Deployed"
+	{
+		"fr"		"Station de soins déployée. Restez à côté pour regagner de la vie. "
+	}
+
+	"Healing From"
+	{
+		"fr"		"Régénération depuis la station de soins de {orchid}{1} "
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"fr"		"Cette station de soins est à cour de batteries ! Attendez qu'elle se recharge ! "
+	}
+
+	"Traitor List"
+	{
+		"fr"		"{darkred} {1}"
+	}
+
+	"Welcome Menu"
+	{
+		"fr"		"Bonjour {1}, \nCeci est un serveur Trouble in Terrorist Town \nécrit par {2} \n\nÊtes-vous familier avec les règles ? "
+	}
+
+	"WM Yes"
+	{
+		"fr"		"Oui, je suis familier avec les règles ! "
+	}
+
 	"WM Kick Message"
 	{
 		"fr"		"Tu es inactif ou ferme le menu des regles !"
@@ -283,6 +458,11 @@
 		"fr"		"Tu veux jouer en tant que detective?\nDonc tu dois avoir ce qui suit:\n\n-Un micro fonctionnant\n-Parler aux autres joueurs\n-Etre actif\n\nTu peux confirmer cela?"
 	}
 
+	"AM Yes"
+	{
+		"fr"		"Oui, je confirme "
+	}
+
 	"AM No"
 	{
 		"fr"		"Non, je ne peux pas confirmer cela"
@@ -291,6 +471,306 @@
 	"WM No"
 	{
 		"fr"		"Non, montre moi les regles !"
+	}
+
+	"next round in"
+	{
+		"fr"		"Prochaine manche dans {1} secondes ! "
+	}
+
+	"Hurt Station Deployed"
+	{
+		"fr"		"Station de dégâts déployée ! Elle fera des dégâts à tout joueur proche ! "
+	}
+
+	"You reached limit"
+	{
+		"fr"		"Vous ne pouvez en acheter que {1} par manche. "
+	}
+
+	"All karma has been updated"
+	{
+		"fr"		"LE KARMA A ÉTÉ MIS À JOUR ! "
+	}
+
+	"ID: Need to be Alive"
+	{
+		"fr"		"Vous devez être en vie pour utiliser cette commande. "
+	}
+
+	"ID: Need to buy ID"
+	{
+		"fr"		"Vous n'avez pas d'ID. Achetez en un dans le magasin. "
+	}
+
+	"ID: Shows ID"
+	{
+		"fr"		"{1} est Innocent "
+	}
+
+	"Found Fake"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a trouvé un faux corps ! "
+	}
+
+	"TaserMax"
+	{
+		"fr"		"Vous avez atteint la limite de tasers ! (Utilisations par manche : {1}) "
+	}
+
+	"AdminSet"
+	{
+		"fr"		"Vous avez donné {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"ID: Buy Message"
+	{
+		"fr"		"Entrez !id pour montrer votre innocence. "
+	}
+
+	"RoundStartCenter"
+	{
+		"fr"		"Début du round dans {1} secondes. "
+	}
+
+	"RoundStartedCenter"
+	{
+		"fr"		"GO GO GO ! ! !"
+	}
+
+	"YouAreDead"
+	{
+		"fr"		"Vous ne pouvez pas utiliser ceci lorsque vous n'êtes pas vivant "
+	}
+
+	"Bought All"
+	{
+		"fr"		"Vous avez atteint la limite de {1} {orchid}( {2} ) "
+	}
+
+	"DT: Invalid Position"
+	{
+		"fr"		"La position du leurre était incorrect. (problème de blocage) "
+	}
+
+	"SpecMenu: Title"
+	{
+		"fr"		"Menu Spectateurs"
+	}
+
+	"SpecMenu: Player"
+	{
+		"fr"		"Joueur : {1} "
+	}
+
+	"SpecMenu: Next"
+	{
+		"fr"		"Joueur suivant "
+	}
+
+	"SpecMenu: Prev"
+	{
+		"fr"		"Joueur précédent "
+	}
+
+	"SpecMenu: Mute"
+	{
+		"fr"		"Désactiver le son de ce joueur "
+	}
+
+	"Hud Name"
+	{
+		"fr"		"Nom"
+	}
+
+	"Hud Health"
+	{
+		"fr"		"Vie"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"fr"		"{1}"
+	}
+
+	"Hud Karma"
+	{
+		"fr"		"Karma"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"fr"		"{1} "
+	}
+
+	"You tased a Traitor"
+	{
+		"fr"		"Le joueur {lightgreen}{1} a utilisé un détecteur sur le joueur {darkred}{2} {lightgreen} et c'est un {darkred}TRAÎTRE! "
+	}
+
+	"You tased a Detective"
+	{
+		"fr"		"Le joueur {lightgreen}{1} a utilisé un détecteur sur le joueur {darkblue} {2} {lightgreen}et c'est un {darkblue}DÉTECTIVE !"
+	}
+
+	"You tased an Innocent"
+	{
+		"fr"		"Le joueur {lightgreen}{1} a utilisé un détecteur sur le joueur {green} {2} {lightgreen}et c'est un {green}INNOCENT!"
+	}
+
+	"AlreadyTaser"
+	{
+		"fr"		"Vous avez déjà un taser dans votre inventaire ! "
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"fr"		"{1} est en train de parler dans le chat vocal des Traîtres "
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"fr"		"{1} a arrêté de parler dans le chat vocal des Traîtres "
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"fr"		"Chat vocal des Traîtres : Désactivé ! "
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"fr"		"Chat vocal des Traîtres : Activé ! "
+	}
+
+	"ID: Cooldown"
+	{
+		"fr"		"Vous devez attendre avant de pouvoir utiliser cette commande à nouveau. "
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"fr"		"Réactiver le chat des joueurs morts "
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"fr"		"Désactiver les communications des joueurs morts "
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"fr"		"Activer le chat des joueurs en vie "
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"fr"		"Couper les communications des joueurs vivants "
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"fr"		"Le magasin n'ouvrira plus après l'achat d'un objet. "
+	}
+
+	"Reopen Shop activated"
+	{
+		"fr"		"Le magasin ouvrira de nouveau après l'achat d'un objet."
+	}
+
+	"You already have an active Station"
+	{
+		"fr"		"Vous avez déjà une station active ! "
+	}
+
+	"Item bought! (NEW)"
+	{
+		"fr"		"Objet {2} acheté pour {3} crédits ! Crédits restants : {1} "
+	}
+
+	"watching logs alive"
+	{
+		"fr"		"{green}{1} {default}est {darkred}en vie {default}et est en train de regarder les journaux du round actuel."
+	}
+
+	"Player is Now Innocent"
+	{
+		"fr"		"{orchid}{1} {lightgreen}est maintenant {green}Innocent !"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"fr"		"{orchid}{1} {lightgreen}a été tué par {orchid}{2} {lightgreen}pour {orchid}{3} {lightgreen}manches !"
+	}
+
+	"RS - Slayed"
+	{
+		"fr"		"Vous avez été tué ! Manches restantes : {orchid}{1} "
+	}
+
+	"Shop Discount Price"
+	{
+		"fr"		"(- {1}%%)"
+	}
+
+	"Sprint active"
+	{
+		"fr"		"Sprint est actif pour {1} secondes! "
+	}
+
+	"Sprint cooldown"
+	{
+		"fr"		"Sprint disponible dans {1} secondes. "
+	}
+
+	"Sprint available"
+	{
+		"fr"		"Sprint est maintenant disponible ! "
+	}
+
+	"TAGrenade We Found"
+	{
+		"fr"		"Nous avons trouvé :"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"fr"		"{green}{1} Innocents"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"fr"		"{darkred}{1} Traîtres"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"fr"		"{darkblue}{1} Détectives"
+	}
+
+	"Location Saved"
+	{
+		"fr"		"Emplacement sauvegardé ! Entrez '{orchid}!tele{lightgreen}' dans le chat pour vous téléporter."
+	}
+
+	"Teleport Max"
+	{
+		"fr"		"Vous avez atteint la limite ! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"fr"		"Radar mis à jour ! "
+	}
+
+	"Decoy Body Active"
+	{
+		"fr"		"Vous avez trouvé un corps leurre ! COURREZ ! "
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"fr"		"Trouble in Terrorist Town - Version: {1}"
 	}
 
 }

@@ -1,6 +1,6 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-06 11:40:15 UTC
-// Language: Dutch (nl)
+// Date: 2017-12-06 11:40:16 UTC
+// Language: Hebrew (he)
 // 
 // To view other translations for this plugin, please visit:
 // http://translator.mitchdempsey.com/sourcemod_plugins/158
@@ -8,9 +8,14 @@
 "Phrases"
 {
 
-	"You killed a Traitor"
+	"credits earned"
 	{
-		"nl"		"Je vermoorde een {darkred}VERRADER!"
+		"he"		"מספר"
+	}
+
+	"credits earned"
+	{
+		"he"		"מספר"
 	}
 
 }
