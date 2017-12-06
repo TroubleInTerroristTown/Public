@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-06 11:40:14 UTC
+// Date: 2017-12-06 23:08:45 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -763,9 +763,119 @@
 		"de"		"Radar aktualisiert!"
 	}
 
+	"Decoy Body Active"
+	{
+		"de"		"Sie haben ein Decoy Körper gefunden! LAUF!"
+	}
+
 	"Player Spawn TTT Version"
 	{
 		"de"		"Trouble in Terrorist Town - Version: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"de"		"TTT Radio Befehle"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"de"		"Ja"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"de"		"Nein"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"de"		"Vielleicht"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"de"		"Hilfe"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"de"		"Check"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"de"		"Ich bin bei..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"de"		"Verdächtig..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"de"		"Traitor..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"de"		"Innocent..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"de"		"Ich sehe..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"de"		"Ja"
+	}
+
+	"TTT Radio: No"
+	{
+		"de"		"Nein"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"de"		"Vielleicht"
+	}
+
+	"TTT Radio: Help"
+	{
+		"de"		"Hilfe"
+	}
+
+	"TTT Radio: Check"
+	{
+		"de"		"Check"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"de"		"Ich bin bei {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"de"		"{1} handelt verdächtig."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"de"		"{1} ist der Traitor!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"de"		"{1} ist ein Innocent."
+	}
+
+	"TTT Radio: See"
+	{
+		"de"		"Ich sehe {1}"
 	}
 
 }

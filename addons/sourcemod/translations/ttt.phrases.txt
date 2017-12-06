@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-06 11:40:16 UTC
+// Date: 2017-12-06 23:08:48 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -843,6 +843,116 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Trouble in Terrorist Town - Version: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"en"		"TTT Radio Commands"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"en"		"Yes"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"en"		"No"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"en"		"Maybe"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"en"		"Help"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"en"		"Check"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"en"		"Im with..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"en"		"Suspect..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"en"		"Traitor..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"en"		"Innocent..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"en"		"See..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"en"		"Yes"
+	}
+
+	"TTT Radio: No"
+	{
+		"en"		"No"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"en"		"Maybe"
+	}
+
+	"TTT Radio: Help"
+	{
+		"en"		"Help"
+	}
+
+	"TTT Radio: Check"
+	{
+		"en"		"Check"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"#format"	"{1:N}"
+		"en"		"Im with {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} acts suspicious."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} is the traitor!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} is innocent."
+	}
+
+	"TTT Radio: See"
+	{
+		"#format"	"{1:N}"
+		"en"		"I see {1}"
 	}
 
 }

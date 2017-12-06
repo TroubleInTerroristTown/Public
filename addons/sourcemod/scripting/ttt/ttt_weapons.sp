@@ -138,9 +138,9 @@ public void OnPluginStart()
 	g_cAWP_Min_Shots = AutoExecConfig_CreateConVar("awp_min_shots", "1", "The min. amount of shots of traitor awp.");
 	g_cAWP_Max_Shots = AutoExecConfig_CreateConVar("awp_max_shots", "3", "The max. amount of shots of traitor awp.");
 	g_cAWP_Prio = AutoExecConfig_CreateConVar("awp_sort_prio", "0", "The sorting priority of the AWP in the shop menu.");
-	g_cKF_Price = AutoExecConfig_CreateConVar("1knife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
-	g_cKnife_Max = AutoExecConfig_CreateConVar("1knife_max", "5", "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
-	g_cKnife_Prio = AutoExecConfig_CreateConVar("1knife_sort_prio", "0", "The sorting priority of the One-Hit Knife in the shop menu.");
+	g_cKF_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
+	g_cKnife_Max = AutoExecConfig_CreateConVar("oneknife_max", "5", "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
+	g_cKnife_Prio = AutoExecConfig_CreateConVar("oneknife_sort_prio", "0", "The sorting priority of the One-Hit Knife in the shop menu.");
 	g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
 	g_cHeavy_Long = AutoExecConfig_CreateConVar("heavy_name", "Heavy", "The name of the heavy in the shop menu.");
 	g_cHelm_Long = AutoExecConfig_CreateConVar("helm_name", "Helm", "The name of the helm in the shop menu.");
@@ -152,7 +152,7 @@ public void OnPluginStart()
 	g_cScout_Long = AutoExecConfig_CreateConVar("scout_name", "Scout", "The name of the Scout in the shop menu.");
 	g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
 	g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
-	g_cKF_Long = AutoExecConfig_CreateConVar("1knife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
+	g_cKF_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
 	g_cKev_Discount = AutoExecConfig_CreateConVar("kevlar_discount", "0", "Should kevlar discountable?", _, true, 0.0, true, 1.0);
 	g_cHeavy_Discount = AutoExecConfig_CreateConVar("heavy_discount", "0", "Should heavy discountable?", _, true, 0.0, true, 1.0);
 	g_cHelm_Discount = AutoExecConfig_CreateConVar("helm_discount", "0", "Should helm discountable?", _, true, 0.0, true, 1.0);
@@ -164,7 +164,7 @@ public void OnPluginStart()
 	g_cScout_Discount = AutoExecConfig_CreateConVar("scout_discount", "0", "Should Scout discountable?", _, true, 0.0, true, 1.0);
 	g_cM4_Discount = AutoExecConfig_CreateConVar("m4a1_discount", "0", "Should M4A1-S discountable?", _, true, 0.0, true, 1.0);
 	g_cAWP_Discount = AutoExecConfig_CreateConVar("awp_discount", "0", "Should AWP discountable?", _, true, 0.0, true, 1.0);
-	g_cKF_Discount = AutoExecConfig_CreateConVar("1knife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
+	g_cKF_Discount = AutoExecConfig_CreateConVar("oneknife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
 	EndConfig();
 
 	LoadTranslations("ttt.phrases");
