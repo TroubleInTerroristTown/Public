@@ -331,7 +331,7 @@ stock bool tHasFlags(int client, AdminFlag flags[16])
 	return false;
 }
 
-stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
+stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
 {
 	for(int offset = 0; offset < 128; offset += 4)
 	{
@@ -344,7 +344,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
 
 			if (StrEqual(sClass, classname, false))
 			{
-				return TTT_SafeRemoveWeapon(client, weapon);
+				return TTT_SafeRemoveWeapon(client, weapon, slot);
 			}
 		}
 	}
@@ -352,35 +352,58 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
 	return false;
 }
 
-stock bool TTT_SafeRemoveWeapon(int iClient, int iWeapon)
+stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
 {
-	if (!IsValidEntity(iWeapon) || !IsValidEdict(iWeapon))
-		return false;
-
-	if (!HasEntProp(iWeapon, Prop_Send, "m_hOwnerEntity"))
-		return false;
-
-	int iOwnerEntity = GetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity");
-
-	if (iOwnerEntity != iClient)
-		SetEntPropEnt(iWeapon, Prop_Send, "m_hOwnerEntity", iClient);
-
-	CS_DropWeapon(iClient, iWeapon, false);
-
-	if (HasEntProp(iWeapon, Prop_Send, "m_hWeaponWorldModel"))
-	{
-		int iWorldModel = GetEntPropEnt(iWeapon, Prop_Send, "m_hWeaponWorldModel");
-
-		if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
-			if (!AcceptEntityInput(iWorldModel, "Kill"))
-				return false;
-	}
-
-	if (!AcceptEntityInput(iWeapon, "Kill"))
+	int iDefIndex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
+	
+	if (iDefIndex < 0 || iDefIndex > 700)
 	{
 		return false;
 	}
-
+	
+	if (HasEntProp(weapon, Prop_Send, "m_bInitialized"))
+	{
+		if (GetEntProp(weapon, Prop_Send, "m_bInitialized") == 0)
+		{
+			return false;
+		}
+	}
+	
+	if (HasEntProp(weapon, Prop_Send, "m_bStartedArming"))
+	{
+		if (GetEntSendPropOffs(weapon, "m_bStartedArming") > -1)
+		{
+			return false;
+		}
+	}
+	
+	if (GetPlayerWeaponSlot(client, slot) != weapon)
+	{
+		return false;
+	}
+	
+	if (!RemovePlayerItem(client, weapon))
+	{
+		return false;
+	}
+	
+	int iWorldModel = GetEntPropEnt(weapon, Prop_Send, "m_hWeaponWorldModel");
+	
+	if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
+	{
+		if (!AcceptEntityInput(iWorldModel, "Kill"))
+		{
+			return false;
+		}
+	}
+	
+	if (weapon == GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon"))
+	{
+		SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", -1);
+	}
+	
+	AcceptEntityInput(weapon, "Kill");
+	
 	return true;
 }
 

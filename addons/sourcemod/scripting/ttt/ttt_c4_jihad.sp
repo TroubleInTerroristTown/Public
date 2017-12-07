@@ -282,7 +282,7 @@ stock bool RemoveC4(int client)
 {
 	if (!g_bHasC4[client] && !g_bHasJihad[client])
 	{
-		return TTT_RemoveWeaponByClassname(client, "weapon_c4");
+		return TTT_RemoveWeaponByClassname(client, "weapon_c4", CS_SLOT_C4);
 	}
 	
 	return false;

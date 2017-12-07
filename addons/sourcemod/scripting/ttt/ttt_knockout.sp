@@ -177,7 +177,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			g_bHasKnockout[client] = true;
 
-			TTT_RemoveWeaponByClassname(client, "weapon_taser");
+			TTT_RemoveWeaponByClassname(client, "weapon_taser", CS_SLOT_KNIFE);
 			
 			GivePlayerItem(client, "weapon_taser");
 		}
@@ -317,7 +317,7 @@ stock void DropWeapons(int client)
 
 			if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
 			{
-				TTT_SafeRemoveWeapon(client, weapon);
+				TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE);
 			}
 			else
 			{

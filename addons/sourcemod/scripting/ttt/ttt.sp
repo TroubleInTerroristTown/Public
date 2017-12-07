@@ -1102,7 +1102,7 @@ stock void TeamInitialize(int client)
 			}
 			else if (g_cPrimaryWeaponUpdate.IntValue == 2)
 			{
-				TTT_SafeRemoveWeapon(client, iWeapon);
+				TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
 				GivePlayerItem(client, g_sDefaultPrimary);
 			}
 		}
@@ -1136,7 +1136,7 @@ stock void TeamInitialize(int client)
 			}
 			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
 			{
-				TTT_SafeRemoveWeapon(client, iWeapon);
+				TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
 				GivePlayerItem(client, g_sDefaultSecondary);
 			}
 		}
@@ -1179,7 +1179,7 @@ stock void TeamInitialize(int client)
 			}
 			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
 			{
-				TTT_SafeRemoveWeapon(client, iWeapon);
+				TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
 				GivePlayerItem(client, g_sDefaultSecondary);
 			}
 		}
@@ -1218,7 +1218,7 @@ stock void TeamInitialize(int client)
 				
 				if (StrContains(sBuffer, "knife", false) != -1 || StrContains(sBuffer, "bayonet", false) != -1)
 				{
-					TTT_SafeRemoveWeapon(client, iEnt);
+					TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_KNIFE);
 				}
 			}
 		}
@@ -1238,7 +1238,7 @@ stock void TeamInitialize(int client)
 			}
 			else if (g_cSecondaryWeaponUpdate.IntValue == 2)
 			{
-				TTT_SafeRemoveWeapon(client, iWeapon);
+				TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
 				GivePlayerItem(client, g_sDefaultSecondary);
 			}
 		}
@@ -3780,7 +3780,7 @@ stock void StripAllWeapons(int client)
 	{
 		while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
 		{
-			TTT_SafeRemoveWeapon(client, iEnt);
+			TTT_SafeRemoveWeapon(client, iEnt, i);
 		}
 	}
 }

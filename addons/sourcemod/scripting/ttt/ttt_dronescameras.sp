@@ -100,7 +100,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 			
-			TTT_RemoveWeaponByClassname(client, "weapon_tagrenade");
+			TTT_RemoveWeaponByClassname(client, "weapon_tagrenade", CS_SLOT_GRENADE);
 	
 			GivePlayerItem(client, "weapon_tagrenade");
 		}

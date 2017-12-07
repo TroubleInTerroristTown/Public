@@ -137,7 +137,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
 			int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
 			if (iWeapon != -1)
 			{
-				TTT_SafeRemoveWeapon(client, iWeapon);
+				TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
 			}
 
 			g_iWeapon[client] = GivePlayerItem(client, "weapon_awp");
