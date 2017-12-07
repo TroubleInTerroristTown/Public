@@ -5,7 +5,7 @@ Just bug fixes till 10th of december and from 11th inactive for this year.
 
 ## Build Status
 
-[![Build Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara20/TroubleinTerroristTown)
+[![Build Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara/TroubleinTerroristTown)
 
 
 ## Donate
