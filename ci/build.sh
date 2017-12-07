@@ -4,7 +4,7 @@ git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
 VERSION=2.3.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
-FILE=ttt-$2-$1-$VERSION-$HASH.zip
+FILE=ttt-$2-$1-$VERSION-$HASH-$6.zip
 
 echo -e "Download und extract sourcemod\n"
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
