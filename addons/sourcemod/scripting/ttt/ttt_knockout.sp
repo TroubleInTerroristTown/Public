@@ -317,7 +317,10 @@ stock void DropWeapons(int client)
 
 			if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
 			{
-				TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE);
+				if (!TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE))
+				{
+					LogError("Can't remove knife! Player: \"%L\"", client);
+				}
 			}
 			else
 			{

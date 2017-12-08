@@ -1209,8 +1209,8 @@ stock void TeamInitialize(int client)
 		}
 		else
 		{
-			char sBuffer[32];
-			int iEnt;
+			/* char sBuffer[32];
+			int iEnt = -1;
 			
 			while ((iEnt = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE)) != -1)
 			{
@@ -1218,7 +1218,33 @@ stock void TeamInitialize(int client)
 				
 				if (StrContains(sBuffer, "knife", false) != -1 || StrContains(sBuffer, "bayonet", false) != -1)
 				{
-					TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_KNIFE);
+					if (!TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_KNIFE))
+					{
+						LogError("Can't remove knife! Player: \"%L\"", client);
+					}
+					
+					break;
+				}
+			} */
+
+			for(int offset = 0; offset < 128; offset += 4)
+			{
+				int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+		
+				if (IsValidEntity(weapon))
+				{
+					char sClass[32];
+					GetEntityClassname(weapon, sClass, sizeof(sClass));
+		
+					if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
+					{
+						if (!TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE))
+						{
+							LogError("Can't remove knife! Player: \"%L\"", client);
+						}
+						
+						break;
+					}
 				}
 			}
 		}
