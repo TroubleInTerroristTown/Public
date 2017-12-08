@@ -21,3 +21,14 @@ before_script:
 
 script:
   - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://csgottt.com/discord-travis-ci.php
+    on_success: always
+    on_failure: always
+    on_start: always
+    on_cancel: always
+    on_error: always
