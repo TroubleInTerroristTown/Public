@@ -1,12 +1,18 @@
 # [TroubleinTerroristTown](http://csgottt.com/)
 
+
 ## Status
 Just bug fixes till 10th of december and from 11th inactive for this year.
+
 
 ## Build Status
 
 [![Build Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara/TroubleinTerroristTown)
 
+
+## Discord
+
+[![Discord](https://img.shields.io/discord/388685157286019072.svg?style=flat-square)](https://discord.gg/eCsqjcD)
 
 ## Donate
 
