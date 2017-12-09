@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-06 23:08:46 UTC
+// Date: 2017-12-09 19:13:00 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:

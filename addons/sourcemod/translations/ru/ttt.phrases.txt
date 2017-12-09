@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-06 23:08:48 UTC
+// Date: 2017-12-09 19:13:03 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -575,12 +575,12 @@
 
 	"SpecMenu: Prev"
 	{
-		"ru"		"Предыдущий игрок"
+		"ru"		"Пред. игрок"
 	}
 
 	"SpecMenu: Mute"
 	{
-		"ru"		"Замутить этого игрока"
+		"ru"		"Замутить тек. игрока"
 	}
 
 	"Hud Name"
@@ -660,7 +660,7 @@
 
 	"SpecMenu: Mute Dead"
 	{
-		"ru"		"Замутить мертвых игроков"
+		"ru"		"Замутить мертвых"
 	}
 
 	"SpecMenu: Unmute Alive"
@@ -670,7 +670,7 @@
 
 	"SpecMenu: Mute Alive"
 	{
-		"ru"		"Замутить живых игроков"
+		"ru"		"Замутить живых"
 	}
 
 	"Reopen Shop deactivated"
@@ -701,6 +701,186 @@
 	"Player is Now Innocent"
 	{
 		"ru"		"{orchid}{1} {green}НЕВИНОВНЫЙ"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"ru"		"{orchid}{1} {lightgreen}будет убит от {orchid}{2} {lightgreen}на {orchid}{3} {lightgreen}раундов!"
+	}
+
+	"RS - Slayed"
+	{
+		"ru"		"Вы были убиты! Осталось раундов: {orchid}{1}"
+	}
+
+	"Shop Discount Price"
+	{
+		"ru"		"({1}%% Откл.)"
+	}
+
+	"Sprint active"
+	{
+		"ru"		"Бег активирован на {1} секунд!"
+	}
+
+	"Sprint cooldown"
+	{
+		"ru"		"Сервер будет доступен на {1} секунд."
+	}
+
+	"Sprint available"
+	{
+		"ru"		"Бег сейчас доступен!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"ru"		"Мы нашли:"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"ru"		"{green}{1} НЕВИНОВНЫХ"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"ru"		"{darkred}{1} ТРЕЙТЕРОВ"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"ru"		"{darkblue}{1} ДЕТЕКТИВЫ"
+	}
+
+	"Location Saved"
+	{
+		"ru"		"Местоположение сохранино! Пишите '{orchid}!tele{lightgreen}' чтобы телепортировать себя."
+	}
+
+	"Teleport Max"
+	{
+		"ru"		"Вы достигли лимита! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"ru"		"Радар обновлен!"
+	}
+
+	"Decoy Body Active"
+	{
+		"ru"		"Вы нашли decoy тело! Беги!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"ru"		"Trouble in Terrorist Town - Вирсия: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"ru"		"TTT Радио команды"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"ru"		"Да"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"ru"		"Нет"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"ru"		"Возможно"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"ru"		"Помощь"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"ru"		"Проверь"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"ru"		"Я с..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"ru"		"Подозреваем..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"ru"		"Трейтор..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"ru"		"Невиновный..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"ru"		"Вижу..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"ru"		"Да"
+	}
+
+	"TTT Radio: No"
+	{
+		"ru"		"Нет"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"ru"		"Возможно"
+	}
+
+	"TTT Radio: Help"
+	{
+		"ru"		"Помощь"
+	}
+
+	"TTT Radio: Check"
+	{
+		"ru"		"Проверь"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"ru"		"Я с {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"ru"		"{1} действует подозрительно."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"ru"		"{1} я вижу трейтора!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"ru"		"{1} невиновный."
+	}
+
+	"TTT Radio: See"
+	{
+		"ru"		"Я вижу {1}"
 	}
 
 }
