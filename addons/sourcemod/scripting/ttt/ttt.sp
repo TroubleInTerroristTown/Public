@@ -858,7 +858,7 @@ public Action Timer_Selection(Handle hTimer)
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
+		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR && GetRandomInt(1, 6) == 4))
 		{
 			g_iRole[client] = TTT_TEAM_TRAITOR;
 			g_iLastRole[client] = TTT_TEAM_TRAITOR;
