@@ -96,4 +96,4 @@ echo -e "Go to build folder\n"
 cd build
 
 echo -e "Compress directories and files\n"
-zip -9rq $FILE addons materials sound LICENSE CVARS.txt
+zip -9rq $FILE addons materials sound LICENSE CVARS.txt adminmenu_custom.txt
