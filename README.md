@@ -12,7 +12,7 @@ Just bug fixes till 10th of december and from 11th inactive for this year.
 
 ## Discord
 
-[![Discord](https://img.shields.io/discord/388685157286019072.svg?style=flat-square)](https://discord.gg/eCsqjcD)
+[![Discord](https://img.shields.io/discord/388685157286019072.svg)](https://discord.gg/eCsqjcD)
 
 ## Donate
 
