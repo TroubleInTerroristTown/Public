@@ -858,7 +858,7 @@ public Action Timer_Selection(Handle hTimer)
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 3) == 2))
+		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
 		{
 			g_iRole[client] = TTT_TEAM_TRAITOR;
 			g_iLastRole[client] = TTT_TEAM_TRAITOR;
@@ -904,7 +904,7 @@ public Action Timer_Selection(Handle hTimer)
 		iRand = GetRandomInt(0, aPlayers.Length - 1);
 		client = aPlayers.Get(iRand);
 
-		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1,3) == 2))
+		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1, 6) == 4))
 		{
 			if (g_bAvoidDetective[client] == true)
 			{
