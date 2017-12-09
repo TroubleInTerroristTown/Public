@@ -86,8 +86,8 @@ rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
 
-echo -e "Add LICENSE to build package\n"
-cp LICENSE CVARS.txt build/
+echo -e "Add LICENSE, CVARS.txt and adminmenu_custom.txt to build package\n"
+cp LICENSE CVARS.txt adminmenu_custom.txt build/
 
 echo -e "Clean root folder\n"
 rm sourcemod.tar.gz
