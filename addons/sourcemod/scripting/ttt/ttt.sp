@@ -772,12 +772,30 @@ public Action Timer_Selection(Handle hTimer)
 
 		return;
 	}
+	
+	LoopValidClients(i)
+	{
+		if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
+		{
+			ForcePlayerSuicide(i);
+			g_iRoundSlays[i]--;
+			
+			if (g_iRoundSlays[i] > 0)
+			{
+				CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
+				LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
+			}
+			UpdateRoundSlaysCookie(i);
+		}
+	}
 
 	//Check if there are any slain players
 	for (int i = 0; i < aPlayers.Length; i++)
 	{
 		if(!IsPlayerAlive(aPlayers.Get(i)))
+		{
 			aPlayers.Erase(i--);
+		}
 	}
 
 	if (aPlayers.Length < g_crequiredPlayers.IntValue)
@@ -804,22 +822,6 @@ public Action Timer_Selection(Handle hTimer)
 	g_bSelection = true;
 	g_bCheckPlayers = false;
 	
-	LoopValidClients(i)
-	{
-		if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
-		{
-			ForcePlayerSuicide(i);
-			g_iRoundSlays[i]--;
-			
-			if (g_iRoundSlays[i] > 0)
-			{
-				CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
-				LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
-			}
-			UpdateRoundSlaysCookie(i);
-		}
-	}
-
 	int iTCount = GetTCount(aPlayers.Length);
 	int iDCount = GetDCount(aPlayers.Length);
 
