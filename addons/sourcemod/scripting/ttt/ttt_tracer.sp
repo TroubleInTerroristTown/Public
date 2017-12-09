@@ -15,7 +15,7 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tracer"
 #define SHORT_NAME "Tracer"
 
-bool b_HasTracer[MAXPLAYERS+1];
+bool g_bHasTracer[MAXPLAYERS+1];
 Handle g_hHUD = null;
 
 
@@ -24,8 +24,8 @@ ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 
-ConVar g_CompassShowNameDistance = null;
-ConVar g_CompassDisorientationDistance = null;
+ConVar g_cCompassShowNameDistance = null;
+ConVar g_cCompassDisorientationDistance = null;
 
 public Plugin myinfo =
 {
@@ -43,15 +43,15 @@ public void OnPluginStart()
 	//TTT
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("tracer");
+	TTT_StartConfig("tracer");
 	CreateConVar("ttt2_tracer_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("tracer_name", "Tracer", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("tracer_price", "9000", "The amount of credits blackout costs as traitor. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the blackout in the shop menu.");
-	g_CompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
-	g_CompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
+	g_cCompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
+	g_cCompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
 	g_cDiscount = AutoExecConfig_CreateConVar("tracer_traitor", "0", "Should Tracer discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 	
 	//
 	g_hHUD = CreateHudSynchronizer();
@@ -65,13 +65,13 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	
 	if (TTT_IsClientValid(client))
 	{
-		b_HasTracer[client] = false;
+		g_bHasTracer[client] = false;
 	}
 }
 
 public void OnClientConnected(int client)
 {
-	b_HasTracer[client] = false;
+	g_bHasTracer[client] = false;
 }
 
 public void OnConfigsExecuted()
@@ -95,7 +95,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 			
-			b_HasTracer[client] = true;
+			g_bHasTracer[client] = true;
 			
 		}
 	}
@@ -110,7 +110,6 @@ public Action Tracer_Display(Handle timer)
 		int iClientToShow = client;
 		
 		// Check if players is spectating another player
-		
 		if(!IsPlayerAlive(client) || IsClientObserver(client))
 		{
 			int iObserverMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
@@ -119,29 +118,33 @@ public Action Tracer_Display(Handle timer)
 				iClientToShow = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
 				
 				if(iClientToShow <= 0 || iClientToShow > MaxClients)
+				{
 					continue;
+				}
 			}
-			else continue;
+			else
+			{
+				continue;
 			}
+		}
 		
-		if(!b_HasTracer[iClientToShow] || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
+		if(!g_bHasTracer[iClientToShow] || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
+		{
 			continue;
+		}
 		
-		
-		HUD_Tribute(client, iClientToShow);
+		ShowHUD(client, iClientToShow);
 	}
 }
 
 
 
-void HUD_Tribute(int client, int iClientToShow)
+void ShowHUD(int client, int iClientToShow)
 {
-	char sInfo[32],sName[64],centerText[64];
+	char sInfo[32], sName[64], centerText[64];
+	
 	if(GetCompassInfo(client, sInfo, sName) > 0)
 	{
-		//Format(centerText, sizeof(centerText), "<font size='48'>   %s</font>%s<font size='20'>%s</font>", sInfo, StrEqual(sName, "") ? "" : ": ", sName);
-		//PrintHintText(iClientToShow,centerText);
-		
 		Format(centerText, sizeof(centerText), "%s%s%s", sInfo, StrEqual(sName, "") ? "" : ": ", sName);
 		SetHudTextParams(0.2, 0.2, 2.0, 135 , 206, 255, 255, 0, 30.0, 0.0, 0.0);
 		ShowSyncHudText(iClientToShow, g_hHUD, centerText);
@@ -156,7 +159,9 @@ int GetCompassInfo(int client, char sInfo[32], char sName[64])
 	int nearest = GetCompassTarget(client, clientOrigin);
 	
 	if(nearest <= 0)
+	{
 		return false;
+	}
 	
 	float targetOrigin[3];
 	GetClientAbsOrigin(nearest, targetOrigin);
@@ -177,76 +182,93 @@ int GetCompassInfo(int client, char sInfo[32], char sName[64])
 	float diff = clientAngles[1] - vecAngles[1];
 	
 	while(diff < -180.0)
+	{
 		diff += 360.0;
+	}
 	
 	while(diff > 180.0)
+	{
 		diff -= 360.0;
+	}
 	
 	// up
 	if (diff >= -22.5 && diff < 22.5)
 	{
 		Format(sInfo, sizeof(sInfo), "\xe2\x86\x91");
 	}
-	
 	// right up
 	else if (diff >= 22.5 && diff < 67.5)
 	{
-		if(distance > g_CompassDisorientationDistance.FloatValue)
+		if(distance > g_cCompassDisorientationDistance.FloatValue)
+		{
 			Format(sInfo, sizeof(sInfo), "\xe2\x86\x97");
-		// up
-		else Format(sInfo, sizeof(sInfo), "\xe2\x86\x91");
+		}
+		// left
+		else
+		{
+			Format(sInfo, sizeof(sInfo), "\xe2\x86\x91");
+		}
 	}
-	
 	// right
 	else if (diff >= 67.5 && diff < 112.5)
 	{
 		Format(sInfo, sizeof(sInfo), "\xe2\x86\x92");
 	}
-	
 	// right down
 	else if (diff >= 112.5 && diff < 157.5)
 	{
-		if(distance > g_CompassDisorientationDistance.FloatValue)
+		if(distance > g_cCompassDisorientationDistance.FloatValue)
+		{
 			Format(sInfo, sizeof(sInfo), "\xe2\x86\x98");
-		// right
-		else Format(sInfo, sizeof(sInfo), "\xe2\x86\x92");
+		}
+		// left
+		else
+		{
+			Format(sInfo, sizeof(sInfo), "\xe2\x86\x92");
+		}
 	}
-	
 	// down
 	else if (diff >= 157.5 || diff < -157.5)
 	{
 		Format(sInfo, sizeof(sInfo), "\xe2\x86\x93");
 	}
-	
 	// down left
 	else if (diff >= -157.5 && diff < -112.5)
 	{
-		if(distance > g_CompassDisorientationDistance.FloatValue)
+		if(distance > g_cCompassDisorientationDistance.FloatValue)
+		{
 			Format(sInfo, sizeof(sInfo), "\xe2\x86\x99");
-		// down
-		else Format(sInfo, sizeof(sInfo), "\xe2\x86\x93");
+		}
+		// left
+		else
+		{
+			Format(sInfo, sizeof(sInfo), "\xe2\x86\x93");
+		}
 	}
-	
 	// left
 	else if (diff >= -112.5 && diff < -67.5)
 	{
 		Format(sInfo, sizeof(sInfo), "\xe2\x86\x90");
 	}
-	
 	// left up
 	else 
 	{
-		if(distance > g_CompassDisorientationDistance.FloatValue)
+		if(distance > g_cCompassDisorientationDistance.FloatValue)
+		{
 			Format(sInfo, sizeof(sInfo), "\xe2\x86\x96");
+		}
 		// left
-		else Format(sInfo, sizeof(sInfo), "\xe2\x86\x90");
+		else
+		{
+			Format(sInfo, sizeof(sInfo), "\xe2\x86\x90");
+		}
 	}
 	
 	char sTarget[12];
 	GetClientName(nearest, sTarget, sizeof(sTarget));
 	int iMeters = RoundToFloor(distance * 0.02);
 	
-	if(distance < g_CompassShowNameDistance.FloatValue)
+	if(distance < g_cCompassShowNameDistance.FloatValue)
 	{
 		Format(sName, sizeof(sName), "%s ( ~%dm )", sTarget, iMeters);
 	}
@@ -258,27 +280,33 @@ int GetCompassTarget(int client, float pos[3])
 {
 	float fDistance;
 	float fClosestDistance = -1.0;
-	
 	int player = 0;
-	
 	
 	LoopValidClients(i)
 	{
 		if(i == client)
+		{
 			continue;
+		}
 		
 		if(!IsPlayerAlive(i))
+		{
 			continue;
+		}
 		
 		if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_UNASSIGNED)
+		{
 			continue;
+		}
 		
 		
 		float fTargetPos[3];
 		GetClientAbsOrigin(i, fTargetPos);
 		
 		if(fTargetPos[0] == 0.0 && fTargetPos[1] == 0.0 && fTargetPos[2] == 0.0)
+		{
 			continue;
+		}
 		
 		fDistance = GetVectorDistance(pos, fTargetPos);
 		
