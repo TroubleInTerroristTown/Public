@@ -64,7 +64,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("tagrenade");
+	TTT_StartConfig("tagrenade");
 	CreateConVar("ttt2_tagrenade_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("tagrenade_name", "TA-Grenade", "The name of the TA-Grenade in the Shop");
 	g_cTPrice = AutoExecConfig_CreateConVar("tagrenade_traitor_price", "9000", "The amount of credits for tagrenade costs as traitor. 0 to disable.");
@@ -84,7 +84,7 @@ public void OnPluginStart()
 	g_cCountTraitors = AutoExecConfig_CreateConVar("tagrenade_detective_count_traitors", "1", "Count traitors for detectives tagrenade?", _, true, 0.0, true, 1.0);
 	g_cCountDetectives = AutoExecConfig_CreateConVar("tagrenade_detective_count_detectives", "1", "Count detectives for detectives tagrenade?", _, true, 0.0, true, 1.0);
 	g_cRequiredPlayers = AutoExecConfig_CreateConVar("tagrenade_detective_required_players", "4", "How much (valid incl. count convars) players must be in the proximity?");
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);

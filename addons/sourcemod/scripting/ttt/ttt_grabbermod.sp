@@ -45,7 +45,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("grabbermod");
+	TTT_StartConfig("grabbermod");
 	CreateConVar("ttt2_grabbermod_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLogWhitelist = AutoExecConfig_CreateConVar("gbm_log_whitelist", "1", "Log whitelist?", _, true, 0.0, true, 1.0);
 	g_cLogBlacklist = AutoExecConfig_CreateConVar("gbm_log_blacklist", "1", "Log blacklist?", _, true, 0.0, true, 1.0);
@@ -55,7 +55,7 @@ public void OnPluginStart()
 	g_cGrabNonMoveAlive = AutoExecConfig_CreateConVar("gbm_grab_non_move_alive", "0", "Grab living non moveable players?", _, true, 0.0, true, 1.0);
 	g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist/whitelist.", _, true, 0.0, true, 1.0);
 	g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
-	EndConfig();
+	TTT_EndConfig();
 	
 	LoadLists();
 

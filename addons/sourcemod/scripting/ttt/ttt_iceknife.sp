@@ -45,7 +45,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("ice_knife");
+	TTT_StartConfig("ice_knife");
 	CreateConVar("ttt2_ice_knife_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("iceknife_name", "Ice Knife", "The name of the Ice Knife in the Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("iceknife_price", "9000", "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
@@ -55,7 +55,7 @@ public void OnPluginStart()
 	g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
 	g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
 	g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
@@ -180,7 +180,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Handled;
 	}
 
-	if (IsWorldDamage(iAttacker, damagetype))
+	if (TTT_IsWorldDamage(iAttacker, damagetype))
 	{
 		return Plugin_Continue;
 	}

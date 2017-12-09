@@ -103,7 +103,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("weapons");
+	TTT_StartConfig("weapons");
 	CreateConVar("ttt2_weapons_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cKev_Type = AutoExecConfig_CreateConVar("kevlar_type", "1", "Type of kevlar configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_cKev_Price = AutoExecConfig_CreateConVar("kevlar_price", "3000", "The amount of credits the kevlar costs. 0 to disable.");
@@ -165,7 +165,7 @@ public void OnPluginStart()
 	g_cM4_Discount = AutoExecConfig_CreateConVar("m4a1_discount", "0", "Should M4A1-S discountable?", _, true, 0.0, true, 1.0);
 	g_cAWP_Discount = AutoExecConfig_CreateConVar("awp_discount", "0", "Should AWP discountable?", _, true, 0.0, true, 1.0);
 	g_cKF_Discount = AutoExecConfig_CreateConVar("oneknife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	LoadTranslations("ttt.phrases");
 }

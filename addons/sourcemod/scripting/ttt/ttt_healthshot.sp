@@ -48,7 +48,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("healthshot");
+	TTT_StartConfig("healthshot");
 	CreateConVar("ttt2_healthshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("hs_name", "Healthshot", "The name of the Healtshot in the Shop");
 	g_cTPrice = AutoExecConfig_CreateConVar("hs_traitor_price", "9000", "The amount of credits for healthshot costs as traitor. 0 to disable.");
@@ -63,7 +63,7 @@ public void OnPluginStart()
 	g_cDiscountI = AutoExecConfig_CreateConVar("hs_discount_innocent", "0", "Should healthshot discountable for innocents?", _, true, 0.0, true, 1.0);
 	g_cDiscountT = AutoExecConfig_CreateConVar("hs_discount_traitor", "0", "Should healthshot discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("hs_discount_detective", "0", "Should healthshot discountable for detectives?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

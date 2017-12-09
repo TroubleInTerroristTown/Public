@@ -71,7 +71,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("taser");
+	TTT_StartConfig("taser");
 	CreateConVar("ttt2_taser_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cDPrice = AutoExecConfig_CreateConVar("ta_detective_price", "9000", "The amount of credits a taser costs as detective. 0 to disable.");
 	g_cIPrice = AutoExecConfig_CreateConVar("ta_innocent_price", "9000", "The amount of credits a taser costs as innocent. 0 to disable.");
@@ -92,7 +92,7 @@ public void OnPluginStart()
 	g_cDiscountD = AutoExecConfig_CreateConVar("ta_discount_detective", "0", "Should taser discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("ta_discount_innocent", "0", "Should taser discountable for innocents?", _, true, 0.0, true, 1.0);
 	g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("item_equip", Event_ItemEquip);
@@ -276,7 +276,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		return Plugin_Continue;
 	}
 
-	if (IsWorldDamage(iAttacker, damagetype))
+	if (TTT_IsWorldDamage(iAttacker, damagetype))
 	{
 		return Plugin_Continue;
 	}

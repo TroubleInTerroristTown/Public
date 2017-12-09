@@ -54,7 +54,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("silent_awp");
+	TTT_StartConfig("silent_awp");
 	CreateConVar("ttt2_silent_awp_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("silent_awp_name", "Silent AWP", "The name of this in Shop");
 	g_cAmountT = AutoExecConfig_CreateConVar("silent_awp_amount_t", "2", "How many AWPs can traitors buy?");
@@ -75,7 +75,7 @@ public void OnPluginStart()
 	g_cDiscountT = AutoExecConfig_CreateConVar("silent_awp_discount_traitor", "0", "Should silent awp discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("silent_awp_discount_detective", "0", "Should silent awp discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("silent_awp_discount_innocents", "0", "Should silent awp discountable for innocents?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 

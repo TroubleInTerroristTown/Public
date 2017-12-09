@@ -45,7 +45,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("buyroles");
+	TTT_StartConfig("buyroles");
 	CreateConVar("ttt2_buy_roles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cTLongName = AutoExecConfig_CreateConVar("buyroles_traitor_name", "Buy Traitor Role", "The name of the buy traitor role in the Shop");
 	g_cTiLongName = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop");
@@ -63,7 +63,7 @@ public void OnPluginStart()
 	g_cTiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor_instantly", "0", "Should traitor role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective_instantly", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 }
 
 public void OnConfigsExecuted()

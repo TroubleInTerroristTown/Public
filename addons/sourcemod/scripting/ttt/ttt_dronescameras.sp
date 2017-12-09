@@ -37,7 +37,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("dronesandcameras");
+	TTT_StartConfig("dronesandcameras");
 	CreateConVar("ttt2_drones_and_cameras_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cCLongName = AutoExecConfig_CreateConVar("cad_camera_name", "Camera", "The name of this in Shop");
 	g_cCPrice = AutoExecConfig_CreateConVar("cad_camera_price", "9000", "The amount of credits a camera costs as detective. 0 to disable.");
@@ -47,7 +47,7 @@ public void OnPluginStart()
 	g_cDPrio = AutoExecConfig_CreateConVar("cad_drone_sort_prio", "0", "The sorting priority of the drone in the shop menu.");
 	g_cDiscountC = AutoExecConfig_CreateConVar("cad_discount_camera", "0", "Should camera discountable?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("cad_discount_drone", "0", "Should drone discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

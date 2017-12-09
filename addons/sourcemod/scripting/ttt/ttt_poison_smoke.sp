@@ -39,7 +39,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("posion_smoke");
+	TTT_StartConfig("posion_smoke");
 	CreateConVar("ttt2_posion_smoke_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("posion_smoke_name", "Poison Smoke", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("posion_smoke_price", "9000", "The amount of credits poison smoke costs as traitor. 0 to disable.");
@@ -50,7 +50,7 @@ public void OnPluginStart()
 	g_cDistance = AutoExecConfig_CreateConVar("poison_smoke_distance", "145", "Distance from the middle which should do damage");
 	g_cDamageInterval = AutoExecConfig_CreateConVar("poison_smoke_damage_interval", "1.0", "Damage interval in seconds", _, true, 1.0);
 	g_cDamage = AutoExecConfig_CreateConVar("poison_smoke_damage_per_interval", "10", "Damage per interval by poison smoke");
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("smokegrenade_detonate", Event_SmokeDetonate, EventHookMode_Post);

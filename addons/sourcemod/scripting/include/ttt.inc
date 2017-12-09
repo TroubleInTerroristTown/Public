@@ -407,7 +407,7 @@ stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
 	return true;
 }
 
-stock void ShowOverlayToClient(int client, const char[] overlaypath)
+stock void TTT_ShowOverlayToClient(int client, const char[] overlaypath)
 {
 	int iFlags = GetCommandFlags("r_screenoverlay");
 
@@ -416,18 +416,18 @@ stock void ShowOverlayToClient(int client, const char[] overlaypath)
 	SetCommandFlags("r_screenoverlay", iFlags);
 }
 
-stock void ShowOverlayToAll(const char[] overlaypath)
+stock void TTT_ShowOverlayToAll(const char[] overlaypath)
 {
 	LoopValidClients(i)
 	{
 		if (!IsFakeClient(i))
 		{
-			ShowOverlayToClient(i, overlaypath);
+			TTT_ShowOverlayToClient(i, overlaypath);
 		}
 	}
 }
 
-stock bool IsWorldDamage(int iAttacker, int damagetype)
+stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)
 {
 	if (damagetype == DMG_FALL
 		 || damagetype == DMG_GENERIC
@@ -466,14 +466,14 @@ stock void TTT_ClearTimer(Handle &timer)
 	}
 }
 
-stock void StartConfig(char[] file, char[] directory = "ttt")
+stock void TTT_StartConfig(char[] file, char[] directory = "ttt")
 {
 	AutoExecConfig_SetCreateDirectory(true);
 	AutoExecConfig_SetCreateFile(true);
 	AutoExecConfig_SetFile(file, directory);
 }
 
-stock void EndConfig()
+stock void TTT_EndConfig()
 {
 	AutoExecConfig_ExecuteFile();
 	AutoExecConfig_CleanFile();

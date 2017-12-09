@@ -54,7 +54,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("decoy_body");
+	TTT_StartConfig("decoy_body");
 	CreateConVar("ttt2_decoy_body_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("decoy_body_name", "Decoy Body", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("decoy_body_price", "9000", "The amount of credits decoy body costs as traitor. 0 to disable.");
@@ -71,7 +71,7 @@ public void OnPluginStart()
 	g_cBeepVolume = AutoExecConfig_CreateConVar("decoy_body_beep_volume", "0.6", "Volume of beep sound", _, true, 0.0, true, 1.0);
 	g_cExplosionVolume = AutoExecConfig_CreateConVar("decoy_body_explosion_volume", "0.6", "Volume of explosion sound", _, true, 0.0, true, 1.0);
 	g_cShowMessage = AutoExecConfig_CreateConVar("decoy_body_show_message", "1", "Show message on decoy body found?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

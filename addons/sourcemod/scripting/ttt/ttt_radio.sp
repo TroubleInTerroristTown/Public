@@ -29,9 +29,9 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("radio");
+	TTT_StartConfig("radio");
 	CreateConVar("ttt2_radio_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-	EndConfig();
+	TTT_EndConfig();
 	
 	RegConsoleCmd("sm_radio", Command_Radio);
 }

@@ -50,7 +50,7 @@ Handle g_hSyncT = null;
 
 public void OnPluginStart()
 {
-	StartConfig("overlay");
+	TTT_StartConfig("overlay");
 	CreateConVar("ttt2_overlay_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.");
 	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.");
@@ -72,7 +72,7 @@ public void OnPluginStart()
 	g_cColorI = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorT = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 
@@ -159,7 +159,7 @@ public void OnMapStart()
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
-	ShowOverlayToAll(" ");
+	TTT_ShowOverlayToAll(" ");
 }
 
 public void TTT_OnRoundEnd(int winner)
@@ -178,21 +178,21 @@ public void TTT_OnRoundEnd(int winner)
 		g_iTWin++;
 		
 		g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToAll(sBuffer);
+		TTT_ShowOverlayToAll(sBuffer);
 	}
 	else if (winner == TTT_TEAM_INNOCENT)
 	{
 		g_iCTWin++;
 		
 		g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToAll(sBuffer);
+		TTT_ShowOverlayToAll(sBuffer);
 	}
 	else if (winner == TTT_TEAM_DETECTIVE)
 	{
 		g_iCTWin++;
 		
 		g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToAll(sBuffer);
+		TTT_ShowOverlayToAll(sBuffer);
 	}
 	
 	if (g_cUpdateTeamScore.BoolValue)
@@ -301,28 +301,28 @@ public void AssignOverlay(int client, int role)
 {
 	if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
 	{
-		ShowOverlayToClient(client, " ");
+		TTT_ShowOverlayToClient(client, " ");
 	}
 	if (!IsPlayerAlive(client))
 	{
-		ShowOverlayToClient(client, " ");
+		TTT_ShowOverlayToClient(client, " ");
 	}
 
 	char sBuffer[PLATFORM_MAX_PATH];
 	if (role == TTT_TEAM_DETECTIVE)
 	{
 		g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToClient(client, sBuffer);
+		TTT_ShowOverlayToClient(client, sBuffer);
 	}
 	else if (role == TTT_TEAM_TRAITOR)
 	{
 		g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToClient(client, sBuffer);
+		TTT_ShowOverlayToClient(client, sBuffer);
 	}
 	else if (role == TTT_TEAM_INNOCENT)
 	{
 		g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-		ShowOverlayToClient(client, sBuffer);
+		TTT_ShowOverlayToClient(client, sBuffer);
 	}
 }
 

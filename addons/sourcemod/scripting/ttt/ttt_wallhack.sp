@@ -57,7 +57,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("wallhack");
+	TTT_StartConfig("wallhack");
 	CreateConVar("ttt2_wallhack_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("wh_name", "Wallhack", "The name of the Wallhack in the Shop");
 	g_cTraitorPrice = AutoExecConfig_CreateConVar("wh_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
@@ -76,7 +76,7 @@ public void OnPluginStart()
 	g_cDefaultGreen = AutoExecConfig_CreateConVar("wh_default_color_green", "255", "Green color of default glow");
 	g_cDefaultBlue = AutoExecConfig_CreateConVar("wh_default_color_blue", "255", "Blue color of default glow");
 	g_cDefaultAlpha = AutoExecConfig_CreateConVar("wh_default_color_alpha", "255", "Alpha of default glow");
-	EndConfig();
+	TTT_EndConfig();
 	
 	HookEvent("player_spawn", Event_PlayerReset);
 	HookEvent("player_death", Event_PlayerReset);

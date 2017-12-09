@@ -79,7 +79,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("c4_jihad");
+	TTT_StartConfig("c4_jihad");
 	g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
 	g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
 	g_cPrio_C4 = AutoExecConfig_CreateConVar("c4_sort_prio", "0", "The sorting priority of the C4 in the shop menu.");
@@ -98,7 +98,7 @@ public void OnPluginStart()
 	g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
 	g_cDiscountC4 = AutoExecConfig_CreateConVar("c4_discount_traitor", "0", "Should c4 discountable?", _, true, 0.0, true, 1.0);
 	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 

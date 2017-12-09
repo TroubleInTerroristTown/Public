@@ -41,7 +41,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {  
-	StartConfig("res");
+	TTT_StartConfig("res");
 	CreateConVar("ttt2_res_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cEnable = AutoExecConfig_CreateConVar("res_enable", "0", "Enable round end sounds plugin? (Default: false/0)", _, true, 0.0, true, 1.0);
 	g_cTraPath = AutoExecConfig_CreateConVar("res_traitor_path", "ttt/res/traitor", "Path off traitor sounds in /cstrike/sound");
@@ -50,7 +50,7 @@ public void OnPluginStart()
 	g_cPlayType = AutoExecConfig_CreateConVar("res_play_type", "0", "0 - Random, 1 - Play in queue", _, true, 0.0, true, 1.0);
 	g_cStop = AutoExecConfig_CreateConVar("res_stop_map_music", "1", "Stop map musics", _, true, 0.0, true, 1.0);	
 	g_cSettings = AutoExecConfig_CreateConVar("res_client_preferences", "1", "Enable/Disable client preferences", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 	
 	g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
 	SetCookieMenuItem(Cookie_RoundEndSound, 0, "Round End Sounds");

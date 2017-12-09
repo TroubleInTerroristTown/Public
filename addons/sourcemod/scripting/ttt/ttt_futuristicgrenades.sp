@@ -86,7 +86,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("futuristicgrenades");
+	TTT_StartConfig("futuristicgrenades");
 	CreateConVar("ttt2_futuristic_grenades_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cOneTime = AutoExecConfig_CreateConVar("futuristic_one_time", "1", "Effect for just one grenade?", _, true, 0.0, true, 1.0);
 	g_cGiveDecoy = AutoExecConfig_CreateConVar("futuristic_give_decoy", "1", "Give decoy on purchase?", _, true, 0.0, true, 1.0);
@@ -130,7 +130,7 @@ public void OnPluginStart()
 	g_cPrioFII = AutoExecConfig_CreateConVar("implosion_sort_prio_innocent", "0", "The sorting priority of the implosion grenades in the shop menu for innocents.");
 	g_cPrioFIT = AutoExecConfig_CreateConVar("implosion_sort_prio_traitor", "0", "The sorting priority of the implosion grenades in the shop menu for traitors.");
 	g_cPrioFID = AutoExecConfig_CreateConVar("implosion_sort_prio_detective", "0", "The sorting priority of the implosion grenades in the shop menu for detectives.");
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

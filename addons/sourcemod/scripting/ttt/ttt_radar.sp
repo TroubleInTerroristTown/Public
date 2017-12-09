@@ -55,7 +55,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("radar");
+	TTT_StartConfig("radar");
 	CreateConVar("ttt2_radar_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("radar_name", "Radar", "The name of this in Shop");
 	
@@ -76,7 +76,7 @@ public void OnPluginStart()
 	g_cTGreen = AutoExecConfig_CreateConVar("radar_player_color_traitor_green", "0", "Green colors for traitor radar", _, true, 0.0, true, 255.0);
 	g_cTBlue = AutoExecConfig_CreateConVar("radar_player_color_traitor_blue", "255", "Blue colors for traitor radar", _, true, 0.0, true, 255.0);
 	g_cTAlpha = AutoExecConfig_CreateConVar("radar_player_color_traitor_alpha", "255", "Visibility for traitor radar", _, true, 0.0, true, 255.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

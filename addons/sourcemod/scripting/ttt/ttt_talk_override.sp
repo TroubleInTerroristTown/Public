@@ -28,10 +28,10 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("talk_override");
+	TTT_StartConfig("talk_override");
 	CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	if (g_cEnableTVoice.BoolValue)
 	{

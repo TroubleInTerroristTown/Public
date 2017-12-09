@@ -48,7 +48,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("decoy_teleporter");
+	TTT_StartConfig("decoy_teleporter");
 	CreateConVar("ttt2_decoy_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("dt_name", "Decoy Teleprter", "The name of the Decoy Teleporter in the Shop");
 	g_cTPrice = AutoExecConfig_CreateConVar("dt_traitor_price", "9000", "The amount of credits for decoy teleporter costs as traitor. 0 to disable.");
@@ -60,7 +60,7 @@ public void OnPluginStart()
 	g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Money back, 2 = New decoy");
 	g_cDiscountT = AutoExecConfig_CreateConVar("dt_discount_traitor", "0", "Should decoy teleporter discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("dt_discount_detective", "0", "Should decoy teleporter discountable for detectives?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	HookEvent("decoy_started", Event_DecoyStarted, EventHookMode_Pre);

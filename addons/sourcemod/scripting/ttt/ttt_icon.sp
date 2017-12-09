@@ -40,13 +40,13 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 	
-	StartConfig("icon");
+	TTT_StartConfig("icon");
 	CreateConVar("ttt2_icon_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_roles", "0", "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
 	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file");
 	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file");
 	g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
-	EndConfig();
+	TTT_EndConfig();
 	
 	g_cAdminImmunity.AddChangeHook(OnConVarChanged);
 	g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));

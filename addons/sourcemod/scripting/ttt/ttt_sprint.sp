@@ -47,7 +47,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("sprint");
+	TTT_StartConfig("sprint");
 	CreateConVar("ttt2_sprint_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("sprint_name", "Sprint", "The name of this in Shop");
 	g_cPriceD = AutoExecConfig_CreateConVar("sprint_price_detective", "9000", "The amount of credits sprint costs as detective. 0 to disable.");
@@ -60,7 +60,7 @@ public void OnPluginStart()
 	g_cCooldown = AutoExecConfig_CreateConVar("sprint_cooldown_time", "7.0", "Time in seconds until next speed boost");
 	g_cDiscountT = AutoExecConfig_CreateConVar("sprint_discount_traitor", "0", "Should sprint discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("sprint_discount_detective", "0", "Should sprint discountable for detectives?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }

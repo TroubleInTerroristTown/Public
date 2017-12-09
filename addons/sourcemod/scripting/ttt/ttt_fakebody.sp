@@ -46,7 +46,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("fakebody");
+	TTT_StartConfig("fakebody");
 	CreateConVar("ttt2_fakebody_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("fb_name", "Fakebody", "The name of the Fakebody in the Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("fb_price", "9000", "The amount of credits a fake body costs as traitor. 0 to disable.");
@@ -57,7 +57,7 @@ public void OnPluginStart()
 	g_cDeleteFakeBodyAfterFound = AutoExecConfig_CreateConVar("fb_delete_fakebody_after_found", "0", "Delete fake body after found?");
 	g_cShowTraitorAsDead = AutoExecConfig_CreateConVar("fb_show_traitor_as_dead", "1", "Show traitor as dead after fakebody found?");
 	g_cDiscount = AutoExecConfig_CreateConVar("fb_discount", "0", "Should fake body discountable?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
 

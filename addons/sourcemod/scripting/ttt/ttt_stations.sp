@@ -58,7 +58,7 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
 
-	StartConfig("stations");
+	TTT_StartConfig("stations");
 	CreateConVar("ttt2_stations_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cHealthPrice = AutoExecConfig_CreateConVar("health_station_price", "3000", "The price of the Health Station in the shop for detectives. 0 to disable.");
 	g_cHurtPrice = AutoExecConfig_CreateConVar("hurt_station_price", "0", "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
@@ -76,7 +76,7 @@ public void OnPluginStart()
 	g_cHurt = AutoExecConfig_CreateConVar("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.");
 	g_cDiscountT = AutoExecConfig_CreateConVar("hurt_station_discount", "0", "Should hurt station discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("health_station_discount_detective", "0", "Should health station discountable for detectives?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 	

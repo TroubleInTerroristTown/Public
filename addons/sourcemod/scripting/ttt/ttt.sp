@@ -108,9 +108,9 @@ public void OnPluginStart()
 
 	SetRandomSeed(GetTime());
 	
-	StartConfig("ttt");
+	TTT_StartConfig("ttt");
 	SetupConfig();
-	EndConfig();
+	TTT_EndConfig();
 
 	if (TTT_GetSQLConnection() != null)
 	{

@@ -43,7 +43,7 @@ public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
 
-	StartConfig("id");
+	TTT_StartConfig("id");
 	CreateConVar("ttt2_id_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "1000", "The amount of credits for fake ID costs as traitor. 0 to disable.");
 	g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "1000", "The amount of credits for ID costs as innocent. 0 to disable.");
@@ -54,7 +54,7 @@ public void OnPluginStart()
 	g_cLongNameT = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
 	g_cDiscountT = AutoExecConfig_CreateConVar("id_discount_traitor", "0", "Should fake id discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("id_discount_innocent", "0", "Should id discountable for innocents?", _, true, 0.0, true, 1.0);
-	EndConfig();
+	TTT_EndConfig();
 
 	RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
 

@@ -41,7 +41,7 @@ public void OnPluginStart()
 
 	LoadTranslations("ttt.phrases");
 	
-	StartConfig("blackout");
+	TTT_StartConfig("blackout");
 	CreateConVar("ttt2_blackout_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLongName = AutoExecConfig_CreateConVar("blackout_name", "Blackout", "The name of this in Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("blackout_price", "9000", "The amount of credits blackout costs as traitor. 0 to disable.");
@@ -52,7 +52,7 @@ public void OnPluginStart()
 	g_cDensity = AutoExecConfig_CreateConVar("blackout_fog_density", "0.999", "Density of the fog", _, true, 0.0);
 	g_cTime = AutoExecConfig_CreateConVar("blackout_time", "10", "How long persists the blackout?", _, true, 1.0);
 	g_cDelay = AutoExecConfig_CreateConVar("blackout_delay", "3", "Time in seconds until the blackout starts (from purchase).");
-	EndConfig();
+	TTT_EndConfig();
 
 	HookEvent("round_end", Event_RoundEnd);
 }
