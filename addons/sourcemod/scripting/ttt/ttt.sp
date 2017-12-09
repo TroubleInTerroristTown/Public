@@ -1041,31 +1041,6 @@ int GetDCount(int iActivePlayers)
 	return iDCount;
 }
 
-
-stock int GetRandomArray(Handle array)
-{
-	int size = GetArraySize(array);
-	if (size == 0)
-	{
-		return -1;
-	}
-
-	return GetRandomInt(0, size - 1);
-}
-
-stock bool IsPlayerInArray(int player, Handle array)
-{
-	for (int i = 0; i < GetArraySize(array); i++)
-	{
-		if (player == GetArrayCell(array, i))
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
 stock void TeamInitialize(int client)
 {
 	if (!TTT_IsClientValid(client))
