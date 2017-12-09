@@ -51,8 +51,9 @@ public void OnPluginStart()
 	g_CompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
 	g_CompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
 	g_cDiscount = AutoExecConfig_CreateConVar("tracer_traitor", "0", "Should Tracer discountable?", _, true, 0.0, true, 1.0);
+	EndConfig();
+	
 	//
-	// Add your own code here...
 	g_hHUD = CreateHudSynchronizer();
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
