@@ -253,6 +253,11 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
 		target = i;
 	}
 	
+	if (target == -1)
+	{
+		return Plugin_Handled;
+	}
+	
 	int iTRole = TTT_GetClientRole(target);
 		
 	if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
