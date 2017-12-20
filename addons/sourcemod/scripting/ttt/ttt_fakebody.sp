@@ -211,7 +211,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 
 		if (g_cShowTraitorAsDead.BoolValue)
 		{
-			TTT_SetFoundStatus(iRagdollC[Victim], true);
+			TTT_SetFoundStatus(GetClientOfUserId(iRagdollC[Victim]), true);
 		}
 
 		iRagdollC[Found] = true;
