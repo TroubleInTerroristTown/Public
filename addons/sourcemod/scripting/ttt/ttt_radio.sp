@@ -75,7 +75,7 @@ public Action Command_Radio(int client, int args)
 	}
 	else if (role == TTT_TEAM_TRAITOR)
 	{
-		Format(sColor, sizeof(sColor), "darkred");
+		Format(sColor, sizeof(sColor), "green");
 	}
 	else if (role == TTT_TEAM_DETECTIVE)
 	{
