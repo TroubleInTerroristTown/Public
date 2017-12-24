@@ -57,6 +57,12 @@ public Action Command_Radio(int client, int args)
 		return Plugin_Handled;
 	}
 	
+	if (!IsPlayerAlive(client))
+	{
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
+		return Plugin_Handled;
+	}
+
 	if (args == 0)
 	{
 		ShowRadioMenu(client);
