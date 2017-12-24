@@ -69,7 +69,7 @@ public Action Command_Radio(int client, int args)
 	char sColor[16];
 	int role = TTT_GetClientRole(client);
 	
-	if (role == TTT_TEAM_INNOCENT || TTT_TEAM_TRAITOR)
+	if (role == TTT_TEAM_INNOCENT || role == TTT_TEAM_TRAITOR)
 	{
 		Format(sColor, sizeof(sColor), "green");
 	}
