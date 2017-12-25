@@ -2833,24 +2833,32 @@ public int TTT_OnButtonPress(int client, int button)
 							{
 								g_bFound[victim] = true;
 							}
+
+							char iItem[TTT_LOG_SIZE];
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, "%s %T", g_sTag, "Found Innocent", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
+								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Innocent)", client, iRagdollC[VictimName]);
+								addArrayTime(iItem);
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, "%s %T", g_sTag, "Found Detective", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
+								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Detective)", client, iRagdollC[VictimName]);
+								addArrayTime(iItem);							
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
 									CPrintToChat(j, "%s %T", g_sTag, "Found Traitor", j, client, iRagdollC[VictimName]);
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
+								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Traitor)", client, iRagdollC[VictimName]);
+								addArrayTime(iItem);								
 							}
 
 							if (bValid)
