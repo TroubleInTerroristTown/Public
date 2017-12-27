@@ -2,7 +2,24 @@
 
 public void OnPluginStart()
 {
+	RegConsoleCmd("sm_iftest", Command_IfTest);
 	RegConsoleCmd("sm_random", Command_Random);
+}
+
+public Action Command_IfTest(int client, int args)
+{
+	int a = 1;
+	int b = 2;
+
+	if (a == 1 || 2)
+	{
+		ReplyToCommand(client, "a is %d", a);
+	}
+
+	if (b == 1 || 2)
+	{
+		ReplyToCommand(client, "b is %d", b);
+	}
 }
 
 public Action Command_Random(int client, int args)
