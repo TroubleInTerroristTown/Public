@@ -2835,29 +2835,52 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 
 							char iItem[TTT_LOG_SIZE];
+
+							char sRole[16];
+							if (g_iRole[client] == TTT_TEAM_INNOCENT)
+							{
+								Format(sRole[client], sizeof(sRole[]), "Innocent");
+							}
+							else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+							{
+								Format(sRole[client], sizeof(sRole[]), "Detective");
+							}
+							else if (g_iRole[client] == TTT_TEAM_TRAITOR)
+							{
+								Format(sRole[client], sizeof(sRole[]), "Traitor");
+							}
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
 								LoopValidClients(j)
+								{
 									CPrintToChat(j, "%s %T", g_sTag, "Found Innocent", j, client, iRagdollC[VictimName]);
+								}
+
 								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
-								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Innocent)", client, iRagdollC[VictimName]);
+								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent)", client, sRole, iRagdollC[VictimName]);
 								addArrayTime(iItem);
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
 								LoopValidClients(j)
+								{
 									CPrintToChat(j, "%s %T", g_sTag, "Found Detective", j, client, iRagdollC[VictimName]);
+								}
+
 								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
-								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Detective)", client, iRagdollC[VictimName]);
+								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective)", client, sRole, iRagdollC[VictimName]);
 								addArrayTime(iItem);							
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
 								LoopValidClients(j)
+								{
 									CPrintToChat(j, "%s %T", g_sTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+								}
+
 								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
-								Format(iItem, sizeof(iItem), "-> %N identified body of %s (Traitor)", client, iRagdollC[VictimName]);
+								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor)", client, sRole, iRagdollC[VictimName]);
 								addArrayTime(iItem);								
 							}
 
