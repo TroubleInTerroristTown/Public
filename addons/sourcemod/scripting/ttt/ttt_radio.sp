@@ -57,6 +57,12 @@ public Action Command_Radio(int client, int args)
 		return Plugin_Handled;
 	}
 	
+	if (!IsPlayerAlive(client))
+	{
+		CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
+		return Plugin_Handled;
+	}
+
 	if (args == 0)
 	{
 		ShowRadioMenu(client);
@@ -69,13 +75,9 @@ public Action Command_Radio(int client, int args)
 	char sColor[16];
 	int role = TTT_GetClientRole(client);
 	
-	if (role == TTT_TEAM_INNOCENT)
+	if (role == TTT_TEAM_INNOCENT || role == TTT_TEAM_TRAITOR)
 	{
 		Format(sColor, sizeof(sColor), "green");
-	}
-	else if (role == TTT_TEAM_TRAITOR)
-	{
-		Format(sColor, sizeof(sColor), "darkred");
 	}
 	else if (role == TTT_TEAM_DETECTIVE)
 	{
