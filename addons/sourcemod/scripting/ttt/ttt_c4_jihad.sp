@@ -42,6 +42,7 @@ ConVar g_cJihadDamageRadius = null;
 ConVar g_cJihadMagnitude = null;
 ConVar g_cDiscountC4 = null;
 ConVar g_cDiscountJ = null;
+ConVar g_cC4BeepVolume = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
@@ -98,6 +99,7 @@ public void OnPluginStart()
 	g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
 	g_cDiscountC4 = AutoExecConfig_CreateConVar("c4_discount_traitor", "0", "Should c4 discountable?", _, true, 0.0, true, 1.0);
 	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
+	g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
@@ -241,7 +243,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				g_hJihadBomb[client] = CreateTimer(g_cJihadPreparingTime.FloatValue, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			}
-			else (g_cJihadPreparingTime.FloatValue == 0.0)
+			else if(g_cJihadPreparingTime.FloatValue == 0.0)
 			{
 				CPrintToChat(client, "%s %T", g_sPluginTag, "Your bomb is now armed.", client);
 				EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
@@ -731,17 +733,21 @@ stock float plantBomb(int client, float time)
 			continue;
 		}
 
-		Handle explosionPack;
-		Handle beepPack;
-		
 		TTT_ClearTimer(g_hExplosionTimer[client]);
-		
+
+		Handle explosionPack;
 		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
-		CreateDataTimer(1.0, bombBeep, beepPack);
 		WritePackCell(explosionPack, GetClientUserId(client));
 		WritePackCell(explosionPack, bombEnt);
-		WritePackCell(beepPack, bombEnt);
-		WritePackCell(beepPack, (time - 1));
+
+		if (g_cC4BeepVolume.FloatValue > 0.0)
+		{
+			Handle beepPack;
+			CreateDataTimer(1.0, bombBeep, beepPack);
+			WritePackCell(beepPack, bombEnt);
+			WritePackCell(beepPack, (time - 1));
+		}
+
 		g_bHasActiveBomb[client] = true;
 		bombFound = true;
 	}
@@ -833,7 +839,7 @@ public Action bombBeep(Handle timer, Handle pack)
 	bool stopBeeping = false;
 	if (beeps > 0)
 	{
-		EmitAmbientSoundAny(SND_BEEP, bombPos);
+		EmitAmbientSoundAny(SND_BEEP, bombPos, _, _, _, g_cC4BeepVolume.FloatValue);
 		beeps--;
 		stopBeeping = false;
 	}
