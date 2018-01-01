@@ -70,6 +70,7 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_log", Command_Logs);
 	RegConsoleCmd("sm_trules", Command_TRules);
 	RegConsoleCmd("sm_drules", Command_DetectiveRules);
+	RegConsoleCmd("sm_detective", Command_DetectiveRules);
 	RegConsoleCmd("sm_rslays", Command_RSlays);
 	RegConsoleCmd("sm_tttversion", Command_TTTVersion);
 	
