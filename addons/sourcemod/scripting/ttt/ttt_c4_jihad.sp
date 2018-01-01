@@ -89,7 +89,7 @@ public void OnPluginStart()
 	g_cLongName_J = AutoExecConfig_CreateConVar("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop");
 	g_cPrice_J = AutoExecConfig_CreateConVar("jihad_price", "9000", "The amount of credits a jihad costs as traitor. 0 to disable.");
 	g_cPrio_J = AutoExecConfig_CreateConVar("jihad_sort_prio", "0", "The sorting priority of the Jihad in the shop menu.");
-	g_cJihadPreparingTime = AutoExecConfig_CreateConVar("jihad_preparing_time", "60.0", "The amount of time in seconds until the jihad bomb is ready after buying it.");
+	g_cJihadPreparingTime = AutoExecConfig_CreateConVar("jihad_preparing_time", "60.0", "The amount of time in seconds until the jihad bomb is ready after buying it. 0.0 - immediately");
 	g_cRemoveBomb = AutoExecConfig_CreateConVar("remove_bomb_on_spawn", "1", "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
 	g_cJihadDamageRadius = AutoExecConfig_CreateConVar("jihad_damage_radius", "600", "The damage radius of the Jihad explosion.");
 	g_cSlayPlayer = AutoExecConfig_CreateConVar("jihad_slay_player", "1", "Slay player on own jihad explosion?", _, true, 0.0, true, 1.0);
@@ -236,7 +236,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 
 			TTT_ClearTimer(g_hJihadBomb[client]);
-			g_hJihadBomb[client] = CreateTimer(g_cJihadPreparingTime.FloatValue, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+
+			if (g_cJihadPreparingTime.FloatValue > 0.0)
+			{
+				g_hJihadBomb[client] = CreateTimer(g_cJihadPreparingTime.FloatValue, Timer_JihadPreparing, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+			}
+			else (g_cJihadPreparingTime.FloatValue == 0.0)
+			{
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Your bomb is now armed.", client);
+				EmitAmbientSound(SND_BLIP, NULL_VECTOR, client);
+			}
+			
 			g_bHasJihad[client] = true;
 
 			CPrintToChat(client, "%s %T", g_sPluginTag, "bomb will arm in 60 seconds, double tab F to explode", client);
