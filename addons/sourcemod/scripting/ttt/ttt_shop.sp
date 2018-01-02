@@ -381,11 +381,11 @@ stock void UpdatePlayer(int client)
 	
 	if (TTT_GetConnectionType() == dMySQL)
 	{
-		Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iCredits[client], g_iCredits[client]);
+		Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, credits) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE credits = %d;", sCommunityID, g_iCredits[client], g_iCredits[client]);
 	}
 	else
 	{
-		Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, karma) VALUES (\"%s\", %d);", sCommunityID, g_iCredits[client], g_iCredits[client]);
+		Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, credits) VALUES (\"%s\", %d);", sCommunityID, g_iCredits[client], g_iCredits[client]);
 	}
 
 	ConVar cvar = FindConVar("ttt_debug_mode");
