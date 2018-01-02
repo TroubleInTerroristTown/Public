@@ -190,7 +190,6 @@ public void TTT_OnSQLConnect(Database db)
 {
 	g_dDB = db;
 	AlterKarmaColumn();
-	LateLoadClients(false);
 }
 
 void AlterKarmaColumn()
@@ -1846,7 +1845,7 @@ public void OnClientPostAdminCheck(int client)
 	DispatchKeyValue(client, "targetname", "UNASSIGNED");
 	CS_SetClientClanTag(client, "UNASSIGNED");
 
-	if (TTT_GetSQLConnection() != null)
+	if (g_dDB != null)
 	{
 		CreateTimer(1.0, Timer_OnClientPostAdminCheck, GetClientUserId(client));
 	}
