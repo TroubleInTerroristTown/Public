@@ -6,8 +6,16 @@ public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, 
 		{
 			LogToFileEx(g_sErrorFile, "(SQL_AlterKarmaColumn) Query failed: %s", error);
 		}
+		else
+		{
+			LateLoadClients(false);
+		}
 		
 		return;
+	}
+	else
+	{
+		LateLoadClients(false);
 	}
 }
 

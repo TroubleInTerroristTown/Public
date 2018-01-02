@@ -5,9 +5,10 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
-#include <ttt>
 #include <multicolors>
 #include <clientprefs>
+#include <ttt>
+#include <ttt_sql>
 #include <ttt_shop>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Shop"
@@ -70,6 +71,7 @@ int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
 
+Database g_dDB = null;
 
 char g_sShopCMDs[][] =  {
 	"menu",
@@ -221,6 +223,49 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cPluginTag)
 	{
 		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
+}
+
+public void TTT_OnSQLConnect(Database db)
+{
+	g_dDB = db;
+	AlterCreditsColumn();
+}
+
+void AlterCreditsColumn()
+{
+	char sQuery[64];
+	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT %d;", g_cStartCredits.IntValue);
+
+	if (g_dDB != null)
+	{
+		g_dDB.Query(SQL_AlterCreditsColumn, sQuery);
+	}
+	else
+	{
+		SetFailState("Database handle is invalid!");
+		return;
+	}
+}
+
+public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if (hndl == null || strlen(error) > 0)
+	{
+		if (StrContains(error, "Duplicate column name") == -1)
+		{
+			LogError("(SQL_AlterCreditsColumn) Query failed: %s", error);
+		}
+		else
+		{
+			// LoadClientCredits(client);
+		}
+		
+		return;
+	}
+	else
+	{
+		// LoadClientCredits(client);
 	}
 }
 
@@ -709,9 +754,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	return Plugin_Continue;
 }
 
-public void OnClientPutInServer(int client)
+public void OnClientPostAdminCheck(int client)
 {
 	g_iCredits[client] = g_cStartCredits.IntValue;
+
+	// LoadClientCredits(client);
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
