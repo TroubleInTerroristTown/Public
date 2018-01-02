@@ -1,3 +1,16 @@
+public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if (hndl == null || strlen(error) > 0)
+	{
+		if (StrContains(error, "Duplicate column name") == -1)
+		{
+			LogToFileEx(g_sErrorFile, "(SQL_AlterKarmaColumn) Query failed: %s", error);
+		}
+		
+		return;
+	}
+}
+
 public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any userid)
 {
 	if (hndl == null || strlen(error) > 0)

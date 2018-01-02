@@ -189,8 +189,24 @@ public void OnConfigsExecuted()
 public void TTT_OnSQLConnect(Database db)
 {
 	g_dDB = db;
-
+	AlterKarmaColumn();
 	LateLoadClients(false);
+}
+
+void AlterKarmaColumn()
+{
+	char sQuery[64];
+	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `karma` INT(11) NOT NULL DEFAULT %d;", g_cstartKarma.IntValue);
+
+	if (g_dDB != null)
+	{
+		g_dDB.Query(SQL_AlterKarmaColumn, sQuery);
+	}
+	else
+	{
+		SetFailState("Database handle is invalid!");
+		return;
+	}
 }
 
 public Action Command_Logs(int client, int args)
