@@ -55,6 +55,7 @@ ConVar g_cStartCredits = null;
 ConVar g_cCreditsMin = null;
 ConVar g_cCreditsMax = null;
 ConVar g_cCreditsInterval = null;
+ConVar g_cSQLCredits = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -170,6 +171,7 @@ public void OnPluginStart()
 	g_cCredits = AutoExecConfig_CreateConVar("ttt_credits_command", "credits", "The command to show the credits");
 	g_cBuyCmd = AutoExecConfig_CreateConVar("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly");
 	g_cShowCmd = AutoExecConfig_CreateConVar("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)");
+	g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "1", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	LoadTranslations("common.phrases");
@@ -880,7 +882,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 
 	if (TTT_IsClientValid(client))
 	{
-		if (g_cResetCreditsEachRound.BoolValue)
+		if (g_cResetCreditsEachRound.BoolValue && !g_cSQLCredits.BoolValue)
 		{
 			g_iCredits[client] = g_cStartCredits.IntValue;
 		}
@@ -905,9 +907,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnClientPostAdminCheck(int client)
 {
-	g_iCredits[client] = g_cStartCredits.IntValue;
-
-	// LoadClientCredits(client);
+	if (!g_cSQLCredits.BoolValue)
+	{
+		g_iCredits[client] = g_cStartCredits.IntValue;
+	}
+	else
+	{
+		LoadClientCredits(client);
+	}
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
@@ -1079,6 +1086,8 @@ stock void addCredits(int client, int credits, bool message = false)
 		}
 	}
 
+	UpdatePlayer(client);
+
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
@@ -1123,6 +1132,8 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		}
 	}
 
+	UpdatePlayer(client);
+
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
@@ -1137,6 +1148,13 @@ stock void setCredits(int client, int credits)
 	{
 		g_iCredits[client] = 0;
 	}
+
+	UpdatePlayer(client);
+
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(g_iCredits[client]);
+	Call_Finish();
 }
 
 public Action Command_SetCredits(int client, int args)
