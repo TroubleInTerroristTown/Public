@@ -68,6 +68,7 @@ Handle g_hReopenCookie = null;
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bCredits[MAXPLAYERS + 1] = { false, ... }; // just for sql credits
 
 bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
 
@@ -176,11 +177,21 @@ public void OnPluginStart()
 
 	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
 
+	if (TTT_GetSQLConnection() != null)
+	{
+		g_dDB = TTT_GetSQLConnection();
+	}
+
 	for (int i = 0; i <= MaxClients; i++)
 	{
 		if (TTT_IsClientValid(i))
 		{
 			OnClientCookiesCached(i);
+
+			if (g_dDB != null)
+			{
+				LoadClientCredits(i);
+			}
 		}
 	}
 }
@@ -258,14 +269,152 @@ public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error
 		}
 		else
 		{
-			// LoadClientCredits(client);
+			LoadClientCredits(GetClientOfUserId(userid));
 		}
 		
 		return;
 	}
 	else
 	{
-		// LoadClientCredits(client);
+		LoadClientCredits(GetClientOfUserId(userid));
+	}
+}
+
+stock void LoadClientCredits(int client)
+{
+	if (TTT_IsClientValid(client))
+	{
+		ConVar cvar = FindConVar("ttt_show_debug_messages");
+		if (cvar != null && cvar.BoolValue)
+		{
+			LogMessage("(LoadClientCredits) Client: \"%L\"", client);
+		}
+		
+		char sCommunityID[64];
+
+		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+		{
+			LogError("(LoadClientCredits) Auth failed: #%d", client);
+			return;
+		}
+
+		char sQuery[2048];
+		Format(sQuery, sizeof(sQuery), "SELECT `credits` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
+
+		cvar = FindConVar("ttt_debug_mode");
+		if (cvar != null && cvar.BoolValue)
+		{
+			LogMessage(sQuery);
+		}
+
+		if (g_dDB != null)
+		{
+			g_dDB.Query(SQL_OnClientPostAdminCheck, sQuery, GetClientUserId(client));
+		}
+	}
+}
+
+public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	int client = GetClientOfUserId(userid);
+
+	if (!client || !TTT_IsClientValid(client) || IsFakeClient(client))
+	{
+		return;
+	}
+
+	if (hndl == null || strlen(error) > 0)
+	{
+		LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+		return;
+	}
+	else
+	{
+		if (!SQL_FetchRow(hndl))
+		{
+			g_iCredits[client] = g_cStartCredits.IntValue;
+			UpdatePlayer(client);
+		}
+		else
+		{
+			char sCommunityID[64];
+
+			if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+			{
+				LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+				return;
+			}
+
+			int credits = SQL_FetchInt(hndl, 0);
+
+			ConVar cvar = FindConVar("ttt_debug_mode");
+			if (cvar.BoolValue)
+			{
+				LogMessage("Name: %L has %d credits", client, credits);
+			}
+
+			if (credits == 0)
+			{
+				g_iCredits[client] = g_cStartCredits.IntValue;
+			}
+			else
+			{
+				g_iCredits[client] = credits;
+			}
+
+			g_bCredits[client] = true;
+		}
+	}
+}
+
+stock void UpdatePlayer(int client)
+{
+	char sCommunityID[64];
+
+	if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+	{
+		LogError("(UpdatePlayer) Auth failed: #%d", client);
+		return;
+	}
+
+	char sQuery[2048];
+	
+	if (TTT_GetConnectionType() == dMySQL)
+	{
+		Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iCredits[client], g_iCredits[client]);
+	}
+	else
+	{
+		Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, karma) VALUES (\"%s\", %d);", sCommunityID, g_iCredits[client], g_iCredits[client]);
+	}
+
+	ConVar cvar = FindConVar("ttt_debug_mode");
+	if (cvar.BoolValue)
+	{
+		LogMessage(sQuery);
+	}
+
+	if (g_dDB != null)
+	{
+		g_dDB.Query(SQL_UpdatePlayer, sQuery, GetClientUserId(client));
+	}
+}
+
+public void SQL_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if (hndl == null || strlen(error) > 0)
+	{
+		LogError("(SQL_UpdatePlayer) Query failed: %s", error);
+		return;
+	}
+	else
+	{
+		int client = GetClientOfUserId(userid);
+
+		if (TTT_IsClientValid(client))
+		{
+			g_bCredits[client] = true;
+		}
 	}
 }
 
