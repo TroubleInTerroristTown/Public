@@ -24,7 +24,7 @@ echo -e "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
   echo -e -e "\nCompiling $file..." 
-  addons/sourcemod/scripting/spcomp -E -v0 $file
+  addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 $file
 done
 
 echo -e "\nCompile 3rd-party-plugins"
