@@ -77,8 +77,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 			if (role == TTT_TEAM_DETECTIVE)
 			{
-				GivePlayerShield(client);
-				
 				if (g_cForce.BoolValue)
 				{
 					OverridePlayerShield(client, 2);
@@ -87,6 +85,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				{
 					OverridePlayerShield(client, 1);
 				}
+
+				GivePlayerShield(client);
 			}
 			else
 			{
