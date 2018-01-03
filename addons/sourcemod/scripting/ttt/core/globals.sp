@@ -200,7 +200,6 @@ ConVar g_cslayAfterStart = null;
 ConVar g_cremoveBuyzone = null;
 ConVar g_cforceTeams = null;
 ConVar g_crandomWinner = null;
-ConVar g_cforceModel = null;
 ConVar g_cmodelCT = null;
 ConVar g_cmodelT = null;
 ConVar g_clogFile = null;

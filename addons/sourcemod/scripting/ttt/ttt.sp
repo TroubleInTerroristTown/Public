@@ -1273,26 +1273,6 @@ stock void TeamInitialize(int client)
 		
 		bUpdate = true;
 	}
-	else if (g_cforceModel.BoolValue)
-	{
-		char sModel[PLATFORM_MAX_PATH + 1];
-	
-		switch (g_iRole[client])
-		{
-			case TTT_TEAM_INNOCENT, TTT_TEAM_TRAITOR:
-			{
-				g_cmodelT.GetString(sModel, sizeof(sModel));
-				SetEntityModel(client, sModel);
-			}
-			case TTT_TEAM_DETECTIVE:
-			{
-				g_cmodelCT.GetString(sModel, sizeof(sModel));
-				SetEntityModel(client, sModel);
-			}
-		}
-		
-		bUpdate = true;
-	}
 	
 	if (bUpdate)
 	{

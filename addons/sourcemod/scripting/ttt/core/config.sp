@@ -64,7 +64,6 @@ void SetupConfig()
 	g_cremoveBuyzone = AutoExecConfig_CreateConVar("ttt_disable_buyzone", "0", "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
 	g_cforceTeams = AutoExecConfig_CreateConVar("ttt_force_teams", "1", "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.", _, true, 0.0, true, 1.0);
 	g_crandomWinner = AutoExecConfig_CreateConVar("ttt_random_winner", "1", "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No", _, true, 0.0, true, 1.0);
-	g_cforceModel = AutoExecConfig_CreateConVar("ttt_force_models", "0", "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).", _, true, 0.0, true, 1.0);
 	g_cendwithD = AutoExecConfig_CreateConVar("ttt_end_with_detective", "0", "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
 	g_chideTeams = AutoExecConfig_CreateConVar("ttt_hide_teams", "0", "Hide team changes from chat.", _, true, 0.0, true, 1.0);
 	g_cstripWeapons = AutoExecConfig_CreateConVar("ttt_strip_weapons", "1", "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.", _, true, 0.0, true, 1.0);
