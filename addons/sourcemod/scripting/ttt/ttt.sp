@@ -459,13 +459,6 @@ public void OnMapStart()
 	g_iBadNameCount = 0;
 
 	LoadBadNames();
-	
-	// Precache models
-	char sModel[PLATFORM_MAX_PATH + 1];
-	g_cmodelCT.GetString(sModel, sizeof(sModel));
-	PrecacheModel(sModel, true);
-	g_cmodelT.GetString(sModel, sizeof(sModel));
-	PrecacheModel(sModel, true);
 
 	g_iBeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
 	g_iHaloSprite = PrecacheModel("materials/sprites/halo.vtf");

@@ -77,8 +77,6 @@ void SetupConfig()
 	g_cRespawnDeadPlayers = AutoExecConfig_CreateConVar("ttt_respawn_dead_players", "1", "Respawn dead players on pre role selection?", _, true, 0.0, true, 1.0);
 	g_cEnableDamage = AutoExecConfig_CreateConVar("ttt_prestart_damage", "0", "Enable damage before round start (Default disabled to prevent kills)?", _, true, 0.0, true, 1.0);
 	g_croundendDamage = AutoExecConfig_CreateConVar("ttt_roundend_dm", "0", "Enable damage after a round until round end.", _, true, 0.0, true, 1.0);
-	g_cmodelCT = AutoExecConfig_CreateConVar("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.");
-	g_cmodelT = AutoExecConfig_CreateConVar("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.");
 	g_clogFile = AutoExecConfig_CreateConVar("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
 	g_cerrFile = AutoExecConfig_CreateConVar("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
 	g_cdefaultPriD = AutoExecConfig_CreateConVar("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).");
