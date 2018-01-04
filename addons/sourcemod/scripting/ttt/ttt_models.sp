@@ -36,7 +36,7 @@ public void OnMapStart()
 		return;
 	}
 	
-	KeyValues hConfig = new KeyValues("TTT-Models");
+	Handle hConfig = CreateKeyValues("TTT-Models");
 	
 	FileToKeyValues(hConfig, CONFIG_FILE);
 	if (KvJumpToKey(hConfig, "Models"))
@@ -194,7 +194,7 @@ public void OnMapStart()
 	}
 	else
 	{
-		SetFailState("Config for '%s' not found!", "TTT-Model");
+		SetFailState("Config for '%s' not found!", "Models");
 		return;
 	}
 	delete hConfig;
@@ -210,7 +210,7 @@ public void TTT_OnClientGetRole(int client, int role)
 
 void SetModel(int client, int role)
 {
-	Handle hConfig = CreateKeyValues("Hosties3");
+	Handle hConfig = CreateKeyValues("TTT-Models");
 
 	if (!FileExists(CONFIG_FILE))
 	{
@@ -227,7 +227,7 @@ void SetModel(int client, int role)
 		int model = GetRandomInt(1, g_iDCount);
 		
 		Format(sName, sizeof(sName), "DModel%d", model);
-		if (KvJumpToKey(hConfig, "TTT-Model"))
+		if (KvJumpToKey(hConfig, "Models"))
 		{
 			KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
 		}
@@ -266,7 +266,7 @@ void SetModel(int client, int role)
 		int model = GetRandomInt(1, g_ITCount);
 		
 		Format(sName, sizeof(sName), "ITModel%d", model);
-		if (KvJumpToKey(hConfig, "TTT-Model"))
+		if (KvJumpToKey(hConfig, "Models"))
 		{
 			KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
 		}
