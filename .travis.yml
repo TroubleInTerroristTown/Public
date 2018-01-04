@@ -14,6 +14,7 @@ language: c
 env:
   - VERSION=1.8
   - VERSION=1.9
+  - VERSION=1.10
 
 before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "stable" ]]; then bash ci/test.sh $VERSION "dev"; fi'
@@ -29,6 +30,5 @@ notifications:
       - https://csgottt.com/discord-travis-ci.php
     on_success: always
     on_failure: always
-    on_start: always
     on_cancel: always
     on_error: always
