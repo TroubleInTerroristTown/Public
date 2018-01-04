@@ -183,19 +183,6 @@ public void OnPluginStart()
 	{
 		g_dDB = TTT_GetSQLConnection();
 	}
-
-	for (int i = 0; i <= MaxClients; i++)
-	{
-		if (TTT_IsClientValid(i))
-		{
-			OnClientCookiesCached(i);
-
-			if (g_dDB != null)
-			{
-				LoadClientCredits(i);
-			}
-		}
-	}
 }
 
 public void OnConfigsExecuted()
@@ -228,6 +215,16 @@ public void OnConfigsExecuted()
 	if(!CommandExists(sBuffer))
 	{
 		RegConsoleCmd(sBuffer, Command_ShowItems);
+	}
+
+	LoopValidClients(i)
+	{
+			OnClientCookiesCached(i);
+
+			if (g_cSQLCredits.BoolValue && g_dDB != null)
+			{
+				LoadClientCredits(i);
+			}
 	}
 }
 
