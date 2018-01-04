@@ -2,7 +2,7 @@
 
 
 ## Status
-Just bug fixes till 10th of december and from 11th inactive for this year.
+Active
 
 
 ## Build Status
