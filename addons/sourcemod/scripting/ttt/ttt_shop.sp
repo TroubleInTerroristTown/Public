@@ -182,6 +182,7 @@ public void OnPluginStart()
 	if (TTT_GetSQLConnection() != null)
 	{
 		g_dDB = TTT_GetSQLConnection();
+		AlterCreditsColumn();
 	}
 }
 
@@ -245,7 +246,7 @@ public void TTT_OnSQLConnect(Database db)
 void AlterCreditsColumn()
 {
 	char sQuery[64];
-	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT %d;", g_cStartCredits.IntValue);
+	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT 0;");
 
 	if (g_dDB != null)
 	{

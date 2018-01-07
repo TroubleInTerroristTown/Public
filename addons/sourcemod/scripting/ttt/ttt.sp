@@ -195,7 +195,7 @@ public void TTT_OnSQLConnect(Database db)
 void AlterKarmaColumn()
 {
 	char sQuery[64];
-	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `karma` INT(11) NOT NULL DEFAULT %d;", g_cstartKarma.IntValue);
+	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `karma` INT(11) NOT NULL DEFAULT 0;");
 
 	if (g_dDB != null)
 	{
