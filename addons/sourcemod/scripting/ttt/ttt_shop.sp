@@ -245,11 +245,10 @@ public void TTT_OnSQLConnect(Database db)
 
 void AlterCreditsColumn()
 {
-	char sQuery[64];
-	Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT 0;");
-
 	if (g_dDB != null)
 	{
+		char sQuery[72];
+		Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT 0;");
 		g_dDB.Query(SQL_AlterCreditsColumn, sQuery);
 	}
 	else
