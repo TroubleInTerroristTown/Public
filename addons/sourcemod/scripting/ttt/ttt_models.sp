@@ -47,6 +47,7 @@ public void OnMapStart()
 
 		if (!g_bEnable)
 		{
+			delete hConfig;
 			return;
 		}
 
@@ -195,6 +196,8 @@ public void OnMapStart()
 	else
 	{
 		SetFailState("Config for '%s' not found!", "Models");
+
+		delete hConfig;
 		return;
 	}
 	delete hConfig;
@@ -215,6 +218,8 @@ void SetModel(int client, int role)
 	if (!FileExists(CONFIG_FILE))
 	{
 		SetFailState("[TTT-Models] '%s' not found!", CONFIG_FILE);
+
+		delete hConfig;
 		return;
 	}
 
