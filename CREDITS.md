@@ -1,8 +1,10 @@
 Current developers
 ---
-- [Bara](https://steamcommunity.com/profiles/76561198041923231/)
-- [good_live](https://steamcommunity.com/profiles/76561198060485155/) 
-- [whocodes](http://steamcommunity.com/profiles/76561197987263853/) - [GitHub](https://github.com/whocodes)
+| User | Steam | Github |
+| --------- |:--------:|-------:|
+| Bara | https://steamcommunity.com/profiles/76561198041923231/ | ttps://github.com/Bara |
+| good_live | https://steamcommunity.com/profiles/76561198060485155/) | https://github.com/good-live |
+| whocodes | ttp://steamcommunity.com/profiles/76561197987263853/) | ttps://github.com/whocodes |
 
 Previous developers/Authors of useful plugins
 ---
@@ -16,14 +18,15 @@ Previous developers/Authors of useful plugins
 
 Communities with ttt servers or contribute with ideas
 ---
-- [Painlessgaming](https://painlessgaming.eu/)
-- [PrestigeGaming](https://www.prestige-gaming.org/)
-- [Dream Community](https://dream-community.de/)
-- [FragHaven.net](https://fraghaven.net)
-- [SkynetGaming](https://skynetgaming.net/)
-- [GFL](https://gflclan.com/)
-
-- [Allied Gaming](https://allied-gaming.com/) (?)
-- [Slayers Gaming](https://www.slayersgaming.com/) (?)
-___
-- Authors of [TroubleinTerroristTown.com](http://www.troubleinterroristtown.com/)
+| Community | Homepage | Server |
+| --------- |:--------:|-------:|
+| Painlessgaming | https://painlessgaming.eu/ | 89.163.145.160:27016 |
+| Prestige Gaming | https://www.prestige-gaming.org/ | 74.91.113.113:27015 |
+| Dream Community | https://dream-community.de/ | csgo.dream-com.de:26266 |
+| Skynet Gaming | https://skynetgaming.net/ | 173.234.30.235:27016 |
+| Games For Life | https://gflclan.com/ | 192.223.26.133:27015 |
+| Classy Wolves | https://clwo.eu | ttt.gproject.co.uk:27015 |
+| Surfburken | https://surfburken.se/ | 81.231.9.34:27015 |
+| Frag Haven | https://fraghaven.net | Unknown |
+| Allied Gaming | https://allied-gaming.com/ | No server |
+| Slayers Gaming | https://www.slayersgaming.com/ | No server |
