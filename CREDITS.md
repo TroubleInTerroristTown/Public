@@ -3,8 +3,8 @@ Current developers
 | User | Steam | Github |
 | --------- |:--------:|-------:|
 | Bara | https://steamcommunity.com/profiles/76561198041923231/ | ttps://github.com/Bara |
-| good_live | https://steamcommunity.com/profiles/76561198060485155/) | https://github.com/good-live |
-| whocodes | ttp://steamcommunity.com/profiles/76561197987263853/) | ttps://github.com/whocodes |
+| good_live | https://steamcommunity.com/profiles/76561198060485155/ | https://github.com/good-live |
+| whocodes | http://steamcommunity.com/profiles/76561197987263853/ | ttps://github.com/whocodes |
 
 Previous developers/Authors of useful plugins
 ---
