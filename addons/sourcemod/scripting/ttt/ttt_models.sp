@@ -14,6 +14,8 @@ bool g_bEnable = false;
 int g_iDCount = 0;
 int g_ITCount = 0;
 
+ConVar g_cDebug = null;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -26,6 +28,11 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
+}
+
+public void OnConfigsExecuted()
+{
+	g_cDebug = FindConVar("ttt_debug_mode");
 }
 
 public void OnMapStart()
@@ -60,6 +67,11 @@ public void OnMapStart()
 				
 				Format(sName, sizeof(sName), "DModel%d", i);
 				KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+
+				if (g_cDebug.BoolValue)
+				{
+					LogMessage("%s: %s", sName, sBuffer);
+				}
 				
 				if (DirExists(sBuffer))
 				{
@@ -79,18 +91,35 @@ public void OnMapStart()
 								if (StrContains(sFileName, ".mdl", false) != -1)
 								{
 									PrecacheModel(sFileName, true);
+									if (g_cDebug.BoolValue)
+									{
+										LogMessage("(OnMapStart) Precache: %s", sFileName);
+									}
 								}
 								
 								AddFileToDownloadsTable(sFileName);
+								if (g_cDebug.BoolValue)
+								{
+									LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+								}
 							}
 						}
 					}
 					
 					delete hModelDir;
 				}
+				else
+				{
+					LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
+				}
 				
 				Format(sName, sizeof(sName), "DMaterial%d", i);
 				KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+
+				if (g_cDebug.BoolValue)
+				{
+					LogMessage("(OnMapStart) %s: %s", sName, sBuffer);
+				}
 				
 				if (DirExists(sBuffer))
 				{
@@ -110,14 +139,26 @@ public void OnMapStart()
 								if (StrContains(sFileName, ".mdl", false) != -1)
 								{
 									PrecacheModel(sFileName, true);
+									if (g_cDebug.BoolValue)
+									{
+										LogMessage("(OnMapStart) Precache: %s", sFileName);
+									}
 								}
 								
 								AddFileToDownloadsTable(sFileName);
+								if (g_cDebug.BoolValue)
+								{
+									LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+								}
 							}
 						}
 					}
 					
 					delete hMaterialDir;
+				}
+				else
+				{
+					LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
 				}
 			}
 		}
@@ -150,14 +191,26 @@ public void OnMapStart()
 								if (StrContains(sFileName, ".mdl", false) != -1)
 								{
 									PrecacheModel(sFileName, true);
+									if (g_cDebug.BoolValue)
+									{
+										LogMessage("(OnMapStart) Precache: %s", sFileName);
+									}
 								}
 								
 								AddFileToDownloadsTable(sFileName);
+								if (g_cDebug.BoolValue)
+								{
+									LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+								}
 							}
 						}
 					}
 					
 					delete hModelDir;
+				}
+				else
+				{
+					LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
 				}
 				
 				Format(sName, sizeof(sName), "ITMaterial%d", i);
@@ -181,14 +234,26 @@ public void OnMapStart()
 								if (StrContains(sFileName, ".mdl", false) != -1)
 								{
 									PrecacheModel(sFileName, true);
+									if (g_cDebug.BoolValue)
+									{
+										LogMessage("(OnMapStart) Precache: %s", sFileName);
+									}
 								}
 								
 								AddFileToDownloadsTable(sFileName);
+								if (g_cDebug.BoolValue)
+								{
+									LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+								}
 							}
 						}
 					}
 					
 					delete hMaterialDir;
+				}
+				else
+				{
+					LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
 				}
 			}
 		}
@@ -255,12 +320,21 @@ void SetModel(int client, int role)
 						if (StrContains(sFileName, ".mdl", false) != -1)
 						{
 							SetEntityModel(client, sFileName);
+
+							if (g_cDebug.BoolValue)
+							{
+								LogMessage("Player: %N, Model: %s", client, sFileName);
+							}
 						}
 					}
 				}
 			}
 			
 			delete hDir;
+		}
+		else
+		{
+			LogError("(SetModel) Can't find %s dir: %s", sName, sBuffer);
 		}
 	}
 	
@@ -294,12 +368,20 @@ void SetModel(int client, int role)
 						if (StrContains(sFileName, ".mdl", false) != -1)
 						{
 							SetEntityModel(client, sFileName);
+							if (g_cDebug.BoolValue)
+							{
+								LogMessage("Player: %N, Model: %s", client, sFileName);
+							}
 						}
 					}
 				}
 			}
 			
 			delete hDir;
+		}
+		else
+		{
+			LogError("(SetModel) Can't find %s dir: %s", sName, sBuffer);
 		}
 	}
 	
