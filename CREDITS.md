@@ -22,6 +22,7 @@ Communities with ttt servers or contribute with ideas
 | --------- |:--------:|-------:|
 | Painlessgaming | https://painlessgaming.eu/ | 89.163.145.160:27016 |
 | Prestige Gaming | https://www.prestige-gaming.org/ | 74.91.113.113:27015 |
+| HeLLsGamers | https://hellsgamers.com/ | 67.228.181.74:27015 |
 | Dream Community | https://dream-community.de/ | csgo.dream-com.de:26266 |
 | Skynet Gaming | https://skynetgaming.net/ | 173.234.30.235:27016 |
 | Games For Life | https://gflclan.com/ | 192.223.26.133:27015 |
