@@ -21,6 +21,7 @@ ConVar g_cFreezeTime = null;
 ConVar g_cFreezeTraitors = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
+ConVar g_cMute = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iOldColors[MAXPLAYERS + 1][4];
@@ -55,6 +56,7 @@ public void OnPluginStart()
 	g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
 	g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
 	g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
+	g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -212,6 +214,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 		if (g_cFreezeTime.FloatValue > 0.0)
 		{
+			if (g_cMute.BoolValue)
+			{
+				LoopValidClients(i)
+				{
+					SetListenOverride(i, iVictim, Listen_No);
+				}
+			}
+
 			CreateTimer(g_cFreezeTime.FloatValue, Timer_FreezeEnd, GetClientUserId(iVictim));
 		}
 
@@ -235,6 +245,14 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 	if (TTT_IsClientValid(client))
 	{
 		PlayFreezeSound(client);
+
+		if (g_cMute.BoolValue)
+		{
+			LoopValidClients(i)
+			{
+				SetListenOverride(i, client, Listen_Default);
+			}
+		}
 
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
