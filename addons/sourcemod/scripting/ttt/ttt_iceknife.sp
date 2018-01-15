@@ -9,6 +9,13 @@
 #include <ttt>
 #include <multicolors>
 
+#undef REQUIRE_PLUGIN
+#pragma newdecls optional
+#include <basecomm>
+#include <sourcecomms>
+#pragma newdecls required
+#define REQUIRE_PLUGIN
+
 #define SHORT_NAME "iceknife"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
@@ -30,6 +37,9 @@ bool g_bFreezed[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIceKnife[MAXPLAYERS + 1] = { false, ... };
 
 char g_sFreezeSound[PLATFORM_MAX_PATH] = "";
+
+bool g_bSourceC = false;
+bool g_bBaseC = false;
 
 public Plugin myinfo =
 {
@@ -61,6 +71,35 @@ public void OnPluginStart()
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
+	
+	g_bSourceC = LibraryExists("sourcecomms");
+	g_bBaseC = LibraryExists("basecomm");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = true;
+	}
+	
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = false;
+	}
+	
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = false;
+	}
 }
 
 public void OnMapStart()
@@ -216,9 +255,17 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 		{
 			if (g_cMute.BoolValue)
 			{
-				LoopValidClients(i)
+				if (g_bSourceC)
 				{
-					SetListenOverride(i, iVictim, Listen_No);
+					SourceComms_SetClientMute(iVictim, true, 1, false, "Ice Knife");
+				}
+				else if (g_bBaseC)
+				{
+					BaseComm_SetClientMute(iVictim, true);
+				}
+				else
+				{
+					LogError("[%s] (OnTraceAttack) Can't mute \"%L\".", PLUGIN_NAME, iVictim);
 				}
 			}
 
@@ -248,9 +295,17 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 
 		if (g_cMute.BoolValue)
 		{
-			LoopValidClients(i)
+			if (g_bSourceC)
 			{
-				SetListenOverride(i, client, Listen_Default);
+				SourceComms_SetClientMute(client, false);
+			}
+			else if (g_bBaseC)
+			{
+				BaseComm_SetClientMute(client, false);
+			}
+			else
+			{
+				LogError("[%s] (Timer_FreezeEnd) Can't unmute \"%L\".", PLUGIN_NAME, client);
 			}
 		}
 
