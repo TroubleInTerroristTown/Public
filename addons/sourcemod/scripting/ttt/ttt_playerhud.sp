@@ -105,10 +105,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Format(sHealth, iHealthLength, "%T", "Hud Health", client);
 	Format(sPlayerHealth, iPlayerHealthLength, "%T", "Hud PlayerHealth", client, iHealth);
 	Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
-
-	char sClientKarma[12];
-	IntToString(iKarma, sClientKarma, sizeof(sClientKarma));
-	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, sClientKarma);
+	Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, iKarma);
 	
 	int iRole = TTT_GetClientRole(client);
 	int iTRole = TTT_GetClientRole(target);
