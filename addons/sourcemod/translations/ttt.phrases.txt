@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:04 UTC
+// Date: 2018-01-15 01:31:01 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -652,7 +652,7 @@
 
 	"Hud PlayerKarma"
 	{
-		"#format"	"{1:d}"
+		"#format"	"{1:s}"
 		"en"		"{1}"
 	}
 
