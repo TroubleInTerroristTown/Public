@@ -1,0 +1,81 @@
+// Exported from SourceMod Translator
+// Date: 2018-01-15 01:31:00 UTC
+// Language: Latvian (lv)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your killer is a Traitor"
+	{
+		"lv"		"Tevi Nogalinaja Traitors"
+	}
+
+	"You don't have enough money"
+	{
+		"lv"		"Tev nav pietiekami kreditu!"
+	}
+
+	"The weapon used has been"
+	{
+		"lv"		"Ieroci lietoja"
+	}
+
+	"Receiving logs"
+	{
+		"lv"		"Saņem log failus... Uzgaidi mirkli"
+	}
+
+	"Found Innocent"
+	{
+		"lv"		"Atrada  liki Tas bija  Innocents"
+	}
+
+	"Your bomb is not armed."
+	{
+		"lv"		"Tava bumba nav brunota."
+	}
+
+	"Right click to plant the C4"
+	{
+		"lv"		"Uzspied labo datorpeles kiliski, lai uzstaditu C4 bumbu!"
+	}
+
+	"You were RDM'd"
+	{
+		"lv"		"RDM Kill veica {1}!"
+	}
+
+	"You Are Unassigned"
+	{
+		"lv"		"Tava lomu vel nav izveleta!"
+	}
+
+	"Set C4 Timer"
+	{
+		"lv"		"Uzstadi C4 Taimeri"
+	}
+
+	"next round in"
+	{
+		"lv"		"Nakamais raunds saksies  pec sekundes"
+	}
+
+	"Found Fake"
+	{
+		"lv"		"Atrada viltus liki"
+	}
+
+	"AdminSet"
+	{
+		"lv"		"Tu iedevi {orchid}{1} {green}{2} {lightgreen} {3}!"
+	}
+
+	"SpecMenu: Player"
+	{
+		"lv"		"Speletajs"
+	}
+
+}

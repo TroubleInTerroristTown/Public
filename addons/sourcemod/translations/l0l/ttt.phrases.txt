@@ -1,0 +1,21 @@
+// Exported from SourceMod Translator
+// Date: 2018-01-15 01:31:01 UTC
+// Language: 1337speak (l0l)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"l0l"		"!3omb w1ll @rm '~ 60 $3c0nds, pr355 ]]= 7w1c[- 7`* €xpl0d3"
+	}
+
+	"Player is Now Detective"
+	{
+		"l0l"		"{orchid}{1} {lightgreen}'§ ~*'// {darkblue}|)3']['3c']['1v3!"
+	}
+
+}
