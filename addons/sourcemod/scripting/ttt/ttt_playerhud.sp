@@ -77,12 +77,12 @@ public Action Timer_UpdateText(Handle timer)
 					continue;
 				}
 
-				char sName[32];
+				char sName[MAX_NAME_LENGTH];
 				char sPlayerName[64];
-				char sHealth[32];
+				char sHealth[64];
 				char sPlayerHealth[64];
-				char sKarma[32];
-				char sPlayerKarma[32];
+				char sKarma[64];
+				char sPlayerKarma[64];
 				char sHintText[512];
 
 				if (PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))

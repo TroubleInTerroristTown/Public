@@ -451,7 +451,7 @@ public Action Command_Buy(int client, int args)
 
 	if (strlen(sItem) > 0)
 	{
-		ClientBuyItem(client, sItem);
+		ClientBuyItem(client, sItem, false);
 	}
 
 	return Plugin_Handled;
@@ -600,12 +600,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		char info[32];
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 
-		ClientBuyItem(client, info);
-
-		if (g_cReopenMenu.BoolValue && g_bReopen[client])
-		{
-			Command_Shop(client, 0);
-		}
+		ClientBuyItem(client, info, true);
 	}
 
 	else if (action == MenuAction_End)
@@ -614,7 +609,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	}
 }
 
-bool ClientBuyItem(int client, char[] item)
+bool ClientBuyItem(int client, char[] item, bool menu)
 {
 	int temp_item[Item];
 	for (int i = 0; i < g_aCustomItems.Length; i++)
@@ -673,6 +668,11 @@ bool ClientBuyItem(int client, char[] item)
 			{
 				CPrintToChat(client, "%s %T", g_sPluginTag, "You don't have enough money", client);
 				return false;
+			}
+
+			if (menu && g_cReopenMenu.BoolValue && g_bReopen[client])
+			{
+				Command_Shop(client, 0);
 			}
 		}
 	}
