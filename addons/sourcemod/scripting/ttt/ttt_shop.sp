@@ -135,7 +135,6 @@ public void OnPluginStart()
 
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
 
-	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
 	HookEvent("player_death", Event_PlayerDeath);
@@ -873,7 +872,7 @@ public Action Timer_CreditsTimer(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
@@ -883,16 +882,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 		{
 			g_iCredits[client] = g_cStartCredits.IntValue;
 		}
-	}
-	return Plugin_Continue;
-}
 
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-
-	if (TTT_IsClientValid(client))
-	{
 		if (TTT_IsRoundActive())
 		{
 			CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
