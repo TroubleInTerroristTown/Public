@@ -496,7 +496,7 @@ public Action Command_Shop(int client, int args)
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
 		Handle menu = CreateMenu(Menu_ShopHandler);
-		SetMenuTitle(menu, "%T", "TTT Shop", client, TTT_GetClientCredits(client));
+		SetMenuTitle(menu, "%T", "TTT Shop", client, g_iCredits[client]);
 
 		char display[128];
 		int temp_item[Item];
@@ -648,7 +648,7 @@ bool ClientBuyItem(int client, char[] item, bool menu)
 				}
 			}
 
-			if (TTT_GetClientCredits(client) >= price)
+			if (g_iCredits[client] >= price)
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
@@ -659,8 +659,8 @@ bool ClientBuyItem(int client, char[] item, bool menu)
 
 				if (res < Plugin_Stop)
 				{
-					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - price));
-					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
+					setCredits(client, (g_iCredits[client] - price));
+					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
 					return true;
 				}
 			}
