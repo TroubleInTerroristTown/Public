@@ -8,11 +8,16 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Template"
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Radio"
+
+ConVar g_cReopen = null;
+ConVar g_cReloadAccess = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
+StringMap g_smMenu = null;
+ArrayList g_alOrder = null;
 
 public Plugin myinfo =
 {
@@ -31,9 +36,104 @@ public void OnPluginStart()
 	
 	TTT_StartConfig("radio");
 	CreateConVar("ttt2_radio_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cReopen = AutoExecConfig_CreateConVar("ttt_radio_reopen", "0", "Reopen radio menu after choose?", _, true, 0.0, true, 1.0);
+	g_cReloadAccess = AutoExecConfig_CreateConVar("ttt_radio_reload_access", "z", "Admin flags to access reload radio command.");
 	TTT_EndConfig();
+
+	LoadMenu();
 	
 	RegConsoleCmd("sm_radio", Command_Radio);
+	RegConsoleCmd("sm_reload_radio", Command_ReloadRadio);
+}
+
+public void OnMapStart()
+{
+	LoadMenu();
+}
+
+public Action Command_ReloadRadio(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+	
+	char sAccess[18];
+	g_cReloadAccess.GetString(sAccess, sizeof(sAccess));
+	
+	if (!TTT_HasFlags(client, sAccess))
+	{
+		return Plugin_Handled;
+	}
+
+	LoadMenu();
+
+	return Plugin_Continue;
+}
+
+void LoadMenu()
+{
+	if (g_alOrder != null)
+	{
+		g_alOrder.Clear();
+		g_alOrder = null;
+	}
+
+	g_alOrder = new ArrayList(32);
+
+	if (g_smMenu != null)
+	{
+		g_smMenu.Clear();
+		g_smMenu = null;
+	}
+
+	g_smMenu = new StringMap();
+
+	char sFile[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/radio.ini");
+
+	if (!FileExists(sFile))
+	{
+		SetFailState("[TTT-Radio] Can't open File: %s", sFile);
+	}
+
+	KeyValues kv = new KeyValues("TTT-Radio");
+
+	if (!kv.ImportFromFile(sFile))
+	{
+		delete kv;
+		SetFailState("[TTT-Radio] Can't read %s correctly! (ImportFromFile)", sFile);
+		return;
+	}
+
+	if (!kv.JumpToKey("Order"))
+	{
+		delete kv;
+		SetFailState("[TTT-Radio] Can't read %s correctly! (JumpToKey)", sFile);
+		return;
+	}
+
+	if (!kv.GotoFirstSubKey(false))
+	{
+		delete kv;
+		SetFailState("[TTT-Radio] Can't read %s correctly! (KvGotoFirstSubKey)", sFile);
+		return;
+	}
+
+	char sKey[32];
+	char sTranslations[64];
+
+	do
+	{
+		kv.GetSectionName(sKey, sizeof(sKey));
+		kv.GetString(NULL_STRING, sTranslations, sizeof(sTranslations));
+
+		g_alOrder.PushString(sKey);
+		g_smMenu.SetString(sKey, sTranslations);
+	}
+	while (kv.GotoNextKey(false));
+
+	delete kv;
 }
 
 public void OnConfigsExecuted()
@@ -42,6 +142,7 @@ public void OnConfigsExecuted()
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
+
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
 	if (convar == g_cPluginTag)
@@ -183,40 +284,19 @@ void ShowRadioMenu(int client)
 {
 	Menu menu = new Menu(Menu_RadioHandler);
 	menu.SetTitle("%T", "TTT Radio Menu: Commands", client);
-	
-	// yes
-	// no
-	// maybe
-	// help
-	// Check
-	// Im with
-	// Acts suspicious
-	// Traitor
-	// Innocent
-	// See
-	
+
+	char sKey[32];
 	char sBuffer[64];
-	
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Yes", client);
-	menu.AddItem("yes", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: No", client);
-	menu.AddItem("no", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Maybe", client);
-	menu.AddItem("maybe", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Help", client);
-	menu.AddItem("help", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Check", client);
-	menu.AddItem("check", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Im With", client);
-	menu.AddItem("imwith", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Suspect", client);
-	menu.AddItem("suspect", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Traitor", client);
-	menu.AddItem("traitor", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: Innocent", client);
-	menu.AddItem("innocent", sBuffer);
-	Format(sBuffer, sizeof(sBuffer), "%T", "TTT Radio Menu: See", client);
-	menu.AddItem("see", sBuffer);
+	char sTranslations[128];
+
+	for (int i = 0; i < g_alOrder.Length; i++)
+	{
+		g_alOrder.GetString(i, sKey, sizeof(sKey));
+		g_smMenu.GetString(sKey, sBuffer, sizeof(sBuffer));
+		Format(sTranslations, sizeof(sTranslations), "TTT Radio Menu: %s", sBuffer);
+		Format(sTranslations, sizeof(sTranslations), "%T", sTranslations, client);
+		menu.AddItem(sKey, sTranslations);
+	}
 	
 	menu.ExitButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -230,10 +310,25 @@ public int Menu_RadioHandler(Menu menu, MenuAction action, int client, int param
 		char sCommand[32];
 		menu.GetItem(param, sCommand, sizeof(sCommand));
 		FakeClientCommand(client, "sm_radio %s", sCommand);
+
+		RequestFrame(Frame_Reopen, GetClientUserId(client));
 	}
 	else if (action == MenuAction_End)
 	{
 		delete menu;
+	}
+}
+
+public void Frame_Reopen(any userid)
+{
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client))
+	{
+		if (g_cReopen.BoolValue)
+		{
+			Command_Radio(client, 0);
+		}
 	}
 }
 
