@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ev
 
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
