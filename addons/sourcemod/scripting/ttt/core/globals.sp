@@ -259,6 +259,16 @@ ConVar g_cPrimaryWeaponUpdate = null;
 ConVar g_cSecondaryWeaponUpdate = null;
 ConVar g_cAdvert = null;
 ConVar g_cInnocentKnife = null;
+ConVar g_cEnableDamageKarma = null;
+ConVar g_cDamageKarmaII = null;
+ConVar g_cDamageKarmaIT = null;
+ConVar g_cDamageKarmaID = null;
+ConVar g_cDamageKarmaTI = null;
+ConVar g_cDamageKarmaTT = null;
+ConVar g_cDamageKarmaTD = null;
+ConVar g_cDamageKarmaDI = null;
+ConVar g_cDamageKarmaDT = null;
+ConVar g_cDamageKarmaDD = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

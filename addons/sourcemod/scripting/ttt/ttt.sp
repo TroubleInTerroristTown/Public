@@ -1581,21 +1581,41 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			subtractKarma(iAttacker, g_cDamageKarmaII.IntValue, false);
+		}
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Traitor) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			addKarma(iAttacker, g_cDamageKarmaIT.IntValue, false);
+		}
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			subtractKarma(iAttacker, g_cDamageKarmaID.IntValue, false);
+		}
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Innocent) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			addKarma(iAttacker, g_cDamageKarmaTI.IntValue, false);
+		}
 
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
@@ -1603,27 +1623,52 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 		Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Traitor) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
 
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			subtractKarma(iAttacker, g_cDamageKarmaTT.IntValue, false);
+		}
+
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Detective) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			addKarma(iAttacker, g_cDamageKarmaTD.IntValue, false);
+		}
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
 
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			subtractKarma(iAttacker, g_cDamageKarmaDI.IntValue, false);
+		}
+
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Traitor) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			addKarma(iAttacker, g_cDamageKarmaDT.IntValue, false);
+		}
 	}
 	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
 	{
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
 		addArrayTime(iItem);
+
+		if (g_cEnableDamageKarma.BoolValue)
+		{
+			subtractKarma(iAttacker, g_cDamageKarmaDD.IntValue, false);
+		}
 	}
 	
 	if (fDamage != damage)
