@@ -75,19 +75,19 @@ mkdir build
 echo -e "Move addons, materials and sound folder\n"
 mv addons materials sound build/
 
-set +e
 echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
 rm -r build/addons/sourcemod/bin
 rm -r build/addons/sourcemod/configs/geoip
 rm -r build/addons/sourcemod/configs/sql-init-scripts
-rm build/addons/sourcemod/configs/*
+rm -r build/addons/sourcemod/configs/*.txt
+rm -r build/addons/sourcemod/configs/*.ini
+rm -r build/addons/sourcemod/configs/*.cfg
 rm -r build/addons/sourcemod/data
 rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
-set -e
 
 echo -e "Add LICENSE, CVARS.txt and adminmenu_custom.txt to build package\n"
 cp LICENSE CVARS.txt adminmenu_custom.txt build/

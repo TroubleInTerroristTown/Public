@@ -1,7 +1,6 @@
 #!/bin/bash
 set -ev
 
-git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
 VERSION=2.3.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
