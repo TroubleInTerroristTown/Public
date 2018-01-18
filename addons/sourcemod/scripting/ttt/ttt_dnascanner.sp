@@ -12,7 +12,7 @@
 
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
-ConVar g_cPrintToAll = null;
+ConVar g_cPrintTo = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 
@@ -41,7 +41,7 @@ public void OnPluginStart()
 	g_cLongName = AutoExecConfig_CreateConVar("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop");
 	g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
-	g_cPrintToAll = AutoExecConfig_CreateConVar("dna_print_message_to_all", "0", "Print scanner to all players? (Default: false)", _, true, 0.0, true, 1.0);
+	g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to_all", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
 	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
@@ -129,11 +129,66 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 
 	if (attacker > 0 && attacker != victim)
 	{
-		if (g_cPrintToAll.BoolValue)
+		ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+		ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
+
+		char sAttackerID[32], sClientID[32], sRole[24];
+
+		if (TTT_GetClientRole(attacker) == TTT_TEAM_INNOCENT)
+		{
+			Format(sRole, sizeof(sRole), "Innocent");
+		}
+		else if (TTT_GetClientRole(attacker) == TTT_TEAM_TRAITOR)
+		{
+			Format(sRole, sizeof(sRole), "Traitor");
+		}
+		else if (TTT_GetClientRole(attacker) == TTT_TEAM_DETECTIVE)
+		{
+			Format(sRole, sizeof(sRole), "Detective");
+		}
+		
+		if (cAddLogs.BoolValue)
+		{
+			if (cLogFormat.IntValue == 1)
+			{
+				GetClientAuthId(attacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+			}
+			else if (cLogFormat.IntValue == 2)
+			{
+				GetClientAuthId(attacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+			}
+			else if (cLogFormat.IntValue == 3)
+			{
+				GetClientAuthId(attacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
+				GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+			}
+			
+			if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
+			{
+				Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+				Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+			}
+		}
+
+		TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %N%s (%s) with Weapon: %s]", client, sClientID, attacker, sAttackerID, sRole);
+
+		if (g_cPrintTo.IntValue == 2)
 		{
 			LoopValidClients(j)
 			{
 				CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			}
+		}
+		else if (g_cPrintTo.IntValue == 1)
+		{
+			LoopValidClients(j)
+			{
+				if (TTT_GetClientRole(j) == TTT_TEAM_DETECTIVE)
+				{
+					CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+				}
 			}
 		}
 		else
@@ -143,11 +198,49 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	}
 	else
 	{
-		if (g_cPrintToAll.BoolValue)
+		ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+		ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
+
+		char sClientID[32];
+		
+		if (cAddLogs.BoolValue)
+		{
+			if (cLogFormat.IntValue == 1)
+			{
+				GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+			}
+			else if (cLogFormat.IntValue == 2)
+			{
+				GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+			}
+			else if (cLogFormat.IntValue == 3)
+			{
+				GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+			}
+			
+			if (strlen(sClientID) > 2)
+			{
+				Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+			}
+		}
+
+		TTT_LogString("-> [%N%s (Detective) scanned a body, player committed suicide", client, sClientID);
+
+		if (g_cPrintTo.IntValue == 2)
 		{
 			LoopValidClients(j)
 			{
 				CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body suicide", j, client);
+			}
+		}
+		else if (g_cPrintTo.IntValue == 1)
+		{
+			LoopValidClients(j)
+			{
+				if (TTT_GetClientRole(j) == TTT_TEAM_DETECTIVE)
+				{
+					CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body suicide", client, client);
+				}
 			}
 		}
 		else
