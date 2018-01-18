@@ -118,8 +118,8 @@ void SetupConfig()
 	g_cDamageKarmaID = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_detective_subtract", "1", "The amount of karma an innocent will lose for damage a detective.");
 	g_cDamageKarmaTI = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_innocent_add", "1", "The amount of karma a traitor will recieve for damage an innocent.");
 	g_cDamageKarmaTT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_traitor_subtract", "1", "The amount of karma a traitor will lose for damage a traitor.");
-	g_cDamageKarmaTD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_detective_add", "1" "The amount of karma a traitor will recieve for damage a detective.");
-	g_cDamageKarmaDI = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_innocent_subtract", "1" "The amount of karma a detective will lose for damage an innocent.");
+	g_cDamageKarmaTD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_detective_add", "1", "The amount of karma a traitor will recieve for damage a detective.");
+	g_cDamageKarmaDI = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_innocent_subtract", "1", "The amount of karma a detective will lose for damage an innocent.");
 	g_cDamageKarmaDT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_traitor_add", "1", "The amount of karma a detective will recieve for damage a traitor.");
 	g_cDamageKarmaDD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_detective_subtract", "1", "The amount of karma a detective will lose for damage a detective.");
 	
