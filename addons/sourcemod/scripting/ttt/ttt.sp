@@ -2872,15 +2872,15 @@ public int TTT_OnButtonPress(int client, int button)
 							char sRole[16];
 							if (g_iRole[client] == TTT_TEAM_INNOCENT)
 							{
-								Format(sRole[client], sizeof(sRole), "Innocent");
+								Format(sRole, sizeof(sRole), "Innocent");
 							}
 							else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 							{
-								Format(sRole[client], sizeof(sRole), "Detective");
+								Format(sRole, sizeof(sRole), "Detective");
 							}
 							else if (g_iRole[client] == TTT_TEAM_TRAITOR)
 							{
-								Format(sRole[client], sizeof(sRole), "Traitor");
+								Format(sRole, sizeof(sRole), "Traitor");
 							}
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
