@@ -18,6 +18,8 @@ forward Action TTT_OnItemPurchased(int client, const char[] itemshort, bool coun
 
 forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item);
 
+forward Action TTT_OnItemsReset();
+
 /*
  * Registers a custom item in the menu/shop.
  *

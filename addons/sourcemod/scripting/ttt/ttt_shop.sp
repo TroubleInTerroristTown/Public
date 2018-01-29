@@ -64,6 +64,7 @@ Handle g_hOnItemPurchased = null;
 Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
+Handle g_hOnItemsReset = null;
 Handle g_hReopenCookie = null;
 
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -98,6 +99,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
 
+	g_hOnItemsReset = CreateGlobalForward("TTT_OnItemsReset", ET_Ignore);
+
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
@@ -128,15 +131,13 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_reshop", Command_ReopenShop);
 	RegConsoleCmd("sm_rshop", Command_ReopenShop);
 
-	g_aCustomItems = new ArrayList(84);
-
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
 
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
+	RegAdminCmd("sm_resetitems", Command_ResetItems, ADMFLAG_ROOT);
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
-
 	HookEvent("player_death", Event_PlayerDeath);
 
 	TTT_StartConfig("shop");
@@ -183,6 +184,16 @@ public void OnPluginStart()
 		g_dDB = TTT_GetSQLConnection();
 		AlterCreditsColumn();
 	}
+}
+
+public void OnMapStart()
+{
+	g_aCustomItems = new ArrayList(84);
+}
+
+public void OnMapEnd()
+{
+	ResetItemsArray();
 }
 
 public void OnConfigsExecuted()
@@ -1190,6 +1201,14 @@ public Action Command_SetCredits(int client, int args)
 	return Plugin_Continue;
 }
 
+public Action Command_ResetItems(int client, int args)
+{
+	ResetItemsArray();
+
+	Call_StartForward(g_hOnItemsReset);
+	Call_Finish();
+}
+
 public int Native_GetClientCredits(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
@@ -1225,4 +1244,13 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 		return g_iCredits[client];
 	}
 	return 0;
+}
+
+void ResetItemsArray()
+{
+	if (g_aCustomItems != null)
+	{
+		g_aCustomItems.Clear(); // Reset array, so we've the new name of every items
+		g_aCustomItems = null;
+	}
 }

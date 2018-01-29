@@ -67,15 +67,24 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	char sBuffer[MAX_ITEM_LENGTH];
-	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue, g_cDiscountD.BoolValue);
-	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue, g_cDiscountT.BoolValue);
-	
 	g_cDebug = FindConVar("ttt_debug_mode");
 	g_cPluginTag = FindConVar("ttt_plugin_tag");
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
+	char sBuffer[MAX_ITEM_LENGTH];
+	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue, g_cDiscountD.BoolValue);
+	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue, g_cDiscountT.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

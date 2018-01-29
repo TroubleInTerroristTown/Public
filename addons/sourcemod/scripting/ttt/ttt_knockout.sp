@@ -136,6 +136,16 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);

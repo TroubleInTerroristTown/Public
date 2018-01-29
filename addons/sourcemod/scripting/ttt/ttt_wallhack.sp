@@ -114,6 +114,16 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	if (g_bCPS && g_bGlow)
 	{
 		char sBuffer[MAX_ITEM_LENGTH];

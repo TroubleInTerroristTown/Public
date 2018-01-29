@@ -77,6 +77,16 @@ public void OnConfigsExecuted()
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);

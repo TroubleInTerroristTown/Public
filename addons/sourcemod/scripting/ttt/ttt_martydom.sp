@@ -78,6 +78,16 @@ public void OnClientDisconnect(int client)
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);

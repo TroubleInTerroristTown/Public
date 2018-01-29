@@ -93,6 +93,16 @@ public void OnConfigsExecuted()
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 

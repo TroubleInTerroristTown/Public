@@ -61,6 +61,16 @@ public void OnConfigsExecuted()
 {
 	SetupBlackout();
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	

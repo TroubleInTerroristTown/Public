@@ -84,13 +84,22 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue, g_cDiscountT.BoolValue);
 	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue, g_cDiscountD.BoolValue);
 	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue, g_cDiscountI.BoolValue);
-
 }
 
 public void OnClientDisconnect(int client)

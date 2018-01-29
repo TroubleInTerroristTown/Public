@@ -52,10 +52,17 @@ public Action Command_UItem(int client, int args)
 
 public void OnConfigsExecuted()
 {
-	if (TTT_IsLoaded())
-	{
-		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
-	}
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
+	TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
 }
 
 public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item)

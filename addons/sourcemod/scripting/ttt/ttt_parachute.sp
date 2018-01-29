@@ -54,6 +54,16 @@ public void OnConfigsExecuted()
 		return;
 	}
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cDiscount.BoolValue);

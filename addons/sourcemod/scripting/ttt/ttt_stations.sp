@@ -91,6 +91,16 @@ public void OnMapStart()
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cHealth.GetString(sBuffer, sizeof(sBuffer));

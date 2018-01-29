@@ -134,6 +134,16 @@ public void OnConfigsExecuted()
 		UseTAGrenade.SetBool(true);
 	}
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	

@@ -157,6 +157,16 @@ public void OnConfigsExecuted()
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName_C4.GetString(sBuffer, sizeof(sBuffer));

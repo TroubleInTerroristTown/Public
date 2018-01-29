@@ -182,6 +182,16 @@ public void OnClientPutInServer(int client)
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[128];
 	
 	g_cKev_Long.GetString(sBuffer, sizeof(sBuffer));
@@ -268,7 +278,6 @@ public void OnConfigsExecuted()
 
 	g_cScout_Long.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(SCOUT_ITEM_SHORT, sBuffer, g_cScout_Price.IntValue, TTT_TEAM_TRAITOR, g_cScout_Prio.IntValue, g_cScout_Discount.BoolValue);
-
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)

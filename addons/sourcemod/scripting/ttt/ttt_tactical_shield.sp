@@ -56,6 +56,16 @@ public void OnConfigsExecuted()
 		return;
 	}
 	
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));

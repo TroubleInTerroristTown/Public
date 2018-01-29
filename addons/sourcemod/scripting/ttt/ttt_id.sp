@@ -124,6 +124,16 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public void OnConfigsExecuted()
 {
+	RegisterItem();
+}
+
+public Action TTT_OnItemsReset()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongNameT.GetString(sBuffer, sizeof(sBuffer));
