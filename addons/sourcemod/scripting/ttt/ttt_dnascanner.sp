@@ -181,7 +181,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 			}
 		}
 
-		TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %N%s (%s) with Weapon: %s]", client, sClientID, attacker, sAttackerID, sRole);
+		TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %N%s (%s) with Weapon: %s]", client, sClientID, attacker, sAttackerID, sRole, iRagdollC[Weaponused]);
 
 		if (g_cPrintTo.IntValue == 2)
 		{
