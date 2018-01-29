@@ -193,7 +193,7 @@ public void OnMapStart()
 
 public void OnMapEnd()
 {
-	ResetItemsArray();
+	ResetItemsArray(false);
 }
 
 public void OnConfigsExecuted()
@@ -1203,7 +1203,7 @@ public Action Command_SetCredits(int client, int args)
 
 public Action Command_ResetItems(int client, int args)
 {
-	ResetItemsArray();
+	ResetItemsArray(true);
 
 	Call_StartForward(g_hOnItemsReset);
 	Call_Finish();
@@ -1246,11 +1246,16 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 	return 0;
 }
 
-void ResetItemsArray()
+void ResetItemsArray(bool initArray = false)
 {
 	if (g_aCustomItems != null)
 	{
 		g_aCustomItems.Clear(); // Reset array, so we've the new name of every items
 		g_aCustomItems = null;
+	}
+
+	if (initArray)
+	{
+		g_aCustomItems = new ArrayList(84);
 	}
 }
