@@ -1491,7 +1491,7 @@ stock void BanBadPlayerKarma(int client)
 
 	if (g_bSourcebans)
 	{
-		SBBanPlayer(0, client, g_ckarmaBanLength.IntValue, sReason);
+		SourceBans_BanPlayer(0, client, g_ckarmaBanLength.IntValue, sReason);
 	}
 	else
 	{
