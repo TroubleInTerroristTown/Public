@@ -1,7 +1,7 @@
 // *************************************************************************
 //  This file is part of SourceBans++.
 //
-//  Copyright (C) 2014-2016 SourceBans++ Dev Team <https://github.com/sbpp>
+//  Copyright (C) 2014-2016 Sarabveer Singh <me@sarabveer.me>
 //
 //  SourceBans++ is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with SourceBans++. If not, see <http://www.gnu.org/licenses/>.
 //
-//  This file based off work(s) covered by the following copyright(s):
+//  This file incorporates work covered by the following copyright(s):
 //
 //   SourceBans 1.4.11
 //   Copyright (C) 2007-2015 SourceBans Team - Part of GameConnect
@@ -29,9 +29,9 @@
 #endif
 #define _sourcebans_included
 
-public SharedPlugin:__pl_sourcebans =
+public SharedPlugin __pl_sourcebans =
 {
-	name = "sourcebans", 
+	name = "SourceBans",
 	file = "sourcebans.smx",
 	#if defined REQUIRE_PLUGIN
 	required = 1
@@ -41,7 +41,7 @@ public SharedPlugin:__pl_sourcebans =
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_sourcebans_SetNTVOptional()
+public void __pl_sourcebans_SetNTVOptional()
 {
 	MarkNativeAsOptional("SBBanPlayer");
 }
@@ -57,28 +57,6 @@ public __pl_sourcebans_SetNTVOptional()
  * @param reason	The reason to ban the player from the server
  * @noreturn
  *********************************************************/
-#pragma deprecated Use SourceBans_BanPlayer() instead.
-native SBBanPlayer(client, target, time, String:reason[]);
-
-/*********************************************************
- * Ban Player from server
- *
- * @param client	The client index of the admin who is banning the client
- * @param target	The client index of the player to ban
- * @param time		The time to ban the player for (in minutes, 0 = permanent)
- * @param reason	The reason to ban the player from the server
- * @noreturn
- *********************************************************/
-native SourceBans_BanPlayer(client, target, time, String:reason[]);
-
-/*********************************************************
- * Called when the admin banning the player.
- *
- * @param           The client index of the admin who is banning the client.
- * @param target    The client index of the player to ban
- * @param time      The time to ban the player for (in minutes, 0 = permanent)
- * @param reason    The reason to ban the player from the server
- *********************************************************/
-forward SourceBans_OnBanPlayer(client, target, time, String:reason[]);
+native void SBBanPlayer(int client, int target, int time, char[] reason);
 
 //Yarr!
