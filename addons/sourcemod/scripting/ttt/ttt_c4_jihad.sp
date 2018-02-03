@@ -57,7 +57,7 @@ Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 
 char g_sPlantSeconds[][] = {
-	"10",
+	// "10", // 10 seconds is a bit too short, but we'll add a cvar to make it configurable
 	"20",
 	"30",
 	"40",
