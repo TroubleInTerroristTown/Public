@@ -1529,7 +1529,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 		{
 			if (g_ckarmaDMG_up.BoolValue || (g_iKarma[iAttacker] < g_cstartKarma.IntValue))
 			{
-				fDamage = (damage * FloatDiv(float(g_iKarma[iAttacker]), float(g_cstartKarma.IntValue)));
+				fDamage = (damage * (float(g_iKarma[iAttacker]) / float(g_cstartKarma.IntValue)));
 			}
 		}
 	}
