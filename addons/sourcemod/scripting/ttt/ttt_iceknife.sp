@@ -68,10 +68,10 @@ public void OnPluginStart()
 	g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
 	g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
-	
+
 	g_bSourceC = LibraryExists("sourcecomms");
 	g_bBaseC = LibraryExists("basecomm");
 }
@@ -82,7 +82,7 @@ public void OnLibraryAdded(const char[] name)
 	{
 		g_bSourceC = true;
 	}
-	
+
 	if (StrEqual(name, "basecomm"))
 	{
 		g_bBaseC = true;
@@ -95,7 +95,7 @@ public void OnLibraryRemoved(const char[] name)
 	{
 		g_bSourceC = false;
 	}
-	
+
 	if (StrEqual(name, "basecomm"))
 	{
 		g_bBaseC = false;
@@ -115,7 +115,7 @@ public void OnMapStart()
 	{
 		PrecacheSound(g_sFreezeSound, true);
 	}
-	
+
 	delete hConfig;
 }
 
@@ -157,6 +157,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	if (TTT_IsClientValid(client))
 	{
 		GetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+		ResetIceK(client);
 	}
 }
 
@@ -174,7 +175,7 @@ void RegisterItem()
 {
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
-	
+
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
@@ -188,10 +189,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				char sName[MAX_ITEM_LENGTH], sTag[64];
 				g_cLongName.GetString(sName, sizeof(sName));
-				
+
 				ConVar hTag = FindConVar("ttt_plugin_tag");
 				hTag.GetString(sTag, sizeof(sTag));
-				
+
 				CPrintToChat(client, "%s %T", sTag, "Bought All", client, sName, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
