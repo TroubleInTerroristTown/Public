@@ -102,7 +102,6 @@ Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
-Handle g_hOnUpdate1 = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;

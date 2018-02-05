@@ -2398,10 +2398,6 @@ public Action Timer_1(Handle timer)
 	float vec[3];
 	LoopValidClients(i)
 	{
-		Call_StartForward(g_hOnUpdate1);
-		Call_PushCell(i);
-		Call_Finish();
-
 		if (IsPlayerAlive(i))
 		{
 			if (g_iRole[i] == TTT_TEAM_TRAITOR)

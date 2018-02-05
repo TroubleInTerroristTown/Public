@@ -37,14 +37,6 @@ enum Ragdolls
 }
 
 /*
- * Called every second
- *
- * @param client            Client index.
- */
-#pragma deprecated TTT_OnUpdate1 will be removed in the near future
-forward void TTT_OnUpdate1(int client);
-
-/*
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
  * You could slay players here to force them to sit out.
