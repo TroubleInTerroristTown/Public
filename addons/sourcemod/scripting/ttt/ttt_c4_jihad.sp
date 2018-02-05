@@ -43,6 +43,7 @@ ConVar g_cJihadMagnitude = null;
 ConVar g_cDiscountC4 = null;
 ConVar g_cDiscountJ = null;
 ConVar g_cC4BeepVolume = null;
+ConVar g_cEnableWires = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
@@ -100,6 +101,7 @@ public void OnPluginStart()
 	g_cDiscountC4 = AutoExecConfig_CreateConVar("c4_discount_traitor", "0", "Should c4 discountable?", _, true, 0.0, true, 1.0);
 	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
 	g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
+	g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
@@ -526,7 +528,7 @@ public int TTT_OnButtonPress(int client, int button)
 			}
 		}
 	}
-	if (button & IN_RELOAD && g_iDefusePlayerIndex[client] == -1)
+	if (button & IN_RELOAD && g_iDefusePlayerIndex[client] == -1 && g_cEnableWires.BoolValue)
 	{
 		int target = GetClientAimTarget(client, false);
 		if (target > 0)
@@ -544,7 +546,7 @@ public int TTT_OnButtonPress(int client, int button)
 			{
 				int planter = GetEntProp(target, Prop_Send, "m_hOwnerEntity");
 
-				if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
+				if (!TTT_IsClientValid(planter))
 				{
 					return;
 				}
@@ -569,7 +571,7 @@ public int TTT_OnButtonPress(int client, int button)
 
 stock void showPlantMenu(int client)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
@@ -594,7 +596,7 @@ stock void showPlantMenu(int client)
 
 stock void showDefuseMenu(int client)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 	{
 		return;
 	}
@@ -620,7 +622,7 @@ stock void showDefuseMenu(int client)
 
 public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 	{
 		return;
 	}
@@ -656,7 +658,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 
 public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client) || !IsPlayerAlive(client))
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 	{
 		return;
 	}
@@ -667,7 +669,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		int planter = g_iDefusePlayerIndex[client];
 		g_iDefusePlayerIndex[client] = -1;
 
-		if (planter < 1 || planter > MaxClients || !IsClientInGame(planter))
+		if (!TTT_IsClientValid(planter))
 		{
 			g_iDefusePlayerIndex[client] = -1;
 			return;
@@ -683,7 +685,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		wire = StringToInt(info);
 		if (wire == correctWire)
 		{
-			if (1 <= planter <= MaxClients && IsClientInGame(planter))
+			if (!TTT_IsClientValid(planter))
 			{
 				CPrintToChat(client, "%s %T", g_sPluginTag, "You Defused Bomb", client, planter);
 				CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, client);
@@ -713,7 +715,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 
 stock float plantBomb(int client, float time)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
@@ -800,7 +802,7 @@ stock int findBombPlanter(int &bomb)
 
 stock int findBomb(int client)
 {
-	if (client < 1 || client > MaxClients || !IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return -1;
 	}
@@ -888,6 +890,6 @@ stock void removeBomb(int client)
 			continue;
 		}
 
-		AcceptEntityInput(iEnt, "Kill");
+		TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_C4);
 	}
 }
