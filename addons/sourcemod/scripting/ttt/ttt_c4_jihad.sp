@@ -45,6 +45,7 @@ ConVar g_cDiscountJ = null;
 ConVar g_cC4BeepVolume = null;
 ConVar g_cEnableWires = null;
 ConVar g_cWireCount = null;
+ConVar g_cPlantSeconds = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
@@ -58,14 +59,8 @@ bool g_bHasActiveBomb[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hExplosionTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 
-char g_sPlantSeconds[][] = {
-	// "10", // 10 seconds is a bit too short, but we'll add a cvar to make it configurable
-	"20",
-	"30",
-	"40",
-	"50",
-	"60"
-};
+int g_iPlantSecondsCount;
+char g_sPlantSeconds[12][32];
 
 public Plugin myinfo =
 {
@@ -104,6 +99,8 @@ public void OnPluginStart()
 	g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
 	g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
 	g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires?", _, true, 1.0);
+	g_cPlantSeconds = AutoExecConfig_CreateConVar("c4_plant_seconds", "20,30,40,50,60", "Plant seconds (Separate numbers with ,)");
+	g_cPlantSeconds.AddChangeHook(OnConVarChanged);
 	TTT_EndConfig();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
@@ -160,6 +157,10 @@ public void OnConfigsExecuted()
 	g_cPluginTag = FindConVar("ttt_plugin_tag");
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+	char sBuffer[128];
+	g_cPlantSeconds.GetString(sBuffer, sizeof(sBuffer));
+	g_iPlantSecondsCount = ExplodeString(sBuffer, ",", g_sPlantSeconds, sizeof(g_sPlantSeconds), sizeof(g_sPlantSeconds[]));
 	
 	RegisterItem();
 }
@@ -185,6 +186,10 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cPluginTag)
 	{
 		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
+	else if (convar == g_cPlantSeconds)
+	{
+		g_iPlantSecondsCount = ExplodeString(newValue, ",", g_sPlantSeconds, sizeof(g_sPlantSeconds), sizeof(g_sPlantSeconds[]));
 	}
 }
 
@@ -586,7 +591,7 @@ stock void showPlantMenu(int client)
 	SetMenuTitle(menuHandle, sTitle);
 	
 	char sSeconds[64];
-	for(int i; i < sizeof(g_sPlantSeconds); i++)
+	for(int i = 0; i < g_iPlantSecondsCount; i++)
 	{
 		Format(sSeconds, sizeof(sSeconds), "%T", "Seconds", client, StringToInt(g_sPlantSeconds[i]));
 		AddMenuItem(menuHandle, g_sPlantSeconds[i], sSeconds);
@@ -633,7 +638,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 		char info[100];
 		GetMenuItem(menu, option, info, sizeof(info));
 		
-		for(int i; i < sizeof(g_sPlantSeconds); i++)
+		for(int i = 0; i < g_iPlantSecondsCount; i++)
 		{
 			if (StrEqual(info, g_sPlantSeconds[i]))
 			{
