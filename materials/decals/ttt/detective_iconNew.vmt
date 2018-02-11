@@ -2,7 +2,7 @@
 {
 	"$receiveflashlight"	0
 	"$singlepassflashlight"	0
-	"$basetexture" "sprites/sg_innocent_icon"
+	"$basetexture" "decals/ttt/detective_iconNew"
 	"$alphatest" 1
 	"$translucent" 1
 	"$vertexalpha" 1
