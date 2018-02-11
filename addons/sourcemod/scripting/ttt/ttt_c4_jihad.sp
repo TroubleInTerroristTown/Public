@@ -44,6 +44,7 @@ ConVar g_cDiscountC4 = null;
 ConVar g_cDiscountJ = null;
 ConVar g_cC4BeepVolume = null;
 ConVar g_cEnableWires = null;
+ConVar g_cWireCount = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
@@ -102,6 +103,7 @@ public void OnPluginStart()
 	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
 	g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
 	g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
+	g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires?", _, true, 1.0);
 	TTT_EndConfig();
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
@@ -602,20 +604,19 @@ stock void showDefuseMenu(int client)
 	}
 
 	char sTitle[128];
-	char sWire1[64], sWire2[64], sWire3[64], sWire4[64];
-
-	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
-	Format(sWire1, sizeof(sWire1), "%T", "C4 Wire", client, 1);
-	Format(sWire2, sizeof(sWire2), "%T", "C4 Wire", client, 2);
-	Format(sWire3, sizeof(sWire3), "%T", "C4 Wire", client, 3);
-	Format(sWire4, sizeof(sWire4), "%T", "C4 Wire", client, 4);
+	char sWire[64], sWireInt[12];
 
 	Handle menuHandle = CreateMenu(defuseBombMenu);
 	SetMenuTitle(menuHandle, sTitle);
-	AddMenuItem(menuHandle, "1", sWire1);
-	AddMenuItem(menuHandle, "2", sWire2);
-	AddMenuItem(menuHandle, "3", sWire3);
-	AddMenuItem(menuHandle, "4", sWire4);
+	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
+
+	for (int i = 1; i <= g_cWireCount.IntValue; i++)
+	{
+		Format(sWire, sizeof(sWire), "%T", "C4 Wire", client, i);
+		IntToString(i, sWireInt, sizeof(sWireInt));
+		AddMenuItem(menuHandle, sWireInt, sWire);
+	}
+
 	SetMenuPagination(menuHandle, 4);
 	DisplayMenu(menuHandle, client, 10);
 }
