@@ -185,22 +185,12 @@ public void OnPluginStart()
 		AlterCreditsColumn();
 	}
 
-	if (g_aCustomItems != null)
-	{
-		g_aCustomItems.Clear();
-	}
-
-	g_aCustomItems = new ArrayList(84);
+	ResetItemsArray(true);
 }
 
 public void OnMapStart()
 {
-	if (g_aCustomItems != null)
-	{
-		g_aCustomItems.Clear();
-	}
-
-	g_aCustomItems = new ArrayList(84);
+	ResetItemsArray(true);
 }
 
 public void OnMapEnd()
