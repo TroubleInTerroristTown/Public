@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-01-15 01:30:59 UTC
+// Date: 2018-03-10 16:53:55 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -130,7 +130,7 @@
 
 	"Inspected body. The extracted data are the following"
 	{
-		"de"		"Die Leiche wurde untersucht, folgende Informationen wurden herausgefunden:"
+		"de"		"Die Leiche wurde untersucht,\nfolgende Informationen wurden herausgefunden:"
 	}
 
 	"Victim name"

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-01-15 01:31:00 UTC
+// Date: 2018-03-10 16:53:56 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -771,6 +771,111 @@
 	"Player Spawn TTT Version"
 	{
 		"pl"		"TTT - Wersja: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"pl"		"TTT Radio Komendy"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"pl"		"Tak"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"pl"		"Nie"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"pl"		"Może"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"pl"		"Pomocy"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"pl"		"Sprawdź"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"pl"		"Jestem z..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"pl"		"Podejrzany..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"pl"		"Zdrajca..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"pl"		"Niewinny..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"pl"		"Zobacz..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"pl"		"Tak"
+	}
+
+	"TTT Radio: No"
+	{
+		"pl"		"Nie"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"pl"		"Może"
+	}
+
+	"TTT Radio: Help"
+	{
+		"pl"		"Pomocy"
+	}
+
+	"TTT Radio: Check"
+	{
+		"pl"		"Sprawdź"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"pl"		"Jestem z {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"pl"		"{1} zachowuje się podejrzanie."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"pl"		"{1} jest zdrajcą!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"pl"		"{1} jest niewinny."
+	}
+
+	"TTT Radio: See"
+	{
+		"pl"		"Widzę {1}"
 	}
 
 }
