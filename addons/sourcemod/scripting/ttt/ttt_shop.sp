@@ -184,10 +184,22 @@ public void OnPluginStart()
 		g_dDB = TTT_GetSQLConnection();
 		AlterCreditsColumn();
 	}
+
+	if (g_aCustomItems != null)
+	{
+		g_aCustomItems.Clear();
+	}
+
+	g_aCustomItems = new ArrayList(84);
 }
 
 public void OnMapStart()
 {
+	if (g_aCustomItems != null)
+	{
+		g_aCustomItems.Clear();
+	}
+
 	g_aCustomItems = new ArrayList(84);
 }
 
