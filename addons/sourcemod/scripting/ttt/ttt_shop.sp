@@ -1250,12 +1250,8 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 
 void ResetItemsArray(bool initArray = false)
 {
-	if (g_aCustomItems != null)
-	{
-		g_aCustomItems.Clear(); // Reset array, so we've the new name of every items
-		g_aCustomItems = null;
-	}
-
+	delete g_aCustomItems;
+	
 	if (initArray)
 	{
 		g_aCustomItems = new ArrayList(84);

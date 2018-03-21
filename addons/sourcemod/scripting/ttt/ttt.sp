@@ -467,8 +467,7 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
 
-	if (g_aLogs != null)
-		g_aLogs.Clear();
+	delete g_aLogs;
 	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)

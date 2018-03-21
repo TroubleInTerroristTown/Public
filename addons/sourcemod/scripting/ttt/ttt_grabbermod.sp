@@ -57,6 +57,9 @@ public void OnPluginStart()
 	g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
 	TTT_EndConfig();
 	
+	g_aWhitelist = new ArrayList(32);
+	g_aBlacklist = new ArrayList(32);
+	
 	LoadLists();
 
 	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
@@ -412,15 +415,6 @@ void LoadLists()
 
 void LoadWhitelist()
 {
-	if (g_aWhitelist != null)
-	{
-		g_aWhitelist.Clear();
-	}
-	else
-	{
-		g_aWhitelist = new ArrayList(32);
-	}
-	
 	char sPath[PLATFORM_MAX_PATH + 1];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/whitelist_grabbermod.ini");
 
@@ -453,15 +447,6 @@ void LoadWhitelist()
 
 void LoadBlacklist()
 {
-	if (g_aBlacklist != null)
-	{
-		g_aBlacklist.Clear();
-	}
-	else
-	{
-		g_aBlacklist = new ArrayList(32);
-	}
-	
 	char sPath[PLATFORM_MAX_PATH + 1];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_grabbermod.ini");
 

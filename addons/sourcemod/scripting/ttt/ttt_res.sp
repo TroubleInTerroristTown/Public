@@ -324,7 +324,11 @@ void RefreshSounds(int client)
  
 int LoadSoundsDet()
 {
-	detSound.Clear();
+	if (detSound != null)
+	{
+		detSound.Clear();
+	}
+	
 	char name[128];
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];
@@ -356,7 +360,11 @@ int LoadSoundsDet()
 
 int LoadSoundsTra()
 {
-	traSound.Clear();
+	if (traSound != null)
+	{
+		traSound.Clear();
+	}
+	
 	char name[128];
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];
@@ -387,7 +395,11 @@ int LoadSoundsTra()
 
 int LoadSoundsInn()
 {
-	innSound.Clear();
+	if (innSound != null)
+	{
+		innSound.Clear();
+	}
+	
 	char name[128];
 	char soundname[512];
 	char soundpath[PLATFORM_MAX_PATH];

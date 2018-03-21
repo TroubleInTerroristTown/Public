@@ -39,6 +39,9 @@ public void OnPluginStart()
 	g_cReopen = AutoExecConfig_CreateConVar("ttt_radio_reopen", "0", "Reopen radio menu after choose?", _, true, 0.0, true, 1.0);
 	g_cReloadAccess = AutoExecConfig_CreateConVar("ttt_radio_reload_access", "z", "Admin flags to access reload radio command.");
 	TTT_EndConfig();
+	
+	g_alOrder = new ArrayList(32);
+	g_smMenu = new StringMap();
 
 	LoadMenu();
 	
@@ -76,18 +79,12 @@ void LoadMenu()
 	if (g_alOrder != null)
 	{
 		g_alOrder.Clear();
-		g_alOrder = null;
-	}
-
-	g_alOrder = new ArrayList(32);
+	}	
 
 	if (g_smMenu != null)
 	{
 		g_smMenu.Clear();
-		g_smMenu = null;
 	}
-
-	g_smMenu = new StringMap();
 
 	char sFile[PLATFORM_MAX_PATH];
 	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/radio.ini");
