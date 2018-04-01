@@ -51,7 +51,6 @@ public void OnPluginStart()
 
 	g_aRagdoll = new ArrayList(104);
 	g_aLogs = new ArrayList(512);
-
 	g_aForceTraitor = new ArrayList();
 	g_aForceDetective = new ArrayList();
 
@@ -466,8 +465,6 @@ public void OnMapStart()
 
 	PrecacheSoundAny(SND_TCHAT, true);
 	PrecacheSoundAny(SND_FLASHLIGHT, true);
-
-	delete g_aLogs;
 	
 	g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
 	if (g_iAlive == -1)
