@@ -759,6 +759,11 @@ public Action Timer_Selection(Handle hTimer)
 		}
 
 		aPlayers.Push(i);
+
+		if ((g_cDoublePushInno.BoolValue && g_iLastRole[i] == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iLastRole[i] == TTT_TEAM_DETECTIVE))
+		{
+			aPlayers.Push(i);
+		}
 	}
 
 	Action res = Plugin_Continue;
@@ -845,12 +850,16 @@ public Action Timer_Selection(Handle hTimer)
 			if (client > 0)
 			{
 				iIndex = aPlayers.FindValue(client);
-				
+
 				if (iIndex != -1)
 				{
-					g_iRole[client] = TTT_TEAM_TRAITOR;
-					iTraitors++;
-					g_iLastRole[client] = TTT_TEAM_TRAITOR;
+					if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+					{
+						g_iRole[client] = TTT_TEAM_TRAITOR;
+						g_iLastRole[client] = TTT_TEAM_TRAITOR;
+						iTraitors++;
+					}
+					
 					aPlayers.Erase(iIndex);
 				}
 			}
@@ -864,10 +873,14 @@ public Action Timer_Selection(Handle hTimer)
 
 		if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
 		{
-			g_iRole[client] = TTT_TEAM_TRAITOR;
-			g_iLastRole[client] = TTT_TEAM_TRAITOR;
+			if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+			{
+				g_iRole[client] = TTT_TEAM_TRAITOR;
+				g_iLastRole[client] = TTT_TEAM_TRAITOR;
+				iTraitors++;
+			}
+
 			aPlayers.Erase(iRand);
-			iTraitors++;
 		}
 	}
 
@@ -883,9 +896,13 @@ public Action Timer_Selection(Handle hTimer)
 				
 				if (iIndex != -1)
 				{
-					g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-					g_iRole[client] = TTT_TEAM_DETECTIVE;
-					iDetectives++;
+					if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+					{
+						g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+						g_iRole[client] = TTT_TEAM_DETECTIVE;
+						iDetectives++;
+					}
+
 					aPlayers.Erase(iIndex);
 				}
 			}
@@ -910,17 +927,21 @@ public Action Timer_Selection(Handle hTimer)
 
 		if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1, 6) == 4))
 		{
-			if (g_bAvoidDetective[client] == true)
+			if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
 			{
-				g_iLastRole[client] = TTT_TEAM_INNOCENT;
-				g_iRole[client] = TTT_TEAM_INNOCENT;
+				if (g_bAvoidDetective[client] == true)
+				{
+					g_iLastRole[client] = TTT_TEAM_INNOCENT;
+					g_iRole[client] = TTT_TEAM_INNOCENT;
+				}
+				else
+				{
+					g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+					g_iRole[client] = TTT_TEAM_DETECTIVE;
+					iDetectives++;
+				}
 			}
-			else
-			{
-				g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-				g_iRole[client] = TTT_TEAM_DETECTIVE;
-				iDetectives++;
-			}
+
 			aPlayers.Erase(iRand);
 		}
 	}
@@ -930,7 +951,7 @@ public Action Timer_Selection(Handle hTimer)
 	while (aPlayers.Length > 0)
 	{
 		client = aPlayers.Get(0);
-		if (TTT_IsClientValid(client))
+		if (TTT_IsClientValid(client) && g_iRole[client] == TTT_TEAM_UNASSIGNED)
 		{
 			g_iLastRole[client] = TTT_TEAM_INNOCENT;
 			g_iRole[client] = TTT_TEAM_INNOCENT;
