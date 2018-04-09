@@ -736,7 +736,6 @@ public Action Timer_Selection(Handle hTimer)
 	g_bRoundEnding = false;
 	g_hStartTimer = null;
 
-
 	ArrayList aPlayers = new ArrayList(1);
 
 	LoopValidClients(i)
@@ -881,6 +880,19 @@ public Action Timer_Selection(Handle hTimer)
 			}
 
 			aPlayers.Erase(iRand);
+		}
+	}
+
+	int count[MAXPLAYERS + 1] = { 0, ... };
+	for (int i = 0; i < aPlayers.Length; i++)
+	{
+		int iClient = aPlayers.Get(i);
+		count[iClient]++;
+
+		if (count[iClient] > 1)
+		{
+			count[iClient] = 1;
+			aPlayers.Erase(i);
 		}
 	}
 
