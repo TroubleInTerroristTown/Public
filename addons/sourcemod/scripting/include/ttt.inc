@@ -419,6 +419,31 @@ stock void TTT_ShowOverlayToAll(const char[] overlaypath)
 	}
 }
 
+stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
+{
+	int[] clients = new int[MaxClients + 1];
+	int clientCount;
+
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (TTT_IsClientValid(i))
+		{
+			if (alive && !IsPlayerAlive(i))
+			{
+				continue;
+			}
+
+			if (role != -1 && role != TTT_GetClientRole(i))
+			{
+				continue;
+			}
+
+			clients[clientCount++] = i;
+		}
+	}
+	return (clientCount == 0) ? -1 : clients[GetRandomInt(0, clientCount-1)];
+} 
+
 stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)
 {
 	if (damagetype == DMG_FALL
