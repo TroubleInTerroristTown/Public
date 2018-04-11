@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-10 18:02:38 UTC
+// Date: 2018-04-11 01:46:23 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -876,6 +876,16 @@
 	"TTT Radio: See"
 	{
 		"de"		"Ich sehe {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"de"		"Keine Leiche gefunden..."
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"de"		"Du hast die Position mit {green}{1} {lightgreen}getauscht."
 	}
 
 }

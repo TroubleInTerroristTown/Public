@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-10 18:02:40 UTC
+// Date: 2018-04-11 01:46:25 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -953,6 +953,17 @@
 	{
 		"#format"	"{1:N}"
 		"en"		"I see {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"en"		"Can't find an ragdoll"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"#format"	"{1:N}"
+		"en"		"You switched the position with {green}{1}"
 	}
 
 }
