@@ -140,7 +140,7 @@ native int TTT_GetClientKarma(int client, bool publicKarma = true);
  * @param client            The victims index.
  * @param radgoll           The array to save the ragoll infos.
  */
-native int TTT_GetClientRagdoll(int victim, int[] ragdoll);
+native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
 
 /*
  * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).

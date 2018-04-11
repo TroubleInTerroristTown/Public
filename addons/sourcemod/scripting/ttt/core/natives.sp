@@ -87,11 +87,11 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 			{
 				SetNativeArray(2, iBody[0], sizeof(iBody));
 			}
-			return 1;
+			return true;
 		}
 	}
 
-	return 0;
+	return false;
 }
 
 public int Native_SetRagdoll(Handle plugin, int numParams)
