@@ -100,12 +100,13 @@ Handle g_hOnRoundStartFailed = null;
 Handle g_hOnRoundEnd = null;
 Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
+Handle g_hOnClientDeathPre = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;
-Handle g_hOnPlayerDeath = null;
+Handle g_hOnPlayerDeathPre = null;
 
 bool g_bSourcebans = false;
 

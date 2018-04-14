@@ -1812,7 +1812,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
 		Action res = Plugin_Continue;
 
-		Call_StartForward(g_hOnPlayerDeath);
+		Call_StartForward(g_hOnPlayerDeathPre);
 		Call_PushCell(client);
 		Call_PushCell(iAttacker);
 		Call_Finish(res);
@@ -2508,6 +2508,18 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 	int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 	if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
+	{
+		return;
+	}
+
+	Action res = Plugin_Continue;
+
+	Call_StartForward(g_hOnClientDeathPre);
+	Call_PushCell(client);
+	Call_PushCell(iAttacker);
+	Call_Finish(res);
+
+	if (res == Plugin_Stop || res == Plugin_Changed)
 	{
 		return;
 	}

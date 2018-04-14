@@ -119,6 +119,12 @@ public void TTT_OnClientDeath(int victim, int attacker)
 	PrintToServer("(TTT_OnClientDeath) victim: %d - attacker: %d", victim, attacker);
 }
 
+public Action TTT_OnClientDeathPre(int victim, int attacker)
+{
+	PrintToServer("TTT_OnClientDeathPre was called!");
+	PrintToServer("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
+}
+
 public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
 {
 	PrintToServer("TTT_OnBodyFound was called!");

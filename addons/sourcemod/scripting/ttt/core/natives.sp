@@ -6,12 +6,13 @@ void InitForwards()
 	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnClientDeathPre = CreateGlobalForward("TTT_OnClientDeathPre", ET_Event, Param_Cell, Param_Cell);
 	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
 	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
 	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
-	g_hOnPlayerDeath = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
+	g_hOnPlayerDeathPre = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
 }
 
 void InitNatives()

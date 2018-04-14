@@ -79,12 +79,20 @@ forward void TTT_OnRoundEnd(int winner);
 forward void TTT_OnClientGetRole(int client, int role);
 
 /*
- * Called when a client dies, after RDM process
+ * Called when a client dies, after Karma process
  *
  * @param victim            Person who died.
  * @param attacker          Attacker.
  */
 forward void TTT_OnClientDeath(int victim, int attacker);
+
+/*
+ * Called when a client dies, before Karma process
+ *
+ * @param victim            Person who died.
+ * @param attacker          Attacker.
+ */
+forward Action TTT_OnClientDeathPre(int victim, int attacker);
 
 /*
  * Called when a body is found.
