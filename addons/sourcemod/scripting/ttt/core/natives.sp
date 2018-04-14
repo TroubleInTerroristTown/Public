@@ -11,6 +11,7 @@ void InitForwards()
 	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
+	g_hOnPlayerDeath = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
 }
 
 void InitNatives()

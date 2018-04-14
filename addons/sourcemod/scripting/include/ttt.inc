@@ -79,7 +79,7 @@ forward void TTT_OnRoundEnd(int winner);
 forward void TTT_OnClientGetRole(int client, int role);
 
 /*
- * Called when a client dies.
+ * Called when a client dies, after RDM process
  *
  * @param victim            Person who died.
  * @param attacker          Attacker.
@@ -114,6 +114,14 @@ forward void TTT_OnModelUpdate(int client, const char[] model);
 
 forward int TTT_OnButtonPress(int client, int button);
 forward int TTT_OnButtonRelease(int client, int button);
+
+/*
+ * Called before RDM will be handled.
+ *
+ * @param victim            Person who died.
+ * @param attacker          Attacker.
+ */
+forward Action TTT_OnPlayerDeath(int victim, int attacker);
 
 /*
  * Checks if the round is active.

@@ -1810,6 +1810,19 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
 		SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 
+		Action res = Plugin_Continue;
+
+		Call_StartForward(g_hOnPlayerDeath);
+		Call_PushCell(client);
+		Call_PushCell(iAttacker);
+		Call_Finish(res);
+
+		if (res == Plugin_Stop || res == Plugin_Changed)
+		{
+			event.BroadcastDisabled = true;
+			return Plugin_Changed;
+		}
+
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
 		{
 			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
@@ -2400,7 +2413,6 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 
 	int iRagdollC[Ragdolls];
 
-	//TODO Make this based on the userid to prevent abuse
 	for (int i = 0; i < g_aRagdoll.Length; i++)
 	{
 		g_aRagdoll.GetArray(i, iRagdollC[0]);

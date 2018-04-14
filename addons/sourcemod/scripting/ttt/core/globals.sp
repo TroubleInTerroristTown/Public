@@ -105,6 +105,7 @@ Handle g_hOnBodyChecked = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;
+Handle g_hOnPlayerDeath = null;
 
 bool g_bSourcebans = false;
 

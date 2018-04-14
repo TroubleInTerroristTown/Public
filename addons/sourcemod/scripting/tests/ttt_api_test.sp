@@ -131,6 +131,12 @@ public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
 	PrintToServer("(TTT_OnBodyScanned) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
 }
 
+public Action TTT_OnPlayerDeath(int victim, int attacker)
+{
+	PrintToServer("TTT_OnPlayerDeath was called!");
+	PrintToServer("(TTT_OnPlayerDeath) victim: %d - attacker: %d", victim, attacker);
+}
+
 public void TTT_OnSQLConnect(Database db)
 {
 	PrintToServer("TTT_OnSQLConnect was called!");
