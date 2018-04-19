@@ -107,6 +107,7 @@ Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;
 Handle g_hOnPlayerDeathPre = null;
+Handle g_hOnKarmaUpdate = null;
 
 bool g_bSourcebans = false;
 
