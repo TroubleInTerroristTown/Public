@@ -3160,6 +3160,12 @@ stock int addKarma(int client, int karma, bool message = false)
 
 	UpdatePlayer(client);
 	
+	Call_StartForward(g_hOnKarmaUpdate);
+	Call_PushCell(client);
+	Call_PushCell(Karma_Add);
+	Call_PushCell(karma);
+	Call_Finish();
+	
 	return g_iKarma[client];
 }
 
@@ -3178,6 +3184,12 @@ stock int setKarma(int client, int karma, bool force = false)
 	}
 
 	UpdatePlayer(client);
+	
+	Call_StartForward(g_hOnKarmaUpdate);
+	Call_PushCell(client);
+	Call_PushCell(Karma_Set);
+	Call_PushCell(karma);
+	Call_Finish();
 	
 	return g_iKarma[client];
 }
@@ -3204,6 +3216,12 @@ stock int subtractKarma(int client, int karma, bool message = false)
 	}
 
 	UpdatePlayer(client);
+	
+	Call_StartForward(g_hOnKarmaUpdate);
+	Call_PushCell(client);
+	Call_PushCell(Karma_Subtract);
+	Call_PushCell(karma);
+	Call_Finish();
 	
 	return g_iKarma[client];
 }
