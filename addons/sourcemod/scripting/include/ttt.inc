@@ -36,6 +36,13 @@ enum Ragdolls
 	bool:Found
 }
 
+enum KarmaUpdate
+{
+	Karma_Add,
+	Karma_Set,
+	Karma_Subtract
+}
+
 /*
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
@@ -130,6 +137,15 @@ forward int TTT_OnButtonRelease(int client, int button);
  * @param attacker          Attacker.
  */
 forward Action TTT_OnPlayerDeath(int victim, int attacker);
+
+/*
+ * Called once Karma has been updated on a client.
+ *
+ * @param client            Client index.
+ * @param type          	Type of update. (Enum above)
+ * @param karma          	Amount of Karma.
+ */
+forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
 
 /*
  * Checks if the round is active.

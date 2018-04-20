@@ -13,6 +13,7 @@ void InitForwards()
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
 	g_hOnPlayerDeathPre = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
+	g_hOnKarmaUpdate = CreateGlobalForward("TTT_OnKarmaUpdate", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 }
 
 void InitNatives()
