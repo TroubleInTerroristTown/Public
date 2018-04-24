@@ -830,8 +830,8 @@ public Action Timer_Selection(Handle hTimer)
 	g_bSelection = true;
 	g_bCheckPlayers = false;
 	
-	int iTCount = GetTCount(aPlayers.Length);
-	int iDCount = GetDCount(aPlayers.Length);
+	int iTCount = GetTCount(aPlayers);
+	int iDCount = GetDCount(aPlayers);
 
 	int iTraitors;
 	int iDetectives;
@@ -1046,8 +1046,22 @@ public Action Timer_Selection(Handle hTimer)
 	Call_Finish();
 }
 
-int GetTCount(int iActivePlayers)
+int GetTCount(ArrayList array)
 {
+	int iActivePlayers = 0;
+	bool bChecked[MAXPLAYERS + 1] = { false, ... };
+
+	for (int i = 0; i < array.Length; i++)
+	{
+		int client = array.Get(i);
+
+		if (!bChecked[client])
+		{
+			bChecked[client] = true;
+			iActivePlayers++;
+		}
+	}
+
 	int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_ctraitorRatio.IntValue) / 100.0));
 
 	if (iTCount < 1)
@@ -1063,8 +1077,22 @@ int GetTCount(int iActivePlayers)
 	return iTCount;
 }
 
-int GetDCount(int iActivePlayers)
+int GetDCount(ArrayList array)
 {
+	int iActivePlayers = 0;
+	bool bChecked[MAXPLAYERS + 1] = { false, ... };
+
+	for (int i = 0; i < array.Length; i++)
+	{
+		int client = array.Get(i);
+
+		if (!bChecked[client])
+		{
+			bChecked[client] = true;
+			iActivePlayers++;
+		}
+	}
+
 	if (iActivePlayers < g_crequiredPlayersD.IntValue)
 	{
 		return 0;
