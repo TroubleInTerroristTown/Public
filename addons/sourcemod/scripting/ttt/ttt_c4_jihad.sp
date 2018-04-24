@@ -98,7 +98,7 @@ public void OnPluginStart()
 	g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
 	g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
 	g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
-	g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires?", _, true, 1.0);
+	g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires for defusing?", _, true, 1.0);
 	g_cPlantSeconds = AutoExecConfig_CreateConVar("c4_plant_seconds", "20,30,40,50,60", "Plant seconds (Separate numbers with ,)");
 	g_cPlantSeconds.AddChangeHook(OnConVarChanged);
 	TTT_EndConfig();
@@ -775,7 +775,7 @@ stock float plantBomb(int client, float time)
 		CPrintToChat(client, "%s %T", g_sPluginTag, "Bomb Was Not Found", client);
 	}
 
-	g_iWire[client] = GetRandomInt(1, 4);
+	g_iWire[client] = GetRandomInt(1, g_cWireCount.IntValue);
 	CPrintToChat(client, "%s %T", g_sPluginTag, "Wire Is", client, g_iWire[client]);
 }
 
