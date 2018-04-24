@@ -691,7 +691,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 		wire = StringToInt(info);
 		if (wire == correctWire)
 		{
-			if (!TTT_IsClientValid(planter))
+			if (TTT_IsClientValid(planter))
 			{
 				CPrintToChat(client, "%s %T", g_sPluginTag, "You Defused Bomb", client, planter);
 				CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, client);
