@@ -382,6 +382,11 @@ stock void UpdatePlayer(int client)
 {
 	char sCommunityID[64];
 
+	if (IsFakeClient(client) || IsClientSourceTV(client))
+	{
+		return;
+	}
+
 	if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
 	{
 		LogError("(UpdatePlayer) Auth failed: #%d", client);
