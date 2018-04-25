@@ -2946,19 +2946,8 @@ public int TTT_OnButtonPress(int client, int button)
 
 							char iItem[TTT_LOG_SIZE];
 
-							char sRole[16];
-							if (g_iRole[client] == TTT_TEAM_INNOCENT)
-							{
-								Format(sRole, sizeof(sRole), "Innocent");
-							}
-							else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
-							{
-								Format(sRole, sizeof(sRole), "Detective");
-							}
-							else if (g_iRole[client] == TTT_TEAM_TRAITOR)
-							{
-								Format(sRole, sizeof(sRole), "Traitor");
-							}
+							char sRole[ROLE_LENGTH];
+							TTT_GetRoleNameByID(g_iRole[client], sRole, sizeof(sRole));
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{

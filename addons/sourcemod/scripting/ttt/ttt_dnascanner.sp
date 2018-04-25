@@ -143,20 +143,8 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
 		ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
 
-		char sAttackerID[32], sClientID[32], sRole[24];
-
-		if (TTT_GetClientRole(attacker) == TTT_TEAM_INNOCENT)
-		{
-			Format(sRole, sizeof(sRole), "Innocent");
-		}
-		else if (TTT_GetClientRole(attacker) == TTT_TEAM_TRAITOR)
-		{
-			Format(sRole, sizeof(sRole), "Traitor");
-		}
-		else if (TTT_GetClientRole(attacker) == TTT_TEAM_DETECTIVE)
-		{
-			Format(sRole, sizeof(sRole), "Detective");
-		}
+		char sAttackerID[32], sClientID[32], sRole[ROLE_LENGTH];
+		TTT_GetRoleNameByID(TTT_GetClientRole(attacker), sRole, sizeof(sRole));
 		
 		if (cAddLogs.BoolValue)
 		{

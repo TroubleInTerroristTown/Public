@@ -284,8 +284,8 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
-native void TTT_GetRoleNameByID(int role, char name, int length = ROLE_LENGTH);
-native void TTT_GetRoleNameByShortName(const char[] shortName, char name, int length = ROLE_LENGTH);
+native void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH);
+native void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH);
 native int TTT_GetRoleIDByName(const char[] name);
 native int TTT_GetRoleIDByShortName(const char[] shortName);
 native void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH);

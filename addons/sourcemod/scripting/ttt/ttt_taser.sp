@@ -336,6 +336,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
+		// TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
 		if (iRole == TTT_TEAM_TRAITOR)
 		{
 			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
