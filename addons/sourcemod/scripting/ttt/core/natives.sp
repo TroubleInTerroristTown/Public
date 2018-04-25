@@ -98,8 +98,8 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 			if (iBody[Victim] == GetClientUserId(client))
 			{
 				SetNativeArray(2, iBody[0], sizeof(iBody));
+				return true;
 			}
-			return true;
 		}
 	}
 
