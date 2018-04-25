@@ -16,6 +16,7 @@
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
+#define ROLE_LENGTH 16
 #define MAX_ITEM_LENGTH 64
 #define TTT_LOG_SIZE 512
 
@@ -282,6 +283,13 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  * @return Returns the amount of rounds, otherwise the client index is invalid
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
+
+native void TTT_GetRoleNameByID(int role, char name, int length = ROLE_LENGTH);
+native void TTT_GetRoleNameByShortName(const char[] shortName, char name, int length = ROLE_LENGTH);
+native int TTT_GetRoleIDByName(const char[] name);
+native int TTT_GetRoleIDByShortName(const char[] shortName);
+native void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH);
+native void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH);
 
 /*
  * Check if TTT plugin is loaded and running.

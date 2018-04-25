@@ -2,6 +2,7 @@
 	#endinput
 #endif
 #define _ttt_playerhud_included
+
 /*
  * Called when a HUD is send to a player. Return Plugin_Stop
  * to prevent the HUD from beeing send.
