@@ -491,5 +491,5 @@ public int Native_GetShortRoleNameByName(Handle plugin, int numParams)
 
 public int Native_IsPlayerAlive(Handle plugin, int numParams)
 {
-	return g_bDeath[GetNativeCell(1)];
+	return g_bAlive[GetNativeCell(1)];
 }

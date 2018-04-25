@@ -1116,7 +1116,7 @@ stock void TeamInitialize(int client)
 	}
 	
 	g_bFound[client] = false;
-	g_bDeath[client] = false;
+	g_bAlive[client] = true;
 	
 	int iTeam = GetClientTeam(client);
 	
@@ -1772,7 +1772,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
-		g_bDeath[client] = true;
+		g_bAlive[client] = false;
 		char playermodel[128];
 		GetClientModel(client, playermodel, 128);
 
