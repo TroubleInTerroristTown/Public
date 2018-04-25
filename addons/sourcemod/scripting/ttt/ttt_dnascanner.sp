@@ -15,6 +15,7 @@ ConVar g_cPrio = null;
 ConVar g_cPrintTo = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
+ConVar g_cRoleColor = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
@@ -43,6 +44,7 @@ public void OnPluginStart()
 	g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
 	g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
 	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
+	g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -187,7 +189,16 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		{
 			LoopValidClients(j)
 			{
-				CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+				if (!g_cRoleColor.BoolValue)
+				{
+					CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+				}
+				else
+				{
+					char sTranslation[64];
+					Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+					CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+				}
 			}
 		}
 		else if (g_cPrintTo.IntValue == 1)
@@ -196,13 +207,31 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 			{
 				if (TTT_GetClientRole(j) == TTT_TEAM_DETECTIVE)
 				{
-					CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+					if (!g_cRoleColor.BoolValue)
+					{
+						CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+					}
+					else
+					{
+						char sTranslation[64];
+						Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+						CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+					}
 				}
 			}
 		}
 		else
 		{
-			CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			if (!g_cRoleColor.BoolValue)
+			{
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			}
+			else
+			{
+				char sTranslation[64];
+				Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+				CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+			}
 		}
 	}
 	else

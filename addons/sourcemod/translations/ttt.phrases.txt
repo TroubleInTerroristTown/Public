@@ -100,6 +100,24 @@
 		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
 	}
 
+	"Detective scan found body Innocent"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{green} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkblue} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
 	"Detective scan found body suicide"
 	{
 		"#format"	"{1:N}"
