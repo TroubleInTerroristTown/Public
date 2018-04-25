@@ -292,6 +292,14 @@ native void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = RO
 native void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH);
 
 /*
+ * Returns if the client is alive or dead.
+ *
+ * @param client		Player's index.
+ * @return				True if the client is alive, false otherwise.
+ */
+native bool TTT_IsPlayerAlive(int client);
+
+/*
  * Check if TTT plugin is loaded and running.
  */
 stock bool TTT_IsLoaded()
@@ -478,6 +486,11 @@ stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 	LoopValidClients(i)
 	{
 		if (alive && !IsPlayerAlive(i))
+		{
+			continue;
+		}
+
+		if (role != TTT_GetClientRole(i))
 		{
 			continue;
 		}

@@ -43,6 +43,8 @@ void InitNatives()
 	CreateNative("TTT_GetRoleIDByShortName", Native_GetRoleIDByShortName);
 	CreateNative("TTT_GetShortRoleNameByID", Native_GetShortRoleNameByID);
 	CreateNative("TTT_GetShortRoleNameByName", Native_GetShortRoleNameByName);
+
+	CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -487,3 +489,7 @@ public int Native_GetShortRoleNameByName(Handle plugin, int numParams)
 	}
 }
 
+public int Native_IsPlayerAlive(Handle plugin, int numParams)
+{
+	return g_bDeath[GetNativeCell(1)];
+}

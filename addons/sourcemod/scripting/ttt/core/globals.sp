@@ -91,6 +91,7 @@ ArrayList g_aRagdoll = null;
 
 bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
+bool g_bDeath[MAXPLAYERS + 1] = { true, ... };
 
 int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 
