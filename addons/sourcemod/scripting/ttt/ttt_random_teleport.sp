@@ -9,7 +9,7 @@
 #include <ttt>
 #include <multicolors>
 
-#define SHORT_NAME "randomTeleporter"
+#define SHORT_NAME "rdmTele"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Random Teleporter"
 
@@ -134,16 +134,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 
-			int target = RandomTeleport(client);
-
-			if (target != -1)
-			{
-				CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
-			}
-			else
-			{
-				return Plugin_Stop;
-			}
+			RandomTeleport(client);
 
 			if (count)
 			{
@@ -178,15 +169,13 @@ int RandomTeleport(int client)
 
 	int target = TTT_GetRandomPlayer(bAlive);
 
-	if (IsPlayerAlive(target))
+	if (TTT_IsPlayerAlive(target))
 	{
 		GetClientAbsOrigin(client, fPlayerPos);
 		GetClientAbsOrigin(target, fTargetPos);
 
 		TeleportEntity(client, fTargetPos, NULL_VECTOR, NULL_VECTOR);
 		TeleportEntity(target, fPlayerPos, NULL_VECTOR, NULL_VECTOR);
-
-		return target;
 	}
 	else
 	{
@@ -196,14 +185,37 @@ int RandomTeleport(int client)
 			return -1;
 		}
 
+		int body = EntRefToEntIndex(iRagdoll[Ent]);
+
+		if (!IsValidEntity(body))
+		{
+			return -1;
+		}
+
+		float fAngles[3], fVelo[3];
 		GetClientAbsOrigin(client, fPlayerPos);
-		GetEntPropVector(iRagdoll[Ent], Prop_Send, "m_vecOrigin",fTargetPos);
+		fPlayerPos[2] += 30;
+
+		GetClientAbsAngles(client, fAngles);
+		GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", fVelo);
+
+		GetEntPropVector(body, Prop_Send, "m_vecOrigin", fTargetPos);
 
 		TeleportEntity(client, fTargetPos, NULL_VECTOR, NULL_VECTOR);
-		TeleportEntity(iRagdoll[Ent], fPlayerPos, NULL_VECTOR, NULL_VECTOR);
 
-		return target;
+		float speed = GetVectorLength(fVelo);
+		if (speed >= 500)
+		{
+			TeleportEntity(body, fPlayerPos, fAngles, NULL_VECTOR);
+		}
+		else
+		{
+			TeleportEntity(body, fPlayerPos, fAngles, fVelo);
+		}
 	}
+
+	CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
+	return target;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
