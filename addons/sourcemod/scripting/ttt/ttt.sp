@@ -2762,8 +2762,8 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 			g_bHurtedPlayer2[iAttacker] = client;
 		} else if (iAttacker != g_bHurtedPlayer1[client] && !g_bResetHurt[iAttacker] && g_bHurtedPlayer1[iAttacker] > 0 && g_bHurtedPlayer2[iAttacker] > 0) {
 			g_bResetHurt[iAttacker] = true;
-			g_bHurtedPlayer2[iAttacker] = client;
-		} else if (iAttacker != g_bHurtedPlayer2[client]  && iAttacker != g_bHurtedPlayer2[client] && g_bResetHurt[iAttacker] && g_bHurtedPlayer2[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
+			g_bHurtedPlayer1[iAttacker] = client;
+		} else if (iAttacker != g_bHurtedPlayer2[client]  && iAttacker != g_bHurtedPlayer1[client] && g_bResetHurt[iAttacker] && g_bHurtedPlayer1[iAttacker] > 0 && g_bHurtedPlayer2[iAttacker] > 0) {
 			g_bResetHurt[iAttacker] = false;
 			g_bHurtedPlayer2[iAttacker] = client;
 		}
