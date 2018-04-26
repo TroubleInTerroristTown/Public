@@ -2629,9 +2629,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
-		} else if (hurtedPlayer2[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaII.IntValue, true);
@@ -2649,9 +2649,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
-		} else if (hurtedPlayer2[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaID.IntValue, true);
@@ -2669,9 +2669,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Traitor) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt traitor");
-		} else if (hurtedPlayer2[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt traitor");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaTT.IntValue, true);
@@ -2689,9 +2689,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
-		} else if (hurtedPlayer2[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaDI.IntValue, true);
@@ -2709,9 +2709,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
-		} else if (hurtedPlayer2[client] == iAttacker && g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaDD.IntValue, true);
