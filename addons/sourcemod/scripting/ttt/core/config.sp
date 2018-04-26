@@ -124,6 +124,7 @@ void SetupConfig()
 	g_cDamageKarmaDD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_detective_subtract", "1", "The amount of karma a detective will lose for damage a detective.");
 	g_cDoublePushInno = AutoExecConfig_CreateConVar("ttt_double_push_innocents", "1", "Push innocents (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
 	g_cDoublePushDete = AutoExecConfig_CreateConVar("ttt_double_push_detective", "1", "Push detective (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
+	g_cKarmaDecreaseWhenKillPlayerWhoHurt = AutoExecConfig_CreateConVar("ttt_karma_decrease_kill_player_who_hurted", "1", "Decrease Karma when you kill a player who hurted you?.", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
