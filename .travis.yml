@@ -30,7 +30,7 @@ notifications:
   email: false
   webhooks:
     urls:
-      - https://csgottt.com/discord-travis-ci.php
+      - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then https://csgottt.com/discord-travis-ci.php; fi'
     on_success: always
     on_failure: always
     on_cancel: always
