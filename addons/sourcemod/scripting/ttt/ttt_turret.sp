@@ -48,7 +48,7 @@ public void OnPluginStart()
 	g_cPrice = AutoExecConfig_CreateConVar("turret_price", "9000", "The amount of credits turret costs as traitor. 0 to disable.");
 	g_cPrio = AutoExecConfig_CreateConVar("turret_sort_prio", "0", "The sorting priority of the turret in the shop menu.");
 	g_cDiscount = AutoExecConfig_CreateConVar("turret_traitor", "0", "Should turret discountable?", _, true, 0.0, true, 1.0);
-	g_cKillTurretcount = AutoExecConfig_CreateConVar("turret_kill_cash_amount", "800", "Kill turret credits ?");
+	g_cKillTurretCount = AutoExecConfig_CreateConVar("turret_kill_cash_amount", "800", "Kill turret credits ?");
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
 
@@ -114,7 +114,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 public void Turret_OnTurretDead(int VictimTurretClientIndex,int AttackerClientIndex)
 {
-	TTT_AddClientCredits(AttackerClientIndex, g_cKillTurretcount.IntValue);
+	TTT_AddClientCredits(AttackerClientIndex, g_cKillTurretCount.IntValue);
 	g_bHasTurret[VictimTurretClientIndex] = false;
 }
 	
