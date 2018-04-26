@@ -30,6 +30,25 @@ public void OnPluginStart()
 	HookEvent("weapon_fire", Event_WeaponFire);
 	
 	RegAdminCmd("sm_uitem", Command_UItem, ADMFLAG_ROOT);
+	RegAdminCmd("sm_trole", Command_TRole, ADMFLAG_ROOT);
+}
+
+public Action Command_TRole(int client, int args)
+{
+	int iRole = TTT_GetClientRole(client);
+	char sRole[ROLE_LENGTH], sShort[ROLE_LENGTH];
+
+	TTT_GetRoleNameByID(iRole, sRole, sizeof(sRole));
+	TTT_GetShortRoleNameByID(iRole, sShort, sizeof(sShort));
+	PrintToChat(client, "(1) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	TTT_GetRoleNameByShortName(sShort, sRole, sizeof(sRole));
+	PrintToChat(client, "(2) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	iRole = TTT_GetRoleIDByName(sRole);
+	PrintToChat(client, "(3) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	iRole = TTT_GetRoleIDByShortName(sShort);
+	PrintToChat(client, "(4) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	TTT_GetShortRoleNameByName(sRole, sShort, sizeof(sShort));
+	PrintToChat(client, "(5) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
 }
 
 public Action Command_UItem(int client, int args)
