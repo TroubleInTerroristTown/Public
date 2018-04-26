@@ -112,7 +112,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 public void Turret_OnTurretDead(int VictimTurretClientIndex,int AttackerClientIndex)
 {
 	TTT_AddClientCredits(AttackerClientIndex, 800);
-	g_bHasTurret[client] = false;
+	g_bHasTurret[VictimTurretClientIndex] = false;
 }
 	
 public void TTT_OnClientGetRole(int client, int role)
