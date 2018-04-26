@@ -767,5 +767,144 @@
 	{
 		"pt"		"Você encontrou um corpo de chamariz! CORRE!"
 	}
+	
+	"Player Spawn TTT Version"
+	{
+		"#format"	"{1:s}"
+		"en"		"Trouble in Terrorist Town - Versão: {1}"
+	}
 
+	"TTT Radio Menu: Commands"
+	{
+		"en"		"TTT Comandos de Rádio"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"en"		"Sim"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"en"		"Não"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"en"		"Talvez"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"en"		"Ajuda"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"en"		"Verifique"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"en"		"Estou com..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"en"		"Suspeito..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"en"		"Traidor..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"en"		"Inocente..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"en"		"Veja..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"en"		"Sim"
+	}
+
+	"TTT Radio: No"
+	{
+		"en"		"Não"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"en"		"Talvez"
+	}
+
+	"TTT Radio: Help"
+	{
+		"en"		"Ajuda"
+	}
+
+	"TTT Radio: Check"
+	{
+		"en"		"Verifique"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"en"		"Estou com {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"en"		"{1} age de forma suspeita."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} é o traidor!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} é inocente."
+	}
+
+	"TTT Radio: See"
+	{
+		"#format"	"{1:N}"
+		"en"		"Eu vejo {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"en"		"Não foi possível encontrar um corpo"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"#format"	"{1:N}"
+		"en"		"Vocë trocou de posições com {green}{1}"
+	}
+	
+	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+	}
+	
+	"No karma hurt traitor"
+	{
+		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
+	}
+	
+	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
+	}
 }
