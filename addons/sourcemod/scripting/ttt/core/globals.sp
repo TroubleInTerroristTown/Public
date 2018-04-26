@@ -54,6 +54,10 @@ bool g_bCheckPlayers = false;
 int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
 bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
+int hurtedPlayer1[MAXPLAYERS + 1] =  { -1, ... };
+int hurtedPlayer2[MAXPLAYERS + 1] =  { -1, ... };
+bool renewHurt[MAXPLAYERS + 1] =  { false, ... };
+
 Handle g_hRoundTimer = null;
 
 bool g_bInactive = false;
@@ -274,6 +278,7 @@ ConVar g_cDamageKarmaDT = null;
 ConVar g_cDamageKarmaDD = null;
 ConVar g_cDoublePushInno = null;
 ConVar g_cDoublePushDete = null;
+ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
