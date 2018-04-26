@@ -594,9 +594,9 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 		g_iDetectiveKills[i] = 0;
 		g_bImmuneRDMManager[i] = false;
 		
-		hurtedPlayer1[i] = -1;
-		hurtedPlayer2[i] = -1;
-		resetHurt[i] = false;
+		g_bHurtedPlayer1[i] = -1;
+		g_bHurtedPlayer2[i] = -1;
+		g_bResetHurt[i] = false;
 		
 		DispatchKeyValue(i, "targetname", "UNASSIGNED");
 		CS_SetClientClanTag(i, " ");
@@ -2629,9 +2629,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
-		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaII.IntValue, true);
@@ -2649,9 +2649,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
-		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaID.IntValue, true);
@@ -2669,9 +2669,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Traitor) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt traitor");
-		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt traitor");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaTT.IntValue, true);
@@ -2689,9 +2689,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
-		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt innocent");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaDI.IntValue, true);
@@ -2709,9 +2709,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 		Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
 		addArrayTime(iItem);
 		
-		if (hurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
-		} else if (hurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+		} else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
 			CPrintToChat(client, "%s %T", g_sTag, "No karma hurt detective");
 		} else {
 			subtractKarma(iAttacker, g_ckarmaDD.IntValue, true);
@@ -2756,16 +2756,16 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 	   (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) ||
 	   (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
 	{
-		if (hurtedPlayer1[iAttacker] == -1 && iAttacker != hurtedPlayer1[client]) {
-			hurtedPlayer1[iAttacker] = client;
-		} else if (hurtedPlayer2[iAttacker] == -1 && iAttacker != hurtedPlayer2[client] && iAttacker != hurtedPlayer1[client]) {
-			hurtedPlayer2[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer1[client] && !resetHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
-			resetHurt[iAttacker] = true;
-			hurtedPlayer1[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer2[client]  && iAttacker != hurtedPlayer1[client] && resetHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
-			resetHurt[iAttacker] = false;
-			hurtedPlayer2[iAttacker] = client;
+		if (g_bHurtedPlayer1[iAttacker] == -1 && iAttacker != g_bHurtedPlayer1[client]) {
+			g_bHurtedPlayer1[iAttacker] = client;
+		} else if (g_bHurtedPlayer2[iAttacker] == -1 && iAttacker != g_bHurtedPlayer2[client] && iAttacker != g_bHurtedPlayer1[client]) {
+			g_bHurtedPlayer2[iAttacker] = client;
+		} else if (iAttacker != g_bHurtedPlayer1[client] && !g_bResetHurt[iAttacker] && g_bHurtedPlayer1[iAttacker] > 0 && g_bHurtedPlayer2[iAttacker] > 0) {
+			g_bResetHurt[iAttacker] = true;
+			g_bHurtedPlayer2[iAttacker] = client;
+		} else if (iAttacker != g_bHurtedPlayer2[client]  && iAttacker != g_bHurtedPlayer2[client] && g_bResetHurt[iAttacker] && g_bHurtedPlayer2[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
+			g_bResetHurt[iAttacker] = false;
+			g_bHurtedPlayer2[iAttacker] = client;
 		}
 	}
 }
