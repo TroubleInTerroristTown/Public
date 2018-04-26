@@ -983,5 +983,19 @@
 		"#format"	"{1:N}"
 		"en"		"You switched the position with {green}{1}"
 	}
-
+	
+	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+	}
+	
+	"No karma hurt traitor"
+	{
+		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
+	}
+	
+	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
+	}
 }
