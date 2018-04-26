@@ -26,7 +26,7 @@ Communities with ttt servers or contribute with ideas
 | Dream Community | https://dream-community.de/ | csgo.dream-com.de:26266 |
 | Skynet Gaming | https://skynetgaming.net/ | 173.234.30.235:27016 |
 | Games For Life | https://gflclan.com/ | 192.223.26.133:27015 |
-| Classy Wolves | https://clwo.eu | ttt.gproject.co.uk:27015 |
+| Classy Wolves | https://clwo.eu | ttt.clwo.eu |
 | Surfburken | https://surfburken.se/ | 81.231.9.34:27015 |
 | Frag Haven | https://fraghaven.net | Unknown |
 | Allied Gaming | https://allied-gaming.com/ | No server |
