@@ -284,12 +284,125 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
-native void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH);
-native void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH);
-native int TTT_GetRoleIDByName(const char[] name);
-native int TTT_GetRoleIDByShortName(const char[] shortName);
-native void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH);
-native void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH);
+stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
+{
+	if (role == TTT_TEAM_INNOCENT)
+	{
+		Format(name, length, "Innocent");
+	}
+	else if (role == TTT_TEAM_DETECTIVE)
+	{
+		Format(name, length, "Detective");
+	}
+	else if (role == TTT_TEAM_TRAITOR)
+	{
+		Format(name, length, "Traitor");
+	}
+	else
+	{
+		Format(name, length, "Unassigned");
+	}
+}
+
+stock void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH)
+{
+	if (StrEqual(shortName, "inno", false))
+	{
+		Format(name, length, "Innocent");
+	}
+	else if (StrEqual(shortName, "dete", false))
+	{
+		Format(name, length, "Detective");
+	}
+	else if (StrEqual(shortName, "trai", false))
+	{
+		Format(name, length, "Traitor");
+	}
+	else
+	{
+		Format(name, length, "Unassigned");
+	}
+}
+
+stock int TTT_GetRoleIDByName(const char[] name)
+{
+	if (StrEqual(name, "innocent", false))
+	{
+		return TTT_TEAM_INNOCENT;
+	}
+	else if (StrEqual(name, "detective", false))
+	{
+		return TTT_TEAM_DETECTIVE;
+	}
+	else if (StrEqual(name, "traitor", false))
+	{
+		return TTT_TEAM_TRAITOR;
+	}
+	else
+	{
+		return TTT_TEAM_UNASSIGNED;
+	}
+}
+
+stock int TTT_GetRoleIDByShortName(const char[] shortName)
+{
+	if (StrEqual(shortName, "inno", false))
+	{
+		return TTT_TEAM_INNOCENT;
+	}
+	else if (StrEqual(shortName, "dete", false))
+	{
+		return TTT_TEAM_DETECTIVE;
+	}
+	else if (StrEqual(shortName, "trai", false))
+	{
+		return TTT_TEAM_TRAITOR;
+	}
+	else
+	{
+		return TTT_TEAM_UNASSIGNED;
+	}
+}
+
+stock void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH)
+{
+	if (role == TTT_TEAM_INNOCENT)
+	{
+		Format(shortName, length, "inno");
+	}
+	else if (role == TTT_TEAM_DETECTIVE)
+	{
+		Format(shortName, length, "dete");
+	}
+	else if (role == TTT_TEAM_TRAITOR)
+	{
+		Format(shortName, length, "trai");
+	}
+	else
+	{
+		Format(shortName, length, "unas");
+	}
+}
+
+stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH)
+{
+	if (StrEqual(name, "Innocent", false))
+	{
+		Format(shortName, length, "inno");
+	}
+	else if (StrEqual(name, "Detective", false))
+	{
+		Format(shortName, length, "dete");
+	}
+	else if (StrEqual(name, "Traitor", false))
+	{
+		Format(shortName, length, "trai");
+	}
+	else
+	{
+		Format(shortName, length, "unas");
+	}
+}
 
 /*
  * Returns if the client is alive or dead.
