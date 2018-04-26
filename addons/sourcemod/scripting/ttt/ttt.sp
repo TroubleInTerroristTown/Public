@@ -2750,45 +2750,21 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 		return;
 	}
 	
-	if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
+	if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) ||
+	   (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE) ||
+	   (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)    ||
+	   (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) ||
+	   (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
 	{
 		if (hurtedPlayer1[iAttacker] == -1 && iAttacker != hurtedPlayer1[client]) {
 			hurtedPlayer1[iAttacker] = client;
 		} else if (hurtedPlayer2[iAttacker] == -1 && iAttacker != hurtedPlayer2[client] && iAttacker != hurtedPlayer1[client]) {
 			hurtedPlayer2[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer1[client] && !renewHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
-			renewHurt[iAttacker] = true;
+		} else if (iAttacker != hurtedPlayer1[client] && !resetHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
+			resetHurt[iAttacker] = true;
 			hurtedPlayer1[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer2[client]  && iAttacker != hurtedPlayer1[client] && renewHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
-			renewHurt[iAttacker] = false;
-			hurtedPlayer2[iAttacker] = client;
-		}
-	}
-	else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
-	{
-		if (hurtedPlayer1[iAttacker] == -1 && iAttacker != hurtedPlayer1[client]) {
-		    hurtedPlayer1[iAttacker] = client;
-		} else if (hurtedPlayer2[iAttacker] == -1 && iAttacker != hurtedPlayer2[client] && client != hurtedPlayer1[iAttacker]) {
-		    hurtedPlayer2[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer1[client] && !renewHurt[iAttacker] && client != hurtedPlayer1[iAttacker]) {
-		    renewHurt[iAttacker] = true;
-		    hurtedPlayer1[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer2[client] && renewHurt[iAttacker] && client != hurtedPlayer2[iAttacker] && client != hurtedPlayer1[iAttacker]) {
-		    renewHurt[iAttacker] = false;
-		    hurtedPlayer2[iAttacker] = client;
-		}
-	}
-	else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
-	{
-		if (hurtedPlayer1[iAttacker] == -1 && iAttacker != hurtedPlayer1[client]) {
-			hurtedPlayer1[iAttacker] = client;
-		} else if (hurtedPlayer2[iAttacker] == -1 && iAttacker != hurtedPlayer2[client] && client != hurtedPlayer1[iAttacker]) {
-			hurtedPlayer2[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer1[client] && !renewHurt[iAttacker] && client != hurtedPlayer1[iAttacker]) {
-			renewHurt[iAttacker] = true;
-			hurtedPlayer1[iAttacker] = client;
-		} else if (iAttacker != hurtedPlayer2[client] && renewHurt[iAttacker] && client != hurtedPlayer2[iAttacker] && client != hurtedPlayer1[iAttacker]) {
-			renewHurt[iAttacker] = false;
+		} else if (iAttacker != hurtedPlayer2[client]  && iAttacker != hurtedPlayer1[client] && resetHurt[iAttacker] && hurtedPlayer1[iAttacker] > 0 && hurtedPlayer2[iAttacker] > 0) {
+			resetHurt[iAttacker] = false;
 			hurtedPlayer2[iAttacker] = client;
 		}
 	}
