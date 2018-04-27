@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-24 23:48:01 UTC
+// Date: 2018-04-27 20:00:48 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -95,24 +95,6 @@
 	}
 
 	"Detective scan found body"
-	{
-		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
-	}
-
-	"Detective scan found body Innocent"
-	{
-		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{green} {2} {lightgreen}with weapon{orchid} {3}"
-	}
-
-	"Detective scan found body Detective"
-	{
-		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkblue} {2} {lightgreen}with weapon{orchid} {3}"
-	}
-
-	"Detective scan found body Traitor"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
 		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
@@ -983,19 +965,38 @@
 		"#format"	"{1:N}"
 		"en"		"You switched the position with {green}{1}"
 	}
-	
-	"No karma hurt innocent"
+
+	"Detective scan found body Innocent"
 	{
-		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{green} {2} {lightgreen}with weapon{orchid} {3}"
 	}
-	
+
+	"Detective scan found body Detective"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkblue} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
 	"No karma hurt traitor"
 	{
 		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
 	}
-	
+
 	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+	}
+
+	"No karma hurt detective"
 	{
 		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
 	}
+
 }
