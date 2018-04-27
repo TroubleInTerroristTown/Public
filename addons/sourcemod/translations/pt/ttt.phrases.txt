@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 19:56:26 UTC
+// Date: 2018-04-27 20:03:23 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -886,16 +886,6 @@
 	"Random Teleporter: Teleport"
 	{
 		"pt"		"Vocë trocou de posições com {green}{1}"
-	}
-
-	"No karma hurt innocent"
-	{
-		"pt"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
-	}
-
-	"No karma hurt traitor"
-	{
-		"pt"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
 	}
 
 }
