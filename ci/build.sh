@@ -89,8 +89,8 @@ rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
 
-echo -e "Add LICENSE, CVARS.txt and adminmenu_custom.txt to build package\n"
-cp LICENSE CVARS.txt adminmenu_custom.txt build/
+echo -e "Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package\n"
+cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/
 
 echo -e "Clean root folder\n"
 rm sourcemod.tar.gz
@@ -99,4 +99,4 @@ echo -e "Go to build folder\n"
 cd build
 
 echo -e "Compress directories and files\n"
-zip -9rq $FILE addons materials sound LICENSE CVARS.txt adminmenu_custom.txt
+zip -9rq $FILE addons materials sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
