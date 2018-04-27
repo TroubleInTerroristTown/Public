@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-24 23:48:00 UTC
+// Date: 2018-04-27 19:56:26 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -767,144 +767,135 @@
 	{
 		"pt"		"Você encontrou um corpo de chamariz! CORRE!"
 	}
-	
+
 	"Player Spawn TTT Version"
 	{
-		"#format"	"{1:s}"
-		"en"		"Trouble in Terrorist Town - Versão: {1}"
+		"pt"		"Trouble in Terrorist Town - Versão: {1}"
 	}
 
 	"TTT Radio Menu: Commands"
 	{
-		"en"		"TTT Comandos de Rádio"
+		"pt"		"TTT Comandos de Rádio"
 	}
 
 	"TTT Radio Menu: Yes"
 	{
-		"en"		"Sim"
+		"pt"		"Sim"
 	}
 
 	"TTT Radio Menu: No"
 	{
-		"en"		"Não"
+		"pt"		"Não"
 	}
 
 	"TTT Radio Menu: Maybe"
 	{
-		"en"		"Talvez"
+		"pt"		"Talvez"
 	}
 
 	"TTT Radio Menu: Help"
 	{
-		"en"		"Ajuda"
+		"pt"		"Ajuda"
 	}
 
 	"TTT Radio Menu: Check"
 	{
-		"en"		"Verifique"
+		"pt"		"Verifique"
 	}
 
 	"TTT Radio Menu: Im With"
 	{
-		"en"		"Estou com..."
+		"pt"		"Estou com..."
 	}
 
 	"TTT Radio Menu: Suspect"
 	{
-		"en"		"Suspeito..."
+		"pt"		"Suspeito..."
 	}
 
 	"TTT Radio Menu: Traitor"
 	{
-		"en"		"Traidor..."
+		"pt"		"Traidor..."
 	}
 
 	"TTT Radio Menu: Innocent"
 	{
-		"en"		"Inocente..."
+		"pt"		"Inocente..."
 	}
 
 	"TTT Radio Menu: See"
 	{
-		"en"		"Veja..."
+		"pt"		"Veja..."
 	}
 
 	"TTT Radio: Yes"
 	{
-		"en"		"Sim"
+		"pt"		"Sim"
 	}
 
 	"TTT Radio: No"
 	{
-		"en"		"Não"
+		"pt"		"Não"
 	}
 
 	"TTT Radio: Maybe"
 	{
-		"en"		"Talvez"
+		"pt"		"Talvez"
 	}
 
 	"TTT Radio: Help"
 	{
-		"en"		"Ajuda"
+		"pt"		"Ajuda"
 	}
 
 	"TTT Radio: Check"
 	{
-		"en"		"Verifique"
+		"pt"		"Verifique"
 	}
 
 	"TTT Radio: Im With"
 	{
-		"en"		"Estou com {1}"
+		"pt"		"Estou com {1}"
 	}
 
 	"TTT Radio: Suspect"
 	{
-		"en"		"{1} age de forma suspeita."
+		"pt"		"{1} age de forma suspeita."
 	}
 
 	"TTT Radio: Traitor"
 	{
-		"#format"	"{1:N}"
-		"en"		"{1} é o traidor!"
+		"pt"		"{1} é o traidor!"
 	}
 
 	"TTT Radio: Innocent"
 	{
-		"#format"	"{1:N}"
-		"en"		"{1} é inocente."
+		"pt"		"{1} é inocente."
 	}
 
 	"TTT Radio: See"
 	{
-		"#format"	"{1:N}"
-		"en"		"Eu vejo {1}"
+		"pt"		"Eu vejo {1}"
 	}
 
 	"Random Teleporter: Cant find ragdoll"
 	{
-		"en"		"Não foi possível encontrar um corpo"
+		"pt"		"Não foi possível encontrar um corpo"
 	}
 
 	"Random Teleporter: Teleport"
 	{
-		"#format"	"{1:N}"
-		"en"		"Vocë trocou de posições com {green}{1}"
+		"pt"		"Vocë trocou de posições com {green}{1}"
 	}
-	
+
 	"No karma hurt innocent"
 	{
-		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+		"pt"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
 	}
-	
+
 	"No karma hurt traitor"
 	{
-		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
+		"pt"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
 	}
-	
-	"No karma hurt innocent"
-	{
-		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
-	}
+
 }

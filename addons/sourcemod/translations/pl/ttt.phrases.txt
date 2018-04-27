@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-24 23:47:59 UTC
+// Date: 2018-04-27 19:52:42 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -886,6 +886,21 @@
 	"Random Teleporter: Teleport"
 	{
 		"pl"		"Zamieniłeś się miejscami z {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{green} {2} {lightgreen}z broni{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{darkblue} {2} {lightgreen}z broni{orchid} {3} "
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{darkred} {2} {lightgreen}z broni{orchid} {3}"
 	}
 
 }
