@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:03:23 UTC
+// Date: 2018-04-27 20:41:23 UTC
 // Language: 1337speak (l0l)
 // 
 // To view other translations for this plugin, please visit:

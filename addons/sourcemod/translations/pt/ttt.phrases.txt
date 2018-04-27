@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:03:23 UTC
+// Date: 2018-04-27 20:41:23 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -90,7 +90,7 @@
 
 	"Detective scan found body"
 	{
-		"pt"		"DETETIVE{darkblue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkred} {2} {lightgreen}com a arma{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
@@ -885,7 +885,37 @@
 
 	"Random Teleporter: Teleport"
 	{
-		"pt"		"Vocë trocou de posições com {green}{1}"
+		"pt"		"Você trocou de posições com {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{green} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkblue} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkred} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"No karma hurt traitor"
+	{
+		"pt"		"Você não perdeu Karma porque o {darkred}TRAIDOR {lightgreen}atacou você primeiro."
+	}
+
+	"No karma hurt innocent"
+	{
+		"pt"		"Você não perdeu Karma porque o {green}INOCENTE {lightgreen}atacou você primeiro."
+	}
+
+	"No karma hurt detective"
+	{
+		"pt"		"Você não perdeu Karma porque o {darkblue}DETETIVE {lightgreen}atacou você primeiro."
 	}
 
 }

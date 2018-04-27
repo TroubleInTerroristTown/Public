@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:03:20 UTC
+// Date: 2018-04-27 20:41:21 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -886,6 +886,36 @@
 	"Random Teleporter: Teleport"
 	{
 		"de"		"Du hast die Position mit {green}{1} {lightgreen}getauscht."
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{green} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"Detective scan found body Detective"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkblue} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"No karma hurt traitor"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {darkred}TRAITOR {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"No karma hurt innocent"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {green}INNOCENT {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"No karma hurt detective"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {darkblue}DETEKTIV {lightgreen}dich vorher angeschossen hat."
 	}
 
 }
