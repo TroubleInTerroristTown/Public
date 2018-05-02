@@ -64,7 +64,7 @@ public void OnConfigsExecuted()
 	RegisterItem();
 }
 
-public Action TTT_OnItemsReset()
+public void TTT_OnItemsReset()
 {
 	RegisterItem();
 }
