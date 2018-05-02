@@ -661,7 +661,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 			}
 			
 			// Reset price if item non discountable
-			if (free && price > 0 && !temp_item[Discount] && temp_item[Price] != price)
+			if (!free && price > 0 && !temp_item[Discount] && temp_item[Price] != price)
 			{
 				price = temp_item[Price];
 			}
