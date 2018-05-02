@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:41:23 UTC
+// Date: 2018-05-02 14:17:18 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -997,6 +997,12 @@
 	"No karma hurt detective"
 	{
 		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
+	}
+
+	"Shop Item not found"
+	{
+		"#format"	"{1:s}"
+		"en"		"Can't find '{1}' as valid shop item"
 	}
 
 }

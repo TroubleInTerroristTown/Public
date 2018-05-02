@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:41:21 UTC
+// Date: 2018-05-02 14:17:15 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -916,6 +916,11 @@
 	"No karma hurt detective"
 	{
 		"de"		"Sie haben kein Karma verloren, weil der {darkblue}DETEKTIV {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"Shop Item not found"
+	{
+		"de"		"{1} nicht als gültiges Shop Item gefunden."
 	}
 
 }

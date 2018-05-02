@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-04-27 20:41:23 UTC
+// Date: 2018-05-02 14:17:17 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -916,6 +916,11 @@
 	"No karma hurt detective"
 	{
 		"pt"		"Você não perdeu Karma porque o {darkblue}DETETIVE {lightgreen}atacou você primeiro."
+	}
+
+	"Shop Item not found"
+	{
+		"pt"		"Não foi possível encontrar '{1}' como um item válido da loja"
 	}
 
 }

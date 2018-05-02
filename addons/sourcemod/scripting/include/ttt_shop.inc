@@ -92,3 +92,12 @@ native int TTT_SetClientCredits(int client, int credits);
  * @param client            Client index.
  */
 native int TTT_AddClientCredits(int client, int credits);
+
+/*
+ * Add item to client (without any costs)
+ *
+ * @param client			Client Index
+ * @param item				Short Item name
+ * @return					True item found/valid, false item not found
+ */
+native bool TTT_GiveClientItem(int client, const char[] item);

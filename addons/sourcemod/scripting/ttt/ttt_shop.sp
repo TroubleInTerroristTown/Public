@@ -110,6 +110,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 
+	CreateNative("TTT_GiveClientItem", Native_GiveClientItem);
+
 	RegPluginLibrary("ttt_shop");
 
 	return APLRes_Success;
@@ -134,6 +136,8 @@ public void OnPluginStart()
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
 
+	// TODO: Add cvar in callback for checking flags (customizable)
+	RegAdminCmd("sm_giveitem", Command_GiveItem, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
 	RegAdminCmd("sm_resetitems", Command_ResetItems, ADMFLAG_ROOT);
 
@@ -626,7 +630,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	}
 }
 
-bool ClientBuyItem(int client, char[] item, bool menu)
+bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 {
 	int temp_item[Item];
 	for (int i = 0; i < g_aCustomItems.Length; i++)
@@ -634,7 +638,13 @@ bool ClientBuyItem(int client, char[] item, bool menu)
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
 		{
-			int price = temp_item[Price];
+			int price = 0;
+
+			if (!free)
+			{
+				price = temp_item[Price];
+			}
+
 			bool count = true;
 
 			Action result = Plugin_Continue;
@@ -651,7 +661,7 @@ bool ClientBuyItem(int client, char[] item, bool menu)
 			}
 			
 			// Reset price if item non discountable
-			if (!temp_item[Discount] && temp_item[Price] != price)
+			if (free && price > 0 && !temp_item[Discount] && temp_item[Price] != price)
 			{
 				price = temp_item[Price];
 			}
@@ -665,7 +675,7 @@ bool ClientBuyItem(int client, char[] item, bool menu)
 				}
 			}
 
-			if (g_iCredits[client] >= price)
+			if ((!free && g_iCredits[client] >= price) || (free && price == 0))
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
@@ -1162,6 +1172,54 @@ stock void setCredits(int client, int credits)
 	Call_Finish();
 }
 
+public Action Command_GiveItem(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+
+	if (args != 2)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_giveitem <#userid|name> <item>");
+		return Plugin_Handled;
+	}
+
+	char sArg1[12];
+	GetCmdArg(1, sArg1, sizeof(sArg1));
+
+	char sItem[16];
+	GetCmdArg(2, sItem, sizeof(sItem));
+
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
+
+	if ((target_count = ProcessTargetString(sArg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_ALIVE, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	for (int i = 0; i < target_count; i++)
+	{
+		int target = target_list[i];
+
+		if (!TTT_IsClientValid(target))
+		{
+			return Plugin_Handled;
+		}
+
+		if (!GiveClientItem(target, sItem))
+		{
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Shop: Item not found", client, sItem);
+		}
+	}
+
+	return Plugin_Continue;
+}
+
 public Action Command_SetCredits(int client, int args)
 {
 	if (!TTT_IsClientValid(client))
@@ -1253,6 +1311,22 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 	return 0;
 }
 
+public int Native_GiveClientItem(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	char sItem[16];
+	GetNativeString(2, sItem, sizeof(sItem));
+
+	if (TTT_IsClientValid(client))
+	{
+		return GiveClientItem(client, sItem);
+	}
+
+	return false;
+}
+
+
 void ResetItemsArray(bool initArray = false)
 {
 	delete g_aCustomItems;
@@ -1261,4 +1335,21 @@ void ResetItemsArray(bool initArray = false)
 	{
 		g_aCustomItems = new ArrayList(84);
 	}
+}
+
+int GiveClientItem(int client, char[] sItem)
+{
+	int iItems[Item];
+
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, iItems[0]);
+		if (strlen(iItems[Short]) > 1 && StrEqual(iItems[Short], sItem, false))
+		{
+			ClientBuyItem(client, sItem, false, true);
+			return true;
+		}
+	}
+
+	return false;
 }
