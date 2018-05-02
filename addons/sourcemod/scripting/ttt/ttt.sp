@@ -1512,7 +1512,6 @@ void HookClient(int client)
 {
 	SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
-	SDKHook(client, SDKHook_WeaponSwitchPost, OnWeaponPostSwitch);
 	SDKHook(client, SDKHook_PostThink, OnPostThink);
 }
 
@@ -1860,29 +1859,9 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 			return Plugin_Changed;
 		}
 
-		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker] && !g_bHoldingProp[client] && !g_bHoldingSilencedWep[client])
+		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker])
 		{
-			if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
-			{
-				if (g_hRDMTimer[client] != null)
-				{
-					TTT_ClearTimer(g_hRDMTimer[client]);
-				}
-
-				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
-				g_iRDMAttacker[client] = iAttacker;
-			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
-			{
-				if (g_hRDMTimer[client] != null)
-				{
-					TTT_ClearTimer(g_hRDMTimer[client]);
-				}
-
-				g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
-				g_iRDMAttacker[client] = iAttacker;
-			}
-			else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
+			if ((g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR) || (g_iRole[iAttacker] != TTT_TEAM_TRAITOR && g_iRole[client] != TTT_TEAM_TRAITOR))
 			{
 				if (g_hRDMTimer[client] != null)
 				{
@@ -2951,7 +2930,6 @@ public int TTT_OnButtonPress(int client, int button)
 
 	if (button & IN_USE)
 	{
-		g_bHoldingProp[client] = true;
 
 		int iEntity = GetClientAimTarget(client, false);
 		if (iEntity > 0)
@@ -3093,7 +3071,6 @@ public int TTT_OnButtonRelease(int client, int button)
 {
 	if (button & IN_USE)
 	{
-		g_bHoldingProp[client] = false;
 		g_bIsChecking[client] = false;
 	}
 }
@@ -3796,20 +3773,6 @@ stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
 		{
 			KickClient(client, "%T", "Kick Bad Name", client, g_sBadNames[i]);
 		}
-	}
-}
-
-public void OnWeaponPostSwitch(int client, int weapon)
-{
-	char weaponName[64];
-	GetClientWeapon(client, weaponName, sizeof(weaponName));
-	if (StrContains(weaponName, "silence") != -1)
-	{
-		g_bHoldingSilencedWep[client] = true;
-	}
-	else
-	{
-		g_bHoldingSilencedWep[client] = false;
 	}
 }
 
