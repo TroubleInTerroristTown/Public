@@ -274,11 +274,7 @@ public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error
 {
 	if (hndl == null || strlen(error) > 0)
 	{
-		if (StrContains(error, "Duplicate column name") == -1)
-		{
-			LogError("(SQL_AlterCreditsColumn) Query failed: %s", error);
-		}
-		else
+		if (StrContains(error, "duplicate column name", false) != -1)
 		{
 			LoadClientCredits(GetClientOfUserId(userid));
 		}

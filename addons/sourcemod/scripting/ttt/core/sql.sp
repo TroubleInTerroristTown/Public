@@ -2,11 +2,7 @@ public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, 
 {
 	if (hndl == null || strlen(error) > 0)
 	{
-		if (StrContains(error, "Duplicate column name") == -1)
-		{
-			LogToFileEx(g_sErrorFile, "(SQL_AlterKarmaColumn) Query failed: %s", error);
-		}
-		else
+		if (StrContains(error, "duplicate column name", false) != -1)
 		{
 			LateLoadClients(false);
 		}
