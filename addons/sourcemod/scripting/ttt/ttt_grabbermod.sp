@@ -49,6 +49,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
 	g_hOnGrabbing = CreateGlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
 
+	CreateNative("TTT_GetGrabEntity", Native_GetGrabEntity);
+
 	RegPluginLibrary("ttt_grabbermod");
 
 	return APLRes_Success;
@@ -231,9 +233,9 @@ stock bool ValidGrab(int client)
 	int iObject = g_iObject[client];
 	if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
 	{
-		return (true);
+		return true;
 	}
-	return (false);
+	return false;
 }
 
 stock int GetObject(int client, bool hitSelf=true)
@@ -245,7 +247,7 @@ stock int GetObject(int client, bool hitSelf=true)
 		if (ValidGrab(client))
 		{
 			iEntity = EntRefToEntIndex(g_iObject[client]);
-			return (iEntity);
+			return iEntity;
 		}
 
 		iEntity = TraceToEntity(client);
@@ -285,7 +287,7 @@ public int TraceToEntity(int client)
 
 	if (TR_DidHit(null))
 	{
-		return (TR_GetEntityIndex(null));
+		return TR_GetEntityIndex(null);
 	}
 
 	return -1;
@@ -293,7 +295,7 @@ public int TraceToEntity(int client)
 
 public bool TraceASDF(int entity, int mask, any data)
 {
-	return (data != entity);
+	return data != entity;
 }
 
 stock int ReplacePhysicsEntity(int iEntity)
@@ -611,4 +613,16 @@ bool CheckLists(int entity, const char[] name)
 	}
 	
 	return false;
+}
+
+public int Native_GetGrabEntity(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (ValidGrab(client))
+	{
+		return g_iObject[client];
+	}
+
+	return -1;
 }

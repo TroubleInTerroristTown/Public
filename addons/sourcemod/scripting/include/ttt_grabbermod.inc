@@ -12,6 +12,13 @@
  */
 forward bool TTT_OnGrabbing(int client, int entity);
 
+/*
+ * 
+ * @param client				The client index
+ * @return						Entity reference (use EntRefToEntIndex to get index)
+ */
+native int TTT_GetGrabEntity(int client);
+
 public SharedPlugin __pl_ttt_grabbermod = 
 {
 	name = "ttt_grabbermod",
@@ -26,6 +33,6 @@ public SharedPlugin __pl_ttt_grabbermod =
 #if !defined REQUIRE_PLUGIN
 public void __pl_ttt_grabbermod_SetNTVOptional()
 {
-	// MarkNativeAsOptional("");
+	MarkNativeAsOptional("TTT_GetGrabEntity");
 }
 #endif
