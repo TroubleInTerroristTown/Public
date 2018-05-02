@@ -278,6 +278,10 @@ public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error
 		{
 			LoadClientCredits(GetClientOfUserId(userid));
 		}
+		else
+		{
+			LogError("(SQL_AlterCreditsColumn) Query failed: %s", error);
+		}
 		
 		return;
 	}

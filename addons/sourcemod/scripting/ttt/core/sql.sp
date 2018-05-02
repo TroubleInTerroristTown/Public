@@ -6,6 +6,10 @@ public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, 
 		{
 			LateLoadClients(false);
 		}
+		else
+		{
+			LogError("(SQL_AlterKarmaColumn) Query failed: %s", error);
+		}
 		
 		return;
 	}
