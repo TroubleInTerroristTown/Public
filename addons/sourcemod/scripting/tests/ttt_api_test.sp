@@ -4,6 +4,7 @@
 #include <ttt>
 #include <ttt_sql>
 #include <ttt_shop>
+#include <ttt_grabbermod>
 
 #pragma newdecls required
 
@@ -174,4 +175,10 @@ public void TTT_OnSQLConnect(Database db)
 	{
 		PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);
 	}
+}
+
+public bool TTT_OnGrabbing(int client, int entity)
+{
+	PrintToServer("TTT_OnGrabbing was called!");
+	PrintToServer("(TTT_OnGrabbing) Client: %N - Entity: %d", client, entity);
 }

@@ -34,6 +34,8 @@ ArrayList g_aWhitelist = null;
 ArrayList g_aBlacklist = null;
 ArrayList g_aBlacklistModels = null;
 
+Handle g_hOnGrabbing = null;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -42,6 +44,15 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnGrabbing = CreateGlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
+
+	RegPluginLibrary("ttt_grabbermod");
+
+	return APLRes_Success;
+}
 
 public void OnPluginStart()
 {
@@ -127,6 +138,17 @@ stock void GrabSomething(int client)
 	
 	// We block doors and buttons by default
 	if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1)
+	{
+		return;
+	}
+
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnGrabbing);
+	Call_PushCell(client);
+	Call_PushCell(ent);
+	Call_Finish(res);
+
+	if (res == Plugin_Handled || res == Plugin_Stop)
 	{
 		return;
 	}
