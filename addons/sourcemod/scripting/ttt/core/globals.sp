@@ -26,8 +26,6 @@ bool g_bRoundEnded = false;
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
 bool g_bImmuneRDMManager[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHoldingProp[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
