@@ -2093,12 +2093,14 @@ stock void ShowRules(int client, int iItem)
 	if (!kvRules.ImportFromFile(g_sRulesFile))
 	{
 		SetFailState("Can't read %s correctly! (ImportFromFile)", g_sRulesFile);
+		delete kvRules;
 		return;
 	}
 
 	if (!kvRules.GotoFirstSubKey())
 	{
 		SetFailState("Can't read %s correctly! (GotoFirstSubKey)", g_sRulesFile);
+		delete kvRules;
 		return;
 	}
 

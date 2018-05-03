@@ -37,6 +37,7 @@ void InitNatives()
 	CreateNative("TTT_AddRoundSlays", Native_AddRoundSlays);
 	CreateNative("TTT_SetRoundSlays", Native_SetRoundSlays);
 	CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
+	CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -348,4 +349,17 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
 public int Native_IsPlayerAlive(Handle plugin, int numParams)
 {
 	return g_bAlive[GetNativeCell(1)];
+}
+
+public int Native_ClientOpenRules(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	g_bRules[client] = false;
+
+	char sBuffer[12];
+	IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
+	SetClientCookie(client, g_hRules, sBuffer);
+
+	ShowRules(client, g_iSite[client]);
 }

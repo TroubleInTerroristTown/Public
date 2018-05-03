@@ -284,6 +284,13 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
+/*
+ * Open rules menu for the client
+ *
+ * @param client			The client index.
+ */
+native void TTT_ClientOpenRules(int client);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
 	if (role == TTT_TEAM_INNOCENT)
