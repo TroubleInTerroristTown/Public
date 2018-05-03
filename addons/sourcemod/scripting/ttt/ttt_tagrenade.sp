@@ -461,6 +461,7 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 void ResetTAG(int client)
 {
 	g_iTPCount[client] = 0;
+	g_iDPCount[client] = 0;
 	g_fTaggingEndTime[client] = 0.0;
 	g_bPlayerIsTagged[client] = false;
 	g_bSeePlayers[client] = false;
