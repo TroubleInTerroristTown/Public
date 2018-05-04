@@ -297,7 +297,7 @@ public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error
 
 stock void LoadClientCredits(int client)
 {
-	if (TTT_IsClientValid(client))
+	if (TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		ConVar cvar = FindConVar("ttt_show_debug_messages");
 		if (cvar != null && cvar.BoolValue)
