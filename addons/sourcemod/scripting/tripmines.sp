@@ -100,6 +100,11 @@ public void OnClientPutInServer(int client)
 	}
 }
 
+public void OnClientDisconnect(int client)
+{
+	g_iRemaining[client] = 0;
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
