@@ -2992,7 +2992,7 @@ public int TTT_OnButtonPress(int client, int button)
 							bool bSilentID = g_cSilentIdEnabled.BoolValue;
 							bool bInWalk = button & IN_WALK != 0;
 							bool bSilentColor = g_cSilentIdColor.BoolValue;
-							int iBodyWasSilentID = 0;
+							bool silentID = false;
 							
 							iRagdollC[Found] = true;
 
@@ -3037,7 +3037,7 @@ public int TTT_OnButtonPress(int client, int button)
 								    	SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 								    }
 								    
-								    iBodyWasSilentID++;
+								    silentID = true;
 								}
 								addArrayTime(iItem);
 							}
@@ -3064,7 +3064,7 @@ public int TTT_OnButtonPress(int client, int button)
 								    	SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 								    }
 								    
-								    iBodyWasSilentID++;
+								    silentID = true;
 								}
 								
 								addArrayTime(iItem);							
@@ -3093,7 +3093,7 @@ public int TTT_OnButtonPress(int client, int button)
 								    	SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 								    }
 								    
-								    iBodyWasSilentID++;
+								    silentID = true;
 								}
 								addArrayTime(iItem);								
 							}
@@ -3116,7 +3116,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							
 							Call_PushString(iRagdollC[VictimName]);
-							Call_PushCell(iBodyWasSilentID);
+							Call_PushCell(silentID);
 							Call_Finish();
 						}
 						g_aRagdoll.SetArray(i, iRagdollC[0]);
