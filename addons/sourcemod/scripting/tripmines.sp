@@ -21,7 +21,7 @@
 #define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 // globals
-int g_iRemaining[MAXPLAYERS+1];		// how many tripmines player has this spawn
+int g_iRemaining[MAXPLAYERS + 1] = { 0, ... };		// how many tripmines player has this spawn
 int g_iCount = 1;
 char g_sModel[PLATFORM_MAX_PATH + 1];
 
@@ -94,10 +94,7 @@ public void OnMapStart()
 // When a new client is put in the server we reset their mines count
 public void OnClientPutInServer(int client)
 {
-	if(client && !IsFakeClient(client))
-	{
-		g_iRemaining[client] = 0;
-	}
+	g_iRemaining[client] = 0;
 }
 
 public void OnClientDisconnect(int client)
