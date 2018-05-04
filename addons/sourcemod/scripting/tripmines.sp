@@ -30,6 +30,10 @@ ConVar g_cNumMines = null;
 ConVar g_cActTime = null;
 ConVar g_cModel = null;
 
+Handle g_hOnPlant = null;
+Handle g_hPlanted = null;
+Handle g_hReady = null;
+
 public Plugin myinfo = {
 	name = "Tripmines 2016 Update",
 	author = "404, Bara",
@@ -38,6 +42,16 @@ public Plugin myinfo = {
 	url = "unfgaming.net, csgottt.com"
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnPlant = CreateGlobalForward("Tripmine_OnPlant", ET_Event, Param_Cell);
+	g_hPlanted = CreateGlobalForward("Tripmine_Planted", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hReady = CreateGlobalForward("Tripmine_Ready", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+
+	RegPluginLibrary("tripmines");
+
+	return APLRes_Success;
+}
 
 public void OnPluginStart() 
 {
@@ -45,7 +59,7 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
 	g_cNumMines = CreateConVar("sm_tripmines_allowed", "3");
-	g_cActTime = CreateConVar("sm_tripmines_activate_time", "2.0");
+	g_cActTime = CreateConVar("sm_tripmines_activate_time", "3.0");
 	g_cModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
 
 	// commands
@@ -137,6 +151,16 @@ void SetMine(int client)
 	{
 		g_iCount = 1;
 	}
+
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnPlant);
+	Call_PushCell(client);
+	Call_Finish(res);
+
+	if (res == Plugin_Handled || res == Plugin_Stop)
+	{
+		return;
+	}
 	
 	// trace client view to get position and angles for tripmine
 	
@@ -220,6 +244,12 @@ void SetMine(int client)
 		SetEntPropFloat(ent2, Prop_Data, "m_fWidth", 4.0);
 		AcceptEntityInput(ent2, "TurnOff");
 
+		Call_StartForward(g_hPlanted);
+		Call_PushCell(client);
+		Call_PushCell(ent);
+		Call_PushCell(ent2);
+		Call_Finish();
+
 		// Create a datapack
 		DataPack hData = new DataPack();
 		CreateTimer(g_cActTime.FloatValue, TurnBeamOn, hData);
@@ -278,6 +308,12 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
 		end[2] = hData.ReadFloat();
 
 		EmitSoundToAllAny(SND_MINEACT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
+
+		Call_StartForward(g_hReady);
+		Call_PushCell(client);
+		Call_PushCell(ent);
+		Call_PushCell(ent2);
+		Call_Finish();
 	}
 
 	delete hData;
