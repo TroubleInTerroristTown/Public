@@ -3115,7 +3115,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							
 							Call_PushString(iRagdollC[VictimName]);
-							Call_PushCell(silentID);
+							Call_PushCell(view_as<int>(silentID));
 							Call_Finish();
 						}
 						g_aRagdoll.SetArray(i, iRagdollC[0]);
