@@ -2989,10 +2989,7 @@ public int TTT_OnButtonPress(int client, int button)
 
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
-							bool bSilentID = g_cSilentIdEnabled.BoolValue;
-							bool bInWalk = button & IN_WALK != 0;
-							bool bSilentColor = g_cSilentIdColor.BoolValue;
-							int iAllowedRolesSilentID = g_cSilentIdRoles.IntValue;
+							bool bInWalk = ((button & IN_WALK) > 0);
 							bool silentID = false;
 							
 							iRagdollC[Found] = true;
@@ -3016,7 +3013,7 @@ public int TTT_OnButtonPress(int client, int button)
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3033,7 +3030,7 @@ public int TTT_OnButtonPress(int client, int button)
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
-								    if (bSilentColor)
+								    if (g_cSilentIdColor.BoolValue)
 								    {
 								    	SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 								    }
@@ -3044,7 +3041,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3061,7 +3058,8 @@ public int TTT_OnButtonPress(int client, int button)
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
-								    if (bSilentColor) {
+								    if (g_cSilentIdColor.BoolValue)
+								    {
 								    	SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 								    }
 								    
@@ -3072,7 +3070,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3089,7 +3087,7 @@ public int TTT_OnButtonPress(int client, int button)
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
-								    if (bSilentColor)
+								    if (g_cSilentIdColor.BoolValue)
 								    {
 								    	SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 								    }
@@ -3117,7 +3115,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							
 							Call_PushString(iRagdollC[VictimName]);
-							Call_PushCell(view_as<int>(silentID));
+							Call_PushCell(silentID);
 							Call_Finish();
 						}
 						g_aRagdoll.SetArray(i, iRagdollC[0]);
