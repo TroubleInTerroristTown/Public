@@ -1,6 +1,8 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
+
+#include <autoexecconfig>
 #include <emitsoundany>
 
 #pragma semicolon 1
@@ -58,9 +60,14 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
-	g_cActTime = CreateConVar("tripmines_activate_time", "3.0");
-	g_cModel = CreateConVar("tripmines_model", DEFAULT_MODEL);
-	g_cColor = CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the beam (Example: \"R G B\" or as color code: \"255 0 0 \" for red beam");
+	AutoExecConfig_SetCreateDirectory(true);
+    AutoExecConfig_SetCreateFile(true);
+    AutoExecConfig_SetFile("plugin.knifes");
+	g_cActTime = AutoExecConfig_CreateConVar("tripmines_activate_time", "3.0");
+	g_cModel = AutoExecConfig_CreateConVar("tripmines_model", DEFAULT_MODEL);
+	g_cColor = AutoExecConfig_CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the beam (Example: \"R G B\" or as color code: \"255 0 0 \" for red beam");
+	AutoExecConfig_ExecuteFile();
+    AutoExecConfig_CleanFile();
 
 	// commands
 	RegConsoleCmd("sm_tripmine", Command_TripMine);
