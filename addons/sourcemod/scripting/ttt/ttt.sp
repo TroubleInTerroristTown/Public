@@ -3132,7 +3132,7 @@ public int TTT_OnButtonPress(int client, int button)
 }
 
 public TTT_ValidSilentIDRole(int client, int role) {
-    return (TTT_GetClientRole(client) & role);
+    return (role & TTT_GetClientRole(client));
 }
 
 public int TTT_OnButtonRelease(int client, int button)
