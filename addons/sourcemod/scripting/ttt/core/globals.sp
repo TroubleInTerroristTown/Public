@@ -280,7 +280,6 @@ ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
 ConVar g_cSilentIdEnabled = null;
 ConVar g_cSilentIdColor = null;
 ConVar g_cSilentIdRoles = null;
-ConVar g_cSilentIdRewards = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
