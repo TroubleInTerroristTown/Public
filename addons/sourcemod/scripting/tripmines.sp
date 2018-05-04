@@ -1,5 +1,6 @@
 #include <sourcemod>
 #include <sdktools>
+#include <cstrike>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -14,14 +15,12 @@
 #define SND_MINEPUT "npc/roller/blade_cut.wav"
 #define SND_MINEACT "npc/roller/mine/rmine_blades_in2.wav"
 
-#define TEAM_T 2
-#define TEAM_CT 3
-
 #define COLOR_T "255 0 0"
 #define COLOR_CT "0 0 255"
 #define COLOR_DEF "0 255 255"
 
 #define MAX_LINE_LEN 256
+#define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 // globals
 int gRemaining[MAXPLAYERS+1];		// how many tripmines player has this spawn
@@ -32,11 +31,10 @@ char mdlMine[256];
 Handle cvNumMines = null;
 Handle cvActTime = null;
 Handle cvModel = null;
-Handle cvTeamRestricted = null;
 
 public Plugin myinfo = {
 	name = "Tripmines 2016 Update",
-	author = "404 (abrandnewday)",
+	author = "404, Bara",
 	description = "That old L. Duke Tripmines plugin, updated to actually fucking work.",
 	version = PLUGIN_VERSION,
 	url = "http://www.unfgaming.net"
@@ -45,15 +43,12 @@ public Plugin myinfo = {
 
 public void OnPluginStart() 
 {
-	CreateConVar("sm_tripmines2016_version", PLUGIN_VERSION, "Tripmines", FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
-	
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
 	cvNumMines = CreateConVar("sm_tripmines_allowed", "3");
 	cvActTime = CreateConVar("sm_tripmines_activate_time", "2.0");
-	cvModel = CreateConVar("sm_tripmines_model", "models/props_lab/tpplug.mdl");
-	cvTeamRestricted = CreateConVar("sm_tripmines_restrictedteam", "0");
+	cvModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
 
 	// commands
 	RegConsoleCmd("sm_tripmine", Command_TripMine);
@@ -105,14 +100,6 @@ public Action Command_TripMine(int client, int args)
 	// make sure client is not spectating
 	if (!IsClientInGame(client))
 	{
-		return Plugin_Handled;
-	}
-		
-	// check restricted team 
-	int team = GetClientTeam(client);
-	if(team == GetConVarInt(cvTeamRestricted))
-	{ 
-		PrintHintText(client, "Your team does not have access to this equipment.");
 		return Plugin_Handled;
 	}
 	
@@ -260,12 +247,13 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
 	if (IsValidEntity(ent))
 	{
 		// To Do: Game-based team checks and handling.
+		// To Do: Replace teams check with ttt roles
 		int team = GetClientTeam(client);
-		if(team == TEAM_T)
+		if(team == CS_TEAM_T)
 		{
 			color = COLOR_T;
 		}
-		else if(team == TEAM_CT)
+		else if(team == CS_TEAM_CT)
 		{
 			color = COLOR_CT;
 		}
