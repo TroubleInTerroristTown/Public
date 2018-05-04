@@ -26,7 +26,6 @@ int g_iCount = 1;
 char g_sModel[PLATFORM_MAX_PATH + 1];
 
 // convars
-ConVar g_cNumMines = null;
 ConVar g_cActTime = null;
 ConVar g_cModel = null;
 
@@ -48,6 +47,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hPlanted = CreateGlobalForward("Tripmine_Planted", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hReady = CreateGlobalForward("Tripmine_Ready", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 
+	CreateNative("Tripmine_GetClientMines", Native_GetClientMines);
+	CreateNative("Tripmine_AddClientMines", Native_AddClientMines);
+	CreateNative("Tripmine_SetClientMines", Native_SetClientMines);
+
 	RegPluginLibrary("tripmines");
 
 	return APLRes_Success;
@@ -58,7 +61,6 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
-	g_cNumMines = CreateConVar("sm_tripmines_allowed", "3");
 	g_cActTime = CreateConVar("sm_tripmines_activate_time", "3.0");
 	g_cModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
 
@@ -102,7 +104,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	g_iRemaining[client] = g_cNumMines.IntValue;
+	g_iRemaining[client] = 0;
 	
 	return Plugin_Continue;
 }
@@ -119,7 +121,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 public Action Command_TripMine(int client, int args)
 {	
 	// make sure client is not spectating
-	if (!IsClientInGame(client))
+	if (client < 0 || !IsClientInGame(client))
 	{
 		return Plugin_Handled;
 	}
@@ -330,4 +332,29 @@ public bool FilterAll(int entity, int contentsMask)
 	return false;
 }
 
+public int Native_GetClientMines(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	return g_iRemaining[client];
+}
+
+public int Native_AddClientMines(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int amount = GetNativeCell(2);
+
+	g_iRemaining[client] += amount;
+
+	return g_iRemaining[client];
+}
+
+public int Native_SetClientMines(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	int amount = GetNativeCell(2);
+
+	g_iRemaining[client] = amount;
+
+	return g_iRemaining[client];
+}
 

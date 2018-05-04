@@ -28,6 +28,31 @@ forward void Tripmine_Planted(int client, int entity, int beam);
  */
 forward void Tripmine_Ready(int client, int entity, int beam);
 
+/*
+ * Returns the amount of mines of a client
+ *
+ * @param client			The client index
+ * @return					returns the amount of mines for the client
+ */
+public int Tripmine_GetClientMines(int client);
+
+/*
+ * Adds the amount of mines for a client
+ *
+ * @param client			The client index
+ * @return					returns the (new) amount of mines for the client
+ */
+public int Tripmine_AddClientMines(int client, int amount);
+
+
+/*
+ * Sets the amount of mines for a client
+ *
+ * @param client			The client index
+ * @return					returns the (new) amount of mines for the client
+ */
+public int Tripmine_SetClientMines(int client, int amount);
+
 public SharedPlugin __pl_tripmines = 
 {
 	name = "tripmines",
