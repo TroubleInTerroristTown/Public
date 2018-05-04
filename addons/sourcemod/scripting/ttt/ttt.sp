@@ -2992,6 +2992,7 @@ public int TTT_OnButtonPress(int client, int button)
 							bool bSilentID = g_cSilentIdEnabled.BoolValue;
 							bool bInWalk = button & IN_WALK != 0;
 							bool bSilentColor = g_cSilentIdColor.BoolValue;
+							int iAllowedRolesSilentID = g_cSilentIdRoles.IntValue;
 							bool silentID = false;
 							
 							iRagdollC[Found] = true;
@@ -3015,7 +3016,7 @@ public int TTT_OnButtonPress(int client, int button)
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, g_iRole[client]))
+								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
 								{
 									LoopValidClients(j)
 									{
@@ -3043,7 +3044,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, g_iRole[client]))
+								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
 								{
 									LoopValidClients(j)
 									{
@@ -3058,7 +3059,7 @@ public int TTT_OnButtonPress(int client, int button)
 								{
 								    CPrintToChat(client, "%s %T", g_sTag, "Found Detective", client, client, iRagdollC[VictimName]);
 								    
-								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective) - SILENT", client, sRole, iRagdollC[VictimName])
+								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
 								    if (bSilentColor) {
 								    	SetEntityRenderColor(iEntity, 0, 0, 255, 255);
@@ -3071,7 +3072,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
-								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, g_iRole[client]))
+								if (!bSilentID || !(bInWalk && TTT_ValidSilentIDRole(client, iAllowedRolesSilentID)))
 								{
 									LoopValidClients(j)
 									{
