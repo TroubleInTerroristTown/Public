@@ -3030,7 +3030,7 @@ public int TTT_OnButtonPress(int client, int button)
 								}
 								else
 								{
-								    CPrintToChat(client, "%s %T", g_sTag, "Found Innocent Silent", client, client, iRagdollC[VictimName]);
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Innocent Silent", client, iRagdollC[VictimName]);
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
@@ -3058,7 +3058,7 @@ public int TTT_OnButtonPress(int client, int button)
 								}
 								else
 								{
-								    CPrintToChat(client, "%s %T", g_sTag, "Found Detective Silent", client, client, iRagdollC[VictimName]);
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Detective Silent", client, iRagdollC[VictimName]);
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
@@ -3087,7 +3087,7 @@ public int TTT_OnButtonPress(int client, int button)
 								}
 								else
 								{
-								    CPrintToChat(client, "%s %T", g_sTag, "Found Traitor Silent", client, client, iRagdollC[VictimName]);
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Traitor Silent", client, iRagdollC[VictimName]);
 								    
 								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor) - SILENT", client, sRole, iRagdollC[VictimName]);
 								    
