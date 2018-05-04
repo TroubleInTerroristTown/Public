@@ -50,7 +50,7 @@ public void OnConfigsExecuted()
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158", sFile);
+		SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158");
 		return;
 	}
 	
