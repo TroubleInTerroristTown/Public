@@ -2094,6 +2094,7 @@ stock void ShowRules(int client, int iItem)
 	{
 		SetFailState("Can't read %s correctly! (ImportFromFile)", g_sRulesFile);
 		delete kvRules;
+		delete hFile;
 		return;
 	}
 
@@ -2101,6 +2102,7 @@ stock void ShowRules(int client, int iItem)
 	{
 		SetFailState("Can't read %s correctly! (GotoFirstSubKey)", g_sRulesFile);
 		delete kvRules;
+		delete hFile;
 		return;
 	}
 
