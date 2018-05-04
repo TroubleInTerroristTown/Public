@@ -1063,9 +1063,14 @@ public void TTT_OnRoundEnd(int WinningTeam)
 	}
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, int isBodySilecedID = 0)
 {
-	addCredits(client, g_cCreditsFoundBody.IntValue);
+	bool bSilentID = g_cSilentIdEnabled.BoolValue;
+	bool bSilentRewards = g_cSilentIdRewards.BoolValue;
+	if (!bSilentID || (bSilentRewards && bSilentIisBodySilecedID > 0) || isBodySilecedID == 0)
+	{
+		addCredits(client, g_cCreditsFoundBody.IntValue);
+	}
 }
 
 stock void addCredits(int client, int credits, bool message = false)
