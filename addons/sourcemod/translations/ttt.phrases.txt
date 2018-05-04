@@ -1004,5 +1004,21 @@
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
 	}
+	"Found Innocent Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {green}{2}. {lightgreen}It was a {green}INNOCENT!"
+	}
 
+	"Found Detective Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {darkblue}{2}. {lightgreen}It was a {darkblue}DETECTIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {darkred}{2}. {lightgreen}It was a {darkred}Traitor!"
+	}
 }
