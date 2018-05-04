@@ -1,43 +1,41 @@
 #include <sourcemod>
 #include <sdktools>
 #include <cstrike>
+#include <emitsoundany>
 
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_VERSION "1.0"
-
 #define TRACE_START 24.0
 #define TRACE_END 64.0
 
-#define MDL_LASER "sprites/laser.vmt"
+#define MDL_LASER "materials/sprites/purplelaser1.vmt"
 
-#define SND_MINEPUT "npc/roller/blade_cut.wav"
-#define SND_MINEACT "npc/roller/mine/rmine_blades_in2.wav"
+#define SND_MINEPUT "weapons/g3sg1/g3sg1_slideback.wav"
+#define SND_MINEACT "items/nvg_on.wav"
 
 #define COLOR_T "255 0 0"
 #define COLOR_CT "0 0 255"
 #define COLOR_DEF "0 255 255"
 
-#define MAX_LINE_LEN 256
 #define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 // globals
-int gRemaining[MAXPLAYERS+1];		// how many tripmines player has this spawn
-int gCount = 1;
-char mdlMine[256];
+int g_iRemaining[MAXPLAYERS+1];		// how many tripmines player has this spawn
+int g_iCount = 1;
+char g_sModel[PLATFORM_MAX_PATH + 1];
 
 // convars
-Handle cvNumMines = null;
-Handle cvActTime = null;
-Handle cvModel = null;
+ConVar g_cNumMines = null;
+ConVar g_cActTime = null;
+ConVar g_cModel = null;
 
 public Plugin myinfo = {
 	name = "Tripmines 2016 Update",
 	author = "404, Bara",
 	description = "That old L. Duke Tripmines plugin, updated to actually fucking work.",
-	version = PLUGIN_VERSION,
-	url = "http://www.unfgaming.net"
+	version = "1.0 ( will be never updated :) )",
+	url = "unfgaming.net, csgottt.com"
 };
 
 
@@ -46,9 +44,9 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
-	cvNumMines = CreateConVar("sm_tripmines_allowed", "3");
-	cvActTime = CreateConVar("sm_tripmines_activate_time", "2.0");
-	cvModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
+	g_cNumMines = CreateConVar("sm_tripmines_allowed", "3");
+	g_cActTime = CreateConVar("sm_tripmines_activate_time", "2.0");
+	g_cModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
 
 	// commands
 	RegConsoleCmd("sm_tripmine", Command_TripMine);
@@ -57,15 +55,24 @@ public void OnPluginStart()
 public void OnMapStart()
 {
 	// set model based on cvar
-	GetConVarString(cvModel, mdlMine, sizeof(mdlMine));
+	g_cModel.GetString(g_sModel, sizeof(g_sModel));
 	
 	// precache models
-	PrecacheModel(mdlMine, true);
-	PrecacheModel(MDL_LASER, true);
+	int iIndex1 = PrecacheModel(g_sModel);
+	AddFileToDownloadsTable("models/tripmine/tripmine.dx90.vtx");
+	AddFileToDownloadsTable("models/tripmine/tripmine.mdl");
+	AddFileToDownloadsTable("models/tripmine/tripmine.phy");
+	AddFileToDownloadsTable("models/tripmine/tripmine.vvd");
+	AddFileToDownloadsTable("materials/models/tripmine/minetexture.vmt");
+	AddFileToDownloadsTable("materials/models/tripmine/minetexture.vtf");
+
+	int iIndex2 = PrecacheModel(MDL_LASER, true);
 	
 	// precache sounds
-	PrecacheSound(SND_MINEPUT, true);
-	PrecacheSound(SND_MINEACT, true);
+	int iIndex3 = PrecacheSound(SND_MINEPUT, true);
+	int iIndex4 = PrecacheSound(SND_MINEACT, true);
+
+	LogMessage("(OnMapStart) %s: %d, %s: %d, %s: %d, %s: %d", g_sModel, iIndex1, MDL_LASER, iIndex2, SND_MINEPUT, iIndex3, SND_MINEACT, iIndex4);
 }
 
 // When a new client is put in the server we reset their mines count
@@ -73,24 +80,24 @@ public void OnClientPutInServer(int client)
 {
 	if(client && !IsFakeClient(client))
 	{
-		gRemaining[client] = 0;
+		g_iRemaining[client] = 0;
 	}
 }
 
-public Action Event_PlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	gRemaining[client] = GetConVarInt(cvNumMines);
+	g_iRemaining[client] = g_cNumMines.IntValue;
 	
 	return Plugin_Continue;
 }
 
-public Action Event_PlayerDeath(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(GetEventInt(event, "userid"));
+	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	gRemaining[client] = 0;
+	g_iRemaining[client] = 0;
 	
 	return Plugin_Continue;
 }
@@ -104,7 +111,7 @@ public Action Command_TripMine(int client, int args)
 	}
 	
 	// call SetMine if any remain in client's inventory
-	if (gRemaining[client] > 0)
+	if (g_iRemaining[client] > 0)
 	{
 		SetMine(client);
 	}
@@ -122,13 +129,13 @@ void SetMine(int client)
 	char beammdl[64];
 	char tmp[128];
 	
-	Format(beam, sizeof(beam), "tmbeam%d", gCount);
-	Format(beammdl, sizeof(beammdl), "tmbeammdl%d", gCount);
+	Format(beam, sizeof(beam), "tmbeam%d", g_iCount);
+	Format(beammdl, sizeof(beammdl), "tmbeammdl%d", g_iCount);
 	
-	gCount++;
-	if (gCount > 10000)
+	g_iCount++;
+	if (g_iCount > 10000)
 	{
-		gCount = 1;
+		g_iCount = 1;
 	}
 	
 	// trace client view to get position and angles for tripmine
@@ -156,7 +163,7 @@ void SetMine(int client)
 	if (TR_DidHit(null))
 	{
 		// update client's inventory
-		gRemaining[client]--;
+		g_iRemaining[client]--;
 		
 		// Find angles for tripmine
 		TR_GetEndPosition(end, null);
@@ -169,7 +176,7 @@ void SetMine(int client)
 		
 		// Create tripmine model
 		int ent = CreateEntityByName("prop_dynamic_override");
-		SetEntityModel(ent, mdlMine);
+		SetEntityModel(ent, g_sModel);
 		DispatchKeyValue(ent, "StartDisabled", "false");
 		DispatchSpawn(ent);
 		TeleportEntity(ent, end, normal, NULL_VECTOR);
@@ -215,7 +222,7 @@ void SetMine(int client)
 
 		// Create a datapack
 		DataPack hData = new DataPack();
-		CreateTimer(GetConVarFloat(cvActTime), TurnBeamOn, hData);
+		CreateTimer(g_cActTime.FloatValue, TurnBeamOn, hData);
 		hData.WriteCell(client);
 		hData.WriteCell(ent);
 		hData.WriteCell(ent2);
@@ -224,10 +231,10 @@ void SetMine(int client)
 		hData.WriteFloat(end[2]);
 		
 		// Play sound
-		EmitSoundToAll(SND_MINEPUT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
+		EmitSoundToAllAny(SND_MINEPUT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
 		
 		// Update remaining tripmine count
-		PrintHintText(client, "Tripmines remaining: %d", gRemaining[client]);
+		PrintHintText(client, "Tripmines remaining: %d", g_iRemaining[client]);
 	}
 	else
 	{
@@ -270,7 +277,7 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
 		end[1] = hData.ReadFloat();
 		end[2] = hData.ReadFloat();
 
-		EmitSoundToAll(SND_MINEACT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
+		EmitSoundToAllAny(SND_MINEACT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
 	}
 
 	delete hData;
