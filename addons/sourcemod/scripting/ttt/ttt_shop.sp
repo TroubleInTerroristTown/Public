@@ -1065,10 +1065,10 @@ public void TTT_OnRoundEnd(int WinningTeam)
 	}
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, book sillentID = false)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, book silentID = false)
 {
 	bool bSilentRewards = g_cSilentIdRewards.BoolValue;
-	if (!sillentID || (bSilentRewards && sillentID))
+	if (!silentID || (bSilentRewards && silentID))
 	{
 		addCredits(client, g_cCreditsFoundBody.IntValue);
 	}
