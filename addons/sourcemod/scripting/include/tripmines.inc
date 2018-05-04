@@ -34,7 +34,7 @@ forward void Tripmine_Ready(int client, int entity, int beam);
  * @param client			The client index
  * @return					returns the amount of mines for the client
  */
-public int Tripmine_GetClientMines(int client);
+native int Tripmine_GetClientMines(int client);
 
 /*
  * Adds the amount of mines for a client
@@ -42,7 +42,7 @@ public int Tripmine_GetClientMines(int client);
  * @param client			The client index
  * @return					returns the (new) amount of mines for the client
  */
-public int Tripmine_AddClientMines(int client, int amount);
+native int Tripmine_AddClientMines(int client, int amount);
 
 
 /*
@@ -51,7 +51,7 @@ public int Tripmine_AddClientMines(int client, int amount);
  * @param client			The client index
  * @return					returns the (new) amount of mines for the client
  */
-public int Tripmine_SetClientMines(int client, int amount);
+native int Tripmine_SetClientMines(int client, int amount);
 
 public SharedPlugin __pl_tripmines = 
 {
