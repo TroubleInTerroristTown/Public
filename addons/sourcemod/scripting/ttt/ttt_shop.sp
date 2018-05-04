@@ -1065,7 +1065,7 @@ public void TTT_OnRoundEnd(int WinningTeam)
 	}
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID = false)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID)
 {
 	bool bSilentRewards = g_cSilentIdRewards.BoolValue;
 	if (!silentID || (bSilentRewards && silentID))
