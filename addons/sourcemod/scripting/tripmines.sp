@@ -14,10 +14,6 @@
 #define SND_MINEPUT "weapons/g3sg1/g3sg1_slideback.wav"
 #define SND_MINEACT "items/nvg_on.wav"
 
-#define COLOR_T "255 0 0"
-#define COLOR_CT "0 0 255"
-#define COLOR_DEF "0 255 255"
-
 #define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 // globals
@@ -28,6 +24,7 @@ char g_sModel[PLATFORM_MAX_PATH + 1];
 // convars
 ConVar g_cActTime = null;
 ConVar g_cModel = null;
+ConVar g_cColor = null;
 
 Handle g_hOnPlant = null;
 Handle g_hPlanted = null;
@@ -61,8 +58,9 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_spawn", Event_PlayerSpawn);
 
-	g_cActTime = CreateConVar("sm_tripmines_activate_time", "3.0");
-	g_cModel = CreateConVar("sm_tripmines_model", DEFAULT_MODEL);
+	g_cActTime = CreateConVar("tripmines_activate_time", "3.0");
+	g_cModel = CreateConVar("tripmines_model", DEFAULT_MODEL);
+	g_cColor = CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the beam (Example: \"R G B\" or as color code: \"255 0 0 \" for red beam");
 
 	// commands
 	RegConsoleCmd("sm_tripmine", Command_TripMine);
@@ -135,7 +133,7 @@ public Action Command_TripMine(int client, int args)
 	}
 	else
 	{
-		PrintHintText(client, "You do not have any tripmines.");
+		PrintHintText(client, "%T", "No tripmines", client);
 	}
 	return Plugin_Handled;
 }
@@ -268,18 +266,16 @@ void SetMine(int client)
 		EmitSoundToAllAny(SND_MINEPUT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
 		
 		// Update remaining tripmine count
-		PrintHintText(client, "Tripmines remaining: %d", g_iRemaining[client]);
+		PrintHintText(client, "%T", "Remaining Tripmines", client, g_iRemaining[client]);
 	}
 	else
 	{
-		PrintHintText(client, "Invalid location for Tripmine");
+		PrintHintText(client, "%T", "Invalid location", client);
 	}
 }
 
 public Action TurnBeamOn(Handle timer, DataPack hData)
 {
-	char color[26];
-
 	hData.Reset();
 	int client = hData.ReadCell();
 	int ent = hData.ReadCell();
@@ -287,23 +283,10 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
 
 	if (IsValidEntity(ent))
 	{
-		// To Do: Game-based team checks and handling.
-		// To Do: Replace teams check with ttt roles
-		int team = GetClientTeam(client);
-		if(team == CS_TEAM_T)
-		{
-			color = COLOR_T;
-		}
-		else if(team == CS_TEAM_CT)
-		{
-			color = COLOR_CT;
-		}
-		else
-		{
-			color = COLOR_DEF;
-		}
+		char sColor[18];
+		g_cColor.GetString(sColor, sizeof(sColor));
 
-		DispatchKeyValue(ent2, "rendercolor", color);
+		DispatchKeyValue(ent2, "rendercolor", sColor);
 		AcceptEntityInput(ent2, "TurnOn");
 
 		float end[3];
