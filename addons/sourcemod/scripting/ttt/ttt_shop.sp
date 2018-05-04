@@ -1067,8 +1067,7 @@ public void TTT_OnRoundEnd(int WinningTeam)
 
 public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID)
 {
-	bool bSilentRewards = g_cSilentIdRewards.BoolValue;
-	if (!silentID || (bSilentRewards && silentID))
+	if (!silentID || (g_cSilentIdRewards.BoolValue && silentID))
 	{
 		addCredits(client, g_cCreditsFoundBody.IntValue);
 	}
