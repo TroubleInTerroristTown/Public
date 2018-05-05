@@ -145,10 +145,10 @@ public Action TTT_OnClientDeathPre(int victim, int attacker)
 	PrintToServer("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silent)
 {
 	PrintToServer("TTT_OnBodyFound was called!");
-	PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+	PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
 }
 
 public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
