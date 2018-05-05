@@ -277,6 +277,9 @@ ConVar g_cDamageKarmaDD = null;
 ConVar g_cDoublePushInno = null;
 ConVar g_cDoublePushDete = null;
 ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
+ConVar g_cSilentIdEnabled = null;
+ConVar g_cSilentIdColor = null;
+ConVar g_cSilentIdRoles = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

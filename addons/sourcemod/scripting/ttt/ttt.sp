@@ -2901,13 +2901,17 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 	{
 		button = (1 << i);
 
-		if ((buttons & button))
+		if ((buttons & button) || (buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED)
 		{
 			if (!(g_iLastButtons[client] & button))
 			{
 				Call_StartForward(g_hOnButtonPress);
 				Call_PushCell(client);
-				Call_PushCell(button);
+				if ((buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED) {
+					Call_PushCell(buttons);
+				} else {
+					Call_PushCell(button);
+				}
 				Call_Finish();
 			}
 		}
@@ -2989,6 +2993,9 @@ public int TTT_OnButtonPress(int client, int button)
 
 						if (!iRagdollC[Found] && IsPlayerAlive(client))
 						{
+							bool bInWalk = ((button & IN_SPEED) > 0);
+							bool silentID = false;
+							
 							iRagdollC[Found] = true;
 
 							bool bValid = false;
@@ -3010,35 +3017,87 @@ public int TTT_OnButtonPress(int client, int button)
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
-								LoopValidClients(j)
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
-									CPrintToChat(j, "%s %T", g_sTag, "Found Innocent", j, client, iRagdollC[VictimName]);
+									LoopValidClients(j)
+									{
+										CPrintToChat(j, "%s %T", g_sTag, "Found Innocent", j, client, iRagdollC[VictimName]);
+									}
+									
+									Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent)", client, sRole, iRagdollC[VictimName]);
+									
+									SetEntityRenderColor(iEntity, 0, 255, 0, 255);
 								}
-
-								SetEntityRenderColor(iEntity, 0, 255, 0, 255);
-								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent)", client, sRole, iRagdollC[VictimName]);
+								else
+								{
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Innocent Silent", client, iRagdollC[VictimName]);
+								    
+								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Innocent) - SILENT", client, sRole, iRagdollC[VictimName]);
+								    
+								    if (g_cSilentIdColor.BoolValue)
+								    {
+								    	SetEntityRenderColor(iEntity, 0, 255, 0, 255);
+								    }
+								    
+								    silentID = true;
+								}
 								addArrayTime(iItem);
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
-								LoopValidClients(j)
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
-									CPrintToChat(j, "%s %T", g_sTag, "Found Detective", j, client, iRagdollC[VictimName]);
+									LoopValidClients(j)
+									{
+										CPrintToChat(j, "%s %T", g_sTag, "Found Detective", j, client, iRagdollC[VictimName]);
+									}
+									
+									Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective)", client, sRole, iRagdollC[VictimName]);
+									
+									SetEntityRenderColor(iEntity, 0, 0, 255, 255);
 								}
-
-								SetEntityRenderColor(iEntity, 0, 0, 255, 255);
-								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective)", client, sRole, iRagdollC[VictimName]);
+								else
+								{
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Detective Silent", client, iRagdollC[VictimName]);
+								    
+								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Detective) - SILENT", client, sRole, iRagdollC[VictimName]);
+								    
+								    if (g_cSilentIdColor.BoolValue)
+								    {
+								    	SetEntityRenderColor(iEntity, 0, 0, 255, 255);
+								    }
+								    
+								    silentID = true;
+								}
+								
 								addArrayTime(iItem);							
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
-								LoopValidClients(j)
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
 								{
-									CPrintToChat(j, "%s %T", g_sTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+									LoopValidClients(j)
+									{
+										CPrintToChat(j, "%s %T", g_sTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+									}
+									
+									Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor)", client, sRole, iRagdollC[VictimName]);
+									
+									SetEntityRenderColor(iEntity, 255, 0, 0, 255);
 								}
-
-								SetEntityRenderColor(iEntity, 255, 0, 0, 255);
-								Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor)", client, sRole, iRagdollC[VictimName]);
+								else
+								{
+								    CPrintToChat(client, "%s %T", g_sTag, "Found Traitor Silent", client, iRagdollC[VictimName]);
+								    
+								    Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (Traitor) - SILENT", client, sRole, iRagdollC[VictimName]);
+								    
+								    if (g_cSilentIdColor.BoolValue)
+								    {
+								    	SetEntityRenderColor(iEntity, 255, 0, 0, 255);
+								    }
+								    
+								    silentID = true;
+								}
 								addArrayTime(iItem);								
 							}
 
@@ -3060,6 +3119,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							
 							Call_PushString(iRagdollC[VictimName]);
+							Call_PushCell(silentID);
 							Call_Finish();
 						}
 						g_aRagdoll.SetArray(i, iRagdollC[0]);
@@ -3069,6 +3129,10 @@ public int TTT_OnButtonPress(int client, int button)
 			}
 		}
 	}
+}
+
+public TTT_ValidSilentIDRole(int client, int role) {
+    return (role & TTT_GetClientRole(client));
 }
 
 public int TTT_OnButtonRelease(int client, int button)

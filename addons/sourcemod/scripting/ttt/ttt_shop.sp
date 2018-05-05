@@ -56,6 +56,7 @@ ConVar g_cCreditsMin = null;
 ConVar g_cCreditsMax = null;
 ConVar g_cCreditsInterval = null;
 ConVar g_cSQLCredits = null;
+ConVar g_cSilentIdRewards = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -176,6 +177,7 @@ public void OnPluginStart()
 	g_cBuyCmd = AutoExecConfig_CreateConVar("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly");
 	g_cShowCmd = AutoExecConfig_CreateConVar("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)");
 	g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "0", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
+	g_cSilentIdRewards = AutoExecConfig_CreateConVar("ttt_shop_silent_id_rewards", "1", "0 = Disabled, will not reward credits with silent id. 1 = Will reward the client with credits for inspecting the body.", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	LoadTranslations("common.phrases");
@@ -1063,9 +1065,12 @@ public void TTT_OnRoundEnd(int WinningTeam)
 	}
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID)
 {
-	addCredits(client, g_cCreditsFoundBody.IntValue);
+	if (!silentID || (g_cSilentIdRewards.BoolValue && silentID))
+	{
+		addCredits(client, g_cCreditsFoundBody.IntValue);
+	}
 }
 
 stock void addCredits(int client, int credits, bool message = false)

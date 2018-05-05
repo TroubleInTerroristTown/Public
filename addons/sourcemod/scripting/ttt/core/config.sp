@@ -125,6 +125,9 @@ void SetupConfig()
 	g_cDoublePushInno = AutoExecConfig_CreateConVar("ttt_double_push_innocents", "1", "Push innocents (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
 	g_cDoublePushDete = AutoExecConfig_CreateConVar("ttt_double_push_detective", "1", "Push detective (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
 	g_cKarmaDecreaseWhenKillPlayerWhoHurt = AutoExecConfig_CreateConVar("ttt_karma_decrease_kill_player_who_hurted", "1", "Decrease Karma when you kill a player who hurted you?.", _, true, 0.0, true, 1.0);
+	g_cSilentIdEnabled = AutoExecConfig_CreateConVar("ttt_silent_id", "0", "0 = Disabled. 1 = Enable silent id (+speed and +use together). Silent ID wont print on chat when someone inspects a body.", _, true, 0.0, true, 1.0);
+	g_cSilentIdColor = AutoExecConfig_CreateConVar("ttt_silent_id_color", "1", "0 = Disabled, will not change the color of the body. 1 = Silent ID will color the body when inspecting. (Green = Innocent, Red = Traitor, Blue = Detective)", _, true, 0.0, true, 1.0);
+	g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");	
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
