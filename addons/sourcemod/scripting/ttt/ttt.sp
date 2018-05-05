@@ -3017,7 +3017,7 @@ public int TTT_OnButtonPress(int client, int button)
 							
 							if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
 							{
-								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3045,7 +3045,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
-								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3074,7 +3074,7 @@ public int TTT_OnButtonPress(int client, int button)
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
-								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_ValidSilentIDRole(client, g_cSilentIdRoles.IntValue)))
+								if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
 								{
 									LoopValidClients(j)
 									{
@@ -3129,10 +3129,6 @@ public int TTT_OnButtonPress(int client, int button)
 			}
 		}
 	}
-}
-
-public TTT_ValidSilentIDRole(int client, int role) {
-    return (role & TTT_GetClientRole(client));
 }
 
 public int TTT_OnButtonRelease(int client, int button)
