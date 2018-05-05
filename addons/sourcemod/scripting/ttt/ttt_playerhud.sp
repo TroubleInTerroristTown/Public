@@ -11,6 +11,7 @@ ConVar g_cTextD = null;
 ConVar g_cTextI = null;
 ConVar g_cTextT = null;
 ConVar g_cTextU = null;
+ConVar g_cTimer = null;
 
 int g_iTarget[MAXPLAYERS + 1] = {0, ...};
 Handle g_hOnHudSend_Pre = null;
@@ -43,11 +44,10 @@ public void OnPluginStart()
 	g_cTextI = AutoExecConfig_CreateConVar("hud_display_innocent", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
 	g_cTextT = AutoExecConfig_CreateConVar("hud_display_traitor", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
 	g_cTextU = AutoExecConfig_CreateConVar("hud_display_unassigned", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	g_cTimer = AutoExecConfig_CreateConVar("hud_timer_check", "0.2", "Check each x seconds.");
 	TTT_EndConfig();
 
 	LoadTranslations("ttt.phrases");
-
-	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public void OnConfigsExecuted()
@@ -59,6 +59,8 @@ public void OnConfigsExecuted()
 	{
 		SetFailState("Old player hud file found! Please delete '%s'", sFile);
 	}
+
+	CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
