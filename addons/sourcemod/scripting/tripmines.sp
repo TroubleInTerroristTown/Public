@@ -62,7 +62,7 @@ public void OnPluginStart()
 
     AutoExecConfig_SetCreateDirectory(true);
     AutoExecConfig_SetCreateFile(true);
-    AutoExecConfig_SetFile("plugin.knifes");
+    AutoExecConfig_SetFile("plugin.tripmines");
     g_cActTime = AutoExecConfig_CreateConVar("tripmines_activate_time", "3.0");
     g_cModel = AutoExecConfig_CreateConVar("tripmines_model", DEFAULT_MODEL);
     g_cColor = AutoExecConfig_CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the beam (Example: \"R G B\" or as color code: \"255 0 0 \" for red beam");
