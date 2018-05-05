@@ -84,6 +84,7 @@ public void OnMapStart()
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
+                        bool bModel = false;
                         
                         while (ReadDirEntry(hModelDir, sFileName, sizeof(sFileName), ftType))
                         {
@@ -99,9 +100,16 @@ public void OnMapStart()
                                 if (StrContains(sFileName, ".mdl", false) != -1)
                                 {
                                     PrecacheModel(sFileName, true);
+
+                                    if (StrContains(sFileName, "_arms", false) == -1)
+                                    {
+                                        bModel = true;
+                                    }
+
+                                    // TODO: Push String Map (ITModelX - sFilename)
                                     if (g_bDebug)
                                     {
-                                        LogMessage("(OnMapStart) Precache: %s", sFileName);
+                                        LogMessage("(OnMapStart) Precache: %s - bFound: %d", sFileName, bModel);
                                     }
                                 }
                                 
@@ -111,6 +119,14 @@ public void OnMapStart()
                                     LogMessage("(OnMapStart) AddDownload: %s", sFileName);
                                 }
                             }
+                        }
+
+                        if (!bModel)
+                        {
+                            SetFailState("Can't find .mdl-File for %s", sName);
+                            delete hModelDir;
+                            delete hConfig;
+                            return;
                         }
                     }
                     
@@ -149,15 +165,6 @@ public void OnMapStart()
                                     continue;
                                 }
                                 
-                                if (StrContains(sFileName, ".mdl", false) != -1)
-                                {
-                                    PrecacheModel(sFileName, true);
-                                    if (g_bDebug)
-                                    {
-                                        LogMessage("(OnMapStart) Precache: %s", sFileName);
-                                    }
-                                }
-                                
                                 AddFileToDownloadsTable(sFileName);
                                 if (g_bDebug)
                                 {
@@ -194,6 +201,7 @@ public void OnMapStart()
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
+                        bool bModel = false;
                         
                         while (ReadDirEntry(hModelDir, sFileName, sizeof(sFileName), ftType))
                         {
@@ -209,9 +217,16 @@ public void OnMapStart()
                                 if (StrContains(sFileName, ".mdl", false) != -1)
                                 {
                                     PrecacheModel(sFileName, true);
+
+                                    if (StrContains(sFileName, "_arms", false) == -1)
+                                    {
+                                        bModel = true;
+                                    }
+
+                                    // TODO: Push String Map (ITModelX - sFilename)
                                     if (g_bDebug)
                                     {
-                                        LogMessage("(OnMapStart) Precache: %s", sFileName);
+                                        LogMessage("(OnMapStart) Precache: %s - bFound: %d", sFileName, bModel);
                                     }
                                 }
                                 
@@ -221,6 +236,14 @@ public void OnMapStart()
                                     LogMessage("(OnMapStart) AddDownload: %s", sFileName);
                                 }
                             }
+                        }
+
+                        if (!bModel)
+                        {
+                            SetFailState("Can't find .mdl-File for %s", sName);
+                            delete hModelDir;
+                            delete hConfig;
+                            return;
                         }
                     }
                     
@@ -252,15 +275,6 @@ public void OnMapStart()
                                 if (!g_bEnableArms && StrContains(sFileName, "_arms", false) != -1)
                                 {
                                     continue;
-                                }
-                                
-                                if (StrContains(sFileName, ".mdl", false) != -1)
-                                {
-                                    PrecacheModel(sFileName, true);
-                                    if (g_bDebug)
-                                    {
-                                        LogMessage("(OnMapStart) Precache: %s", sFileName);
-                                    }
                                 }
                                 
                                 AddFileToDownloadsTable(sFileName);
