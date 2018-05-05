@@ -678,7 +678,7 @@ stock bool TTT_IsWarmUp()
 	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
 }
 
-public TTT_IsValidRole(int client, int role)
+stock int TTT_IsValidRole(int client, int role)
 {
     return (role & TTT_GetClientRole(client));
 }
