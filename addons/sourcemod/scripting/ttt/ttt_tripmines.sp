@@ -10,7 +10,7 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tripmines"
 
-#define SHORTNAME_T "tacticalShield_d"
+#define SHORTNAME_T "tripmines"
 
 ConVar g_cLongName = null;
 ConVar g_cPrice = null;

@@ -3,7 +3,6 @@
 #include <cstrike>
 
 #include <autoexecconfig>
-#include <emitsoundany>
 
 #pragma semicolon 1
 #pragma newdecls required
@@ -57,6 +56,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart() 
 {
+    LoadTranslations("tripmines.phrases");
+
     HookEvent("player_death", Event_PlayerDeath);
     HookEvent("player_spawn", Event_PlayerSpawn);
 
@@ -80,14 +81,15 @@ public void OnMapStart()
     
     // precache models
     int iIndex1 = PrecacheModel(g_sModel);
+    int iIndex2 = PrecacheModel(MDL_LASER, true);
+
+    // add files to download table
     AddFileToDownloadsTable("models/tripmine/tripmine.dx90.vtx");
     AddFileToDownloadsTable("models/tripmine/tripmine.mdl");
     AddFileToDownloadsTable("models/tripmine/tripmine.phy");
     AddFileToDownloadsTable("models/tripmine/tripmine.vvd");
     AddFileToDownloadsTable("materials/models/tripmine/minetexture.vmt");
     AddFileToDownloadsTable("materials/models/tripmine/minetexture.vtf");
-
-    int iIndex2 = PrecacheModel(MDL_LASER, true);
     
     // precache sounds
     int iIndex3 = PrecacheSound(SND_MINEPUT, true);
@@ -270,7 +272,7 @@ void SetMine(int client)
         hData.WriteFloat(end[2]);
         
         // Play sound
-        EmitSoundToAll(SND_MINEPUT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
+        EmitSoundToAll(SND_MINEPUT, ent);
         
         // Update remaining tripmine count
         PrintHintText(client, "%T", "Remaining Tripmines", client, g_iRemaining[client]);
@@ -301,7 +303,7 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
         end[1] = hData.ReadFloat();
         end[2] = hData.ReadFloat();
 
-        EmitSoundToAll(SND_MINEACT, ent, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, 100, ent, end, NULL_VECTOR, true, 0.0);
+        EmitSoundToAll(SND_MINEACT, ent);
 
         Call_StartForward(g_hReady);
         Call_PushCell(client);
