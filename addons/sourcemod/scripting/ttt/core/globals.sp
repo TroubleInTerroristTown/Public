@@ -280,6 +280,8 @@ ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
 ConVar g_cSilentIdEnabled = null;
 ConVar g_cSilentIdColor = null;
 ConVar g_cSilentIdRoles = null;
+ConVar g_cLogButtons = null;
+ConVar g_cLogButtonsSpam = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
@@ -289,3 +291,5 @@ bool g_bDRules[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
+
+bool g_bPressed[MAXPLAYERS + 1] = { false, ... };

@@ -186,6 +186,11 @@ public void OnConfigsExecuted()
 		LogMessage("Log File: \"%s\"", g_sLogFile);
 		LogMessage("Error File :\"%s\"", g_sErrorFile);
 	}
+
+	if (g_cLogButtons.BoolValue)
+	{
+		HookEntityOutput("func_button", "OnPressed", OnButtonPressed);
+	}
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -557,6 +562,58 @@ public Action Command_Karma(int client, int args)
 	CPrintToChat(client, "%s %T", g_sTag, "Your karma is", client, g_iKarma[client]);
 
 	return Plugin_Handled;
+}
+
+public OnButtonPressed(const String:output[], entity, client, Float:delay)
+{
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
+	{
+		return;
+	}
+	
+	if (g_bPressed[entity])
+	{
+		return;
+	}
+
+	char sClientID[32], sRole[ROLE_LENGTH], sName[512], iItem[TTT_LOG_SIZE];
+	if (g_cAddSteamIDtoLogs.BoolValue)
+	{
+		if (g_cSteamIDLogFormat.IntValue == 1)
+		{
+			GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+		}
+		else if (g_cSteamIDLogFormat.IntValue == 2)
+		{
+			GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+		}
+		else if (g_cSteamIDLogFormat.IntValue == 3)
+		{
+			GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+		}
+		
+		if (strlen(sClientID) > 2)
+		{
+			Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+		}
+	}
+
+	TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+	GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));	
+	Format(iItem, sizeof(iItem), "-> [%N%s (%s) pressed the button %s (%d)]", client, sClientID, sRole, sName, entity);
+	
+	g_bPressed[entity] = true;
+	CreateTimer(g_cLogButtonsSpam.FloatValue, Timer_EnableButton, EntIndexToEntRef(entity));
+}
+
+public Action Timer_EnableButton(Handle timer, any reference)
+{
+	int entity = EntRefToEntIndex(reference);
+	
+	if (IsValidEntity(entity))
+	{
+		g_bPressed[entity] = false;
+	}
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
