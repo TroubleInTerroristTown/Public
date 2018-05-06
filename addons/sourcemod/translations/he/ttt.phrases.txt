@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-06 10:05:15 UTC
+// Date: 2018-05-06 19:11:15 UTC
 // Language: Hebrew (he)
 // 
 // To view other translations for this plugin, please visit:

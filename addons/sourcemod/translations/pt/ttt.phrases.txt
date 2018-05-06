@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-06 10:05:15 UTC
+// Date: 2018-05-06 19:11:15 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -225,12 +225,12 @@
 
 	"Found Detective"
 	{
-		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkblue}{2}. {lightgreen}Isso era um {darkblue}DETETIVE!"
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkblue}{2}. {lightgreen}Ele era {darkblue}DETETIVE!"
 	}
 
 	"Found Traitor"
 	{
-		"pt"		"{orchid} {1} {lightgreen} encontrou o corpo de {darkred}{2}. {lightgreen}Esse era um traidor{darkred}!"
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkred}{2}. {lightgreen}Ele era {darkred}Traidor!"
 	}
 
 	"Your bomb is not armed."
@@ -921,6 +921,26 @@
 	"Shop Item not found"
 	{
 		"pt"		"Não foi possível encontrar '{1}' como um item válido da loja"
+	}
+
+	"TTT Radio: KOS"
+	{
+		"pt"		"KOS {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {green}{1}. {lightgreen}Ele era {green}INOCENTE!"
+	}
+
+	"Found Detective Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {darkblue}{1}. {lightgreen}Ele era {darkblue}DETETIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {darkred}{1}. {lightgreen}Ele era {darkred}Traidor!"
 	}
 
 }
