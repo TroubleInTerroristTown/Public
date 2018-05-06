@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-02 14:17:18 UTC
+// Date: 2018-05-06 10:05:16 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -1004,6 +1004,13 @@
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
 	}
+
+	"TTT Radio: KOS"
+	{
+		"#format"	"{1:N}"
+		"en"		"KOS {1}!"
+	}
+
 	"Found Innocent Silent"
 	{
 		"#format"	"{1:s}"
@@ -1021,4 +1028,5 @@
 		"#format"	"{1:s}"
 		"en"		"{lightgreen}You silently found the body of {darkred}{1}. {lightgreen}It was a {darkred}Traitor!"
 	}
+
 }

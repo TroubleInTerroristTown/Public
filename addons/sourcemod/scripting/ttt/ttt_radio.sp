@@ -257,6 +257,14 @@ public Action Command_Radio(int client, int args)
 			CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Traitor", i, iTarget);
 		}
 	}
+
+	if (StrEqual(sMessage, "kos", false))
+	{
+		LoopValidClients(i)
+		{
+			CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: KOS", i, iTarget);
+		}
+	}
 	
 	if (StrEqual(sMessage, "innocent", false))
 	{

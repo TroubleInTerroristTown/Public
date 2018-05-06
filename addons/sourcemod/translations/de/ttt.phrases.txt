@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-02 14:17:15 UTC
+// Date: 2018-05-06 10:05:12 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -921,6 +921,26 @@
 	"Shop Item not found"
 	{
 		"de"		"{1} nicht als gültiges Shop Item gefunden."
+	}
+
+	"TTT Radio: KOS"
+	{
+		"de"		"KOS {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {green}{1} {lightgreen}gefunden. {lightgreen}Er war ein {green}INNOCENT!"
+	}
+
+	"Found Detective Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {darkblue}{1} {lightgreen}gefunden. {lightgreen}Er war ein {darkblue}DETECTIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {darkred}{1} {lightgreen}gefunden. {lightgreen}Er war ein {darkred}TRAITOR!"
 	}
 
 }
