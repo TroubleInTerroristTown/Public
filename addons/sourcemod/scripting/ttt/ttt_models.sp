@@ -13,10 +13,13 @@ bool g_bEnable = false;
 bool g_bEnableArms = false;
 
 int g_iDCount = 0;
-int g_ITCount = 0;
+int g_iITCount = 0;
 
-ConVar g_cDebug = null;
 bool g_bDebug = false;
+
+StringMap g_smModels = null;
+
+char g_sLog[PLATFORM_MAX_PATH+1];
 
 public Plugin myinfo =
 {
@@ -30,11 +33,10 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     TTT_IsGameCSGO();
-}
 
-public void OnConfigsExecuted()
-{
-    g_cDebug = FindConVar("ttt_debug_mode");
+    char sDate[12];
+    FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
+    BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt/ttt_models_%s.log", sDate);
 }
 
 public void OnMapStart()
@@ -45,19 +47,25 @@ public void OnMapStart()
         return;
     }
     
-    Handle hConfig = CreateKeyValues("TTT-Models");
+    KeyValues kvConfig = new KeyValues("TTT-Models");
+    g_smModels = new StringMap();
     
-    FileToKeyValues(hConfig, CONFIG_FILE);
-    if (KvJumpToKey(hConfig, "Models"))
+    if (!kvConfig.ImportFromFile(CONFIG_FILE))
     {
-        g_bEnable = view_as<bool>(KvGetNum(hConfig, "Enable", 0));
-        g_bEnableArms = view_as<bool>(KvGetNum(hConfig, "EnableArms", 0));
-        g_iDCount = KvGetNum(hConfig, "DModelCount", 1);
-        g_ITCount = KvGetNum(hConfig, "ITModelCount", 1);
+        SetFailState("[TTT-Models] Something went wrong with: \"%s\"", CONFIG_FILE);
+        return;
+    }
+
+    if (kvConfig.JumpToKey("Models"))
+    {
+        g_bEnable = view_as<bool>(kvConfig.GetNum("Enable", 0));
+        g_bEnableArms = view_as<bool>(kvConfig.GetNum("EnableArms", 0));
+        g_iDCount = kvConfig.GetNum("DModelCount", 1);
+        g_iITCount = kvConfig.GetNum("ITModelCount", 1);
 
         if (!g_bEnable)
         {
-            delete hConfig;
+            delete kvConfig;
             return;
         }
 
@@ -69,30 +77,34 @@ public void OnMapStart()
                 char sBuffer[256];
                 
                 Format(sName, sizeof(sName), "DModel%d", i);
-                KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
 
                 if (g_bDebug)
                 {
-                    LogMessage("%s: %s", sName, sBuffer);
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
                 }
                 
                 if (DirExists(sBuffer))
                 {
-                    Handle hModelDir = OpenDirectory(sBuffer);
+                    DirectoryListing dModel = OpenDirectory(sBuffer);
                     
-                    if (hModelDir != null)
+                    if (dModel != null)
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
-                        bool bModel = false;
                         
-                        while (ReadDirEntry(hModelDir, sFileName, sizeof(sFileName), ftType))
+                        while (dModel.GetNext(sFileName, sizeof(sFileName), ftType))
                         {
                             if (ftType == FileType_File)
                             {
                                 Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
 
-                                if (!g_bEnableArms && StrContains(sFileName, "_arms", false) != -1)
+                                if (g_bDebug)
+                                {
+                                    LogToFile(g_sLog, "(OnMapStart) sFileName: %s", sFileName);
+                                }
+
+                                if (!g_bEnableArms && IsArms(sFileName))
                                 {
                                     continue;
                                 }
@@ -101,36 +113,43 @@ public void OnMapStart()
                                 {
                                     PrecacheModel(sFileName, true);
 
-                                    if (StrContains(sFileName, "_arms", false) == -1)
+                                    if (IsModel(sFileName))
                                     {
-                                        bModel = true;
+                                        g_smModels.SetString(sName, sFileName);
+
+                                        if (g_bDebug)
+                                        {
+                                            LogToFile(g_sLog, "(OnMapStart) %s SetString: %s - %s", sName, sName, sFileName);
+                                        }
+                                    }
+                                    else if (IsArms(sFileName))
+                                    {
+                                        char sArms[64];
+                                        Format(sArms, sizeof(sArms), "%s_Arms", sName);
+                                        g_smModels.SetString(sArms, sFileName);
+
+                                        if (g_bDebug)
+                                        {
+                                            LogToFile(g_sLog, "(OnMapStart) %s SetString: %s - %s", sArms, sArms, sFileName);
+                                        }
                                     }
 
-                                    // TODO: Push String Map (ITModelX - sFilename)
                                     if (g_bDebug)
                                     {
-                                        LogMessage("(OnMapStart) Precache: %s - bFound: %d", sFileName, bModel);
+                                        LogToFile(g_sLog, "(OnMapStart) %s Precache: %s", sName, sFileName);
                                     }
                                 }
                                 
                                 AddFileToDownloadsTable(sFileName);
                                 if (g_bDebug)
                                 {
-                                    LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
                                 }
                             }
                         }
-
-                        if (!bModel)
-                        {
-                            SetFailState("Can't find .mdl-File for %s", sName);
-                            delete hModelDir;
-                            delete hConfig;
-                            return;
-                        }
                     }
                     
-                    delete hModelDir;
+                    delete dModel;
                 }
                 else
                 {
@@ -138,29 +157,29 @@ public void OnMapStart()
                 }
                 
                 Format(sName, sizeof(sName), "DMaterial%d", i);
-                KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
 
                 if (g_bDebug)
                 {
-                    LogMessage("(OnMapStart) %s: %s", sName, sBuffer);
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
                 }
                 
                 if (DirExists(sBuffer))
                 {
-                    Handle hMaterialDir = OpenDirectory(sBuffer);
+                    DirectoryListing dMaterial = OpenDirectory(sBuffer);
                     
-                    if (hMaterialDir != null)
+                    if (dMaterial != null)
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
                         
-                        while (ReadDirEntry(hMaterialDir, sFileName, sizeof(sFileName), ftType))
+                        while (dMaterial.GetNext(sFileName, sizeof(sFileName), ftType))
                         {
                             if (ftType == FileType_File)
                             {
                                 Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
 
-                                if (!g_bEnableArms && StrContains(sFileName, "_arms", false) != -1)
+                                if (!g_bEnableArms && IsArms(sFileName))
                                 {
                                     continue;
                                 }
@@ -168,13 +187,13 @@ public void OnMapStart()
                                 AddFileToDownloadsTable(sFileName);
                                 if (g_bDebug)
                                 {
-                                    LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
                                 }
                             }
                         }
                     }
                     
-                    delete hMaterialDir;
+                    delete dMaterial;
                 }
                 else
                 {
@@ -183,33 +202,42 @@ public void OnMapStart()
             }
         }
         
-        if (g_ITCount > 0)
+        if (g_iITCount > 0)
         {
-            for(int i = 1; i <= g_ITCount; i++)
+            for(int i = 1; i <= g_iITCount; i++)
             {
                 char sName[64];
                 char sBuffer[256];
                 
                 Format(sName, sizeof(sName), "ITModel%d", i);
-                KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
+
+                if (g_bDebug)
+                {
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
+                }
                 
                 if (DirExists(sBuffer))
                 {
-                    Handle hModelDir = OpenDirectory(sBuffer);
+                    DirectoryListing dModel = OpenDirectory(sBuffer);
                     
-                    if (hModelDir != null)
+                    if (dModel != null)
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
-                        bool bModel = false;
                         
-                        while (ReadDirEntry(hModelDir, sFileName, sizeof(sFileName), ftType))
+                        while (dModel.GetNext(sFileName, sizeof(sFileName), ftType))
                         {
                             if (ftType == FileType_File)
                             {
                                 Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
+                                
+                                if (g_bDebug)
+                                {
+                                    LogToFile(g_sLog, "(OnMapStart) %s sFileName: %s", sName, sFileName);
+                                }
 
-                                if (!g_bEnableArms && StrContains(sFileName, "_arms", false) != -1)
+                                if (!g_bEnableArms && IsArms(sFileName))
                                 {
                                     continue;
                                 }
@@ -218,36 +246,43 @@ public void OnMapStart()
                                 {
                                     PrecacheModel(sFileName, true);
 
-                                    if (StrContains(sFileName, "_arms", false) == -1)
+                                    if (IsModel(sFileName))
                                     {
-                                        bModel = true;
+                                        g_smModels.SetString(sName, sFileName);
+
+                                        if (g_bDebug)
+                                        {
+                                            LogToFile(g_sLog, "(OnMapStart) %s SetString: %s - %s", sName, sName, sFileName);
+                                        }
+                                    }
+                                    else if (IsArms(sFileName))
+                                    {
+                                        char sArms[64];
+                                        Format(sArms, sizeof(sArms), "%s_Arms", sName);
+                                        g_smModels.SetString(sArms, sFileName);
+
+                                        if (g_bDebug)
+                                        {
+                                            LogToFile(g_sLog, "(OnMapStart) %s SetString: %s - %s", sArms, sArms, sFileName);
+                                        }
                                     }
 
-                                    // TODO: Push String Map (ITModelX - sFilename)
                                     if (g_bDebug)
                                     {
-                                        LogMessage("(OnMapStart) Precache: %s - bFound: %d", sFileName, bModel);
+                                        LogToFile(g_sLog, "(OnMapStart) %s Precache: %s", sName, sFileName);
                                     }
                                 }
                                 
                                 AddFileToDownloadsTable(sFileName);
                                 if (g_bDebug)
                                 {
-                                    LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
                                 }
                             }
                         }
-
-                        if (!bModel)
-                        {
-                            SetFailState("Can't find .mdl-File for %s", sName);
-                            delete hModelDir;
-                            delete hConfig;
-                            return;
-                        }
                     }
                     
-                    delete hModelDir;
+                    delete dModel;
                 }
                 else
                 {
@@ -255,24 +290,29 @@ public void OnMapStart()
                 }
                 
                 Format(sName, sizeof(sName), "ITMaterial%d", i);
-                KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
+
+                if (g_bDebug)
+                {
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
+                }
                 
                 if (DirExists(sBuffer))
                 {
-                    Handle hMaterialDir = OpenDirectory(sBuffer);
+                    DirectoryListing dMaterial = OpenDirectory(sBuffer);
                     
-                    if (hMaterialDir != null)
+                    if (dMaterial != null)
                     {
                         char sFileName[PLATFORM_MAX_PATH + 1];
                         FileType ftType;
                         
-                        while (ReadDirEntry(hMaterialDir, sFileName, sizeof(sFileName), ftType))
+                        while (dMaterial.GetNext(sFileName, sizeof(sFileName), ftType))
                         {
                             if (ftType == FileType_File)
                             {
                                 Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
 
-                                if (!g_bEnableArms && StrContains(sFileName, "_arms", false) != -1)
+                                if (!g_bEnableArms && IsArms(sFileName))
                                 {
                                     continue;
                                 }
@@ -280,13 +320,13 @@ public void OnMapStart()
                                 AddFileToDownloadsTable(sFileName);
                                 if (g_bDebug)
                                 {
-                                    LogMessage("(OnMapStart) AddDownload: %s", sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
                                 }
                             }
                         }
                     }
                     
-                    delete hMaterialDir;
+                    delete dMaterial;
                 }
                 else
                 {
@@ -299,10 +339,10 @@ public void OnMapStart()
     {
         SetFailState("Config for '%s' not found!", "Models");
 
-        delete hConfig;
+        delete kvConfig;
         return;
     }
-    delete hConfig;
+    delete kvConfig;
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -315,134 +355,66 @@ public void TTT_OnClientGetRole(int client, int role)
 
 void SetModel(int client, int role)
 {
-    Handle hConfig = CreateKeyValues("TTT-Models");
-
-    if (!FileExists(CONFIG_FILE))
-    {
-        SetFailState("[TTT-Models] '%s' not found!", CONFIG_FILE);
-
-        delete hConfig;
-        return;
-    }
-
-    FileToKeyValues(hConfig, CONFIG_FILE);
-
     if (role == TTT_TEAM_DETECTIVE)
     {
         char sName[64];
-        char sBuffer[256];
+        char sFileName[PLATFORM_MAX_PATH+1];
         int model = GetRandomInt(1, g_iDCount);
-        
+
         Format(sName, sizeof(sName), "DModel%d", model);
-        if (KvJumpToKey(hConfig, "Models"))
+        g_smModels.GetString(sName, sFileName, sizeof(sFileName));
+        SetEntityModel(client, sFileName);
+
+        if (g_bDebug)
         {
-            KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
+            LogToFile(g_sLog, "Player Model: %N (Detective), Model: (%d) %s", client, model, sFileName);
         }
         
-        if (DirExists(sBuffer))
+        if (g_bEnableArms)
         {
-            Handle hDir = OpenDirectory(sBuffer);
-            
-            if (hDir != null)
+            Format(sName, sizeof(sName), "%s_Arms", sName);
+            g_smModels.GetString(sName, sFileName, sizeof(sFileName));
+
+            SetEntPropString(client, Prop_Send, "m_szArmsModel", "");
+            SetEntPropString(client, Prop_Send, "m_szArmsModel", sFileName);
+
+            if (g_bDebug)
             {
-                char sFileName[PLATFORM_MAX_PATH + 1];
-                FileType ftType;
-                
-                while (ReadDirEntry(hDir, sFileName, sizeof(sFileName), ftType))
-                {
-                    if (ftType == FileType_File)
-                    {
-                        Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
-                        
-                        if (IsModel(sFileName))
-                        {
-                            SetEntityModel(client, sFileName);
-
-                            if (g_cDebug.BoolValue)
-                            {
-                                LogMessage("Player: %N, Model: %s", client, sFileName);
-                            }
-                        }
-                        else if (g_bEnableArms && IsArm(sFileName))
-                        {
-                            SetEntPropString(client, Prop_Send, "m_szArmsModel", "");
-                            SetEntPropString(client, Prop_Send, "m_szArmsModel", sFileName);
-
-                            if (g_cDebug.BoolValue)
-                            {
-                                LogMessage("Player: %N, Arm: %s", client, sFileName);
-                            }
-                        }
-                    }
-                }
+                LogToFile(g_sLog, "Player Arms: %N (Detective), Arms: (%d) %s", client, model, sFileName);
             }
-            
-            delete hDir;
-        }
-        else
-        {
-            LogError("(SetModel) Can't find %s dir: %s", sName, sBuffer);
         }
     }
     
     if (role == TTT_TEAM_INNOCENT || role == TTT_TEAM_TRAITOR)
     {
-        char sName[64];
-        char sBuffer[256];
-        int model = GetRandomInt(1, g_ITCount);
-        
-        Format(sName, sizeof(sName), "ITModel%d", model);
-        if (KvJumpToKey(hConfig, "Models"))
-        {
-            KvGetString(hConfig, sName, sBuffer, sizeof(sBuffer));
-        }
-        
-        if (DirExists(sBuffer))
-        {
-            Handle hDir = OpenDirectory(sBuffer);
-            
-            if (hDir != null)
-            {
-                char sFileName[PLATFORM_MAX_PATH + 1];
-                FileType ftType;
-                
-                while (ReadDirEntry(hDir, sFileName, sizeof(sFileName), ftType))
-                {
-                    if (ftType == FileType_File)
-                    {
-                        Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
-                        
-                        if (IsModel(sFileName))
-                        {
-                            SetEntityModel(client, sFileName);
-                            if (g_cDebug.BoolValue)
-                            {
-                                LogMessage("Player: %N, Model: %s", client, sFileName);
-                            }
-                        }
-                        else if (g_bEnableArms && IsArm(sFileName))
-                        {
-                            SetEntPropString(client, Prop_Send, "m_szArmsModel", "");
-                            SetEntPropString(client, Prop_Send, "m_szArmsModel", sFileName);
+        char sName[64],  sRole[ROLE_LENGTH];
+        char sFileName[PLATFORM_MAX_PATH+1];
+        int model = GetRandomInt(1, g_iITCount);
 
-                            if (g_cDebug.BoolValue)
-                            {
-                                LogMessage("Player: %N, Arm: %s", client, sFileName);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            delete hDir;
-        }
-        else
+        TTT_GetRoleNameByID(role, sRole, sizeof(sRole));
+        Format(sName, sizeof(sName), "ITModel%d", model);
+        g_smModels.GetString(sName, sFileName, sizeof(sFileName));
+        SetEntityModel(client, sFileName);
+
+        if (g_bDebug)
         {
-            LogError("(SetModel) Can't find %s dir: %s", sName, sBuffer);
+            LogToFile(g_sLog, "Player Model: %N (%s), Model: (%d) %s", client, sRole, model, sFileName);
+        }
+
+        if (g_bEnableArms)
+        {
+            Format(sName, sizeof(sName), "%s_Arms", sName);
+            g_smModels.GetString(sName, sFileName, sizeof(sFileName));
+
+            SetEntPropString(client, Prop_Send, "m_szArmsModel", "");
+            SetEntPropString(client, Prop_Send, "m_szArmsModel", sFileName);
+
+            if (g_bDebug)
+            {
+                LogToFile(g_sLog, "Player Arms: %N (%s), Arms: (%d) %s", client, sRole, model, sFileName);
+            }
         }
     }
-    
-    delete hConfig;
 }
 
 bool IsModel(char[] model)
@@ -455,7 +427,7 @@ bool IsModel(char[] model)
     return false;
 }
 
-bool IsArm(char[] model)
+bool IsArms(char[] model)
 {
     if (StrContains(model, ".mdl", false) != -1 && StrContains(model, ".bz2", false) == -1 && StrContains(model, "_arms", false) != -1)
     {
@@ -464,4 +436,3 @@ bool IsArm(char[] model)
     
     return false;
 }
-
