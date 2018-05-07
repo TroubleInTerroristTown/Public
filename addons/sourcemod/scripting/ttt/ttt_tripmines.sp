@@ -50,7 +50,7 @@ public void OnConfigsExecuted()
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333");
+		SetFailState("Can't find tripmines.smx! This file will be provided with TTT.");
 		return;
 	}
 	
