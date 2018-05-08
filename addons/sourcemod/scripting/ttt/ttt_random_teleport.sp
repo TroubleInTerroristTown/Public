@@ -134,9 +134,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				return Plugin_Stop;
 			}
 
-			RandomTeleport(client);
+			int target = RandomTeleport(client);
 
-			if (count)
+			if (count && target != -1)
 			{
 				if (role == TTT_TEAM_TRAITOR)
 				{
@@ -168,6 +168,18 @@ int RandomTeleport(int client)
 	}
 
 	int target = TTT_GetRandomPlayer(bAlive);
+
+	ConVar cDebug = FindConVar("ttt_debug_mode");
+
+	if (cDebug != null && cDebug.BoolValue)
+	{
+		CPrintToChatAll("[Random Teleport] Target: %d Valid: %d", target, TTT_IsClientValid(target));
+	}
+
+	if (!TTT_IsClientValid(target))
+	{
+		return -1;
+	}
 
 	if (TTT_IsPlayerAlive(target))
 	{
