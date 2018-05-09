@@ -851,6 +851,11 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			ForcePlayerSuicide(i);
 			g_iRoundSlays[i]--;
+
+			if (g_cOpenRulesOnPunish.BoolValue)
+			{
+				TTT_ClientOpenRules(i);
+			}
 			
 			if (g_iRoundSlays[i] > 0)
 			{

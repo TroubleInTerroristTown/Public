@@ -282,6 +282,7 @@ ConVar g_cSilentIdColor = null;
 ConVar g_cSilentIdRoles = null;
 ConVar g_cLogButtons = null;
 ConVar g_cLogButtonsSpam = null;
+ConVar g_cOpenRulesOnPunish = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

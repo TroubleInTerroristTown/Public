@@ -130,6 +130,7 @@ void SetupConfig()
 	g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");	
 	g_cLogButtons = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "0", "Log pressed buttons?", _, true, 0.0, true, 1.0);
 	g_cLogButtonsSpam = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "5", "Prevent log spamming for the same button - Time in seconds to relog a button");
+	g_cOpenRulesOnPunish = AutoExecConfig_CreateConVar("ttt_open_rules_on_punish", "0", "Open rules menu for a player while he will be punished?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
