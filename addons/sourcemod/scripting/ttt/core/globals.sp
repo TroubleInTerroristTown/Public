@@ -283,6 +283,7 @@ ConVar g_cSilentIdRoles = null;
 ConVar g_cLogButtons = null;
 ConVar g_cLogButtonsSpam = null;
 ConVar g_cOpenRulesOnPunish = null;
+ConVar g_cRulesURLCloseMenu = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

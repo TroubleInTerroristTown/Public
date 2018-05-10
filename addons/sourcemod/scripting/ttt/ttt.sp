@@ -2261,8 +2261,15 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 				{
 					WebFix_OpenUrl(client, "TTT Rules", sValue);
 
-					g_bKnowRules[client] = false;
-					g_bReadRules[client] = true;
+					if (g_cRulesURLCloseMenu.BoolValue)
+					{
+						g_bKnowRules[client] = false;
+						g_bReadRules[client] = true;
+					}
+					else
+					{
+						TTT_ClientOpenRules(client);
+					}
 
 					delete kvRules;
 					return 0;
