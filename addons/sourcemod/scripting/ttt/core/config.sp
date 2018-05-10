@@ -131,7 +131,7 @@ void SetupConfig()
 	g_cLogButtons = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "0", "Log pressed buttons?", _, true, 0.0, true, 1.0);
 	g_cLogButtonsSpam = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "5", "Prevent log spamming for the same button - Time in seconds to relog a button");
 	g_cOpenRulesOnPunish = AutoExecConfig_CreateConVar("ttt_open_rules_on_punish", "0", "Open rules menu for a player while he will be punished?", _, true, 0.0, true, 1.0);
-	g_cRulesURLCloseMenu = AutoExecConfig_CreateConVar("ttt_close_rules_on_url", "1", "Close Menu when a player will be redirect to motd/popup window?", _, true, 0.0, true, 1.0);
+	g_cRulesURLReopenMenu = AutoExecConfig_CreateConVar("ttt_reopen_rules_on_url", "1", "Reopen rules menu when a player will be redirect to motd/popup window?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
