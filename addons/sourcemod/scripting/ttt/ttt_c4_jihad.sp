@@ -584,21 +584,21 @@ stock void showPlantMenu(int client)
 	}
 
 	
-	Handle menuHandle = CreateMenu(plantBombMenu);
+	Menu menu = new Menu(plantBombMenu);
 	
 	char sTitle[128];
 	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
-	SetMenuTitle(menuHandle, sTitle);
+	menu.SetTitle(sTitle);
 	
 	char sSeconds[64];
 	for(int i = 0; i < g_iPlantSecondsCount; i++)
 	{
 		Format(sSeconds, sizeof(sSeconds), "%T", "Seconds", client, StringToInt(g_sPlantSeconds[i]));
-		AddMenuItem(menuHandle, g_sPlantSeconds[i], sSeconds);
+		menu.AddItem(g_sPlantSeconds[i], sSeconds);
 	}
 	
-	SetMenuPagination(menuHandle, 6);
-	DisplayMenu(menuHandle, client, 10);
+	menu.Pagination = 6;
+	menu.Display(client, 10);
 }
 
 stock void showDefuseMenu(int client)
@@ -611,19 +611,19 @@ stock void showDefuseMenu(int client)
 	char sTitle[128];
 	char sWire[64], sWireInt[12];
 
-	Handle menuHandle = CreateMenu(defuseBombMenu);
-	SetMenuTitle(menuHandle, sTitle);
+	Menu menu = new Menu(defuseBombMenu);
+	menu.SetTitle(sTitle);
 	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
 
 	for (int i = 1; i <= g_cWireCount.IntValue; i++)
 	{
 		Format(sWire, sizeof(sWire), "%T", "C4 Wire", client, i);
 		IntToString(i, sWireInt, sizeof(sWireInt));
-		AddMenuItem(menuHandle, sWireInt, sWire);
+		menu.AddItem(sWireInt, sWire);
 	}
 
-	SetMenuPagination(menuHandle, 4);
-	DisplayMenu(menuHandle, client, 10);
+	menu.Pagination = 4;
+	menu.Display(client, 10);
 }
 
 public int plantBombMenu(Menu menu, MenuAction action, int client, int option)

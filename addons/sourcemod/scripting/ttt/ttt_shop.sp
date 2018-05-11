@@ -519,8 +519,8 @@ public Action Command_Shop(int client, int args)
 	int team = TTT_GetClientRole(client);
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
-		Handle menu = CreateMenu(Menu_ShopHandler);
-		SetMenuTitle(menu, "%T", "TTT Shop", client, g_iCredits[client]);
+		Menu menu = new Menu(Menu_ShopHandler);
+		menu.SetTitle("%T", "TTT Shop", client, g_iCredits[client]);
 
 		char display[128];
 		int temp_item[Item];
@@ -563,13 +563,13 @@ public Action Command_Shop(int client, int args)
 					{
 						Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
 					}
-					AddMenuItem(menu, temp_item[Short], display);
+					menu.AddItem(temp_item[Short], display);
 				}
 			}
 		}
 
-		SetMenuExitButton(menu, true);
-		DisplayMenu(menu, client, 15);
+		menu.ExitButton = true;
+		menu.Display(client, 15);
 	}
 	else
 	{
