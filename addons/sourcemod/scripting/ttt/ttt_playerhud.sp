@@ -50,7 +50,7 @@ public void OnPluginStart()
 	LoadTranslations("ttt.phrases");
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "ttt_player_hud.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
@@ -59,7 +59,10 @@ public void OnConfigsExecuted()
 	{
 		SetFailState("Old player hud file found! Please delete '%s'", sFile);
 	}
+}
 
+public void OnConfigsExecuted()
+{
 	CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT);
 }
 

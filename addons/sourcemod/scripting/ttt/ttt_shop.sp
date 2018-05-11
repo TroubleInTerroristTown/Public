@@ -106,6 +106,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
 	CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
+	CreateNative("TTT_RemoveCustomItem", Native_RemoveCustomItem);
 
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
@@ -518,8 +519,8 @@ public Action Command_Shop(int client, int args)
 	int team = TTT_GetClientRole(client);
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
-		Handle menu = CreateMenu(Menu_ShopHandler);
-		SetMenuTitle(menu, "%T", "TTT Shop", client, g_iCredits[client]);
+		Menu menu = new Menu(Menu_ShopHandler);
+		menu.SetTitle("%T", "TTT Shop", client, g_iCredits[client]);
 
 		char display[128];
 		int temp_item[Item];
@@ -562,13 +563,13 @@ public Action Command_Shop(int client, int args)
 					{
 						Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
 					}
-					AddMenuItem(menu, temp_item[Short], display);
+					menu.AddItem(temp_item[Short], display);
 				}
 			}
 		}
 
-		SetMenuExitButton(menu, true);
-		DisplayMenu(menu, client, 15);
+		menu.ExitButton = true;
+		menu.Display(client, 15);
 	}
 	else
 	{
@@ -809,6 +810,25 @@ public int Native_UpdateCustomItem(Handle plugin, int numParams)
 			
 			g_aCustomItems.SetArray(i, temp_item[0]);
 			
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+public int Native_RemoveCustomItem(Handle plugin, int numParams)
+{
+	int temp_item[Item];
+	char temp_short[16];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if (StrEqual(temp_item[Short], temp_short, false))
+		{
+			g_aCustomItems.Erase(i);
 			return true;
 		}
 	}

@@ -43,6 +43,14 @@ native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong
 native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0, bool discount = false);
 
 /*
+ * Remove shop item.
+ *
+ * @param itemshort         The short-tag identifier to find the item.
+ * @return					True it was removed, otherwise shop item not found
+ */
+native bool TTT_RemoveCustomItem(const char[] itemshort);
+
+/*
  * Retrieve a custom item's price.
  *
  * @param item              The short-tag identifier of the item.

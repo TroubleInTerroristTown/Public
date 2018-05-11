@@ -46,10 +46,12 @@ ConVar g_cC4BeepVolume = null;
 ConVar g_cEnableWires = null;
 ConVar g_cWireCount = null;
 ConVar g_cPlantSeconds = null;
+ConVar g_cPunishment = null;
 
 int g_iPCount_C4[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDefusePlayerIndex[MAXPLAYERS + 1] =  { -1, ... };
 int g_iWire[MAXPLAYERS + 1] =  { 0, ... };
+int g_iPunishment[MAXPLAYERS + 1] = { 0, ... };
 
 bool g_bHasC4[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasJihad[MAXPLAYERS + 1] =  { false, ... };
@@ -100,6 +102,7 @@ public void OnPluginStart()
 	g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
 	g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires for defusing?", _, true, 1.0);
 	g_cPlantSeconds = AutoExecConfig_CreateConVar("c4_plant_seconds", "20,30,40,50,60", "Plant seconds (Separate numbers with ,)");
+	g_cPunishment = AutoExecConfig_CreateConVar("c4_punishment", "0", "Punishment for the player who cut the wrong wire. 0 - Slay player, 1 - (Instant) Bomb explode, 2 - Menu (Players choice)", _, true, 0.0, true, 3.0);
 	g_cPlantSeconds.AddChangeHook(OnConVarChanged);
 	TTT_EndConfig();
 	
@@ -430,11 +433,9 @@ public Action Timer_Reset(Handle timer, any userid)
 
 public Action explodeC4(Handle timer, Handle pack)
 {
-	int clientUserId;
-	int bombEnt;
 	ResetPack(pack);
-	clientUserId = ReadPackCell(pack);
-	bombEnt = ReadPackCell(pack);
+	int clientUserId = ReadPackCell(pack);
+	int bombEnt = ReadPackCell(pack);
 
 	if (!IsValidEntity(bombEnt))
 	{
@@ -584,21 +585,18 @@ stock void showPlantMenu(int client)
 	}
 
 	
-	Handle menuHandle = CreateMenu(plantBombMenu);
-	
-	char sTitle[128];
-	Format(sTitle, sizeof(sTitle), "%T", "Set C4 Timer", client);
-	SetMenuTitle(menuHandle, sTitle);
+	Menu menu = new Menu(plantBombMenu);
+	menu.SetTitle("%T", "Set C4 Timer", client);
 	
 	char sSeconds[64];
 	for(int i = 0; i < g_iPlantSecondsCount; i++)
 	{
 		Format(sSeconds, sizeof(sSeconds), "%T", "Seconds", client, StringToInt(g_sPlantSeconds[i]));
-		AddMenuItem(menuHandle, g_sPlantSeconds[i], sSeconds);
+		menu.AddItem(g_sPlantSeconds[i], sSeconds);
 	}
 	
-	SetMenuPagination(menuHandle, 6);
-	DisplayMenu(menuHandle, client, 10);
+	menu.Pagination = 6;
+	menu.Display(client, 10);
 }
 
 stock void showDefuseMenu(int client)
@@ -608,22 +606,19 @@ stock void showDefuseMenu(int client)
 		return;
 	}
 
-	char sTitle[128];
 	char sWire[64], sWireInt[12];
-
-	Handle menuHandle = CreateMenu(defuseBombMenu);
-	SetMenuTitle(menuHandle, sTitle);
-	Format(sTitle, sizeof(sTitle), "%T", "Defuse C4", client);
+	Menu menu = new Menu(defuseBombMenu);
+	menu.SetTitle("%T", "Defuse C4", client);
 
 	for (int i = 1; i <= g_cWireCount.IntValue; i++)
 	{
 		Format(sWire, sizeof(sWire), "%T", "C4 Wire", client, i);
 		IntToString(i, sWireInt, sizeof(sWireInt));
-		AddMenuItem(menuHandle, sWireInt, sWire);
+		menu.AddItem(sWireInt, sWire);
 	}
 
-	SetMenuPagination(menuHandle, 4);
-	DisplayMenu(menuHandle, client, 10);
+	menu.Pagination = 4;
+	menu.Display(client, 10);
 }
 
 public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
@@ -646,6 +641,15 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 				break;
 			}
 		}
+
+		if (g_cPunishment.IntValue == 0 || g_cPunishment.IntValue == 1)
+		{
+			g_iPunishment[client] = g_cPunishment.IntValue;
+		}
+		else
+		{
+			showPlanterPunishments(client);
+		}
 		
 		g_bHasC4[client] = false;
 	}
@@ -659,6 +663,54 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 	{
 		g_bHasActiveBomb[client] = false;
 		removeBomb(client);
+	}
+}
+
+stock void showPlanterPunishments(int client)
+{
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
+	{
+		return;
+	}
+
+	char sBuffer[128];
+
+	Handle menuHandle = CreateMenu(punishmentsBombMenu);
+	SetMenuTitle(menuHandle, "%T", "C4: Choose Punishment", client);
+
+	Format(sBuffer, sizeof(sBuffer), "%T", "C4: Slay", client);
+	AddMenuItem(menuHandle, "slay", sBuffer);
+
+	Format(sBuffer, sizeof(sBuffer), "%T", "C4: Explode", client);
+	AddMenuItem(menuHandle, "explode", sBuffer);
+
+	DisplayMenu(menuHandle, client, 10);
+}
+
+public int punishmentsBombMenu(Menu menu, MenuAction action, int client, int option)
+{
+	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
+	{
+		return;
+	}
+
+	if (action == MenuAction_Select)
+	{
+		char info[100];
+		GetMenuItem(menu, option, info, sizeof(info));
+		
+		if (StrEqual(info, "slay", false))
+		{
+			g_iPunishment[client] = 0;
+		}
+		else if (StrEqual(info, "explode", false))
+		{
+			g_iPunishment[client] = 1;
+		}
+	}
+	else if (action == MenuAction_End)
+	{
+		delete menu;
 	}
 }
 
@@ -683,9 +735,9 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 
 		int wire;
 		int correctWire;
-		int planterBombIndex = findBomb(planter);
+		int iBomb = findBomb(planter);
 		float bombPos[3];
-		GetEntPropVector(planterBombIndex, Prop_Data, "m_vecOrigin", bombPos);
+		GetEntPropVector(iBomb, Prop_Data, "m_vecOrigin", bombPos);
 		correctWire = g_iWire[planter];
 		GetMenuItem(menu, option, info, sizeof(info));
 		wire = StringToInt(info);
@@ -698,13 +750,22 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 				EmitAmbientSoundAny(SND_DISARM, bombPos);
 				g_bHasActiveBomb[planter] = false;
 				TTT_ClearTimer(g_hExplosionTimer[planter]);
-				SetEntProp(planterBombIndex, Prop_Send, "m_hOwnerEntity", -1);
+				SetEntProp(iBomb, Prop_Send, "m_hOwnerEntity", -1);
 			}
 		}
 		else
 		{
 			CPrintToChat(client, "%s %T", g_sPluginTag, "Failed Defuse", client);
-			ForcePlayerSuicide(client);
+
+			if (g_iPunishment[planter] == 1)
+			{
+				TriggerTimer(g_hExplosionTimer[planter], false);
+			}
+			else
+			{
+				ForcePlayerSuicide(client);
+			}
+			
 			g_iDefusePlayerIndex[client] = -1;
 		}
 	}

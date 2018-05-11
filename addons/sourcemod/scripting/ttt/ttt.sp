@@ -3295,36 +3295,36 @@ stock void InspectBody(int client, int victim, int victimRole, int attacker, int
 		Format(team, sizeof(team), "%T", "Innocents", client);
 	}
 
-	Handle menu = CreateMenu(BodyMenuHandler);
+	Menu menu = new Menu(BodyMenuHandler);
 	char sBuffer[128];
 
-	SetMenuTitle(menu, "%T", "Inspected body. The extracted data are the following", client);
+	menu.SetTitle("%T", "Inspected body. The extracted data are the following", client);
 
 	Format(sBuffer, sizeof(sBuffer), "%T", "Victim name", client, victimName);
-	AddMenuItem(menu, "", sBuffer);
+	menu.AddItem("", sBuffer);
 
 	Format(sBuffer, sizeof(sBuffer), "%T", "Team victim", client, team);
-	AddMenuItem(menu, "", sBuffer);
+	menu.AddItem("", sBuffer);
 
 	if (g_iRole[client] == TTT_TEAM_DETECTIVE)
 	{
 		Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, time);
-		AddMenuItem(menu, "", sBuffer);
+		menu.AddItem("", sBuffer);
 
 		if (TTT_IsClientValid(attacker) && attacker != victim)
 		{
 			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been", client, weapon);
-			AddMenuItem(menu, "", sBuffer);
+			menu.AddItem("", sBuffer);
 		}
 		else
 		{
 			Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been: himself (suicide)", client);
-			AddMenuItem(menu, "", sBuffer);
+			menu.AddItem("", sBuffer);
 		}
 	}
 
-	SetMenuExitButton(menu, true);
-	DisplayMenu(menu, client, 15);
+	menu.ExitButton = true;
+	menu.Display(client, 15);
 
 }
 
@@ -3490,11 +3490,11 @@ stock void manageRDM(int client)
 	Format(sForgive, sizeof(sForgive), "%T", "Forgive", client);
 	Format(sPunish, sizeof(sPunish), "%T", "Punish", client);
 
-	Handle menuHandle = CreateMenu(manageRDMHandle);
-	SetMenuTitle(menuHandle, display);
-	AddMenuItem(menuHandle, "Forgive", sForgive);
-	AddMenuItem(menuHandle, "Punish", sPunish);
-	DisplayMenu(menuHandle, client, 10);
+	Menu menu = new Menu(manageRDMHandle);
+	menu.SetTitle(display);
+	menu.AddItem("Forgive", sForgive);
+	menu.AddItem("Punish", sPunish);
+	menu.Display(client, 10);
 }
 
 public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)

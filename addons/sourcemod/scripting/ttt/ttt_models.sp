@@ -7,7 +7,6 @@
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Models"
-#define CONFIG_FILE "addons/sourcemod/configs/ttt/models.ini"
 
 bool g_bEnable = false;
 bool g_bEnableArms = false;
@@ -41,18 +40,21 @@ public void OnPluginStart()
 
 public void OnMapStart()
 {
-    if (!FileExists(CONFIG_FILE))
+    char sFile[PLATFORM_MAX_PATH + 1];
+    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/models.ini");
+
+    if (!FileExists(sFile))
     {
-        SetFailState("[TTT-Models] '%s' not found!", CONFIG_FILE);
+        SetFailState("[TTT-Models] '%s' not found!", sFile);
         return;
     }
     
     KeyValues kvConfig = new KeyValues("TTT-Models");
     g_smModels = new StringMap();
     
-    if (!kvConfig.ImportFromFile(CONFIG_FILE))
+    if (!kvConfig.ImportFromFile(sFile))
     {
-        SetFailState("[TTT-Models] Something went wrong with: \"%s\"", CONFIG_FILE);
+        SetFailState("[TTT-Models] Something went wrong with: \"%s\"", sFile);
         return;
     }
 

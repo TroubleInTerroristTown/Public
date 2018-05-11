@@ -45,17 +45,18 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
-	char sFile[] = "tacticalshield.smx";
-	Handle hPlugin = FindPluginByFile(sFile);
-	
-	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
+	if (!LibraryExists("tacticalshield"))
 	{
+		TTT_RemoveCustomItem(SHORT_NAME_D);
 		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333");
 		return;
 	}
-	
+}
+
+public void OnConfigsExecuted()
+{
 	RegisterItem();
 }
 

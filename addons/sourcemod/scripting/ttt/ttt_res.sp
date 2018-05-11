@@ -184,26 +184,26 @@ public Action Commamnd_RES(int client, int args)
 	}
 	
 	int cookievalue = GetIntCookie(client, g_hCookie);
-	Handle hMenu = CreateMenu(MenuHandle);
-	SetMenuTitle(hMenu, "Round End Sounds...");
+	Menu menu = new Menu(MenuHandle);
+	menu.SetTitle("Round End Sounds...");
 	char Item[128];
 	if(cookievalue == 0)
 	{
 		Format(Item, sizeof(Item), "Sounds on [X]");
-		AddMenuItem(hMenu, "ON", Item);
+		menu.AddItem("ON", Item);
 		Format(Item, sizeof(Item), "Sounds off"); 
-		AddMenuItem(hMenu, "OFF", Item);
+		menu.AddItem("OFF", Item);
 	}
 	else
 	{
 		Format(Item, sizeof(Item), "Sounds on");
-		AddMenuItem(hMenu, "ON", Item);
+		menu.AddItem("ON", Item);
 		Format(Item, sizeof(Item), "Sounds off [X]");
-		AddMenuItem(hMenu, "OFF", Item);
+		menu.AddItem("OFF", Item);
 	}
-	SetMenuExitBackButton(hMenu, true);
-	SetMenuExitButton(hMenu, true);
-	DisplayMenu(hMenu, client, 30);
+	menu.ExitBackButton = true;
+	menu.ExitButton = true;
+	menu.Display(client, 30);
 	return Plugin_Continue;
 }
 
@@ -213,33 +213,35 @@ public Action Command_ResRefresh(int client, int args)
 	return Plugin_Handled;
 }
 
-public int MenuHandle(Handle menu, MenuAction action, int param1, int param2)
+public int MenuHandle(Menu menu, MenuAction action, int client, int param)
 {
-	Handle hMenu = CreateMenu(MenuHandle);
 	if (action == MenuAction_DrawItem)
 	{
 		return ITEMDRAW_DEFAULT;
 	}
-	else if(param2 == MenuCancel_ExitBack)
+	else if(param == MenuCancel_ExitBack)
 	{
-		ShowCookieMenu(param1);
+		ShowCookieMenu(client);
 	}
 	else if (action == MenuAction_Select)
 	{
-		switch (param2)
+		switch (param)
 		{
 			case 0:
 			{
-				SetClientCookie(param1, g_hCookie, "0");
-				Commamnd_RES(param1, 0);
+				SetClientCookie(client, g_hCookie, "0");
+				Commamnd_RES(client, 0);
 			}
 			case 1:
 			{
-				SetClientCookie(param1, g_hCookie, "1");
-				Commamnd_RES(param1, 0);
+				SetClientCookie(client, g_hCookie, "1");
+				Commamnd_RES(client, 0);
 			}
 		}
-		delete hMenu;
+	}
+	else if (action == MenuAction_End)
+	{
+		delete menu;
 	}
 	return 0;
 }

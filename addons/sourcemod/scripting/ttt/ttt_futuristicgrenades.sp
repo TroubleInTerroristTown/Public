@@ -135,17 +135,35 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "futuristicgrenades.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
+		TTT_RemoveCustomItem(FUTURISTIC_I);
+		TTT_RemoveCustomItem(FUTURISTIC_T);
+		TTT_RemoveCustomItem(FUTURISTIC_D);
+		TTT_RemoveCustomItem(FF_SNAME_I);
+		TTT_RemoveCustomItem(FF_SNAME_T);
+		TTT_RemoveCustomItem(FF_SNAME_D);
+		TTT_RemoveCustomItem(BH_SNAME_I);
+		TTT_RemoveCustomItem(BH_SNAME_T);
+		TTT_RemoveCustomItem(BH_SNAME_D);
+		TTT_RemoveCustomItem(FE_SNAME_I);
+		TTT_RemoveCustomItem(FE_SNAME_T);
+		TTT_RemoveCustomItem(FE_SNAME_D);
+		TTT_RemoveCustomItem(FI_SNAME_I);
+		TTT_RemoveCustomItem(FI_SNAME_T);
+		TTT_RemoveCustomItem(FI_SNAME_D);
 		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?p=2499362");
 		return;
 	}
-	
+}
+
+public void OnConfigsExecuted()
+{
 	RegisterItem();
 }
 
