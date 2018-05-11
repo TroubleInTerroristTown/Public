@@ -21,6 +21,7 @@ ConVar g_cCount = null;
 ConVar g_cDistance = null;
 ConVar g_cDropMode = null;
 ConVar g_cCooldown = null;
+ConVar g_cDropTraitorWeapons = null;
 
 int g_iBeamSprite = -1;
 int g_iBeamHaloSprite = -1;
@@ -52,8 +53,9 @@ public void OnPluginStart()
     g_cDiscount = AutoExecConfig_CreateConVar("drop_discountable", "0", "Should Drop discountable?", _, true, 0.0, true, 1.0);
     g_cCount = AutoExecConfig_CreateConVar("drop_max_usage", "1", "Usages per round", _, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("drop_distance", "500", "Distance between client and target");
-    g_cDropMode = AutoExecConfig_CreateConVar("drop_drop_mode", "2", "0 - Just drop primary weapons, 1 - Drop primary weapons (no pickup for x seconds)", _, true, 0.0, true, 1.0);
-    g_cCooldown = AutoExecConfig_CreateConVar("drop_drop_cooldown", "3", "Cooldown to allow pickup again (drop_drop_mode must be higher as 0)");
+    g_cDropMode = AutoExecConfig_CreateConVar("drop_mode", "2", "0 - Just drop primary weapons, 1 - Drop primary weapons (no pickup for x seconds)", _, true, 0.0, true, 1.0);
+    g_cCooldown = AutoExecConfig_CreateConVar("drop_cooldown", "3", "Cooldown to allow pickup again (drop_drop_mode must be higher as 0)");
+    g_cDropTraitorWeapons = AutoExecConfig_CreateConVar("drop_traitor_weapons", "0", "Drop all traitor weapons? If it true just the caller does not drop his weapons", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoopValidClients(client)
@@ -142,6 +144,16 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 {
                     if (IsClientInRange(client, i))
                     {
+                        if (client == i)
+                        {
+                            continue;
+                        }
+
+                        if (!g_cDropTraitorWeapons.BoolValue && TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+                        {
+                            continue;
+                        }
+
                         DropWeapons(i);
 
                         if (g_cDropMode.BoolValue)
