@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-06 19:11:12 UTC
+// Date: 2018-05-11 20:36:20 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -941,6 +941,21 @@
 	"Found Traitor Silent"
 	{
 		"de"		"{lightgreen}Du hast heimlich die Leiche von {darkred}{1} {lightgreen}gefunden. {lightgreen}Er war ein {darkred}TRAITOR!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"de"		"Wähle eine Bestrafung:"
+	}
+
+	"C4: Slay"
+	{
+		"de"		"Spieler erschlagen"
+	}
+
+	"C4: Explode"
+	{
+		"de"		"Bombe explodieren lassen"
 	}
 
 }

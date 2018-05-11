@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-06 19:11:16 UTC
+// Date: 2018-05-11 20:36:24 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -393,21 +393,6 @@
 	"Defuse C4"
 	{
 		"en"		"Defuse the C4!"
-	}
-
-	"C4: Choose Punishment"
-	{
-		"en"		"Choose Punishment:"
-	}
-
-	"C4: Slay"
-	{
-		"en"		"Slay player"
-	}
-
-	"C4: Explode"
-	{
-		"en"		"Explode bomb"
 	}
 
 	"C4 Wire"
@@ -1042,6 +1027,21 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{lightgreen}You silently found the body of {darkred}{1}. {lightgreen}It was a {darkred}Traitor!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"en"		"Choose Punishment:"
+	}
+
+	"C4: Slay"
+	{
+		"en"		"Slay player"
+	}
+
+	"C4: Explode"
+	{
+		"en"		"Explode bomb"
 	}
 
 }
