@@ -395,6 +395,21 @@
 		"en"		"Defuse the C4!"
 	}
 
+	"C4: Choose Punishment"
+	{
+		"en"		"Choose Punishment:"
+	}
+
+	"C4: Slay"
+	{
+		"en"		"Slay player"
+	}
+
+	"C4: Explode"
+	{
+		"en"		"Explode bomb"
+	}
+
 	"C4 Wire"
 	{
 		"#format"	"{1:d}"
