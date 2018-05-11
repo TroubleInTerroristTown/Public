@@ -43,17 +43,21 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "AdvancedParachute.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
+		TTT_RemoveCustomItem(SHORT_NAME);
 		SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158");
 		return;
 	}
-	
+}
+
+public void OnConfigsExecuted()
+{
 	RegisterItem();
 }
 

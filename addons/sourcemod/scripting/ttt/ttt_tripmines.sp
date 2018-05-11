@@ -43,17 +43,21 @@ public void OnPluginStart()
 	TTT_EndConfig();
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "tripmines.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
+		TTT_RemoveCustomItem(SHORTNAME_T);
 		SetFailState("Can't find tripmines.smx! This file will be provided with TTT.");
 		return;
 	}
-	
+}
+
+public void OnConfigsExecuted()
+{
 	RegisterItem();
 }
 
