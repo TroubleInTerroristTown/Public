@@ -81,7 +81,7 @@ public void OnClientPutInServer(int client)
 
 public Action OnWeapon(int client, int weapon)
 {
-    if (g_bCooldown[client])
+    if (g_bCooldown[client] && TTT_IsPrimaryWeapon(weapon))
     {
         return Plugin_Handled;
     }
