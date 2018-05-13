@@ -80,7 +80,6 @@ public void OnPluginStart()
 	AddCommandListener(Command_InterceptSuicide, "explode");
 	AddCommandListener(Command_InterceptSuicide, "spectate");
 	AddCommandListener(Command_InterceptSuicide, "jointeam");
-	AddCommandListener(Command_InterceptSuicide, "joinclass");
 	AddCommandListener(Command_InterceptSuicide, "explodevector");
 	AddCommandListener(Command_InterceptSuicide, "killvector");
 	
