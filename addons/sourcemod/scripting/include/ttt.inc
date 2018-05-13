@@ -682,3 +682,30 @@ stock int TTT_IsValidRole(int client, int role)
 {
     return (role & TTT_GetClientRole(client));
 }
+
+stock bool TTT_IsPrimaryWeapon(int weapon)
+{
+	if (IsValidEntity(weapon))
+	{
+		char sClass[32];
+		GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+		if ((StrContains(sClass, "ak47", false) != -1) || (StrContains(sClass, "m4a1", false) != -1) ||
+			(StrContains(sClass, "m4a1_silencer", false) != -1) || (StrContains(sClass, "awp", false) != -1) ||
+			(StrContains(sClass, "p90", false) != -1) || (StrContains(sClass, "sg556", false) != -1) ||
+			(StrContains(sClass, "aug", false) != -1) || (StrContains(sClass, "galilar", false) != -1) ||
+			(StrContains(sClass, "famas", false) != -1) || (StrContains(sClass, "ssg08", false) != -1) ||
+			(StrContains(sClass, "g3sg1", false) != -1) || (StrContains(sClass, "scar20", false) != -1) ||
+			(StrContains(sClass, "m249", false) != -1) || (StrContains(sClass, "negev", false) != -1) ||
+			(StrContains(sClass, "nova", false) != -1) || (StrContains(sClass, "xm1014", false) != -1) ||
+			(StrContains(sClass, "sawedoff", false) != -1) || (StrContains(sClass, "mag7", false) != -1) ||
+			(StrContains(sClass, "mac10", false) != -1) || (StrContains(sClass, "mp9", false) != -1) ||
+			(StrContains(sClass, "mp7", false) != -1) || (StrContains(sClass, "ump45", false) != -1) ||
+			(StrContains(sClass, "bizon", false) != -1))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
