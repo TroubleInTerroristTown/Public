@@ -65,7 +65,7 @@ public void OnPluginStart()
 	g_cDiscountT = AutoExecConfig_CreateConVar("rt_discount_traitor", "0", "Should Random Teleport discountable for traitors?", _, true, 0.0, true, 1.0);
 	g_cDiscountD = AutoExecConfig_CreateConVar("rt_discount_detective", "0", "Should Random Teleport discountable for detectives?", _, true, 0.0, true, 1.0);
 	g_cDiscountI = AutoExecConfig_CreateConVar("rt_discount_innocent", "0", "Should Random Teleport discountable for innocents?", _, true, 0.0, true, 1.0);
-	g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 1.0, true, 1.0);
+	g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
