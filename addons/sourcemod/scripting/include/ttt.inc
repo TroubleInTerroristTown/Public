@@ -606,7 +606,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 
 	LoopValidClients(i)
 	{
-		if (alive && !IsPlayerAlive(i))
+		if (alive && !TTT_IsPlayerAlive(i))
 		{
 			continue;
 		}

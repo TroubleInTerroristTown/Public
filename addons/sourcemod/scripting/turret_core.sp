@@ -373,6 +373,7 @@ void TickTurret(int client)
 			GetEntPropVector(g_iTurrets[client], Prop_Send, "m_vecMins", m_vecMins);
 			GetEntPropVector(g_iTurrets[client], Prop_Send, "m_vecMaxs", m_vecMaxs);
 			
+			// MASK_SOLID
 			TR_TraceHullFilter(TurretPos, EnemyPos, m_vecMins, m_vecMaxs, MASK_SOLID, DontHitOwnerOrNade, client);
 			if(TR_GetEntityIndex() == i)
 			{

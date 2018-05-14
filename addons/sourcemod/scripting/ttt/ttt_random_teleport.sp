@@ -176,11 +176,6 @@ int RandomTeleport(int client)
 		CPrintToChatAll("[Random Teleport] Target: %d Valid: %d", target, TTT_IsClientValid(target));
 	}
 
-	if (!TTT_IsClientValid(target))
-	{
-		return -1;
-	}
-
 	if (TTT_IsPlayerAlive(target))
 	{
 		GetClientAbsOrigin(client, fPlayerPos);
