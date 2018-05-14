@@ -1,18 +1,11 @@
-/*
-* Request Core Plugin turret_core 
-* https://forums.alliedmods.net/showpost.php?p=2589375&postcount=2
-*/
 #pragma semicolon 1
+#pragma newdecls required
+
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
 
-#undef REQUIRE_PLUGIN
 #include <turret_core>
-#define Turret_Core_AVAILABLE()	(GetFeatureStatus(FeatureType_Native, "SetTurretCanAttackClient") == FeatureStatus_Available)
-
-#pragma newdecls required
-
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Turret"
 #define SHORT_NAME "turret"
@@ -31,7 +24,7 @@ ConVar g_cCheckTeam = null;
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
-	author = "bbs.93x.net",
+	author = TTT_PLUGIN_AUTHOR ... " & bbs.93x.net",
 	description = TTT_PLUGIN_DESCRIPTION,
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
