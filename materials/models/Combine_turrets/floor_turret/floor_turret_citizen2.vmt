@@ -1,0 +1,24 @@
+"VertexLitGeneric"
+{
+	"$surfaceprop" "metal"
+	"$bumpmap" "models/combine_turrets/floor_turret/combine_gun002_normal"
+	"$phong" 1
+	"$phongexponent" "10"
+	"$phongboost" "4"									
+	"$phongfresnelranges"	"[.1 .5  1]"
+	"$selfillum" "1"
+	"$selfillumtint" "[3 3 3]"
+
+	// Use separate self-illum mask on Pre DX9 hardware
+	">=dx90_20b"
+	{
+		"$baseTexture" 		"Models/Combine_turrets/Floor_turret/floor_turret_citizen2_noalpha"
+		"$selfillummask" 	"Models/Combine_turrets/Floor_turret/floor_turret_citizen_glow"
+	}
+
+	// Use redundant self-illum in base alpha on Pre DX9 hardware
+	"<dx90_20b"
+	{
+		"$basetexture"	"Models/Combine_turrets/Floor_turret/floor_turret_citizen2"
+	}
+}
