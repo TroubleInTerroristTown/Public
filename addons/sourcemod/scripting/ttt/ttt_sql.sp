@@ -119,6 +119,8 @@ void SQL_Start()
 
 	if (!SQL_CheckConfig(sEntry) && g_iRetries < g_cRetries.IntValue)
 	{
+		LogError("(SQL_Start) Couldn't find an \"%s\"-entry in your databases.cfg...", sEntry);
+
 		char sError[255];
 		g_dDatabase = SQL_Connect(sEntry, true, sError, sizeof(sError));
 
