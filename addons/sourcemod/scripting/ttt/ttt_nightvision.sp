@@ -45,7 +45,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

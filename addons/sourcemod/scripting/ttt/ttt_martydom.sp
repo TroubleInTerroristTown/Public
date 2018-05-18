@@ -76,7 +76,7 @@ public void OnClientDisconnect(int client)
 	g_bHasMartydom[client] = false;
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

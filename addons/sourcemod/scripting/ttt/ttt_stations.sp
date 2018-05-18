@@ -89,7 +89,7 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_WARNING, true);
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

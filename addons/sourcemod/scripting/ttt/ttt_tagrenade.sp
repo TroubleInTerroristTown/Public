@@ -133,10 +133,7 @@ public void OnConfigsExecuted()
 	{
 		UseTAGrenade.SetBool(true);
 	}
-}
-
-public void OnAllPluginsLoaded()
-{
+	
 	RegisterItem();
 }
 

@@ -164,10 +164,7 @@ public void OnConfigsExecuted()
 	char sBuffer[128];
 	g_cPlantSeconds.GetString(sBuffer, sizeof(sBuffer));
 	g_iPlantSecondsCount = ExplodeString(sBuffer, ",", g_sPlantSeconds, sizeof(g_sPlantSeconds), sizeof(g_sPlantSeconds[]));
-}
-
-public void OnAllPluginsLoaded()
-{
+	
 	RegisterItem();
 }
 

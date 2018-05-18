@@ -66,7 +66,7 @@ public void OnPluginStart()
 	TTT_EndConfig();
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

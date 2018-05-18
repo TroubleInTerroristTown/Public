@@ -112,7 +112,7 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

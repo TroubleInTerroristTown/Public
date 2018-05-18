@@ -74,7 +74,7 @@ public void OnClientConnected(int client)
 	g_bHasTracer[client] = false;
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
 	RegisterItem();
 }

@@ -89,7 +89,7 @@ public Action OnWeapon(int client, int weapon)
     return Plugin_Continue;
 }
 
-public void OnAllPluginsLoaded()
+public void OnConfigsExecuted()
 {
     RegisterItem();
 }
