@@ -77,6 +77,8 @@ bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
 
 Database g_dDB = null;
 
+char g_sLog[PLATFORM_MAX_PATH+1];
+
 char g_sShopCMDs[][] =  {
 	"menu",
 	"shop"
@@ -184,6 +186,10 @@ public void OnPluginStart()
 	LoadTranslations("common.phrases");
 	LoadTranslations("ttt.phrases");
 
+	char sDate[12];
+	FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
+	BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt_shop_%s.log", sDate);
+
 	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
 
 	if (TTT_GetSQLConnection() != null)
@@ -192,17 +198,7 @@ public void OnPluginStart()
 		AlterCreditsColumn();
 	}
 
-	ResetItemsArray(true);
-}
-
-public void OnMapStart()
-{
-	ResetItemsArray(true);
-}
-
-public void OnMapEnd()
-{
-	ResetItemsArray(false);
+	ResetItemsArray("OnPluginStart", true);
 }
 
 public void OnConfigsExecuted()
@@ -758,6 +754,8 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	bool temp_discount = view_as<bool>(GetNativeCell(6));
 	int temp_item[Item];
 
+	// LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
+
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 	{
 		return false;
@@ -1293,7 +1291,7 @@ public Action Command_SetCredits(int client, int args)
 
 public Action Command_ResetItems(int client, int args)
 {
-	ResetItemsArray(true);
+	ResetItemsArray("Command_ResetItems", true);
 
 	Call_StartForward(g_hOnItemsReset);
 	Call_Finish();
@@ -1352,9 +1350,11 @@ public int Native_GiveClientItem(Handle plugin, int numParams)
 }
 
 
-void ResetItemsArray(bool initArray = false)
+void ResetItemsArray(const char[] sFunction, bool initArray = false)
 {
 	delete g_aCustomItems;
+
+	LogToFile(g_sLog, "Function: %s - Init: %d", sFunction, initArray);
 	
 	if (initArray)
 	{

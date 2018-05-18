@@ -26,9 +26,9 @@ forward void TTT_OnItemsReset();
  * @param itemshort         The short-tag identifier of the item (must be unique).
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
- * @param role              The optional role to restrict the item to.
- * @param sort				The priority in Sorting. Buy menu is sorted from high to low.
- * @param discount			Item discountable for special players? (Required: ttt_shop_discount)
+ * @param role              The optional role to restrict the item to. (Default: 0 - for all)
+ * @param sort				The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ * @param discount			Item discountable for special players? (Default: false - Required: ttt_shop_discount)
  */
 native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, bool discount = false);
 
