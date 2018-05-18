@@ -134,7 +134,7 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	RegisterItem();
 }

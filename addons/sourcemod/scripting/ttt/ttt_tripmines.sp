@@ -54,10 +54,7 @@ public void OnAllPluginsLoaded()
 		SetFailState("Can't find tripmines.smx! This file will be provided with TTT.");
 		return;
 	}
-}
 
-public void OnConfigsExecuted()
-{
 	RegisterItem();
 }
 

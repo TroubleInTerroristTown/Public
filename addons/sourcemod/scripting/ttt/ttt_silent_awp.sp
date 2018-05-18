@@ -82,7 +82,7 @@ public void OnPluginStart()
 	AddTempEntHook("Shotgun Shot", Hook_ShotgunShot);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	RegisterItem();
 }

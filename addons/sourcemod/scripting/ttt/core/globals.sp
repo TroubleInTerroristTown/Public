@@ -85,7 +85,6 @@ int g_iBadNameCount = 0;
 
 Database g_dDB = null;
 
-
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 
 ArrayList g_aLogs = null;

@@ -24,7 +24,7 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-ArrayList g_aCustomItems;
+ArrayList g_aCustomItems = null;
 
 ConVar g_cCredits = null;
 ConVar g_cBuyCmd = null;

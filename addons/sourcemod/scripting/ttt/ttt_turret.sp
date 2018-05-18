@@ -56,10 +56,7 @@ public void OnAllPluginsLoaded()
         g_cCheckTeam.SetInt(3);
         g_cCheckTeam.AddChangeHook(ConVarChanged);
 	}
-}
 
-public void OnConfigsExecuted()
-{
 	RegisterItem();
 }
 

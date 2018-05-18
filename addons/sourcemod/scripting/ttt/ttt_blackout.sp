@@ -57,7 +57,7 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	SetupBlackout();
 	

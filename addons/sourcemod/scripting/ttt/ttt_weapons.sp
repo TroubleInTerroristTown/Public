@@ -180,7 +180,7 @@ public void OnClientPutInServer(int client)
 	SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	RegisterItem();
 }

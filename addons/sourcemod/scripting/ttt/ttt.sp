@@ -2466,6 +2466,7 @@ public void OnClientDisconnect(int client)
 	{
 		g_bKarma[client] = false;
 		g_bFound[client] = true;
+		g_bAlive[client] = false;
 
 		if (g_cTranfserArmor.BoolValue)
 		{

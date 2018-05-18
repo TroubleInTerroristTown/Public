@@ -57,7 +57,7 @@ public void OnPluginStart()
 	HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	RegisterItem();
 }

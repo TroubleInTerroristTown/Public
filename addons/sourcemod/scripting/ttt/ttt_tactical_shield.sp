@@ -56,10 +56,7 @@ public void OnAllPluginsLoaded()
 		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333");
 		return;
 	}
-}
 
-public void OnConfigsExecuted()
-{
 	RegisterItem();
 }
 

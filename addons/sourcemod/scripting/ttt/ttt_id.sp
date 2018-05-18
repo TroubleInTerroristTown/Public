@@ -122,7 +122,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	RegisterItem();
 }
