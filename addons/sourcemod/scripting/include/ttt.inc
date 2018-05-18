@@ -602,7 +602,7 @@ stock void TTT_ShowOverlayToAll(const char[] overlaypath)
 stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 {
 	int[] clients = new int[MaxClients + 1];
-	int clientCount;
+	int clientCount = 0;
 
 	LoopValidClients(i)
 	{
@@ -618,7 +618,13 @@ stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 
 		clients[clientCount++] = i;
 	}
-	return (clientCount == 0) ? -1 : clients[GetRandomInt(0, clientCount-1)];
+
+	if (clientCount == 0)
+	{
+ 		return -1;
+	}
+
+	return clients[GetRandomInt(0, clientCount-1)];
 } 
 
 stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)

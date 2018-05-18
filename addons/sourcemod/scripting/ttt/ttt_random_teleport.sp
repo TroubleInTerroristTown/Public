@@ -146,6 +146,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
             int target = RandomTeleport(client);
 
+            if (target == -1)
+            {
+                return Plugin_Stop;
+            }
+
             if (count && target != -1)
             {
                 if (role == TTT_TEAM_TRAITOR)
@@ -179,9 +184,15 @@ int RandomTeleport(int client)
 
     int target = TTT_GetRandomPlayer(bAlive);
 
+    if (target == -1 || !TTT_IsClientValid(target))
+    {
+        LogToFile(g_sLog, "[Random Teleport] Target %d is invalid (with Ragdoll? %d)", target, g_cRagdoll.BoolValue);
+        return -1;
+    }
+
     if (g_bDebug)
     {
-        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target));
+        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d - Ragdoll: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target), g_cRagdoll.BoolValue);
     }
 
     if (TTT_IsPlayerAlive(target))
