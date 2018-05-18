@@ -36,7 +36,6 @@ ConVar g_cRate = null;
 ConVar g_cCheckTeam = null;
 ConVar g_cDistance = null;
 
-
 public void OnPluginStart()
 {
 	//ConVar
@@ -53,8 +52,6 @@ public void OnPluginStart()
 	
 	HookEvent("round_start", Event_RoundStart);
 	RegAdminCmd("testturret", CreateTurrettest,ADMFLAG_ROOT);
-	
-	g_hOnDead = CreateGlobalForward("Turret_OnTurretDead", ET_Event, Param_Cell, Param_Cell);
 }
 
 
@@ -510,8 +507,11 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("CreateTurret", Native_CreateTurret);
 	CreateNative("RemoveTurret", Native_RemovePlayerTurret);
 	CreateNative("SetTurretCanAttackClient", Native_SetTurretCanAttackClient);
+
+	g_hOnDead = CreateGlobalForward("Turret_OnTurretDead", ET_Event, Param_Cell, Param_Cell);
 	
-	RegPluginLibrary("TurretCore");
+	RegPluginLibrary("turret_core");
+
 	return APLRes_Success;
 }
 

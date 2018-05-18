@@ -67,7 +67,7 @@ public void TTT_OnItemsReset()
 
 void RegisterItem()
 {
-	if(!LibraryExists("TurretCore"))
+	if(!LibraryExists("turret_core"))
     {
 		TTT_RemoveCustomItem(SHORT_NAME);
 		SetFailState("Can't find turret_core.smx! This file will be provided with TTT.");
