@@ -14,8 +14,8 @@ void InitForwards()
 	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
 	g_hOnPlayerDeathPre = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
 	g_hOnKarmaUpdate = CreateGlobalForward("TTT_OnKarmaUpdate", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-	g_hOnRulesMenu = CreateGlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_Cell);
-	g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_Cell);
+	g_hOnRulesMenu = CreateGlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_CellByRef);
+	g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
 }
 
 void InitNatives()
