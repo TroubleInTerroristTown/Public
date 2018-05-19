@@ -113,6 +113,24 @@ forward Action TTT_OnClientDeathPre(int victim, int attacker);
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID);
 
 /*
+ * Called before we create rules menu.
+ * If want to change it use "return Plugin_Changed;"
+ *
+ * @param client            The client index.
+ * @param show              True - Menu will be opened, False - Menu will not open
+ */
+forward Action TTT_OnRulesMenu(int client, bool &show);
+
+/*
+ * Called before we create detectives menu.
+ * If want to change it use "return Plugin_Changed;"
+ *
+ * @param client            The client index.
+ * @param show              True - Menu will be opened, False - Menu will not open
+ */
+forward Action TTT_OnDetectiveMenu(int client, bool &show);
+
+/*
  * Called when a body is scanned (by a Detective - not really? (Line 2761-2765 ttt.sp) -).
  *
  * @param client            The client who scanned the body.

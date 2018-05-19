@@ -2134,6 +2134,18 @@ stock void ShowRules(int client, int iItem)
 	{
 		return;
 	}
+
+	bool bShow = true;
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnRulesMenu);
+	Call_PushCell(client);
+	Call_PushCellRef(bShow);
+	Call_Finish(res);
+
+	if (res == Plugin_Changed && !bShow)
+	{
+		return;
+	}
 	
 	char sText[512], sYes[64];
 	Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
@@ -2387,6 +2399,18 @@ public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
 stock void AskClientForMicrophone(int client)
 {
 	if (g_cDRulesMenu.BoolValue && g_bDRules[client])
+	{
+		return;
+	}
+
+	bool bShow = true;
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnDetectiveMenu);
+	Call_PushCell(client);
+	Call_PushCellRef(bShow);
+	Call_Finish(res);
+
+	if (res == Plugin_Changed && !bShow)
 	{
 		return;
 	}
