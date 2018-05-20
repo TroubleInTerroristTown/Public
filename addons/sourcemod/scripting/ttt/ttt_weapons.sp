@@ -50,7 +50,6 @@ ConVar g_cScout_Discount = null;
 ConVar g_cKev_Type = null;
 ConVar g_cKev_Price = null;
 ConVar g_cHeavy_Type = null;
-ConVar g_cHeavy_Armor = null;
 ConVar g_cHeavy_Price = null;
 ConVar g_cHelm_Type = null;
 ConVar g_cHelm_Price = null;
@@ -89,7 +88,6 @@ bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 int g_iKnives[MAXPLAYERS+1] = { -1, ...};
 int g_iKevs[MAXPLAYERS+1] = { -1, ...};
 int g_iHeavy[MAXPLAYERS+1] = { -1, ...};
-int g_iHeavyID[MAXPLAYERS+1] = { -1, ...};
 int g_iHelms[MAXPLAYERS+1] = { -1, ...};
 int g_iKevHelms[MAXPLAYERS+1] = { -1, ...};
 
@@ -111,7 +109,6 @@ public void OnPluginStart()
 	g_cKev_Max = AutoExecConfig_CreateConVar("kevlar_max", "5", "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
 	g_cKev_Prio = AutoExecConfig_CreateConVar("kevlar_sort_prio", "0", "The sorting priority of the kevlar in the shop menu.");
 	g_cHeavy_Type = AutoExecConfig_CreateConVar("heavy_type", "1", "Type of heavy configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
-	g_cHeavy_Armor = AutoExecConfig_CreateConVar("heavy_armor", "100", "The amount of armor the heavy has. 100 is default.");
 	g_cHeavy_Price = AutoExecConfig_CreateConVar("heavy_price", "10000", "The amount of credits the heavy costs. 0 to disable.");
 	g_cHeavy_Max = AutoExecConfig_CreateConVar("heavy_max", "5", "The max amount of times a player can purchase heavy in one round. 0 for unlimited.");
 	g_cHeavy_Prio = AutoExecConfig_CreateConVar("heavy_sort_prio", "0", "The sorting priority of the heavy in the shop menu.");
@@ -278,24 +275,24 @@ void RegisterItem()
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-	ResetKnifes();
+	ResetStuff();
 	return Plugin_Continue;
 }
 
 public Action TTT_OnRoundStart_Pre()
 {
-	ResetKnifes();
+	ResetStuff();
 	return Plugin_Continue;
 }
 
 public void TTT_OnRoundStartFailed(int p, int r, int d)
 {
-	ResetKnifes();
+	ResetStuff();
 }
 
 public void TTT_OnRoundStart(int i, int t, int d)
 {
-	ResetKnifes();
+	ResetStuff();
 }
 
 public void TTT_OnClientDeath(int v, int a)
@@ -540,23 +537,16 @@ void GiveArmor(int client)
 void GiveHeavy(int client)
 {
 	g_iHeavy[client]++;
-	SetEntityModel(client, HEAVY_MODEL);
-	g_iHeavyID[client] = GivePlayerItem(client, "item_heavyassaultsuit");
-	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
-
-	if(g_cHeavy_Armor.IntValue > 100)
-	{
-		SetEntProp(client, Prop_Data, "m_ArmorValue", g_cHeavy_Armor.IntValue, 1);
-	}
+	GivePlayerItem(client, "item_heavyassaultsuit");
 }
 
 void GiveHelm(int client)
 {
 	g_iHelms[client]++;
-	SetEntData(client, FindSendPropInfo("CCSPlayer", "m_bHasHelmet"), true);
+	SetEntProp(client, Prop_Send, "m_bHasHelmet", true);
 }
 
-void ResetKnifes()
+void ResetStuff()
 {
 	LoopValidClients(i)
 	{
@@ -566,11 +556,10 @@ void ResetKnifes()
 		g_iHeavy[i] = 0;
 		g_iHelms[i] = 0;
 
-		if (g_iHeavyID[i] != -1)
-		{
-			RemovePlayerItem(i, g_iHeavyID[i]);
-		}
-		g_iHeavyID[i] = -1;
+		SetEntProp(i, Prop_Send, "m_bHasHelmet", false);
+		SetEntProp(i, Prop_Send, "m_bHasHeavyArmor", false);
+		SetEntProp(i, Prop_Send, "m_bWearingSuit", false);
+		SetEntProp(i, Prop_Data, "m_ArmorValue", 0);
 	}
 }
 
