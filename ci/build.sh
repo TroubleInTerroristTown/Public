@@ -76,8 +76,8 @@ fi
 echo -e "Create clean build folder\n"
 mkdir build
 
-echo -e "Move addons, materials and sound folder\n"
-mv addons materials sound build/
+echo -e "Move addons, materials, models and sound folder\n"
+mv addons materials models sound build/
 
 echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
@@ -103,4 +103,4 @@ echo -e "Go to build folder\n"
 cd build
 
 echo -e "Compress directories and files\n"
-zip -9rq $FILE addons materials sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
