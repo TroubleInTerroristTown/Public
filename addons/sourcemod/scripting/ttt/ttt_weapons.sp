@@ -89,6 +89,7 @@ bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 int g_iKnives[MAXPLAYERS+1] = { -1, ...};
 int g_iKevs[MAXPLAYERS+1] = { -1, ...};
 int g_iHeavy[MAXPLAYERS+1] = { -1, ...};
+int g_iHeavyID[MAXPLAYERS+1] = { -1, ...};
 int g_iHelms[MAXPLAYERS+1] = { -1, ...};
 int g_iKevHelms[MAXPLAYERS+1] = { -1, ...};
 
@@ -540,7 +541,7 @@ void GiveHeavy(int client)
 {
 	g_iHeavy[client]++;
 	SetEntityModel(client, HEAVY_MODEL);
-	GivePlayerItem(client, "item_heavyassaultsuit");
+	g_iHeavyID[client] = GivePlayerItem(client, "item_heavyassaultsuit");
 	SetEntProp(client, Prop_Send, "m_bHasHelmet", 1);
 
 	if(g_cHeavy_Armor.IntValue > 100)
@@ -564,6 +565,12 @@ void ResetKnifes()
 		g_iKevs[i] = 0;
 		g_iHeavy[i] = 0;
 		g_iHelms[i] = 0;
+
+		if (g_iHeavyID[i] != -1)
+		{
+			RemovePlayerItem(i, g_iHeavyID[i]);
+		}
+		g_iHeavyID[i] = -1;
 	}
 }
 

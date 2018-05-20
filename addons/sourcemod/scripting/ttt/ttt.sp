@@ -1840,8 +1840,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 	if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
 	{
 		g_bAlive[client] = false;
-		char playermodel[128];
-		GetClientModel(client, playermodel, 128);
+		char sModel[128];
+		GetClientModel(client, sModel, sizeof(sModel));
 
 		float origin[3], angles[3], velocity[3];
 
@@ -1850,7 +1850,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 		GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", velocity);
 
 		int iEntity = CreateEntityByName("prop_ragdoll");
-		DispatchKeyValue(iEntity, "model", playermodel);
+		DispatchKeyValue(iEntity, "model", sModel);
 		SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
 		SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
 
