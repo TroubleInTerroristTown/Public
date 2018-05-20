@@ -161,12 +161,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

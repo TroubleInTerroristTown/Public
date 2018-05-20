@@ -45,12 +45,7 @@ public void OnPluginStart()
 	HookEvent("player_death", Event_PlayerDeath);
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

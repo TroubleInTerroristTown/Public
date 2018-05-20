@@ -164,11 +164,9 @@ public void OnConfigsExecuted()
 	char sBuffer[128];
 	g_cPlantSeconds.GetString(sBuffer, sizeof(sBuffer));
 	g_iPlantSecondsCount = ExplodeString(sBuffer, ",", g_sPlantSeconds, sizeof(g_sPlantSeconds), sizeof(g_sPlantSeconds[]));
-	
-	RegisterItem();
 }
 
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

@@ -58,12 +58,7 @@ public void OnAllPluginsLoaded()
 	}
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

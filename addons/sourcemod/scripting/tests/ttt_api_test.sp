@@ -75,11 +75,6 @@ public void OnConfigsExecuted()
 	RegisterItem();
 }
 
-public void TTT_OnItemsReset()
-{
-	RegisterItem();
-}
-
 void RegisterItem()
 {
 	TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);

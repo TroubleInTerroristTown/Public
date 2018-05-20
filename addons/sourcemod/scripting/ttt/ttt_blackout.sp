@@ -57,14 +57,7 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd);
 }
 
-public void OnConfigsExecuted()
-{
-	SetupBlackout();
-	
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

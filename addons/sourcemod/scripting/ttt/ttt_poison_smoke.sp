@@ -57,12 +57,7 @@ public void OnPluginStart()
 	HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

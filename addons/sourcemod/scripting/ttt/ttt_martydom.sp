@@ -76,12 +76,7 @@ public void OnClientDisconnect(int client)
 	g_bHasMartydom[client] = false;
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

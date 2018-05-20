@@ -65,7 +65,6 @@ Handle g_hOnItemPurchased = null;
 Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
-Handle g_hOnItemsReset = null;
 Handle g_hOnShopReady = null;
 
 Handle g_hReopenCookie = null;
@@ -102,7 +101,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnItemsReset = CreateGlobalForward("TTT_OnItemsReset", ET_Ignore);
 	g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
@@ -1293,9 +1291,6 @@ public Action Command_SetCredits(int client, int args)
 public Action Command_ResetItems(int client, int args)
 {
 	ResetItemsArray("Command_ResetItems", true);
-
-	Call_StartForward(g_hOnItemsReset);
-	Call_Finish();
 }
 
 public int Native_GetClientCredits(Handle plugin, int numParams)

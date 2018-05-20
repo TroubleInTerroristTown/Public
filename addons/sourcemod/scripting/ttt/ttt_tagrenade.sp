@@ -133,11 +133,9 @@ public void OnConfigsExecuted()
 	{
 		UseTAGrenade.SetBool(true);
 	}
-	
-	RegisterItem();
 }
 
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

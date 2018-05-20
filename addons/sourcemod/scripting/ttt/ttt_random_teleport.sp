@@ -88,13 +88,11 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-	
-    // LogToFile(g_sLog, "(OnConfigsExecuted) called!");
-    RegisterItem();
 }
 
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
+    // LogToFile(g_sLog, "(TTT_OnShopReady) called!");
     RegisterItem();
 }
 

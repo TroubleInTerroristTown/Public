@@ -112,12 +112,7 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }

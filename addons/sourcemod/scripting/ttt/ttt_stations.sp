@@ -89,12 +89,7 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_WARNING, true);
 }
 
-public void OnConfigsExecuted()
-{
-	RegisterItem();
-}
-
-public void TTT_OnItemsReset()
+public void TTT_OnShopReady()
 {
 	RegisterItem();
 }
