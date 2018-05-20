@@ -66,6 +66,8 @@ Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnItemsReset = null;
+Handle g_hOnShopReady = null;
+
 Handle g_hReopenCookie = null;
 
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -98,11 +100,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
 	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
 	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
-
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
-
 	g_hOnItemsReset = CreateGlobalForward("TTT_OnItemsReset", ET_Ignore);
+	g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
@@ -1359,6 +1360,16 @@ void ResetItemsArray(const char[] sFunction, bool initArray = false)
 	if (initArray)
 	{
 		g_aCustomItems = new ArrayList(84);
+		RequestFrame(Frame_ShopReady, g_aCustomItems);
+	}
+}
+
+public void Frame_ShopReady(ArrayList aItems)
+{
+	if (aItems != null && g_aCustomItems != null && aItems == g_aCustomItems) // ¯\_(ツ)_/¯
+	{
+		Call_StartForward(g_hOnShopReady);
+		Call_Finish();
 	}
 }
 
