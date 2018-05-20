@@ -1044,4 +1044,20 @@
 		"en"		"Explode bomb"
 	}
 
+	"Name Change Message"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}changed name to {orchid}{2}!"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"en"		"Name change are not allowed during an active round!"
+	}
+
+	"Name Change Reason"
+	{
+		"en"		"Name change during active round"
+	}
+
 }

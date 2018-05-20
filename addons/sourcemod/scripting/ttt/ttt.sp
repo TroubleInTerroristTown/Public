@@ -93,9 +93,9 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEndPre, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeam_Pre, EventHookMode_Pre);
+	HookEvent("player_changename", Event_ChangeName_Pre, EventHookMode_Pre);
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("player_changename", Event_ChangeName);
 	HookEvent("player_death", Event_PlayerDeath);
 	HookEvent("player_hurt", Event_PlayerHurt);
 	HookEvent("cs_win_panel_round", Event_WinPanel);
@@ -843,7 +843,27 @@ public Action Timer_Selection(Handle hTimer)
 
 		return;
 	}
-	
+
+	if (aPlayers.Length < g_crequiredPlayers.IntValue)
+	{
+		g_bInactive = true;
+		LoopValidClients(i)
+		{
+			CPrintToChat(i, "%s %T", g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_crequiredPlayers.IntValue);
+		}
+
+		g_bCheckPlayers = true;
+
+		Call_StartForward(g_hOnRoundStartFailed);
+		Call_PushCell(aPlayers.Length);
+		Call_PushCell(g_crequiredPlayers.IntValue);
+		Call_Finish();
+
+		GiveWeaponsOnFailStart();
+
+		return;
+	}
+
 	LoopValidClients(i)
 	{
 		if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
@@ -872,26 +892,6 @@ public Action Timer_Selection(Handle hTimer)
 		{
 			aPlayers.Erase(i--);
 		}
-	}
-
-	if (aPlayers.Length < g_crequiredPlayers.IntValue)
-	{
-		g_bInactive = true;
-		LoopValidClients(i)
-		{
-			CPrintToChat(i, "%s %T", g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_crequiredPlayers.IntValue);
-		}
-
-		g_bCheckPlayers = true;
-
-		Call_StartForward(g_hOnRoundStartFailed);
-		Call_PushCell(aPlayers.Length);
-		Call_PushCell(g_crequiredPlayers.IntValue);
-		Call_Finish();
-
-		GiveWeaponsOnFailStart();
-
-		return;
 	}
 
 	g_bRoundStarted = true;
@@ -2504,24 +2504,69 @@ public void OnClientDisconnect(int client)
 	}
 }
 
-public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcast)
+public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if (!IsClientInGame(client))
 	{
-		return;
+		return Plugin_Handled;
 	}
 
-	char userName[MAX_NAME_LENGTH];
-	event.GetString("newname", userName, sizeof(userName));
-	nameCheck(client, userName);
+	if (g_cNameChangePunish.IntValue > 0 && g_bRoundStarted)
+	{
+		char sOld[MAX_NAME_LENGTH], sNew[MAX_NAME_LENGTH];
+		event.GetString("oldname", sOld, sizeof(sOld));
+		event.GetString("newname", sNew, sizeof(sNew));
+
+		if (g_cNameChangePunish.IntValue == 1)
+		{
+			LoopValidClients(i)
+			{
+				CPrintToChat(i, "%T", "Name Change Message", i, sOld, sNew);
+			}
+		}
+		else if (g_cNameChangePunish.IntValue == 2)
+		{
+			DataPack pack = new DataPack();
+			pack.WriteCell(GetClientUserId(client));
+			pack.WriteString(sOld);
+
+			RequestFrame(Frame_RechangeName, pack);
+
+			return Plugin_Handled;
+		}
+		else if (g_cNameChangePunish.IntValue == 3)
+		{
+			char sReason[512];
+			Format(sReason, sizeof(sReason), "%T", "Name Change Kick Reason", client);
+			KickClient(client, sReason);
+		}
+		else if (g_cNameChangePunish.IntValue == 4)
+		{
+			char sReason[512];
+			Format(sReason, sizeof(sReason), "%T", "Name Change Reason", client);
+
+			if (g_bSourcebans)
+			{
+				SBBanPlayer(0, client, g_cNameChangeLength.IntValue, sReason);
+			}
+			else
+			{
+				ServerCommand("sm_ban #%d %d \"%s\"", GetClientUserId(client), g_cNameChangeLength.IntValue, sReason);
+			}
+		}
+	}
+
+	char sNew[MAX_NAME_LENGTH];
+	event.GetString("newname", sNew, sizeof(sNew));
+	nameCheck(client, sNew);
 
 	int iSize = g_aRagdoll.Length;
 
 	if (iSize == 0)
 	{
-		return;
+		return Plugin_Handled;
 	}
 
 	int iRagdollC[Ragdolls];
@@ -2532,14 +2577,31 @@ public Action Event_ChangeName(Event event, const char[] name, bool dontBroadcas
 
 		if (client == GetClientOfUserId(iRagdollC[Attacker]))
 		{
-			Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, userName);
+			Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sNew);
 			g_aRagdoll.SetArray(i, iRagdollC[0]);
 		}
 		else if (client == GetClientOfUserId(iRagdollC[Victim]))
 		{
-			Format(iRagdollC[VictimName], MAX_NAME_LENGTH, userName);
+			Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sNew);
 			g_aRagdoll.SetArray(i, iRagdollC[0]);
 		}
+	}
+
+	return Plugin_Continue;
+}
+
+public void Frame_RechangeName(DataPack pack)
+{
+	int userid = pack.ReadCell();
+
+	char sName[MAX_NAME_LENGTH];
+	pack.ReadString(sName, sizeof(sName));
+
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client))
+	{
+		SetClientName(client, sName);
 	}
 }
 

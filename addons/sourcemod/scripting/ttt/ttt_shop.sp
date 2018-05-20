@@ -753,7 +753,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	bool temp_discount = view_as<bool>(GetNativeCell(6));
 	int temp_item[Item];
 
-	// LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
+	LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
 
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 	{
