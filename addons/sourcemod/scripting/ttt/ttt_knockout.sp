@@ -329,7 +329,7 @@ stock void DropWeapons(int client)
 			}
 			else
 			{
-				CS_DropWeapon(client, weapon, true, true);
+				SDKHooks_DropWeapon(client, weapon);
 			}
 		}
 	}
