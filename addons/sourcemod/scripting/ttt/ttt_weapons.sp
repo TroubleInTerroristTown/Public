@@ -538,6 +538,24 @@ void GiveHeavy(int client)
 {
 	g_iHeavy[client]++;
 	GivePlayerItem(client, "item_heavyassaultsuit");
+
+	int weapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
+
+	if (IsValidEntity(weapon))
+	{
+		char sName[32];
+		GetEntityClassname(weapon, sName, sizeof(sName));
+
+		if ((StrContains(sName, "p90", false) == -1) && (StrContains(sName, "m249", false) == -1) &&
+			(StrContains(sName, "negev", false) == -1) && (StrContains(sName, "nova", false) == -1) &&
+			(StrContains(sName, "xm1014", false) == -1) && (StrContains(sName, "sawedoff", false) == -1) &&
+			(StrContains(sName, "mag7", false) == -1) && (StrContains(sName, "mac10", false) == -1) &&
+			(StrContains(sName, "mp9", false) == -1) && (StrContains(sName, "mp7", false) == -1) &&
+			(StrContains(sName, "ump45", false) == -1) && (StrContains(sName, "bizon", false) == -1))
+		{
+			SDKHooks_DropWeapon(client, weapon);
+		}
+	}
 }
 
 void GiveHelm(int client)
