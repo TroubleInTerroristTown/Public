@@ -40,6 +40,7 @@ void InitNatives()
 	CreateNative("TTT_SetRoundSlays", Native_SetRoundSlays);
 	CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
 	CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
+	CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -399,6 +400,33 @@ public int Native_ClientOpenRules(Handle plugin, int numParams)
 		SetClientCookie(client, g_hRules, sBuffer);
 
 		ShowRules(client, g_iSite[client]);
+	}
+
+	return -1;
+}
+
+public int Native_GetRoundTime(Handle plugin, int numParams)
+{
+	if (g_iTeamSelectTime > 0)
+	{
+		int type = GetNativeCell(1);
+		int iTime = GetTime() - g_iTeamSelectTime;
+
+		if (type == 0)
+		{
+			// Time
+			return iTime;
+		}
+		else if (type == 1)
+		{
+			// Minutes
+			return ((iTime / 60) % 60);
+		}
+		else if (type == 2)
+		{
+			// Seconds
+			return (iTime % 60);
+		}
 	}
 
 	return -1;

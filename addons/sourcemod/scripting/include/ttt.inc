@@ -310,6 +310,13 @@ native int TTT_SetRoundSlays(int client, int rounds, bool force);
  */
 native void TTT_ClientOpenRules(int client);
 
+/*
+ * Returns the time of a active rounds (-1 for inactive round/failed to start)
+ *
+ * @param type				Which type is needed? (0 - Time, 1 - Minutes, 2 - Seconds)
+ */
+native void TTT_GetRoundTime(int type);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
 	if (role == TTT_TEAM_INNOCENT)
