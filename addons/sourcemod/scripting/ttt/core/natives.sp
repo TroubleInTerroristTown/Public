@@ -320,6 +320,13 @@ public int Native_AddRoundSlays(Handle plugin, int numParams)
 	if (TTT_IsClientValid(client))
 	{
 		int rounds = GetNativeCell(2);
+
+		if (rounds < 1)
+		{
+			CReplyToCommand(client, "Rounds must be positive and higher as zero.");
+			return -1;
+		}
+
 		bool force = view_as<bool>(GetNativeCell(3));
 		
 		g_iRoundSlays[client] += rounds;
@@ -351,6 +358,13 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
 	if (TTT_IsClientValid(client))
 	{
 		int rounds = GetNativeCell(2);
+
+		if (rounds < 1)
+		{
+			CReplyToCommand(client, "Rounds must be positive and higher as zero.");
+			return -1;
+		}
+		
 		bool force = view_as<bool>(GetNativeCell(3));
 		
 		g_iRoundSlays[client] = rounds;

@@ -868,20 +868,33 @@ public Action Timer_Selection(Handle hTimer)
 	{
 		if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
 		{
+			if (g_iRoundSlays[i] < 0)
+			{
+				g_iRoundSlays[i] = 0;
+				UpdateRoundSlaysCookie(i);
+				continue;
+			}
+			else if (g_iRoundSlays[i] == 0)
+			{
+				UpdateRoundSlaysCookie(i);
+				continue;
+			}
+
 			ForcePlayerSuicide(i);
 			g_iRoundSlays[i]--;
 
-			if (g_cOpenRulesOnPunish.BoolValue)
-			{
-				TTT_ClientOpenRules(i);
-			}
-			
 			if (g_iRoundSlays[i] > 0)
 			{
 				CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
 				LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
 			}
+
 			UpdateRoundSlaysCookie(i);
+
+			if (g_cOpenRulesOnPunish.BoolValue)
+			{
+				TTT_ClientOpenRules(i);
+			}
 		}
 	}
 
@@ -2084,11 +2097,17 @@ public Action Command_RSlays(int client, int args)
 
 		if (target == -1)
 		{
-			ReplyToCommand(client, "[SM] Invalid target.");
+			CReplyToCommand(client, "Invalid target");
 			return Plugin_Handled;
 		}
 
 		int rounds = StringToInt(arg2);
+
+		if (rounds < 0)
+		{
+			CReplyToCommand(client, "Rounds must be zero (reset) or higher.");
+			return Plugin_Handled;
+		}
 
 		TTT_SetRoundSlays(target, rounds, true);
 
