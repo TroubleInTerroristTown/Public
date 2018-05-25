@@ -3215,7 +3215,11 @@ public int TTT_OnButtonPress(int client, int button)
 								    
 								    silentID = true;
 								}
-								addArrayTime(iItem);
+
+								if (g_cIdentifyLog.BoolValue)
+								{
+									addArrayTime(iItem);
+								}
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
 							{
@@ -3244,7 +3248,10 @@ public int TTT_OnButtonPress(int client, int button)
 								    silentID = true;
 								}
 								
-								addArrayTime(iItem);							
+								if (g_cIdentifyLog.BoolValue)
+								{
+									addArrayTime(iItem);
+								}						
 							}
 							else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
 							{
@@ -3272,7 +3279,10 @@ public int TTT_OnButtonPress(int client, int button)
 								    
 								    silentID = true;
 								}
-								addArrayTime(iItem);								
+								if (g_cIdentifyLog.BoolValue)
+								{
+									addArrayTime(iItem);
+								}
 							}
 
 							if (bValid)

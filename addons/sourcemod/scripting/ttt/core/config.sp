@@ -134,6 +134,7 @@ void SetupConfig()
 	g_cRulesURLReopenMenu = AutoExecConfig_CreateConVar("ttt_reopen_rules_on_url", "1", "Reopen rules menu when a player will be redirect to motd/popup window?", _, true, 0.0, true, 1.0);
 	g_cNameChangePunish = AutoExecConfig_CreateConVar("ttt_name_change_punishment", "0", "Which punishment while name change? 0 - Disabled, 1 - Message to all players, 2 - Block Name Change, 3 - Kick Player or 4 - Ban player", _, true, 0.0, true, 3.0);
 	g_cNameChangeLength = AutoExecConfig_CreateConVar("ttt_name_change_banlength", "120", "Ban length for name change (require 'ttt_name_change_punishment 3')");
+	g_cIdentifyLog = AutoExecConfig_CreateConVar("ttt_identity_log", "0", "Log every identified body?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);

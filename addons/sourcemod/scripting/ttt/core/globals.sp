@@ -287,6 +287,7 @@ ConVar g_cOpenRulesOnPunish = null;
 ConVar g_cRulesURLReopenMenu = null;
 ConVar g_cNameChangePunish = null;
 ConVar g_cNameChangeLength = null;
+ConVar g_cIdentifyLog = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
