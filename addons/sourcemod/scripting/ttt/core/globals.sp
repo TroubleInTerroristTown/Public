@@ -61,6 +61,8 @@ Handle g_hRoundTimer = null;
 bool g_bInactive = false;
 
 int g_iCollisionGroup = -1;
+int m_flNextPrimaryAttack = -1;
+int m_flNextSecondaryAttack = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };

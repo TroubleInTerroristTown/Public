@@ -55,6 +55,8 @@ public void OnPluginStart()
 	g_aForceDetective = new ArrayList();
 
 	g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
+	m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
+	m_flNextSecondaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextSecondaryAttack");
 
 	CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
 	CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
@@ -1394,6 +1396,23 @@ stock void TeamInitialize(int client)
 		}
 	}
 
+	for(int offset = 0; offset < 128; offset += 4)
+	{
+		int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+		if (IsValidEntity(weapon))
+		{
+			char sClass[32];
+			GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+			if (StrContains(sClass, "weapon_", false) != -1)
+			{
+				SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() - 0.1);
+				SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() - 0.1);
+			}
+		}
+	}
+
 	CheckClantag(client);
 
 	bool bUpdate = false;
@@ -2635,6 +2654,25 @@ public Action Timer_1(Handle timer)
 	{
 		if (IsPlayerAlive(i))
 		{
+			if (g_iRole[i] == TTT_TEAM_UNASSIGNED && !g_bRoundStarted && g_cdenyFire.BoolValue)
+			{
+				for(int offset = 0; offset < 128; offset += 4)
+				{
+					int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+			
+					if (IsValidEntity(weapon))
+					{
+						char sClass[32];
+						GetEntityClassname(weapon, sClass, sizeof(sClass));
+			
+						if (StrContains(sClass, "weapon_", false) != -1)
+						{
+							SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + 2.0);
+							SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + 2.0);
+						}
+					}
+				}
+			}
 			if (g_iRole[i] == TTT_TEAM_TRAITOR)
 			{
 				g_iTraitorAlive++;
