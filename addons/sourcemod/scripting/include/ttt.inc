@@ -491,10 +491,10 @@ stock void TTT_IsGameCSGO()
 
 stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 {
-	char flags[18];
+	char flags[24];
 	cFlags.GetString(flags, sizeof(flags));
 
-	AdminFlag aFlags[16];
+	AdminFlag aFlags[24];
 	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
 	
 	return tHasFlags(client, aFlags);
@@ -502,13 +502,13 @@ stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 
 stock bool TTT_HasFlags(int client, const char[] flags)
 {
-	AdminFlag aFlags[16];
+	AdminFlag aFlags[24];
 	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
 	
 	return tHasFlags(client, aFlags);
 }
 
-stock bool tHasFlags(int client, AdminFlag flags[16])
+stock bool tHasFlags(int client, AdminFlag flags[24])
 {
 	int iFlags = GetUserFlagBits(client);
 
@@ -526,6 +526,21 @@ stock bool tHasFlags(int client, AdminFlag flags[16])
 	}
 
 	return false;
+}
+
+
+stock bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cFlags)
+{
+	if (GetUserFlagBits(client) & ADMFLAG_ROOT)
+	{
+		return true;
+	}
+
+	char sFlags[24];
+	cFlags.GetString(sFlags, sizeof(sFlags));
+	
+	int iFlags = ReadFlagString(sFlags);
+	return CheckCommandAccess(client, command, iFlags);
 }
 
 stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
