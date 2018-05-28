@@ -531,11 +531,12 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
 
 stock bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cFlags)
 {
-	if (GetUserFlagBits(client) & ADMFLAG_ROOT)
-	{
-		return true;
-	}
-
+	/*
+		We don't the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
+		CheckCommandAccess: https://github.com/alliedmodders/sourcemod/blob/237db0504c7a59e394828446af3e8ca3d53ef647/core/logic/smn_console.cpp#L65
+		CheckClientCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2005
+		CheckAdminCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2036
+	*/
 	char sFlags[24];
 	cFlags.GetString(sFlags, sizeof(sFlags));
 	
