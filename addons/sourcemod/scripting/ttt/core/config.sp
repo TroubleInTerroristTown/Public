@@ -99,7 +99,7 @@ void SetupConfig()
 	g_cRoundSlayInno = AutoExecConfig_CreateConVar("ttt_round_slays_innocent", "5", "How much round slays for innocents after rdm punishment? (0 = Instant slay) (ttt_punish_innocent_for_rdm_kils)");
 	g_cRoundSlayTraitor = AutoExecConfig_CreateConVar("ttt_round_slays_traitor", "5", "How much round slays for traitores after rdm punishment? (0 = Instant slay) (ttt_punish_traitor_for_rdm_kils)");
 	g_cRoundSlayDetective = AutoExecConfig_CreateConVar("ttt_round_slays_detective", "5", "How much round slays for detectives after rdm punishment? (0 = Instant slay) (ttt_punish_detective_for_rdm_kils)");
-	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "2", "How much round slays for the players by a player punishment? (0 = Instant slay)");
+	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "1", "How much round slays for the players by a player punishment? (1 = Instant slay, 2 = Instant slay + slay next round ...)");
 	g_cRoundSlayDestroyTrigger = AutoExecConfig_CreateConVar("ttt_round_slays_destroy_trigger", "2", "How much round slays for players there try to enter a destroy trigger? (?)");
 	g_cRoundSlayAccess = AutoExecConfig_CreateConVar("ttt_round_slays_admin_access", "b", "Admin flags to access round slays command.");
 	g_cDebug = AutoExecConfig_CreateConVar("ttt_debug_mode", "0", "Enable or disable debug mode for ttt? Could by useful for one player tests", _, true, 0.0, true, 1.0);
