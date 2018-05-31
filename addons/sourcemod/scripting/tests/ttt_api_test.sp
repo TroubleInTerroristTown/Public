@@ -1,6 +1,7 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <cstrike>
 #include <ttt>
 #include <ttt_sql>
 #include <ttt_shop>
@@ -32,6 +33,7 @@ public void OnPluginStart()
 	
 	RegAdminCmd("sm_uitem", Command_UItem, ADMFLAG_ROOT);
 	RegAdminCmd("sm_trole", Command_TRole, ADMFLAG_ROOT);
+	RegAdminCmd("sm_endround", Command_EndRound, ADMFLAG_ROOT);
 }
 
 public Action Command_TRole(int client, int args)
@@ -50,6 +52,22 @@ public Action Command_TRole(int client, int args)
 	PrintToChat(client, "(4) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
 	TTT_GetShortRoleNameByName(sRole, sShort, sizeof(sShort));
 	PrintToChat(client, "(5) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+}
+
+public Action Command_EndRound(int client, int args)
+{
+	if (args != 1)
+	{
+		ReplyToCommand(client, "sm_endround <delay in seconds>");
+		return Plugin_Handled;
+	}
+
+	char sArg[12];
+	GetCmdArg(1, sArg, sizeof(sArg));
+
+	CS_TerminateRound(StringToFloat(sArg), CSRoundEnd_Draw, true);
+
+	return Plugin_Handled;
 }
 
 public Action Command_UItem(int client, int args)
