@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:22 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -638,11 +638,6 @@
 		"cze"		"Player {lightgreen}{1} pouzil detektor na Hrace{green} {2} {lightgreen}a je {green}NEVINNY !"
 	}
 
-	"AlreadyTaser"
-	{
-		"cze"		"Jiz mas taser ve svem inventari!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"cze"		"{1} prave ted mluvi v Chate Zradcu"
@@ -701,6 +696,11 @@
 	"Player is Now Innocent"
 	{
 		"cze"		"{orchid}{1} {lightgreen}je nyni {green}NEVINNY!"
+	}
+
+	"AlreadyTaser"
+	{
+		"cze"		"Jiz mas taser ve svem inventari!"
 	}
 
 }

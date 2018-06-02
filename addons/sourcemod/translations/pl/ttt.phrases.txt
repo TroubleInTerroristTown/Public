@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:22 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu{green} {2} {lightgreen}i okazał się być {green}NIEWINNY!"
 	}
 
-	"AlreadyTaser"
-	{
-		"pl"		"Masz już paralizator w ekwipunku!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"pl"		"{1} jest teraz w czacie głosowym Zdrajców"
@@ -901,6 +896,11 @@
 	"Detective scan found body Traitor"
 	{
 		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{darkred} {2} {lightgreen}z broni{orchid} {3}"
+	}
+
+	"AlreadyTaser"
+	{
+		"pl"		"Masz już paralizator w ekwipunku!"
 	}
 
 }

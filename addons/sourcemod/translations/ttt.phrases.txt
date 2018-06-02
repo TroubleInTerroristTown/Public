@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:24 UTC
+// Date: 2018-06-02 08:19:14 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -674,12 +674,6 @@
 		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
 	}
 
-	"AlreadyTaser"
-	{
-		"#format"	"{1:d}"
-		"en"		"You already have a taser in your inventory!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
@@ -1044,12 +1038,6 @@
 		"en"		"Explode bomb"
 	}
 
-	"Name Change Message"
-	{
-		"#format"	"{1:s},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}changed name to {orchid}{2}!"
-	}
-
 	"Name Change Kick Reason"
 	{
 		"en"		"Name change are not allowed during an active round!"
@@ -1058,6 +1046,33 @@
 	"Name Change Reason"
 	{
 		"en"		"Name change during active round"
+	}
+
+	"Name Change Message"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}changed name to {orchid}{2}!"
+	}
+
+	"No tripmines"
+	{
+		"en"		"You do not have any tripmines."
+	}
+
+	"Invalid location"
+	{
+		"en"		"Invalid location for Tripmine"
+	}
+
+	"Remaing Tripmines"
+	{
+		"#format"	"{1:d}"
+		"en"		"Tripmines remaining: {1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"en"		"You already have a taser in your inventory!"
 	}
 
 }

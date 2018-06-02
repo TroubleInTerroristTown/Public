@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:23 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"pt"		"O jogador {lightgreen}{1} usou um detector no player {green}{2} {lightgreen}e ele é {green}INOCENTE!"
 	}
 
-	"AlreadyTaser"
-	{
-		"pt"		"Você já possui uma taser em seu inventário!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"pt"		"{1} agora está falando em Traitor Voice Chat"
@@ -941,6 +936,56 @@
 	"Found Traitor Silent"
 	{
 		"pt"		"Você silenciosamente encontrou o corpo de {darkred}{1}. {lightgreen}Ele era {darkred}Traidor!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"pt"		"Escolha a punição:"
+	}
+
+	"C4: Slay"
+	{
+		"pt"		"Matar o jogador (Slay)"
+	}
+
+	"C4: Explode"
+	{
+		"pt"		"Explodir bomba"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"pt"		"Alterar nome não é permitido durante um round ativo"
+	}
+
+	"Name Change Reason"
+	{
+		"pt"		"Alterar nome durante um round ativo"
+	}
+
+	"Name Change Message"
+	{
+		"pt"		"{orchid}{1} {lightgreen}alterou o nome para {orchid}{2}!"
+	}
+
+	"No tripmines"
+	{
+		"pt"		"Você não tem tripmines."
+	}
+
+	"Invalid location"
+	{
+		"pt"		"Local inválido para colocar a tripmine."
+	}
+
+	"Remaing Tripmines"
+	{
+		"pt"		"Tripmines restantes: {1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"pt"		"Você já possui uma taser em seu inventário!"
 	}
 
 }

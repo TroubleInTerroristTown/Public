@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:20 UTC
+// Date: 2018-06-02 08:19:12 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"de"		"Der Spieler {lightgreen}{1} {green}benutzt einen Detektor am Spieler {lightgreen}{2} {green}und er ist ein INNOCENT!"
 	}
 
-	"AlreadyTaser"
-	{
-		"de"		"Sie haben bereits einen Taser im Inventar!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"de"		"{1} spricht nun im Traitor Sprachchat."
@@ -956,6 +951,36 @@
 	"C4: Explode"
 	{
 		"de"		"Bombe explodieren lassen"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"de"		"Namensänderung in einer aktiven Runde ist verboten!"
+	}
+
+	"Name Change Reason"
+	{
+		"de"		"Namensänderung in einer aktiven Runde"
+	}
+
+	"Name Change Message"
+	{
+		"de"		"{orchid}{1} {lightgreen}hat Name in {orchid}{2} {lightgreen}geändert!"
+	}
+
+	"No tripmines"
+	{
+		"de"		"Du hast keine Tripmines mehr."
+	}
+
+	"Invalid location"
+	{
+		"de"		"Die Position ist für eine Tripmine nicht geeignet"
+	}
+
+	"AlreadyTaser"
+	{
+		"de"		"Sie haben bereits einen Taser im Inventar!"
 	}
 
 }

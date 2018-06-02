@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:23 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: 1337speak (l0l)
 // 
 // To view other translations for this plugin, please visit:
@@ -13,9 +13,19 @@
 		"l0l"		"!3omb w1ll @rm '~ 60 $3c0nds, pr355 ]]= 7w1c[- 7`* €xpl0d3"
 	}
 
+	"Right click to plant the C4"
+	{
+		"l0l"		"R1gh7-c1ick 70 p14n7 7h3 C4!"
+	}
+
 	"Player is Now Detective"
 	{
 		"l0l"		"{orchid}{1} {lightgreen}'§ ~*'// {darkblue}|)3']['3c']['1v3!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"l0l"		"Y0ur 7r4170r p4r7n3r5 4r3:"
 	}
 
 }

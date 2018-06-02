@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-05-11 20:36:21 UTC
+// Date: 2018-06-02 08:19:12 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -608,11 +608,6 @@
 		"es"		"{1}"
 	}
 
-	"AlreadyTaser"
-	{
-		"es"		"¡Ya tienes una pistola eléctrica en tu inventario!"
-	}
-
 	"Player is Now Innocent"
 	{
 		"es"		"{orchid}{1} {lightgreen}és ahora {green}INOCENTE!"
@@ -621,6 +616,11 @@
 	"AdminSetRoundSlays"
 	{
 		"es"		"{lightgreen}¡{orchid}{1} {lightgreen}fue asesinado por {orchid}{2} {lightgreen}durante {orchid}{3} {lightgreen}rondas!"
+	}
+
+	"AlreadyTaser"
+	{
+		"es"		"¡Ya tienes una pistola eléctrica en tu inventario!"
 	}
 
 }
