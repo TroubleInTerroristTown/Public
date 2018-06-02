@@ -168,6 +168,9 @@ forward Action TTT_OnPlayerDeath(int victim, int attacker);
 forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
 
 /**
+ * This forward will be called when a client hasn't access to command (TTT_CheckCommandAccess)
+ * It's possible to give a client access to an not accessible command
+ * You must use 'return Plugin_Changed;' if you want to change the bool 'access'
  */
 forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
 
