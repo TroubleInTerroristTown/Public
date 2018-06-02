@@ -44,14 +44,14 @@ enum KarmaUpdate
 	Karma_Subtract
 }
 
-/*
+/**
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
  * You could slay players here to force them to sit out.
  */
 forward Action TTT_OnRoundStart_Pre();
 
-/*
+/**
  * Called when the actual TTT round starts (after selection time).
  *
  * @param innocents         Count of innocent players.
@@ -60,7 +60,7 @@ forward Action TTT_OnRoundStart_Pre();
  */
 forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
 
-/*
+/**
  * Called when round start is failed or prevented.
  *
  * @param players           The amount of players we have.
@@ -71,14 +71,14 @@ forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
  */
 forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
 
-/*
+/**
  * Called when the actual TTT round ended.
  *
  * @param winner         	The Winning Team.
  */
 forward void TTT_OnRoundEnd(int winner);
 
-/*
+/**
  * Called when a client's role is assigned.
  *
  * @param client            Client index.
@@ -86,7 +86,7 @@ forward void TTT_OnRoundEnd(int winner);
  */
 forward void TTT_OnClientGetRole(int client, int role);
 
-/*
+/**
  * Called when a client dies, after Karma process
  *
  * @param victim            Person who died.
@@ -94,7 +94,7 @@ forward void TTT_OnClientGetRole(int client, int role);
  */
 forward void TTT_OnClientDeath(int victim, int attacker);
 
-/*
+/**
  * Called when a client dies, before Karma process
  *
  * @param victim            Person who died.
@@ -102,7 +102,7 @@ forward void TTT_OnClientDeath(int victim, int attacker);
  */
 forward Action TTT_OnClientDeathPre(int victim, int attacker);
 
-/*
+/**
  * Called when a body is found.
  *
  * @param client            The client who identified the body.
@@ -112,7 +112,7 @@ forward Action TTT_OnClientDeathPre(int victim, int attacker);
  */
 forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID);
 
-/*
+/**
  * Called before we create rules menu.
  * If want to change it use "return Plugin_Changed;"
  *
@@ -121,7 +121,7 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bo
  */
 forward Action TTT_OnRulesMenu(int client, bool &show);
 
-/*
+/**
  * Called before we create detectives menu.
  * If want to change it use "return Plugin_Changed;"
  *
@@ -130,7 +130,7 @@ forward Action TTT_OnRulesMenu(int client, bool &show);
  */
 forward Action TTT_OnDetectiveMenu(int client, bool &show);
 
-/*
+/**
  * Called when a body is scanned (by a Detective - not really? (Line 2761-2765 ttt.sp) -).
  *
  * @param client            The client who scanned the body.
@@ -138,7 +138,7 @@ forward Action TTT_OnDetectiveMenu(int client, bool &show);
  */
 forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
-/*
+/**
  * Called on updated player models
  * (if ttt_update_client_model is true)
  *
@@ -150,7 +150,7 @@ forward void TTT_OnModelUpdate(int client, const char[] model);
 forward int TTT_OnButtonPress(int client, int button);
 forward int TTT_OnButtonRelease(int client, int button);
 
-/*
+/**
  * Called before RDM will be handled.
  *
  * @param victim            Person who died.
@@ -158,7 +158,7 @@ forward int TTT_OnButtonRelease(int client, int button);
  */
 forward Action TTT_OnPlayerDeath(int victim, int attacker);
 
-/*
+/**
  * Called once Karma has been updated on a client.
  *
  * @param client            Client index.
@@ -167,26 +167,36 @@ forward Action TTT_OnPlayerDeath(int victim, int attacker);
  */
 forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
 
-/*
+/**
+ */
+forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
+
+
+
+
+
+
+
+/**
  * Checks if the round is active.
  */
 native bool TTT_IsRoundActive();
 
-/*
+/**
  * Retrieve a client's role.
  *
  * @param client            Client index.
  */
 native int TTT_GetClientRole(int client);
 
-/*
+/**
  * Retrieve a client's karma.
  *
  * @param client            Client index.
  */
 native int TTT_GetClientKarma(int client, bool publicKarma = true);
 
-/*
+/**
  * Retrieve the Radgoll Info.
  *
  * @param client            The victims index.
@@ -194,28 +204,28 @@ native int TTT_GetClientKarma(int client, bool publicKarma = true);
  */
 native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
 
-/*
+/**
  * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
  *
  * @param radgoll           The array to save as Ragdoll.
  */
 native int TTT_SetRagdoll(int[] ragdoll);
 
-/*
+/**
  * Set a client's role.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientRole(int client, int role);
 
-/*
+/**
  * Sets the karma of a client.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Add karma to a client (currentKarma+karma).
  *
  * @param client            Client index.
@@ -223,7 +233,7 @@ native int TTT_SetClientKarma(int client, int karma, bool force);
  */
 native int TTT_AddClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Remove karma from a client (currentKarma-karma).
  *
  * @param client            Client index.
@@ -231,28 +241,28 @@ native int TTT_AddClientKarma(int client, int karma, bool force);
  */
 native int TTT_RemoveClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Determins whether a player's body was found (if dead).
  *
  * @param client            Client index.
  */
 native bool TTT_WasBodyFound(int client);
 
-/*
+/**
  * Determins whether a player's body was scanned (if dead).
  *
  * @param client            Client index.
  */
 native bool TTT_WasBodyScanned(int client);
 
-/*
+/**
  * Determines if a player is dead and has had their body found.
  *
  * @param client              The client index to lookup.
  */
 native bool TTT_GetFoundStatus(int client);
 
-/*
+/**
  * Set whether a player appears dead and body found.
  *
  * @param client             The client index to change.
@@ -260,14 +270,14 @@ native bool TTT_GetFoundStatus(int client);
  */
 native void TTT_SetFoundStatus(int client, bool found);
 
-/*
+/**
  * Log a String to the ingame Log.
  *
  * @param string            The message that should get logged.
  */
 native void TTT_LogString(const char[] format, any ...);
 
-/*
+/**
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.
@@ -275,7 +285,7 @@ native void TTT_LogString(const char[] format, any ...);
  */
 native bool TTT_ForceTraitor(int client);
 
-/*
+/**
  * Force a player to be detective next round. (If there are enough Detectives)
  *
  * @param client             The client index to change.
@@ -283,7 +293,7 @@ native bool TTT_ForceTraitor(int client);
  */
 native bool TTT_ForceDetective(int client);
 
-/*
+/**
  * NO DESCRIPTION
  *
  * @param client             The client index.
@@ -293,7 +303,7 @@ native bool TTT_ForceDetective(int client);
  */
 native int TTT_AddRoundSlays(int client, int rounds, bool force);
 
-/*
+/**
  * NO DESCRIPTION
  *
  * @param client             The client index.
@@ -303,19 +313,40 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
-/*
+/**
  * Open rules menu for the client
  *
  * @param client			The client index.
  */
 native void TTT_ClientOpenRules(int client);
 
-/*
+/**
  * Returns the time of a active rounds (-1 for inactive round/failed to start)
  *
  * @param type				Which type is needed? (0 - Time, 1 - Minutes, 2 - Seconds)
  */
 native void TTT_GetRoundTime(int type);
+
+/**
+ * Returns whether a client has access to a given command string.  The string 
+ * can be any override string, as overrides can be independent of 
+ * commands.  This feature essentially allows you to create custom 
+ * flags using the override system.
+ *
+ * @param client		Client index.
+ * @param command		Command name.  If the command is not found, the default 
+ *						flags are used.
+ * @param flags			Flag convar to use as a default, if the command or override 
+ *						is not found.
+ * @param override_only	If true, SourceMod will not attempt to find a matching 
+ *						command, and it will only use the default flags specified.
+ *						Otherwise, SourceMod will ignore the default flags if 
+ *						there is a matching admin command.
+ * @return				True if the client has access, false otherwise.
+ *
+ * THIS TEXT WAS COPIED FROM HERE: https://github.com/alliedmodders/sourcemod/blob/6c7e29cbdbe1fe17982a4531d839be65116abca2/plugins/include/console.inc#L479
+ */
+native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar, bool override_only = false);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
@@ -437,7 +468,7 @@ stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int l
 	}
 }
 
-/*
+/**
  * Returns if the client is alive or dead.
  *
  * @param client		Player's index.
@@ -445,7 +476,7 @@ stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int l
  */
 native bool TTT_IsPlayerAlive(int client);
 
-/*
+/**
  * Check if TTT plugin is loaded and running.
  */
 stock bool TTT_IsLoaded()
@@ -453,7 +484,7 @@ stock bool TTT_IsLoaded()
 	return LibraryExists("ttt");
 }
 
-/*
+/**
  * Check if a client index is valid.
  */
 stock bool TTT_IsClientValid(int client)
@@ -526,22 +557,6 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
 	}
 
 	return false;
-}
-
-
-stock bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cFlags)
-{
-	/*
-		We don't the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
-		CheckCommandAccess: https://github.com/alliedmodders/sourcemod/blob/237db0504c7a59e394828446af3e8ca3d53ef647/core/logic/smn_console.cpp#L65
-		CheckClientCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2005
-		CheckAdminCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2036
-	*/
-	char sFlags[24];
-	cFlags.GetString(sFlags, sizeof(sFlags));
-	
-	int iFlags = ReadFlagString(sFlags);
-	return CheckCommandAccess(client, command, iFlags);
 }
 
 stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)

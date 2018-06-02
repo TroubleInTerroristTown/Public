@@ -114,6 +114,7 @@ Handle g_hOnPlayerDeathPre = null;
 Handle g_hOnKarmaUpdate = null;
 Handle g_hOnRulesMenu = null;
 Handle g_hOnDetectiveMenu = null;
+Handle g_hOnCheckCommandAccess = null;
 
 bool g_bSourcebans = false;
 

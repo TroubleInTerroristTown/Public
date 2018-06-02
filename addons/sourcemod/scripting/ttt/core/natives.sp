@@ -16,6 +16,7 @@ void InitForwards()
 	g_hOnKarmaUpdate = CreateGlobalForward("TTT_OnKarmaUpdate", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
 	g_hOnRulesMenu = CreateGlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_CellByRef);
 	g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
+	g_hOnCheckCommandAccess = CreateGlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
 }
 
 void InitNatives()
@@ -41,6 +42,7 @@ void InitNatives()
 	CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
 	CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
 	CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
+	CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -444,4 +446,49 @@ public int Native_GetRoundTime(Handle plugin, int numParams)
 	}
 
 	return -1;
+}
+
+public int Native_CheckCommandAccess(Handle plugin, int numParams)
+{
+	/*
+		We don't the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
+		CheckCommandAccess: https://github.com/alliedmodders/sourcemod/blob/237db0504c7a59e394828446af3e8ca3d53ef647/core/logic/smn_console.cpp#L65
+		CheckClientCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2005
+		CheckAdminCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2036
+	*/
+
+	int client = GetNativeCell(1);
+
+	char sCommand[32];
+	GetNativeString(2, sCommand, sizeof(sCommand));
+
+	ConVar cvar = view_as<ConVar>(GetNativeCell(3));
+
+	bool override_only = view_as<bool>(GetNativeCell(4));
+
+	char sFlags[24];
+	cvar.GetString(sFlags, sizeof(sFlags));
+	
+	int iFlags = ReadFlagString(sFlags);
+	if (CheckCommandAccess(client, sCommand, iFlags, override_only))
+	{
+		return true;
+	}
+
+	bool access = false;
+
+	Action result = Plugin_Continue;
+	Call_StartForward(g_hOnCheckCommandAccess);
+	Call_PushCell(client);
+	Call_PushString(sCommand);
+	Call_PushString(sFlags);
+	Call_PushCellRef(access);
+	Call_Finish(result);
+
+	if (result == Plugin_Changed)
+	{
+		return access;
+	}
+
+	return false;
 }
