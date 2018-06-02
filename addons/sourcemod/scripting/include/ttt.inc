@@ -523,6 +523,7 @@ stock void TTT_IsGameCSGO()
 	}
 }
 
+#pragma deprecated TTT_HasCVarFlags is "unsafe". Please use TTT_CheckCommandAccess
 stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 {
 	char flags[24];
@@ -534,6 +535,7 @@ stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 	return tHasFlags(client, aFlags);
 }
 
+#pragma deprecated TTT_HasFlags is "unsafe". Please use TTT_CheckCommandAccess
 stock bool TTT_HasFlags(int client, const char[] flags)
 {
 	AdminFlag aFlags[24];
