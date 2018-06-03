@@ -82,20 +82,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	{
 		if (StrEqual(itemshort, SHORT_NAME_D, false))
 		{
+			ResetTacticalShield(client);
+
 			int role = TTT_GetClientRole(client);
 
 			if (role == TTT_TEAM_DETECTIVE)
 			{
+				GivePlayerShield(client);
+
 				if (g_cForce.BoolValue)
 				{
-					OverridePlayerShield(client, 2);
+					RequestFrame(Frame_SetShield, GetClientUserId(client));
 				}
-				else
-				{
-					OverridePlayerShield(client, 1);
-				}
-
-				GivePlayerShield(client);
 			}
 			else
 			{
@@ -106,6 +104,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
+public void Frame_SetShield(int userid)
+{
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client))
+	{
+		SetEquipPlayerShield(client, true);
+	}
+}
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
