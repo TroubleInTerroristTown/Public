@@ -163,10 +163,7 @@ stock void GrabSomething(int client)
 	
 	if (g_cShowNames.BoolValue)
 	{
-		char sAccess[16];
-		g_cFlags.GetString(sAccess, sizeof(sAccess));
-		
-		if (TTT_HasFlags(client, sAccess))
+		if (TTT_CheckCommandAccess(client, "gbm_output", g_cFlags, true))
 		{
 			CPrintToChat(client, "Name of Entity: %s", sName);
 		}

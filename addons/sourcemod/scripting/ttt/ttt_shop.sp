@@ -536,10 +536,8 @@ public Action Command_Shop(int client, int args)
 					if (cDEnable != null && temp_item[Discount])
 					{
 						ConVar g_cFlags = FindConVar("shop_discount_flags");
-						char sAccess[18];
-						g_cFlags.GetString(sAccess, sizeof(sAccess));
 						
-						if (TTT_HasFlags(client, sAccess))
+						if (TTT_CheckCommandAccess(client, "ttt_purchaseitem", g_cFlags, true))
 						{
 							ConVar cDPercents = FindConVar("shop_discount_percents");
 							iPercents = cDPercents.IntValue;

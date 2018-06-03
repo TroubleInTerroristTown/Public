@@ -157,16 +157,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 		g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
 	}
 
-	if (convar == g_ckickImmunity)
-	{
-		g_ckickImmunity.GetString(g_sKickImmunity, sizeof(g_sKickImmunity));
-	}
-
-	if (convar == g_clogsAccess)
-	{
-		g_clogsAccess.GetString(g_sLogAccess, sizeof(g_sLogAccess));
-	}
-
 	if (convar == g_cdefaultPriD)
 	{
 		g_cdefaultPriD.GetString(g_sDefaultPrimary, sizeof(g_sDefaultPrimary));
@@ -195,21 +185,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cFSSecondary)
 	{
 		g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
-	}
-
-	if (convar == g_cSetRole)
-	{
-		g_cSetRole.GetString(g_sSetRole, sizeof(g_sSetRole));
-	}
-
-	if (convar == g_cKarmaReset)
-	{
-		g_cKarmaReset.GetString(g_sKarmaReset, sizeof(g_sKarmaReset));
-	}
-
-	if (convar == g_cSetKarma)
-	{
-		g_cSetKarma.GetString(g_sSetKarma, sizeof(g_sSetKarma));
 	}
 
 }
