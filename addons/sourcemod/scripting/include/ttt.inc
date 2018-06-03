@@ -339,7 +339,7 @@ native void TTT_GetRoundTime(int type);
  * @param client		Client index.
  * @param command		Command name.  If the command is not found, the default 
  *						flags are used.
- * @param flags			Flag convar to use as a default, if the command or override 
+ * @param cvar			Flag convar to use as a default, if the command or override 
  *						is not found.
  * @param override_only	If true, SourceMod will not attempt to find a matching 
  *						command, and it will only use the default flags specified.
