@@ -61,10 +61,7 @@ public Action Command_ReloadRadio(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	char sAccess[18];
-	g_cReloadAccess.GetString(sAccess, sizeof(sAccess));
-	
-	if (!TTT_HasFlags(client, sAccess))
+	if (!TTT_CheckCommandAccess(client, "sm_reload_radio", g_cReloadAccess, true))
 	{
 		return Plugin_Handled;
 	}

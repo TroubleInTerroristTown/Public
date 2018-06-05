@@ -157,17 +157,12 @@ public void OnConfigsExecuted()
 {
 	// Save configs in strings
 	g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
-	g_ckickImmunity.GetString(g_sKickImmunity, sizeof(g_sKickImmunity));
-	g_clogsAccess.GetString(g_sLogAccess, sizeof(g_sLogAccess));
 	g_cdefaultPriD.GetString(g_sDefaultPrimary, sizeof(g_sDefaultPrimary));
 	g_cdefaultSec.GetString(g_sDefaultSecondary, sizeof(g_sDefaultSecondary));
 	g_cRoundStartedFontColor.GetString(g_sRoundStartedFontColor, sizeof(g_sRoundStartedFontColor));
 	g_cRoundStartFontColor.GetString(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor));
 	g_cFSPrimary.GetString(g_sFSPrimary, sizeof(g_sFSPrimary));
 	g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
-	g_cSetRole.GetString(g_sSetRole, sizeof(g_sSetRole));
-	g_cKarmaReset.GetString(g_sKarmaReset, sizeof(g_sKarmaReset));
-	g_cSetKarma.GetString(g_sSetKarma, sizeof(g_sSetKarma));
 	
 	// Prepare & Format log files
 	char sDate[12];
@@ -223,7 +218,7 @@ public Action Command_Logs(int client, int args)
 		{
 			ShowLogs(client);
 		}
-		else if (TTT_IsClientValid(client) && TTT_HasFlags(client, g_sLogAccess))
+		else if (TTT_IsClientValid(client) && TTT_CheckCommandAccess(client, "ttt_log_access", g_clogsAccess, true))
 		{
 			if (g_cLogsDeadOnly.BoolValue)
 			{
@@ -249,7 +244,7 @@ public Action Command_Logs(int client, int args)
 					{
 						LoopValidClients(j)
 						{
-							if (TTT_HasFlags(j, g_sLogAccess))
+							if (TTT_CheckCommandAccess(j, "ttt_log_access", g_clogsAccess, true))
 							{
 								CPrintToChat(j, "%s %T", g_sTag, "watching logs alive", j, client);
 							}
@@ -2079,7 +2074,7 @@ public Action Command_RSlays(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if (!TTT_CheckCommandAccess(client, "sm_rslays", g_cRoundSlayAccess))
+	if (!TTT_CheckCommandAccess(client, "sm_rslays", g_cRoundSlayAccess, true))
 	{
 		return Plugin_Handled;
 	}
@@ -2392,7 +2387,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 	{
 		if (TTT_IsClientValid(client) && g_crulesClosePunishment.IntValue == 0)
 		{
-			if (!TTT_HasFlags(client, g_sKickImmunity))
+			if (!TTT_CheckCommandAccess(client, "ttt_kick_immunity", g_ckickImmunity, true))
 			{
 				char sMessage[128];
 				Format(sMessage, sizeof(sMessage), "%T", "WM Kick Message", client);
@@ -3710,7 +3705,7 @@ public Action Command_SetRole(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if (!TTT_HasFlags(client, g_sSetRole))
+	if (!TTT_CheckCommandAccess(client, "ttt_set_role", g_cSetRole, true))
 	{
 		return Plugin_Handled;
 	}
@@ -3805,7 +3800,7 @@ public Action Command_SetKarma(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if (!TTT_HasFlags(client, g_sSetKarma))
+	if (!TTT_CheckCommandAccess(client, "ttt_set_karma", g_cSetKarma, true))
 	{
 		return Plugin_Handled;
 	}
@@ -4066,7 +4061,7 @@ public Action Command_KarmaReset(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	if (!TTT_HasFlags(client, g_sKarmaReset))
+	if (!TTT_CheckCommandAccess(client, "ttt_karma_reset", g_cKarmaReset, true))
 	{
 		return Plugin_Handled;
 	}
