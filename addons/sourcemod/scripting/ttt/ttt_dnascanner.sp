@@ -16,6 +16,7 @@ ConVar g_cPrintTo = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 ConVar g_cRoleColor = null;
+ConVar g_cStartWith = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 
@@ -45,6 +46,7 @@ public void OnPluginStart()
 	g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
 	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
 	g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
+	g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "0", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -89,6 +91,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	if (TTT_IsClientValid(client))
 	{
 		ResetScanner(client);
+
+		if (g_cStartWith.BoolValue)
+		{
+			TTT_GiveClientItem(client, SHORT_NAME);
+		}
 	}
 }
 
