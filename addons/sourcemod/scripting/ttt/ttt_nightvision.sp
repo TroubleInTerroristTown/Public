@@ -74,6 +74,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 			
 			g_bNightvision[client] = true;
+
+			// TODO: Add message how to use this
 		}
 	}
 	return Plugin_Continue;
