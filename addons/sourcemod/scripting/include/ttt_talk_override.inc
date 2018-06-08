@@ -6,7 +6,7 @@
 /*
  * TODO: Add Description
  */
-forward ListenOverride TTT_OnListenOverride(int receiver, int sender, ListenOverride &status);
+forward Action TTT_OnListenOverride(int receiver, int sender, ListenOverride &status);
 
 /*
  * TODO: Add Description

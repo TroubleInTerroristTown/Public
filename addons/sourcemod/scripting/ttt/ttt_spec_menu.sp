@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <ttt_talk_override>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Spec Menu"
 
@@ -339,4 +340,24 @@ int GetObservTarget(int client)
 		}
 	}
 	return 0;
+}
+
+public Action TTT_OnListenOverride(int receiver, int sender, ListenOverride &status)
+{
+	if (!IsPlayerAlive(receiver))
+	{
+		if (g_bMutedAlive[receiver] && IsPlayerAlive(sender))
+		{
+			status = Listen_No;
+			return Plugin_Changed;
+		}
+
+		if (g_bMutedDead[receiver] && !IsPlayerAlive(sender))
+		{
+			status = Listen_No;
+			return Plugin_Changed;
+		}
+	}
+
+	return Plugin_Continue;
 }

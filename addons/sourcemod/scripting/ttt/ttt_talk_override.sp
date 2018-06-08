@@ -137,30 +137,26 @@ public Action Timer_UpdateOverride(Handle timer)
 		LoopValidClients(j)
 		{
 			ListenOverride status = GetListenOverride(i, j);
-			bool bChanged = false;
 
 			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR && g_bTVoice[i] && TTT_GetClientRole(i) == TTT_GetClientRole(j))
 			{
 				status = Listen_Yes;
-				bChanged = true;
 			}
-
-			if (!bChanged && TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
+			else if (TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
 			{
 				status = Listen_Yes;
-				bChanged = true;
 			}
-
-			if (!bChanged && TTT_IsPlayerAlive(i) && !TTT_IsPlayerAlive(j))
+			else if (TTT_IsPlayerAlive(i) && !TTT_IsPlayerAlive(j))
 			{
 				status = Listen_No;
-				bChanged = true;
 			}
-
-			if (!bChanged && !TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
+			else if (!TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
 			{
 				status = Listen_Yes;
-				bChanged = true;
+			}
+			else if (!TTT_IsPlayerAlive(i) && !TTT_IsPlayerAlive(j))
+			{
+				status = Listen_Yes;
 			}
 
 			Action result = Plugin_Continue;
@@ -190,13 +186,6 @@ public int Native_SetListenOverride(Handle plugin, int numParams)
 	int receiver = GetNativeCell(1);
 	int sender = GetNativeCell(2);
 	ListenOverride status = view_as<ListenOverride>(GetNativeCell(3));
-
-	Action result = Plugin_Continue;
-	Call_StartForward(g_hOnListenOverride);
-	Call_PushCell(receiver);
-	Call_PushCell(sender);
-	Call_PushCellRef(view_as<int>(status));
-	Call_Finish(result);
 	
 	return view_as<int>(SetListenOverride(receiver, sender, status));
 }
