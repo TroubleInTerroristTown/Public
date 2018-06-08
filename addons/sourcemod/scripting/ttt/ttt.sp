@@ -569,7 +569,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
 		return;
 	}
 	
-	if (g_bPressed[entity])
+	if (IsValidEntity(entity) && g_bPressed[entity])
 	{
 		return;
 	}
