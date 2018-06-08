@@ -15,6 +15,8 @@ bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
 ConVar g_cPluginTag = null;
 char g_sPluginTag[128];
 
+Handle g_hOnListenOverride = null;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -23,6 +25,18 @@ public Plugin myinfo =
 	version = TTT_PLUGIN_VERSION,
 	url = TTT_PLUGIN_URL
 };
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnListenOverride = CreateGlobalForward("TTT_OnListenOverride", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
+
+	CreateNative("TTT_GetListenOverride", Native_GetListenOverride);
+	CreateNative("TTT_SetListenOverride", Native_SetListenOverride);
+
+	RegPluginLibrary("ttt_talk_override");
+
+	return APLRes_Success;
+}
 
 public void OnPluginStart()
 {
@@ -38,9 +52,11 @@ public void OnPluginStart()
 		RegConsoleCmd("sm_tvoice", Command_TVoice);
 	}
 
-	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("player_team", Event_PlayerTeam);
+	CreateTimer(1.0, Timer_UpdateOverride, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+
+	HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
+	HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
+	HookEvent("player_team", Event_PlayerTeam, EventHookMode_Post);
 
 	LoadTranslations("ttt.phrases");
 }
@@ -72,7 +88,7 @@ public Action Command_TVoice(int client, int args)
 		return Plugin_Handled;
 	}
 
-	if (!IsPlayerAlive(client))
+	if (!TTT_IsPlayerAlive(client))
 	{
 		return Plugin_Handled;
 	}
@@ -114,10 +130,81 @@ public Action Command_TVoice(int client, int args)
 	return Plugin_Continue;
 }
 
+public Action Timer_UpdateOverride(Handle timer)
+{
+	LoopValidClients(i)
+	{
+		LoopValidClients(j)
+		{
+			ListenOverride status = GetListenOverride(i, j);
+			bool bChanged = false;
+
+			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR && g_bTVoice[i] && TTT_GetClientRole(i) == TTT_GetClientRole(j))
+			{
+				status = Listen_Yes;
+				bChanged = true;
+			}
+
+			if (!bChanged && TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
+			{
+				status = Listen_Yes;
+				bChanged = true;
+			}
+
+			if (!bChanged && TTT_IsPlayerAlive(i) && !TTT_IsPlayerAlive(j))
+			{
+				status = Listen_No;
+				bChanged = true;
+			}
+
+			if (!bChanged && !TTT_IsPlayerAlive(i) && TTT_IsPlayerAlive(j))
+			{
+				status = Listen_Yes;
+				bChanged = true;
+			}
+
+			Action result = Plugin_Continue;
+			Call_StartForward(g_hOnListenOverride);
+			Call_PushCell(i);
+			Call_PushCell(j);
+			Call_PushCellRef(view_as<int>(status));
+			Call_Finish(result);
+
+			SetListenOverride(i, j, status);
+		}
+	}
+
+	return Plugin_Continue;
+}
+
+public int Native_GetListenOverride(Handle plugin, int numParams)
+{
+	int receiver = GetNativeCell(1);
+	int sender = GetNativeCell(2);
+	
+	return view_as<int>(GetListenOverride(receiver, sender));
+}
+
+public int Native_SetListenOverride(Handle plugin, int numParams)
+{
+	int receiver = GetNativeCell(1);
+	int sender = GetNativeCell(2);
+	ListenOverride status = view_as<ListenOverride>(GetNativeCell(3));
+
+	Action result = Plugin_Continue;
+	Call_StartForward(g_hOnListenOverride);
+	Call_PushCell(receiver);
+	Call_PushCell(sender);
+	Call_PushCellRef(view_as<int>(status));
+	Call_Finish(result);
+	
+	return view_as<int>(SetListenOverride(receiver, sender, status));
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-
 	int client = GetClientOfUserId(event.GetInt("userid"));
+
 	LoopValidClients(i)
 	{
 		SetListenOverride(i, client, Listen_Yes);
@@ -127,10 +214,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int victim = GetClientOfUserId(event.GetInt("userid"));
+
 	g_bTVoice[victim] = false;
+
 	LoopValidClients(i)
 	{
-		if (IsPlayerAlive(i))
+		if (TTT_IsPlayerAlive(i))
 		{
 			SetListenOverride(i, victim, Listen_No);
 		}
@@ -147,9 +236,9 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
 	LoopValidClients(i)
 	{
-		if (!IsPlayerAlive(client))
+		if (!TTT_IsPlayerAlive(client))
 		{
-			if (IsPlayerAlive(i))
+			if (TTT_IsPlayerAlive(i))
 			{
 				SetListenOverride(i, client, Listen_No);
 				SetListenOverride(client, i, Listen_Yes);
