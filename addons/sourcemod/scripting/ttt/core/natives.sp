@@ -361,9 +361,9 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
 	{
 		int rounds = GetNativeCell(2);
 
-		if (rounds < 1)
+		if (rounds < 0)
 		{
-			CReplyToCommand(client, "Rounds must be positive and higher as zero.");
+			CReplyToCommand(client, "Rounds must be zero (reset) or higher.");
 			return -1;
 		}
 		
