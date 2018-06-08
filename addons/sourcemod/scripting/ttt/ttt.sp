@@ -14,6 +14,8 @@
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
 
+#pragma newdecls required
+
 #include "core/globals.sp"
 #include "core/config.sp"
 #include "core/natives.sp"
@@ -560,7 +562,7 @@ public Action Command_Karma(int client, int args)
 	return Plugin_Handled;
 }
 
-public OnButtonPressed(const String:output[], entity, client, Float:delay)
+public int OnButtonPressed(const char[] output, int entity, int client, float delay)
 {
 	if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
 	{
