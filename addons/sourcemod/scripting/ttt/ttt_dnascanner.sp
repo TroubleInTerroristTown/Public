@@ -91,7 +91,13 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	if (TTT_IsClientValid(client))
 	{
 		ResetScanner(client);
+	}
+}
 
+public void TTT_OnClientGetRole(int client, int role)
+{
+	if (role == TTT_TEAM_DETECTIVE)
+	{
 		if (g_cStartWith.BoolValue)
 		{
 			TTT_GiveClientItem(client, SHORT_NAME);
