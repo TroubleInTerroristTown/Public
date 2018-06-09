@@ -683,7 +683,12 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 				if (res < Plugin_Stop)
 				{
 					setCredits(client, (g_iCredits[client] - price));
-					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
+					
+					if (!free)
+					{
+						CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
+					}
+					
 					return true;
 				}
 			}
