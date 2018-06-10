@@ -217,7 +217,7 @@ void CreateTurret(int client)
 
 public Action TurretTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &weapon, float damageForce[3], float damagePosition[3], int damagecustom)
 {
-	if (TTT_IsClientValid(attacker))
+	if (!TTT_IsClientValid(attacker))
 	{
 		return Plugin_Continue;
 	}
