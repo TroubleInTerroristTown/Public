@@ -1951,7 +1951,11 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
 		if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker])
 		{
-			if ((g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR) || (g_iRole[iAttacker] != TTT_TEAM_TRAITOR && g_iRole[client] != TTT_TEAM_TRAITOR))
+			if (
+				(g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR) ||
+				(g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE) ||
+				(g_cShowInnoRDMMenu.BoolValue && g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
+			)
 			{
 				if (g_hRDMTimer[client] != null)
 				{
