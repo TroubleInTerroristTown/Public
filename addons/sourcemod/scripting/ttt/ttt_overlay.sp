@@ -8,6 +8,9 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
 
+#define SPECMODE_FIRSTPERSON 4
+#define SPECMODE_3RDPERSON 5
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -304,12 +307,30 @@ public void AssignOverlay(int client, int role)
 		TTT_ShowOverlayToClient(client, " ");
 	}
 
-	if (!IsPlayerAlive(client))
+	if (!TTT_IsPlayerAlive(client))
 	{
 		TTT_ShowOverlayToClient(client, " ");
 	}
 
-	// ToDo Get Spec Mode and get Cvar ttt_dead_players_can_see_other_roles
+	ConVar cvar = FindConVar("ttt_dead_players_can_see_other_roles");
+
+	if (cvar != null)
+	{
+		if (cvar.BoolValue && !TTT_IsPlayerAlive(client))
+		{
+			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
+
+			if (iMode == SPECMODE_FIRSTPERSON || iMode == SPECMODE_3RDPERSON)
+			{
+				int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+
+				if (TTT_IsClientValid(target) && TTT_IsPlayerAlive(target))
+				{
+					role = TTT_GetClientRole(target);
+				}
+			}
+		}
+	}
 
 	char sBuffer[PLATFORM_MAX_PATH];
 	if (role == TTT_TEAM_DETECTIVE)
