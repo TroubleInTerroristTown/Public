@@ -893,7 +893,12 @@
 	{
 		"en"		"See..."
 	}
-
+	
+	"TTT Radio Menu: KOS"
+	{
+		"en"		"KOS..."
+	}
+	
 	"TTT Radio: Yes"
 	{
 		"en"		"Yes"
@@ -948,7 +953,13 @@
 		"#format"	"{1:N}"
 		"en"		"I see {1}"
 	}
-
+	
+	"TTT Radio: KOS"
+	{
+		"#format"	"{1:N}"
+		"en"		"KOS {1}!"
+	}
+	
 	"Random Teleporter: Cant find ragdoll"
 	{
 		"en"		"Can't find an ragdoll"
@@ -998,13 +1009,7 @@
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
 	}
-
-	"TTT Radio: KOS"
-	{
-		"#format"	"{1:N}"
-		"en"		"KOS {1}!"
-	}
-
+	
 	"Found Innocent Silent"
 	{
 		"#format"	"{1:s}"
