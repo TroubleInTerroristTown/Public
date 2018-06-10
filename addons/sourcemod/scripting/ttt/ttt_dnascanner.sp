@@ -17,8 +17,11 @@ ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 ConVar g_cRoleColor = null;
 ConVar g_cStartWith = null;
+ConVar g_cFreeCount = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
+bool g_bFreeScanner[MAXPLAYERS + 1] = { false, ...};
+int g_iCount[MAXPLAYERS + 1] = { -1, ... };
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -46,7 +49,8 @@ public void OnPluginStart()
 	g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
 	g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
 	g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
-	g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "0", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
+	g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "1", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
+	g_cFreeCount = AutoExecConfig_CreateConVar("dna_free_scanner_count", "3", "Limited the free dna scanner to X usages? (0 - disabled/unlimited)", _, true, 0.0);
 	TTT_EndConfig();
 
 	HookEvent("player_spawn", Event_PlayerSpawn);
@@ -108,6 +112,8 @@ public void TTT_OnClientGetRole(int client, int role)
 void ResetScanner(int client)
 {
 	g_bHasScanner[client] = false;
+	g_bFreeScanner[client] = false;
+	g_iCount[client] = -1;
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
@@ -121,6 +127,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			if (role != TTT_TEAM_DETECTIVE)
 			{
 				return Plugin_Stop;
+			}
+
+			if (g_cFreeCount.IntValue > 0 && price == 0)
+			{
+				g_bFreeScanner[client] = true;
+				g_iCount[client] = 0;
 			}
 
 			g_bHasScanner[client] = true;
@@ -287,6 +299,16 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	}
 
 	iRagdollC[Scanned] = true;
+
+	if (g_bFreeScanner[client])
+	{
+		g_iCount[client]++;
+
+		if (g_iCount[client] == 3)
+		{
+			ResetScanner(client);
+		}
+	}
 
 	return Plugin_Changed;
 }
