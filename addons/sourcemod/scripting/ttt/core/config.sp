@@ -64,7 +64,6 @@ void SetupConfig()
 	g_cremoveBuyzone = AutoExecConfig_CreateConVar("ttt_disable_buyzone", "0", "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
 	g_cforceTeams = AutoExecConfig_CreateConVar("ttt_force_teams", "1", "Force players to teams instead of forcing playermodel. 1 = Force team. 0 = Force playermodel.", _, true, 0.0, true, 1.0);
 	g_crandomWinner = AutoExecConfig_CreateConVar("ttt_random_winner", "1", "Choose random winner (CT/T) regardless of normal result. 1 = Yes, 0 = No", _, true, 0.0, true, 1.0);
-	g_cforceModel = AutoExecConfig_CreateConVar("ttt_force_models", "0", "Force all players to use a specified playermodel. Not functional if update models is enabled. 1 = Force models. 0 = Disabled (default).", _, true, 0.0, true, 1.0);
 	g_cendwithD = AutoExecConfig_CreateConVar("ttt_end_with_detective", "0", "Allow the round to end if Detectives remain alive. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
 	g_chideTeams = AutoExecConfig_CreateConVar("ttt_hide_teams", "0", "Hide team changes from chat.", _, true, 0.0, true, 1.0);
 	g_cstripWeapons = AutoExecConfig_CreateConVar("ttt_strip_weapons", "1", "Strip players weapons on spawn? Optionally use mp_ct_ and mp_t_ cvars instead.", _, true, 0.0, true, 1.0);
@@ -78,8 +77,6 @@ void SetupConfig()
 	g_cRespawnDeadPlayers = AutoExecConfig_CreateConVar("ttt_respawn_dead_players", "1", "Respawn dead players on pre role selection?", _, true, 0.0, true, 1.0);
 	g_cEnableDamage = AutoExecConfig_CreateConVar("ttt_prestart_damage", "0", "Enable damage before round start (Default disabled to prevent kills)?", _, true, 0.0, true, 1.0);
 	g_croundendDamage = AutoExecConfig_CreateConVar("ttt_roundend_dm", "0", "Enable damage after a round until round end.", _, true, 0.0, true, 1.0);
-	g_cmodelCT = AutoExecConfig_CreateConVar("ttt_forced_model_ct", "models/player/ctm_st6.mdl", "The default model to force for CT (Detectives) if ttt_force_models is enabled.");
-	g_cmodelT = AutoExecConfig_CreateConVar("ttt_forced_model_t", "models/player/tm_phoenix.mdl", "The default model to force for T (Inno/Traitor) if ttt_force_models is enabled.");
 	g_clogFile = AutoExecConfig_CreateConVar("ttt_log_file", "logs/ttt/ttt-<DATE>.log", "The default file to log TTT data to (including end of round) - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
 	g_cerrFile = AutoExecConfig_CreateConVar("ttt_error_file", "logs/ttt/ttt-error-<DATE>.log", "The default file to log TTT errors/bugs to - DON'T REMOVE \"-<DATE>\" IF YOU DON'T KNOW WHAT YOU DO.");
 	g_cdefaultPriD = AutoExecConfig_CreateConVar("ttt_default_primary_d", "weapon_m4a1_silencer", "The default primary gun to give players when they become a Detective (if they have no primary).");
@@ -102,7 +99,7 @@ void SetupConfig()
 	g_cRoundSlayInno = AutoExecConfig_CreateConVar("ttt_round_slays_innocent", "5", "How much round slays for innocents after rdm punishment? (0 = Instant slay) (ttt_punish_innocent_for_rdm_kils)");
 	g_cRoundSlayTraitor = AutoExecConfig_CreateConVar("ttt_round_slays_traitor", "5", "How much round slays for traitores after rdm punishment? (0 = Instant slay) (ttt_punish_traitor_for_rdm_kils)");
 	g_cRoundSlayDetective = AutoExecConfig_CreateConVar("ttt_round_slays_detective", "5", "How much round slays for detectives after rdm punishment? (0 = Instant slay) (ttt_punish_detective_for_rdm_kils)");
-	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "2", "How much round slays for the players by a player punishment? (0 = Instant slay)");
+	g_cRoundSlayPlayerRDM = AutoExecConfig_CreateConVar("ttt_round_slays_player_rdm_menu", "1", "How much round slays for the players by a player punishment? (1 = Instant slay, 2 = Instant slay + slay next round ...)");
 	g_cRoundSlayDestroyTrigger = AutoExecConfig_CreateConVar("ttt_round_slays_destroy_trigger", "2", "How much round slays for players there try to enter a destroy trigger? (?)");
 	g_cRoundSlayAccess = AutoExecConfig_CreateConVar("ttt_round_slays_admin_access", "b", "Admin flags to access round slays command.");
 	g_cDebug = AutoExecConfig_CreateConVar("ttt_debug_mode", "0", "Enable or disable debug mode for ttt? Could by useful for one player tests", _, true, 0.0, true, 1.0);
@@ -115,6 +112,30 @@ void SetupConfig()
 	g_cSecondaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_secondary_weapon_update", "0", "What should happen on round start with the secondary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
 	g_cAdvert = AutoExecConfig_CreateConVar("ttt_show_advert_message", "1", "Print a message on player spawn with some ttt details (like \"Trouble in Terrorist Town Version X.X.XXXX\")", _, true, 0.0, true, 1.0);
 	g_cInnocentKnife = AutoExecConfig_CreateConVar("ttt_give_innocent_knife", "1", "Give innocent a knife?", _, true, 0.0, true, 1.0);
+	g_cEnableDamageKarma = AutoExecConfig_CreateConVar("ttt_damage_karma_enable", "0", "Add/Del karma on damage?", _, true, 0.0, true, 1.0);
+	g_cDamageKarmaII = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_innocent_subtract", "1", "The amount of karma an innocent will lose for damage an innocent.");
+	g_cDamageKarmaIT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_traitor_add", "1", "The amount of karma an innocent will recieve for damage a traitor.");
+	g_cDamageKarmaID = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_detective_subtract", "1", "The amount of karma an innocent will lose for damage a detective.");
+	g_cDamageKarmaTI = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_innocent_add", "1", "The amount of karma a traitor will recieve for damage an innocent.");
+	g_cDamageKarmaTT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_traitor_subtract", "1", "The amount of karma a traitor will lose for damage a traitor.");
+	g_cDamageKarmaTD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_traitor_victim_detective_add", "1", "The amount of karma a traitor will recieve for damage a detective.");
+	g_cDamageKarmaDI = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_innocent_subtract", "1", "The amount of karma a detective will lose for damage an innocent.");
+	g_cDamageKarmaDT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_traitor_add", "1", "The amount of karma a detective will recieve for damage a traitor.");
+	g_cDamageKarmaDD = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_detective_victim_detective_subtract", "1", "The amount of karma a detective will lose for damage a detective.");
+	g_cDoublePushInno = AutoExecConfig_CreateConVar("ttt_double_push_innocents", "1", "Push innocents (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
+	g_cDoublePushDete = AutoExecConfig_CreateConVar("ttt_double_push_detective", "1", "Push detective (from last round) two times into players array? This should increase the chance to get traitor in the new round.", _, true, 0.0, true, 1.0);
+	g_cKarmaDecreaseWhenKillPlayerWhoHurt = AutoExecConfig_CreateConVar("ttt_karma_decrease_kill_player_who_hurted", "1", "Decrease Karma when you kill a player who hurted you?.", _, true, 0.0, true, 1.0);
+	g_cSilentIdEnabled = AutoExecConfig_CreateConVar("ttt_silent_id", "0", "0 = Disabled. 1 = Enable silent id (+speed and +use together). Silent ID wont print on chat when someone inspects a body.", _, true, 0.0, true, 1.0);
+	g_cSilentIdColor = AutoExecConfig_CreateConVar("ttt_silent_id_color", "1", "0 = Disabled, will not change the color of the body. 1 = Silent ID will color the body when inspecting. (Green = Innocent, Red = Traitor, Blue = Detective)", _, true, 0.0, true, 1.0);
+	g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");	
+	g_cLogButtons = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "0", "Log pressed buttons?", _, true, 0.0, true, 1.0);
+	g_cLogButtonsSpam = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "5", "Prevent log spamming for the same button - Time in seconds to relog a button");
+	g_cOpenRulesOnPunish = AutoExecConfig_CreateConVar("ttt_open_rules_on_punish", "0", "Open rules menu for a player while he will be punished?", _, true, 0.0, true, 1.0);
+	g_cRulesURLReopenMenu = AutoExecConfig_CreateConVar("ttt_reopen_rules_on_url", "1", "Reopen rules menu when a player will be redirect to motd/popup window?", _, true, 0.0, true, 1.0);
+	g_cNameChangePunish = AutoExecConfig_CreateConVar("ttt_name_change_punishment", "0", "Which punishment while name change? 0 - Disabled, 1 - Message to all players, 2 - Block Name Change, 3 - Kick Player or 4 - Ban player", _, true, 0.0, true, 3.0);
+	g_cNameChangeLength = AutoExecConfig_CreateConVar("ttt_name_change_banlength", "120", "Ban length for name change (require 'ttt_name_change_punishment 3')");
+	g_cIdentifyLog = AutoExecConfig_CreateConVar("ttt_identity_log", "0", "Log every identified body?", _, true, 0.0, true, 1.0);
+	g_cShowInnoRDMMenu = AutoExecConfig_CreateConVar("ttt_show_rdm_menu_for_inno", "0", "Show RDM Menu while killing Innocent as Innocent?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
@@ -135,16 +156,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cpluginTag)
 	{
 		g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
-	}
-
-	if (convar == g_ckickImmunity)
-	{
-		g_ckickImmunity.GetString(g_sKickImmunity, sizeof(g_sKickImmunity));
-	}
-
-	if (convar == g_clogsAccess)
-	{
-		g_clogsAccess.GetString(g_sLogAccess, sizeof(g_sLogAccess));
 	}
 
 	if (convar == g_cdefaultPriD)
@@ -175,21 +186,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cFSSecondary)
 	{
 		g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
-	}
-
-	if (convar == g_cSetRole)
-	{
-		g_cSetRole.GetString(g_sSetRole, sizeof(g_sSetRole));
-	}
-
-	if (convar == g_cKarmaReset)
-	{
-		g_cKarmaReset.GetString(g_sKarmaReset, sizeof(g_sKarmaReset));
-	}
-
-	if (convar == g_cSetKarma)
-	{
-		g_cSetKarma.GetString(g_sSetKarma, sizeof(g_sSetKarma));
 	}
 
 }

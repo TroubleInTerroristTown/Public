@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:04 UTC
+// Date: 2018-06-02 08:19:14 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -674,12 +674,6 @@
 		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
 	}
 
-	"AlreadyTaser"
-	{
-		"#format"	"{1:d}"
-		"en"		"You already have a taser in your inventory!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
@@ -953,6 +947,132 @@
 	{
 		"#format"	"{1:N}"
 		"en"		"I see {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"en"		"Can't find an ragdoll"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"#format"	"{1:N}"
+		"en"		"You switched the position with {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{green} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkblue} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"#format"	"{1:N},{2:s},{3:s}"
+		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+	}
+
+	"No karma hurt traitor"
+	{
+		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
+	}
+
+	"No karma hurt innocent"
+	{
+		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+	}
+
+	"No karma hurt detective"
+	{
+		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
+	}
+
+	"Shop Item not found"
+	{
+		"#format"	"{1:s}"
+		"en"		"Can't find '{1}' as valid shop item"
+	}
+
+	"TTT Radio: KOS"
+	{
+		"#format"	"{1:N}"
+		"en"		"KOS {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {green}{1}. {lightgreen}It was a {green}INNOCENT!"
+	}
+
+	"Found Detective Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {darkblue}{1}. {lightgreen}It was a {darkblue}DETECTIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"#format"	"{1:s}"
+		"en"		"{lightgreen}You silently found the body of {darkred}{1}. {lightgreen}It was a {darkred}Traitor!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"en"		"Choose Punishment:"
+	}
+
+	"C4: Slay"
+	{
+		"en"		"Slay player"
+	}
+
+	"C4: Explode"
+	{
+		"en"		"Explode bomb"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"en"		"Name change are not allowed during an active round!"
+	}
+
+	"Name Change Reason"
+	{
+		"en"		"Name change during active round"
+	}
+
+	"Name Change Message"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{orchid}{1} {lightgreen}changed name to {orchid}{2}!"
+	}
+
+	"No tripmines"
+	{
+		"en"		"You do not have any tripmines."
+	}
+
+	"Invalid location"
+	{
+		"en"		"Invalid location for Tripmine"
+	}
+
+	"Remaing Tripmines"
+	{
+		"#format"	"{1:d}"
+		"en"		"Tripmines remaining: {1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"en"		"You already have a taser in your inventory!"
 	}
 
 }

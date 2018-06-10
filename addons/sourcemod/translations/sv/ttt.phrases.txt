@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:02 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Swedish (sv)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"sv"		"Spelaren {lightgreen}{1} använde en detektor på spelare Player{green} {2} {lightgreen}och han är {green}OSKYLDIG!"
 	}
 
-	"AlreadyTaser"
-	{
-		"sv"		"Du har redan en elpistol!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"sv"		"{1} Pratar nu i Förrädar Voice Chatt"
@@ -696,6 +691,11 @@
 	"Player is Now Innocent"
 	{
 		"sv"		"{orchid}{1} {lightgreen}är nu {green}Oskyldig!"
+	}
+
+	"AlreadyTaser"
+	{
+		"sv"		"Du har redan en elpistol!"
 	}
 
 }

@@ -6,12 +6,17 @@ void InitForwards()
 	g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell);
 	g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String);
+	g_hOnClientDeathPre = CreateGlobalForward("TTT_OnClientDeathPre", ET_Event, Param_Cell, Param_Cell);
+	g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String, Param_Cell);
 	g_hOnBodyChecked = CreateGlobalForward("TTT_OnBodyChecked", ET_Event, Param_Cell, Param_Array);
 	g_hOnButtonPress = CreateGlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
 	g_hOnButtonRelease = CreateGlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
-	g_hOnUpdate1 = CreateGlobalForward("TTT_OnUpdate1", ET_Ignore, Param_Cell);
 	g_hOnModelUpdate = CreateGlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
+	g_hOnPlayerDeathPre = CreateGlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
+	g_hOnKarmaUpdate = CreateGlobalForward("TTT_OnKarmaUpdate", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
+	g_hOnRulesMenu = CreateGlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_CellByRef);
+	g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
+	g_hOnCheckCommandAccess = CreateGlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
 }
 
 void InitNatives()
@@ -34,6 +39,10 @@ void InitNatives()
 	CreateNative("TTT_LogString", Native_LogString);
 	CreateNative("TTT_AddRoundSlays", Native_AddRoundSlays);
 	CreateNative("TTT_SetRoundSlays", Native_SetRoundSlays);
+	CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
+	CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
+	CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
+	CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -50,49 +59,53 @@ public int Native_GetClientRole(Handle plugin, int numParams)
 		return g_iRole[client];
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_GetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	bool publicKarma = view_as<bool>(GetNativeCell(2));
 
-	if (TTT_IsClientValid(client) && g_bKarma[client])
+	if (TTT_IsClientValid(client))
 	{
-		if (g_cpublicKarma.BoolValue || publicKarma)
+		bool publicKarma = view_as<bool>(GetNativeCell(2));
+
+		if (g_bKarma[client])
 		{
-			return g_iKarma[client];
-		}
-		else
-		{
-			return g_iKarmaStart[client];
+			if (g_cpublicKarma.BoolValue || publicKarma)
+			{
+				return g_iKarma[client];
+			}
+			else
+			{
+				return g_iKarmaStart[client];
+			}
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_GetClientRagdoll(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 
-	int iBody[Ragdolls];
-
 	if (TTT_IsClientValid(client))
 	{
+		int iBody[Ragdolls];
+
 		for (int i = 0; i < g_aRagdoll.Length; i++)
 		{
 			g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
 			if (iBody[Victim] == GetClientUserId(client))
 			{
 				SetNativeArray(2, iBody[0], sizeof(iBody));
+				return true;
 			}
-			return 1;
 		}
 	}
 
-	return 0;
+	return false;
 }
 
 public int Native_SetRagdoll(Handle plugin, int numParams)
@@ -109,62 +122,74 @@ public int Native_SetRagdoll(Handle plugin, int numParams)
 public int Native_SetClientRole(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	int role = GetNativeCell(2);
 
 	if (TTT_IsClientValid(client))
 	{
-		g_iRole[client] = role;
-		TeamInitialize(client);
-		return g_iRole[client];
-	}
-	else if (role < TTT_TEAM_UNASSIGNED || role > TTT_TEAM_DETECTIVE)
-	{
-		ThrowNativeError(SP_ERROR_NATIVE, "Invalid role %d", role);
+		int role = GetNativeCell(2);
+
+		if (TTT_IsClientValid(client) && (role >= TTT_TEAM_UNASSIGNED && role <= TTT_TEAM_DETECTIVE))
+		{
+			g_iRole[client] = role;
+			TeamInitialize(client);
+			return g_iRole[client];
+		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_SetClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
 
-	if (TTT_IsClientValid(client) && g_bKarma[client])
+	if (TTT_IsClientValid(client))
 	{
-		return setKarma(client, karma, force);
+		int karma = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+
+		if (TTT_IsClientValid(client) && g_bKarma[client])
+		{
+			return setKarma(client, karma, force);
+		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_AddClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
 
-	if (TTT_IsClientValid(client) && g_bKarma[client])
+	if (TTT_IsClientValid(client))
 	{
-		return setKarma(client, g_iKarma[client] + karma, force);
+		int karma = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+
+		if (TTT_IsClientValid(client) && g_bKarma[client])
+		{
+			return setKarma(client, g_iKarma[client] + karma, force);
+		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_RemoveClientKarma(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	int karma = GetNativeCell(2);
-	bool force = view_as<bool>(GetNativeCell(3));
 
-	if (TTT_IsClientValid(client) && g_bKarma[client])
+	if (TTT_IsClientValid(client))
 	{
-		return setKarma(client, g_iKarma[client] - karma, force);
+		int karma = GetNativeCell(2);
+		bool force = view_as<bool>(GetNativeCell(3));
+
+		if (TTT_IsClientValid(client) && g_bKarma[client])
+		{
+			return setKarma(client, g_iKarma[client] - karma, force);
+		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_WasBodyFound(Handle plugin, int numParams)
@@ -193,7 +218,7 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_WasBodyScanned(Handle plugin, int numParams)
@@ -222,7 +247,7 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
 		}
 	}
 
-	return 0;
+	return -1;
 }
 
 public int Native_LogString(Handle plugin, int numParams)
@@ -250,15 +275,20 @@ public int Native_SetFoundStatus(Handle plugin, int numParams)
 
 public int Native_ForceTraitor(Handle plugin, int numParams)
 {
-	int userid = GetClientUserId(GetNativeCell(1));
-	
-	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
+	int client = GetNativeCell(1);
+
+	if (TTT_IsClientValid(client))
 	{
-		g_aForceTraitor.Push(userid);
-	}
-	else
-	{
-		return false;
+		int userid = GetClientUserId(client);
+		
+		if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
+		{
+			g_aForceTraitor.Push(userid);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -266,15 +296,20 @@ public int Native_ForceTraitor(Handle plugin, int numParams)
 
 public int Native_ForceDetective(Handle plugin, int numParams)
 {
-	int userid = GetClientUserId(GetNativeCell(1));
+	int client = GetNativeCell(1);
+
+	if (TTT_IsClientValid(client))
+	{
+		int userid = GetClientUserId(client);
 	
-	if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
-	{
-		g_aForceDetective.Push(userid);
-	}
-	else
-	{
-		return false;
+		if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
+		{
+			g_aForceDetective.Push(userid);
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -287,6 +322,13 @@ public int Native_AddRoundSlays(Handle plugin, int numParams)
 	if (TTT_IsClientValid(client))
 	{
 		int rounds = GetNativeCell(2);
+
+		if (rounds < 1)
+		{
+			CReplyToCommand(client, "Rounds must be positive and higher as zero.");
+			return -1;
+		}
+
 		bool force = view_as<bool>(GetNativeCell(3));
 		
 		g_iRoundSlays[client] += rounds;
@@ -307,17 +349,24 @@ public int Native_AddRoundSlays(Handle plugin, int numParams)
 		
 		return g_iRoundSlays[client];
 	}
-	
+
 	return -1;
 }
 
 public int Native_SetRoundSlays(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
-	
+
 	if (TTT_IsClientValid(client))
 	{
 		int rounds = GetNativeCell(2);
+
+		if (rounds < 0)
+		{
+			CReplyToCommand(client, "Rounds must be zero (reset) or higher.");
+			return -1;
+		}
+		
 		bool force = view_as<bool>(GetNativeCell(3));
 		
 		g_iRoundSlays[client] = rounds;
@@ -338,7 +387,108 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
 		
 		return rounds;
 	}
-	
+
 	return -1;
 }
 
+public int Native_IsPlayerAlive(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (TTT_IsClientValid(client))
+	{
+		return g_bAlive[client];
+	}
+
+	return false;
+}
+
+public int Native_ClientOpenRules(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (TTT_IsClientValid(client))
+	{
+		g_bRules[client] = false;
+
+		char sBuffer[12];
+		IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
+		SetClientCookie(client, g_hRules, sBuffer);
+
+		ShowRules(client, g_iSite[client]);
+	}
+
+	return -1;
+}
+
+public int Native_GetRoundTime(Handle plugin, int numParams)
+{
+	if (g_iTeamSelectTime > 0)
+	{
+		int type = GetNativeCell(1);
+		int iTime = GetTime() - g_iTeamSelectTime;
+
+		if (type == 0)
+		{
+			// Time
+			return iTime;
+		}
+		else if (type == 1)
+		{
+			// Minutes
+			return ((iTime / 60) % 60);
+		}
+		else if (type == 2)
+		{
+			// Seconds
+			return (iTime % 60);
+		}
+	}
+
+	return -1;
+}
+
+public int Native_CheckCommandAccess(Handle plugin, int numParams)
+{
+	/*
+		We don't the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
+		CheckCommandAccess: https://github.com/alliedmodders/sourcemod/blob/237db0504c7a59e394828446af3e8ca3d53ef647/core/logic/smn_console.cpp#L65
+		CheckClientCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2005
+		CheckAdminCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2036
+	*/
+
+	int client = GetNativeCell(1);
+
+	char sCommand[32];
+	GetNativeString(2, sCommand, sizeof(sCommand));
+
+	ConVar cvar = view_as<ConVar>(GetNativeCell(3));
+
+	bool override_only = view_as<bool>(GetNativeCell(4));
+
+	char sFlags[24];
+	cvar.GetString(sFlags, sizeof(sFlags));
+	
+	int iFlags = ReadFlagString(sFlags);
+	if (CheckCommandAccess(client, sCommand, iFlags, override_only))
+	{
+		return true;
+	}
+
+	bool access = false;
+
+	Action result = Plugin_Continue;
+	Call_StartForward(g_hOnCheckCommandAccess);
+	Call_PushCell(client);
+	Call_PushString(sCommand);
+	Call_PushString(sFlags);
+	Call_PushCellRef(access);
+	Call_Finish(result);
+
+	if (result == Plugin_Changed)
+	{
+		return access;
+	}
+
+	return false;
+}

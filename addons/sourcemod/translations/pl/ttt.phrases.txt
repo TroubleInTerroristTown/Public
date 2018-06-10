@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:00 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu{green} {2} {lightgreen}i okazał się być {green}NIEWINNY!"
 	}
 
-	"AlreadyTaser"
-	{
-		"pl"		"Masz już paralizator w ekwipunku!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"pl"		"{1} jest teraz w czacie głosowym Zdrajców"
@@ -771,6 +766,141 @@
 	"Player Spawn TTT Version"
 	{
 		"pl"		"TTT - Wersja: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"pl"		"TTT Radio Komendy"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"pl"		"Tak"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"pl"		"Nie"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"pl"		"Może"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"pl"		"Pomocy"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"pl"		"Sprawdź"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"pl"		"Jestem z..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"pl"		"Podejrzany..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"pl"		"Zdrajca..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"pl"		"Niewinny..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"pl"		"Zobacz..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"pl"		"Tak"
+	}
+
+	"TTT Radio: No"
+	{
+		"pl"		"Nie"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"pl"		"Może"
+	}
+
+	"TTT Radio: Help"
+	{
+		"pl"		"Pomocy"
+	}
+
+	"TTT Radio: Check"
+	{
+		"pl"		"Sprawdź"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"pl"		"Jestem z {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"pl"		"{1} zachowuje się podejrzanie."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"pl"		"{1} jest zdrajcą!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"pl"		"{1} jest niewinny."
+	}
+
+	"TTT Radio: See"
+	{
+		"pl"		"Widzę {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"pl"		"Nie można znaleźć ciała"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"pl"		"Zamieniłeś się miejscami z {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{green} {2} {lightgreen}z broni{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{darkblue} {2} {lightgreen}z broni{orchid} {3} "
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"pl"		"Detektyw{darkblue} {1} {lightgreen}przeskanował ciało, zabójcą jest{darkred} {2} {lightgreen}z broni{orchid} {3}"
+	}
+
+	"AlreadyTaser"
+	{
+		"pl"		"Masz już paralizator w ekwipunku!"
 	}
 
 }

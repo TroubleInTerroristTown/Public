@@ -1,8 +1,9 @@
 #!/bin/bash
+set -ev
 
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
-VERSION=2.3.$COUNT
+VERSION=2.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
 FILE=ttt-$2-$1-$VERSION-$HASH-$6.zip
 
@@ -24,7 +25,7 @@ echo -e "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
   echo -e -e "\nCompiling $file..." 
-  addons/sourcemod/scripting/spcomp -E -v0 $file
+  addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 $file
 done
 
 echo -e "\nCompile 3rd-party-plugins"
@@ -34,6 +35,10 @@ echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/no_weapon_fix.sp
 echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/block_messages.sp
+echo -e "\nCompiling addons/sourcemod/scripting/tripmines.sp..."
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/tripmines.sp
+echo -e "\nCompiling addons/sourcemod/scripting/turret_core.sp..."
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
 
 echo -e "Remove plugins folder if exists\n"
 if [ -d "addons/sourcemod/plugins" ]; then
@@ -71,23 +76,25 @@ fi
 echo -e "Create clean build folder\n"
 mkdir build
 
-echo -e "Move addons, materials and sound folder\n"
-mv addons materials sound build/
+echo -e "Move addons, materials, models and sound folder\n"
+mv addons materials models sound build/
 
 echo -e "Remove sourcemod folders\n"
 rm -r build/addons/metamod
 rm -r build/addons/sourcemod/bin
 rm -r build/addons/sourcemod/configs/geoip
 rm -r build/addons/sourcemod/configs/sql-init-scripts
-rm build/addons/sourcemod/configs/* 2> /dev/null
+rm -r build/addons/sourcemod/configs/*.txt
+rm -r build/addons/sourcemod/configs/*.ini
+rm -r build/addons/sourcemod/configs/*.cfg
 rm -r build/addons/sourcemod/data
 rm -r build/addons/sourcemod/extensions
 rm -r build/addons/sourcemod/gamedata
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
 
-echo -e "Add LICENSE, CVARS.txt and adminmenu_custom.txt to build package\n"
-cp LICENSE CVARS.txt adminmenu_custom.txt build/
+echo -e "Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package\n"
+cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/
 
 echo -e "Clean root folder\n"
 rm sourcemod.tar.gz
@@ -96,4 +103,4 @@ echo -e "Go to build folder\n"
 cd build
 
 echo -e "Compress directories and files\n"
-zip -9rq $FILE addons materials sound LICENSE CVARS.txt adminmenu_custom.txt
+zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt

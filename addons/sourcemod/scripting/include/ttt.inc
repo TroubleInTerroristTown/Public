@@ -16,6 +16,7 @@
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
+#define ROLE_LENGTH 16
 #define MAX_ITEM_LENGTH 64
 #define TTT_LOG_SIZE 512
 
@@ -36,22 +37,21 @@ enum Ragdolls
 	bool:Found
 }
 
-/*
- * Called every second
- *
- * @param client            Client index.
- */
-#pragma deprecated TTT_OnUpdate1 will be removed in the near future
-forward void TTT_OnUpdate1(int client);
+enum KarmaUpdate
+{
+	Karma_Add,
+	Karma_Set,
+	Karma_Subtract
+}
 
-/*
+/**
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
  * You could slay players here to force them to sit out.
  */
 forward Action TTT_OnRoundStart_Pre();
 
-/*
+/**
  * Called when the actual TTT round starts (after selection time).
  *
  * @param innocents         Count of innocent players.
@@ -60,7 +60,7 @@ forward Action TTT_OnRoundStart_Pre();
  */
 forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
 
-/*
+/**
  * Called when round start is failed or prevented.
  *
  * @param players           The amount of players we have.
@@ -71,14 +71,14 @@ forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
  */
 forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
 
-/*
+/**
  * Called when the actual TTT round ended.
  *
  * @param winner         	The Winning Team.
  */
 forward void TTT_OnRoundEnd(int winner);
 
-/*
+/**
  * Called when a client's role is assigned.
  *
  * @param client            Client index.
@@ -86,24 +86,51 @@ forward void TTT_OnRoundEnd(int winner);
  */
 forward void TTT_OnClientGetRole(int client, int role);
 
-/*
- * Called when a client dies.
+/**
+ * Called when a client dies, after Karma process
  *
  * @param victim            Person who died.
  * @param attacker          Attacker.
  */
 forward void TTT_OnClientDeath(int victim, int attacker);
 
-/*
+/**
+ * Called when a client dies, before Karma process
+ *
+ * @param victim            Person who died.
+ * @param attacker          Attacker.
+ */
+forward Action TTT_OnClientDeathPre(int victim, int attacker);
+
+/**
  * Called when a body is found.
  *
  * @param client            The client who identified the body.
  * @param victim            The client whom the body belongs to. (-1 for invalid index)
  * @param deadPlayer        The name of the victim.
+ * @param silentID          True if body was silenced id and false if normal inspect
  */
-forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
+forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID);
 
-/*
+/**
+ * Called before we create rules menu.
+ * If want to change it use "return Plugin_Changed;"
+ *
+ * @param client            The client index.
+ * @param show              True - Menu will be opened, False - Menu will not open
+ */
+forward Action TTT_OnRulesMenu(int client, bool &show);
+
+/**
+ * Called before we create detectives menu.
+ * If want to change it use "return Plugin_Changed;"
+ *
+ * @param client            The client index.
+ * @param show              True - Menu will be opened, False - Menu will not open
+ */
+forward Action TTT_OnDetectiveMenu(int client, bool &show);
+
+/**
  * Called when a body is scanned (by a Detective - not really? (Line 2761-2765 ttt.sp) -).
  *
  * @param client            The client who scanned the body.
@@ -111,7 +138,7 @@ forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer);
  */
 forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
 
-/*
+/**
  * Called on updated player models
  * (if ttt_update_client_model is true)
  *
@@ -123,55 +150,85 @@ forward void TTT_OnModelUpdate(int client, const char[] model);
 forward int TTT_OnButtonPress(int client, int button);
 forward int TTT_OnButtonRelease(int client, int button);
 
-/*
+/**
+ * Called before RDM will be handled.
+ *
+ * @param victim            Person who died.
+ * @param attacker          Attacker.
+ */
+forward Action TTT_OnPlayerDeath(int victim, int attacker);
+
+/**
+ * Called once Karma has been updated on a client.
+ *
+ * @param client            Client index.
+ * @param type          	Type of update. (Enum above)
+ * @param karma          	Amount of Karma.
+ */
+forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
+
+/**
+ * This forward will be called when a client hasn't access to command (TTT_CheckCommandAccess)
+ * It's possible to give a client access to an not accessible command
+ * You must use 'return Plugin_Changed;' if you want to change the bool 'access'
+ */
+forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
+
+
+
+
+
+
+
+/**
  * Checks if the round is active.
  */
 native bool TTT_IsRoundActive();
 
-/*
+/**
  * Retrieve a client's role.
  *
  * @param client            Client index.
  */
 native int TTT_GetClientRole(int client);
 
-/*
+/**
  * Retrieve a client's karma.
  *
  * @param client            Client index.
  */
 native int TTT_GetClientKarma(int client, bool publicKarma = true);
 
-/*
+/**
  * Retrieve the Radgoll Info.
  *
  * @param client            The victims index.
  * @param radgoll           The array to save the ragoll infos.
  */
-native int TTT_GetClientRagdoll(int victim, int[] ragdoll);
+native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
 
-/*
+/**
  * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
  *
  * @param radgoll           The array to save as Ragdoll.
  */
 native int TTT_SetRagdoll(int[] ragdoll);
 
-/*
+/**
  * Set a client's role.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientRole(int client, int role);
 
-/*
+/**
  * Sets the karma of a client.
  *
  * @param client            Client index.
  */
 native int TTT_SetClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Add karma to a client (currentKarma+karma).
  *
  * @param client            Client index.
@@ -179,7 +236,7 @@ native int TTT_SetClientKarma(int client, int karma, bool force);
  */
 native int TTT_AddClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Remove karma from a client (currentKarma-karma).
  *
  * @param client            Client index.
@@ -187,28 +244,28 @@ native int TTT_AddClientKarma(int client, int karma, bool force);
  */
 native int TTT_RemoveClientKarma(int client, int karma, bool force);
 
-/*
+/**
  * Determins whether a player's body was found (if dead).
  *
  * @param client            Client index.
  */
 native bool TTT_WasBodyFound(int client);
 
-/*
+/**
  * Determins whether a player's body was scanned (if dead).
  *
  * @param client            Client index.
  */
 native bool TTT_WasBodyScanned(int client);
 
-/*
+/**
  * Determines if a player is dead and has had their body found.
  *
  * @param client              The client index to lookup.
  */
 native bool TTT_GetFoundStatus(int client);
 
-/*
+/**
  * Set whether a player appears dead and body found.
  *
  * @param client             The client index to change.
@@ -216,14 +273,14 @@ native bool TTT_GetFoundStatus(int client);
  */
 native void TTT_SetFoundStatus(int client, bool found);
 
-/*
+/**
  * Log a String to the ingame Log.
  *
  * @param string            The message that should get logged.
  */
 native void TTT_LogString(const char[] format, any ...);
 
-/*
+/**
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.
@@ -231,7 +288,7 @@ native void TTT_LogString(const char[] format, any ...);
  */
 native bool TTT_ForceTraitor(int client);
 
-/*
+/**
  * Force a player to be detective next round. (If there are enough Detectives)
  *
  * @param client             The client index to change.
@@ -239,7 +296,7 @@ native bool TTT_ForceTraitor(int client);
  */
 native bool TTT_ForceDetective(int client);
 
-/*
+/**
  * NO DESCRIPTION
  *
  * @param client             The client index.
@@ -249,7 +306,7 @@ native bool TTT_ForceDetective(int client);
  */
 native int TTT_AddRoundSlays(int client, int rounds, bool force);
 
-/*
+/**
  * NO DESCRIPTION
  *
  * @param client             The client index.
@@ -259,7 +316,170 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  */
 native int TTT_SetRoundSlays(int client, int rounds, bool force);
 
-/*
+/**
+ * Open rules menu for the client
+ *
+ * @param client			The client index.
+ */
+native void TTT_ClientOpenRules(int client);
+
+/**
+ * Returns the time of a active rounds (-1 for inactive round/failed to start)
+ *
+ * @param type				Which type is needed? (0 - Time, 1 - Minutes, 2 - Seconds)
+ */
+native void TTT_GetRoundTime(int type);
+
+/**
+ * Returns whether a client has access to a given command string.  The string 
+ * can be any override string, as overrides can be independent of 
+ * commands.  This feature essentially allows you to create custom 
+ * flags using the override system.
+ *
+ * @param client		Client index.
+ * @param command		Command name.  If the command is not found, the default 
+ *						flags are used.
+ * @param cvar			Flag convar to use as a default, if the command or override 
+ *						is not found.
+ * @param override_only	If true, SourceMod will not attempt to find a matching 
+ *						command, and it will only use the default flags specified.
+ *						Otherwise, SourceMod will ignore the default flags if 
+ *						there is a matching admin command.
+ * @return				True if the client has access, false otherwise.
+ *
+ * THIS TEXT WAS COPIED FROM HERE: https://github.com/alliedmodders/sourcemod/blob/6c7e29cbdbe1fe17982a4531d839be65116abca2/plugins/include/console.inc#L479
+ */
+native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar, bool override_only = false);
+
+stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
+{
+	if (role == TTT_TEAM_INNOCENT)
+	{
+		Format(name, length, "Innocent");
+	}
+	else if (role == TTT_TEAM_DETECTIVE)
+	{
+		Format(name, length, "Detective");
+	}
+	else if (role == TTT_TEAM_TRAITOR)
+	{
+		Format(name, length, "Traitor");
+	}
+	else
+	{
+		Format(name, length, "Unassigned");
+	}
+}
+
+stock void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH)
+{
+	if (StrEqual(shortName, "inno", false))
+	{
+		Format(name, length, "Innocent");
+	}
+	else if (StrEqual(shortName, "dete", false))
+	{
+		Format(name, length, "Detective");
+	}
+	else if (StrEqual(shortName, "trai", false))
+	{
+		Format(name, length, "Traitor");
+	}
+	else
+	{
+		Format(name, length, "Unassigned");
+	}
+}
+
+stock int TTT_GetRoleIDByName(const char[] name)
+{
+	if (StrEqual(name, "innocent", false))
+	{
+		return TTT_TEAM_INNOCENT;
+	}
+	else if (StrEqual(name, "detective", false))
+	{
+		return TTT_TEAM_DETECTIVE;
+	}
+	else if (StrEqual(name, "traitor", false))
+	{
+		return TTT_TEAM_TRAITOR;
+	}
+	else
+	{
+		return TTT_TEAM_UNASSIGNED;
+	}
+}
+
+stock int TTT_GetRoleIDByShortName(const char[] shortName)
+{
+	if (StrEqual(shortName, "inno", false))
+	{
+		return TTT_TEAM_INNOCENT;
+	}
+	else if (StrEqual(shortName, "dete", false))
+	{
+		return TTT_TEAM_DETECTIVE;
+	}
+	else if (StrEqual(shortName, "trai", false))
+	{
+		return TTT_TEAM_TRAITOR;
+	}
+	else
+	{
+		return TTT_TEAM_UNASSIGNED;
+	}
+}
+
+stock void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH)
+{
+	if (role == TTT_TEAM_INNOCENT)
+	{
+		Format(shortName, length, "inno");
+	}
+	else if (role == TTT_TEAM_DETECTIVE)
+	{
+		Format(shortName, length, "dete");
+	}
+	else if (role == TTT_TEAM_TRAITOR)
+	{
+		Format(shortName, length, "trai");
+	}
+	else
+	{
+		Format(shortName, length, "unas");
+	}
+}
+
+stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH)
+{
+	if (StrEqual(name, "Innocent", false))
+	{
+		Format(shortName, length, "inno");
+	}
+	else if (StrEqual(name, "Detective", false))
+	{
+		Format(shortName, length, "dete");
+	}
+	else if (StrEqual(name, "Traitor", false))
+	{
+		Format(shortName, length, "trai");
+	}
+	else
+	{
+		Format(shortName, length, "unas");
+	}
+}
+
+/**
+ * Returns if the client is alive or dead.
+ *
+ * @param client		Player's index.
+ * @return				True if the client is alive, false otherwise.
+ */
+native bool TTT_IsPlayerAlive(int client);
+
+/**
  * Check if TTT plugin is loaded and running.
  */
 stock bool TTT_IsLoaded()
@@ -267,7 +487,7 @@ stock bool TTT_IsLoaded()
 	return LibraryExists("ttt");
 }
 
-/*
+/**
  * Check if a client index is valid.
  */
 stock bool TTT_IsClientValid(int client)
@@ -303,15 +523,28 @@ stock void TTT_IsGameCSGO()
 	}
 }
 
-stock bool TTT_HasFlags(int client, const char[] flags)
+#pragma deprecated TTT_HasCVarFlags is "unsafe". Please use TTT_CheckCommandAccess
+stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 {
-	AdminFlag aFlags[16];
+	char flags[24];
+	cFlags.GetString(flags, sizeof(flags));
+
+	AdminFlag aFlags[24];
 	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
 	
 	return tHasFlags(client, aFlags);
 }
 
-stock bool tHasFlags(int client, AdminFlag flags[16])
+#pragma deprecated TTT_HasFlags is "unsafe". Please use TTT_CheckCommandAccess
+stock bool TTT_HasFlags(int client, const char[] flags)
+{
+	AdminFlag aFlags[24];
+	FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
+	
+	return tHasFlags(client, aFlags);
+}
+
+stock bool tHasFlags(int client, AdminFlag flags[24])
 {
 	int iFlags = GetUserFlagBits(client);
 
@@ -427,6 +660,34 @@ stock void TTT_ShowOverlayToAll(const char[] overlaypath)
 	}
 }
 
+stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
+{
+	int[] clients = new int[MaxClients + 1];
+	int clientCount = 0;
+
+	LoopValidClients(i)
+	{
+		if (alive && !TTT_IsPlayerAlive(i))
+		{
+			continue;
+		}
+
+		if (role != TTT_GetClientRole(i))
+		{
+			continue;
+		}
+
+		clients[clientCount++] = i;
+	}
+
+	if (clientCount == 0)
+	{
+ 		return -1;
+	}
+
+	return clients[GetRandomInt(0, clientCount-1)];
+} 
+
 stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)
 {
 	if (damagetype == DMG_FALL
@@ -482,4 +743,36 @@ stock void TTT_EndConfig()
 stock bool TTT_IsWarmUp()
 {
 	return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
+}
+
+stock int TTT_IsValidRole(int client, int role)
+{
+    return (role & TTT_GetClientRole(client));
+}
+
+stock bool TTT_IsPrimaryWeapon(int weapon)
+{
+	if (IsValidEntity(weapon))
+	{
+		char sClass[32];
+		GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+		if ((StrContains(sClass, "ak47", false) != -1) || (StrContains(sClass, "m4a1", false) != -1) ||
+			(StrContains(sClass, "m4a1_silencer", false) != -1) || (StrContains(sClass, "awp", false) != -1) ||
+			(StrContains(sClass, "p90", false) != -1) || (StrContains(sClass, "sg556", false) != -1) ||
+			(StrContains(sClass, "aug", false) != -1) || (StrContains(sClass, "galilar", false) != -1) ||
+			(StrContains(sClass, "famas", false) != -1) || (StrContains(sClass, "ssg08", false) != -1) ||
+			(StrContains(sClass, "g3sg1", false) != -1) || (StrContains(sClass, "scar20", false) != -1) ||
+			(StrContains(sClass, "m249", false) != -1) || (StrContains(sClass, "negev", false) != -1) ||
+			(StrContains(sClass, "nova", false) != -1) || (StrContains(sClass, "xm1014", false) != -1) ||
+			(StrContains(sClass, "sawedoff", false) != -1) || (StrContains(sClass, "mag7", false) != -1) ||
+			(StrContains(sClass, "mac10", false) != -1) || (StrContains(sClass, "mp9", false) != -1) ||
+			(StrContains(sClass, "mp7", false) != -1) || (StrContains(sClass, "ump45", false) != -1) ||
+			(StrContains(sClass, "bizon", false) != -1))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }

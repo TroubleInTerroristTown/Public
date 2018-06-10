@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:03 UTC
+// Date: 2018-06-02 08:19:13 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -623,11 +623,6 @@
 		"ru"		"Игрок {lightgreen}{1} использовал детектор на Игроке{green} {2} {lightgreen}и он {green}НЕВИННЫЙ!"
 	}
 
-	"AlreadyTaser"
-	{
-		"ru"		"У вас в инвентаре уже есть тазер!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"ru"		"{1} сейчас говорит в голосовой чат Предателей"
@@ -881,6 +876,11 @@
 	"TTT Radio: See"
 	{
 		"ru"		"Я вижу {1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"ru"		"У вас в инвентаре уже есть тазер!"
 	}
 
 }

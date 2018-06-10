@@ -1,5 +1,7 @@
+os: linux
 dist: trusty
 sudo: false
+language: c
 
 addons:
   apt:
@@ -7,20 +9,22 @@ addons:
     - lftp
     - lib32z1
     - lib32stdc++6
-    - rsync
-
-language: c
 
 env:
   - VERSION=1.8
   - VERSION=1.9
+  - VERSION=1.10
+
+matrix:
+  allow_failures:
+    - env: VERSION=1.10
 
 before_script:
-  - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" && $TRAVIS_BRANCH != "stable" ]]; then bash ci/test.sh $VERSION "dev"; fi'
-  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" ]]; then bash ci/test.sh $VERSION "dev"; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
 
 script:
-  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" || $TRAVIS_BRANCH == "stable" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
 
 notifications:
   email: false
@@ -29,6 +33,6 @@ notifications:
       - https://csgottt.com/discord-travis-ci.php
     on_success: always
     on_failure: always
-    on_start: always
     on_cancel: always
     on_error: always
+    on_pull_requests: false

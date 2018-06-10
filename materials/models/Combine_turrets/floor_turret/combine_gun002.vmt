@@ -1,0 +1,13 @@
+"VertexLitGeneric"
+{
+	"$basetexture" "models/combine_turrets/floor_turret/combine_gun002"
+	"$surfaceprop" "metal"
+	"$bumpmap" "models/combine_turrets/floor_turret/combine_gun002_normal"
+	"$phong" 1
+	"$phongexponent" "10"
+	//"$phongexponenttexture" "models/combine_turrets/floor_turret/combine_gun002_phong"
+	"$phongboost" "4"
+	"$phongalbedotint" 1										
+	"$phongfresnelranges"	"[.1 .5  1]"
+	"$selfillum" 1
+}

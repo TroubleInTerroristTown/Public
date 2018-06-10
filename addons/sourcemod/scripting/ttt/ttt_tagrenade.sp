@@ -133,7 +133,15 @@ public void OnConfigsExecuted()
 	{
 		UseTAGrenade.SetBool(true);
 	}
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
 	
@@ -191,7 +199,7 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -451,6 +459,7 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 void ResetTAG(int client)
 {
 	g_iTPCount[client] = 0;
+	g_iDPCount[client] = 0;
 	g_fTaggingEndTime[client] = 0.0;
 	g_bPlayerIsTagged[client] = false;
 	g_bSeePlayers[client] = false;

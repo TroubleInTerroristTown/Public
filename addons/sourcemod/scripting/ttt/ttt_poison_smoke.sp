@@ -57,7 +57,12 @@ public void OnPluginStart()
 	HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
@@ -70,7 +75,7 @@ public void OnClientDisconnect(int client)
 	ResetStuff(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

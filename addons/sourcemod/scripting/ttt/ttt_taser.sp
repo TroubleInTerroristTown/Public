@@ -105,7 +105,15 @@ public void OnConfigsExecuted()
 	g_cPluginTag = FindConVar("ttt_plugin_tag");
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
@@ -202,7 +210,7 @@ public Action OnWeaponDrop(int client, int weapon)
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -326,6 +334,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 			}
 		}
 		
+		// TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
 		if (iRole == TTT_TEAM_TRAITOR)
 		{
 			TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);

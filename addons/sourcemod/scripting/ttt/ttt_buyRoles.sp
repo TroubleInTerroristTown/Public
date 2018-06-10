@@ -66,7 +66,12 @@ public void OnPluginStart()
 	TTT_EndConfig();
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	
@@ -83,8 +88,7 @@ public void OnConfigsExecuted()
 	TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue, g_cDiDiscount.BoolValue);
 }
 
-
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

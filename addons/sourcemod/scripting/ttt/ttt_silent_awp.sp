@@ -82,7 +82,12 @@ public void OnPluginStart()
 	AddTempEntHook("Shotgun Shot", Hook_ShotgunShot);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	
@@ -90,7 +95,6 @@ public void OnConfigsExecuted()
 	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue, g_cDiscountT.BoolValue);
 	TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue, g_cDiscountD.BoolValue);
 	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue, g_cDiscountI.BoolValue);
-
 }
 
 public void OnClientDisconnect(int client)
@@ -108,7 +112,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

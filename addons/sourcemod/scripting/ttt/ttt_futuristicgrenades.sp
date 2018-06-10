@@ -135,17 +135,40 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "futuristicgrenades.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?p=2499362", sFile);
+		TTT_RemoveCustomItem(FUTURISTIC_I);
+		TTT_RemoveCustomItem(FUTURISTIC_T);
+		TTT_RemoveCustomItem(FUTURISTIC_D);
+		TTT_RemoveCustomItem(FF_SNAME_I);
+		TTT_RemoveCustomItem(FF_SNAME_T);
+		TTT_RemoveCustomItem(FF_SNAME_D);
+		TTT_RemoveCustomItem(BH_SNAME_I);
+		TTT_RemoveCustomItem(BH_SNAME_T);
+		TTT_RemoveCustomItem(BH_SNAME_D);
+		TTT_RemoveCustomItem(FE_SNAME_I);
+		TTT_RemoveCustomItem(FE_SNAME_T);
+		TTT_RemoveCustomItem(FE_SNAME_D);
+		TTT_RemoveCustomItem(FI_SNAME_I);
+		TTT_RemoveCustomItem(FI_SNAME_T);
+		TTT_RemoveCustomItem(FI_SNAME_D);
+		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?p=2499362");
 		return;
 	}
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongNameF.GetString(sBuffer, sizeof(sBuffer));
@@ -189,7 +212,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

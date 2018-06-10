@@ -43,17 +43,26 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "AdvancedParachute.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158", sFile);
+		TTT_RemoveCustomItem(SHORT_NAME);
+		SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158");
 		return;
 	}
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cDiscount.BoolValue);
@@ -64,7 +73,7 @@ public void OnClientDisconnect(int client)
 	ResetTemplate(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

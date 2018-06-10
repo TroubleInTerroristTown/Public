@@ -89,7 +89,12 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_WARNING, true);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	
@@ -100,7 +105,7 @@ public void OnConfigsExecuted()
 	TTT_RegisterCustomItem(HURT_ITEM_SHORT, sBuffer, g_cHurtPrice.IntValue, TTT_TEAM_TRAITOR, g_cHurtPrio.IntValue, g_cDiscountT.BoolValue);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

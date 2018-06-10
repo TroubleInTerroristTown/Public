@@ -45,17 +45,26 @@ public void OnPluginStart()
 	HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "tacticalshield.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
 	
 	if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
 	{
-		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333", sFile);
+		TTT_RemoveCustomItem(SHORT_NAME_D);
+		SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333");
 		return;
 	}
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sBuffer[MAX_ITEM_LENGTH];
 	
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
@@ -67,25 +76,23 @@ public void OnClientDisconnect(int client)
 	ResetTacticalShield(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
 		if (StrEqual(itemshort, SHORT_NAME_D, false))
 		{
+			ResetTacticalShield(client);
+
 			int role = TTT_GetClientRole(client);
 
 			if (role == TTT_TEAM_DETECTIVE)
 			{
 				GivePlayerShield(client);
-				
+
 				if (g_cForce.BoolValue)
 				{
-					OverridePlayerShield(client, 2);
-				}
-				else
-				{
-					OverridePlayerShield(client, 1);
+					RequestFrame(Frame_SetShield, GetClientUserId(client));
 				}
 			}
 			else
@@ -97,6 +104,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
+public void Frame_SetShield(int userid)
+{
+	int client = GetClientOfUserId(userid);
+
+	if (TTT_IsClientValid(client))
+	{
+		SetEquipPlayerShield(client, true);
+	}
+}
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
