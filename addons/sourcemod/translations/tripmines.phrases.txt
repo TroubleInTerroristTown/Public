@@ -15,7 +15,7 @@
         	"pt"		"Local inválido para colocar a tripmine."
 	}
 
-	"Remaing Tripmines"
+	"Remaining Tripmines"
 	{
 		"#format"	"{1:d}"
 		"en"		"Tripmines remaining: {1}"
