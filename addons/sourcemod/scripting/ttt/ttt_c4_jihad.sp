@@ -217,7 +217,7 @@ public void ResetGlobals(int client)
 	TTT_ClearTimer(g_hJihadBomb[client]);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

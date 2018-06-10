@@ -90,7 +90,7 @@ void RegisterItem()
 	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

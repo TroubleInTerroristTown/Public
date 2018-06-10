@@ -112,7 +112,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if(TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

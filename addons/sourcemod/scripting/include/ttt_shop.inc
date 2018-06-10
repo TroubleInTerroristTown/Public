@@ -13,8 +13,9 @@
  * @param client            The client who purchased the item.
  * @param itemshort         The short-tag for the item's name.
  * @param count             TODO(?)
+ * @param price             The price that the item has cost. (0 = Free)
  */
-forward Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count);
+forward Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price);
 
 forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item);
 
@@ -23,6 +24,23 @@ forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const cha
  *
  */
 forward void TTT_OnShopReady();
+
+/*
+ * Called after a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param credits     	    The new amount of credits.
+ */
+forward void TTT_OnCreditsChanged(int client, int &credits);
+
+/*
+ * Called before a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param oldcredits        The old amount of credits.
+ * @param newcredits     	 The new amount of credits.
+ */
+forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
 
 /*
  * Registers a custom item in the menu/shop.
@@ -66,23 +84,6 @@ native int TTT_GetCustomItemPrice(const char[] item);
  * @param item              The short-tag identifier of the item.
  */
 native int TTT_GetCustomItemRole(const char[] item);
-
-/*
- * Called after a players credits are modified.
- *
- * @param client            Client index.
- * @param credits     	    The new amount of credits.
- */
-forward void TTT_OnCreditsChanged(int client, int &credits);
-
-/*
- * Called before a players credits are modified.
- *
- * @param client            Client index.
- * @param oldcredits        The old amount of credits.
- * @param newcredits     	 The new amount of credits.
- */
-forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
 
 /*
  * Retrieve a client's credits.

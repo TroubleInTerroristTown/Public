@@ -303,10 +303,13 @@ public void AssignOverlay(int client, int role)
 	{
 		TTT_ShowOverlayToClient(client, " ");
 	}
+
 	if (!IsPlayerAlive(client))
 	{
 		TTT_ShowOverlayToClient(client, " ");
 	}
+
+	// ToDo Get Spec Mode and get Cvar ttt_dead_players_can_see_other_roles
 
 	char sBuffer[PLATFORM_MAX_PATH];
 	if (role == TTT_TEAM_DETECTIVE)

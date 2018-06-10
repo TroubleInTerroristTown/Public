@@ -97,7 +97,7 @@ enum Item
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
 	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
@@ -678,6 +678,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 				Call_PushCell(client);
 				Call_PushString(temp_item[Short]);
 				Call_PushCell(count);
+				Call_PushCell(price);
 				Call_Finish(res);
 
 				if (res < Plugin_Stop)
