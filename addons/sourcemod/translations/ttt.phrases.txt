@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-02 08:19:14 UTC
+// Date: 2018-06-11 08:54:50 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -893,12 +893,7 @@
 	{
 		"en"		"See..."
 	}
-	
-	"TTT Radio Menu: KOS"
-	{
-		"en"		"KOS..."
-	}
-	
+
 	"TTT Radio: Yes"
 	{
 		"en"		"Yes"
@@ -953,13 +948,7 @@
 		"#format"	"{1:N}"
 		"en"		"I see {1}"
 	}
-	
-	"TTT Radio: KOS"
-	{
-		"#format"	"{1:N}"
-		"en"		"KOS {1}!"
-	}
-	
+
 	"Random Teleporter: Cant find ragdoll"
 	{
 		"en"		"Can't find an ragdoll"
@@ -1009,7 +998,13 @@
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
 	}
-	
+
+	"TTT Radio: KOS"
+	{
+		"#format"	"{1:N}"
+		"en"		"KOS {1}!"
+	}
+
 	"Found Innocent Silent"
 	{
 		"#format"	"{1:s}"
@@ -1069,15 +1064,20 @@
 		"en"		"Invalid location for Tripmine"
 	}
 
-	"Remaing Tripmines"
+	"AlreadyTaser"
+	{
+		"en"		"You already have a taser in your inventory!"
+	}
+
+	"Remaining Tripmines"
 	{
 		"#format"	"{1:d}"
 		"en"		"Tripmines remaining: {1}"
 	}
 
-	"AlreadyTaser"
+	"TTT Radio Menu: KOS"
 	{
-		"en"		"You already have a taser in your inventory!"
+		"en"		"KOS..."
 	}
 
 }

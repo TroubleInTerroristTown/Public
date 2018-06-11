@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-02 08:19:13 UTC
+// Date: 2018-06-11 08:54:49 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -978,14 +978,14 @@
 		"pt"		"Local inválido para colocar a tripmine."
 	}
 
-	"Remaing Tripmines"
-	{
-		"pt"		"Tripmines restantes: {1}"
-	}
-
 	"AlreadyTaser"
 	{
 		"pt"		"Você já possui uma taser em seu inventário!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"pt"		"Tripmines restantes: {1}"
 	}
 
 }
