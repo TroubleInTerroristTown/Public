@@ -297,4 +297,4 @@ bool g_bDRules[MAXPLAYERS + 1] =  { false, ... };
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
 
-bool g_bPressed[MAXPLAYERS + 1] = { false, ... };
+bool g_bPressed[2048] = { false, ... };

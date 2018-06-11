@@ -129,7 +129,7 @@ void SetupConfig()
 	g_cSilentIdColor = AutoExecConfig_CreateConVar("ttt_silent_id_color", "1", "0 = Disabled, will not change the color of the body. 1 = Silent ID will color the body when inspecting. (Green = Innocent, Red = Traitor, Blue = Detective)", _, true, 0.0, true, 1.0);
 	g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");	
 	g_cLogButtons = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "0", "Log pressed buttons?", _, true, 0.0, true, 1.0);
-	g_cLogButtonsSpam = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons", "5", "Prevent log spamming for the same button - Time in seconds to relog a button");
+	g_cLogButtonsSpam = AutoExecConfig_CreateConVar("ttt_log_pressed_buttons_time", "5", "Prevent log spamming for the same button - Time in seconds to relog a button");
 	g_cOpenRulesOnPunish = AutoExecConfig_CreateConVar("ttt_open_rules_on_punish", "0", "Open rules menu for a player while he will be punished?", _, true, 0.0, true, 1.0);
 	g_cRulesURLReopenMenu = AutoExecConfig_CreateConVar("ttt_reopen_rules_on_url", "1", "Reopen rules menu when a player will be redirect to motd/popup window?", _, true, 0.0, true, 1.0);
 	g_cNameChangePunish = AutoExecConfig_CreateConVar("ttt_name_change_punishment", "0", "Which punishment while name change? 0 - Disabled, 1 - Message to all players, 2 - Block Name Change, 3 - Kick Player or 4 - Ban player", _, true, 0.0, true, 3.0);
