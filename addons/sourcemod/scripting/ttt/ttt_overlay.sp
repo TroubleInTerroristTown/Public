@@ -40,6 +40,7 @@ ConVar g_cColorD = null;
 ConVar g_cColorI = null;
 ConVar g_cColorT = null;
 ConVar g_cUpdateTeamScore = null;
+ConVar g_cSeeRole = null;
 
 bool g_bEndOverlay = false;
 
@@ -158,6 +159,11 @@ public void OnMapStart()
 
 	g_iCTWin = 0;
 	g_iTWin = 0;
+}
+
+public void OnAllPluginsLoaded()
+{
+	g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_roles");
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
@@ -312,11 +318,9 @@ public void AssignOverlay(int client, int role)
 		TTT_ShowOverlayToClient(client, " ");
 	}
 
-	ConVar cvar = FindConVar("ttt_dead_players_can_see_other_roles");
-
-	if (cvar != null)
+	if (g_cSeeRole != null)
 	{
-		if (cvar.BoolValue && !TTT_IsPlayerAlive(client))
+		if (g_cSeeRole.BoolValue && !TTT_IsPlayerAlive(client))
 		{
 			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
 
