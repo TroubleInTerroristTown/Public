@@ -545,12 +545,13 @@ bool CheckBlacklist(const char[] name)
 		{
 			g_aBlacklist.GetString(i, sBuffer, sizeof(sBuffer));
 			
-			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			if (strlen(sBuffer) > 1 && StrContains(name, sBuffer, false) != -1)
 			{
 				return true;
 			}
 		}
 	}
+
 	
 	return false;
 }
@@ -592,7 +593,7 @@ bool CheckWhitelist(const char[] name)
 		{
 			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
 			
-			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			if (strlen(sBuffer) > 1 && StrContains(name, sBuffer, false) != -1)
 			{
 				return true;
 			}
@@ -604,7 +605,7 @@ bool CheckWhitelist(const char[] name)
 
 bool CheckLists(int entity, const char[] name)
 {
-	if (CheckBlacklist(name) && CheckBlacklistModels(entity) && !CheckWhitelist(name))
+	if (CheckBlacklist(name) || CheckBlacklistModels(entity) || !CheckWhitelist(name))
 	{
 		return true;
 	}
