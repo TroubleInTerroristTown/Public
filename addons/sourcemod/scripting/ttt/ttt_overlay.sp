@@ -40,6 +40,7 @@ ConVar g_cColorD = null;
 ConVar g_cColorI = null;
 ConVar g_cColorT = null;
 ConVar g_cUpdateTeamScore = null;
+ConVar g_cSeeRoles = null;
 
 bool g_bEndOverlay = false;
 
@@ -75,6 +76,7 @@ public void OnPluginStart()
 	g_cColorI = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorT = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
+	g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_roles", "0", "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -312,11 +314,9 @@ public void AssignOverlay(int client, int role)
 		TTT_ShowOverlayToClient(client, " ");
 	}
 
-	ConVar cvar = FindConVar("ttt_dead_players_can_see_other_roles");
-
-	if (cvar != null)
+	if (g_cSeeRoles != null)
 	{
-		if (cvar.BoolValue && !TTT_IsPlayerAlive(client))
+		if (g_cSeeRoles.BoolValue && !TTT_IsPlayerAlive(client))
 		{
 			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
 
