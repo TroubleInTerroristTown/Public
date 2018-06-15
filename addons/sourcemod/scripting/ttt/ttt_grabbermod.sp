@@ -79,7 +79,7 @@ public void OnPluginStart()
 	
 	LoadLists();
 
-	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
+	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -156,11 +156,11 @@ stock void GrabSomething(int client)
 	}
 	
 	// true is a positive found on the blacklist(models) or negative found on the whitelist 
-	if (CheckLists(ent, sName))
+	if (CheckLists(client, ent, sName))
 	{
 		return;
 	}
-	
+
 	if (g_cShowNames.BoolValue)
 	{
 		if (TTT_CheckCommandAccess(client, "gbm_output", g_cFlags, true))
@@ -186,7 +186,7 @@ stock void GrabSomething(int client)
 		GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
 		
 		// true is a positive found on the blacklist(models) or negative found on the whitelist 
-		if (CheckLists(ent, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
+		if (CheckLists(client, ent, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 		{
 			return;
 		}
@@ -366,9 +366,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return Plugin_Continue;
 }
 
-public Action Adjust(Handle timer)
+public Action Timer_Adjust(Handle timer)
 {
-
 	float vecDir[3];
 	float vecPos[3];
 	float vecPos2[3];
@@ -535,18 +534,21 @@ void LoadBlacklistModels()
 	delete hFile;
 }
 
-bool CheckBlacklist(const char[] name)
+bool CheckBlacklist(int client, const char[] name)
 {
 	char sBuffer[32];
-	
+	if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s", name);
 	if (g_aBlacklist.Length > 0)
 	{
 		for (int i = 0; i < g_aBlacklist.Length; i++)
 		{
 			g_aBlacklist.GetString(i, sBuffer, sizeof(sBuffer));
+
+			if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s - sBuffer: %s", name, sBuffer);
 			
 			if (strlen(sBuffer) > 1 && StrContains(name, sBuffer, false) != -1)
 			{
+				if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s - sBuffer: %s", name, sBuffer);
 				return true;
 			}
 		}
@@ -603,9 +605,11 @@ bool CheckWhitelist(const char[] name)
 	return false;
 }
 
-bool CheckLists(int entity, const char[] name)
+bool CheckLists(int client, int entity, const char[] name)
 {
-	if (CheckBlacklist(name) || CheckBlacklistModels(entity) || !CheckWhitelist(name))
+	if (g_cShowNames.BoolValue) PrintToChat(client, "CheckLists 1 - CheckBlacklist: %d - CheckBlacklistModels: %d - CheckWhitelist: %d", CheckBlacklist(client, name), CheckBlacklistModels(entity), CheckWhitelist(name));
+
+	if (CheckBlacklist(client, name) || CheckBlacklistModels(entity) || !CheckWhitelist(name))
 	{
 		return true;
 	}
