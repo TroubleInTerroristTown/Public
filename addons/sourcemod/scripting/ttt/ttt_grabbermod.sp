@@ -607,11 +607,21 @@ bool CheckWhitelist(const char[] name)
 
 bool CheckLists(int client, int entity, const char[] name)
 {
+	if (strlen(name) < 2)
+	{
+		return false;
+	}
+
 	if (g_cShowNames.BoolValue) PrintToChat(client, "CheckLists 1 - CheckBlacklist: %d - CheckBlacklistModels: %d - CheckWhitelist: %d", CheckBlacklist(client, name), CheckBlacklistModels(entity), CheckWhitelist(name));
 
-	if (CheckBlacklist(client, name) || CheckBlacklistModels(entity) || !CheckWhitelist(name))
+	if (CheckBlacklist(client, name) || CheckBlacklistModels(entity))
 	{
 		return true;
+	}
+
+	if (CheckWhitelist(name))
+	{
+		return false;
 	}
 	
 	return false;
