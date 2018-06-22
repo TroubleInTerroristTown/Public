@@ -1330,7 +1330,7 @@ stock void TeamInitialize(int client)
 		{
 			GivePlayerItem(client, "weapon_knife");
 		}
-		else
+		else if (!g_cInnocentKnife.BoolValue && GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) != -1)
 		{
 			/* char sBuffer[32];
 			int iEnt = -1;
