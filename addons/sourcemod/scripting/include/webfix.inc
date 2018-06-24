@@ -47,43 +47,47 @@ stock void WebFix_SetRedirectUrl(char[] url)
  * @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
  * @return				true if successful, false if error encountered.
  */
-stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0)
+stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0 ,bool UrlEncode = true)
 {
-  //Attempt to read redirect url from config file
-  if (!s_WebFix_IsRedirectUrlSet) {
-    WebFix_ReadRedirectUrlFromConfig();
-  }
+	//Attempt to read redirect url from config file
+	if (!s_WebFix_IsRedirectUrlSet) {
+		WebFix_ReadRedirectUrlFromConfig();
+	}
+	
+	//If url is still not set and we're using non-hidden mode, fail 
+	if (!s_WebFix_IsRedirectUrlSet && !hidden) {
+		LogError("Attempting to use WebFix_OpenUrl in non-hidden mode without a redirect URL being set.");
+		return false;
+	}
 
-  //If url is still not set and we're using non-hidden mode, fail 
-  if (!s_WebFix_IsRedirectUrlSet && !hidden) {
-    LogError("Attempting to use WebFix_OpenUrl in non-hidden mode without a redirect URL being set.");
-    return false;
-  }
-  
-  //Confirm URL is valid
-  if (StrContains(url, "http://", false) != 0 && StrContains(url, "https://", false) != 0 && !StrEqual(url, "about:blank")) {
-    LogError("Invalid protocol provided. Only 'http://', 'https://' and 'about:blank' are supported.");
-    return false;
-  }
-  
-  if (!IsClientInGame(client) || IsFakeClient(client))
-    return false;
-  
-  //Load invalid (non-existing) URL
-  ShowMOTDPanel(client, "WebFix", "http://invaliddomain.invalidtld", MOTDPANEL_TYPE_URL);
-  
-  DataPack pack;
-  CreateDataTimer(1.0, WebFix_OpenUrl_OpenTarget, pack);
-  pack.WriteCell(EntIndexToEntRef(client));
-  pack.WriteString(title);
-  pack.WriteString(url);
-  pack.WriteCell(hidden);
-  pack.WriteCell(width);
-  pack.WriteCell(height);
-  
-  return true;
+	if(UrlEncode){
+		char sUrlencode[WEBFIX_URL_LENGTH];
+		WebFix_URLEncode(url,sUrlencode,WEBFIX_URL_LENGTH);
+	}
+	
+	//Confirm URL is valid
+	if (!UrlEncode && StrContains(url, "http://", false) != 0 && StrContains(url, "https://", false) != 0 && !StrEqual(url, "about:blank")) {
+		LogError("Invalid protocol provided. Only 'http://', 'https://' and 'about:blank' are supported.");
+		return false;
+	}
+	
+	if (!IsClientInGame(client) || IsFakeClient(client))
+		return false;
+	
+	//Load invalid (non-existing) URL
+	ShowMOTDPanel(client, "WebFix", "http://invaliddomain.invalidtld", MOTDPANEL_TYPE_URL);
+	
+	DataPack pack;
+	CreateDataTimer(1.0, WebFix_OpenUrl_OpenTarget, pack);
+	pack.WriteCell(EntIndexToEntRef(client));
+	pack.WriteString(title);
+	pack.WriteString(url);
+	pack.WriteCell(hidden);
+	pack.WriteCell(width);
+	pack.WriteCell(height);
+	
+	return true;
 }
-
 /**
  * Open a URL on all clients using WebFix
  *
@@ -174,4 +178,44 @@ static void WebFix_ReadRedirectUrlFromConfig()
     
     file.Close();
   }
+}
+
+stock int WebFix_URLEncode( const char[] szInput, char[] szOutput, const int iLen)
+{
+	static const HEXCHARS[ 16 ] = {
+		0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+		0x38, 0x39, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66
+	};
+	
+	int iPos, cChar, iFLen;
+	while( ( cChar = szInput[ iPos ] ) && iFLen < iLen )
+	{
+		if( cChar == 0x20 )
+			szOutput[ iFLen++ ] = 0x2B;
+		else if( !( 0x41 <= cChar <= 0x5A )
+		&& !( 0x61 <= cChar <= 0x7A )
+		&& !( 0x30 <= cChar <= 0x39 )
+		&& cChar != 0x2D
+		&& cChar != 0x2E
+		&& cChar != 0x5F )
+		{
+			
+			if( ( iFLen + 3 ) > iLen )
+				break;
+			else if( cChar > 0xFF
+				|| cChar < 0x00 )
+			cChar = 0x2A;
+			
+			szOutput[ iFLen++ ] = 0x25;
+			szOutput[ iFLen++ ] = HEXCHARS[ cChar >> 4 ];
+			szOutput[ iFLen++ ] = HEXCHARS[ cChar & 15 ];
+		}
+		else
+		szOutput[ iFLen++ ] = cChar;
+		
+		iPos++;
+	}
+	
+	szOutput[ iFLen ] = 0;
+	return iFLen;
 }
