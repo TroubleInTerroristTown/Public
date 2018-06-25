@@ -37,42 +37,52 @@ stock void WebFix_SetRedirectUrl(char[] url)
 }
 
 /**
-* Open a URL on a client using WebFix
-*
-* @param client			Client which MOTD window will be opened on.
-* @param title			Window title.
-* @param url			URL to open. Must be prefixed with http:// or https:// protocols.
-* @param hidden			Override type (specific command or group).
-* @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
-* @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
-* @return				true if successful, false if error encountered.
-*/
+ * Open a URL on a client using WebFix
+ *
+ * @param client			Client which MOTD window will be opened on.
+ * @param title			Window title.
+ * @param url			URL to open. Must be prefixed with http:// or https:// protocols.
+ * @param hidden			Override type (specific command or group).
+ * @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
+ * @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
+ * @return				true if successful, false if error encountered.
+ */
 stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0,bool UrlEncode = true)
 {
 	//Attempt to read redirect url from config file
-	if (!s_WebFix_IsRedirectUrlSet) {
+	if (!s_WebFix_IsRedirectUrlSet)
+	{
 		WebFix_ReadRedirectUrlFromConfig();
 	}
 	
 	//If url is still not set and we're using non-hidden mode, fail 
-	if (!s_WebFix_IsRedirectUrlSet && !hidden) {
+	if (!s_WebFix_IsRedirectUrlSet && !hidden)
+	{
 		LogError("Attempting to use WebFix_OpenUrl in non-hidden mode without a redirect URL being set.");
 		return false;
 	}
 
 	//Confirm URL is valid
-	if (!UrlEncode && StrContains(url, "http://", false) != 0 && StrContains(url, "https://", false) != 0 && !StrEqual(url, "about:blank")) {
+	if (!UrlEncode && StrContains(url, "http://", false) != 0 && StrContains(url, "https://", false) != 0 && !StrEqual(url, "about:blank"))
+	{
 		LogError("Invalid protocol provided. Only 'http://', 'https://' and 'about:blank' are supported.error-> %s",url);
 		return false;
 	}
 	
 	char sUrlencode[WEBFIX_URL_LENGTH];
-	if(UrlEncode){
+	if(UrlEncode)
+	{
 		WebFix_URLEncode(url,sUrlencode,WEBFIX_URL_LENGTH);
-	}else strcopy(sUrlencode,WEBFIX_URL_LENGTH,url);
+	}
+	else
+	{
+		strcopy(sUrlencode,WEBFIX_URL_LENGTH,url);
+	}
 	
 	if (!IsClientInGame(client) || IsFakeClient(client))
+	{
 		return false;
+	}
 	
 	//Load invalid (non-existing) URL
 	ShowMOTDPanel(client, "WebFix", "http://invaliddomain.invalidtld", MOTDPANEL_TYPE_URL);
@@ -90,30 +100,37 @@ stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool
 }
 
 /**
-* Open a URL on all clients using WebFix
-*
-* @param title			Window title.
-* @param url			URL to open. Must be prefixed with http:// or https:// protocols.
-* @param hidden			Override type (specific command or group).
-* @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
-* @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
-* @return				true if all successful, false if any errors encountered.
-*/
+ * Open a URL on all clients using WebFix
+ *
+ * @param title			Window title.
+ * @param url			URL to open. Must be prefixed with http:// or https:// protocols.
+ * @param hidden			Override type (specific command or group).
+ * @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
+ * @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
+ * @return				true if all successful, false if any errors encountered.
+ */
 stock bool WebFix_OpenUrlAll(const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0)
 {
 	bool returnValue = true;
-	for (int i = 1; i <= MaxClients; ++i) {
-		if (IsClientInGame(i) && !IsFakeClient(i)){
+	for (int i = 1; i <= MaxClients; ++i)
+	{
+		if (IsClientInGame(i) && !IsFakeClient(i))
+		{
 			bool success = WebFix_OpenUrl(i, title, url, hidden, width, height);
 			if (!success)
+			{
 				returnValue = false;
+			}
 		}
 	}
 	
 	return returnValue;
 }
 
-//Internal Command! Do not call.
+
+/**
+ * Internal Command! Do not call.
+ */
 public Action WebFix_OpenUrl_OpenTarget(Handle timer, DataPack pack)
 {
 	pack.Reset();
@@ -121,7 +138,9 @@ public Action WebFix_OpenUrl_OpenTarget(Handle timer, DataPack pack)
 	int client = EntRefToEntIndex(pack.ReadCell());
 	
 	if (!IsClientInGame(client))
+	{
 		return Plugin_Handled;
+	}
 	
 	char title[WEBFIX_TITLE_LENGTH];
 	pack.ReadString(title, sizeof(title));
@@ -133,7 +152,9 @@ public Action WebFix_OpenUrl_OpenTarget(Handle timer, DataPack pack)
 	
 	//Use redirect url for non-hidden windows
 	if (!hidden)
+	{
 		Format(url, sizeof(url), "%s?url=%s&width=%d&height=%d", s_WebFix_RedirectUrl, url, width, height);
+	}
 	
 	//Show VGUI Panel
 	Handle panel = CreateKeyValues("data");
@@ -147,40 +168,49 @@ public Action WebFix_OpenUrl_OpenTarget(Handle timer, DataPack pack)
 	return Plugin_Handled;
 }
 
-//Internal Command
+/**
+ * Internal Command! Do not call.
+ */
 static void WebFix_ReadRedirectUrlFromConfig()
 {
 	char configFilePath[PLATFORM_MAX_PATH];
 	Format(configFilePath, sizeof(configFilePath), "configs/webfix_redirecturl.txt");
 	BuildPath(Path_SM, configFilePath, PLATFORM_MAX_PATH, configFilePath);
 	
-	if (FileExists(configFilePath)) {
+	if (FileExists(configFilePath))
+	{
 		//Open config file
 		File file = OpenFile(configFilePath, "r");
 		
-		if (file != null) {
+		if (file != null)
+		{
 			char buffer[PLATFORM_MAX_PATH];
-			if (file.ReadLine(buffer, sizeof(buffer))) { //Read a single line
-				
+			if (file.ReadLine(buffer, sizeof(buffer))) //Read a single line
+			{
 				//Remove final new line
 				//buffer length > 0 check needed in case file is completely empty and there is no new line '\n' char after empty string ""
 				if (strlen(buffer) > 0 && buffer[strlen(buffer) - 1] == '\n')
+				{
 					buffer[strlen(buffer) - 1] = '\0';
+				}
 				
 				//Remove any whitespace at either end
 				TrimString(buffer);
 				
 				if (StrContains(buffer, "http://", false) != 0 && StrContains(buffer, "https://", false) != 0)
+				{
 					LogError("Invalid redirect URL read from config file. Only 'http://' and 'https://' are supported.");
+				}
 				else
-				WebFix_SetRedirectUrl(buffer);
+				{
+					WebFix_SetRedirectUrl(buffer);
+				}
 			}
 		}
 		
 		file.Close();
 	}
 }
-
 
 stock int WebFix_URLEncode( const char[] szInput, char[] szOutput, const int iLen)
 {
