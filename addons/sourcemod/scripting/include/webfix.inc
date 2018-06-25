@@ -1,6 +1,6 @@
 /**
  *
-  * WebFix.inc
+ * WebFix.inc
  *
  * WebFix Include for CSGO allowing proper usage of MOTD's without caching first URL visited.
  * Fixes issue introduced in June 2017 CSGO/Steam updates.
@@ -9,7 +9,7 @@
  * Method by: Boomix (https://forums.alliedmods.net/member.php?u=260232)
  *
  * Version: 1.00
- * 
+ *
  */
 
 #if defined _webfix_included
