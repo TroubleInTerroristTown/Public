@@ -1,19 +1,19 @@
 /**
-*
-* WebFix.inc
-*
-* WebFix Include for CSGO allowing proper usage of MOTD's without caching first URL visited.
-* Fixes issue introduced in June 2017 CSGO/Steam updates.
-* 
-* Made by: Byte (https://forums.alliedmods.net/member.php?u=261613)
-* Method by: Boomix (https://forums.alliedmods.net/member.php?u=260232)
-*
-* Version: 1.00
-*
-*/
+ *
+  * WebFix.inc
+ *
+ * WebFix Include for CSGO allowing proper usage of MOTD's without caching first URL visited.
+ * Fixes issue introduced in June 2017 CSGO/Steam updates.
+ * 
+ * Made by: Byte (https://forums.alliedmods.net/member.php?u=261613)
+ * Method by: Boomix (https://forums.alliedmods.net/member.php?u=260232)
+ *
+ * Version: 1.00
+ * 
+ */
 
 #if defined _webfix_included
-#endinput
+ #endinput
 #endif
 #define _webfix_included
 
@@ -25,11 +25,11 @@ static char s_WebFix_RedirectUrl[WEBFIX_URL_LENGTH];
 static bool s_WebFix_IsRedirectUrlSet = false;
 
 /**
-* Sets the WebFix Redirect URL
-* Call this before calling WebFix_OpenUrl if 'webfix_redirecturl.txt' is not used.
-*
-* @param url			URL to WebFix Redirection Script
-*/
+ * Sets the WebFix Redirect URL
+ * Call this before calling WebFix_OpenUrl if 'webfix_redirecturl.txt' is not used.
+ *
+ * @param url			URL to WebFix Redirection Script
+ */
 stock void WebFix_SetRedirectUrl(char[] url)
 {
 	Format(s_WebFix_RedirectUrl, sizeof(s_WebFix_RedirectUrl), url);
