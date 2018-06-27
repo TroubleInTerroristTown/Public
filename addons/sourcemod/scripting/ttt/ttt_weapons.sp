@@ -245,7 +245,7 @@ void RegisterItem()
 	}
 	else if(g_cKevHelm_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
+		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 
 	g_cKF_Long.GetString(sBuffer, sizeof(sBuffer));
@@ -491,7 +491,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 				}
 				if(TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
 				{
-					GiveArmor(client);
+					GiveHelm(client);
 				}
 		}
 		else if(	(strcmp(itemshort, HEAVY_ITEM_SHORT, false) == 0)
