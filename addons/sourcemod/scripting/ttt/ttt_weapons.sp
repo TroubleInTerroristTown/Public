@@ -37,8 +37,8 @@ ConVar g_cM4_Long = null;
 ConVar g_cM4_Discount = null;
 ConVar g_cAWP_Long = null;
 ConVar g_cAWP_Discount = null;
-ConVar g_cKF_Long = null;
-ConVar g_cKF_Discount = null;
+ConVar g_cKnife_Long = null;
+ConVar g_cKnife_Discount = null;
 ConVar g_cAK_Long = null;
 ConVar g_cAK_Discount = null;
 ConVar g_cDeagle_Long = null;
@@ -60,7 +60,7 @@ ConVar g_cM4_Price = null;
 ConVar g_cAWP_Price = null;
 ConVar g_cAWP_Min_Shots = null;
 ConVar g_cAWP_Max_Shots = null;
-ConVar g_cKF_Price = null;
+ConVar g_cKnife_Price = null;
 ConVar g_cKev_Max = null;
 ConVar g_cHeavy_Max = null;
 ConVar g_cKev_Prio = null;
@@ -108,61 +108,72 @@ public void OnPluginStart()
 	g_cKev_Price = AutoExecConfig_CreateConVar("kevlar_price", "3000", "The amount of credits the kevlar costs. 0 to disable.");
 	g_cKev_Max = AutoExecConfig_CreateConVar("kevlar_max", "5", "The max amount of times a player can purchase kevlar in one round. 0 for unlimited.");
 	g_cKev_Prio = AutoExecConfig_CreateConVar("kevlar_sort_prio", "0", "The sorting priority of the kevlar in the shop menu.");
+	g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
+	g_cKev_Discount = AutoExecConfig_CreateConVar("kevlar_discount", "0", "Should kevlar discountable?", _, true, 0.0, true, 1.0);
+
 	g_cHeavy_Type = AutoExecConfig_CreateConVar("heavy_type", "1", "Type of heavy configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_cHeavy_Price = AutoExecConfig_CreateConVar("heavy_price", "10000", "The amount of credits the heavy costs. 0 to disable.");
 	g_cHeavy_Max = AutoExecConfig_CreateConVar("heavy_max", "5", "The max amount of times a player can purchase heavy in one round. 0 for unlimited.");
 	g_cHeavy_Prio = AutoExecConfig_CreateConVar("heavy_sort_prio", "0", "The sorting priority of the heavy in the shop menu.");
+	g_cHeavy_Long = AutoExecConfig_CreateConVar("heavy_name", "Heavy", "The name of the heavy in the shop menu.");
+	g_cHeavy_Discount = AutoExecConfig_CreateConVar("heavy_discount", "0", "Should heavy discountable?", _, true, 0.0, true, 1.0);
+
 	g_cHelm_Type = AutoExecConfig_CreateConVar("helm_type", "1", "Type of helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_cHelm_Price = AutoExecConfig_CreateConVar("helm_price", "2000", "The amount of credits the helm costs. 0 to disable.");
 	g_cHelm_Max = AutoExecConfig_CreateConVar("helm_max", "5", "The max amount of times a player can purchase helm in one round. 0 for unlimited.");
 	g_cHelm_Prio = AutoExecConfig_CreateConVar("helm_sort_prio", "0", "The sorting priority of the helm in the shop menu.");
+	g_cHelm_Long = AutoExecConfig_CreateConVar("helm_name", "Helm", "The name of the helm in the shop menu.");
+	g_cHelm_Discount = AutoExecConfig_CreateConVar("helm_discount", "0", "Should helm discountable?", _, true, 0.0, true, 1.0);
+
 	g_cKevHelm_Type = AutoExecConfig_CreateConVar("kevhelm_type", "1", "Type of kevlar+helm configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
 	g_cKevHelm_Price = AutoExecConfig_CreateConVar("kevhelm_price", "2000", "The amount of credits the kevlar+helm costs. 0 to disable.");
 	g_cKevHelm_Max = AutoExecConfig_CreateConVar("kevhelm_max", "5", "The max amount of times a player can purchase kevlar+helm in one round. 0 for unlimited.");
 	g_cKevHelm_Prio = AutoExecConfig_CreateConVar("kevhelm_sort_prio", "0", "The sorting priority of the kevlar+helm in the shop menu.");
+	g_cKevHelm_Long = AutoExecConfig_CreateConVar("kevhelm_name", "Kevlar+Helm", "The name of the kevlar+helm in the shop menu.");
+	g_cKevHelm_Discount = AutoExecConfig_CreateConVar("kevhelm_discount", "0", "Should kevlar+helm discountable?", _, true, 0.0, true, 1.0);
+
 	g_cUSP_Price = AutoExecConfig_CreateConVar("usp_price", "3000", "The amount of credits the USP-S costs. 0 to disable.");
 	g_cUSP_Prio = AutoExecConfig_CreateConVar("usp_sort_prio", "0", "The sorting priority of the USP-S in the shop menu.");
+	g_cUSP_Long = AutoExecConfig_CreateConVar("usp_name", "USP-S", "The name of the USP-S in the shop menu.");
+	g_cUSP_Discount = AutoExecConfig_CreateConVar("usp_discount", "0", "Should USP-S discountable?", _, true, 0.0, true, 1.0);
+
 	g_cAK_Price = AutoExecConfig_CreateConVar("ak47_price", "3000", "The amount of credits the AK47 costs. 0 to disable.");
 	g_cAK_Prio = AutoExecConfig_CreateConVar("ak47_sort_prio", "0", "The sorting priority of the AK47 in the shop menu.");
+	g_cAK_Long = AutoExecConfig_CreateConVar("ak47_name", "AK47", "The name of the AK47 in the shop menu.");
+	g_cAK_Discount = AutoExecConfig_CreateConVar("ak47_discount", "0", "Should AK47 discountable?", _, true, 0.0, true, 1.0);
+
 	g_cDeagle_Price = AutoExecConfig_CreateConVar("deagle_price", "3000", "The amount of credits the Deagle costs. 0 to disable.");
 	g_cDeagle_Prio = AutoExecConfig_CreateConVar("deagle_sort_prio", "0", "The sorting priority of the Deagle in the shop menu.");
+	g_cDeagle_Long = AutoExecConfig_CreateConVar("deagle_name", "Deagle", "The name of the Deagle in the shop menu.");
+	g_cDeagle_Discount = AutoExecConfig_CreateConVar("deagle_discount", "0", "Should Deagle discountable?", _, true, 0.0, true, 1.0);
+
 	g_cRevolver_Price = AutoExecConfig_CreateConVar("revolver_price", "3000", "The amount of credits the Revolver costs. 0 to disable.");
 	g_cRevolver_Prio = AutoExecConfig_CreateConVar("revolver_sort_prio", "0", "The sorting priority of the Revolver in the shop menu.");
+	g_cRevolver_Long = AutoExecConfig_CreateConVar("revolver_name", "Revolver", "The name of the Revolver in the shop menu.");
+	g_cRevolver_Discount = AutoExecConfig_CreateConVar("revolver_discount", "0", "Should Revolver discountable?", _, true, 0.0, true, 1.0);
+
 	g_cScout_Price = AutoExecConfig_CreateConVar("scout_price", "3000", "The amount of credits the Scout costs. 0 to disable.");
 	g_cScout_Prio = AutoExecConfig_CreateConVar("scout_sort_prio", "0", "The sorting priority of the Scout in the shop menu.");
+	g_cScout_Long = AutoExecConfig_CreateConVar("scout_name", "Scout", "The name of the Scout in the shop menu.");
+	g_cScout_Discount = AutoExecConfig_CreateConVar("scout_discount", "0", "Should Scout discountable?", _, true, 0.0, true, 1.0);
+
 	g_cM4_Price = AutoExecConfig_CreateConVar("m4a1_price", "3000", "The amount of credits the M4A1-S costs. 0 to disable.");
 	g_cM4_Prio = AutoExecConfig_CreateConVar("m4a1_sort_prio", "0", "The sorting priority of the M4A1-S in the shop menu.");
+	g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
+	g_cM4_Discount = AutoExecConfig_CreateConVar("m4a1_discount", "0", "Should M4A1-S discountable?", _, true, 0.0, true, 1.0);
+
 	g_cAWP_Price = AutoExecConfig_CreateConVar("awp_price", "3000", "The amount of credits the AWP costs. 0 to disable.");
 	g_cAWP_Min_Shots = AutoExecConfig_CreateConVar("awp_min_shots", "1", "The min. amount of shots of traitor awp.");
 	g_cAWP_Max_Shots = AutoExecConfig_CreateConVar("awp_max_shots", "3", "The max. amount of shots of traitor awp.");
 	g_cAWP_Prio = AutoExecConfig_CreateConVar("awp_sort_prio", "0", "The sorting priority of the AWP in the shop menu.");
-	g_cKF_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
+	g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
+	g_cAWP_Discount = AutoExecConfig_CreateConVar("awp_discount", "0", "Should AWP discountable?", _, true, 0.0, true, 1.0);
+
+	g_cKnife_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
+	g_cKnife_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
+	g_cKnife_Discount = AutoExecConfig_CreateConVar("oneknife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
 	g_cKnife_Max = AutoExecConfig_CreateConVar("oneknife_max", "5", "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
 	g_cKnife_Prio = AutoExecConfig_CreateConVar("oneknife_sort_prio", "0", "The sorting priority of the One-Hit Knife in the shop menu.");
-	g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
-	g_cHeavy_Long = AutoExecConfig_CreateConVar("heavy_name", "Heavy", "The name of the heavy in the shop menu.");
-	g_cHelm_Long = AutoExecConfig_CreateConVar("helm_name", "Helm", "The name of the helm in the shop menu.");
-	g_cKevHelm_Long = AutoExecConfig_CreateConVar("kevhelm_name", "Kevlar+Helm", "The name of the kevlar+helm in the shop menu.");
-	g_cUSP_Long = AutoExecConfig_CreateConVar("usp_name", "USP-S", "The name of the USP-S in the shop menu.");
-	g_cAK_Long = AutoExecConfig_CreateConVar("ak47_name", "AK47", "The name of the AK47 in the shop menu.");
-	g_cDeagle_Long = AutoExecConfig_CreateConVar("deagle_name", "Deagle", "The name of the Deagle in the shop menu.");
-	g_cRevolver_Long = AutoExecConfig_CreateConVar("revolver_name", "Revolver", "The name of the Revolver in the shop menu.");
-	g_cScout_Long = AutoExecConfig_CreateConVar("scout_name", "Scout", "The name of the Scout in the shop menu.");
-	g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
-	g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
-	g_cKF_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
-	g_cKev_Discount = AutoExecConfig_CreateConVar("kevlar_discount", "0", "Should kevlar discountable?", _, true, 0.0, true, 1.0);
-	g_cHeavy_Discount = AutoExecConfig_CreateConVar("heavy_discount", "0", "Should heavy discountable?", _, true, 0.0, true, 1.0);
-	g_cHelm_Discount = AutoExecConfig_CreateConVar("helm_discount", "0", "Should helm discountable?", _, true, 0.0, true, 1.0);
-	g_cKevHelm_Discount = AutoExecConfig_CreateConVar("kevhelm_discount", "0", "Should kevlar+helm discountable?", _, true, 0.0, true, 1.0);
-	g_cUSP_Discount = AutoExecConfig_CreateConVar("usp_discount", "0", "Should USP-S discountable?", _, true, 0.0, true, 1.0);
-	g_cAK_Discount = AutoExecConfig_CreateConVar("ak47_discount", "0", "Should AK47 discountable?", _, true, 0.0, true, 1.0);
-	g_cDeagle_Discount = AutoExecConfig_CreateConVar("deagle_discount", "0", "Should Deagle discountable?", _, true, 0.0, true, 1.0);
-	g_cRevolver_Discount = AutoExecConfig_CreateConVar("revolver_discount", "0", "Should Revolver discountable?", _, true, 0.0, true, 1.0);
-	g_cScout_Discount = AutoExecConfig_CreateConVar("scout_discount", "0", "Should Scout discountable?", _, true, 0.0, true, 1.0);
-	g_cM4_Discount = AutoExecConfig_CreateConVar("m4a1_discount", "0", "Should M4A1-S discountable?", _, true, 0.0, true, 1.0);
-	g_cAWP_Discount = AutoExecConfig_CreateConVar("awp_discount", "0", "Should AWP discountable?", _, true, 0.0, true, 1.0);
-	g_cKF_Discount = AutoExecConfig_CreateConVar("oneknife_discount", "0", "Should 1-hit knife discountable?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	LoadTranslations("ttt.phrases");
@@ -248,8 +259,8 @@ void RegisterItem()
 		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 
-	g_cKF_Long.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKF_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue, g_cKF_Discount.BoolValue);
+	g_cKnife_Long.GetString(sBuffer, sizeof(sBuffer));
+	TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKnife_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue, g_cKnife_Discount.BoolValue);
 
 	g_cM4_Long.GetString(sBuffer, sizeof(sBuffer));
 	TTT_RegisterCustomItem(M4_ITEM_SHORT, sBuffer, g_cM4_Price.IntValue, TTT_TEAM_TRAITOR, g_cM4_Prio.IntValue, g_cM4_Discount.BoolValue);
