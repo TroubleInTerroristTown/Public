@@ -75,7 +75,8 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_drules", Command_DetectiveRules);
 	RegConsoleCmd("sm_detective", Command_DetectiveRules);
 	RegConsoleCmd("sm_rslays", Command_RSlays);
-	RegConsoleCmd("sm_tttversion", Command_TTTVersion);
+	RegConsoleCmd("sm_tttversion", Command_Version);
+	RegConsoleCmd("sm_version", Command_Version);
 	
 	AddCommandListener(Command_LAW, "+lookatweapon");
 	AddCommandListener(Command_Say, "say");
@@ -2139,7 +2140,7 @@ public Action Command_RSlays(int client, int args)
 	return Plugin_Continue;
 }
 
-public Action Command_TTTVersion(int client, int args)
+public Action Command_Version(int client, int args)
 {
 	ReplyToCommand(client, "TTT Version: %s", TTT_PLUGIN_VERSION);
 }
