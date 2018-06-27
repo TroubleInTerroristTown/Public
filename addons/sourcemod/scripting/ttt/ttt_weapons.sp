@@ -199,7 +199,7 @@ void RegisterItem()
 	}
 	else if(g_cKev_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(KEV_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
+		TTT_RegisterCustomItem(KEV_T_ITEM_SHORT, sBuffer, g_cKev_Price.IntValue, TTT_TEAM_TRAITOR, g_cKev_Prio.IntValue, g_cKev_Discount.BoolValue);
 	}
 
 
@@ -215,7 +215,7 @@ void RegisterItem()
 	}
 	else if(g_cHeavy_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HEAVY_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
+		TTT_RegisterCustomItem(HEAVY_T_ITEM_SHORT, sBuffer, g_cHeavy_Price.IntValue, TTT_TEAM_TRAITOR, g_cHeavy_Prio.IntValue, g_cHeavy_Discount.BoolValue);
 	}
 
 	g_cHelm_Long.GetString(sBuffer, sizeof(sBuffer));
@@ -230,7 +230,7 @@ void RegisterItem()
 	}
 	else if(g_cHelm_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(HELM_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
+		TTT_RegisterCustomItem(HELM_T_ITEM_SHORT, sBuffer, g_cHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cHelm_Prio.IntValue, g_cHelm_Discount.BoolValue);
 	}
 
 	g_cKevHelm_Long.GetString(sBuffer, sizeof(sBuffer));
@@ -245,7 +245,7 @@ void RegisterItem()
 	}
 	else if(g_cKevHelm_Type.IntValue == 2)
 	{
-		TTT_RegisterCustomItem(KEVHELM_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
+		TTT_RegisterCustomItem(KEVHELM_T_ITEM_SHORT, sBuffer, g_cKevHelm_Price.IntValue, TTT_TEAM_TRAITOR, g_cKevHelm_Prio.IntValue, g_cKevHelm_Discount.BoolValue);
 	}
 
 	g_cKF_Long.GetString(sBuffer, sizeof(sBuffer));
