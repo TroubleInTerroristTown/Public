@@ -539,10 +539,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
-void GiveArmor(int client)
+void GiveArmor(int client, int armor = 100)
 {
 	g_iKevs[client]++;
-	SetEntProp(client, Prop_Data, "m_ArmorValue", 100, 1);
+	SetEntProp(client, Prop_Send, "m_ArmorValue", armor);
 }
 
 void GiveHeavy(int client)
@@ -588,7 +588,7 @@ void ResetStuff()
 		SetEntProp(i, Prop_Send, "m_bHasHelmet", false);
 		SetEntProp(i, Prop_Send, "m_bHasHeavyArmor", false);
 		SetEntProp(i, Prop_Send, "m_bWearingSuit", false);
-		SetEntProp(i, Prop_Data, "m_ArmorValue", 0);
+		SetEntProp(i, Prop_Send, "m_ArmorValue", 0);
 	}
 }
 
