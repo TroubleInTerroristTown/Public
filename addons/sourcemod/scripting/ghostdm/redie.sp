@@ -1,5 +1,8 @@
 Redie_OnPluginStart()
 {
+    RegConsoleCmd("sm_redie", Command_Redie);
+    RegConsoleCmd("sm_reback", Command_Reback);
+
     AddNormalSoundHook(view_as<NormalSHook>(OnNormalSoundPlayed));
 
     LoopValidClients(i)
@@ -78,7 +81,7 @@ void Redie_OnPlayerDeath(int client)
     }
 }
 
-public Action Command_redie(int client, int args)
+public Action Command_Redie(int client, int args)
 {
     if(IsClientValid(client))
     {
@@ -143,7 +146,7 @@ public Action Command_redie(int client, int args)
     return Plugin_Handled;
 }
 
-public Action Command_reback(int client, int args)
+public Action Command_Reback(int client, int args)
 {
     if(IsClientValid(client))
     {

@@ -44,17 +44,14 @@ public int Native_IsClientInRedie(Handle plugin, int numParams)
 
 public void OnPluginStart()
 {
-    RegAdminCmd("sm_redie", Command_redie, ADMFLAG_CUSTOM4);
-    RegAdminCmd("sm_reback", Command_reback, ADMFLAG_CUSTOM4);
-    
-    HookEvent("round_start", RoundStart);
-    HookEvent("round_end", RoundEnd);
-    HookEvent("player_death", PlayerDeath);
-    HookEvent("player_team", PlayerTeam, EventHookMode_Pre);
-    HookEvent("player_spawn", PlayerSpawn, EventHookMode_Pre);
+    HookEvent("round_start", Event_RoundStart);
+    HookEvent("round_end", Event_RoundEnd);
+    HookEvent("player_death", Event_PlayerDeath);
+    HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
+    HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Pre);
 
     g_cPluginTag = AutoExecConfig_CreateConVar("ghostdm_plugin_tag", "{darkred}[Redie] {default}", "Plugin tag for every message from this plugin");
-    g_cPluginTag.AddChangeHook(OnConVarChanged);
+    g_cPluginTag.AddChangeHook(CVar_OnConVarChanged);
     
     Redie_OnPluginStart();
 }
@@ -64,7 +61,7 @@ public void OnConfigsExecuted()
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
 
-public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+public void CVar_OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     if (convar == g_cPluginTag)
     {
@@ -85,17 +82,17 @@ public void OnClientDisconnect(int client)
     ResetRedie(client);
 }
 
-public Action RoundStart(Event event, const char[] name, bool dontBroadcast)
+public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
     Redie_OnRoundStart();
 }
 
-public Action RoundEnd(Event event, const char[] name, bool dontBroadcast)
+public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
     Redie_OnRoundEnd();
 }
 
-public Action PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
     
@@ -105,13 +102,13 @@ public Action PlayerDeath(Event event, const char[] name, bool dontBroadcast)
     }
 }
 
-public Action PlayerTeam(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
     event.BroadcastDisabled = true;
     return Plugin_Changed;
 }
 
-public Action PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
     
