@@ -1,44 +1,44 @@
-#include <sourcemod>
-#include <cstrike>
-#include <sdktools>
-#include <sdkhooks>
-#include <ttt>
-#include <multicolors>
-
 #pragma semicolon 1
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Redie with Deathmatch"
+#include <sourcemod>
+#include <sdktools>
+#include <sdkhooks>
+#include <cstrike>
+#include <autoexecconfig>
+#include <multicolors>
 
-bool g_bBlockCommand;
-bool g_bRedie[MAXPLAYERS+1];
-bool g_bNoclipBlock[MAXPLAYERS+1];
+#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
 
-Handle g_hNoclip[MAXPLAYERS+1];
-Handle g_hNoclipReset[MAXPLAYERS+1];
+bool g_bBlockRedie = false;
+bool g_bRedie[MAXPLAYERS + 1] = { false, ... };
+bool g_bNoclipBlock[MAXPLAYERS + 1] = { false, ... };
+
+Handle g_hNoclip[MAXPLAYERS + 1] = { null, ... };
+Handle g_hNoclipReset[MAXPLAYERS + 1] = { null, ... };
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 public Plugin myinfo =
 {
-	name = PLUGIN_NAME,
-	author = TTT_PLUGIN_AUTHOR,
-	description = TTT_PLUGIN_DESCRIPTION,
-	version = TTT_PLUGIN_VERSION,
-	url = TTT_PLUGIN_URL
+	name = "Ghost Deathmatch with Redie",
+	author = "Bara",
+	description = "",
+	version = "1.0.0",
+	url = "github.com/Bara/TroubleinTerroristTown"
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	CreateNative("GetRedieStatus", Native_GetRedieStatus);
+	CreateNative("GhostDM_IsClientInRedie", Native_IsClientInRedie);
 	
 	RegPluginLibrary("ghostdm");
 	
 	return APLRes_Success;
 }
 
-public int Native_GetRedieStatus(Handle plugin, int numParams)
+public int Native_IsClientInRedie(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
 	
@@ -57,6 +57,9 @@ public void OnPluginStart()
 	HookEvent("player_spawn", PlayerSpawn, EventHookMode_Pre);
 	
 	AddNormalSoundHook(view_as<NormalSHook>(OnNormalSoundPlayed));
+
+	g_cPluginTag = AutoExecConfig_CreateConVar("ghostdm_plugin_tag", "{darkred}[Redie] {default}", "Plugin tag for every message from this plugin");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	
 	LoopValidClients(i)
 	{
@@ -68,8 +71,6 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-	g_cPluginTag = FindConVar("ttt_plugin_tag");
-	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
 
@@ -83,12 +84,17 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public void OnClientPutInServer(int client)
 {
-	if (TTT_IsClientValid(client))
+	if (IsClientValid(client))
 	{
 		SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
 		SDKHook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
 		SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 	}
+}
+
+public void OnClientDisconnect(int client)
+{
+	ResetRedie(client);
 }
 
 public Action OnWeaponCanUse(int client, int weapon)
@@ -109,13 +115,13 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
 
 public Action Command_redie(int client, int args)
 {
-	if(TTT_IsClientValid(client))
+	if(IsClientValid(client))
 	{
 		if(!IsPlayerAlive(client))
 		{
 			if(GetClientTeam(client) > CS_TEAM_SPECTATOR)
 			{
-				if(!g_bBlockCommand)
+				if(!g_bBlockRedie)
 				{
 					g_bRedie[client] = true;
 					
@@ -130,7 +136,7 @@ public Action Command_redie(int client, int args)
 						
 						while((index = GetPlayerWeaponSlot(client, i)) != -1)
 						{
-							TTT_SafeRemoveWeapon(client, index, i);
+							SafeRemoveWeapon(client, index, i);
 						}
 					}
 
@@ -174,7 +180,7 @@ public Action Command_redie(int client, int args)
 
 public Action Command_reback(int client, int args)
 {
-	if(TTT_IsClientValid(client))
+	if(IsClientValid(client))
 	{
 		if(g_bRedie[client])
 		{
@@ -205,7 +211,7 @@ public Action Command_reback(int client, int args)
 
 public Action RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
-	g_bBlockCommand = false;
+	g_bBlockRedie = false;
 	
 	LoopValidClients(client)
 	{
@@ -238,7 +244,7 @@ public Action RoundStart(Event event, const char[] name, bool dontBroadcast)
 
 public Action RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
-	g_bBlockCommand = true;
+	g_bBlockRedie = true;
 
 	LoopValidClients(i)
 	{
@@ -250,7 +256,7 @@ public Action PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client))
+	if(IsClientValid(client))
 	{
 		if(CheckCommandAccess(client, "sm_redie", ADMFLAG_CUSTOM4))
 		{
@@ -269,7 +275,7 @@ public Action PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 	
-	if(TTT_IsClientValid(client) && g_bRedie[client])
+	if(IsClientValid(client) && g_bRedie[client])
 	{
 		ResetRedie(client);
 		CreateTimer(0.5, Timer_FixSolids, GetClientUserId(client));
@@ -280,7 +286,7 @@ public Action Timer_FixSolids(Handle timer, int userid)
 {
 	int client = GetClientOfUserId(userid);
 
-	if (TTT_IsClientValid(client))
+	if (IsClientValid(client))
 	{
 		SetEntProp(client, Prop_Data, "m_CollisionGroup", 1);
 		SetEntProp(client, Prop_Data, "m_nSolidType", 0);
@@ -296,7 +302,7 @@ public Action Timer_FixSolids(Handle timer, int userid)
 
 public Action NoclipTimer(Handle timer, any client)
 {
-	if(TTT_IsClientValid(client) && g_bRedie[client])
+	if(IsClientValid(client) && g_bRedie[client])
 	{
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		
@@ -308,7 +314,7 @@ public Action NoclipTimer(Handle timer, any client)
 
 public Action NoclipReset(Handle timer, any client)
 {
-	if(TTT_IsClientValid(client) && g_bRedie[client])
+	if(IsClientValid(client) && g_bRedie[client])
 	{
 		g_bNoclipBlock[client] = false;
 	}
@@ -318,7 +324,7 @@ public Action NoclipReset(Handle timer, any client)
 
 public Action BlockTouch(int entity, int other)
 {
-	if(TTT_IsClientValid(other) && g_bRedie[other])
+	if(IsClientValid(other) && g_bRedie[other])
 	{
 		return Plugin_Handled;
 	}
@@ -328,7 +334,7 @@ public Action BlockTouch(int entity, int other)
 
 public Action OnNormalSoundPlayed(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
 {
-	if(TTT_IsClientValid(entity) && g_bRedie[entity])
+	if(IsClientValid(entity) && g_bRedie[entity])
 	{
 		return Plugin_Stop;
 	}
@@ -375,7 +381,81 @@ void ResetRedie(int client)
 	delete g_hNoclipReset[client];
 }
 
-public void OnClientDisconnect(int client)
+stock bool IsClientValid(int client)
 {
-	ResetRedie(client);
+	if (client > 0 && client <= MaxClients)
+	{
+		if (!IsClientConnected(client))
+		{
+			return false;
+		}
+		
+		if (IsClientSourceTV(client))
+		{
+			return false;
+		}
+
+		if (!IsClientInGame(client))
+		{
+			return false;
+		}
+
+		return true;
+	}
+	return false;
+}
+
+stock bool SafeRemoveWeapon(int client, int weapon, int slot)
+{
+	int iDefIndex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
+	
+	if (iDefIndex < 0 || iDefIndex > 700)
+	{
+		return false;
+	}
+	
+	if (HasEntProp(weapon, Prop_Send, "m_bInitialized"))
+	{
+		if (GetEntProp(weapon, Prop_Send, "m_bInitialized") == 0)
+		{
+			return false;
+		}
+	}
+	
+	if (HasEntProp(weapon, Prop_Send, "m_bStartedArming"))
+	{
+		if (GetEntSendPropOffs(weapon, "m_bStartedArming") > -1)
+		{
+			return false;
+		}
+	}
+	
+	if (GetPlayerWeaponSlot(client, slot) != weapon)
+	{
+		return false;
+	}
+	
+	if (!RemovePlayerItem(client, weapon))
+	{
+		return false;
+	}
+	
+	int iWorldModel = GetEntPropEnt(weapon, Prop_Send, "m_hWeaponWorldModel");
+	
+	if (IsValidEdict(iWorldModel) && IsValidEntity(iWorldModel))
+	{
+		if (!AcceptEntityInput(iWorldModel, "Kill"))
+		{
+			return false;
+		}
+	}
+	
+	if (weapon == GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon"))
+	{
+		SetEntPropEnt(client, Prop_Send, "m_hActiveWeapon", -1);
+	}
+	
+	AcceptEntityInput(weapon, "Kill");
+	
+	return true;
 }
