@@ -122,3 +122,16 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 {
     Redie_OnPlayerRunCmd(client, buttons);
 }
+
+public Action OnNormalSoundPlayed(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
+{
+    if(IsClientValid(entity))
+    {
+        if (Redie_OnNormalSoundPlayed(entity))
+        {
+            return Plugin_Stop;
+        }
+    }
+    
+    return Plugin_Continue;
+}

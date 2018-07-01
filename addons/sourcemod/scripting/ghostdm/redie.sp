@@ -225,14 +225,14 @@ public Action OnEntityTouch(int entity, int other)
     return Plugin_Continue;
 }
 
-public Action OnNormalSoundPlayed(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
+bool Redie_OnNormalSoundPlayed(int client)
 {
-    if(IsClientValid(entity) && g_bRedie[entity])
+    if (g_bRedie[client])
     {
-        return Plugin_Stop;
+        return true;
     }
     
-    return Plugin_Continue;
+    return false;
 }
 
 public Action Timer_FixSolids(Handle timer, int userid)
