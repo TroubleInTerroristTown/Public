@@ -14,6 +14,7 @@ ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 #include "ghostdm/globals.sp"
+#include "ghostdm/config.sp"
 #include "ghostdm/stocks.sp"
 #include "ghostdm/redie.sp"
 
@@ -49,6 +50,8 @@ public void OnPluginStart()
     HookEvent("player_death", Event_PlayerDeath);
     HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Pre);
+
+    Config_OnPluginStart();
 
     g_cPluginTag = AutoExecConfig_CreateConVar("ghostdm_plugin_tag", "{darkred}[Redie] {default}", "Plugin tag for every message from this plugin");
     g_cPluginTag.AddChangeHook(CVar_OnConVarChanged);
