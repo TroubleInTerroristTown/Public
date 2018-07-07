@@ -11,13 +11,8 @@ addons:
     - lib32stdc++6
 
 env:
-  - VERSION=1.8
   - VERSION=1.9
   - VERSION=1.10
-
-matrix:
-  allow_failures:
-    - env: VERSION=1.10
 
 before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" ]]; then bash ci/test.sh $VERSION "dev"; fi'
