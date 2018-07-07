@@ -54,7 +54,7 @@ void SetupConfig()
 	g_clogsAccess = AutoExecConfig_CreateConVar("ttt_logsaccess", "b", "Admin flags to view logs in a round.");
 	g_cLogsDeadOnly = AutoExecConfig_CreateConVar("ttt_logs_dead_only", "0", "Access to logs only for dead admins?", _, true, 0.0, true, 1.0);
 	g_cLogsNotifyAlive = AutoExecConfig_CreateConVar("ttt_logs_notify_alive", "1", "Notify if logs has been watched by alive admin. 0 = Don't notify anyone, 1 = Notify everyone, 2 = Notify admins only", _, true, 0.0, true, 2.0);
-	g_cupdateClientModel = AutoExecConfig_CreateConVar("ttt_update_client_model", "1", "Update the client model isntantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update", _, true, 0.0, true, 1.0);
+	g_cupdateClientModel = AutoExecConfig_CreateConVar("ttt_update_client_model", "1", "Update the client model instantly when they are assigned a role. Disables forcing client models to a specified model. 1 = Update, 0 = Don't Update", _, true, 0.0, true, 1.0);
 	g_cremoveHostages = AutoExecConfig_CreateConVar("ttt_remove_hostages", "1", "Remove all hostages from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
 	g_cremoveBomb = AutoExecConfig_CreateConVar("ttt_remove_bomb_on_spawn", "1", "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
 	g_ctraitorRatio = AutoExecConfig_CreateConVar("ttt_traitor_ratio", "25", "The chance of getting the traitor role.");

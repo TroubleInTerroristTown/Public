@@ -178,6 +178,7 @@ void Redie_OnPlayerRunCmd(int client, int &buttons)
 {
     if(g_bRedie[client])
     {
+        // Block +use usage for players in redie
         buttons &= ~IN_USE;
         
         if(buttons & IN_RELOAD)
