@@ -120,6 +120,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	if (iRole == TTT_TEAM_TRAITOR)
 	{
 		g_cTextT.GetString(sText, sizeof(sText));
+		
+		if (TTT_UseClientPanorama(client))
+		{
+			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
+		}
+
 		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
@@ -142,6 +148,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	else if (iRole == TTT_TEAM_DETECTIVE)
 	{
 		g_cTextD.GetString(sText, sizeof(sText));
+		
+		if (TTT_UseClientPanorama(client))
+		{
+			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
+		}
+
 		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
@@ -164,6 +176,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	else if (iRole == TTT_TEAM_INNOCENT)
 	{
 		g_cTextI.GetString(sText, sizeof(sText));
+		
+		if (TTT_UseClientPanorama(client))
+		{
+			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
+		}
+
 		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)
@@ -186,6 +204,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	else if (iRole == TTT_TEAM_UNASSIGNED)
 	{
 		g_cTextU.GetString(sText, sizeof(sText));
+		
+		if (TTT_UseClientPanorama(client))
+		{
+			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
+		}
+
 		strcopy(sHintText, iHintTextLength, sText);
 		
 		if (iTRole == TTT_TEAM_TRAITOR)

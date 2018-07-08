@@ -1119,7 +1119,16 @@ stock void addCredits(int client, int credits, bool message = false)
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
 			CFormatColor(sBuffer, sizeof(sBuffer), client);
-			PrintHintText(client, sBuffer);
+			
+			if (TTT_UseClientPanorama(client))
+			{
+				Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+				PrintCenterText(client, sBuffer);
+			}
+			else
+			{
+				PrintHintText(client, sBuffer);
+			}
 		}
 		else
 		{
@@ -1165,7 +1174,16 @@ stock void subtractCredits(int client, int credits, bool message = false)
 			char sBuffer[MAX_MESSAGE_LENGTH];
 			Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
 			CFormatColor(sBuffer, sizeof(sBuffer), client);
-			PrintHintText(client, sBuffer);
+			
+			if (TTT_UseClientPanorama(client))
+			{
+				Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+				PrintCenterText(client, sBuffer);
+			}
+			else
+			{
+				PrintHintText(client, sBuffer);
+			}
 		}
 		else
 		{
