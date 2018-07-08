@@ -778,7 +778,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 			{
 				if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
 				{
-					PrintCenterText(i, "<pre><font'>GO! GO! GO!</font></pre>");
+					PrintCenterText(i, "<pre>GO! GO! GO!</pre>");
 					return Plugin_Continue;
 				}
 				
@@ -795,7 +795,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 	{
 		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
 		{
-			PrintCenterText(i, "<pre><font'>Round starts in %d seconds</font></pre>", timeLeft);
+			PrintCenterText(i, "<pre>Round starts in %d seconds</pre>", timeLeft);
 			return Plugin_Continue;
 		}
 		
