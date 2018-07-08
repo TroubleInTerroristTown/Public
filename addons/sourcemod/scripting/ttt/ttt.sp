@@ -2028,6 +2028,20 @@ public void OnClientPostAdminCheck(int client)
 	{
 		CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
 	}
+
+	QueryClientConVar(client, "@panorama_debug_overlay_opacity", OnQueryClientConVar);
+}
+
+public void OnQueryClientConVar(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
+{
+	if (result != ConVarQuery_Okay)
+	{
+		g_bPanorama[client] = false;
+	}
+	else
+	{
+		g_bPanorama[client] = true;
+	}
 }
 
 public Action Timer_OnClientPostAdminCheck(Handle timer, any userid)
@@ -2528,6 +2542,7 @@ public void OnClientDisconnect(int client)
 		g_bKarma[client] = false;
 		g_bFound[client] = true;
 		g_bAlive[client] = false;
+		g_bPanorama[client] = false;
 
 		if (g_cTranfserArmor.BoolValue)
 		{
