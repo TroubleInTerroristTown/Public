@@ -776,6 +776,12 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 		{
 			LoopValidClients(i)
 			{
+				if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
+				{
+					PrintCenterText(i, "<pre><font'>GO! GO! GO!</font></pre>");
+					return Plugin_Continue;
+				}
+				
 				Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
 				PrintHintText(i, centerText);
 			}
@@ -787,6 +793,12 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
 	LoopValidClients(i)
 	{
+		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
+		{
+			PrintCenterText(i, "<pre><font'>Round starts in %d seconds</font></pre>", timeLeft);
+			return Plugin_Continue;
+		}
+		
 		Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
 		PrintHintText(i, centerText);
 	}
@@ -3521,7 +3533,16 @@ stock int addKarma(int client, int karma, bool message = false)
 	{
 		if (g_cmessageTypKarma.IntValue == 1)
 		{
-			PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
+			if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
+			{
+				char sBuffer[MAX_MESSAGE_LENGTH];
+				Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
+				PrintCenterText(client, sBuffer);
+			}
+			else
+			{
+				PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
+			}
 		}
 		else
 		{
@@ -3578,7 +3599,16 @@ stock int subtractKarma(int client, int karma, bool message = false)
 	{
 		if (g_cmessageTypKarma.IntValue == 1)
 		{
-			PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
+			if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
+			{
+				char sBuffer[MAX_MESSAGE_LENGTH];
+				Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
+				PrintCenterText(client, sBuffer);
+			}
+			else
+			{
+				PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
+			}
 		}
 		else
 		{

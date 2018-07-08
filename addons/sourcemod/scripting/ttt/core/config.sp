@@ -136,6 +136,7 @@ void SetupConfig()
 	g_cNameChangeLength = AutoExecConfig_CreateConVar("ttt_name_change_banlength", "120", "Ban length for name change (require 'ttt_name_change_punishment 3')");
 	g_cIdentifyLog = AutoExecConfig_CreateConVar("ttt_identity_log", "0", "Log every identified body?", _, true, 0.0, true, 1.0);
 	g_cShowInnoRDMMenu = AutoExecConfig_CreateConVar("ttt_show_rdm_menu_for_inno", "0", "Show RDM Menu while killing Innocent as Innocent?", _, true, 0.0, true, 1.0);
+	g_cPanoramaMessages = AutoExecConfig_CreateConVar("ttt_enable_panorama_messages", "1", "Enable new messages (Colors aren't supported!) for panorama players?", _, true, 0.0, true, 1.0);
 	
 	g_cpluginTag.AddChangeHook(OnConVarChanged);
 	g_ckickImmunity.AddChangeHook(OnConVarChanged);
