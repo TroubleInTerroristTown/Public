@@ -16,6 +16,8 @@ ConVar g_cTimer = null;
 int g_iTarget[MAXPLAYERS + 1] = {0, ...};
 Handle g_hOnHudSend_Pre = null;
 
+ConVar g_cPanoramaMessages = null;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -58,6 +60,13 @@ public void OnAllPluginsLoaded()
 	if (hPlugin != null && GetPluginStatus(hPlugin) == Plugin_Running)
 	{
 		SetFailState("Old player hud file found! Please delete '%s'", sFile);
+	}
+
+	g_cPanoramaMessages = FindConVar("ttt_enable_panorama_messages");
+
+	if (g_cPanoramaMessages == null)
+	{
+		SetFailState("Can't find the config entry: ttt_enable_panorama_messages");
 	}
 }
 
@@ -121,7 +130,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		g_cTextT.GetString(sText, sizeof(sText));
 		
-		if (TTT_UseClientPanorama(client))
+		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
 		{
 			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
 		}
@@ -149,7 +158,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		g_cTextD.GetString(sText, sizeof(sText));
 		
-		if (TTT_UseClientPanorama(client))
+		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
 		{
 			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
 		}
@@ -177,7 +186,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		g_cTextI.GetString(sText, sizeof(sText));
 		
-		if (TTT_UseClientPanorama(client))
+		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
 		{
 			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
 		}
@@ -205,7 +214,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	{
 		g_cTextU.GetString(sText, sizeof(sText));
 		
-		if (TTT_UseClientPanorama(client))
+		if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
 		{
 			Format(sText, sizeof(sText), "<pre>%s</pre>", sText);
 		}
