@@ -351,6 +351,15 @@ native void TTT_GetRoundTime(int type);
  */
 native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar, bool override_only = false);
 
+/**
+ * Check client, whether he use the new Panorama UI.
+ *
+ * @param client        Client Index
+ * @return              True if the client use the new panorama ui, false otherwise
+ *
+ */
+native bool TTT_UseClientPanorama(int client);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
 	if (role == TTT_TEAM_INNOCENT)
