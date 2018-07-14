@@ -186,7 +186,7 @@ public Action TTT_OnBodyChecked(int client, int[] ragdoll)
 		}
 		
 		DataPack pack = new DataPack();
-		CreateDataTimer(1.0, Timer_DecoyBody, pack, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(1.0, Timer_DecoyBody, pack, TIMER_FLAG_NO_MAPCHANGE);
 		pack.WriteCell(GetClientUserId(attacker));
 		pack.WriteCell(EntIndexToEntRef(body));
 		pack.WriteCell(bReal);
@@ -217,7 +217,7 @@ public Action Timer_DecoyBody(Handle timer, any pack)
 			EmitAmbientSoundAny(BEEP_SOUND, fPos);
 			
 			DataPack pack2 = new DataPack();
-			CreateDataTimer(1.0, Timer_DecoyBody, pack2, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+			CreateTimer(1.0, Timer_DecoyBody, pack2, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			pack2.WriteCell(GetClientUserId(attacker));
 			pack2.WriteCell(EntIndexToEntRef(body));
 			pack2.WriteCell(bReal);

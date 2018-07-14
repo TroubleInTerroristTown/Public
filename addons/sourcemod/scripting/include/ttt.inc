@@ -752,23 +752,23 @@ stock int TTT_IsValidRole(int client, int role)
 
 stock bool TTT_IsPrimaryWeapon(int weapon)
 {
-	if (IsValidEntity(weapon))
+	if (IsValidEdict(weapon))
 	{
 		char sClass[32];
-		GetEntityClassname(weapon, sClass, sizeof(sClass));
+		GetEdictClassname(weapon, sClass, sizeof(sClass));
 
-		if ((StrContains(sClass, "ak47", false) != -1) || (StrContains(sClass, "m4a1", false) != -1) ||
-			(StrContains(sClass, "m4a1_silencer", false) != -1) || (StrContains(sClass, "awp", false) != -1) ||
-			(StrContains(sClass, "p90", false) != -1) || (StrContains(sClass, "sg556", false) != -1) ||
-			(StrContains(sClass, "aug", false) != -1) || (StrContains(sClass, "galilar", false) != -1) ||
-			(StrContains(sClass, "famas", false) != -1) || (StrContains(sClass, "ssg08", false) != -1) ||
-			(StrContains(sClass, "g3sg1", false) != -1) || (StrContains(sClass, "scar20", false) != -1) ||
-			(StrContains(sClass, "m249", false) != -1) || (StrContains(sClass, "negev", false) != -1) ||
-			(StrContains(sClass, "nova", false) != -1) || (StrContains(sClass, "xm1014", false) != -1) ||
-			(StrContains(sClass, "sawedoff", false) != -1) || (StrContains(sClass, "mag7", false) != -1) ||
-			(StrContains(sClass, "mac10", false) != -1) || (StrContains(sClass, "mp9", false) != -1) ||
-			(StrContains(sClass, "mp7", false) != -1) || (StrContains(sClass, "ump45", false) != -1) ||
-			(StrContains(sClass, "bizon", false) != -1))
+		if ((StrEqual(sClass, "weapon_ak47", false)) || (StrEqual(sClass, "weapon_m4a1", false)) ||
+			(StrEqual(sClass, "weapon_m4a1_silencer", false)) || (StrEqual(sClass, "weapon_awp", false)) ||
+			(StrEqual(sClass, "weapon_p90", false)) || (StrEqual(sClass, "weapon_sg556", false)) ||
+			(StrEqual(sClass, "weapon_aug", false)) || (StrEqual(sClass, "weapon_galilar", false)) ||
+			(StrEqual(sClass, "weapon_famas", false)) || (StrEqual(sClass, "weapon_ssg08", false)) ||
+			(StrEqual(sClass, "weapon_g3sg1", false)) || (StrEqual(sClass, "weapon_scar20", false)) ||
+			(StrEqual(sClass, "weapon_m249", false)) || (StrEqual(sClass, "weapon_negev", false)) ||
+			(StrEqual(sClass, "weapon_nova", false)) || (StrEqual(sClass, "weapon_xm1014", false)) ||
+			(StrEqual(sClass, "weapon_sawedoff", false)) || (StrEqual(sClass, "weapon_mag7", false)) ||
+			(StrEqual(sClass, "weapon_mac10", false)) || (StrEqual(sClass, "weapon_mp9", false)) ||
+			(StrEqual(sClass, "weapon_mp7", false)) || (StrEqual(sClass, "weapon_ump45", false)) ||
+			(StrEqual(sClass, "weapon_bizon", false)))
 		{
 			return true;
 		}

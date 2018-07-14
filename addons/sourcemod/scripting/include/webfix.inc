@@ -88,7 +88,7 @@ stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool
 	ShowMOTDPanel(client, "WebFix", "http://invaliddomain.invalidtld", MOTDPANEL_TYPE_URL);
 	
 	DataPack pack;
-	CreateDataTimer(1.0, WebFix_OpenUrl_OpenTarget, pack);
+	CreateTimer(1.0, WebFix_OpenUrl_OpenTarget, pack);
 	pack.WriteCell(EntIndexToEntRef(client));
 	pack.WriteString(title);
 	pack.WriteString(sUrlencode);

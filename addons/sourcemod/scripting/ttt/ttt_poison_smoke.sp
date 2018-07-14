@@ -134,7 +134,7 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
 	g_bActivePoison[client] = true;
 	
 	DataPack pack = new DataPack();
-	CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
 	pack.WriteCell(GetClientUserId(client));
 	pack.WriteCell(EntIndexToEntRef(entity));
 	
@@ -183,7 +183,7 @@ public Action Timer_CheckPlayers(Handle timer, any pack)
 		}
 		
 		DataPack pack2 = new DataPack();
-		CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
 		pack2.WriteCell(GetClientUserId(attacker));
 		pack2.WriteCell(EntIndexToEntRef(entity));
 	}

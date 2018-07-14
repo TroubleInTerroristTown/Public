@@ -813,14 +813,14 @@ stock float plantBomb(int client, float time)
 		TTT_ClearTimer(g_hExplosionTimer[client]);
 
 		Handle explosionPack;
-		g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
+		g_hExplosionTimer[client] = CreateTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
 		WritePackCell(explosionPack, GetClientUserId(client));
 		WritePackCell(explosionPack, bombEnt);
 
 		if (g_cC4BeepVolume.FloatValue > 0.0)
 		{
 			Handle beepPack;
-			CreateDataTimer(1.0, bombBeep, beepPack);
+			CreateTimer(1.0, bombBeep, beepPack);
 			WritePackCell(beepPack, bombEnt);
 			WritePackCell(beepPack, (time - 1));
 		}
@@ -931,7 +931,7 @@ public Action bombBeep(Handle timer, Handle pack)
 	}
 
 	Handle bombBeep2;
-	CreateDataTimer(1.0, bombBeep, bombBeep2);
+	CreateTimer(1.0, bombBeep, bombBeep2);
 	WritePackCell(bombBeep2, bombEnt);
 	WritePackCell(bombBeep2, beeps);
 	return Plugin_Stop;
