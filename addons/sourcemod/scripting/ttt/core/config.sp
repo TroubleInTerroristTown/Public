@@ -36,7 +36,7 @@ void SetupConfig()
 	g_cblockLookAtWeapon = AutoExecConfig_CreateConVar("ttt_block_look_at_weapon", "1", "Block weapon inspecting. 1 = Block, 0 = Don't Block)", _, true, 0.0, true, 1.0);
 	g_cenableNoBlock = AutoExecConfig_CreateConVar("ttt_enable_noblock", "0", "Enable No Block. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_ckadRemover = AutoExecConfig_CreateConVar("ttt_kad_remover", "1", "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
-	g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "TODO: Add description");
+	g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "Set player health to a fixed value to avoid abusing. You can't disable it, it's highly recommend");
 	g_cfakeLife = AutoExecConfig_CreateConVar("ttt_fake_life", "0", "This prevents abusing with a health bar (0 - default, 1 - everyone is dead, 2 - everyone is alive)", _, true, 0.0, true, 2.0);
 	g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen}", "The prefix used in all plugin messages");
 	g_cspawnHPT = AutoExecConfig_CreateConVar("ttt_spawn_t", "100", "The amount of health traitors spawn with. ( 0 = disabled )", _, true, 0.0);
