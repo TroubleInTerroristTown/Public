@@ -1,7 +1,7 @@
 void SetupConfig()
 {
 	CreateConVar("ttt2_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-	g_cshowKarmaOnSpawn = AutoExecConfig_CreateConVar("ttt_show_karma_on_spawn", "1", "Show players karma on spawn?", _, true, 0.0, true, 1.0);
+	g_cshowKarmaOnSpawn = AutoExecConfig_CreateConVar("ttt_show_karma_on_spawn", "1", "Show players karma (as chat message) on spawn?", _, true, 0.0, true, 1.0);
 	g_cshowEarnKarmaMessage = AutoExecConfig_CreateConVar("ttt_show_message_earn_karma", "1", "Display a message showing how much karma you earned. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cshowLoseKarmaMessage = AutoExecConfig_CreateConVar("ttt_show_message_lose_karma", "1", "Display a message showing how much karma you lost. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cpublicKarma = AutoExecConfig_CreateConVar("ttt_public_karma", "0", "Show karma as points (or another way?)", _, true, 0.0, true, 1.0);
@@ -20,7 +20,7 @@ void SetupConfig()
 	g_ckarmaDD = AutoExecConfig_CreateConVar("ttt_karma_killer_detective_victim_detective_subtract", "7", "The amount of karma a detective will lose for killing a detective.");
 	g_cstartKarma = AutoExecConfig_CreateConVar("ttt_start_karma", "100", "The amount of karma new players and players who were karma banned will start with.");
 	g_ckarmaBan = AutoExecConfig_CreateConVar("ttt_with_karma_ban", "75", "The amount of karma needed to be banned for Bad Karma. (0 = Disabled)", _, true, 0.0);
-	g_cBanKarmaDead = AutoExecConfig_CreateConVar("ttt_with_karma_dead", "0", "Ban dead players for bad karma?", _, true, 0.0, true, 1.0);
+	g_cBanKarmaDead = AutoExecConfig_CreateConVar("ttt_with_karma_dead", "0", "Ban dead players for bad karma? (if it 0, player will be banned at the end of a round)", _, true, 0.0, true, 1.0);
 	g_ckarmaBanLength = AutoExecConfig_CreateConVar("ttt_with_karma_ban_length", "10080", "The length (time in minutes) of a Bad Karma ban. (Default = 1 Week)");
 	g_cmaxKarma = AutoExecConfig_CreateConVar("ttt_max_karma", "150", "The maximum amount of karma a player can have.");
 	g_crequiredPlayersD = AutoExecConfig_CreateConVar("ttt_required_players_detective", "6", "The amount of players required to activate the detective role.");
@@ -37,7 +37,7 @@ void SetupConfig()
 	g_cenableNoBlock = AutoExecConfig_CreateConVar("ttt_enable_noblock", "0", "Enable No Block. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_ckadRemover = AutoExecConfig_CreateConVar("ttt_kad_remover", "1", "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
 	g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "TODO: Add description");
-	g_cfakeLife = AutoExecConfig_CreateConVar("ttt_fake_life", "0", "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)", _, true, 0.0, true, 2.0);
+	g_cfakeLife = AutoExecConfig_CreateConVar("ttt_fake_life", "0", "This prevents abusing with a health bar (0 - default, 1 - everyone is dead, 2 - everyone is alive)", _, true, 0.0, true, 2.0);
 	g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen}", "The prefix used in all plugin messages");
 	g_cspawnHPT = AutoExecConfig_CreateConVar("ttt_spawn_t", "100", "The amount of health traitors spawn with. ( 0 = disabled )", _, true, 0.0);
 	g_cspawnHPD = AutoExecConfig_CreateConVar("ttt_spawn_d", "100", "The amount of health detectives spawn with. ( 0 = disabled )", _, true, 0.0);
