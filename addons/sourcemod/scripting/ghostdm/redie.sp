@@ -26,6 +26,7 @@ void Redie_OnRoundStart()
     
     LoopValidClients(client)
     {
+        ResetDM(client);
         ResetRedie(client);
         
         SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
@@ -59,6 +60,7 @@ void Redie_OnRoundEnd()
 
     LoopValidClients(i)
     {
+        ResetDM(i);
         ResetRedie(i);
     }
 }
@@ -67,6 +69,7 @@ void Redie_OnPlayerSpawn(int client)
 {
     if(g_bRedie[client])
     {
+        ResetDM(client);
         ResetRedie(client);
         CreateTimer(0.5, Timer_FixSolids, GetClientUserId(client));
     }
@@ -163,6 +166,7 @@ public Action Command_Reback(int client, int args)
                 SetListenOverride(i, client, Listen_Default);
             }
             
+            ResetDM(client);
             ResetRedie(client);
         }
         else

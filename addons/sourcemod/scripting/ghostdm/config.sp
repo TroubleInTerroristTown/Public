@@ -54,7 +54,7 @@ void Config_OnPluginStart()
             kvConfig.GetString(NULL_STRING, sName, sizeof(sName));
 
             g_aPrimary.PushString(sClass);
-            g_smPrimary.SetString(sClass, sName);
+            g_smPrimary.SetString(sClass, sName, true);
 
             LogMessage("[GhostDM.Primary] Class: %s - Name: %s", sClass, sName);
         }
@@ -88,12 +88,105 @@ void Config_OnPluginStart()
             kvConfig.GetString(NULL_STRING, sName, sizeof(sName));
 
             g_aSecondary.PushString(sClass);
-            g_smSecondary.SetString(sClass, sName);
+            g_smSecondary.SetString(sClass, sName, true);
 
             LogMessage("[GhostDM.Secondary] Class: %s - Name: %s", sClass, sName);
         }
         while (kvConfig.GotoNextKey(false));
     }
+    kvConfig.GoBack();
+    kvConfig.GoBack();
+
+    // Get weapon limits
+    delete g_smWeaponLimits;
+    g_smWeaponLimits = new StringMap();
+
+    if (!kvConfig.JumpToKey("Limits-Weapons", false))
+    {
+        SetFailState("[GhostDM] Can't find the entry \"Limits-Weapons\" in \"%s\"! (JumpToKey)", sFile);
+        delete kvConfig;
+        return;
+    }
+
+    if (kvConfig.GotoFirstSubKey(false))
+    {
+        do
+        {
+            char sClass[32];
+
+            kvConfig.GetSectionName(sClass, sizeof(sClass));
+            int iLimit = kvConfig.GetNum(NULL_STRING);
+
+            g_smWeaponLimits.SetValue(sClass, iLimit, true);
+
+            LogMessage("[GhostDM.Limits-Weapons] Class: %s - Limit: %d", sClass, iLimit);
+        }
+        while (kvConfig.GotoNextKey(false));
+    }
+    kvConfig.GoBack();
+    kvConfig.GoBack();
+
+    // Get grenades
+    delete g_aGrenade;
+    g_aGrenade = new ArrayList(32);
+
+    delete g_smGrenade;
+    g_smGrenade = new StringMap();
+
+    if (!kvConfig.JumpToKey("Grenades", false))
+    {
+        SetFailState("[GhostDM] Can't find the entry \"Grenades\" in \"%s\"! (JumpToKey)", sFile);
+        delete kvConfig;
+        return;
+    }
+
+    if (kvConfig.GotoFirstSubKey(false))
+    {
+        do
+        {
+            char sClass[32];
+            char sName[64];
+
+            kvConfig.GetSectionName(sClass, sizeof(sClass));
+            kvConfig.GetString(NULL_STRING, sName, sizeof(sName));
+
+            g_aGrenade.PushString(sClass);
+            g_smGrenade.SetString(sClass, sName, true);
+
+            LogMessage("[GhostDM.Grenades] Class: %s - Name: %s", sClass, sName);
+        }
+        while (kvConfig.GotoNextKey(false));
+    }
+    kvConfig.GoBack();
+    kvConfig.GoBack();
+
+    // Get grenades limits
+    delete g_smGrenadeLimits;
+    g_smGrenadeLimits = new StringMap();
+
+    if (!kvConfig.JumpToKey("Limits-Grenades", false))
+    {
+        SetFailState("[GhostDM] Can't find the entry \"Limits-Grenades\" in \"%s\"! (JumpToKey)", sFile);
+        delete kvConfig;
+        return;
+    }
+
+    if (kvConfig.GotoFirstSubKey(false))
+    {
+        do
+        {
+            char sClass[32];
+
+            kvConfig.GetSectionName(sClass, sizeof(sClass));
+            int iLimit = kvConfig.GetNum(NULL_STRING);
+
+            g_smGrenadeLimits.SetValue(sClass, iLimit, true);
+
+            LogMessage("[GhostDM.Limits-Grenades] Class: %s - Limit: %d", sClass, iLimit);
+        }
+        while (kvConfig.GotoNextKey(false));
+    }
+    kvConfig.GoBack();
     kvConfig.GoBack();
 
     delete kvConfig;

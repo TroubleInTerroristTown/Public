@@ -19,6 +19,7 @@ char g_sGhostDMTag[64];
 #include "ghostdm/config.sp"
 #include "ghostdm/stocks.sp"
 #include "ghostdm/redie.sp"
+#include "ghostdm/deathmatch.sp"
 
 public Plugin myinfo =
 {
@@ -32,6 +33,7 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     CreateNative("GhostDM_IsClientInRedie", Native_IsClientInRedie);
+    CreateNative("GhostDM_IsClientInDM", Native_IsClientInDM);
     
     RegPluginLibrary("ghostdm");
     
@@ -43,6 +45,13 @@ public int Native_IsClientInRedie(Handle plugin, int numParams)
     int client = GetNativeCell(1);
     
     return g_bRedie[client];
+}
+
+public int Native_IsClientInDM(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+    
+    return g_bDM[client];
 }
 
 public void OnPluginStart()
@@ -66,6 +75,7 @@ public void OnPluginStart()
     AutoExecConfig_CleanFile();
 
     Redie_OnPluginStart();
+    GhostDM_OnPluginStart();
 }
 
 public void OnConfigsExecuted()
@@ -90,12 +100,15 @@ public void OnClientPutInServer(int client)
 {
     if (IsClientValid(client))
     {
+        ResetDM(client);
+        ResetRedie(client);
         Redie_OnClientPutInServer(client);
     }
 }
 
 public void OnClientDisconnect(int client)
 {
+    ResetDM(client);
     ResetRedie(client);
 }
 
