@@ -10,8 +10,10 @@
 
 #define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
 
-ConVar g_cPluginTag = null;
-char g_sPluginTag[64];
+ConVar g_cRedieTag = null;
+ConVar g_cGhostDMTag = null;
+char g_sRedieTag[64];
+char g_sGhostDMTag[64];
 
 #include "ghostdm/globals.sp"
 #include "ghostdm/config.sp"
@@ -53,22 +55,34 @@ public void OnPluginStart()
 
     Config_OnPluginStart();
 
-    g_cPluginTag = AutoExecConfig_CreateConVar("ghostdm_plugin_tag", "{darkred}[Redie] {default}", "Plugin tag for every message from this plugin");
-    g_cPluginTag.AddChangeHook(CVar_OnConVarChanged);
-    
+    AutoExecConfig_SetCreateDirectory(true);
+    AutoExecConfig_SetCreateFile(true);
+    AutoExecConfig_SetFile("plugin.ghostdm");
+    g_cRedieTag = AutoExecConfig_CreateConVar("ghostdm_redie_tag", "{darkblue}[Redie] {default}", "Redie tag for every message from this plugin");
+    g_cGhostDMTag = AutoExecConfig_CreateConVar("ghostdm_tag", "{darkred}[GhostDM] {default}", "GhostDM tag for every message from this plugin");
+    g_cRedieTag.AddChangeHook(CVar_OnConVarChanged);
+    g_cGhostDMTag.AddChangeHook(CVar_OnConVarChanged);
+    AutoExecConfig_ExecuteFile();
+    AutoExecConfig_CleanFile();
+
     Redie_OnPluginStart();
 }
 
 public void OnConfigsExecuted()
 {
-    g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    g_cRedieTag.GetString(g_sRedieTag, sizeof(g_sRedieTag));
+    g_cGhostDMTag.GetString(g_sGhostDMTag, sizeof(g_sGhostDMTag));
 }
 
 public void CVar_OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-    if (convar == g_cPluginTag)
+    if (convar == g_cRedieTag)
     {
-        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+        g_cRedieTag.GetString(g_sRedieTag, sizeof(g_sRedieTag));
+    }
+    else if (convar == g_cGhostDMTag)
+    {
+        g_cGhostDMTag.GetString(g_sGhostDMTag, sizeof(g_sGhostDMTag));
     }
 }
 

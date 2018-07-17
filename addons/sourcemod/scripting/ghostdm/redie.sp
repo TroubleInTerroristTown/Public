@@ -77,7 +77,7 @@ void Redie_OnPlayerDeath(int client)
 {
     if(CheckCommandAccess(client, "sm_redie", ADMFLAG_CUSTOM4))
     {
-        CPrintToChat(client, "%s Gib %s!redie %sein, um als Geist weiterzuspielen.", g_sPluginTag, "{green}", "{lightgreen}");
+        CPrintToChat(client, "%s Gib %s!redie %sein, um als Geist weiterzuspielen.", g_sRedieTag, "{green}", "{lightgreen}");
     }
 }
 
@@ -125,21 +125,21 @@ public Action Command_Redie(int client, int args)
                             SetListenOverride(i, client, Listen_Yes);
                     }
         
-                    CPrintToChat(client, "%s Du bist nun ein Geist.", g_sPluginTag);
+                    CPrintToChat(client, "%s Du bist nun ein Geist.", g_sRedieTag);
                 }
                 else
                 {
-                    CPrintToChat(client, "%s Du musst bis zur nächsten Runde warten.", g_sPluginTag);
+                    CPrintToChat(client, "%s Du musst bis zur nächsten Runde warten.", g_sRedieTag);
                 }
             }
             else
             {
-                CPrintToChat(client, "%s Du musst in einem Team sein, um %s!redie %snutzen zu können.", g_sPluginTag, "{green}", "{lightgreen}");
+                CPrintToChat(client, "%s Du musst in einem Team sein, um %s!redie %snutzen zu können.", g_sRedieTag, "{green}", "{lightgreen}");
             }
         }
         else
         {
-            CPrintToChat(client, "%s Du musst tot sein, um %s!redie %snutzen zu können.", g_sPluginTag, "{green}", "{lightgreen}");
+            CPrintToChat(client, "%s Du musst tot sein, um %s!redie %snutzen zu können.", g_sRedieTag, "{green}", "{lightgreen}");
         }
     }
     
@@ -167,7 +167,7 @@ public Action Command_Reback(int client, int args)
         }
         else
         {
-            CPrintToChat(client, "%s Du musst im %s!redie %ssein, um %s!reback %snutzen zu können.", g_sPluginTag, "{green}", "{lightgreen}", "{green}", "{lightgreen}");
+            CPrintToChat(client, "%s Du musst im %s!redie %ssein, um %s!reback %snutzen zu können.", g_sRedieTag, "{green}", "{lightgreen}", "{green}", "{lightgreen}");
         }
     }
     
@@ -190,7 +190,7 @@ void Redie_OnPlayerRunCmd(int client, int &buttons)
                 SetEntityMoveType(client, MOVETYPE_NOCLIP);
                 g_hNoclip[client] = CreateTimer(1.0, Timer_Noclip, client);
                 
-                CPrintToChat(client, "%s Du hast für %s1 Sekunde %sNoclip.", g_sPluginTag, "{green}", "{lightgreen}");
+                CPrintToChat(client, "%s Du hast für %s1 Sekunde %sNoclip.", g_sRedieTag, "{green}", "{lightgreen}");
             }
         }
     }
