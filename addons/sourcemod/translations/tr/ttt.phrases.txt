@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-11 08:54:50 UTC
+// Date: 2018-07-17 16:47:44 UTC
 // Language: Turkish (tr)
 // 
 // To view other translations for this plugin, please visit:

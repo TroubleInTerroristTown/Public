@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-11 08:54:48 UTC
+// Date: 2018-07-17 16:47:41 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -981,6 +981,21 @@
 	"AlreadyTaser"
 	{
 		"de"		"Sie haben bereits einen Taser im Inventar!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"de"		"Tripmines verbleibend: {1}"
+	}
+
+	"TTT Radio Menu: KOS"
+	{
+		"de"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"de"		"Um eine Tripmine zu platzieren, gib '/tripmine' im Chat ein."
 	}
 
 }

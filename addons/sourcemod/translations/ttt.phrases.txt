@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-11 08:54:50 UTC
+// Date: 2018-07-17 16:47:44 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -1078,6 +1078,11 @@
 	"TTT Radio Menu: KOS"
 	{
 		"en"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"en"		"For placing a tripmine, type '/tripmine' into the chat"
 	}
 
 }
