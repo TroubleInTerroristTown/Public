@@ -672,7 +672,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 			continue;
 		}
 
-		if (role != TTT_GetClientRole(i))
+		if (role != -1 && role != TTT_GetClientRole(i))
 		{
 			continue;
 		}

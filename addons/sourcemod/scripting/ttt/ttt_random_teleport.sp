@@ -178,7 +178,12 @@ int RandomTeleport(int client)
         bAlive = false;
     }
 
-    int target = TTT_GetRandomPlayer(bAlive);
+    int target = -1;
+
+    while ((target = TTT_GetRandomPlayer(bAlive)) == client)
+    {
+        PrintToChat(client, "You're the random player...  Let's try again...");
+    }
 
     if (target == -1 || !TTT_IsClientValid(target))
     {
