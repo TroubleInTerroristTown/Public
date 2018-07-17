@@ -108,11 +108,11 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
 	return Plugin_Continue;
 }
 
-public Action TTT_OnItemPurchased((int client, const char[] itemshort, bool count, int price)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(item) > 2)
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(itemshort) > 2)
 	{
-		PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d Price: %d", item, count, price);
+		PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d Price: %d", itemshort, count, price);
 	}
 
 	return Plugin_Continue;
