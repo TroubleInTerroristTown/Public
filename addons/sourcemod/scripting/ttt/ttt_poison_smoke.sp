@@ -147,6 +147,8 @@ public Action Timer_CheckPlayers(Handle timer, DataPack pack)
 	
 	int attacker = GetClientOfUserId(pack.ReadCell());
 	int entity = EntRefToEntIndex(pack.ReadCell());
+
+	delete pack;
 	
 	if (TTT_IsClientValid(attacker) && IsValidEntity(entity))
 	{

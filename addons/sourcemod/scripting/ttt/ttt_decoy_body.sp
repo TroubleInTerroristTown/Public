@@ -205,6 +205,8 @@ public Action Timer_DecoyBody(Handle timer, DataPack pack)
 	int body = EntRefToEntIndex(pack.ReadCell());
 	bool bReal = view_as<bool>(pack.ReadCell());
 	
+	delete pack;
+
 	if (TTT_IsClientValid(attacker) && IsValidEntity(body))
 	{
 		if (!g_cInstantExplode.BoolValue && g_iCountdown[attacker] > 0)

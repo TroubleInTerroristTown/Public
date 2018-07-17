@@ -434,6 +434,7 @@ public Action Timer_ExplodeC4(Handle timer, DataPack pack)
 	pack.Reset();
 	int client = GetClientOfUserId(pack.ReadCell());
 	int bombEnt = EntRefToEntIndex(pack.ReadCell());
+	delete pack;
 
 	if (!IsValidEntity(bombEnt))
 	{
@@ -898,6 +899,7 @@ public Action Timer_Beep(Handle timer, DataPack pack)
 	pack.Reset();
 	bombEnt = EntRefToEntIndex(pack.ReadCell());
 	beeps = pack.ReadCell();
+	delete pack;
 	if (!IsValidEntity(bombEnt))
 	{
 		return Plugin_Stop;
