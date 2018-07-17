@@ -6,6 +6,7 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_shop>
+#include <multicolors>
 #undef REQUIRE_PLUGIN
 #include <tripmines>
 
@@ -18,6 +19,9 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cDiscount = null;
 ConVar g_cAmount = null;
+
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
 
 public Plugin myinfo =
 {
@@ -42,6 +46,21 @@ public void OnPluginStart()
 	g_cDiscount = AutoExecConfig_CreateConVar("tripmines_discountable", "0", "Should tripmines discountable?", _, true, 0.0, true, 1.0);
 	g_cAmount = AutoExecConfig_CreateConVar("tripmines_mines", "1", "How mines get the player?", _, true, 1.0);
 	TTT_EndConfig();
+}
+
+public void OnConfigsExecuted()
+{
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnAllPluginsLoaded()
@@ -81,6 +100,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			if (role == TTT_TEAM_TRAITOR)
 			{
 				Tripmine_AddClientMines(client, g_cAmount.IntValue);
+
+				CPrintToChat(client, "%s %T", g_sPluginTag, "Place Tripmine", client);
 			}
 		}
 	}
