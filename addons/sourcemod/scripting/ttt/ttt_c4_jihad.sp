@@ -429,18 +429,17 @@ public Action Timer_Reset(Handle timer, any userid)
 	return Plugin_Handled;
 }
 
-public Action explodeC4(Handle timer, Handle pack)
+public Action Timer_ExplodeC4(Handle timer, DataPack pack)
 {
-	ResetPack(pack);
-	int clientUserId = ReadPackCell(pack);
-	int bombEnt = ReadPackCell(pack);
+	pack.Reset();
+	int client = GetClientOfUserId(pack.ReadCell());
+	int bombEnt = EntRefToEntIndex(pack.ReadCell());
 
 	if (!IsValidEntity(bombEnt))
 	{
 		return Plugin_Stop;
 	}
 
-	int client = GetClientOfUserId(clientUserId);
 	float explosionOrigin[3];
 	GetEntPropVector(bombEnt, Prop_Send, "m_vecOrigin", explosionOrigin);
 	if (TTT_IsClientValid(client))
@@ -581,7 +580,6 @@ stock void showPlantMenu(int client)
 	{
 		return;
 	}
-
 	
 	Menu menu = new Menu(plantBombMenu);
 	menu.SetTitle("%T", "Set C4 Timer", client);
@@ -812,17 +810,17 @@ stock float plantBomb(int client, float time)
 
 		TTT_ClearTimer(g_hExplosionTimer[client]);
 
-		Handle explosionPack;
-		g_hExplosionTimer[client] = CreateTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
-		WritePackCell(explosionPack, GetClientUserId(client));
-		WritePackCell(explosionPack, bombEnt);
+		DataPack explosionPack = new DataPack();
+		g_hExplosionTimer[client] = CreateTimer(time, Timer_ExplodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
+		explosionPack.WriteCell(GetClientUserId(client));
+		explosionPack.WriteCell(EntIndexToEntRef(bombEnt));
 
 		if (g_cC4BeepVolume.FloatValue > 0.0)
 		{
-			Handle beepPack;
-			CreateTimer(1.0, bombBeep, beepPack);
-			WritePackCell(beepPack, bombEnt);
-			WritePackCell(beepPack, (time - 1));
+			DataPack beepPack = new DataPack();
+			CreateTimer(1.0, Timer_Beep, beepPack);
+			beepPack.WriteCell(EntIndexToEntRef(bombEnt));
+			beepPack.WriteCell((time - 1));
 		}
 
 		g_bHasActiveBomb[client] = true;
@@ -893,13 +891,13 @@ stock int findBomb(int client)
 	return -1;
 }
 
-public Action bombBeep(Handle timer, Handle pack)
+public Action Timer_Beep(Handle timer, DataPack pack)
 {
 	int bombEnt;
 	int beeps;
-	ResetPack(pack);
-	bombEnt = ReadPackCell(pack);
-	beeps = ReadPackCell(pack);
+	pack.Reset();
+	bombEnt = EntRefToEntIndex(pack.ReadCell());
+	beeps = pack.ReadCell();
 	if (!IsValidEntity(bombEnt))
 	{
 		return Plugin_Stop;
@@ -930,10 +928,10 @@ public Action bombBeep(Handle timer, Handle pack)
 		return Plugin_Stop;
 	}
 
-	Handle bombBeep2;
-	CreateTimer(1.0, bombBeep, bombBeep2);
-	WritePackCell(bombBeep2, bombEnt);
-	WritePackCell(bombBeep2, beeps);
+	DataPack bombBeep2 = new DataPack();
+	CreateTimer(1.0, Timer_Beep, bombBeep2);
+	bombBeep2.WriteCell(EntIndexToEntRef(bombEnt));
+	bombBeep2.WriteCell(beeps);
 	return Plugin_Stop;
 }
 
