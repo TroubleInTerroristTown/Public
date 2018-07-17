@@ -6,6 +6,7 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_shop>
+#undef REQUIRE_PLUGIN
 #include <tripmines>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tripmines"

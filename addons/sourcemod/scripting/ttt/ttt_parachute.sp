@@ -1,11 +1,11 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
+#undef REQUIRE_PLUGIN
 #include <AdvancedParachute>
-
-#pragma newdecls required
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Parachute"
 #define SHORT_NAME "parachute"
