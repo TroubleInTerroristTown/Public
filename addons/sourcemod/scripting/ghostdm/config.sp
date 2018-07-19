@@ -3,7 +3,7 @@ void Config_OnPluginStart()
     char sFile[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ghostdm_settings.ini");
 
-    KeyValues kvConfig = CreateKeyValues("GhostDM-Weapons");
+    KeyValues kvConfig = new KeyValues("GhostDM-Weapons");
 
     if (!kvConfig.ImportFromFile(sFile))
     {

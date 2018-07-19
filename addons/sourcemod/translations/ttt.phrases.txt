@@ -641,7 +641,7 @@
 
 	"Hud PlayerHealth"
 	{
-		"#format"	"{1:d}"
+		"#format"	"{1:s}"
 		"en"		"{1}"
 	}
 
@@ -652,7 +652,7 @@
 
 	"Hud PlayerKarma"
 	{
-		"#format"	"{1:d}"
+		"#format"	"{1:s}"
 		"en"		"{1}"
 	}
 
@@ -1078,6 +1078,66 @@
 	"TTT Radio Menu: KOS"
 	{
 		"en"		"KOS..."
+	}
+
+	"HUD Health - Invalid"
+	{
+		"en"		"Invalid value"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"en"		"Near Death"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"en"		"Badly Wounded"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"en"		"Wounded"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"en"		"Hurt"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"en"		"Healthy"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"en"		"Invalid value"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"en"		"Liability"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"en"		"Dangerous"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"en"		"Trigger-Happy"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"en"		"Crude"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"en"		"Reputable"
 	}
 
 }
