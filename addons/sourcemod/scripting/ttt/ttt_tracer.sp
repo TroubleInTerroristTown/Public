@@ -16,8 +16,6 @@
 #define SHORT_NAME "Tracer"
 
 bool g_bHasTracer[MAXPLAYERS+1];
-Handle g_hHUD = null;
-
 
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
@@ -36,11 +34,8 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-
-
 public void OnPluginStart()
 {
-	//TTT
 	LoadTranslations("ttt.phrases");
 	
 	TTT_StartConfig("tracer");
@@ -53,8 +48,6 @@ public void OnPluginStart()
 	g_cDiscount = AutoExecConfig_CreateConVar("tracer_traitor", "0", "Should Tracer discountable?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 	
-	//
-	g_hHUD = CreateHudSynchronizer();
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
 	CreateTimer(1.0, Tracer_Display, _, TIMER_REPEAT);
@@ -107,7 +100,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 	return Plugin_Continue;
 }
 
-
 public Action Tracer_Display(Handle timer)
 {
 	LoopValidClients(client)
@@ -142,8 +134,6 @@ public Action Tracer_Display(Handle timer)
 	}
 }
 
-
-
 void ShowHUD(int client, int iClientToShow)
 {
 	char sInfo[32], sName[64], centerText[64];
@@ -152,7 +142,7 @@ void ShowHUD(int client, int iClientToShow)
 	{
 		Format(centerText, sizeof(centerText), "%s%s%s", sInfo, StrEqual(sName, "") ? "" : ": ", sName);
 		SetHudTextParams(0.2, 0.2, 2.0, 135 , 206, 255, 255, 0, 30.0, 0.0, 0.0);
-		ShowSyncHudText(iClientToShow, g_hHUD, centerText);
+		ShowHudText(iClientToShow, -1, centerText);
 	}
 }
 

@@ -47,11 +47,6 @@ bool g_bEndOverlay = false;
 int g_iCTWin = 0;
 int g_iTWin = 0;
 
-Handle g_hSyncR = null;
-Handle g_hSyncD = null;
-Handle g_hSyncI = null;
-Handle g_hSyncT = null;
-
 public void OnPluginStart()
 {
 	TTT_StartConfig("overlay");
@@ -67,10 +62,10 @@ public void OnPluginStart()
 	g_cPosDX = AutoExecConfig_CreateConVar("ttt_hud_text_detective_x_position", "0.37", "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
 	g_cPosIX = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_x_position", "0.48", "Innocent position (Default Horizontal: 0.48 Vertical: 0.3,) (<X>-POSITION>)");
 	g_cPosTX = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_x_position", "0.586", "Traitor position (Default Horizontal: 0.586 Vertical: 0.3) (<X>-POSITION>)");
-	g_cPosRY = AutoExecConfig_CreateConVar("ttt_hud_text_remaining_y_position", "0.0", "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
-	g_cPosDY = AutoExecConfig_CreateConVar("ttt_hud_text_detective_y_position", "0.0", "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
-	g_cPosIY = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_y_position", "0.0", "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
-	g_cPosTY = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_y_position", "0.0", "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
+	g_cPosRY = AutoExecConfig_CreateConVar("ttt_hud_text_remaining_y_position", "0.06", "Remaining position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_cPosDY = AutoExecConfig_CreateConVar("ttt_hud_text_detective_y_position", "0.06", "Detective position (Default Horizontal: 0.0 Vertical: 0.0) (<Y>-POSITION>)");
+	g_cPosIY = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_y_position", "0.06", "Innocent position (Default Horizontal: 0.0 Vertical: 0.05) (<Y>-POSITION>)");
+	g_cPosTY = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_y_position", "0.06", "Traitor position (Default Horizontal: 0.0 Vertical: 0.1) (<Y>-POSITION>)");
 	g_cColorR = AutoExecConfig_CreateConVar("ttt_hud_text_remaining_color", "255;255,255", "Remaining color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorD = AutoExecConfig_CreateConVar("ttt_hud_text_detective_color", "0;0;255", "Detective color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cColorI = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
@@ -79,11 +74,6 @@ public void OnPluginStart()
 	TTT_EndConfig();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
-
-	g_hSyncR = CreateHudSynchronizer();
-	g_hSyncD = CreateHudSynchronizer();
-	g_hSyncI = CreateHudSynchronizer();
-	g_hSyncT = CreateHudSynchronizer();
 
 	CreateTimer(2.0, Timer_HUD, _, TIMER_REPEAT);
 }
@@ -299,10 +289,10 @@ public Action Timer_HUD(Handle timer)
 		g_cColorT.GetString(sBuffer, sizeof(sBuffer));
 		ExplodeString(sBuffer, ";", sCT, sizeof(sCT), sizeof(sCT[]));
 
-		showHudToAll(g_hSyncR, sR, g_cPosRX.FloatValue, g_cPosRY.FloatValue, sCR[0], sCR[1], sCR[2], sCR[3]);
-		showHudToAll(g_hSyncD, sD, g_cPosDX.FloatValue, g_cPosDY.FloatValue, sCD[0], sCD[1], sCD[2], sCD[3]);
-		showHudToAll(g_hSyncI, sI, g_cPosIX.FloatValue, g_cPosIY.FloatValue, sCI[0], sCI[1], sCI[2], sCI[3]);
-		showHudToAll(g_hSyncT, sT, g_cPosTX.FloatValue, g_cPosTY.FloatValue, sCT[0], sCT[1], sCT[2], sCT[3]);
+		showHudToAll(sR, g_cPosRX.FloatValue, g_cPosRY.FloatValue, sCR[0], sCR[1], sCR[2], sCR[3]);
+		showHudToAll(sD, g_cPosDX.FloatValue, g_cPosDY.FloatValue, sCD[0], sCD[1], sCD[2], sCD[3]);
+		showHudToAll(sI, g_cPosIX.FloatValue, g_cPosIY.FloatValue, sCI[0], sCI[1], sCI[2], sCI[3]);
+		showHudToAll(sT, g_cPosTX.FloatValue, g_cPosTY.FloatValue, sCT[0], sCT[1], sCT[2], sCT[3]);
 	}
 }
 
@@ -354,11 +344,11 @@ public void AssignOverlay(int client, int role)
 	}
 }
 
-void showHudToAll(Handle sync, char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
+void showHudToAll(char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
 {
 	LoopValidClients(client)
 	{
-		SetHudTextParams(x, y, 1.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
-		ShowSyncHudText(client, sync, message);
+		SetHudTextParams(x, y, 2.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
+		ShowHudText(client, -1, message);
 	}
 }

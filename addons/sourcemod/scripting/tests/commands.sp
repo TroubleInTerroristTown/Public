@@ -4,16 +4,12 @@
 #include <sourcemod>
 #include <ttt>
 
-Handle g_hSync = null;
-
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_checkGOTV", Command_CheckGOTV);
 	RegConsoleCmd("sm_panorama", Command_Panorama);
 	RegConsoleCmd("sm_reloadmap", Command_Reloadmap);
 	RegConsoleCmd("sm_hud", Command_HUD);
-
-	g_hSync = CreateHudSynchronizer();
 }
 
 public Action Command_CheckGOTV(int client, int args)
@@ -92,7 +88,7 @@ public Action Command_HUD(int client, int args)
 		}
 
 		SetHudTextParams(0.34, -0.57, 7.0, iRed, iGreen, iBlue, iAlpha, 1, 2.0, 1.0, 1.0);
-		ShowSyncHudText(target, g_hSync, sText);
+		ShowHudText(target, -1, sText);
 	}
 	
 	return Plugin_Continue;
