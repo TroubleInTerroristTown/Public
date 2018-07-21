@@ -239,7 +239,7 @@ stock int GetObject(int client, bool hitSelf=true)
 {
 	int iEntity = -1;
 
-	if (IsClientInGame(client))
+	if (TTT_IsClientValid(client))
 	{
 		if (ValidGrab(client))
 		{
@@ -316,7 +316,7 @@ stock int ReplacePhysicsEntity(int iEntity)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3])
 {
-	if (!IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return Plugin_Continue;
 	}

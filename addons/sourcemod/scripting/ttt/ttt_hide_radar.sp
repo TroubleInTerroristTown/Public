@@ -34,7 +34,7 @@ public Action RemoveRadar(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 
-	if (client > 0 && IsClientInGame(client) && !IsFakeClient(client))
+	if (TTT_IsClientValid(client) && !IsFakeClient(client))
 	{
 		SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
 	}
@@ -45,7 +45,7 @@ public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadca
 	int userid = event.GetInt("userid");
 	int client = GetClientOfUserId(userid);
 
-	if (IsClientInGame(client) && !IsFakeClient(client) && GetClientTeam(client) > 1)
+	if (TTT_IsClientValid(client) && !IsFakeClient(client) && GetClientTeam(client) > 1)
 	{
 		float fDuration = GetEntPropFloat(client, Prop_Send, "m_flFlashDuration");
 		CreateTimer(fDuration, RemoveRadar, userid);

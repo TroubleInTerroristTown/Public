@@ -375,7 +375,7 @@ public void OnCreate(any data)
 		client = GetClientOfUserId(userid);
 	}
 
-	if ((client == 0) || IsClientInGame(client))
+	if ((client == 0) || TTT_IsClientValid(client))
 	{
 		int sizearray = g_aLogs.Length;
 		int old = (index + 1);
@@ -2572,7 +2572,7 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
-	if (!IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return Plugin_Handled;
 	}
@@ -3169,7 +3169,7 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 
 public int TTT_OnButtonPress(int client, int button)
 {
-	if (!IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
@@ -3663,7 +3663,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
 
 stock void manageRDM(int client)
 {
-	if (!IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
@@ -3674,7 +3674,7 @@ stock void manageRDM(int client)
 	}
 
 	int iAttacker = g_iRDMAttacker[client];
-	if (!IsClientInGame(iAttacker) || iAttacker < 0 || iAttacker > MaxClients)
+	if (!TTT_IsClientValid(iAttacker))
 	{
 		CPrintToChat(client, "%s %T", g_sTag, "The player who RDM'd you is no longer available", client);
 		return;
@@ -3696,13 +3696,13 @@ stock void manageRDM(int client)
 
 public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
 {
-	if (1 > client || client > MaxClients || !IsClientInGame(client))
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
 
 	int iAttacker = g_iRDMAttacker[client];
-	if (1 > iAttacker || iAttacker > MaxClients || !IsClientInGame(iAttacker))
+	if (!TTT_IsClientValid(iAttacker))
 	{
 		return;
 	}
@@ -4070,7 +4070,7 @@ public void OnEntityCreated(int entity, const char[] name)
 
 public Action OnUse(int entity, int activator, int caller, UseType type, float value)
 {
-	if (activator < 1 || activator > MaxClients || !IsClientInGame(activator))
+	if (!TTT_IsClientValid(activator))
 	{
 		return Plugin_Continue;
 	}

@@ -194,13 +194,13 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 public Action OnTakeDamageStation(int stationIndex, int &iAttacker, int &inflictor, float &damage, int &damagetype)
 {
-	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || iAttacker < 1 || iAttacker > MaxClients || !IsClientInGame(iAttacker))
+	if (!IsValidEntity(stationIndex) || stationIndex == INVALID_ENT_REFERENCE || stationIndex <= MaxClients || !TTT_IsClientValid(iAttacker))
 	{
 		return Plugin_Continue;
 	}
 
 	int owner = GetEntProp(stationIndex, Prop_Send, "m_hOwnerEntity");
-	if (owner < 1 || owner > MaxClients || !IsClientInGame(owner))
+	if (!TTT_IsClientValid(owner))
 	{
 		return Plugin_Continue;
 	}

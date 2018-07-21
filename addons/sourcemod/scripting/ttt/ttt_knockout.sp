@@ -354,7 +354,7 @@ public Action Timer_Delete(Handle timer, any userid)
 		g_iRagdoll[client] = -1;
 		g_bKnockout[client] = false;
 		
-		if(IsClientInGame(client))
+		if(TTT_IsClientValid(client))
 		{
 			if (g_bSourceC)
 			{
