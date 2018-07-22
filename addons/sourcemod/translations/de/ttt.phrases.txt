@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-07-17 16:47:41 UTC
+// Date: 2018-07-22 10:23:17 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -996,6 +996,11 @@
 	"Place Tripmine"
 	{
 		"de"		"Um eine Tripmine zu platzieren, gib '/tripmine' im Chat ein."
+	}
+
+	"Free DNA Scanner left"
+	{
+		"de"		"Du hast einen kostenlose DNA-Scanner benutzt! {1} Nutzung(en) verbleibend."
 	}
 
 }

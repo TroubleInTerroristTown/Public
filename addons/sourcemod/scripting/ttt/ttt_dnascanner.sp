@@ -312,7 +312,11 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 		if (g_iCount[client] >= g_cFreeCount.IntValue)
 		{
 			ResetScanner(client);
+			return Plugin_Changed;
 		}
+
+		int iLeft = g_cFreeCount.IntValue - g_iCount[client];	
+		CPrintToChat(client, "%s %T", g_sPluginTag, "Free DNA Scanner left", client, iLeft);
 	}
 
 	return Plugin_Changed;
