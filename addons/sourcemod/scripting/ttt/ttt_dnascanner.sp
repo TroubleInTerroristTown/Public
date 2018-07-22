@@ -304,7 +304,7 @@ public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
 	{
 		g_iCount[client]++;
 
-		if (g_iCount[client] == 3)
+		if (g_iCount[client] >= g_cFreeCount.IntValue)
 		{
 			ResetScanner(client);
 		}
