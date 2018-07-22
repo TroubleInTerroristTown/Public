@@ -120,6 +120,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
+		if (g_bHasScanner[client] || (g_bFreeScanner[client] && g_iCount[client] < g_cFreeCount.IntValue))
+		{
+			return Plugin_Stop;
+		}
+
 		if (StrEqual(itemshort, SHORT_NAME, false))
 		{
 			int role = TTT_GetClientRole(client);
