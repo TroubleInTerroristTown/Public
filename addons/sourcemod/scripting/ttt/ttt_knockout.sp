@@ -134,7 +134,12 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
@@ -162,7 +167,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -324,7 +329,7 @@ stock void DropWeapons(int client)
 			}
 			else
 			{
-				CS_DropWeapon(client, weapon, true, true);
+				SDKHooks_DropWeapon(client, weapon);
 			}
 		}
 	}

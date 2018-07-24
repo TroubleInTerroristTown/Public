@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:01 UTC
+// Date: 2018-07-22 10:23:18 UTC
 // Language: Korean (ko)
 // 
 // To view other translations for this plugin, please visit:

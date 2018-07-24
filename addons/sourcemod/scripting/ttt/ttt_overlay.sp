@@ -8,6 +8,9 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
 
+#define SPECMODE_FIRSTPERSON 4
+#define SPECMODE_3RDPERSON 5
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -37,6 +40,7 @@ ConVar g_cColorD = null;
 ConVar g_cColorI = null;
 ConVar g_cColorT = null;
 ConVar g_cUpdateTeamScore = null;
+ConVar g_cSeeRole = null;
 
 bool g_bEndOverlay = false;
 
@@ -55,9 +59,9 @@ public void OnPluginStart()
 	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.");
 	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.");
 	g_cInnocentIcon = AutoExecConfig_CreateConVar("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for detectives during the round.");
-	g_coverlayDWin = AutoExecConfig_CreateConVar("ttt_overlay_detective_win", "overlays/ttt/detectives_win", "The overlay to display when detectives win.");
-	g_coverlayTWin = AutoExecConfig_CreateConVar("ttt_overlay_traitor_win", "overlays/ttt/traitors_win", "The overlay to display when traitors win.");
-	g_coverlayIWin = AutoExecConfig_CreateConVar("ttt_overlay_inno_win", "overlays/ttt/innocents_win", "The overlay to display when innocent win.");
+	g_coverlayDWin = AutoExecConfig_CreateConVar("ttt_overlay_detective_win", "overlays/ttt/detectives_winNew", "The overlay to display when detectives win.");
+	g_coverlayTWin = AutoExecConfig_CreateConVar("ttt_overlay_traitor_win", "overlays/ttt/traitors_winNew", "The overlay to display when traitors win.");
+	g_coverlayIWin = AutoExecConfig_CreateConVar("ttt_overlay_inno_win", "overlays/ttt/innocents_winNew", "The overlay to display when innocent win.");
 	g_cEnableHud = AutoExecConfig_CreateConVar("ttt_hud_text_enable", "0", "Enable hud_text? (it's a bit buggy with 4:3 and 16:9 resolutions)", _, true, 0.0, true, 1.0);
 	g_cPosRX = AutoExecConfig_CreateConVar("ttt_hud_text_remaining_x_position", "0.28", "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
 	g_cPosDX = AutoExecConfig_CreateConVar("ttt_hud_text_detective_x_position", "0.37", "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
@@ -155,6 +159,11 @@ public void OnMapStart()
 
 	g_iCTWin = 0;
 	g_iTWin = 0;
+}
+
+public void OnAllPluginsLoaded()
+{
+	g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_roles");
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
@@ -303,9 +312,28 @@ public void AssignOverlay(int client, int role)
 	{
 		TTT_ShowOverlayToClient(client, " ");
 	}
-	if (!IsPlayerAlive(client))
+
+	if (!TTT_IsPlayerAlive(client))
 	{
 		TTT_ShowOverlayToClient(client, " ");
+	}
+
+	if (g_cSeeRole != null)
+	{
+		if (g_cSeeRole.BoolValue && !TTT_IsPlayerAlive(client))
+		{
+			int iMode = GetEntProp(client, Prop_Send, "m_iObserverMode");
+
+			if (iMode == SPECMODE_FIRSTPERSON || iMode == SPECMODE_3RDPERSON)
+			{
+				int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+
+				if (TTT_IsClientValid(target) && TTT_IsPlayerAlive(target))
+				{
+					role = TTT_GetClientRole(target);
+				}
+			}
+		}
 	}
 
 	char sBuffer[PLATFORM_MAX_PATH];

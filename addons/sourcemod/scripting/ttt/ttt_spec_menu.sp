@@ -120,19 +120,19 @@ void ShowSpecMenu(int client)
 
 	if (TTT_IsClientValid(GetObservTarget(client)) && !IsFakeClient(client))
 	{
-		char sPlayer[128];
+		char sPlayer[MAX_NAME_LENGTH];
 		Format(sPlayer, sizeof(sPlayer), "%T\n--------------------", "SpecMenu: Player", client, GetObservTarget(client));
 		menu.AddItem("player", sPlayer, ITEMDRAW_DISABLED);
 	}
 
-	char sNext[32], sPrev[32];
+	char sNext[64], sPrev[64];
 	Format(sNext, sizeof(sNext), "%T", "SpecMenu: Next", client);
 	Format(sPrev, sizeof(sPrev), "%T\n--------------------", "SpecMenu: Prev", client);
 
 	menu.AddItem("next", sNext);
 	menu.AddItem("prev", sPrev);
 
-	char sItem[32];
+	char sItem[64];
 	if (g_bMutedAlive[client])
 	{
 		Format(sItem, sizeof(sItem), "%T", "SpecMenu: Unmute Alive", client);

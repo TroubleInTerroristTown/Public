@@ -16,8 +16,6 @@ ConVar g_cSeeRoles = null;
 ConVar g_cTraitorIcon = null;
 ConVar g_cDetectiveIcon = null;
 
-char g_sAdminImmunity[18];
-
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -43,14 +41,11 @@ public void OnPluginStart()
 	TTT_StartConfig("icon");
 	CreateConVar("ttt2_icon_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_roles", "0", "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
-	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "sprites/sg_traitor_icon", "Path to traitor icon file");
-	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "sprites/sg_detective_icon", "Path to detective icon file");
+	g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "decals/ttt/traitor_iconNew", "Path to traitor icon file");
+	g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "decals/ttt/detective_iconNew", "Path to detective icon file");
 	g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
 	TTT_EndConfig();
 	
-	g_cAdminImmunity.AddChangeHook(OnConVarChanged);
-	g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
-
 	HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
 	HookEvent("player_team", Event_PlayerTeamPre, EventHookMode_Pre);
 
@@ -62,14 +57,6 @@ public void OnPluginEnd()
 	LoopValidClients(i)
 	{
 		ClearIcon(i);
-	}
-}
-
-public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-	if (convar == g_cAdminImmunity)
-	{
-		g_cAdminImmunity.GetString(g_sAdminImmunity, sizeof(g_sAdminImmunity));
 	}
 }
 
@@ -223,12 +210,9 @@ public Action Hook_SetTransmitT(int entity, int client)
 			}
 			else
 			{
-				if (strlen(g_sAdminImmunity) > 0)
+				if (TTT_CheckCommandAccess(client, "icon_immunity", g_cAdminImmunity, true))
 				{
-					if (TTT_HasFlags(client, g_sAdminImmunity))
-					{
-						return Plugin_Continue;
-					}
+					return Plugin_Continue;
 				}
 			}
 		}

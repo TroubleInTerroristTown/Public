@@ -5,9 +5,10 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
-#include <ttt>
 #include <multicolors>
 #include <clientprefs>
+#include <ttt>
+#include <ttt_sql>
 #include <ttt_shop>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Shop"
@@ -23,7 +24,7 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
-ArrayList g_aCustomItems;
+ArrayList g_aCustomItems = null;
 
 ConVar g_cCredits = null;
 ConVar g_cBuyCmd = null;
@@ -54,6 +55,8 @@ ConVar g_cStartCredits = null;
 ConVar g_cCreditsMin = null;
 ConVar g_cCreditsMax = null;
 ConVar g_cCreditsInterval = null;
+ConVar g_cSQLCredits = null;
+ConVar g_cSilentIdRewards = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -62,14 +65,20 @@ Handle g_hOnItemPurchased = null;
 Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
+Handle g_hOnShopReady = null;
+
 Handle g_hReopenCookie = null;
 
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
+bool g_bCredits[MAXPLAYERS + 1] = { false, ... }; // just for sql credits
 
 bool g_bReopen[MAXPLAYERS + 1] =  { true, ... };
 
+Database g_dDB = null;
+
+char g_sLog[PLATFORM_MAX_PATH+1];
 
 char g_sShopCMDs[][] =  {
 	"menu",
@@ -88,20 +97,23 @@ enum Item
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell);
+	g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
 	g_hOnItemPurchase = CreateGlobalForward("TTT_OnItemPurchase", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef, Param_String);
-
 	g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
 	g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
+	g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
 
 	CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
 	CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
 	CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
 	CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
+	CreateNative("TTT_RemoveCustomItem", Native_RemoveCustomItem);
 
 	CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
 	CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
 	CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
+
+	CreateNative("TTT_GiveClientItem", Native_GiveClientItem);
 
 	RegPluginLibrary("ttt_shop");
 
@@ -124,16 +136,15 @@ public void OnPluginStart()
 	RegConsoleCmd("sm_reshop", Command_ReopenShop);
 	RegConsoleCmd("sm_rshop", Command_ReopenShop);
 
-	g_aCustomItems = new ArrayList(84);
-
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say_team");
 
+	// TODO: Add cvar in callback for checking flags (customizable)
+	RegAdminCmd("sm_giveitem", Command_GiveItem, ADMFLAG_ROOT);
 	RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
+	RegAdminCmd("sm_resetitems", Command_ResetItems, ADMFLAG_ROOT);
 
-	HookEvent("player_spawn", Event_PlayerSpawn_Pre, EventHookMode_Pre);
 	HookEvent("player_spawn", Event_PlayerSpawn);
-
 	HookEvent("player_death", Event_PlayerDeath);
 
 	TTT_StartConfig("shop");
@@ -167,20 +178,26 @@ public void OnPluginStart()
 	g_cCredits = AutoExecConfig_CreateConVar("ttt_credits_command", "credits", "The command to show the credits");
 	g_cBuyCmd = AutoExecConfig_CreateConVar("ttt_shop_buy_command", "buyitem", "The command to buy a shop item instantly");
 	g_cShowCmd = AutoExecConfig_CreateConVar("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)");
+	g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "0", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
+	g_cSilentIdRewards = AutoExecConfig_CreateConVar("ttt_shop_silent_id_rewards", "1", "0 = Disabled, will not reward credits with silent id. 1 = Will reward the client with credits for inspecting the body.", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
 
 	LoadTranslations("common.phrases");
 	LoadTranslations("ttt.phrases");
 
+	char sDate[12];
+	FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
+	BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt_shop_%s.log", sDate);
+
 	g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
 
-	for (int i = 0; i <= MaxClients; i++)
+	if (TTT_GetSQLConnection() != null)
 	{
-		if (TTT_IsClientValid(i))
-		{
-			OnClientCookiesCached(i);
-		}
+		g_dDB = TTT_GetSQLConnection();
+		AlterCreditsColumn();
 	}
+
+	ResetItemsArray("OnPluginStart", true);
 }
 
 public void OnConfigsExecuted()
@@ -214,6 +231,16 @@ public void OnConfigsExecuted()
 	{
 		RegConsoleCmd(sBuffer, Command_ShowItems);
 	}
+
+	LoopValidClients(i)
+	{
+			OnClientCookiesCached(i);
+
+			if (g_cSQLCredits.BoolValue && g_dDB != null)
+			{
+				LoadClientCredits(i);
+			}
+	}
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -221,6 +248,191 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 	if (convar == g_cPluginTag)
 	{
 		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
+}
+
+public void TTT_OnSQLConnect(Database db)
+{
+	g_dDB = db;
+	AlterCreditsColumn();
+}
+
+void AlterCreditsColumn()
+{
+	if (g_dDB != null)
+	{
+		char sQuery[72];
+		Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `credits` INT(11) NOT NULL DEFAULT 0;");
+		g_dDB.Query(SQL_AlterCreditsColumn, sQuery);
+	}
+	else
+	{
+		SetFailState("Database handle is invalid!");
+		return;
+	}
+}
+
+public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if (hndl == null || strlen(error) > 0)
+	{
+		if (StrContains(error, "duplicate column name", false) != -1)
+		{
+			LoadClientCredits(GetClientOfUserId(userid));
+		}
+		else
+		{
+			LogError("(SQL_AlterCreditsColumn) Query failed: %s", error);
+		}
+		
+		return;
+	}
+	else
+	{
+		LoadClientCredits(GetClientOfUserId(userid));
+	}
+}
+
+stock void LoadClientCredits(int client)
+{
+	if (TTT_IsClientValid(client) && !IsFakeClient(client))
+	{
+		ConVar cvar = FindConVar("ttt_show_debug_messages");
+		if (cvar != null && cvar.BoolValue)
+		{
+			LogMessage("(LoadClientCredits) Client: \"%L\"", client);
+		}
+		
+		char sCommunityID[64];
+
+		if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+		{
+			LogError("(LoadClientCredits) Auth failed: #%d", client);
+			return;
+		}
+
+		char sQuery[2048];
+		Format(sQuery, sizeof(sQuery), "SELECT `credits` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
+
+		cvar = FindConVar("ttt_debug_mode");
+		if (cvar != null && cvar.BoolValue)
+		{
+			LogMessage(sQuery);
+		}
+
+		if (g_dDB != null)
+		{
+			g_dDB.Query(SQL_OnClientPostAdminCheck, sQuery, GetClientUserId(client));
+		}
+	}
+}
+
+public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	int client = GetClientOfUserId(userid);
+
+	if (!client || !TTT_IsClientValid(client) || IsFakeClient(client))
+	{
+		return;
+	}
+
+	if (hndl == null || strlen(error) > 0)
+	{
+		LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+		return;
+	}
+	else
+	{
+		if (!SQL_FetchRow(hndl))
+		{
+			g_iCredits[client] = g_cStartCredits.IntValue;
+			UpdatePlayer(client);
+		}
+		else
+		{
+			char sCommunityID[64];
+
+			if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+			{
+				LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+				return;
+			}
+
+			int credits = SQL_FetchInt(hndl, 0);
+
+			ConVar cvar = FindConVar("ttt_debug_mode");
+			if (cvar.BoolValue)
+			{
+				LogMessage("Name: %L has %d credits", client, credits);
+			}
+
+			if (credits == 0)
+			{
+				g_iCredits[client] = g_cStartCredits.IntValue;
+			}
+			else
+			{
+				g_iCredits[client] = credits;
+			}
+
+			g_bCredits[client] = true;
+		}
+	}
+}
+
+stock void UpdatePlayer(int client)
+{
+	char sCommunityID[64];
+
+	if (IsFakeClient(client) || IsClientSourceTV(client))
+	{
+		return;
+	}
+
+	if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+	{
+		LogError("(UpdatePlayer) Auth failed: #%d", client);
+		return;
+	}
+
+	char sQuery[2048];
+	
+	if (TTT_GetConnectionType() == dMySQL)
+	{
+		Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, credits) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE credits = %d;", sCommunityID, g_iCredits[client], g_iCredits[client]);
+	}
+	else
+	{
+		Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, credits) VALUES (\"%s\", %d);", sCommunityID, g_iCredits[client], g_iCredits[client]);
+	}
+
+	ConVar cvar = FindConVar("ttt_debug_mode");
+	if (cvar.BoolValue)
+	{
+		LogMessage(sQuery);
+	}
+
+	if (g_dDB != null)
+	{
+		g_dDB.Query(SQL_UpdatePlayer, sQuery, GetClientUserId(client));
+	}
+}
+
+public void SQL_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
+{
+	if (hndl == null || strlen(error) > 0)
+	{
+		LogError("(SQL_UpdatePlayer) Query failed: %s", error);
+		return;
+	}
+	else
+	{
+		int client = GetClientOfUserId(userid);
+
+		if (TTT_IsClientValid(client))
+		{
+			g_bCredits[client] = true;
+		}
 	}
 }
 
@@ -258,7 +470,7 @@ public Action Command_Buy(int client, int args)
 
 	if (strlen(sItem) > 0)
 	{
-		ClientBuyItem(client, sItem);
+		ClientBuyItem(client, sItem, false);
 	}
 
 	return Plugin_Handled;
@@ -302,8 +514,8 @@ public Action Command_Shop(int client, int args)
 	int team = TTT_GetClientRole(client);
 	if (team != TTT_TEAM_UNASSIGNED)
 	{
-		Handle menu = CreateMenu(Menu_ShopHandler);
-		SetMenuTitle(menu, "%T", "TTT Shop", client, TTT_GetClientCredits(client));
+		Menu menu = new Menu(Menu_ShopHandler);
+		menu.SetTitle("%T", "TTT Shop", client, g_iCredits[client]);
 
 		char display[128];
 		int temp_item[Item];
@@ -324,10 +536,8 @@ public Action Command_Shop(int client, int args)
 					if (cDEnable != null && temp_item[Discount])
 					{
 						ConVar g_cFlags = FindConVar("shop_discount_flags");
-						char sAccess[18];
-						g_cFlags.GetString(sAccess, sizeof(sAccess));
 						
-						if (TTT_HasFlags(client, sAccess))
+						if (TTT_CheckCommandAccess(client, "ttt_purchaseitem", g_cFlags, true))
 						{
 							ConVar cDPercents = FindConVar("shop_discount_percents");
 							iPercents = cDPercents.IntValue;
@@ -346,13 +556,13 @@ public Action Command_Shop(int client, int args)
 					{
 						Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
 					}
-					AddMenuItem(menu, temp_item[Short], display);
+					menu.AddItem(temp_item[Short], display);
 				}
 			}
 		}
 
-		SetMenuExitButton(menu, true);
-		DisplayMenu(menu, client, 15);
+		menu.ExitButton = true;
+		menu.Display(client, 15);
 	}
 	else
 	{
@@ -407,12 +617,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 		char info[32];
 		GetMenuItem(menu, itemNum, info, sizeof(info));
 
-		ClientBuyItem(client, info);
-
-		if (g_cReopenMenu.BoolValue && g_bReopen[client])
-		{
-			Command_Shop(client, 0);
-		}
+		ClientBuyItem(client, info, true);
 	}
 
 	else if (action == MenuAction_End)
@@ -421,7 +626,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 	}
 }
 
-bool ClientBuyItem(int client, char[] item)
+bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 {
 	int temp_item[Item];
 	for (int i = 0; i < g_aCustomItems.Length; i++)
@@ -429,7 +634,13 @@ bool ClientBuyItem(int client, char[] item)
 		g_aCustomItems.GetArray(i, temp_item[0]);
 		if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
 		{
-			int price = temp_item[Price];
+			int price = 0;
+
+			if (!free)
+			{
+				price = temp_item[Price];
+			}
+
 			bool count = true;
 
 			Action result = Plugin_Continue;
@@ -446,7 +657,7 @@ bool ClientBuyItem(int client, char[] item)
 			}
 			
 			// Reset price if item non discountable
-			if (!temp_item[Discount] && temp_item[Price] != price)
+			if (!free && price > 0 && !temp_item[Discount] && temp_item[Price] != price)
 			{
 				price = temp_item[Price];
 			}
@@ -460,19 +671,25 @@ bool ClientBuyItem(int client, char[] item)
 				}
 			}
 
-			if (TTT_GetClientCredits(client) >= price)
+			if ((!free && g_iCredits[client] >= price) || (free && price == 0))
 			{
 				Action res = Plugin_Continue;
 				Call_StartForward(g_hOnItemPurchased);
 				Call_PushCell(client);
 				Call_PushString(temp_item[Short]);
 				Call_PushCell(count);
+				Call_PushCell(price);
 				Call_Finish(res);
 
 				if (res < Plugin_Stop)
 				{
-					TTT_SetClientCredits(client, (TTT_GetClientCredits(client) - price));
-					CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, TTT_GetClientCredits(client), temp_item[Long], price);
+					setCredits(client, (g_iCredits[client] - price));
+					
+					if (!free)
+					{
+						CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
+					}
+					
 					return true;
 				}
 			}
@@ -480,6 +697,11 @@ bool ClientBuyItem(int client, char[] item)
 			{
 				CPrintToChat(client, "%s %T", g_sPluginTag, "You don't have enough money", client);
 				return false;
+			}
+
+			if (menu && g_cReopenMenu.BoolValue && g_bReopen[client])
+			{
+				Command_Shop(client, 0);
 			}
 		}
 	}
@@ -535,6 +757,8 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 	bool temp_discount = view_as<bool>(GetNativeCell(6));
 	int temp_item[Item];
 
+	LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
+
 	if ((strlen(temp_short) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
 	{
 		return false;
@@ -587,6 +811,25 @@ public int Native_UpdateCustomItem(Handle plugin, int numParams)
 			
 			g_aCustomItems.SetArray(i, temp_item[0]);
 			
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+public int Native_RemoveCustomItem(Handle plugin, int numParams)
+{
+	int temp_item[Item];
+	char temp_short[16];
+	GetNativeString(1, temp_short, sizeof(temp_short));
+	
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, temp_item[0]);
+		if (StrEqual(temp_item[Short], temp_short, false))
+		{
+			g_aCustomItems.Erase(i);
 			return true;
 		}
 	}
@@ -680,26 +923,17 @@ public Action Timer_CreditsTimer(Handle timer, any userid)
 	return Plugin_Stop;
 }
 
-public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBroadcast)
-{
-	int client = GetClientOfUserId(event.GetInt("userid"));
-
-	if (TTT_IsClientValid(client))
-	{
-		if (g_cResetCreditsEachRound.BoolValue)
-		{
-			g_iCredits[client] = g_cStartCredits.IntValue;
-		}
-	}
-	return Plugin_Continue;
-}
-
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	if (TTT_IsClientValid(client))
 	{
+		if (g_cResetCreditsEachRound.BoolValue && !g_cSQLCredits.BoolValue)
+		{
+			g_iCredits[client] = g_cStartCredits.IntValue;
+		}
+
 		if (TTT_IsRoundActive())
 		{
 			CPrintToChat(client, "%s %T", g_sPluginTag, "Your credits is", client, g_iCredits[client]);
@@ -709,9 +943,16 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	return Plugin_Continue;
 }
 
-public void OnClientPutInServer(int client)
+public void OnClientPostAdminCheck(int client)
 {
-	g_iCredits[client] = g_cStartCredits.IntValue;
+	if (!g_cSQLCredits.BoolValue)
+	{
+		g_iCredits[client] = g_cStartCredits.IntValue;
+	}
+	else
+	{
+		LoadClientCredits(client);
+	}
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
@@ -845,9 +1086,12 @@ public void TTT_OnRoundEnd(int WinningTeam)
 	}
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID)
 {
-	addCredits(client, g_cCreditsFoundBody.IntValue);
+	if (!silentID || (g_cSilentIdRewards.BoolValue && silentID))
+	{
+		addCredits(client, g_cCreditsFoundBody.IntValue);
+	}
 }
 
 stock void addCredits(int client, int credits, bool message = false)
@@ -882,6 +1126,8 @@ stock void addCredits(int client, int credits, bool message = false)
 			CPrintToChat(client, "%s %T", g_sPluginTag, "credits earned", client, credits, g_iCredits[client]);
 		}
 	}
+
+	UpdatePlayer(client);
 
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
@@ -927,6 +1173,8 @@ stock void subtractCredits(int client, int credits, bool message = false)
 		}
 	}
 
+	UpdatePlayer(client);
+
 	Call_StartForward(g_hOnCreditsGiven);
 	Call_PushCell(client);
 	Call_PushCell(g_iCredits[client]);
@@ -941,6 +1189,61 @@ stock void setCredits(int client, int credits)
 	{
 		g_iCredits[client] = 0;
 	}
+
+	UpdatePlayer(client);
+
+	Call_StartForward(g_hOnCreditsGiven);
+	Call_PushCell(client);
+	Call_PushCell(g_iCredits[client]);
+	Call_Finish();
+}
+
+public Action Command_GiveItem(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+
+	if (args != 2)
+	{
+		ReplyToCommand(client, "[SM] Usage: sm_giveitem <#userid|name> <item>");
+		return Plugin_Handled;
+	}
+
+	char sArg1[12];
+	GetCmdArg(1, sArg1, sizeof(sArg1));
+
+	char sItem[16];
+	GetCmdArg(2, sItem, sizeof(sItem));
+
+	char target_name[MAX_TARGET_LENGTH];
+	int target_list[MAXPLAYERS];
+	int target_count;
+	bool tn_is_ml;
+
+	if ((target_count = ProcessTargetString(sArg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_ALIVE, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+	{
+		ReplyToTargetError(client, target_count);
+		return Plugin_Handled;
+	}
+
+	for (int i = 0; i < target_count; i++)
+	{
+		int target = target_list[i];
+
+		if (!TTT_IsClientValid(target))
+		{
+			return Plugin_Handled;
+		}
+
+		if (!GiveClientItem(target, sItem))
+		{
+			CPrintToChat(client, "%s %T", g_sPluginTag, "Shop: Item not found", client, sItem);
+		}
+	}
+
+	return Plugin_Continue;
 }
 
 public Action Command_SetCredits(int client, int args)
@@ -989,6 +1292,11 @@ public Action Command_SetCredits(int client, int args)
 	return Plugin_Continue;
 }
 
+public Action Command_ResetItems(int client, int args)
+{
+	ResetItemsArray("Command_ResetItems", true);
+}
+
 public int Native_GetClientCredits(Handle plugin, int numParams)
 {
 	int client = GetNativeCell(1);
@@ -1024,4 +1332,59 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 		return g_iCredits[client];
 	}
 	return 0;
+}
+
+public int Native_GiveClientItem(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	
+	char sItem[16];
+	GetNativeString(2, sItem, sizeof(sItem));
+
+	if (TTT_IsClientValid(client))
+	{
+		return GiveClientItem(client, sItem);
+	}
+
+	return false;
+}
+
+
+void ResetItemsArray(const char[] sFunction, bool initArray = false)
+{
+	delete g_aCustomItems;
+
+	LogToFile(g_sLog, "Function: %s - Init: %d", sFunction, initArray);
+	
+	if (initArray)
+	{
+		g_aCustomItems = new ArrayList(84);
+		RequestFrame(Frame_ShopReady, g_aCustomItems);
+	}
+}
+
+public void Frame_ShopReady(ArrayList aItems)
+{
+	if (aItems != null && g_aCustomItems != null && aItems == g_aCustomItems) // ¯\_(ツ)_/¯
+	{
+		Call_StartForward(g_hOnShopReady);
+		Call_Finish();
+	}
+}
+
+int GiveClientItem(int client, char[] sItem)
+{
+	int iItems[Item];
+
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, iItems[0]);
+		if (strlen(iItems[Short]) > 1 && StrEqual(iItems[Short], sItem, false))
+		{
+			ClientBuyItem(client, sItem, false, true);
+			return true;
+		}
+	}
+
+	return false;
 }

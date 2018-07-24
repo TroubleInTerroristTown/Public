@@ -112,7 +112,12 @@ public void OnLibraryRemoved(const char[] name)
 	}
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	if (g_bCPS && g_bGlow)
 	{
@@ -158,7 +163,7 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 	}
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

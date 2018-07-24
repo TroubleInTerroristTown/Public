@@ -1,0 +1,26 @@
+"Phrases"
+{
+
+	"No tripmines"
+	{
+		"en"		"You do not have any tripmines."
+		"de"		"Du hast keine Tripmines mehr."
+        	"pt"		"Você não tem tripmines."
+	}
+
+	"Invalid location"
+	{
+		"en"		"Invalid location for Tripmine"
+		"de"		"Die Position ist für eine Tripmine nicht geeignet"
+        	"pt"		"Local inválido para colocar a tripmine."
+	}
+
+	"Remaining Tripmines"
+	{
+		"#format"	"{1:d}"
+		"en"		"Tripmines remaining: {1}"
+		"de"		"Tripmines verbleibend: {1}"
+        	"pt"		"Tripmines restantes: {1}"
+	}
+
+}

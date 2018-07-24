@@ -11,6 +11,7 @@ ConVar g_cTextD = null;
 ConVar g_cTextI = null;
 ConVar g_cTextT = null;
 ConVar g_cTextU = null;
+ConVar g_cTimer = null;
 
 int g_iTarget[MAXPLAYERS + 1] = {0, ...};
 Handle g_hOnHudSend_Pre = null;
@@ -43,14 +44,13 @@ public void OnPluginStart()
 	g_cTextI = AutoExecConfig_CreateConVar("hud_display_innocent", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a innocent. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
 	g_cTextT = AutoExecConfig_CreateConVar("hud_display_traitor", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a traitor. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
 	g_cTextU = AutoExecConfig_CreateConVar("hud_display_unassigned", "{NAME}: {PLAYERNAME}<br>{KARMA}: {PLAYERKARMA}", "The hint text that is displayed to a unassigned. Use {Name} {PlayerName} {Health} {PlayerHealth} {Karma} {PlayerKarma}(See translation)");
+	g_cTimer = AutoExecConfig_CreateConVar("hud_timer_check", "0.2", "Check each x seconds.");
 	TTT_EndConfig();
 
 	LoadTranslations("ttt.phrases");
-
-	CreateTimer(0.3, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
-public void OnConfigsExecuted()
+public void OnAllPluginsLoaded()
 {
 	char sFile[] = "ttt_player_hud.smx";
 	Handle hPlugin = FindPluginByFile(sFile);
@@ -59,6 +59,11 @@ public void OnConfigsExecuted()
 	{
 		SetFailState("Old player hud file found! Please delete '%s'", sFile);
 	}
+}
+
+public void OnConfigsExecuted()
+{
+	CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT);
 }
 
 public Action Timer_UpdateText(Handle timer)
@@ -77,12 +82,12 @@ public Action Timer_UpdateText(Handle timer)
 					continue;
 				}
 
-				char sName[32];
+				char sName[MAX_NAME_LENGTH];
 				char sPlayerName[64];
-				char sHealth[32];
+				char sHealth[64];
 				char sPlayerHealth[64];
-				char sKarma[32];
-				char sPlayerKarma[32];
+				char sKarma[64];
+				char sPlayerKarma[64];
 				char sHintText[512];
 
 				if (PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
@@ -205,17 +210,17 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 	Call_StartForward(g_hOnHudSend_Pre);
 	Call_PushCell(client);
 	Call_PushCell(target);
-	Call_PushStringEx(sName, iNameLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sName, iNameLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iNameLength);
-	Call_PushStringEx(sPlayerName, iPlayerNameLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sPlayerName, iPlayerNameLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iPlayerNameLength);
-	Call_PushStringEx(sHealth, iHealthLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sHealth, iHealthLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iHealthLength);
-	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iPlayerHealthLength);
-	Call_PushStringEx(sKarma, iKarmaLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sKarma, iKarmaLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iKarmaLength);
-	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, 0, SM_PARAM_COPYBACK & SM_PARAM_STRING_COPY);
+	Call_PushStringEx(sPlayerKarma, iPlayerKarmaLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
 	Call_PushCell(iPlayerKarmaLength);
 	Call_Finish(res);
 	if (res >= Plugin_Handled)

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:00 UTC
+// Date: 2018-07-22 10:23:18 UTC
 // Language: French (fr)
 // 
 // To view other translations for this plugin, please visit:
@@ -618,11 +618,6 @@
 		"fr"		"Le joueur {lightgreen}{1} a utilisé un détecteur sur le joueur {green} {2} {lightgreen}et c'est un {green}INNOCENT!"
 	}
 
-	"AlreadyTaser"
-	{
-		"fr"		"Vous avez déjà un taser dans votre inventaire ! "
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"fr"		"{1} est en train de parler dans le chat vocal des Traîtres "
@@ -771,6 +766,16 @@
 	"Player Spawn TTT Version"
 	{
 		"fr"		"Trouble in Terrorist Town - Version: {1}"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"fr"		"Vous avez changé la position avec {green}{1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"fr"		"Vous avez déjà un taser dans votre inventaire ! "
 	}
 
 }

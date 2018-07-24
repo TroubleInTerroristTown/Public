@@ -9,25 +9,18 @@ char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
 char g_sTag[64];
-char g_sKickImmunity[18];
-char g_sLogAccess[18];
 char g_sDefaultPrimary[32];
 char g_sDefaultSecondary[32];
 char g_sRoundStartedFontColor[12];
 char g_sRoundStartFontColor[12];
 char g_sFSSecondary[32];
 char g_sFSPrimary[32];
-char g_sSetRole[18];
-char g_sKarmaReset[18];
-char g_sSetKarma[18];
 
 bool g_bRoundEnded = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
 bool g_bImmuneRDMManager[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHoldingProp[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHoldingSilencedWep[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -54,11 +47,17 @@ bool g_bCheckPlayers = false;
 int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
 bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
+int g_bHurtedPlayer1[MAXPLAYERS + 1] =  { -1, ... };
+int g_bHurtedPlayer2[MAXPLAYERS + 1] =  { -1, ... };
+bool g_bResetHurt[MAXPLAYERS + 1] =  { false, ... };
+
 Handle g_hRoundTimer = null;
 
 bool g_bInactive = false;
 
 int g_iCollisionGroup = -1;
+int m_flNextPrimaryAttack = -1;
+int m_flNextSecondaryAttack = -1;
 
 bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
 int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
@@ -83,7 +82,6 @@ int g_iBadNameCount = 0;
 
 Database g_dDB = null;
 
-
 bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
 
 ArrayList g_aLogs = null;
@@ -91,6 +89,7 @@ ArrayList g_aRagdoll = null;
 
 bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
 bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
+bool g_bAlive[MAXPLAYERS + 1] = { false, ... };
 
 int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -100,12 +99,17 @@ Handle g_hOnRoundStartFailed = null;
 Handle g_hOnRoundEnd = null;
 Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
+Handle g_hOnClientDeathPre = null;
 Handle g_hOnBodyFound = null;
 Handle g_hOnBodyChecked = null;
-Handle g_hOnUpdate1 = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;
+Handle g_hOnPlayerDeathPre = null;
+Handle g_hOnKarmaUpdate = null;
+Handle g_hOnRulesMenu = null;
+Handle g_hOnDetectiveMenu = null;
+Handle g_hOnCheckCommandAccess = null;
 
 bool g_bSourcebans = false;
 
@@ -200,9 +204,6 @@ ConVar g_cslayAfterStart = null;
 ConVar g_cremoveBuyzone = null;
 ConVar g_cforceTeams = null;
 ConVar g_crandomWinner = null;
-ConVar g_cforceModel = null;
-ConVar g_cmodelCT = null;
-ConVar g_cmodelT = null;
 ConVar g_clogFile = null;
 ConVar g_cerrFile = null;
 ConVar g_cdefaultPriD = null;
@@ -262,6 +263,30 @@ ConVar g_cPrimaryWeaponUpdate = null;
 ConVar g_cSecondaryWeaponUpdate = null;
 ConVar g_cAdvert = null;
 ConVar g_cInnocentKnife = null;
+ConVar g_cEnableDamageKarma = null;
+ConVar g_cDamageKarmaII = null;
+ConVar g_cDamageKarmaIT = null;
+ConVar g_cDamageKarmaID = null;
+ConVar g_cDamageKarmaTI = null;
+ConVar g_cDamageKarmaTT = null;
+ConVar g_cDamageKarmaTD = null;
+ConVar g_cDamageKarmaDI = null;
+ConVar g_cDamageKarmaDT = null;
+ConVar g_cDamageKarmaDD = null;
+ConVar g_cDoublePushInno = null;
+ConVar g_cDoublePushDete = null;
+ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
+ConVar g_cSilentIdEnabled = null;
+ConVar g_cSilentIdColor = null;
+ConVar g_cSilentIdRoles = null;
+ConVar g_cLogButtons = null;
+ConVar g_cLogButtonsSpam = null;
+ConVar g_cOpenRulesOnPunish = null;
+ConVar g_cRulesURLReopenMenu = null;
+ConVar g_cNameChangePunish = null;
+ConVar g_cNameChangeLength = null;
+ConVar g_cIdentifyLog = null;
+ConVar g_cShowInnoRDMMenu = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
@@ -271,3 +296,5 @@ bool g_bDRules[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
+
+bool g_bPressed[2048] = { false, ... };

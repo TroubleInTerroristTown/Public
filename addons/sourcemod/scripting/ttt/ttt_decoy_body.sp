@@ -89,10 +89,17 @@ public void OnConfigsExecuted()
 	g_cPluginTag = FindConVar("ttt_plugin_tag");
 	g_cPluginTag.AddChangeHook(OnConVarChanged);
 	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-	
+}
+
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
-	
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
@@ -109,7 +116,7 @@ public void OnClientDisconnect(int client)
 	ResetStuff(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -179,7 +186,7 @@ public Action TTT_OnBodyChecked(int client, int[] ragdoll)
 		}
 		
 		DataPack pack = new DataPack();
-		CreateDataTimer(1.0, Timer_DecoyBody, pack, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(1.0, Timer_DecoyBody, pack, TIMER_FLAG_NO_MAPCHANGE);
 		pack.WriteCell(GetClientUserId(attacker));
 		pack.WriteCell(EntIndexToEntRef(body));
 		pack.WriteCell(bReal);
@@ -190,14 +197,16 @@ public Action TTT_OnBodyChecked(int client, int[] ragdoll)
 	return Plugin_Continue;
 }
 
-public Action Timer_DecoyBody(Handle timer, any pack)
+public Action Timer_DecoyBody(Handle timer, DataPack pack)
 {
-	ResetPack(pack);
+	pack.Reset();
 	
-	int attacker = GetClientOfUserId(ReadPackCell(pack));
-	int body = EntRefToEntIndex(ReadPackCell(pack));
-	bool bReal = view_as<bool>(ReadPackCell(pack));
+	int attacker = GetClientOfUserId(pack.ReadCell());
+	int body = EntRefToEntIndex(pack.ReadCell());
+	bool bReal = view_as<bool>(pack.ReadCell());
 	
+	delete pack;
+
 	if (TTT_IsClientValid(attacker) && IsValidEntity(body))
 	{
 		if (!g_cInstantExplode.BoolValue && g_iCountdown[attacker] > 0)
@@ -210,7 +219,7 @@ public Action Timer_DecoyBody(Handle timer, any pack)
 			EmitAmbientSoundAny(BEEP_SOUND, fPos);
 			
 			DataPack pack2 = new DataPack();
-			CreateDataTimer(1.0, Timer_DecoyBody, pack2, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+			CreateTimer(1.0, Timer_DecoyBody, pack2, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 			pack2.WriteCell(GetClientUserId(attacker));
 			pack2.WriteCell(EntIndexToEntRef(body));
 			pack2.WriteCell(bReal);

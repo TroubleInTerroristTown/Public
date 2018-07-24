@@ -119,6 +119,8 @@ void SQL_Start()
 
 	if (!SQL_CheckConfig(sEntry) && g_iRetries < g_cRetries.IntValue)
 	{
+		LogError("(SQL_Start) Couldn't find an \"%s\"-entry in your databases.cfg...", sEntry);
+
 		char sError[255];
 		g_dDatabase = SQL_Connect(sEntry, true, sError, sizeof(sError));
 
@@ -189,11 +191,11 @@ void CheckAndCreateTables()
 	char sQuery[256];
 	if (StrEqual(g_sType, "mysql", false))
 	{
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , `karma` INT(11) NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 	}
 	else if (StrEqual(g_sType, "sqlite", false))
 	{
-		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', `karma` INT NOT NULL DEFAULT 0, PRIMARY KEY (`communityid`));");
+		Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', PRIMARY KEY (`communityid`));");
 	}
 
 	TTT_Query("Callback_CheckAndCreateTables", sQuery);

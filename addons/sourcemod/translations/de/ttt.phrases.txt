@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:12:59 UTC
+// Date: 2018-07-22 10:23:17 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -130,7 +130,7 @@
 
 	"Inspected body. The extracted data are the following"
 	{
-		"de"		"Die Leiche wurde untersucht, folgende Informationen wurden herausgefunden:"
+		"de"		"Die Leiche wurde untersucht,\nfolgende Informationen wurden herausgefunden:"
 	}
 
 	"Victim name"
@@ -618,11 +618,6 @@
 		"de"		"Der Spieler {lightgreen}{1} {green}benutzt einen Detektor am Spieler {lightgreen}{2} {green}und er ist ein INNOCENT!"
 	}
 
-	"AlreadyTaser"
-	{
-		"de"		"Sie haben bereits einen Taser im Inventar!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"de"		"{1} spricht nun im Traitor Sprachchat."
@@ -876,6 +871,136 @@
 	"TTT Radio: See"
 	{
 		"de"		"Ich sehe {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"de"		"Keine Leiche gefunden..."
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"de"		"Du hast die Position mit {green}{1} {lightgreen}getauscht."
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{green} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"Detective scan found body Detective"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkblue} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"de"		"DETEKTIV{darkblue} {1} {lightgreen}hat eine Leiche untersucht, der Mörder war: Spieler{darkred} {2} {lightgreen}mit einer {orchid}{3} "
+	}
+
+	"No karma hurt traitor"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {darkred}TRAITOR {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"No karma hurt innocent"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {green}INNOCENT {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"No karma hurt detective"
+	{
+		"de"		"Sie haben kein Karma verloren, weil der {darkblue}DETEKTIV {lightgreen}dich vorher angeschossen hat."
+	}
+
+	"Shop Item not found"
+	{
+		"de"		"{1} nicht als gültiges Shop Item gefunden."
+	}
+
+	"TTT Radio: KOS"
+	{
+		"de"		"KOS {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {green}{1} {lightgreen}gefunden. {lightgreen}Er war ein {green}INNOCENT!"
+	}
+
+	"Found Detective Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {darkblue}{1} {lightgreen}gefunden. {lightgreen}Er war ein {darkblue}DETECTIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"de"		"{lightgreen}Du hast heimlich die Leiche von {darkred}{1} {lightgreen}gefunden. {lightgreen}Er war ein {darkred}TRAITOR!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"de"		"Wähle eine Bestrafung:"
+	}
+
+	"C4: Slay"
+	{
+		"de"		"Spieler erschlagen"
+	}
+
+	"C4: Explode"
+	{
+		"de"		"Bombe explodieren lassen"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"de"		"Namensänderung in einer aktiven Runde ist verboten!"
+	}
+
+	"Name Change Reason"
+	{
+		"de"		"Namensänderung in einer aktiven Runde"
+	}
+
+	"Name Change Message"
+	{
+		"de"		"{orchid}{1} {lightgreen}hat Name in {orchid}{2} {lightgreen}geändert!"
+	}
+
+	"No tripmines"
+	{
+		"de"		"Du hast keine Tripmines mehr."
+	}
+
+	"Invalid location"
+	{
+		"de"		"Die Position ist für eine Tripmine nicht geeignet"
+	}
+
+	"AlreadyTaser"
+	{
+		"de"		"Sie haben bereits einen Taser im Inventar!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"de"		"Tripmines verbleibend: {1}"
+	}
+
+	"TTT Radio Menu: KOS"
+	{
+		"de"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"de"		"Um eine Tripmine zu platzieren, gib '/tripmine' im Chat ein."
+	}
+
+	"Free DNA Scanner left"
+	{
+		"de"		"Du hast einen kostenlose DNA-Scanner benutzt! {1} Nutzung(en) verbleibend."
 	}
 
 }

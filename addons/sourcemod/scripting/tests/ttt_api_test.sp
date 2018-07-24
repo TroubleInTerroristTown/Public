@@ -1,9 +1,11 @@
 #pragma semicolon 1
 
 #include <sourcemod>
+#include <cstrike>
 #include <ttt>
 #include <ttt_sql>
 #include <ttt_shop>
+#include <ttt_grabbermod>
 
 #pragma newdecls required
 
@@ -30,6 +32,42 @@ public void OnPluginStart()
 	HookEvent("weapon_fire", Event_WeaponFire);
 	
 	RegAdminCmd("sm_uitem", Command_UItem, ADMFLAG_ROOT);
+	RegAdminCmd("sm_trole", Command_TRole, ADMFLAG_ROOT);
+	RegAdminCmd("sm_endround", Command_EndRound, ADMFLAG_ROOT);
+}
+
+public Action Command_TRole(int client, int args)
+{
+	int iRole = TTT_GetClientRole(client);
+	char sRole[ROLE_LENGTH], sShort[ROLE_LENGTH];
+
+	TTT_GetRoleNameByID(iRole, sRole, sizeof(sRole));
+	TTT_GetShortRoleNameByID(iRole, sShort, sizeof(sShort));
+	PrintToChat(client, "(1) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	TTT_GetRoleNameByShortName(sShort, sRole, sizeof(sRole));
+	PrintToChat(client, "(2) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	iRole = TTT_GetRoleIDByName(sRole);
+	PrintToChat(client, "(3) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	iRole = TTT_GetRoleIDByShortName(sShort);
+	PrintToChat(client, "(4) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+	TTT_GetShortRoleNameByName(sRole, sShort, sizeof(sShort));
+	PrintToChat(client, "(5) Player: %N - RoleID: %d - RoleName: %s - RoleShort: %s", client, iRole, sRole, sShort);
+}
+
+public Action Command_EndRound(int client, int args)
+{
+	if (args != 1)
+	{
+		ReplyToCommand(client, "sm_endround <delay in seconds>");
+		return Plugin_Handled;
+	}
+
+	char sArg[12];
+	GetCmdArg(1, sArg, sizeof(sArg));
+
+	CS_TerminateRound(StringToFloat(sArg), CSRoundEnd_Draw, true);
+
+	return Plugin_Handled;
 }
 
 public Action Command_UItem(int client, int args)
@@ -52,10 +90,12 @@ public Action Command_UItem(int client, int args)
 
 public void OnConfigsExecuted()
 {
-	if (TTT_IsLoaded())
-	{
-		TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
-	}
+	RegisterItem();
+}
+
+void RegisterItem()
+{
+	TTT_RegisterCustomItem(PLUGIN_ITEM_SHORT, PLUGIN_ITEM_LONG, PLUGIN_ITEM_PRICE);
 }
 
 public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item)
@@ -68,11 +108,11 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
 	return Plugin_Continue;
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] item, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(item) > 2)
+	if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(itemshort) > 2)
 	{
-		PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d", item, count);
+		PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d Price: %d", itemshort, count, price);
 	}
 
 	return Plugin_Continue;
@@ -112,16 +152,28 @@ public void TTT_OnClientDeath(int victim, int attacker)
 	PrintToServer("(TTT_OnClientDeath) victim: %d - attacker: %d", victim, attacker);
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer)
+public Action TTT_OnClientDeathPre(int victim, int attacker)
+{
+	PrintToServer("TTT_OnClientDeathPre was called!");
+	PrintToServer("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
+}
+
+public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silent)
 {
 	PrintToServer("TTT_OnBodyFound was called!");
-	PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+	PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
 }
 
 public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
 {
 	PrintToServer("TTT_OnBodyScanned was called!");
 	PrintToServer("(TTT_OnBodyScanned) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+}
+
+public Action TTT_OnPlayerDeath(int victim, int attacker)
+{
+	PrintToServer("TTT_OnPlayerDeath was called!");
+	PrintToServer("(TTT_OnPlayerDeath) victim: %d - attacker: %d", victim, attacker);
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -136,4 +188,10 @@ public void TTT_OnSQLConnect(Database db)
 	{
 		PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);
 	}
+}
+
+public bool TTT_OnGrabbing(int client, int entity)
+{
+	PrintToServer("TTT_OnGrabbing was called!");
+	PrintToServer("(TTT_OnGrabbing) Client: %N - Entity: %d", client, entity);
 }

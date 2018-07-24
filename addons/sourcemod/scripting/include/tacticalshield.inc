@@ -21,17 +21,30 @@
 #endif
 
 #define _tacticalshield_included
- 
 
-/**
- * Give the specified player a shield, if he can have one.
- * It is the same as the command ts_buy but without using money.
- *
- * @param client			Client index.
- * @return
- * @error					Invalid client.
- */
-native void GivePlayerShield(int client);
+public SharedPlugin __pl_tacticalshield = 
+{
+	name = "tacticalshield",
+	file = "tacticalshield.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};
+
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_tacticalshield_SetNTVOptional()
+{
+	MarkNativeAsOptional("GivePlayerShield");
+	MarkNativeAsOptional("OverridePlayerShield");
+	MarkNativeAsOptional("RemovePlayerShield");
+	MarkNativeAsOptional("DestroyPlayerShield");
+	MarkNativeAsOptional("SetEquipPlayerShield");
+	MarkNativeAsOptional("SetHidePlayerShield");
+}
+#endif
 
 /**
  * Override shield status for the specified player.
@@ -44,10 +57,50 @@ native void GivePlayerShield(int client);
 native void OverridePlayerShield(int client, int override);
 
 /**
- * Remove the shield for the specified player.
+ * Give the specified player a shield, if he can have one.
+ * It is the same as the command ts_buy but without using money.
+ *
+ * @param client			Client index.
+ * @return
+ * @error					Invalid client.
+ */
+native void GivePlayerShield(int client);
+
+/**
+ * Silently remove the shield for the specified player. He won't be able to use it anymore
  *
  * @param client			Client index.
  * @return
  * @error					Invalid client.
  */
 native void RemovePlayerShield(int client);
+
+/**
+ * Destroy the shield for the specified player. He won't be able to use it anymore.
+ * Same as RemovePlayerShield but gives player feedback (sound and message).
+ *
+ * @param client			Client index.
+ * @return
+ * @error					Invalid client.
+ */
+native void DestroyPlayerShield(int client);
+
+/**
+ * Force the specified player to equip/unequip the shield.
+ *
+ * @param client			Client index.
+ * @return
+ * @error					Invalid client.
+ */
+native void SetEquipPlayerShield(int client, bool equip);
+
+/**
+ * Hide/unhide the shield of the specified player. He will be able to use it again.
+ * This removes the shield entity without removing the shield from the player inventory.
+ * The player will then be able to use it again when unhidden.
+ *
+ * @param client			Client index.
+ * @return
+ * @error					Invalid client.
+ */
+native void SetHidePlayerShield(int client, bool hide);

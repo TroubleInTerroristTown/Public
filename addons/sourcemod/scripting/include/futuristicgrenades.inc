@@ -149,7 +149,7 @@ public SharedPlugin __pl_futuristicgrenades  =
 };
 
 #if !defined REQUIRE_PLUGIN
-public __pl_futuristicgrenades_SetNTVOptional()
+public void __pl_futuristicgrenades_SetNTVOptional()
 {	
 	MarkNativeAsOptional("FGrenades_IsFriendlyFire");
 	MarkNativeAsOptional("FGrenades_GetMode");

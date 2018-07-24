@@ -9,6 +9,13 @@
 #include <ttt>
 #include <multicolors>
 
+#undef REQUIRE_PLUGIN
+#pragma newdecls optional
+#include <basecomm>
+#include <sourcecomms>
+#pragma newdecls required
+#define REQUIRE_PLUGIN
+
 #define SHORT_NAME "iceknife"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
@@ -21,6 +28,7 @@ ConVar g_cFreezeTime = null;
 ConVar g_cFreezeTraitors = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
+ConVar g_cMute = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iOldColors[MAXPLAYERS + 1][4];
@@ -29,6 +37,9 @@ bool g_bFreezed[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIceKnife[MAXPLAYERS + 1] = { false, ... };
 
 char g_sFreezeSound[PLATFORM_MAX_PATH] = "";
+
+bool g_bSourceC = false;
+bool g_bBaseC = false;
 
 public Plugin myinfo =
 {
@@ -55,10 +66,40 @@ public void OnPluginStart()
 	g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
 	g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
 	g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
+	g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
-	
+
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	LateLoadAll();
+
+	g_bSourceC = LibraryExists("sourcecomms");
+	g_bBaseC = LibraryExists("basecomm");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = true;
+	}
+
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = true;
+	}
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+	if (StrEqual(name, "sourcecomms"))
+	{
+		g_bSourceC = false;
+	}
+
+	if (StrEqual(name, "basecomm"))
+	{
+		g_bBaseC = false;
+	}
 }
 
 public void OnMapStart()
@@ -74,7 +115,7 @@ public void OnMapStart()
 	{
 		PrecacheSound(g_sFreezeSound, true);
 	}
-	
+
 	delete hConfig;
 }
 
@@ -116,18 +157,24 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 	if (TTT_IsClientValid(client))
 	{
 		GetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
+		ResetIceK(client);
 	}
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
-	
+
 	TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -137,10 +184,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			{
 				char sName[MAX_ITEM_LENGTH], sTag[64];
 				g_cLongName.GetString(sName, sizeof(sName));
-				
+
 				ConVar hTag = FindConVar("ttt_plugin_tag");
 				hTag.GetString(sTag, sizeof(sTag));
-				
+
 				CPrintToChat(client, "%s %T", sTag, "Bought All", client, sName, g_cCount.IntValue);
 				return Plugin_Stop;
 			}
@@ -212,6 +259,22 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 		if (g_cFreezeTime.FloatValue > 0.0)
 		{
+			if (g_cMute.BoolValue)
+			{
+				if (g_bSourceC)
+				{
+					SourceComms_SetClientMute(iVictim, true, 1, false, "Ice Knife");
+				}
+				else if (g_bBaseC)
+				{
+					BaseComm_SetClientMute(iVictim, true);
+				}
+				else
+				{
+					LogError("[%s] (OnTraceAttack) Can't mute \"%L\".", PLUGIN_NAME, iVictim);
+				}
+			}
+
 			CreateTimer(g_cFreezeTime.FloatValue, Timer_FreezeEnd, GetClientUserId(iVictim));
 		}
 
@@ -235,6 +298,22 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 	if (TTT_IsClientValid(client))
 	{
 		PlayFreezeSound(client);
+
+		if (g_cMute.BoolValue)
+		{
+			if (g_bSourceC)
+			{
+				SourceComms_SetClientMute(client, false);
+			}
+			else if (g_bBaseC)
+			{
+				BaseComm_SetClientMute(client, false);
+			}
+			else
+			{
+				LogError("[%s] (Timer_FreezeEnd) Can't unmute \"%L\".", PLUGIN_NAME, client);
+			}
+		}
 
 		SetEntityMoveType(client, MOVETYPE_WALK);
 		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);

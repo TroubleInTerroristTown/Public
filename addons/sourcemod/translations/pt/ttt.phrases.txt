@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:03 UTC
+// Date: 2018-07-22 10:23:18 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -90,7 +90,7 @@
 
 	"Detective scan found body"
 	{
-		"pt"		"DETETIVE{darkblue} {1} {lightgreen} Escaneado um corpo, o assassino é o jogador{darkred} {2} {lightgreen} com arma {orchid} {3}"
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkred} {2} {lightgreen}com a arma{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
@@ -225,12 +225,12 @@
 
 	"Found Detective"
 	{
-		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkblue}{2}. {lightgreen}Isso era um {darkblue}DETETIVE!"
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkblue}{2}. {lightgreen}Ele era {darkblue}DETETIVE!"
 	}
 
 	"Found Traitor"
 	{
-		"pt"		"{orchid} {1} {lightgreen} encontrou o corpo de {darkred}{2}. {lightgreen}Esse era um traidor{darkred}!"
+		"pt"		"{orchid}{1} {lightgreen}encontrou o corpo de {darkred}{2}. {lightgreen}Ele era {darkred}Traidor!"
 	}
 
 	"Your bomb is not armed."
@@ -618,11 +618,6 @@
 		"pt"		"O jogador {lightgreen}{1} usou um detector no player {green}{2} {lightgreen}e ele é {green}INOCENTE!"
 	}
 
-	"AlreadyTaser"
-	{
-		"pt"		"Você já possui uma taser em seu inventário!"
-	}
-
 	"is now talking in Traitor Voice Chat"
 	{
 		"pt"		"{1} agora está falando em Traitor Voice Chat"
@@ -766,6 +761,231 @@
 	"Decoy Body Active"
 	{
 		"pt"		"Você encontrou um corpo de chamariz! CORRE!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"pt"		"Trouble in Terrorist Town - Versão: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"pt"		"TTT Comandos de Rádio"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"pt"		"Sim"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"pt"		"Não"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"pt"		"Talvez"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"pt"		"Ajuda"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"pt"		"Verifique"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"pt"		"Estou com..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"pt"		"Suspeito..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"pt"		"Traidor..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"pt"		"Inocente..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"pt"		"Veja..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"pt"		"Sim"
+	}
+
+	"TTT Radio: No"
+	{
+		"pt"		"Não"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"pt"		"Talvez"
+	}
+
+	"TTT Radio: Help"
+	{
+		"pt"		"Ajuda"
+	}
+
+	"TTT Radio: Check"
+	{
+		"pt"		"Verifique"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"pt"		"Estou com {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"pt"		"{1} age de forma suspeita."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"pt"		"{1} é o traidor!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"pt"		"{1} é inocente."
+	}
+
+	"TTT Radio: See"
+	{
+		"pt"		"Eu vejo {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"pt"		"Não foi possível encontrar um corpo"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"pt"		"Você trocou de posições com {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{green} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkblue} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"pt"		"DETETIVE{darkblue} {1} {lightgreen} escaneou um corpo, o assassino é o jogador{darkred} {2} {lightgreen}com a arma{orchid} {3}"
+	}
+
+	"No karma hurt traitor"
+	{
+		"pt"		"Você não perdeu Karma porque o {darkred}TRAIDOR {lightgreen}atacou você primeiro."
+	}
+
+	"No karma hurt innocent"
+	{
+		"pt"		"Você não perdeu Karma porque o {green}INOCENTE {lightgreen}atacou você primeiro."
+	}
+
+	"No karma hurt detective"
+	{
+		"pt"		"Você não perdeu Karma porque o {darkblue}DETETIVE {lightgreen}atacou você primeiro."
+	}
+
+	"Shop Item not found"
+	{
+		"pt"		"Não foi possível encontrar '{1}' como um item válido da loja"
+	}
+
+	"TTT Radio: KOS"
+	{
+		"pt"		"KOS {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {green}{1}. {lightgreen}Ele era {green}INOCENTE!"
+	}
+
+	"Found Detective Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {darkblue}{1}. {lightgreen}Ele era {darkblue}DETETIVE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"pt"		"Você silenciosamente encontrou o corpo de {darkred}{1}. {lightgreen}Ele era {darkred}Traidor!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"pt"		"Escolha a punição:"
+	}
+
+	"C4: Slay"
+	{
+		"pt"		"Matar o jogador (Slay)"
+	}
+
+	"C4: Explode"
+	{
+		"pt"		"Explodir bomba"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"pt"		"Alterar nome não é permitido durante um round ativo"
+	}
+
+	"Name Change Reason"
+	{
+		"pt"		"Alterar nome durante um round ativo"
+	}
+
+	"Name Change Message"
+	{
+		"pt"		"{orchid}{1} {lightgreen}alterou o nome para {orchid}{2}!"
+	}
+
+	"No tripmines"
+	{
+		"pt"		"Você não tem tripmines."
+	}
+
+	"Invalid location"
+	{
+		"pt"		"Local inválido para colocar a tripmine."
+	}
+
+	"AlreadyTaser"
+	{
+		"pt"		"Você já possui uma taser em seu inventário!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"pt"		"Tripmines restantes: {1}"
 	}
 
 }

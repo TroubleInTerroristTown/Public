@@ -34,6 +34,7 @@ public Action UserMsg_TextMsg(UserMsg msg_id, Protobuf msg, const int[] players,
 		if (!FileExists(sPath))
 		{
 			SetFailState("Can't find the following file: \"configs/ttt/block_messages.ini\"");
+			delete hFile;
 			return Plugin_Continue;
 		}
 
@@ -41,6 +42,7 @@ public Action UserMsg_TextMsg(UserMsg msg_id, Protobuf msg, const int[] players,
 		{
 			if (StrContains(sText, sFileText, false) != -1)
 			{
+				delete hFile;
 				return Plugin_Handled;
 			}
 		}

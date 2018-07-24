@@ -57,10 +57,13 @@ public void OnPluginStart()
 	HookEvent("round_end", Event_RoundEnd);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
 {
-	SetupBlackout();
-	
+	RegisterItem();
+}
+
+void RegisterItem()
+{
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
 	
@@ -85,7 +88,7 @@ public void OnMapStart()
 	SetupBlackout();
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{

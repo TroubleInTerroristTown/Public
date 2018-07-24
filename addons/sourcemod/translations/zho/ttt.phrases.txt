@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:01 UTC
+// Date: 2018-07-22 10:23:18 UTC
 // Language: Chinese (Traditional) (zho)
 // 
 // To view other translations for this plugin, please visit:
@@ -468,9 +468,19 @@
 		"zho"		"否, 請告訴我遊戲規則!"
 	}
 
+	"SpecMenu: Unmute Alive"
+	{
+		"zho"		"取消屏蔽存活玩家语音"
+	}
+
 	"Player is Now Innocent"
 	{
 		"zho"		"{orchid}{1} {lightgreen}現在是 {green}平民!"
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"zho"		"怀疑..."
 	}
 
 }

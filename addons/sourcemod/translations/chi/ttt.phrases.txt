@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:00 UTC
+// Date: 2018-07-22 10:23:18 UTC
 // Language: Chinese (Simplified) (chi)
 // 
 // To view other translations for this plugin, please visit:
@@ -493,6 +493,11 @@
 		"chi"		"人品值已更新!"
 	}
 
+	"ID: Shows ID"
+	{
+		"chi"		"{1} 是平民"
+	}
+
 	"SpecMenu: Player"
 	{
 		"chi"		"玩家: {1}"
@@ -513,6 +518,16 @@
 		"chi"		"玩家 {lightgreen}{1} 对 玩家 {darkred}{2} {lightgreen} 使用了电击枪，结果 {darkred}是一个叛徒! "
 	}
 
+	"is now talking in Traitor Voice Chat"
+	{
+		"chi"		"{1} 正在叛徒语音内讲话."
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"chi"		"{1} 已停止在叛徒语音内讲话."
+	}
+
 	"ID: Cooldown"
 	{
 		"chi"		"在你再次使用这个指令前，请等待冷却结束"
@@ -523,9 +538,29 @@
 		"chi"		"取消对死亡玩家的禁言"
 	}
 
+	"SpecMenu: Unmute Alive"
+	{
+		"chi"		"取消屏蔽存活玩家"
+	}
+
 	"Player is Now Innocent"
 	{
 		"chi"		"{orchid}{1} {lightgreen}现在是 {green}平民!"
+	}
+
+	"Sprint active"
+	{
+		"chi"		"已激活 {1} 秒内的冲刺 !"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"chi"		"{darkred} {1} 个叛徒"
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"chi"		"怀疑..."
 	}
 
 }

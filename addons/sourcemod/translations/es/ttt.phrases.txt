@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2017-12-09 19:13:00 UTC
+// Date: 2018-07-22 10:23:17 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -608,9 +608,179 @@
 		"es"		"{1}"
 	}
 
+	"You tased a Traitor"
+	{
+		"es"		"El jugador {lightgreen} {1} usó un detector en jugador {darkred} {2} {lightgreen} y él es un {darkred} TRAIDOR!"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"es"		"{1} dejó de hablar en el chat de voz de Traidores"
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"es"		"Dejar de silenciar a los jugadores muertos"
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"es"		"Dejar de silenciar jugadores vivos"
+	}
+
+	"SpecMenu: Mute Alive"
+	{
+		"es"		"Silenciar jugadores vivos"
+	}
+
+	"You already have an active Station"
+	{
+		"es"		"¡Ya tienes una estación activa!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"es"		"¡Artículo {2} comprado por {3} créditos! Créditos remanentes: {1}"
+	}
+
 	"Player is Now Innocent"
 	{
 		"es"		"{orchid}{1} {lightgreen}és ahora {green}INOCENTE!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"es"		"{lightgreen}¡{orchid}{1} {lightgreen}fue asesinado por {orchid}{2} {lightgreen}durante {orchid}{3} {lightgreen}rondas!"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"es"		"{green}{1} Inocentes"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"es"		"{darkblue} {1} Detectives"
+	}
+
+	"Teleport Max"
+	{
+		"es"		"¡Has llegado al límite! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"es"		"¡Radar actualizado!"
+	}
+
+	"Decoy Body Active"
+	{
+		"es"		"¡Has encontrado un cuerpo de señuelo! ¡CORRE!"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"es"		"Si"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"es"		"No"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"es"		"Help"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"es"		"Estoy con..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"es"		"Sospechar..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"es"		"Si"
+	}
+
+	"TTT Radio: No"
+	{
+		"es"		"No"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"es"		"Tal vez"
+	}
+
+	"TTT Radio: Check"
+	{
+		"es"		"Comprobar"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"es"		"{1} actúa sospechoso"
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"es"		"¡{1} es el traidor!"
+	}
+
+	"Detective scan found body Detective"
+	{
+		"es"		"DETECTIVE {darkblue} {1} {lightgreen} Escaneó un cuerpo, el asesino es el jugador {darkblue} {2} {lightgreen} usó el arma{orchid} {3}"
+	}
+
+	"No karma hurt traitor"
+	{
+		"es"		"No perdiste Karma porque el {darkred} TRAIDOR {lightgreen} te lastimó antes."
+	}
+
+	"Shop Item not found"
+	{
+		"es"		"No se puede encontrar '{1}' como un artículo de compra válido"
+	}
+
+	"Found Innocent Silent"
+	{
+		"es"		"{lightgreen} Has encontrado silenciosamente el cuerpo de {green} {1}. {lightgreen} ¡Era {green}INOCENTE!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"es"		"{lightgreen} Has encontrado silenciosamente el cuerpo de {darkred} {1}. {lightgreen} ¡Era un {darkred}Traidor !"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"es"		"¡El cambio de nombre no está permitido durante una ronda activa!"
+	}
+
+	"Name Change Reason"
+	{
+		"es"		"Cambio de nombre durante la ronda activa"
+	}
+
+	"No tripmines"
+	{
+		"es"		"Usted no tiene ninguna mina."
+	}
+
+	"Invalid location"
+	{
+		"es"		"La ubicación no es válida para colocar la mina."
+	}
+
+	"AlreadyTaser"
+	{
+		"es"		"¡Ya tienes una pistola eléctrica en tu inventario!"
 	}
 
 }

@@ -19,6 +19,7 @@ ConVar g_cShowNames = null;
 ConVar g_cGrabAlive = null;
 ConVar g_cGrabNonMoveAlive = null;
 ConVar g_cLogBlacklist = null;
+ConVar g_cLogBlacklistModels = null;
 ConVar g_cLogWhitelist = null;
 ConVar g_cFlags = null;
 
@@ -31,6 +32,9 @@ float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 ArrayList g_aWhitelist = null;
 ArrayList g_aBlacklist = null;
+ArrayList g_aBlacklistModels = null;
+
+Handle g_hOnGrabbing = null;
 
 public Plugin myinfo =
 {
@@ -41,6 +45,17 @@ public Plugin myinfo =
 	url = TTT_PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	g_hOnGrabbing = CreateGlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
+
+	CreateNative("TTT_GetGrabEntity", Native_GetGrabEntity);
+
+	RegPluginLibrary("ttt_grabbermod");
+
+	return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
 	TTT_IsGameCSGO();
@@ -49,17 +64,22 @@ public void OnPluginStart()
 	CreateConVar("ttt2_grabbermod_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cLogWhitelist = AutoExecConfig_CreateConVar("gbm_log_whitelist", "1", "Log whitelist?", _, true, 0.0, true, 1.0);
 	g_cLogBlacklist = AutoExecConfig_CreateConVar("gbm_log_blacklist", "1", "Log blacklist?", _, true, 0.0, true, 1.0);
+	g_cLogBlacklistModels = AutoExecConfig_CreateConVar("gbm_log_blacklist_models", "1", "Log blacklist models?", _, true, 0.0, true, 1.0);
 	g_cColored = AutoExecConfig_CreateConVar("gbm_colored", "1", "Colored laser beam for grab (new color every second)?", _, true, 0.0, true, 1.0);
 	g_cBlockJump = AutoExecConfig_CreateConVar("gbm_block_jump", "1", "Block jump on \"grabbed\" entities to prevent abusing?", _, true, 0.0, true, 1.0);
 	g_cGrabAlive = AutoExecConfig_CreateConVar("gbm_grab_alive", "0", "Grab living players?", _, true, 0.0, true, 1.0);
 	g_cGrabNonMoveAlive = AutoExecConfig_CreateConVar("gbm_grab_non_move_alive", "0", "Grab living non moveable players?", _, true, 0.0, true, 1.0);
-	g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist/whitelist.", _, true, 0.0, true, 1.0);
+	g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist(models)/whitelist.", _, true, 0.0, true, 1.0);
 	g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
 	TTT_EndConfig();
 	
+	g_aWhitelist = new ArrayList(32);
+	g_aBlacklist = new ArrayList(32);
+	g_aBlacklistModels = new ArrayList(PLATFORM_MAX_PATH+1);
+	
 	LoadLists();
 
-	CreateTimer(0.1, Adjust, _, TIMER_REPEAT);
+	CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
@@ -123,19 +143,27 @@ stock void GrabSomething(int client)
 	{
 		return;
 	}
-	
-	// true is a positive found on the blacklist or negative found on the whitelist 
-	if (CheckLists(sName))
+
+	Action res = Plugin_Continue;
+	Call_StartForward(g_hOnGrabbing);
+	Call_PushCell(client);
+	Call_PushCell(ent);
+	Call_Finish(res);
+
+	if (res == Plugin_Handled || res == Plugin_Stop)
 	{
 		return;
 	}
 	
+	// true is a positive found on the blacklist(models) or negative found on the whitelist 
+	if (CheckLists(client, ent, sName))
+	{
+		return;
+	}
+
 	if (g_cShowNames.BoolValue)
 	{
-		char sAccess[16];
-		g_cFlags.GetString(sAccess, sizeof(sAccess));
-		
-		if (TTT_HasFlags(client, sAccess))
+		if (TTT_CheckCommandAccess(client, "gbm_output", g_cFlags, true))
 		{
 			CPrintToChat(client, "Name of Entity: %s", sName);
 		}
@@ -157,8 +185,8 @@ stock void GrabSomething(int client)
 		char sTargetname[32];
 		GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
 		
-		// true is a positive found on the blacklist or negative found on the whitelist 
-		if (CheckLists(sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
+		// true is a positive found on the blacklist(models) or negative found on the whitelist 
+		if (CheckLists(client, ent, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
 		{
 			return;
 		}
@@ -202,9 +230,9 @@ stock bool ValidGrab(int client)
 	int iObject = g_iObject[client];
 	if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
 	{
-		return (true);
+		return true;
 	}
-	return (false);
+	return false;
 }
 
 stock int GetObject(int client, bool hitSelf=true)
@@ -216,7 +244,7 @@ stock int GetObject(int client, bool hitSelf=true)
 		if (ValidGrab(client))
 		{
 			iEntity = EntRefToEntIndex(g_iObject[client]);
-			return (iEntity);
+			return iEntity;
 		}
 
 		iEntity = TraceToEntity(client);
@@ -256,7 +284,7 @@ public int TraceToEntity(int client)
 
 	if (TR_DidHit(null))
 	{
-		return (TR_GetEntityIndex(null));
+		return TR_GetEntityIndex(null);
 	}
 
 	return -1;
@@ -264,7 +292,7 @@ public int TraceToEntity(int client)
 
 public bool TraceASDF(int entity, int mask, any data)
 {
-	return (data != entity);
+	return data != entity;
 }
 
 stock int ReplacePhysicsEntity(int iEntity)
@@ -338,9 +366,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 	return Plugin_Continue;
 }
 
-public Action Adjust(Handle timer)
+public Action Timer_Adjust(Handle timer)
 {
-
 	float vecDir[3];
 	float vecPos[3];
 	float vecPos2[3];
@@ -408,19 +435,11 @@ void LoadLists()
 {
 	LoadWhitelist();
 	LoadBlacklist();
+	LoadBlacklistModels();
 }
 
 void LoadWhitelist()
 {
-	if (g_aWhitelist != null)
-	{
-		g_aWhitelist.Clear();
-	}
-	else
-	{
-		g_aWhitelist = new ArrayList(32);
-	}
-	
 	char sPath[PLATFORM_MAX_PATH + 1];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/whitelist_grabbermod.ini");
 
@@ -453,15 +472,6 @@ void LoadWhitelist()
 
 void LoadBlacklist()
 {
-	if (g_aBlacklist != null)
-	{
-		g_aBlacklist.Clear();
-	}
-	else
-	{
-		g_aBlacklist = new ArrayList(32);
-	}
-	
 	char sPath[PLATFORM_MAX_PATH + 1];
 	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_grabbermod.ini");
 
@@ -492,17 +502,80 @@ void LoadBlacklist()
 	delete hFile;
 }
 
-bool CheckBlacklist(const char[] name)
+void LoadBlacklistModels()
+{
+	char sPath[PLATFORM_MAX_PATH + 1];
+	BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_models_grabbermod.ini");
+
+	Handle hFile = OpenFile(sPath, "rt");
+
+	if (!FileExists(sPath))
+	{
+		SetFailState("Can't find the following file: \"configs/ttt/blacklist_models_grabbermod.ini\"");
+		return;
+	}
+	
+	char sBuffer[PLATFORM_MAX_PATH+1];
+	while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+	{
+		TrimString(sBuffer);
+		
+		if (strlen(sBuffer) > 2)
+		{
+			g_aBlacklistModels.PushString(sBuffer);
+			
+			if (g_cLogBlacklistModels.BoolValue)
+			{
+				LogMessage("[GrabberMod] (LoadBlacklistModels) Add %s to array...", sBuffer);
+			}
+		}
+	}
+	
+	delete hFile;
+}
+
+bool CheckBlacklist(int client, const char[] name)
 {
 	char sBuffer[32];
-	
+	if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s", name);
 	if (g_aBlacklist.Length > 0)
 	{
 		for (int i = 0; i < g_aBlacklist.Length; i++)
 		{
 			g_aBlacklist.GetString(i, sBuffer, sizeof(sBuffer));
+
+			if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s - sBuffer: %s", name, sBuffer);
 			
-			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			if (strlen(sBuffer) > 1 && StrContains(name, sBuffer, false) != -1)
+			{
+				if (g_cShowNames.BoolValue) PrintToChat(client, "(Blocked) name: %s - sBuffer: %s", name, sBuffer);
+				return true;
+			}
+		}
+	}
+
+	
+	return false;
+}
+
+bool CheckBlacklistModels(int entity)
+{
+	char sBuffer[PLATFORM_MAX_PATH+1], sModel[PLATFORM_MAX_PATH+1];
+	GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
+	
+	// by returning true we shouldn't break any compatibility with older version
+	if (strlen(sModel) < 1)
+	{
+		return true;
+	}
+
+	if (g_aBlacklistModels.Length > 0)
+	{
+		for (int i = 0; i < g_aBlacklistModels.Length; i++)
+		{
+			g_aBlacklistModels.GetString(i, sBuffer, sizeof(sBuffer));
+			
+			if (strlen(sBuffer) > 1 && StrContains(sBuffer, sModel, false) != -1)
 			{
 				return true;
 			}
@@ -522,7 +595,7 @@ bool CheckWhitelist(const char[] name)
 		{
 			g_aWhitelist.GetString(i, sBuffer, sizeof(sBuffer));
 			
-			if (strlen(sBuffer) > 1 && StrContains(sBuffer, name, false) != -1)
+			if (strlen(sBuffer) > 1 && StrContains(name, sBuffer, false) != -1)
 			{
 				return true;
 			}
@@ -532,12 +605,40 @@ bool CheckWhitelist(const char[] name)
 	return false;
 }
 
-bool CheckLists(const char[] name)
+bool CheckLists(int client, int entity, const char[] name)
 {
-	if (CheckBlacklist(name) && !CheckWhitelist(name))
+	if (strlen(name) < 2)
+	{
+		return false;
+	}
+
+	if (g_cShowNames.BoolValue)
+	{
+		PrintToChat(client, "CheckLists 1 - CheckBlacklist: %d - CheckBlacklistModels: %d - CheckWhitelist: %d", CheckBlacklist(client, name), CheckBlacklistModels(entity), CheckWhitelist(name));
+	}
+
+	if (CheckWhitelist(name))
+	{
+		return false;
+	}
+
+	// We'll check blacklists first...
+	if (CheckBlacklist(client, name) || CheckBlacklistModels(entity))
 	{
 		return true;
 	}
 	
 	return false;
+}
+
+public int Native_GetGrabEntity(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+
+	if (ValidGrab(client))
+	{
+		return g_iObject[client];
+	}
+
+	return -1;
 }

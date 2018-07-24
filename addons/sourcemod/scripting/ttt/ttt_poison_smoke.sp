@@ -57,7 +57,12 @@ public void OnPluginStart()
 	HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sName[MAX_ITEM_LENGTH];
 	g_cLongName.GetString(sName, sizeof(sName));
@@ -70,7 +75,7 @@ public void OnClientDisconnect(int client)
 	ResetStuff(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -129,19 +134,21 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
 	g_bActivePoison[client] = true;
 	
 	DataPack pack = new DataPack();
-	CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
 	pack.WriteCell(GetClientUserId(client));
 	pack.WriteCell(EntIndexToEntRef(entity));
 	
 	return Plugin_Continue;
 }
 
-public Action Timer_CheckPlayers(Handle timer, any pack)
+public Action Timer_CheckPlayers(Handle timer, DataPack pack)
 {
-	ResetPack(pack);
+	pack.Reset();
 	
-	int attacker = GetClientOfUserId(ReadPackCell(pack));
-	int entity = EntRefToEntIndex(ReadPackCell(pack));
+	int attacker = GetClientOfUserId(pack.ReadCell());
+	int entity = EntRefToEntIndex(pack.ReadCell());
+
+	delete pack;
 	
 	if (TTT_IsClientValid(attacker) && IsValidEntity(entity))
 	{
@@ -178,7 +185,7 @@ public Action Timer_CheckPlayers(Handle timer, any pack)
 		}
 		
 		DataPack pack2 = new DataPack();
-		CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack2, TIMER_FLAG_NO_MAPCHANGE);
 		pack2.WriteCell(GetClientUserId(attacker));
 		pack2.WriteCell(EntIndexToEntRef(entity));
 	}

@@ -89,7 +89,12 @@ public void OnMapStart()
 	PrecacheSoundAny(SND_WARNING, true);
 }
 
-public void OnConfigsExecuted()
+public void TTT_OnShopReady()
+{
+	RegisterItem();
+}
+
+void RegisterItem()
 {
 	char sBuffer[MAX_ITEM_LENGTH];
 	
@@ -100,7 +105,7 @@ public void OnConfigsExecuted()
 	TTT_RegisterCustomItem(HURT_ITEM_SHORT, sBuffer, g_cHurtPrice.IntValue, TTT_TEAM_TRAITOR, g_cHurtPrio.IntValue, g_cDiscountT.BoolValue);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
 	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
 	{
@@ -172,7 +177,7 @@ public void OnClientDisconnect(int client)
 	TTT_ClearTimer(g_hRemoveCoolDownTimer[client]);
 }
 
-public Action removeCoolDown(Handle timer, any userid)
+public Action Timer_RemoveCooldown(Handle timer, any userid)
 {
 	int client = GetClientOfUserId(userid);
 	g_bOnHealingCoolDown[client] = false;
@@ -290,7 +295,7 @@ void checkDistanceFromStation(int client)
 			EmitSoundToClientAny(client, SND_WARNING);
 			g_iStationCharges[owner]--;
 			g_bOnHealingCoolDown[client] = true;
-			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+			g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, Timer_RemoveCooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 		}
 		else
 		{
@@ -298,7 +303,7 @@ void checkDistanceFromStation(int client)
 			{
 				CPrintToChat(client, g_sPluginTag, "Health Station Out Of Charges", client);
 				g_bOnHealingCoolDown[client] = true;
-				g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+				g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, Timer_RemoveCooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 			}
 		}
 	}
