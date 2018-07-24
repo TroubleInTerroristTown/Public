@@ -2,29 +2,23 @@
 #pragma newdecls required
 
 #include <sourcemod>
-#include <ttt>
+#include <sdktools>
+#include <cstrike>
 
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_checkGOTV", Command_CheckGOTV);
-	RegConsoleCmd("sm_panorama", Command_Panorama);
 	RegConsoleCmd("sm_reloadmap", Command_Reloadmap);
 	RegConsoleCmd("sm_hud", Command_HUD);
+	RegConsoleCmd("sm_endround", Command_EndRound);
+	RegConsoleCmd("sm_give", Command_Give);
 }
 
 public Action Command_CheckGOTV(int client, int args)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		ReplyToCommand(client, "i: %d, Name: %N, IsFakeClient: %d, IsClientSourceTV: %d, IsClientConnected: %d, IsClientInGame: %d", i, i, IsFakeClient(i), IsClientSourceTV(i), IsClientConnected(i), IsClientInGame(i));
-	}
-}
-
-public Action Command_Panorama(int client, int args)
-{
-	LoopValidClients(i)
-	{
-		ReplyToCommand(client, "%N panorama: %d", i, TTT_UseClientPanorama(i));
+		ReplyToCommand(client, "i: %d, Name: %N, IsFakeClient: %d, IsClientSourceTV: %d, IsClientConnected: %d, IsClientInGame: %d, IsPlayerAlive: %d", i, i, IsFakeClient(i), IsClientSourceTV(i), IsClientConnected(i), IsClientInGame(i), IsPlayerAlive(i));
 	}
 }
 
@@ -72,7 +66,7 @@ public Action Command_HUD(int client, int args)
 	{
 		int target = targets[i];
 		
-		if(!TTT_IsClientValid(target))
+		if(target < 1 || !IsClientInGame(target))
 			continue;
 
 		char sText[256];
@@ -92,4 +86,38 @@ public Action Command_HUD(int client, int args)
 	}
 	
 	return Plugin_Continue;
+}
+
+public Action Command_EndRound(int client, int args)
+{
+	if (args != 1)
+	{
+		ReplyToCommand(client, "sm_endround <delay in seconds>");
+		return Plugin_Handled;
+	}
+
+	char sArg[12];
+	GetCmdArg(1, sArg, sizeof(sArg));
+
+	CS_TerminateRound(StringToFloat(sArg), CSRoundEnd_Draw, true);
+
+	return Plugin_Handled;
+}
+
+
+public Action Command_Give(int client, int args)
+{
+	if (args != 1)
+	{
+		ReplyToCommand(client, "sm_give <weapon>");
+		return Plugin_Handled;
+	}
+
+	char sArg[32];
+	GetCmdArg(1, sArg, sizeof(sArg));
+	Format(sArg, sizeof(sArg), "weapon_%s", sArg);
+	int iWeapon = GivePlayerItem(client, sArg);
+	EquipPlayerWeapon(client, iWeapon);
+
+	return Plugin_Handled;
 }
