@@ -47,6 +47,11 @@ bool g_bEndOverlay = false;
 int g_iCTWin = 0;
 int g_iTWin = 0;
 
+Handle g_hSyncR = null;
+Handle g_hSyncD = null;
+Handle g_hSyncI = null;
+Handle g_hSyncT = null;
+
 public void OnPluginStart()
 {
 	TTT_StartConfig("overlay");
@@ -72,6 +77,11 @@ public void OnPluginStart()
 	g_cColorT = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
 	g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
+
+	g_hSyncR = CreateHudSynchronizer();
+	g_hSyncD = CreateHudSynchronizer();
+	g_hSyncI = CreateHudSynchronizer();
+	g_hSyncT = CreateHudSynchronizer();
 
 	HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 
@@ -289,10 +299,10 @@ public Action Timer_HUD(Handle timer)
 		g_cColorT.GetString(sBuffer, sizeof(sBuffer));
 		ExplodeString(sBuffer, ";", sCT, sizeof(sCT), sizeof(sCT[]));
 
-		showHudToAll(sR, g_cPosRX.FloatValue, g_cPosRY.FloatValue, sCR[0], sCR[1], sCR[2], sCR[3]);
-		showHudToAll(sD, g_cPosDX.FloatValue, g_cPosDY.FloatValue, sCD[0], sCD[1], sCD[2], sCD[3]);
-		showHudToAll(sI, g_cPosIX.FloatValue, g_cPosIY.FloatValue, sCI[0], sCI[1], sCI[2], sCI[3]);
-		showHudToAll(sT, g_cPosTX.FloatValue, g_cPosTY.FloatValue, sCT[0], sCT[1], sCT[2], sCT[3]);
+		showHudToAll(sR, g_hSyncR, g_cPosRX.FloatValue, g_cPosRY.FloatValue, sCR[0], sCR[1], sCR[2], sCR[3]);
+		showHudToAll(sD, g_hSyncD, g_cPosDX.FloatValue, g_cPosDY.FloatValue, sCD[0], sCD[1], sCD[2], sCD[3]);
+		showHudToAll(sI, g_hSyncI, g_cPosIX.FloatValue, g_cPosIY.FloatValue, sCI[0], sCI[1], sCI[2], sCI[3]);
+		showHudToAll(sT, g_hSyncT, g_cPosTX.FloatValue, g_cPosTY.FloatValue, sCT[0], sCT[1], sCT[2], sCT[3]);
 	}
 }
 
@@ -344,11 +354,11 @@ public void AssignOverlay(int client, int role)
 	}
 }
 
-void showHudToAll(char[] message, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
+void showHudToAll(char[] message, Handle sync, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)
 {
 	LoopValidClients(client)
 	{
 		SetHudTextParams(x, y, 2.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
-		ShowHudText(client, -1, message);
+		ShowSyncHudText(client, sync, message);
 	}
 }

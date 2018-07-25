@@ -25,6 +25,8 @@ ConVar g_cDiscount = null;
 ConVar g_cCompassShowNameDistance = null;
 ConVar g_cCompassDisorientationDistance = null;
 
+Handle g_hHUD = null;
+
 public Plugin myinfo =
 {
 	name = PLUGIN_NAME,
@@ -47,6 +49,8 @@ public void OnPluginStart()
 	g_cCompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
 	g_cDiscount = AutoExecConfig_CreateConVar("tracer_traitor", "0", "Should Tracer discountable?", _, true, 0.0, true, 1.0);
 	TTT_EndConfig();
+
+	g_hHUD = CreateHudSynchronizer();
 	
 	HookEvent("player_spawn", Event_PlayerSpawn);
 	
@@ -142,7 +146,7 @@ void ShowHUD(int client, int iClientToShow)
 	{
 		Format(centerText, sizeof(centerText), "%s%s%s", sInfo, StrEqual(sName, "") ? "" : ": ", sName);
 		SetHudTextParams(0.2, 0.2, 2.0, 135 , 206, 255, 255, 0, 30.0, 0.0, 0.0);
-		ShowHudText(iClientToShow, -1, centerText);
+		ShowSyncHudText(iClientToShow, g_hHUD, centerText);
 	}
 }
 
