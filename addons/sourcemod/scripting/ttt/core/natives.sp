@@ -26,6 +26,7 @@ void InitNatives()
 	CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
 	CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
 	CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
+	CreateNative("TTT_GetClientByRagdollID", Native_GetClientByRagdollID);
 	CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
 	CreateNative("TTT_GetClientRole", Native_GetClientRole);
 	CreateNative("TTT_SetClientRole", Native_SetClientRole);
@@ -107,6 +108,27 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 	}
 
 	return false;
+}
+
+public int Native_GetClientByRagdollID(Handle plugin, int numParams)
+{
+	int ragdoll = GetNativeCell(1);
+
+	if (IsValidEntity(ragdoll))
+	{
+		int iBody[Ragdolls];
+
+		for (int i = 0; i < g_aRagdoll.Length; i++)
+		{
+			g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
+			if (iBody[Ent] == EntIndexToEntRef(ragdoll))
+			{
+				return GetClientOfUserId(iBody[Victim]);
+			}
+		}
+	}
+
+	return -1;
 }
 
 public int Native_SetRagdoll(Handle plugin, int numParams)

@@ -208,6 +208,14 @@ native int TTT_GetClientKarma(int client, bool publicKarma = true);
 native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
 
 /**
+ * Retrieve the client index.
+ *
+ * @param ragdoll           The ragdoll index.
+ * @return                  The client index
+ */
+native int TTT_GetClientByRagdollID(int ragdoll);
+
+/**
  * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
  *
  * @param radgoll           The array to save as Ragdoll.
@@ -727,11 +735,11 @@ stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)
 	return false;
 }
 
-stock void TTT_ClearTimer(Handle &timer)
+stock void TTT_ClearTimer(Handle &timer, bool autoClose = false)
 {
 	if (timer != null)
 	{
-		KillTimer(timer);
+		KillTimer(timer, autoClose);
 		timer = null;
 	}
 }
