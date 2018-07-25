@@ -10,7 +10,7 @@
  * @param client            	The client index.
  * @param entity            	The entity index which was grabbed by the client.
  */
-forward bool TTT_OnGrabbing(int client, int entity);
+forward Action TTT_OnGrabbing(int client, int entity);
 
 /*
  * 
