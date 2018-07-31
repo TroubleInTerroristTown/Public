@@ -27,6 +27,9 @@ ConVar g_cDiscountT = null;
 ConVar g_cDiscountD = null;
 ConVar g_cDiscountI = null;
 ConVar g_cRagdoll = null;
+ConVar g_cIgnoreRoleTraitor = null;
+ConVar g_cIgnoreRoleInnocent = null;
+ConVar g_cIgnoreRoleDetective = null;
 
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -73,6 +76,9 @@ public void OnPluginStart()
     g_cDiscountD = AutoExecConfig_CreateConVar("rt_discount_detective", "0", "Should Random Teleport discountable for detectives?", _, true, 0.0, true, 1.0);
     g_cDiscountI = AutoExecConfig_CreateConVar("rt_discount_innocent", "0", "Should Random Teleport discountable for innocents?", _, true, 0.0, true, 1.0);
     g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
+    g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -178,7 +184,21 @@ int RandomTeleport(int client)
         bAlive = false;
     }
 
-    int target = TTT_GetRandomPlayer(bAlive);
+    int target = -1;
+    int iRole = TTT_GetClientRole(client);
+
+    if (iRole == TTT_TEAM_TRAITOR)
+    {
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleTraitor.IntValue);
+    }
+    else if (iRole == TTT_TEAM_INNOCENT)
+    {
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleInnocent.IntValue);
+    }
+    else if (iRole == TTT_TEAM_DETECTIVE)
+    {
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleDetective.IntValue);
+    }
 
     if (target == -1 || !TTT_IsClientValid(target))
     {

@@ -677,7 +677,7 @@ stock void TTT_ShowOverlayToAll(const char[] overlaypath)
 	}
 }
 
-stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
+stock int TTT_GetRandomPlayer(bool alive = true, int targetRole = -1)
 {
 	int[] clients = new int[MaxClients + 1];
 	int clientCount = 0;
@@ -689,7 +689,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int role = -1)
 			continue;
 		}
 
-		if (role != TTT_GetClientRole(i))
+		if (targetRole != -1 && TTT_IsValidRole(i, targetRole))
 		{
 			continue;
 		}
