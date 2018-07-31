@@ -34,110 +34,110 @@ ConVar g_cDiDiscount = null;
 
 public Plugin myinfo =
 {
-	name = PLUGIN_NAME,
-	author = TTT_PLUGIN_AUTHOR,
-	description = TTT_PLUGIN_DESCRIPTION,
-	version = TTT_PLUGIN_VERSION,
-	url = TTT_PLUGIN_URL
+    name = PLUGIN_NAME,
+    author = TTT_PLUGIN_AUTHOR,
+    description = TTT_PLUGIN_DESCRIPTION,
+    version = TTT_PLUGIN_VERSION,
+    url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
-	TTT_IsGameCSGO();
+    TTT_IsGameCSGO();
 
-	TTT_StartConfig("buyroles");
-	CreateConVar("ttt2_buy_roles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-	g_cTLongName = AutoExecConfig_CreateConVar("buyroles_traitor_name", "Buy Traitor Role", "The name of the buy traitor role in the Shop");
-	g_cTiLongName = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop");
-	g_cDLongName = AutoExecConfig_CreateConVar("buyroles_detective_name", "Buy Detective Role", "The name of the buy detective role in the Shop");
-	g_cDiLongName = AutoExecConfig_CreateConVar("buyroles_detective_instantly_name", "Buy Detective Role Instantly", "The name of the buy detective role in the Shop");
-	g_cTPrice = AutoExecConfig_CreateConVar("buyroles_traitor_price", "9000", "The amount of credits that cost to buy the traitor role. 0 to disable.");
-	g_cTiPrice = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_price", "40000", "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
-	g_cDPrice = AutoExecConfig_CreateConVar("buyroles_detective_price", "9000", "The amount of credits that cost to buy the detective role. 0 to disable.");
-	g_cDiPrice = AutoExecConfig_CreateConVar("buyroles_detective_instantly_price", "10000", "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
-	g_cTPrio = AutoExecConfig_CreateConVar("buyroles_traitor_prio", "0", "The sorting priority of the buy traitor role in the shop menu.");
-	g_cTiPrio = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_prio", "0", "The sorting priority of the buy traitor instantly role in the shop menu.");
-	g_cDPrio = AutoExecConfig_CreateConVar("buyroles_detective_prio", "0", "The sorting priority of the buy detective role in the shop menu.");
-	g_cDiPrio = AutoExecConfig_CreateConVar("buyroles_detective_instantly_prio", "0", "The sorting priority of the buy detective instantly role in the shop menu.");
-	g_cTDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor", "0", "Should traitor role discountable for detectives?", _, true, 0.0, true, 1.0);
-	g_cTiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor_instantly", "0", "Should traitor role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
-	g_cDDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
-	g_cDiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective_instantly", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
-	TTT_EndConfig();
+    TTT_StartConfig("buyroles");
+    CreateConVar("ttt2_buy_roles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    g_cTLongName = AutoExecConfig_CreateConVar("buyroles_traitor_name", "Buy Traitor Role", "The name of the buy traitor role in the Shop");
+    g_cTiLongName = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop");
+    g_cDLongName = AutoExecConfig_CreateConVar("buyroles_detective_name", "Buy Detective Role", "The name of the buy detective role in the Shop");
+    g_cDiLongName = AutoExecConfig_CreateConVar("buyroles_detective_instantly_name", "Buy Detective Role Instantly", "The name of the buy detective role in the Shop");
+    g_cTPrice = AutoExecConfig_CreateConVar("buyroles_traitor_price", "9000", "The amount of credits that cost to buy the traitor role. 0 to disable.");
+    g_cTiPrice = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_price", "40000", "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("buyroles_detective_price", "9000", "The amount of credits that cost to buy the detective role. 0 to disable.");
+    g_cDiPrice = AutoExecConfig_CreateConVar("buyroles_detective_instantly_price", "10000", "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
+    g_cTPrio = AutoExecConfig_CreateConVar("buyroles_traitor_prio", "0", "The sorting priority of the buy traitor role in the shop menu.");
+    g_cTiPrio = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_prio", "0", "The sorting priority of the buy traitor instantly role in the shop menu.");
+    g_cDPrio = AutoExecConfig_CreateConVar("buyroles_detective_prio", "0", "The sorting priority of the buy detective role in the shop menu.");
+    g_cDiPrio = AutoExecConfig_CreateConVar("buyroles_detective_instantly_prio", "0", "The sorting priority of the buy detective instantly role in the shop menu.");
+    g_cTDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor", "0", "Should traitor role discountable for detectives?", _, true, 0.0, true, 1.0);
+    g_cTiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_traitor_instantly", "0", "Should traitor role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
+    g_cDDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
+    g_cDiDiscount = AutoExecConfig_CreateConVar("buyroles_discount_detective_instantly", "0", "Should detective role (instantly) discountable for detectives?", _, true, 0.0, true, 1.0);
+    TTT_EndConfig();
 }
 
 public void TTT_OnShopReady()
 {
-	RegisterItem();
+    RegisterItem();
 }
 
 void RegisterItem()
 {
-	char sBuffer[MAX_ITEM_LENGTH];
-	
-	g_cTLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue, g_cTDiscount.BoolValue);
-	
-	g_cTiLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue, g_cTiDiscount.BoolValue);
-	
-	g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue, g_cDDiscount.BoolValue);
-	
-	g_cDiLongName.GetString(sBuffer, sizeof(sBuffer));
-	TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue, g_cDiDiscount.BoolValue);
+    char sBuffer[MAX_ITEM_LENGTH];
+    
+    g_cTLongName.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue, g_cTDiscount.BoolValue);
+    
+    g_cTiLongName.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue, g_cTiDiscount.BoolValue);
+    
+    g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue, g_cDDiscount.BoolValue);
+    
+    g_cDiLongName.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue, g_cDiDiscount.BoolValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-	{
-		if (StrEqual(itemshort, D_SHORT_NAME, false))
-		{
-			int role = TTT_GetClientRole(client);
+    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    {
+        if (StrEqual(itemshort, D_SHORT_NAME, false))
+        {
+            int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_INNOCENT)
-			{
-				return Plugin_Stop;
-			}
+            if (role != TTT_TEAM_INNOCENT)
+            {
+                return Plugin_Stop;
+            }
 
-			if(!TTT_ForceDetective(client))
-				return Plugin_Stop;
-		}
-		else if (StrEqual(itemshort, T_SHORT_NAME, false))
-		{
-			int role = TTT_GetClientRole(client);
+            if(!TTT_ForceDetective(client))
+                return Plugin_Stop;
+        }
+        else if (StrEqual(itemshort, T_SHORT_NAME, false))
+        {
+            int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_INNOCENT)
-			{
-				return Plugin_Stop;
-			}
+            if (role != TTT_TEAM_INNOCENT)
+            {
+                return Plugin_Stop;
+            }
 
-			if(!TTT_ForceTraitor(client))
-				return Plugin_Stop;
-		}
-		else if (StrEqual(itemshort, DI_SHORT_NAME, false))
-		{
-			int role = TTT_GetClientRole(client);
+            if(!TTT_ForceTraitor(client))
+                return Plugin_Stop;
+        }
+        else if (StrEqual(itemshort, DI_SHORT_NAME, false))
+        {
+            int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_INNOCENT)
-			{
-				return Plugin_Stop;
-			}
+            if (role != TTT_TEAM_INNOCENT)
+            {
+                return Plugin_Stop;
+            }
 
-			TTT_SetClientRole(client, TTT_TEAM_DETECTIVE);
-		}
-		else if (StrEqual(itemshort, TI_SHORT_NAME, false))
-		{
-			int role = TTT_GetClientRole(client);
+            TTT_SetClientRole(client, TTT_TEAM_DETECTIVE);
+        }
+        else if (StrEqual(itemshort, TI_SHORT_NAME, false))
+        {
+            int role = TTT_GetClientRole(client);
 
-			if (role != TTT_TEAM_INNOCENT)
-			{
-				return Plugin_Stop;
-			}
+            if (role != TTT_TEAM_INNOCENT)
+            {
+                return Plugin_Stop;
+            }
 
-			TTT_SetClientRole(client, TTT_TEAM_TRAITOR);
-		}
-	}
-	return Plugin_Continue;
+            TTT_SetClientRole(client, TTT_TEAM_TRAITOR);
+        }
+    }
+    return Plugin_Continue;
 }

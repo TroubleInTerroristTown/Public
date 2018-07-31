@@ -27,18 +27,18 @@
  * Give player the gear (camera or drone) depending on its team
  * It is the same as the command cd_buy but without using money.
  *
- * @param client	Client index.
+ * @param client    Client index.
  * @return
- * @error	Invalid client.
+ * @error    Invalid client.
  */
 native void BuyPlayerGear(int client);
 
 /**
  * Adds two numbers together.
  *
- * @param client	Client index.
- * @param override	Override parameter: -1= no gear, 0= no override, 1= force cameras, 2= force drones.
+ * @param client    Client index.
+ * @param override    Override parameter: -1= no gear, 0= no override, 1= force cameras, 2= force drones.
  * @return
- * @error	Invalid client.
+ * @error    Invalid client.
  */
 native void OverridePlayerGear(int client, int override);

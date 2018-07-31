@@ -28,7 +28,7 @@ static bool s_WebFix_IsRedirectUrlSet = false;
  * Sets the WebFix Redirect URL
  * Call this before calling WebFix_OpenUrl if 'webfix_redirecturl.txt' is not used.
  *
- * @param url			URL to WebFix Redirection Script
+ * @param url            URL to WebFix Redirection Script
  */
 stock void WebFix_SetRedirectUrl(char[] url)
 {
@@ -39,13 +39,13 @@ stock void WebFix_SetRedirectUrl(char[] url)
 /**
  * Open a URL on a client using WebFix
  *
- * @param client			Client which MOTD window will be opened on.
- * @param title			Window title.
- * @param url			URL to open. Must be prefixed with http:// or https:// protocols.
- * @param hidden			Override type (specific command or group).
- * @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
- * @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
- * @return				true if successful, false if error encountered.
+ * @param client            Client which MOTD window will be opened on.
+ * @param title            Window title.
+ * @param url            URL to open. Must be prefixed with http:// or https:// protocols.
+ * @param hidden            Override type (specific command or group).
+ * @param width            Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
+ * @param height            Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
+ * @return                true if successful, false if error encountered.
  */
 stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0)
 {
@@ -87,17 +87,17 @@ stock bool WebFix_OpenUrl(int client, const char[] title, const char[] url, bool
 /**
  * Open a URL on all clients using WebFix
  *
- * @param title			Window title.
- * @param url			URL to open. Must be prefixed with http:// or https:// protocols.
- * @param hidden			Override type (specific command or group).
- * @param width			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
- * @param height			Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
- * @return				true if all successful, false if any errors encountered.
+ * @param title            Window title.
+ * @param url            URL to open. Must be prefixed with http:// or https:// protocols.
+ * @param hidden            Override type (specific command or group).
+ * @param width            Optional pointer to store allow/deny setting. 0 (default) uses clients full screen width.
+ * @param height            Optional pointer to store allow/deny setting. 0 (default) uses clients full screen height.
+ * @return                true if all successful, false if any errors encountered.
  */
 stock bool WebFix_OpenUrlAll(const char[] title, const char[] url, bool hidden = false, int width = 0, int height = 0)
 {
   bool returnValue = true;
-	for (int i = 1; i <= MaxClients; ++i) {
+    for (int i = 1; i <= MaxClients; ++i) {
     if (IsClientInGame(i) && !IsFakeClient(i)){
       bool success = WebFix_OpenUrl(i, title, url, hidden, width, height);
       if (!success)

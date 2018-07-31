@@ -18,7 +18,7 @@
 #define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 // globals
-int g_iRemaining[MAXPLAYERS + 1] = { 0, ... };		// how many tripmines player has this spawn
+int g_iRemaining[MAXPLAYERS + 1] = { 0, ... };        // how many tripmines player has this spawn
 int g_iCount = 1;
 char g_sModel[PLATFORM_MAX_PATH + 1];
 
@@ -128,7 +128,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 }
 
 public Action Command_TripMine(int client, int args)
-{	
+{    
     // make sure client is not spectating
     if (client < 0 || !IsClientInGame(client))
     {
@@ -250,7 +250,7 @@ void SetMine(int client)
         DispatchKeyValue(ent2, "StrikeTime", "0");
         DispatchKeyValue(ent2, "TextureScroll", "35");
         Format(tmp, sizeof(tmp), "%s,Break,,0,-1", beammdl);
-        DispatchKeyValue(ent2, "OnTouchedByEntity", tmp);	 
+        DispatchKeyValue(ent2, "OnTouchedByEntity", tmp);     
         SetEntPropVector(ent2, Prop_Data, "m_vecEndPos", end);
         SetEntPropFloat(ent2, Prop_Data, "m_fWidth", 4.0);
         AcceptEntityInput(ent2, "TurnOff");

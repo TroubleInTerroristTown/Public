@@ -1,5 +1,5 @@
 #if defined _ttt_weapons_included
-	#endinput
+    #endinput
 #endif
 #define _ttt_weapons_included
 

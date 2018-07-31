@@ -114,38 +114,38 @@ Handle g_hOnCheckCommandAccess = null;
 bool g_bSourcebans = false;
 
 char g_sRadioCMDs[][] =  {
-	"coverme",
-	"takepoint",
-	"holdpos",
-	"regroup",
-	"followme",
-	"takingfire",
-	"go",
-	"fallback",
-	"sticktog",
-	"getinpos",
-	"stormfront",
-	"report",
-	"roger",
-	"enemyspot",
-	"needbackup",
-	"sectorclear",
-	"inposition",
-	"reportingin",
-	"getout",
-	"negative",
-	"enemydown",
-	"compliment",
-	"thanks",
-	"cheer"
+    "coverme",
+    "takepoint",
+    "holdpos",
+    "regroup",
+    "followme",
+    "takingfire",
+    "go",
+    "fallback",
+    "sticktog",
+    "getinpos",
+    "stormfront",
+    "report",
+    "roger",
+    "enemyspot",
+    "needbackup",
+    "sectorclear",
+    "inposition",
+    "reportingin",
+    "getout",
+    "negative",
+    "enemydown",
+    "compliment",
+    "thanks",
+    "cheer"
 };
 
 char g_sRemoveEntityList[][] =  {
-	"func_bomb_target",
-	"hostage_entity",
-	"func_hostage_rescue",
-	"info_hostage_spawn",
-	"func_buyzone"
+    "func_bomb_target",
+    "hostage_entity",
+    "func_hostage_rescue",
+    "info_hostage_spawn",
+    "func_buyzone"
 };
 
 bool g_bRoundEnding = false;

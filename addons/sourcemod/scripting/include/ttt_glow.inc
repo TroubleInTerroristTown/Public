@@ -1,5 +1,5 @@
 #if defined _ttt_glow_included
-	#endinput
+    #endinput
 #endif
 #define _ttt_glow_included
 
@@ -7,11 +7,11 @@ forward Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &ov
 
 public SharedPlugin __pl_ttt_glow = 
 {
-	name = "ttt_glow",
-	file = "ttt_glow.smx",
+    name = "ttt_glow",
+    file = "ttt_glow.smx",
 #if defined REQUIRE_PLUGIN
-	required = 1,
+    required = 1,
 #else
-	required = 0,
+    required = 0,
 #endif
 };

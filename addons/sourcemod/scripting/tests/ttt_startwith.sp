@@ -11,17 +11,17 @@
 
 public Plugin myinfo =
 {
-	name = PLUGIN_NAME,
-	author = TTT_PLUGIN_AUTHOR,
-	description = TTT_PLUGIN_DESCRIPTION,
-	version = TTT_PLUGIN_VERSION,
-	url = TTT_PLUGIN_URL
+    name = PLUGIN_NAME,
+    author = TTT_PLUGIN_AUTHOR,
+    description = TTT_PLUGIN_DESCRIPTION,
+    version = TTT_PLUGIN_VERSION,
+    url = TTT_PLUGIN_URL
 };
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-	if (role == TTT_TEAM_DETECTIVE)
-	{
-		TTT_GiveClientItem(client, KEVHELM_D_ITEM_SHORT);
-	}
+    if (role == TTT_TEAM_DETECTIVE)
+    {
+        TTT_GiveClientItem(client, KEVHELM_D_ITEM_SHORT);
+    }
 }

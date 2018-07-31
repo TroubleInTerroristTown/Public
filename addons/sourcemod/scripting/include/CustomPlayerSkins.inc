@@ -56,9 +56,9 @@ native void CPS_RemoveSkin(int client, int flags = CPS_NOFLAGS);
  *
  * @param owner Client index of the skin's owner
  * @param client Client index of the player that will see the skin.
- * @param transmit	0 - Do not transmit at all.
-					1 - Transmit only if other cases pass.
-					2 - Override other checks.
+ * @param transmit    0 - Do not transmit at all.
+                    1 - Transmit only if other cases pass.
+                    2 - Override other checks.
  * @noreturn
  * @error Invalid client.
  */
@@ -76,23 +76,23 @@ native int CPS_GetFlags(int client);
 
 public SharedPlugin __pl_CustomPlayerSkins =
 {
-	name = "CustomPlayerSkins",
-	file = "CustomPlayerSkins.smx",
+    name = "CustomPlayerSkins",
+    file = "CustomPlayerSkins.smx",
 #if defined REQUIRE_PLUGIN
-	required = 1,
+    required = 1,
 #else
-	required = 0,
+    required = 0,
 #endif
 };
 
 #if !defined REQUIRE_PLUGIN
 public __pl_CustomPlayerSkins_SetNTVOptional()
 {
-	MarkNativeAsOptional("CPS_SetSkin");
-	MarkNativeAsOptional("CPS_GetSkin");
-	MarkNativeAsOptional("CPS_HasSkin");
-	MarkNativeAsOptional("CPS_RemoveSkin");
-	MarkNativeAsOptional("CPS_SetTransmit");
-	MarkNativeAsOptional("CPS_GetFlags");
+    MarkNativeAsOptional("CPS_SetSkin");
+    MarkNativeAsOptional("CPS_GetSkin");
+    MarkNativeAsOptional("CPS_HasSkin");
+    MarkNativeAsOptional("CPS_RemoveSkin");
+    MarkNativeAsOptional("CPS_SetTransmit");
+    MarkNativeAsOptional("CPS_GetFlags");
 }
 #endif

@@ -35,124 +35,124 @@ int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 public Plugin myinfo =
 {
-	name = PLUGIN_NAME,
-	author = TTT_PLUGIN_AUTHOR,
-	description = TTT_PLUGIN_DESCRIPTION,
-	version = TTT_PLUGIN_VERSION,
-	url = TTT_PLUGIN_URL
+    name = PLUGIN_NAME,
+    author = TTT_PLUGIN_AUTHOR,
+    description = TTT_PLUGIN_DESCRIPTION,
+    version = TTT_PLUGIN_VERSION,
+    url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
-	TTT_IsGameCSGO();
+    TTT_IsGameCSGO();
 
-	LoadTranslations("ttt.phrases");
+    LoadTranslations("ttt.phrases");
 
-	TTT_StartConfig("healthshot");
-	CreateConVar("ttt2_healthshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-	g_cLongName = AutoExecConfig_CreateConVar("hs_name", "Healthshot", "The name of the Healtshot in the Shop");
-	g_cTPrice = AutoExecConfig_CreateConVar("hs_traitor_price", "9000", "The amount of credits for healthshot costs as traitor. 0 to disable.");
-	g_cDPrice = AutoExecConfig_CreateConVar("hs_detective_price", "9000", "The amount of credits for healthshot costs as detective. 0 to disable.");
-	g_cIPrice = AutoExecConfig_CreateConVar("hs_innocent_price", "9000", "The amount of credits for healthshot costs as innocent. 0 to disable.");
-	g_cTCount = AutoExecConfig_CreateConVar("hs_traitor_count", "1", "The amount of usages for healthshots per round as traitor. 0 to disable.");
-	g_cDCount = AutoExecConfig_CreateConVar("hs_detective_count", "1", "The amount of usages for healthshots per round as detective. 0 to disable.");
-	g_cICount = AutoExecConfig_CreateConVar("hs_innocent_count", "1", "The amount of usages for healthshots per round as innocent. 0 to disable.");
-	g_cTPrio = AutoExecConfig_CreateConVar("hs_traitor_sort_prio", "0", "The sorting priority of the healthshots (Traitor) in the shop menu.");
-	g_cDPrio = AutoExecConfig_CreateConVar("hs_detective_sort_prio", "0", "The sorting priority of the healthshots (Detective) in the shop menu.");
-	g_cIPrio = AutoExecConfig_CreateConVar("hs_innocent_sort_prio", "0", "The sorting priority of the healthshots (Innocent) in the shop menu.");
-	g_cDiscountI = AutoExecConfig_CreateConVar("hs_discount_innocent", "0", "Should healthshot discountable for innocents?", _, true, 0.0, true, 1.0);
-	g_cDiscountT = AutoExecConfig_CreateConVar("hs_discount_traitor", "0", "Should healthshot discountable for traitors?", _, true, 0.0, true, 1.0);
-	g_cDiscountD = AutoExecConfig_CreateConVar("hs_discount_detective", "0", "Should healthshot discountable for detectives?", _, true, 0.0, true, 1.0);
-	TTT_EndConfig();
+    TTT_StartConfig("healthshot");
+    CreateConVar("ttt2_healthshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    g_cLongName = AutoExecConfig_CreateConVar("hs_name", "Healthshot", "The name of the Healtshot in the Shop");
+    g_cTPrice = AutoExecConfig_CreateConVar("hs_traitor_price", "9000", "The amount of credits for healthshot costs as traitor. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("hs_detective_price", "9000", "The amount of credits for healthshot costs as detective. 0 to disable.");
+    g_cIPrice = AutoExecConfig_CreateConVar("hs_innocent_price", "9000", "The amount of credits for healthshot costs as innocent. 0 to disable.");
+    g_cTCount = AutoExecConfig_CreateConVar("hs_traitor_count", "1", "The amount of usages for healthshots per round as traitor. 0 to disable.");
+    g_cDCount = AutoExecConfig_CreateConVar("hs_detective_count", "1", "The amount of usages for healthshots per round as detective. 0 to disable.");
+    g_cICount = AutoExecConfig_CreateConVar("hs_innocent_count", "1", "The amount of usages for healthshots per round as innocent. 0 to disable.");
+    g_cTPrio = AutoExecConfig_CreateConVar("hs_traitor_sort_prio", "0", "The sorting priority of the healthshots (Traitor) in the shop menu.");
+    g_cDPrio = AutoExecConfig_CreateConVar("hs_detective_sort_prio", "0", "The sorting priority of the healthshots (Detective) in the shop menu.");
+    g_cIPrio = AutoExecConfig_CreateConVar("hs_innocent_sort_prio", "0", "The sorting priority of the healthshots (Innocent) in the shop menu.");
+    g_cDiscountI = AutoExecConfig_CreateConVar("hs_discount_innocent", "0", "Should healthshot discountable for innocents?", _, true, 0.0, true, 1.0);
+    g_cDiscountT = AutoExecConfig_CreateConVar("hs_discount_traitor", "0", "Should healthshot discountable for traitors?", _, true, 0.0, true, 1.0);
+    g_cDiscountD = AutoExecConfig_CreateConVar("hs_discount_detective", "0", "Should healthshot discountable for detectives?", _, true, 0.0, true, 1.0);
+    TTT_EndConfig();
 
-	HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
 public void OnClientDisconnect(int client)
 {
-	ResetHealthshot(client);
+    ResetHealthshot(client);
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(event.GetInt("userid"));
+    int client = GetClientOfUserId(event.GetInt("userid"));
 
-	if (TTT_IsClientValid(client))
-	{
-		ResetHealthshot(client);
-	}
+    if (TTT_IsClientValid(client))
+    {
+        ResetHealthshot(client);
+    }
 }
 
 public void TTT_OnShopReady()
 {
-	RegisterItem();
+    RegisterItem();
 }
 
 void RegisterItem()
 {
-	char sBuffer[MAX_ITEM_LENGTH];
-	g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-	
-	TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-	TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
-	TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+    char sBuffer[MAX_ITEM_LENGTH];
+    g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+    
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-	if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-	{
-		if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
-		{
-			int role = TTT_GetClientRole(client);
-			
-			char sPluginTag[128];
-			char sLongName[MAX_ITEM_LENGTH];
-			ConVar hTag = FindConVar("ttt_plugin_tag");
-			
-			g_cLongName.GetString(sLongName, sizeof(sLongName));
-			hTag.GetString(sPluginTag, sizeof(sPluginTag));
-			
-			if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
-			{
-				CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cTCount.IntValue);
-				return Plugin_Stop;
-			}
-			else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
-			{
-				CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cDCount.IntValue);
-				return Plugin_Stop;
-			}
-			else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_cICount.IntValue)
-			{
-				CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cICount.IntValue);
-				return Plugin_Stop;
-			}
-			GivePlayerItem(client, "weapon_healthshot");
+    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    {
+        if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
+        {
+            int role = TTT_GetClientRole(client);
+            
+            char sPluginTag[128];
+            char sLongName[MAX_ITEM_LENGTH];
+            ConVar hTag = FindConVar("ttt_plugin_tag");
+            
+            g_cLongName.GetString(sLongName, sizeof(sLongName));
+            hTag.GetString(sPluginTag, sizeof(sPluginTag));
+            
+            if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
+            {
+                CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cTCount.IntValue);
+                return Plugin_Stop;
+            }
+            else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
+            {
+                CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cDCount.IntValue);
+                return Plugin_Stop;
+            }
+            else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_cICount.IntValue)
+            {
+                CPrintToChat(client, sPluginTag, "Bought All", client, sLongName, g_cICount.IntValue);
+                return Plugin_Stop;
+            }
+            GivePlayerItem(client, "weapon_healthshot");
 
-			if (count)
-			{
-				if (role == TTT_TEAM_TRAITOR)
-				{
-					g_iTPCount[client]++;
-				}
-				else if (role == TTT_TEAM_DETECTIVE)
-				{
-					g_iDPCount[client]++;
-				}
-				else if (role == TTT_TEAM_INNOCENT)
-				{
-					g_iIPCount[client]++;
-				}
-			}
-		}
-	}
-	return Plugin_Continue;
+            if (count)
+            {
+                if (role == TTT_TEAM_TRAITOR)
+                {
+                    g_iTPCount[client]++;
+                }
+                else if (role == TTT_TEAM_DETECTIVE)
+                {
+                    g_iDPCount[client]++;
+                }
+                else if (role == TTT_TEAM_INNOCENT)
+                {
+                    g_iIPCount[client]++;
+                }
+            }
+        }
+    }
+    return Plugin_Continue;
 }
 
 void ResetHealthshot(int client)
 {
-	g_iTPCount[client] = 0;
-	g_iDPCount[client] = 0;
-	g_iIPCount[client] = 0;
+    g_iTPCount[client] = 0;
+    g_iDPCount[client] = 0;
+    g_iIPCount[client] = 0;
 }

@@ -11,20 +11,20 @@ native void SetTurretCanAttackClient(int client,bool CanAttack = false);
 
 public SharedPlugin __pl_turret_core = 
 {
-	name = "turret_core",
-	file = "turret_core.smx",
+    name = "turret_core",
+    file = "turret_core.smx",
 #if defined REQUIRE_PLUGIN
-	required = 1,
+    required = 1,
 #else
-	required = 0,
+    required = 0,
 #endif
 };
 
 #if !defined REQUIRE_PLUGIN
 public void __pl_turret_core_SetNTVOptional()
 {
-	MarkNativeAsOptional("CreateTurret");
-	MarkNativeAsOptional("RemoveTurret");
-	MarkNativeAsOptional("SetTurretCanAttackClient");
+    MarkNativeAsOptional("CreateTurret");
+    MarkNativeAsOptional("RemoveTurret");
+    MarkNativeAsOptional("SetTurretCanAttackClient");
 }
 #endif

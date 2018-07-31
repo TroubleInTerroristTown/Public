@@ -1,11 +1,11 @@
 #if defined _ttt_sql_included
-	#endinput
+    #endinput
 #endif
 #define _ttt_sql_included
 
 enum dConnection {
-	dSQLite = 0,
-	dMySQL
+    dSQLite = 0,
+    dMySQL
 };
 
 native void TTT_Query(const char[] debugname, const char[] query);

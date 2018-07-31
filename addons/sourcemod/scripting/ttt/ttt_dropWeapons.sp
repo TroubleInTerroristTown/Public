@@ -190,7 +190,7 @@ void DropWeapons(int client)
     int weapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
     if (weapon != -1)
     {
-		SDKHooks_DropWeapon(client, weapon);
+        SDKHooks_DropWeapon(client, weapon);
     }
 }
 
