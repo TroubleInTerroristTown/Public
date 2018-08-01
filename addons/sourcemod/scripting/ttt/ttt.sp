@@ -2593,10 +2593,9 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
         else if (g_cNameChangePunish.IntValue == 2)
         {
             DataPack pack = new DataPack();
+            RequestFrame(Frame_RechangeName, pack);
             pack.WriteCell(GetClientUserId(client));
             pack.WriteString(sOld);
-
-            RequestFrame(Frame_RechangeName, pack);
 
             return Plugin_Handled;
         }
@@ -2656,6 +2655,8 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
 
 public void Frame_RechangeName(DataPack pack)
 {
+    pack.Reset();
+    
     int userid = pack.ReadCell();
 
     char sName[MAX_NAME_LENGTH];
