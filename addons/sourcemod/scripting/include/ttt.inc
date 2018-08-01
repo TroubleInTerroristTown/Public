@@ -796,3 +796,66 @@ stock bool TTT_IsPrimaryWeapon(int weapon)
 
     return false;
 }
+
+
+void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
+{
+    int iEnd = endTime - startTime;
+    int iCurrent = GetTime() - startTime;
+    float fPercentage = ((100.0 / float(iEnd)) * float(iCurrent));
+
+    char sProgress[128];
+    for(int i = 0; i < fPercentage / 5; i++)
+    {
+        Format(sProgress, sizeof(sProgress), "%s█", sProgress);
+    }
+    
+    if (fPercentage >= 100.0)
+    {
+        // Green
+        SetHudTextParams(0.17, 0.13, 3.0, 0, 204, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 3.0, 0, 204, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+    else if (fPercentage >= 90.0)
+    {
+        // Green
+        SetHudTextParams(0.17, 0.13, 1.1, 0, 204, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 1.1, 0, 204, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+    else if(fPercentage >= 75.0)
+    {
+        // Lightgreen
+        SetHudTextParams(0.17, 0.13, 1.1, 153, 255, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 1.1, 153, 255, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+    else if(fPercentage >= 50.0)
+    {
+        // Yellow
+        SetHudTextParams(0.17, 0.13, 1.1, 255, 255, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 1.1, 255, 255, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+    else if(fPercentage >= 30.0)
+    {
+        // Orange
+        SetHudTextParams(0.17, 0.13, 1.1, 255, 165, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 1.1, 255, 165, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+    else
+    {
+        // Red
+        SetHudTextParams(0.17, 0.13, 1.1, 255, 0, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+        SetHudTextParams(0.17, 0.1, 1.1, 255, 0, 0, 0, 0, 0.0, 0.0, 0.0);
+        ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    }
+}
