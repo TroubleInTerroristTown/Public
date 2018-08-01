@@ -604,11 +604,14 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
 
 stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
 {
-    int iDefIndex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
-    
-    if (iDefIndex < 0 || iDefIndex > 700)
+    if (HasEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex"))
     {
-        return false;
+        int iDefIndex = GetEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex");
+        
+        if (iDefIndex < 0 || iDefIndex > 700)
+        {
+            return false;
+        }
     }
     
     if (HasEntProp(weapon, Prop_Send, "m_bInitialized"))
