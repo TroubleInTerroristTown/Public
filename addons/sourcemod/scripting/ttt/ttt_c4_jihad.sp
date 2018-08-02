@@ -64,6 +64,9 @@ Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iPlantSecondsCount;
 char g_sPlantSeconds[12][32];
 
+int g_iBeamSprite = -1;
+int g_iHaloSprite = -1;
+
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
@@ -128,6 +131,9 @@ public void OnMapStart()
 
     AddFileToDownloadsTable("sound/ttt/jihad/explosion.mp3");
     AddFileToDownloadsTable("sound/ttt/jihad/jihad.mp3");
+
+    g_iBeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
+    g_iHaloSprite = PrecacheModel("materials/sprites/halo.vtf");
 }
 
 public void OnClientDisconnect(int client)
@@ -375,13 +381,13 @@ public Action Command_Detonate(int client, int args)
 
     EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-    CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+    CreateTimer(2.0, Timer_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
     g_bHasJihad[client] = false;
 
     return Plugin_Handled;
 }
 
-public Action TimerCallback_Detonate(Handle timer, any userid)
+public Action Timer_Detonate(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -404,7 +410,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
     {
         EmitAmbientSoundAny("ttt/jihad/jihad.mp3", NULL_VECTOR, client);
 
-        CreateTimer(2.0, TimerCallback_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+        CreateTimer(2.0, Timer_Detonate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
         g_bHasJihad[client] = false;
 
         return Plugin_Continue;
@@ -820,7 +826,7 @@ stock float plantBomb(int client, float time)
         if (g_cC4BeepVolume.FloatValue > 0.0)
         {
             Handle beepPack;
-            CreateDataTimer(1.0, bombBeep, beepPack);
+            CreateDataTimer(1.0, Timer_Beep, beepPack);
             WritePackCell(beepPack, bombEnt);
             WritePackCell(beepPack, (time - 1));
         }
@@ -893,7 +899,7 @@ stock int findBomb(int client)
     return -1;
 }
 
-public Action bombBeep(Handle timer, Handle pack)
+public Action Timer_Beep(Handle timer, Handle pack)
 {
     int bombEnt;
     int beeps;
@@ -918,6 +924,24 @@ public Action bombBeep(Handle timer, Handle pack)
     {
         EmitAmbientSoundAny(SND_BEEP, bombPos, _, _, _, g_cC4BeepVolume.FloatValue);
         beeps--;
+
+        int[] clients = new int[MaxClients];
+        int index = 0;
+
+        LoopValidClients(j)
+        {
+            if (TTT_IsPlayerAlive(j) && TTT_GetClientRole(j) == TTT_TEAM_TRAITOR)
+            {
+                clients[index] = j;
+                index++;
+            }
+        }
+
+        bombPos[2] += 10;
+
+        TE_SetupBeamRingPoint(bombPos, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
+        TE_Send(clients, index);
+
         stopBeeping = false;
     }
     else
@@ -931,7 +955,7 @@ public Action bombBeep(Handle timer, Handle pack)
     }
 
     Handle bombBeep2;
-    CreateDataTimer(1.0, bombBeep, bombBeep2);
+    CreateDataTimer(1.0, Timer_Beep, bombBeep2);
     WritePackCell(bombBeep2, bombEnt);
     WritePackCell(bombBeep2, beeps);
     return Plugin_Stop;
