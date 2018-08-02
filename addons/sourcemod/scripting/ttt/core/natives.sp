@@ -17,6 +17,7 @@ void InitForwards()
     g_hOnRulesMenu = CreateGlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_CellByRef);
     g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
     g_hOnCheckCommandAccess = CreateGlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
+    g_hOnPlayerRespawn = CreateGlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
 }
 
 void InitNatives()
@@ -526,13 +527,14 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
 
-    g_bRespawn[client] = false;
+    g_bRespawn[client] = true;
     CS_RespawnPlayer(client);
     g_bAlive[client] = true;
     g_bFound[client] = false;
 
-    int iBody[Ragdolls];
+    float fOrigin[3];
 
+    int iBody[Ragdolls];
     for (int i = 0; i < g_aRagdoll.Length; i++)
     {
         g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
@@ -544,8 +546,16 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
 
             if (iRagdoll > 0)
             {
+                GetEntPropVector(iRagdoll, Prop_Send, "m_vecOrigin", fOrigin);
                 AcceptEntityInput(iRagdoll, "Kill");
             }
         }
     }
+
+    fOrigin[2] += 73.0;
+    TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
+
+    Call_StartForward(g_hOnPlayerRespawn);
+    Call_PushCell(client);
+    Call_Finish();
 }

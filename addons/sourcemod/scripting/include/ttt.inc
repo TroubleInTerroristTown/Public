@@ -147,6 +147,13 @@ forward Action TTT_OnBodyCheck(int client, int[] ragdoll);
  */
 forward void TTT_OnModelUpdate(int client, const char[] model);
 
+/**
+ * Called after TTT_RespawnPlayer execute
+ *
+ * @param client            The client index
+ */
+forward void TTT_OnPlayerRespawn(int client);
+
 forward int TTT_OnButtonPress(int client, int button);
 forward int TTT_OnButtonRelease(int client, int button);
 
@@ -367,6 +374,15 @@ native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar
  *
  */
 native bool TTT_UseClientPanorama(int client);
+
+/**
+ * Respawns a player.
+ *
+ * @param client        Client Index
+ * @noreturn
+ *
+ */
+native void TTT_RespawnPlayer(int client);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {

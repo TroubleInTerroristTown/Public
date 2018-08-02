@@ -110,6 +110,7 @@ Handle g_hOnKarmaUpdate = null;
 Handle g_hOnRulesMenu = null;
 Handle g_hOnDetectiveMenu = null;
 Handle g_hOnCheckCommandAccess = null;
+Handle g_hOnPlayerRespawn = null;
 
 bool g_bSourcebans = false;
 
