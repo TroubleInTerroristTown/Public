@@ -1511,7 +1511,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             {
                 g_iRole[client] = TTT_TEAM_UNASSIGNED;
                 
-                RequestFrame(Frame_SlapPlayer, GetClientUserId(client));
+                RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
                 
                 CS_SetClientClanTag(client, "UNASSIGNED");
                 DispatchKeyValue(client, "targetname", "UNASSIGNED");
@@ -1577,7 +1577,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public void Frame_SlapPlayer(any userid)
+public void Frame_SlayPlayer(any userid)
 {
     int client = GetClientOfUserId(userid);
 
