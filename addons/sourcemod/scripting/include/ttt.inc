@@ -131,12 +131,12 @@ forward Action TTT_OnRulesMenu(int client, bool &show);
 forward Action TTT_OnDetectiveMenu(int client, bool &show);
 
 /**
- * Called when a body is scanned (by a Detective - not really? (Line 2761-2765 ttt.sp) -).
+ * Called before a body will be scanned.
  *
  * @param client            The client who scanned the body.
- * @param ragdoll           The Array with Ragdoll informations (by refrence).
+ * @param ragdoll           The Array with Ragdoll informations (by reference).
  */
-forward Action TTT_OnBodyChecked(int client, int[] ragdoll);
+forward Action TTT_OnBodyCheck(int client, int[] ragdoll);
 
 /**
  * Called on updated player models
@@ -798,7 +798,7 @@ stock bool TTT_IsPrimaryWeapon(int weapon)
 }
 
 
-void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
+stock void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
 {
     int iEnd = endTime - startTime;
     int iCurrent = GetTime() - startTime;

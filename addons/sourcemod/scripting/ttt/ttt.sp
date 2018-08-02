@@ -3146,9 +3146,12 @@ public Action OnPlayerRunCmd(int client, int &buttons)
             {
                 Call_StartForward(g_hOnButtonPress);
                 Call_PushCell(client);
-                if ((buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED) {
+                if ((buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED)
+                {
                     Call_PushCell(buttons);
-                } else {
+                }
+                else
+                {
                     Call_PushCell(button);
                 }
                 Call_Finish();
@@ -3185,7 +3188,9 @@ public int TTT_OnButtonPress(int client, int button)
             GetClientEyePosition(client, TargetOriginG);
             GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", OriginG);
             if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
+            {
                 return;
+            }
 
             int iSize = g_aRagdoll.Length;
             if (iSize == 0)
@@ -3206,11 +3211,11 @@ public int TTT_OnButtonPress(int client, int button)
                     {
                         g_bIsChecking[client] = true;
                         Action res = Plugin_Continue;
-                        Call_StartForward(g_hOnBodyChecked);
+                        Call_StartForward(g_hOnBodyCheck);
                         Call_PushCell(client);
                         Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
                         Call_Finish(res);
-                        if (res == Plugin_Stop)
+                        if (res == Plugin_Stop || res == Plugin_Handled)
                         {
                             return;
                         }
