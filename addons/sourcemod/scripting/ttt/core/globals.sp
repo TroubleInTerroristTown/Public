@@ -301,3 +301,4 @@ int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
 bool g_bPressed[2048] = { false, ... };
 
 bool g_bPanorama[MAXPLAYERS + 1] = { false, ... };
+bool g_bRespawn[MAXPLAYERS + 1] = { false, ... };

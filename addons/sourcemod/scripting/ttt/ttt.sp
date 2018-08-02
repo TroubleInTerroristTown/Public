@@ -653,6 +653,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         g_bHurtedPlayer1[i] = -1;
         g_bHurtedPlayer2[i] = -1;
         g_bResetHurt[i] = false;
+        g_bRespawn[i] = false;
         
         DispatchKeyValue(i, "targetname", "UNASSIGNED");
         CS_SetClientClanTag(i, " ");
@@ -1485,7 +1486,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    if (g_bRoundStarted && TTT_IsClientValid(client))
+    if (g_bRoundStarted && TTT_IsClientValid(client) && !g_bRespawn[client])
     {
         CS_SetClientClanTag(client, "UNASSIGNED");
         return Plugin_Stop;
@@ -1505,7 +1506,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             CPrintToChat(client, "%s %T", g_sTag, "Player Spawn TTT Version", client, TTT_PLUGIN_VERSION);
         }
         
-        if (g_bRoundStarted)
+        if (g_bRoundStarted && !g_bRespawn[client])
         {
             if (g_cslayAfterStart.BoolValue)
             {
@@ -1574,6 +1575,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             SetEntProp(client, Prop_Send, "m_ArmorValue", g_iArmor[client]);
             g_iArmor[client] = 0;
         }
+
+        g_bRespawn[client] = false;
     }
 }
 
@@ -2555,6 +2558,7 @@ public void OnClientDisconnect(int client)
         g_bFound[client] = true;
         g_bAlive[client] = false;
         g_bPanorama[client] = false;
+        g_bRespawn[client] = false;
 
         if (g_cTranfserArmor.BoolValue)
         {

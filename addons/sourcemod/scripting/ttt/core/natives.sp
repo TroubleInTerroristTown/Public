@@ -45,6 +45,7 @@ void InitNatives()
     CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
     CreateNative("TTT_UseClientPanorama", Native_UseClientPanorama);
+    CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -474,7 +475,7 @@ public int Native_GetRoundTime(Handle plugin, int numParams)
 public int Native_CheckCommandAccess(Handle plugin, int numParams)
 {
     /*
-        We don't the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
+        We don't check the root flag check, it's already included in the CheckAdminCommandAccess function that will be used for CheckClientCommandAccess/CheckCommandAccess
         CheckCommandAccess: https://github.com/alliedmodders/sourcemod/blob/237db0504c7a59e394828446af3e8ca3d53ef647/core/logic/smn_console.cpp#L65
         CheckClientCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2005
         CheckAdminCommandAccess: https://github.com/alliedmodders/sourcemod/blob/5611ec54a21c3045cc1680b954631c6ca049c768/core/logic/AdminCache.cpp#L2036
@@ -519,4 +520,32 @@ public int Native_CheckCommandAccess(Handle plugin, int numParams)
 public int Native_UseClientPanorama(Handle plugin, int numParams)
 {
     return g_bPanorama[GetNativeCell(1)];
+}
+
+public int Native_RespawnPlayer(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+
+    g_bRespawn[client] = false;
+    CS_RespawnPlayer(client);
+    g_bAlive[client] = true;
+    g_bFound[client] = false;
+
+    int iBody[Ragdolls];
+
+    for (int i = 0; i < g_aRagdoll.Length; i++)
+    {
+        g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
+        if (iBody[Victim] == GetClientUserId(client))
+        {
+            g_aRagdoll.Erase(i);
+
+            int iRagdoll = EntRefToEntIndex(iBody[Ent]);
+
+            if (iRagdoll > 0)
+            {
+                AcceptEntityInput(iRagdoll, "Kill");
+            }
+        }
+    }
 }
