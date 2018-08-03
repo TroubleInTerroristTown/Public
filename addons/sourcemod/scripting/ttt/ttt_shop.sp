@@ -85,8 +85,6 @@ char g_sShopCMDs[][] =  {
     "shop"
 };
 
-ConVar g_cPanoramaMessages = null;
-
 enum Item
 {
     String:Long[64],
@@ -242,16 +240,6 @@ public void OnConfigsExecuted()
             {
                 LoadClientCredits(i);
             }
-    }
-}
-
-public void OnAllPluginsLoaded()
-{
-    g_cPanoramaMessages = FindConVar("ttt_enable_panorama_messages");
-
-    if (g_cPanoramaMessages == null)
-    {
-        SetFailState("Can't find the config entry: ttt_enable_panorama_messages");
     }
 }
 
@@ -1131,16 +1119,8 @@ stock void addCredits(int client, int credits, bool message = false)
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
             CFormatColor(sBuffer, sizeof(sBuffer), client);
-            
-            if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
-            {
-                Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
-                PrintCenterText(client, sBuffer);
-            }
-            else
-            {
-                PrintHintText(client, sBuffer);
-            }
+            Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+            PrintCenterText(client, sBuffer);
         }
         else
         {
@@ -1186,16 +1166,8 @@ stock void subtractCredits(int client, int credits, bool message = false)
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
             CFormatColor(sBuffer, sizeof(sBuffer), client);
-            
-            if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
-            {
-                Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
-                PrintCenterText(client, sBuffer);
-            }
-            else
-            {
-                PrintHintText(client, sBuffer);
-            }
+            Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+            PrintCenterText(client, sBuffer);
         }
         else
         {

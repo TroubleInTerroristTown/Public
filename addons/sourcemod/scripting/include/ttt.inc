@@ -367,15 +367,6 @@ native void TTT_GetRoundTime(int type);
 native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar, bool override_only = false);
 
 /**
- * Check client, whether he use the new Panorama UI.
- *
- * @param client        Client Index
- * @return              True if the client use the new panorama ui, false otherwise
- *
- */
-native bool TTT_UseClientPanorama(int client);
-
-/**
  * Respawns a player.
  *
  * @param client        Client Index

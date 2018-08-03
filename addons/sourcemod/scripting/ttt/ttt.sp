@@ -777,14 +777,8 @@ public Action Timer_SelectionCountdown(Handle hTimer)
         {
             LoopValidClients(i)
             {
-                if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
-                {
-                    PrintCenterText(i, "<pre>GO! GO! GO!</pre>");
-                    return Plugin_Continue;
-                }
-                
-                Format(centerText, sizeof(centerText), "%T", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
-                PrintHintText(i, centerText);
+                Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
+                PrintCenterText(i, centerText);
             }
         }
 
@@ -794,14 +788,8 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
     LoopValidClients(i)
     {
-        if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(i))
-        {
-            PrintCenterText(i, "<pre>Round starts in %d seconds</pre>", timeLeft);
-            return Plugin_Continue;
-        }
-        
-        Format(centerText, sizeof(centerText), "%T", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
-        PrintHintText(i, centerText);
+        Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
+        PrintCenterText(i, centerText);
     }
 
     return Plugin_Continue;
@@ -2043,20 +2031,6 @@ public void OnClientPostAdminCheck(int client)
     {
         CreateTimer(3.0, Timer_ShowDetectiveMenu, GetClientUserId(client));
     }
-
-    QueryClientConVar(client, "@panorama_debug_overlay_opacity", OnQueryClientConVar);
-}
-
-public void OnQueryClientConVar(QueryCookie cookie, int client, ConVarQueryResult result, const char[] cvarName, const char[] cvarValue)
-{
-    if (result != ConVarQuery_Okay)
-    {
-        g_bPanorama[client] = false;
-    }
-    else
-    {
-        g_bPanorama[client] = true;
-    }
 }
 
 public Action Timer_OnClientPostAdminCheck(Handle timer, any userid)
@@ -2557,7 +2531,6 @@ public void OnClientDisconnect(int client)
         g_bKarma[client] = false;
         g_bFound[client] = true;
         g_bAlive[client] = false;
-        g_bPanorama[client] = false;
         g_bRespawn[client] = false;
 
         if (g_cTranfserArmor.BoolValue)
@@ -3543,16 +3516,9 @@ stock int addKarma(int client, int karma, bool message = false)
     {
         if (g_cmessageTypKarma.IntValue == 1)
         {
-            if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
-            {
-                char sBuffer[MAX_MESSAGE_LENGTH];
-                Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
-                PrintCenterText(client, sBuffer);
-            }
-            else
-            {
-                PrintHintText(client, "%T", "karma earned", client, karma, g_iKarma[client]);
-            }
+            char sBuffer[MAX_MESSAGE_LENGTH];
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
+            PrintCenterText(client, sBuffer);
         }
         else
         {
@@ -3609,16 +3575,9 @@ stock int subtractKarma(int client, int karma, bool message = false)
     {
         if (g_cmessageTypKarma.IntValue == 1)
         {
-            if (g_cPanoramaMessages.BoolValue && TTT_UseClientPanorama(client))
-            {
-                char sBuffer[MAX_MESSAGE_LENGTH];
-                Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
-                PrintCenterText(client, sBuffer);
-            }
-            else
-            {
-                PrintHintText(client, "%T", "lost karma", client, karma, g_iKarma[client]);
-            }
+            char sBuffer[MAX_MESSAGE_LENGTH];
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
+            PrintCenterText(client, sBuffer);
         }
         else
         {

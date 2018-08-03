@@ -45,7 +45,6 @@ void InitNatives()
     CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
     CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
-    CreateNative("TTT_UseClientPanorama", Native_UseClientPanorama);
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
 }
 
@@ -516,11 +515,6 @@ public int Native_CheckCommandAccess(Handle plugin, int numParams)
     }
 
     return false;
-}
-
-public int Native_UseClientPanorama(Handle plugin, int numParams)
-{
-    return g_bPanorama[GetNativeCell(1)];
 }
 
 public int Native_RespawnPlayer(Handle plugin, int numParams)
