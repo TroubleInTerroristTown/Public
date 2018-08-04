@@ -77,6 +77,8 @@ public void OnPluginStart()
     RegConsoleCmd("sm_rslays", Command_RSlays);
     RegConsoleCmd("sm_tttversion", Command_Version);
     RegConsoleCmd("sm_version", Command_Version);
+    RegConsoleCmd("sm_fl", Command_FL);
+    RegConsoleCmd("sm_flashlight", Command_FL);
     
     AddCommandListener(Command_LAW, "+lookatweapon");
     AddCommandListener(Command_Say, "say");
@@ -3611,6 +3613,11 @@ stock void addArrayTime(char[] message)
 
 public Action Command_LAW(int client, const char[] command, int argc)
 {
+    if (g_cFlashlightOption.IntValue != 0)
+    {
+        return Plugin_Continue;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Continue;
@@ -3622,6 +3629,23 @@ public Action Command_LAW(int client, const char[] command, int argc)
     {
         return Plugin_Handled;
     }
+
+    return Plugin_Continue;
+}
+
+public Action Command_FL(int client, int args)
+{
+    if (g_cFlashlightOption.IntValue != 1)
+    {
+        return Plugin_Continue;
+    }
+
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    SetFlashlight(client);
 
     return Plugin_Continue;
 }
