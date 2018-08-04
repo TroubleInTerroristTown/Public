@@ -3616,11 +3616,7 @@ public Action Command_LAW(int client, const char[] command, int argc)
         return Plugin_Continue;
     }
 
-    if (g_callowFlash.BoolValue && IsPlayerAlive(client))
-    {
-        EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
-        SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
-    }
+    SetFlashlight(client);
 
     if (g_cblockLookAtWeapon.BoolValue)
     {
@@ -3628,6 +3624,15 @@ public Action Command_LAW(int client, const char[] command, int argc)
     }
 
     return Plugin_Continue;
+}
+
+void SetFlashlight(int client)
+{
+    if (g_callowFlash.BoolValue && IsPlayerAlive(client))
+    {
+        EmitSoundToAllAny(SND_FLASHLIGHT, client, SNDCHAN_AUTO, SNDLEVEL_NORMAL, SND_NOFLAGS, 0.6);
+        SetEntProp(client, Prop_Send, "m_fEffects", GetEntProp(client, Prop_Send, "m_fEffects") ^ 4);
+    }
 }
 
 stock void manageRDM(int client)
