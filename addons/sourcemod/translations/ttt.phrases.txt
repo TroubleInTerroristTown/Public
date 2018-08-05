@@ -1140,4 +1140,56 @@
 		"en"		"Reputable"
 	}
 
+	"Revive: Before to Target"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} wants to revive you, wait {2} seconds until you can accept it."
+	}
+
+	"Revive: Before to Player"
+	{
+		"#format"	"{1:N}"
+		"en"		"You'll revive {1}."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} must accept your revive request."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} wants to revive you.\nDo you accept this request?\nYou've {2} seconds..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"en"		"Yes, I want!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"en"		"No, thank you!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"#format"	"{1:N}"
+		"en"		"Menu timed out... No response from {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} accepted your request and is now back ingame!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} declined your request!"
+	}
+
 }
