@@ -85,7 +85,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         AcceptEntityInput(target, "Lock");
     }
 
-      return Plugin_Continue;
+    return Plugin_Continue;
 }
 
 public int OnLockedUse(const char[] output, int caller, int attacker, float data)
