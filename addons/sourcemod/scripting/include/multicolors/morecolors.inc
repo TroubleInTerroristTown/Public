@@ -7,7 +7,6 @@
 #endif
 #define _more_colors_included
 
-#pragma newdecls optional
 #include <regex>
 
 #define MORE_COLORS_VERSION     "2.0.0-MC"
