@@ -137,6 +137,7 @@ void SetupConfig()
     g_cIdentifyLog = AutoExecConfig_CreateConVar("ttt_identity_log", "0", "Log every identified body?", _, true, 0.0, true, 1.0);
     g_cShowInnoRDMMenu = AutoExecConfig_CreateConVar("ttt_show_rdm_menu_for_inno", "0", "Show RDM Menu while killing Innocent as Innocent?", _, true, 0.0, true, 1.0);
     g_cFlashlightOption = AutoExecConfig_CreateConVar("ttt_flashlight_option", "0", "How should flashlight be activated? 0 = +lookatweapon, 1 - Command (sm_fl or sm_flashlight)", _, true, 0.0, true, 1.0);
+    g_cRespawnAccess = AutoExecConfig_CreateConVar("ttt_respawn_admin_access", "b", "Admin flags to access respawn command.");
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);

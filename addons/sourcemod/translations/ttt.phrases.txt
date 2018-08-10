@@ -1192,4 +1192,16 @@
 		"en"		"{1} declined your request!"
 	}
 
+	"Respawn: Must Dead"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} is not dead!"
+	}
+
+	"Respawn: Player"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"{1} respawned {2}!"
+	}
+
 }

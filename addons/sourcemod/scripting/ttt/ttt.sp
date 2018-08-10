@@ -79,6 +79,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_version", Command_Version);
     RegConsoleCmd("sm_fl", Command_FL);
     RegConsoleCmd("sm_flashlight", Command_FL);
+    RegConsoleCmd("sm_respawn", Command_Respawn);
     
     AddCommandListener(Command_LAW, "+lookatweapon");
     AddCommandListener(Command_Say, "say");
@@ -2140,6 +2141,70 @@ public Action Command_RSlays(int client, int args)
         }
         
         LogAction(client, target, "\"%L\" slayed \"%L\" for \"%i\" rounds", client, target, rounds);
+    }
+
+    return Plugin_Continue;
+}
+
+public Action Command_Respawn(int client, int args)
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+    
+    if (!TTT_CheckCommandAccess(client, "sm_respawn", g_cRespawnAccess, true))
+    {
+        return Plugin_Handled;
+    }
+
+    if (args < 2 || args > 3)
+    {
+        ReplyToCommand(client, "[SM] Usage: sm_respawn <#userid|name>");
+
+        return Plugin_Handled;
+    }
+
+    char arg1[32];
+    char arg2[32];
+    GetCmdArg(1, arg1, sizeof(arg1));
+    GetCmdArg(2, arg2, sizeof(arg2));
+
+    char target_name[MAX_TARGET_LENGTH];
+    int target_list[MAXPLAYERS];
+    int target_count;
+    bool tn_is_ml;
+
+    if ((target_count = ProcessTargetString(arg1, client, target_list, MAXPLAYERS, COMMAND_FILTER_CONNECTED, target_name, sizeof(target_name), tn_is_ml)) <= 0)
+    {
+        ReplyToTargetError(client, target_count);
+        return Plugin_Handled;
+    }
+
+    for (int i = 0; i < target_count; i++)
+    {
+        int target = target_list[i];
+
+        if (target == -1 || !TTT_IsClientValid(target))
+        {
+            CReplyToCommand(client, "Invalid target");
+            return Plugin_Handled;
+        }
+
+        if (TTT_IsPlayerAlive(target))
+        {
+            CReplyToCommand(client, "%T", "Respawn: Must Dead", client);
+            return Plugin_Handled;
+        }
+
+        TTT_RespawnPlayer(target);
+
+        LoopValidClients(j)
+        {
+            CPrintToChat(j, "%s %T", g_sTag, "Respawn: Player", j, client, target);
+        }
+        
+        LogAction(client, target, "\"%L\" respawned \"%L\"", client, target);
     }
 
     return Plugin_Continue;

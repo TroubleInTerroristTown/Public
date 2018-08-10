@@ -289,6 +289,7 @@ ConVar g_cNameChangeLength = null;
 ConVar g_cIdentifyLog = null;
 ConVar g_cShowInnoRDMMenu = null;
 ConVar g_cFlashlightOption = null;
+ConVar g_cRespawnAccess = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
