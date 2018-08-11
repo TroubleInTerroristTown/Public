@@ -11,7 +11,8 @@
 
 #pragma newdecls required
 
-#define SHORT_NAME "revive"
+#define SHORT_NAME_D "revive_d"
+#define SHORT_NAME_T "revive_t"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Revive"
 
@@ -109,8 +110,8 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -125,7 +126,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 {
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
+        if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
         {
             if (g_bHasRevive[client])
             {

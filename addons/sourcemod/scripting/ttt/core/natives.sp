@@ -44,6 +44,7 @@ void InitNatives()
     CreateNative("TTT_IsPlayerAlive", Native_IsPlayerAlive);
     CreateNative("TTT_ClientOpenRules", Native_ClientOpenRules);
     CreateNative("TTT_GetRoundTime", Native_GetRoundTime);
+    CreateNative("TTT_GetRoundTimestamp", Native_GetRoundTimestamp);
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
 }
@@ -470,6 +471,11 @@ public int Native_GetRoundTime(Handle plugin, int numParams)
     }
 
     return -1;
+}
+
+public int Native_GetRoundTimestamp(Handle plugin, int numParams)
+{
+    return g_iRoundTime;
 }
 
 public int Native_CheckCommandAccess(Handle plugin, int numParams)

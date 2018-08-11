@@ -29,6 +29,7 @@ int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iTeamSelectTime = 0;
+int g_iRoundTime = -1;
 
 Handle g_hGraceTime = null;
 

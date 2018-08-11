@@ -375,6 +375,13 @@ native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar
  */
 native void TTT_RespawnPlayer(int client);
 
+/**
+ * Returns the timestamp where "round_prestart" was executed.
+ *
+ * @return                Returns the timestamp where "round_prestart" was executed.
+ */
+native int TTT_GetRoundTimestamp();
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
     if (role == TTT_TEAM_INNOCENT)
@@ -865,4 +872,29 @@ stock void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSyn
         SetHudTextParams(0.17, 0.1, 1.1, 255, 0, 0, 0, 0, 0.0, 0.0, 0.0);
         ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
     }
+}
+
+stock int TTT_GetRoundTimeLeft()
+{
+    if (TTT_GetRoundTimestamp() == -1)
+    {
+        LogError("Invalid timestamp (%d)", TTT_GetRoundTimestamp());
+        return -1;
+    }
+
+    ConVar cRoundTime = FindConVar("mp_roundtime");
+    int iElapsed = (GetTime() - TTT_GetRoundTimestamp()) - 1;
+    return ((cRoundTime.IntValue * 60) - iElapsed);
+}
+
+stock int TTT_GetRoundTimeElapsed()
+{
+    if (TTT_GetRoundTimestamp() == -1)
+    {
+        LogError("Invalid timestamp (%d)", TTT_GetRoundTimestamp());
+        return -1;
+    }
+
+    ConVar cRoundTime = FindConVar("mp_roundtime");
+    return (GetTime() - TTT_GetRoundTimestamp()) - 1;
 }

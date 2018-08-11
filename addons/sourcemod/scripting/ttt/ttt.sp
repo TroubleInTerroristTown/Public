@@ -620,6 +620,8 @@ public Action Timer_EnableButton(Handle timer, any reference)
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
+    g_iRoundTime = GetTime();
+    
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 1 (Warmup: %d)", TTT_IsWarmUp());

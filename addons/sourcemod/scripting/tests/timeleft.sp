@@ -2,6 +2,7 @@
 #pragma newdecls required
 
 #include <sourcemod>
+#include <ttt>
 
 int g_iRoundStart = -1;
 
@@ -23,5 +24,5 @@ public Action Command_Timeleft(int client, int args)
     int iElapsed = (GetTime() - g_iRoundStart) - 1;
     int iLeft = ((g_cRoundTime.IntValue * 60) - iElapsed);
 
-    ReplyToCommand(client, "Time Elapsed: %d, Time Left: %d", iElapsed, iLeft);
+    ReplyToCommand(client, "Time Elapsed: %d, Time Left: %d (TTT stock: %d)", iElapsed, iLeft, TTT_GetRoundTimeLeft());
 }
