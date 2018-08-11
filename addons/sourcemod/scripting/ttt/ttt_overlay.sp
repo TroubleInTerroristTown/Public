@@ -41,6 +41,8 @@ ConVar g_cColorI = null;
 ConVar g_cColorT = null;
 ConVar g_cUpdateTeamScore = null;
 ConVar g_cSeeRole = null;
+ConVar g_cTimeOverlays = null;
+ConVar g_cTimeOverlaysTime = null;
 
 bool g_bEndOverlay = false;
 
@@ -51,6 +53,9 @@ Handle g_hSyncR = null;
 Handle g_hSyncD = null;
 Handle g_hSyncI = null;
 Handle g_hSyncT = null;
+
+StringMap g_smTimeOverlays = null;
+bool g_bTimeOverlay = false;
 
 public void OnPluginStart()
 {
@@ -76,6 +81,8 @@ public void OnPluginStart()
     g_cColorI = AutoExecConfig_CreateConVar("ttt_hud_text_innocent_color", "0;255;0", "Innocent color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
     g_cColorT = AutoExecConfig_CreateConVar("ttt_hud_text_traitor_color", "255;0;0", "Traitor color in rbga (<RED>,<GREEN>,<BLUE>,<ALPHA>)");
     g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
+    g_cTimeOverlays = AutoExecConfig_CreateConVar("ttt_time_overlays_enable", "0", "Enable / Disable time overlays? You could show overlays during a active(!) round. 0 - Disable, 1 - Enable", _, true, 0.0, true, 1.0);
+    g_cTimeOverlaysTime = AutoExecConfig_CreateConVar("ttt_time_overlays_time", "3.0", "Time in seconds how long the time overlays will be shown.");
     TTT_EndConfig();
 
     g_hSyncR = CreateHudSynchronizer();
@@ -85,7 +92,7 @@ public void OnPluginStart()
 
     HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 
-    CreateTimer(2.0, Timer_HUD, _, TIMER_REPEAT);
+    CreateTimer(1.0, Timer_HUD, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public void OnMapStart()
@@ -109,7 +116,6 @@ public void OnMapStart()
     
     g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
     Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
     AddFileToDownloadsTable(sBuffer);
 
     PrecacheDecal(sBuffer, true);
@@ -159,6 +165,61 @@ public void OnMapStart()
 
     g_iCTWin = 0;
     g_iTWin = 0;
+
+    PrecacheTimeOverlays();
+}
+
+void PrecacheTimeOverlays()
+{
+    delete g_smTimeOverlays;
+    g_smTimeOverlays = new StringMap();
+
+    char sFile[PLATFORM_MAX_PATH];
+    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/time_overlays.ini");
+
+    if (!FileExists(sFile))
+    {
+        SetFailState("[Time-Overlays] Can't open File: %s", sFile);
+    }
+
+    KeyValues kv = new KeyValues("Time-Overlays");
+
+    if (!kv.ImportFromFile(sFile))
+    {
+        delete kv;
+        SetFailState("[Time-Overlays] Can't read %s correctly! (ImportFromFile)", sFile);
+        return;
+    }
+
+    if (!kv.GotoFirstSubKey(false))
+    {
+        delete kv;
+        SetFailState("[Time-Overlays] Can't read %s correctly! (KvGotoFirstSubKey)", sFile);
+        return;
+    }
+
+    char sTime[32];
+    char sOverlay[PLATFORM_MAX_PATH];
+
+    do
+    {
+        kv.GetSectionName(sTime, sizeof(sTime));
+        kv.GetString(NULL_STRING, sOverlay, sizeof(sOverlay));
+
+        char sFullPath[PLATFORM_MAX_PATH];
+        Format(sFullPath, sizeof(sFullPath), "materials/%s.vmt", sOverlay);
+        AddFileToDownloadsTable(sFullPath);
+        Format(sFullPath, sizeof(sFullPath), "materials/%s.vtf", sOverlay);
+        AddFileToDownloadsTable(sFullPath);
+        PrecacheDecal(sFullPath, true);
+
+        g_smTimeOverlays.SetString(sTime, sOverlay);
+
+        LogMessage("[Time-Overlays] Time: %s, Overlay: %s", sTime, sOverlay);
+    }
+    while (kv.GotoNextKey(false));
+
+    delete kv;
 }
 
 public void OnAllPluginsLoaded()
@@ -168,11 +229,13 @@ public void OnAllPluginsLoaded()
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
+    g_bTimeOverlay = false;
     TTT_ShowOverlayToAll(" ");
 }
 
 public void TTT_OnRoundEnd(int winner)
 {
+    g_bTimeOverlay = false;
     ConVar cCvar = FindConVar("ttt_after_round_delay");
     
     if (cCvar.FloatValue > 0.0)
@@ -304,10 +367,36 @@ public Action Timer_HUD(Handle timer)
         showHudToAll(sI, g_hSyncI, g_cPosIX.FloatValue, g_cPosIY.FloatValue, sCI[0], sCI[1], sCI[2], sCI[3]);
         showHudToAll(sT, g_hSyncT, g_cPosTX.FloatValue, g_cPosTY.FloatValue, sCT[0], sCT[1], sCT[2], sCT[3]);
     }
+
+    if (g_cTimeOverlays.BoolValue)
+    {
+        int iLeft = TTT_GetRoundTimeLeft();
+
+        char sLeft[12], sOverlay[PLATFORM_MAX_PATH];
+        IntToString(iLeft, sLeft, sizeof(sLeft));
+
+        if (g_smTimeOverlays.GetString(sLeft, sOverlay, sizeof(sOverlay)))
+        {
+            g_bTimeOverlay = true;
+            CreateTimer(g_cTimeOverlaysTime.FloatValue, Timer_DisableTimeOverlays);
+            TTT_ShowOverlayToAll(sOverlay);
+        }
+    }
+}
+
+public Action Timer_DisableTimeOverlays(Handle timer)
+{
+    g_bTimeOverlay = false;
+    return Plugin_Stop;
 }
 
 public void AssignOverlay(int client, int role)
 {
+    if (g_bTimeOverlay)
+    {
+        return;
+    }
+
     if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
     {
         TTT_ShowOverlayToClient(client, " ");
