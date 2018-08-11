@@ -883,7 +883,7 @@ stock int TTT_GetRoundTimeLeft()
     }
 
     ConVar cRoundTime = FindConVar("mp_roundtime");
-    int iElapsed = (GetTime() - TTT_GetRoundTimestamp()) - 1;
+    int iElapsed = (GetTime() - TTT_GetRoundTimestamp());
     return ((cRoundTime.IntValue * 60) - iElapsed);
 }
 
@@ -896,5 +896,5 @@ stock int TTT_GetRoundTimeElapsed()
     }
 
     ConVar cRoundTime = FindConVar("mp_roundtime");
-    return (GetTime() - TTT_GetRoundTimestamp()) - 1;
+    return (GetTime() - TTT_GetRoundTimestamp());
 }
