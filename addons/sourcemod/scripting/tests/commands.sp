@@ -12,6 +12,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_hud", Command_HUD);
     RegConsoleCmd("sm_endround", Command_EndRound);
     RegConsoleCmd("sm_give", Command_Give);
+    RegConsoleCmd("sm_roundtime", Command_RoundTime);
 }
 
 public Action Command_CheckGOTV(int client, int args)
@@ -120,4 +121,10 @@ public Action Command_Give(int client, int args)
     EquipPlayerWeapon(client, iWeapon);
 
     return Plugin_Handled;
+}
+
+public Action Command_RoundTime(int client, int args)
+{
+    int time = GameRules_GetProp("m_iRoundTime");
+    ReplyToCommand(client, "Round Time: %d", time);
 }
