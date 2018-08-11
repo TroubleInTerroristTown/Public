@@ -233,6 +233,7 @@ native int TTT_SetRagdoll(int[] ragdoll);
  * Set a client's role.
  *
  * @param client            Client index.
+ * @param role              The new role.
  */
 native int TTT_SetClientRole(int client, int role);
 
@@ -240,6 +241,7 @@ native int TTT_SetClientRole(int client, int role);
  * Sets the karma of a client.
  *
  * @param client            Client index.
+ * @param karma             Karma for the client.
  */
 native int TTT_SetClientKarma(int client, int karma, bool force);
 
@@ -247,7 +249,7 @@ native int TTT_SetClientKarma(int client, int karma, bool force);
  * Add karma to a client (currentKarma+karma).
  *
  * @param client            Client index.
- * @param client            Karma that will be added.
+ * @param karma             Karma that will be added.
  */
 native int TTT_AddClientKarma(int client, int karma, bool force);
 
@@ -255,7 +257,7 @@ native int TTT_AddClientKarma(int client, int karma, bool force);
  * Remove karma from a client (currentKarma-karma).
  *
  * @param client            Client index.
- * @param client            Karma to remove.
+ * @param karma             Karma to remove.
  */
 native int TTT_RemoveClientKarma(int client, int karma, bool force);
 

@@ -55,7 +55,31 @@ Handle g_hSyncI = null;
 Handle g_hSyncT = null;
 
 StringMap g_smTimeOverlays = null;
+
 bool g_bTimeOverlay = false;
+bool g_bDisableRoleOverlays = false;
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    CreateNative("TTT_DisableRoleOverlays", Native_DisableRoleOverlays);
+    
+    RegPluginLibrary("ttt_overlay");
+
+    return APLRes_Success;
+}
+
+public int Native_DisableRoleOverlays(Handle plugin, int numParams)
+{
+    float fTime = view_as<float>(GetNativeCell(1));
+    g_bDisableRoleOverlays = true;
+    CreateTimer(fTime, Timer_EnableRoleOverlays);
+}
+
+public Action Timer_EnableRoleOverlays(Handle timer)
+{
+    g_bDisableRoleOverlays = false;
+    return Plugin_Stop;
+}
 
 public void OnPluginStart()
 {
@@ -230,12 +254,14 @@ public void OnAllPluginsLoaded()
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     g_bTimeOverlay = false;
+    g_bDisableRoleOverlays = false;
     TTT_ShowOverlayToAll(" ");
 }
 
 public void TTT_OnRoundEnd(int winner)
 {
     g_bTimeOverlay = false;
+    g_bDisableRoleOverlays = false;
     ConVar cCvar = FindConVar("ttt_after_round_delay");
     
     if (cCvar.FloatValue > 0.0)
@@ -392,7 +418,7 @@ public Action Timer_DisableTimeOverlays(Handle timer)
 
 public void AssignOverlay(int client, int role)
 {
-    if (g_bTimeOverlay)
+    if (g_bTimeOverlay || g_bDisableRoleOverlays)
     {
         return;
     }
