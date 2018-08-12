@@ -57,6 +57,7 @@ ConVar g_cCreditsMax = null;
 ConVar g_cCreditsInterval = null;
 ConVar g_cSQLCredits = null;
 ConVar g_cSilentIdRewards = null;
+ConVar g_cMoneyCredits = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -180,6 +181,7 @@ public void OnPluginStart()
     g_cShowCmd = AutoExecConfig_CreateConVar("ttt_shop_show_command", "showitems", "The command to show the shortname of the shopitems (to use for the buycommand)");
     g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "0", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
     g_cSilentIdRewards = AutoExecConfig_CreateConVar("ttt_shop_silent_id_rewards", "1", "0 = Disabled, will not reward credits with silent id. 1 = Will reward the client with credits for inspecting the body.", _, true, 0.0, true, 1.0);
+    g_cMoneyCredits = AutoExecConfig_CreateConVar("ttt_shop_show_credits_as_money", "1", "Show player credits as csgo money?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -375,6 +377,11 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
                 g_iCredits[client] = credits;
             }
 
+            if (g_cMoneyCredits.BoolValue)
+            {
+                SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
+            }
+
             g_bCredits[client] = true;
         }
     }
@@ -415,6 +422,11 @@ stock void UpdatePlayer(int client)
     if (g_dDB != null)
     {
         g_dDB.Query(SQL_UpdatePlayer, sQuery, GetClientUserId(client));
+    }
+
+    if (g_cMoneyCredits.BoolValue)
+    {
+        SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
     }
 }
 

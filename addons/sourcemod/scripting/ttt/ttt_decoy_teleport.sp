@@ -57,7 +57,7 @@ public void OnPluginStart()
     g_cDPrio = AutoExecConfig_CreateConVar("dt_detective_sort_prio", "0", "The sorting priority of the decoy teleporter (Detective) in the shop menu.");
     g_cTCount = AutoExecConfig_CreateConVar("dt_traitor_count", "1", "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("dt_detective_count", "1", "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
-    g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Money back, 2 = New decoy");
+    g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Credits back, 2 = New decoy");
     g_cDiscountT = AutoExecConfig_CreateConVar("dt_discount_traitor", "0", "Should decoy teleporter discountable for traitors?", _, true, 0.0, true, 1.0);
     g_cDiscountD = AutoExecConfig_CreateConVar("dt_discount_detective", "0", "Should decoy teleporter discountable for detectives?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
