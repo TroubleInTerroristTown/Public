@@ -327,7 +327,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         {
             int iEnt = GetEntPropEnt(client, Prop_Send, "m_hGroundEntity");
 
-            if (iEnt > 0)
+            if (IsValidEntity(iEnt))
             {
                 char sName[128];
                 GetEdictClassname(iEnt, sName, sizeof(sName));
@@ -340,11 +340,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
                 {
                     if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
                     {
-                        if (IsValidEdict(iEnt) && IsValidEntity(iEnt))
-                        {
-                            buttons &= ~IN_JUMP;
-                            return Plugin_Changed;
-                        }
+                        buttons &= ~IN_JUMP;
+                        return Plugin_Changed;
                     }
                 }
             }

@@ -814,72 +814,64 @@ stock bool TTT_IsPrimaryWeapon(int weapon)
 }
 
 
-void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
+stock void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
 {
-	int iEnd = endTime - startTime;
-	int iCurrent = GetTime() - startTime;
-	float fPercentage = ((100.0 / float(iEnd)) * float(iCurrent));
+    int iEnd = endTime - startTime;
+    int iCurrent = GetTime() - startTime;
+    float fPercentage = ((100.0 / float(iEnd)) * float(iCurrent));
 
-	char sProgress[128];
-	for(int i = 0; i < fPercentage / 5; i++)
-	{
-		Format(sProgress, sizeof(sProgress), "%s█", sProgress);
-	}
-	
-	int iColor[4]; //0(R) 1(G) 2(B) 3(A)
+    char sProgress[128];
+    for(int i = 0; i < fPercentage / 5; i++)
+    {
+        Format(sProgress, sizeof(sProgress), "%s█", sProgress);
+    }
+    
+    int iColor[4]; //0(R) 1(G) 2(B) 3(A)
 
-	if (fPercentage >= 100.0)
-	{
-		// Green
-		iColor[0] = 0; 		//r
-		iColor[1] = 204; 	//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	else if (fPercentage >= 90.0)
-	{
-		// Green
-		iColor[0] = 0; 		//r
-		iColor[1] = 204; 	//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	else if(fPercentage >= 75.0)
-	{
-		// Lightgreen
-		iColor[0] = 153; 	//r
-		iColor[1] = 255; 	//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	else if(fPercentage >= 50.0)
-	{
-		// Yellow
-		iColor[0] = 255; 	//r
-		iColor[1] = 255; 	//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	else if(fPercentage >= 30.0)
-	{
-		// Orange
-		iColor[0] = 255; 	//r
-		iColor[1] = 165; 	//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	else
-	{
-		// Red
-		iColor[0] = 255; 	//r
-		iColor[1] = 0; 		//g
-		iColor[2] = 0;		//b
-		iColor[3] = 0;		//a
-	}
-	SetHudTextParams(0.17, 0.13, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
-	ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
-	SetHudTextParams(0.17, 0.1, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
-	ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+    if (fPercentage >= 90.0)
+    {
+        // Green
+        iColor[0] = 0;      //r
+        iColor[1] = 204;    //g
+        iColor[2] = 0;      //b
+        iColor[3] = 0;      //a
+    }
+    else if(fPercentage >= 75.0)
+    {
+        // Lightgreen
+        iColor[0] = 153;    //r
+        iColor[1] = 255;    //g
+        iColor[2] = 0;      //b
+        iColor[3] = 0;      //a
+    }
+    else if(fPercentage >= 50.0)
+    {
+        // Yellow
+        iColor[0] = 255;    //r
+        iColor[1] = 255;    //g
+        iColor[2] = 0;      //b
+        iColor[3] = 0;      //a
+    }
+    else if(fPercentage >= 30.0)
+    {
+        // Orange
+        iColor[0] = 255;    //r
+        iColor[1] = 165;    //g
+        iColor[2] = 0;      //b
+        iColor[3] = 0;      //a
+    }
+    else
+    {
+        // Red
+        iColor[0] = 255;    //r
+        iColor[1] = 0;      //g
+        iColor[2] = 0;      //b
+        iColor[3] = 0;      //a
+    }
+    SetHudTextParams(0.17, 0.13, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
+    ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
+    SetHudTextParams(0.17, 0.1, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
+    ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
 }
 
 stock int TTT_GetRoundTimeLeft()
