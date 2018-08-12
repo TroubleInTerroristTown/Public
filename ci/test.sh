@@ -20,8 +20,8 @@ echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/block_messages.sp
 echo -e "Compiling addons/sourcemod/scripting/CustomPlayerSkins.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/CustomPlayerSkins.sp
-echo -e "Compiling addons/sourcemod/scripting/ghostdm.sp..."
-addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/ghostdm.sp
+# echo -e "Compiling addons/sourcemod/scripting/ghostdm.sp..."
+# addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/ghostdm.sp
 echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/no_weapon_fix.sp
 echo -e "\nCompiling addons/sourcemod/scripting/tripmines.sp..."
