@@ -1,4 +1,9 @@
-Redie_OnPluginStart()
+static int m_flNextPrimaryAttack = -1;
+static int m_flNextSecondaryAttack = -1;
+static int g_iAlive = -1;
+static int g_iHealth = -1;
+
+void Redie_OnPluginStart()
 {
     RegConsoleCmd("sm_redie", Command_Redie);
     RegConsoleCmd("sm_reback", Command_Reback);
@@ -7,17 +12,56 @@ Redie_OnPluginStart()
 
     LoopValidClients(i)
     {
-        SDKHook(i, SDKHook_WeaponCanUse, OnWeaponCanUse);
-        SDKHook(i, SDKHook_WeaponEquip, OnWeaponCanUse);
-        SDKHook(i, SDKHook_TraceAttack, OnTraceAttack);
+        HookClient(i);
     }
+
+    m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
+    m_flNextSecondaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextSecondaryAttack");
+
+    g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
+    if (g_iAlive == -1)
+    {
+        SetFailState("CCSPlayerResource \"m_bAlive\" offset is invalid");
+    }
+    
+    g_iHealth = FindSendPropInfo("CCSPlayerResource", "m_iHealth");
+    if (g_iHealth == -1)
+    {
+        SetFailState("CCSPlayerResource \"m_iHealth\" offset is invalid");
+    }
+
+    SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
+}
+
+public void ThinkPost(int entity)
+{
+    int isAlive[MAXPLAYERS + 1];
+    int iHealth[MAXPLAYERS + 1];
+
+    GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
+    GetEntDataArray(entity, g_iHealth, iHealth, MAXPLAYERS + 1);
+    
+    LoopValidClients(i)
+    {
+        if (g_bDM[i])
+        {
+            isAlive[i] = false;
+            iHealth[i] = 100;
+        }
+        else if (g_bRedie[i])
+        {
+            isAlive[i] = false;
+            iHealth[i] = 100;
+        }
+    }
+    
+    SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
+    SetEntDataArray(entity, g_iHealth, iHealth, MAXPLAYERS + 1);
 }
 
 void Redie_OnClientPutInServer(int client)
 {
-    SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-    SDKHook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
-    SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
+    HookClient(client);
 }
 
 void Redie_OnRoundStart()
@@ -29,8 +73,7 @@ void Redie_OnRoundStart()
         ResetDM(client);
         ResetRedie(client);
         
-        SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-        SDKUnhook(client, SDKHook_TraceAttack, OnTraceAttack);
+        UnhookClient(client);
     }
     
     int ent = MaxClients + 1;
@@ -96,8 +139,7 @@ public Action Command_Redie(int client, int args)
                 {
                     g_bRedie[client] = true;
                     
-                    SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-                    SDKUnhook(client, SDKHook_TraceAttack, OnTraceAttack);
+                    UnhookClient(client);
                     
                     CS_RespawnPlayer(client);
                     
@@ -115,10 +157,14 @@ public Action Command_Redie(int client, int args)
         
                     g_bRedie[client] = true;
         
-                    SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-                    SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
+                    HookClient(client);
+
+                    int iWeapon = GivePlayerItem(client, "weapon_ak47");
+                    EquipPlayerWeapon(client, iWeapon);
+                    iWeapon = GivePlayerItem(client, "weapon_deagle");
+                    EquipPlayerWeapon(client, iWeapon);
                     
-                    LoopValidClients(i)
+                    /* LoopValidClients(i)
                     {
                         SetListenOverride(client, i, Listen_Yes);
                         
@@ -126,7 +172,7 @@ public Action Command_Redie(int client, int args)
                             SetListenOverride(i, client, Listen_No);
                         else
                             SetListenOverride(i, client, Listen_Yes);
-                    }
+                    } */
         
                     CPrintToChat(client, "%s Du bist nun ein Geist.", g_sRedieTag);
                 }
@@ -160,11 +206,11 @@ public Action Command_Reback(int client, int args)
             ChangeClientTeam(client, CS_TEAM_SPECTATOR);
             ChangeClientTeam(client, iTeam);
             
-            LoopValidClients(i)
+            /* LoopValidClients(i)
             {
                 SetListenOverride(client, i, Listen_Default);
                 SetListenOverride(i, client, Listen_Default);
-            }
+            } */
             
             ResetDM(client);
             ResetRedie(client);
@@ -180,7 +226,7 @@ public Action Command_Reback(int client, int args)
 
 void Redie_OnPlayerRunCmd(int client, int &buttons)
 {
-    if(g_bRedie[client])
+    if(g_bRedie[client] && !g_bDM[client])
     {
         // Block +use usage for players in redie
         buttons &= ~IN_USE;
@@ -202,7 +248,13 @@ void Redie_OnPlayerRunCmd(int client, int &buttons)
 
 public Action OnWeaponCanUse(int client, int weapon)
 {
-    if(IsClientValid(client) && g_bRedie[client])
+    if(IsClientValid(client) && g_bDM[client])
+    {
+        SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() - 0.1);
+        SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() - 0.1);
+    }
+
+    if(IsClientValid(client) && (g_bRedie[client] && !g_bDM[client]))
     {
         return Plugin_Handled;
     }
@@ -212,7 +264,27 @@ public Action OnWeaponCanUse(int client, int weapon)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-    if(IsClientValid(victim) && g_bRedie[victim])
+    PrintToChatAll("OnTraceAttack");
+
+    if(IsClientValid(victim) && (g_bRedie[attacker] && !g_bDM[attacker]))
+    {
+        return Plugin_Handled;
+    }
+
+    return Plugin_Continue;
+}
+
+public Action OnTakeDamage(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
+{
+    PrintToChatAll("OnTakeDamage");
+    return Plugin_Continue;
+}
+
+public Action OnTakeDamageAlive(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
+{
+    PrintToChatAll("OnTakeDamageAlive");
+
+    if(IsClientValid(victim) && (g_bRedie[attacker] && !g_bDM[attacker]))
     {
         return Plugin_Handled;
     }
@@ -249,10 +321,6 @@ public Action Timer_FixSolids(Handle timer, int userid)
         SetEntProp(client, Prop_Data, "m_CollisionGroup", 1);
         SetEntProp(client, Prop_Data, "m_nSolidType", 0);
         SetEntProp(client, Prop_Send, "m_usSolidFlags", 4);
-
-        CPrintToChat(client, "m_CollisionGroup: %d", GetEntProp(client, Prop_Data, "m_CollisionGroup"));
-        CPrintToChat(client, "m_nSolidType: %d", GetEntProp(client, Prop_Data, "m_nSolidType"));
-        CPrintToChat(client, "m_usSolidFlags: %d", GetEntProp(client, Prop_Send, "m_usSolidFlags"));
     }
 }
 
@@ -283,15 +351,35 @@ void ResetRedie(int client)
     g_bRedie[client] = false;
     g_bNoclipBlock[client] = false;
     
-    LoopValidClients(i)
+    /* LoopValidClients(i)
     {
         SetListenOverride(client, i, Listen_Default);
         SetListenOverride(i, client, Listen_Default);
-    }
+    } */
 
-    SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-    SDKUnhook(client, SDKHook_TraceAttack, OnTraceAttack);
+    UnhookClient(client);
     
     delete g_hNoclip[client];
     delete g_hNoclipReset[client];
+}
+
+void HookClient(int client)
+{
+    SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
+    SDKHook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
+    SDKHook(client, SDKHook_WeaponSwitch, OnWeaponCanUse);
+    SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
+    SDKHook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+    SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
+}
+
+
+void UnhookClient(int client)
+{
+    SDKUnhook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
+    SDKUnhook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
+    SDKUnhook(client, SDKHook_WeaponSwitch, OnWeaponCanUse);
+    SDKUnhook(client, SDKHook_TraceAttack, OnTraceAttack);
+    SDKUnhook(client, SDKHook_OnTakeDamage, OnTakeDamage);
+    SDKUnhook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 }

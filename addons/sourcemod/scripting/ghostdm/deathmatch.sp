@@ -1,7 +1,7 @@
-GhostDM_OnPluginStart()
+void GhostDM_OnPluginStart()
 {
-    RegConsoleCmd("sm_dm", Command_DM);
-    RegConsoleCmd("sm_stopdm", Command_StopDM);
+    RegConsoleCmd("sm_dm", Command_GhostDM);
+    RegConsoleCmd("sm_stopdm", Command_StopGhostDM);
 }
 
 public Action Command_GhostDM(int client, int args)
@@ -13,23 +13,23 @@ public Action Command_GhostDM(int client, int args)
 
     if (IsPlayerAlive(client))
     {
-        // TODO: Add Message
+        PrintToChat(client, "You must be dead!");
         return Plugin_Handled;
     }
 
     if (!g_bRedie[client])
     {
-        // TODO: Add Message
+        PrintToChat(client, "You must in redie!");
         return Plugin_Handled;
     }
 
     g_bDM[client] = true;
-    // TODO: Add Message (in Deathmatch)
+    PrintToChat(client, "You are now in deathmatch mode!");
 
     return Plugin_Continue;
 }
 
-public Action Command_GhostDM(int client, int args)
+public Action Command_StopGhostDM(int client, int args)
 {
     ResetDM(client);
 }
