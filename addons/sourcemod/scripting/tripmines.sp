@@ -223,7 +223,7 @@ void SetMine(int client)
         SetEntPropEnt(ent, Prop_Data, "m_hLastAttacker", client);
         DispatchKeyValue(ent, "targetname", beammdl);
         DispatchKeyValue(ent, "ExplodeRadius", "256");
-        DispatchKeyValue(ent, "ExplodeDamage", "400");
+        DispatchKeyValue(ent, "ExplodeDamage", "550");
         Format(tmp, sizeof(tmp), "%s,Break,,0,-1", beammdl);
         DispatchKeyValue(ent, "OnHealthChanged", tmp);
         Format(tmp, sizeof(tmp), "%s,Kill,,0,-1", beam);
