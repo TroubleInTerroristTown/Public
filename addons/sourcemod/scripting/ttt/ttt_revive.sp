@@ -474,16 +474,6 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
     }
 }
 
-public Action TTT_OnBodyCheck(int client, int[] ragdoll)
-{
-    if (g_bInUse[client])
-    {
-        return Plugin_Handled;
-    }
-
-    return Plugin_Continue;
-}
-
 public int TTT_OnButtonPress(int client, int button)
 {
     if (g_bHasRevive[client] && g_bInUse[client] && (button &= ~IN_USE))
