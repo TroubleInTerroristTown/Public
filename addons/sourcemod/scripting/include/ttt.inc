@@ -804,7 +804,7 @@ stock bool TTT_IsPrimaryWeapon(int weapon)
             (StrContains(sClass, "sawedoff", false) != -1) || (StrContains(sClass, "mag7", false) != -1) ||
             (StrContains(sClass, "mac10", false) != -1) || (StrContains(sClass, "mp9", false) != -1) ||
             (StrContains(sClass, "mp7", false) != -1) || (StrContains(sClass, "ump45", false) != -1) ||
-            (StrContains(sClass, "bizon", false) != -1))
+            (StrContains(sClass, "bizon", false) != -1) || (StrContains(sClass, "mp5sd", false) != -1))
         {
             return true;
         }
