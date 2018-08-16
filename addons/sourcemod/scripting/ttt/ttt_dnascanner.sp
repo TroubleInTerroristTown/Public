@@ -141,7 +141,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
+public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 {
     if (iRagdollC[Scanned])
     {

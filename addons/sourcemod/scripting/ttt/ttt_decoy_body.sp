@@ -140,7 +140,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public Action TTT_OnBodyChecked(int client, int[] ragdoll)
+public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 {
     bool bReal = false;
     int attacker = -1;

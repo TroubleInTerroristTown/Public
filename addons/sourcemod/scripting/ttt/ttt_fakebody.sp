@@ -184,7 +184,7 @@ stock bool SpawnFakeBody(int client)
     return false;
 }
 
-public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
+public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 {
     if (!TTT_IsClientValid(client))
     {
