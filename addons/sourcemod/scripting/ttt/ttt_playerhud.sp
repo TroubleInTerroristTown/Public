@@ -317,11 +317,6 @@ public bool TRDontHitSelf(int entity, int mask, int data)
     return (entity != data);
 }
 
-/* void LoadConfig()
-{
-    
-} */
-
 void GetTranslationName(const char[] type, int value, char[] translation, int length)
 {
     if (value == -1)
