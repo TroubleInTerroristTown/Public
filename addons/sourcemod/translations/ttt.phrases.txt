@@ -1204,4 +1204,9 @@
 		"en"		"{1} respawned {2}!"
 	}
 
+	"Tasers: Enabled"
+	{
+		"en"		"Tasers loaded and enabled!"
+	}
+
 }

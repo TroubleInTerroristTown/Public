@@ -43,6 +43,7 @@ ConVar g_cTaserCooldown = null;
 ConVar g_cGlowPlayer = null;
 ConVar g_cGlowLength = null;
 ConVar g_cGlowToAll = null;
+ConVar g_cTaserCooldownMessage = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -106,6 +107,7 @@ public void OnPluginStart()
     g_cDiscountI = AutoExecConfig_CreateConVar("ta_discount_innocent", "0", "Should taser discountable for innocents?", _, true, 0.0, true, 1.0);
     g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
     g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
+    g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
     g_cGlowPlayer = AutoExecConfig_CreateConVar("ta_glow_player_after_taser", "1", "Glow player on taser? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
     g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
     g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all (ta_broadcast_taser_result must be 1 for this)? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
@@ -235,6 +237,11 @@ public Action Timer_ActivateTasers(Handle timer)
                 }
             }
         }
+    }
+
+    if (g_cTaserCooldownMessage.BoolValue)
+    {
+        CPrintToChatAll("%s %T", g_sPluginTag, "Tasers: Enabled", LANG_SERVER);
     }
 
     g_hCooldown = null;
