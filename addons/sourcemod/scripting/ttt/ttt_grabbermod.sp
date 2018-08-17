@@ -22,6 +22,7 @@ ConVar g_cLogBlacklist = null;
 ConVar g_cLogBlacklistModels = null;
 ConVar g_cLogWhitelist = null;
 ConVar g_cFlags = null;
+ConVar g_cBlockPush = null;
 
 int g_iSprite = -1;
 
@@ -71,6 +72,7 @@ public void OnPluginStart()
     g_cGrabNonMoveAlive = AutoExecConfig_CreateConVar("gbm_grab_non_move_alive", "0", "Grab living non moveable players?", _, true, 0.0, true, 1.0);
     g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist(models)/whitelist.", _, true, 0.0, true, 1.0);
     g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
+    g_cBlockPush = AutoExecConfig_CreateConVar("gbm_block_push_props", "1", "Block props with the MoveType MOVETYPE_PUSH (no clip to world, push and crush)?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
     
     g_aWhitelist = new ArrayList(32);
@@ -167,6 +169,11 @@ stock void GrabSomething(int client)
         {
             CPrintToChat(client, "Name of Entity: %s", sName);
         }
+    }
+
+    if (g_cBlockPush.BoolValue && GetEntityMoveType(ent) == MOVETYPE_PUSH)
+    {
+        return;
     }
     
     if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
