@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <ttt>
 #include <multicolors>
+#include <emitsoundany>
 
 #undef REQUIRE_PLUGIN
 #include <ttt_knockout>
@@ -13,6 +14,8 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
 #define GRAB_DISTANCE 150.0
 
+#define SOUND_ONGRAB "ui/item_drop.wav"
+#define VOLUME_ONGRAB 0.1
 ConVar g_cColored = null;
 ConVar g_cBlockJump = null;
 ConVar g_cShowNames = null;
@@ -87,6 +90,7 @@ public void OnPluginStart()
 public void OnMapStart()
 {
     g_iSprite = PrecacheModel("materials/sprites/laserbeam.vmt");
+    PrecacheSoundAny(SOUND_ONGRAB, true);
 }
 
 stock void Command_Grab(int client)
@@ -225,6 +229,7 @@ stock void GrabSomething(int client)
     }
 
     g_iObject[client] = EntIndexToEntRef(ent);
+    EmitSoundToClientAny(client, SOUND_ONGRAB, _, _, _, _, VOLUME_ONGRAB);
 
     g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
