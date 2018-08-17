@@ -2160,7 +2160,7 @@ public Action Command_Respawn(int client, int args)
         return Plugin_Handled;
     }
 
-    if (args < 2 || args > 3)
+    if (args != 1)
     {
         ReplyToCommand(client, "[SM] Usage: sm_respawn <#userid|name>");
 
