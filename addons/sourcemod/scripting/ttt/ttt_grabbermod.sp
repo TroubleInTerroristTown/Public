@@ -3,6 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
+#include <sdkhooks>
 #include <ttt>
 #include <multicolors>
 #include <emitsoundany>
@@ -12,10 +13,7 @@
 #define REQUIRE_PLUGIN
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Grabber Mod"
-#define GRAB_DISTANCE 150.0
 
-#define SOUND_ONGRAB "ui/item_drop.wav"
-#define VOLUME_ONGRAB 0.1
 ConVar g_cColored = null;
 ConVar g_cBlockJump = null;
 ConVar g_cShowNames = null;
@@ -26,6 +24,13 @@ ConVar g_cLogBlacklistModels = null;
 ConVar g_cLogWhitelist = null;
 ConVar g_cFlags = null;
 ConVar g_cBlockPush = null;
+ConVar g_cGrabSound = null;
+ConVar g_cGrabSoundVol = null;
+ConVar g_cThrowSound = null;
+ConVar g_cThrowSoundVol = null;
+ConVar g_cGrabDistance = null;
+ConVar g_cAllowThrow = null;
+ConVar g_cThrowForce = null;
 
 int g_iSprite = -1;
 
@@ -76,21 +81,34 @@ public void OnPluginStart()
     g_cShowNames = AutoExecConfig_CreateConVar("gbm_show_name", "0", "Show names of entities? Useful to add this on blacklist(models)/whitelist.", _, true, 0.0, true, 1.0);
     g_cFlags = AutoExecConfig_CreateConVar("gbm_admin_flags", "z", "Admin flags to get access for gbm_show_name");
     g_cBlockPush = AutoExecConfig_CreateConVar("gbm_block_push_props", "1", "Block props with the MoveType MOVETYPE_PUSH (no clip to world, push and crush)?", _, true, 0.0, true, 1.0);
+    g_cGrabSound = AutoExecConfig_CreateConVar("gbm_on_grab_sound", "ui/item_drop.wav", "Sound when player grab something (blank = disabled)");
+    g_cGrabSoundVol = AutoExecConfig_CreateConVar("gbm_on_grab_sound_volume", "0.1", "Volume of the grab sound", _, true, 0.1, true, 1.0);
+    g_cThrowSound = AutoExecConfig_CreateConVar("gbm_on_throw_sound", "weapons/hegrenade/grenade_throw.wav", "Sound when player throw a prop (blank = disabled)");
+    g_cThrowSoundVol = AutoExecConfig_CreateConVar("gbm_on_throw_sound_volume", "1.0", "Volume of the throw sound", _, true, 0.1, true, 1.0);
+    g_cGrabDistance = AutoExecConfig_CreateConVar("gbm_grab_distance", "150.0", "How long should be max the grab distance?");
+    g_cAllowThrow = AutoExecConfig_CreateConVar("gbm_allow_throw", "1", "Allow throwing of props?", _, true, 0.0, true, 1.0);
+    g_cThrowForce = AutoExecConfig_CreateConVar("gbm_throw_force", "1000.0", "How strong should the throw of a prop?");
     TTT_EndConfig();
     
     g_aWhitelist = new ArrayList(32);
     g_aBlacklist = new ArrayList(32);
-    g_aBlacklistModels = new ArrayList(PLATFORM_MAX_PATH+1);
+    g_aBlacklistModels = new ArrayList(PLATFORM_MAX_PATH + 1);
     
     LoadLists();
 
-    CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
+    // CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
 }
 
 public void OnMapStart()
 {
     g_iSprite = PrecacheModel("materials/sprites/laserbeam.vmt");
-    PrecacheSoundAny(SOUND_ONGRAB, true);
+
+    char sBuffer[PLATFORM_MAX_PATH + 1];
+    g_cGrabSound.GetString(sBuffer, sizeof(sBuffer));
+    PrecacheSoundAny(sBuffer, true);
+
+    g_cThrowSound.GetString(sBuffer, sizeof(sBuffer));
+    PrecacheSoundAny(sBuffer, true);
 }
 
 stock void Command_Grab(int client)
@@ -103,15 +121,16 @@ stock void Command_UnGrab(int client)
     if (ValidGrab(client))
     {
         char sName[128];
-        GetEdictClassname(g_iObject[client], sName, 128);
+        GetEdictClassname(EntRefToEntIndex(g_iObject[client]), sName, 128);
 
         if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
         {
-            SetEntPropEnt(g_iObject[client], Prop_Data, "m_hPhysicsAttacker", 0);
+            SetEntPropEnt(EntRefToEntIndex(g_iObject[client]), Prop_Data, "m_hPhysicsAttacker", 0);
         }
     }
 
     g_iObject[client] = -1;
+    SDKUnhook(client, SDKHook_PreThink, OnPreThink);
     g_fTime[client] = 0.0;
 }
 
@@ -136,7 +155,7 @@ stock void GrabSomething(int client)
 
     GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
     GetClientEyePosition(client, VecPos_Client);
-    if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > 150.0)
+    if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > g_cGrabDistance.FloatValue)
     {
         return;
     }
@@ -229,7 +248,15 @@ stock void GrabSomething(int client)
     }
 
     g_iObject[client] = EntIndexToEntRef(ent);
-    EmitSoundToClientAny(client, SOUND_ONGRAB, _, _, _, _, VOLUME_ONGRAB);
+    SDKHook(client, SDKHook_PreThink, OnPreThink);
+
+    char sSound[PLATFORM_MAX_PATH + 1];
+    g_cGrabSound.GetString(sSound, sizeof(sSound));
+
+    if (strlen(sSound) > 0)
+    {
+        EmitSoundToClientAny(client, sSound, _, _, _, _, g_cGrabSoundVol.FloatValue);
+    }
 
     g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
@@ -239,7 +266,7 @@ stock void GrabSomething(int client)
 
 stock bool ValidGrab(int client)
 {
-    int iObject = g_iObject[client];
+    int iObject = EntRefToEntIndex(g_iObject[client]);
     if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
     {
         return true;
@@ -366,6 +393,18 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         {
             Command_Grab(client);
         }
+        else if (IsPlayerAlive(client) && ValidGrab(client) && g_cAllowThrow.BoolValue)
+        {
+            buttons &= ~IN_ATTACK;
+
+            if (buttons & IN_ATTACK2)
+            {
+                buttons &= ~IN_ATTACK2;
+                ThrowObject(client);
+            }
+
+            return Plugin_Changed;
+        }
     }
     else if (ValidGrab(client))
     {
@@ -375,7 +414,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
-public Action Timer_Adjust(Handle timer)
+// public Action Timer_Adjust(Handle timer)
+public void OnPreThink(int i)
 {
     float vecDir[3];
     float vecPos[3];
@@ -383,60 +423,61 @@ public Action Timer_Adjust(Handle timer)
     float vecVel[3];
     float viewang[3];
 
-    LoopValidClients(i)
+    // LoopValidClients(i)
+    // {
+    if (IsPlayerAlive(i))
     {
-        if (IsPlayerAlive(i))
+        if (ValidGrab(i))
         {
-            if (ValidGrab(i))
+            GetClientEyeAngles(i, viewang);
+            GetAngleVectors(viewang, vecDir, NULL_VECTOR, NULL_VECTOR);
+            GetClientEyePosition(i, vecPos);
+
+            int color[4];
+
+            if (g_cColored.BoolValue)
             {
-                GetClientEyeAngles(i, viewang);
-                GetAngleVectors(viewang, vecDir, NULL_VECTOR, NULL_VECTOR);
-                GetClientEyePosition(i, vecPos);
-
-                int color[4];
-
-                if (g_cColored.BoolValue)
+                if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
                 {
-                    if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
-                    {
-                        color[0] = GetRandomInt(0, 255);
-                        color[1] = GetRandomInt(0, 255);
-                        color[2] = GetRandomInt(0, 255);
-                        color[3] = 255;
-                    }
-                }
-                else
-                {
-                    color[0] = 255;
-                    color[1] = 0;
-                    color[2] = 0;
+                    color[0] = GetRandomInt(0, 255);
+                    color[1] = GetRandomInt(0, 255);
+                    color[2] = GetRandomInt(0, 255);
                     color[3] = 255;
                 }
-
-                vecPos2 = vecPos;
-                vecPos[0] += vecDir[0] * g_fDistance[i];
-                vecPos[1] += vecDir[1] * g_fDistance[i];
-                vecPos[2] += vecDir[2] * g_fDistance[i];
-
-                GetEntPropVector(g_iObject[i], Prop_Send, "m_vecOrigin", vecDir);
-
-                TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
-                TE_SendToAll();
-
-                g_fTime[i] = GetGameTime() + 1.0;
-
-                SubtractVectors(vecPos, vecDir, vecVel);
-                ScaleVector(vecVel, 10.0);
-
-                TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
             }
+            else
+            {
+                color[0] = 255;
+                color[1] = 0;
+                color[2] = 0;
+                color[3] = 255;
+            }
+
+            vecPos2 = vecPos;
+            vecPos[0] += vecDir[0] * g_fDistance[i];
+            vecPos[1] += vecDir[1] * g_fDistance[i];
+            vecPos[2] += vecDir[2] * g_fDistance[i];
+
+            GetEntPropVector(g_iObject[i], Prop_Send, "m_vecOrigin", vecDir);
+
+            TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
+            TE_SendToAll();
+
+            g_fTime[i] = GetGameTime() + 1.0;
+
+            SubtractVectors(vecPos, vecDir, vecVel);
+            ScaleVector(vecVel, 10.0);
+
+            TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
         }
     }
+    // }
 }
 
 public void OnClientDisconnect(int client)
 {
     g_iObject[client] = -1;
+    SDKUnhook(client, SDKHook_PreThink, OnPreThink);
     g_fTime[client] = 0.0;
 }
 
@@ -524,7 +565,7 @@ void LoadBlacklistModels()
         return;
     }
     
-    char sBuffer[PLATFORM_MAX_PATH+1];
+    char sBuffer[PLATFORM_MAX_PATH + 1];
     while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
     {
         TrimString(sBuffer);
@@ -569,7 +610,7 @@ bool CheckBlacklist(int client, const char[] name)
 
 bool CheckBlacklistModels(int entity)
 {
-    char sBuffer[PLATFORM_MAX_PATH+1], sModel[PLATFORM_MAX_PATH+1];
+    char sBuffer[PLATFORM_MAX_PATH + 1], sModel[PLATFORM_MAX_PATH + 1];
     GetEntPropString(entity, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
     
     // by returning true we shouldn't break any compatibility with older version
@@ -650,4 +691,39 @@ public int Native_GetGrabEntity(Handle plugin, int numParams)
     }
 
     return -1;
+}
+
+stock void ThrowObject(int client)
+{
+    if (ValidGrab(client) && !TTT_IsClientValid(EntRefToEntIndex(g_iObject[client])))
+    {
+        int iEntity = EntRefToEntIndex(g_iObject[client]);
+
+        float fAngles[3], vecFwd[3], fPosition[3], vecVel[3];
+
+        GetClientEyeAngles(client, fAngles);
+        GetAngleVectors(fAngles, vecFwd, NULL_VECTOR, NULL_VECTOR);
+        GetClientEyePosition(client, fPosition);
+
+        fPosition[0] += vecFwd[0] * g_cThrowForce.FloatValue;
+        fPosition[1] += vecFwd[1] * g_cThrowForce.FloatValue;
+        fPosition[2] += vecFwd[2] * g_cThrowForce.FloatValue;
+
+        GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", vecFwd);
+
+        SubtractVectors(fPosition, vecFwd, vecVel);
+        ScaleVector(vecVel, 10.0);
+
+        TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, vecVel);
+
+        char sSound[PLATFORM_MAX_PATH + 1];
+        g_cThrowSound.GetString(sSound, sizeof(sSound));
+
+        if (strlen(sSound) > 0)
+        {
+            EmitSoundToClientAny(client, sSound, _, _, _, _, g_cThrowSoundVol.FloatValue);
+        }
+
+        Command_UnGrab(client);
+    }
 }
