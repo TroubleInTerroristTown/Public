@@ -1,0 +1,21 @@
+"UnlitGeneric"//"VertexLitGeneric"
+{
+	"$baseTexture" "models\weapons\eminem\ice_cube/ice_cube"
+	"$bumpMap" "models\weapons\eminem\ice_cube/ice_cube_normal"
+
+	"$phong"                   "1"
+	"$phongboost"              "1"
+	"$phongexponent"           "50"
+	"$phongtint"               "[1 1 1]"
+	"$phongfresnelranges"      "[.2 .2 1]"
+	"$phongdisablehalflambert" "1"
+	"$rimlight"                "1"
+	"$rimlightexponent"        "15"
+	"$rimlightboost"           ".2"
+	"$additive" "1" 
+	
+	"$selfillum" 				"1"
+	"$surfaceprop" 				"glass"
+	"$reflectivity" 			"[0 0 0]"
+	"$model" 					"1"
+}
