@@ -25,6 +25,18 @@
 		"en"		"MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
 	}
 
+	"WE ARE"
+	{
+		"#format"	"{1:d}"
+		"en"		"We are {1} player(s)!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"#format"	"{1:d}"
+		"en"		"Remaining player(s) to start a round: {1}"
+	}
+
 	"Your Team is DETECTIVES"
 	{
 		"en"		"You are a {darkblue}DETECTIVE"

@@ -33,25 +33,29 @@ public Action Command_Reloadmap(int client, int args)
 
 public Action Command_HUD(int client, int args)
 {
-    if (args < 5)
+    if (args < 8)
     {
-        ReplyToCommand(client, "sm_hud <Red> <Green> <Blue> <Alpha> <#UserID|Name> <message>");
+        ReplyToCommand(client, "sm_hud <X> <Y> <Red> <Green> <Blue> <Alpha> <#UserID|Name> <message>");
         return Plugin_Handled;
     }
     
     int targets[129];
     bool ml = false;
+    char sY[12];
+    char sX[12];
     char sRed[6];
     char sGreen[6];
     char sBlue[6];
     char sAlpha[6];
     char buffer[MAX_NAME_LENGTH], sTarget[MAX_NAME_LENGTH];
-    
-    GetCmdArg(1, sRed, sizeof(sRed));
-    GetCmdArg(2, sGreen, sizeof(sGreen));
-    GetCmdArg(3, sBlue, sizeof(sBlue));
-    GetCmdArg(4, sAlpha, sizeof(sAlpha));
-    GetCmdArg(5, sTarget, sizeof(sTarget));
+
+    GetCmdArg(1, sX, sizeof(sX));
+    GetCmdArg(2, sY, sizeof(sY));
+    GetCmdArg(3, sRed, sizeof(sRed));
+    GetCmdArg(4, sGreen, sizeof(sGreen));
+    GetCmdArg(5, sBlue, sizeof(sBlue));
+    GetCmdArg(6, sAlpha, sizeof(sAlpha));
+    GetCmdArg(7, sTarget, sizeof(sTarget));
 
     int iRed = StringToInt(sRed);
     int iGreen = StringToInt(sGreen);
@@ -72,9 +76,9 @@ public Action Command_HUD(int client, int args)
 
         char sText[256];
 
-        if (args >= 6)
+        if (args >= 8)
         {
-            for (int j = 6; j <= args; j++)
+            for (int j = 8; j <= args; j++)
             {
                 char sBuffer[64];
                 GetCmdArg(j, sBuffer, sizeof(sBuffer));
@@ -82,7 +86,7 @@ public Action Command_HUD(int client, int args)
             }
         }
 
-        SetHudTextParams(0.34, -0.57, 7.0, iRed, iGreen, iBlue, iAlpha, 1, 2.0, 1.0, 1.0);
+        SetHudTextParams(StringToFloat(sX), StringToFloat(sY), 7.0, iRed, iGreen, iBlue, iAlpha, 1, 2.0, 1.0, 1.0);
         ShowHudText(target, -1, sText);
     }
     

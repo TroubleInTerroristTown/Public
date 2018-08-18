@@ -117,6 +117,9 @@ public void OnPluginStart()
     g_hDRules = RegClientCookie("ttt2_detective_menu", "Show detectives menu", CookieAccess_Private);
 
     SetRandomSeed(GetTime());
+
+    g_hWeAreSync = CreateHudSynchronizer();
+    g_hRemainingSync = CreateHudSynchronizer();
     
     TTT_StartConfig("ttt");
     SetupConfig();
@@ -853,9 +856,18 @@ public Action Timer_Selection(Handle hTimer)
     if (aPlayers.Length < g_crequiredPlayers.IntValue)
     {
         g_bInactive = true;
+
         LoopValidClients(i)
         {
             CPrintToChat(i, "%s %T", g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_crequiredPlayers.IntValue);
+            
+            if (g_cPlayerHUDMessage.BoolValue)
+            {
+                SetHudTextParams(0.4, 0.53, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
+                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, aPlayers.Length);
+                SetHudTextParams(0.33, 0.565, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
+                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - aPlayers.Length));
+            }
         }
 
         g_bCheckPlayers = true;
@@ -4091,6 +4103,30 @@ void CheckPlayers()
         }
 
         CS_TerminateRound(3.0, CSRoundEnd_Draw);
+    }
+    else
+    {
+        int iPlayers = 0;
+        LoopValidClients(i)
+        {
+            if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T  || (!g_cDebug.BoolValue && IsFakeClient(i)))
+            {
+                continue;
+            }
+
+            iPlayers++;
+        }
+
+        LoopValidClients(i)
+        {
+            if (g_cPlayerHUDMessage.BoolValue)
+            {
+                SetHudTextParams(0.42, 0.53, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
+                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, iPlayers);
+                SetHudTextParams(0.35, 0.565, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
+                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - iPlayers));
+            }
+        }
     }
 }
 
