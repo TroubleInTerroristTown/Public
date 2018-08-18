@@ -114,6 +114,8 @@ public void OnPluginStart()
     g_hSyncI = CreateHudSynchronizer();
     g_hSyncT = CreateHudSynchronizer();
 
+    HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
+
     CreateTimer(1.0, Timer_HUD, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
@@ -247,6 +249,11 @@ void PrecacheTimeOverlays()
 public void OnAllPluginsLoaded()
 {
     g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_roles");
+}
+
+public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
+{
+    ResetStuff();
 }
 
 public Action TTT_OnRoundStart_Pre()
