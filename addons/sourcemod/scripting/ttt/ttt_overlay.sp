@@ -114,8 +114,6 @@ public void OnPluginStart()
     g_hSyncI = CreateHudSynchronizer();
     g_hSyncT = CreateHudSynchronizer();
 
-    HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
-
     CreateTimer(1.0, Timer_HUD, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 }
 
@@ -251,11 +249,14 @@ public void OnAllPluginsLoaded()
     g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_roles");
 }
 
-public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
+public Action TTT_OnRoundStart_Pre()
 {
-    g_bTimeOverlay = false;
-    g_bDisableRoleOverlays = false;
-    TTT_ShowOverlayToAll(" ");
+    ResetStuff();
+}
+
+public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+{
+    ResetStuff();
 }
 
 public void TTT_OnRoundEnd(int winner)
@@ -476,4 +477,11 @@ void showHudToAll(char[] message, Handle sync, float x, float y, const char[] re
         SetHudTextParams(x, y, 2.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
         ShowSyncHudText(client, sync, message);
     }
+}
+
+void ResetStuff()
+{
+    g_bTimeOverlay = false;
+    g_bDisableRoleOverlays = false;
+    TTT_ShowOverlayToAll(" ");
 }
