@@ -208,7 +208,6 @@ public Action TTT_OnGrabbing(int client, int entity)
         {
             g_bInUse[client] = true;
             g_iRagdoll[client] = entity;
-            PrintToConsole(client, "(TTT_OnGrabbing) - Client: %d, Name: %N, Entity: %d, Class: %s, g_bInUse %d", client, client, entity, sClass, g_bInUse[client]);
 
             DataPack pack = new DataPack();
             g_hTimer[client] = CreateTimer(1.0, Timer_Revive, pack, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
@@ -275,7 +274,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
 
     if (!TTT_IsClientValid(client) || !g_bHasRevive[client])
     {
-        PrintToChatAll("ERROR 1!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -283,7 +281,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     
     if (g_hTimer[client] == null)
     {
-        PrintToChatAll("ERROR 2!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -291,7 +288,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
 
     if (g_iEndTime[client] == -1 || g_iStartTime[client] == -1 || g_iCountdown[client] == -1)
     {
-        PrintToChatAll("ERROR 3!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -299,7 +295,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     
     if (!IsValidEntity(entity))
     {
-        PrintToChatAll("ERROR 4!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -307,7 +302,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     
     if (!g_bInUse[client])
     {
-        PrintToChatAll("ERROR 5!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -315,7 +309,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     
     if (g_iRagdoll[client] == TTT_GetGrabEntity(client))
     {
-        PrintToChatAll("ERROR 6!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
@@ -325,13 +318,10 @@ public Action Timer_Revive(Handle timer, DataPack pack)
 
     if (!TTT_IsClientValid(target))
     {
-        PrintToChatAll("ERROR 7!");
         g_hTimer[client] = null;
         delete pack;
         return Plugin_Stop;
     }
-
-    PrintToConsole(client, "(Timer_Revive) - Client: %d, Name: %N, Entity: %d, g_bInUse %d, Target: %N (%d)", client, client, g_iRagdoll[client], g_bInUse[client], target, target);
 
     char sMessage[MAX_NAME_LENGTH + 32];
     Format(sMessage, sizeof(sMessage), "Reviving %N...", target);
@@ -378,22 +368,17 @@ void ShowReviveMenu(int client, int target)
     menu.ExitBackButton = false;
     menu.ExitButton = false;
 
-    CPrintToChatAll("(ShowReviveMenu) 1 (Time: %d)", g_cTimeToAccept.IntValue);
-
     menu.Display(target, g_cTimeToAccept.IntValue);
 }
 
 public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int param)
 {
-    CPrintToChatAll("(Menu_ReviveRequest) 1");
     if (action == MenuAction_Select)
     {
-        CPrintToChatAll("(Menu_ReviveRequest) 1.1");
         if (!TTT_IsRoundActive() || TTT_IsPlayerAlive(target))
         {
             return;
         }
-        CPrintToChatAll("(Menu_ReviveRequest) 1.2");
 
         char sParam[32];
         menu.GetItem(param, sParam, sizeof(sParam));
@@ -401,7 +386,7 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
         int client = -1;
         int iCount = menu.ItemCount;
         char sInfo[32], sBuffer[32];
-        CPrintToChatAll("(Menu_ReviveRequest) 1.3");
+
         for (int i = 0; i < iCount; i++)
         {
             menu.GetItem(i, sInfo, sizeof(sInfo), _, sBuffer, sizeof(sBuffer));
@@ -409,38 +394,30 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
             if (StrEqual(sInfo, "client"))
             {
                 client = GetClientOfUserId(StringToInt(sBuffer));
-                CPrintToChatAll("(Menu_ReviveRequest) 1.4 (%d/%s)", client, sBuffer);
             }
         }
-        CPrintToChatAll("(Menu_ReviveRequest) 1.4 (%N)", client);
 
         if (!TTT_IsPlayerAlive(client) || !g_bHasRevive[client])
         {
             return;
         }
-        CPrintToChatAll("(Menu_ReviveRequest) 1.5");
 
         if (StrEqual(sParam, "yes", false))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Accepted", client, target);
             TTT_RespawnPlayer(target);
             g_bHasRevive[client] = false;
-            CPrintToChatAll("(Menu_ReviveRequest) 1.5.1");
         }
         else if (StrEqual(sParam, "no", false))
         {
-            CPrintToChatAll("(Menu_ReviveRequest) 1.5.2");
             CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Declined", client, target);
         }
-
-        CPrintToChatAll("(Menu_ReviveRequest) 1.6");
 
         g_bWait[client] = false;
         g_bMenu[target] = false;
     }
     else if (action == MenuAction_Cancel && (param == MenuCancel_Timeout || param == MenuCancel_NoDisplay))
     {
-        CPrintToChatAll("(Menu_ReviveRequest) 2.1");
         int client = -1;
         int iCount = menu.ItemCount;
         char sInfo[32], sBuffer[32];
@@ -452,24 +429,19 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
             if (StrEqual(sInfo, "client"))
             {
                 client = GetClientOfUserId(StringToInt(sBuffer));
-                CPrintToChatAll("(Menu_ReviveRequest) 2.1.1 (%d/%s(%d))", client, sBuffer, StringToInt(sBuffer));
             }
         }
-        CPrintToChatAll("(Menu_ReviveRequest) 2.2 (%N)", client);
 
         if (TTT_IsClientValid(client))
         {
             g_bWait[client] = false;
             CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - No response", client, target);
         }
-
-        CPrintToChatAll("(Menu_ReviveRequest) 2.3");
         
         g_bMenu[target] = false;
     }
     else if (action == MenuAction_End)
     {
-        CPrintToChatAll("(Menu_ReviveRequest) 3");
         delete menu;
     }
 }
@@ -485,8 +457,6 @@ public int TTT_OnButtonPress(int client, int button)
             KillTimer(g_hTimer[client]);
             g_hTimer[client] = null;
         }
-        
-        PrintToConsole(client, "(TTT_OnButtonPress) - Client: %d, Name: %N, g_bInUse %d", client, client, g_bInUse[client]);
     }
 }
 
@@ -495,15 +465,12 @@ public int TTT_OnButtonRelease(int client, int button)
     if (button & IN_USE)
     {
         g_bInUse[client] = false;
-        PrintToConsole(client, "(TTT_OnButtonRelease) - Handle: %d", g_hTimer[client]);
 
         if (g_hTimer[client] != null)
         {
             KillTimer(g_hTimer[client]);
             g_hTimer[client] = null;
         }
-
-        PrintToConsole(client, "(TTT_OnButtonRelease) - Client: %d, Name: %N, g_bInUse %d", client, client, g_bInUse[client]);
     }
 }
 
