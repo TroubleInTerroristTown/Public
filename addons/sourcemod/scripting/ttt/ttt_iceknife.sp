@@ -34,6 +34,7 @@ ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 ConVar g_cMute = null;
 ConVar g_cGag = null;
+ConVar g_cIceCube = null;
 ConVar g_cFreezeVolume = null;
 ConVar g_cUnfreezeVolume = null;
 ConVar g_cHidePlayerHUD = null;
@@ -75,6 +76,7 @@ public void OnPluginStart()
     g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
     g_cGag = AutoExecConfig_CreateConVar("iceknife_gag", "1", "Gag client during freeze time?", _, true, 0.0, true, 1.0);
+    g_cIceCube = AutoExecConfig_CreateConVar("iceknife_ice_cube", "1", "Set player into a ice cube during freeze?", _, true, 0.0, true, 1.0);
     g_cFreezeVolume = AutoExecConfig_CreateConVar("iceknife_freeze_volume", "0.7", "Volume of freeze sound", _, true, 0.1, true, 1.0);
     g_cUnfreezeVolume = AutoExecConfig_CreateConVar("iceknife_unfreeze_volume", "0.7", "Volume of unfreeze sound", _, true, 0.1, true, 1.0);
     g_cHidePlayerHUD = AutoExecConfig_CreateConVar("iceknife_hide_playerhud", "1", "Hide PlayerHUD during freeze", _, true, 0.0, true, 1.0);
@@ -269,8 +271,11 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
         SetEntityRenderColor(iVictim, 0, 128, 255, 135);
 
-        PlaySound(iVictim, true);
-        FreezeModel(iVictim, true);
+        if (g_cIceCube.BoolValue)
+        {
+            PlaySound(iVictim, true);
+            FreezeModel(iVictim, true);
+        }
 
         if (g_cFreezeTime.FloatValue > 0.0)
         {
@@ -338,9 +343,12 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        PlaySound(client, false);
-        FreezeModel(client, false);
-
+        if (g_cIceCube.BoolValue)
+        {
+            PlaySound(client, false);
+            FreezeModel(client, false);
+        }
+        
         if (g_cMute.BoolValue)
         {
             if (g_bSourceC)
