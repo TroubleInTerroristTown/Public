@@ -68,19 +68,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     return APLRes_Success;
 }
 
-public int Native_DisableRoleOverlays(Handle plugin, int numParams)
-{
-    float fTime = view_as<float>(GetNativeCell(1));
-    g_bDisableRoleOverlays = true;
-    CreateTimer(fTime, Timer_EnableRoleOverlays);
-}
-
-public Action Timer_EnableRoleOverlays(Handle timer)
-{
-    g_bDisableRoleOverlays = false;
-    return Plugin_Stop;
-}
-
 public void OnPluginStart()
 {
     TTT_StartConfig("overlay");
@@ -114,9 +101,9 @@ public void OnPluginStart()
     g_hSyncI = CreateHudSynchronizer();
     g_hSyncT = CreateHudSynchronizer();
 
-    HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
+    CreateTimer(1.0, Timer_HUD, _, TIMER_REPEAT);
 
-    CreateTimer(1.0, Timer_HUD, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+    HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 }
 
 public void OnMapStart()
@@ -261,11 +248,6 @@ public Action TTT_OnRoundStart_Pre()
     ResetStuff();
 }
 
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
-{
-    ResetStuff();
-}
-
 public void TTT_OnRoundEnd(int winner)
 {
     g_bTimeOverlay = false;
@@ -275,7 +257,7 @@ public void TTT_OnRoundEnd(int winner)
     if (cCvar.FloatValue > 0.0)
     {
         g_bEndOverlay = true;
-        CreateTimer(cCvar.FloatValue, Delay_Timer);
+        CreateTimer(cCvar.FloatValue, Timer_Delay);
     }
     
     char sBuffer[PLATFORM_MAX_PATH];
@@ -308,14 +290,14 @@ public void TTT_OnRoundEnd(int winner)
     }
 }
 
-public Action Delay_Timer(Handle timer, any data)
+public Action Timer_Delay(Handle timer, any data)
 {
     g_bEndOverlay = false;
 }
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-    AssignOverlay(client, role);
+    SetOverlay(client, role);
 }
 
 public Action Timer_HUD(Handle timer)
@@ -333,7 +315,7 @@ public Action Timer_HUD(Handle timer)
     {
         if (!g_bEndOverlay)
         {
-            AssignOverlay(i, TTT_GetClientRole(i));
+            SetOverlay(i, TTT_GetClientRole(i));
         }
         
         if (!TTT_WasBodyFound(i))
@@ -424,7 +406,7 @@ public Action Timer_DisableTimeOverlays(Handle timer)
     return Plugin_Stop;
 }
 
-public void AssignOverlay(int client, int role)
+public void SetOverlay(int client, int role)
 {
     if (g_bTimeOverlay || g_bDisableRoleOverlays)
     {
@@ -490,5 +472,19 @@ void ResetStuff()
 {
     g_bTimeOverlay = false;
     g_bDisableRoleOverlays = false;
+    g_bEndOverlay = false;
     TTT_ShowOverlayToAll(" ");
+}
+
+public int Native_DisableRoleOverlays(Handle plugin, int numParams)
+{
+    float fTime = view_as<float>(GetNativeCell(1));
+    g_bDisableRoleOverlays = true;
+    CreateTimer(fTime, Timer_EnableRoleOverlays);
+}
+
+public Action Timer_EnableRoleOverlays(Handle timer)
+{
+    g_bDisableRoleOverlays = false;
+    return Plugin_Stop;
 }
