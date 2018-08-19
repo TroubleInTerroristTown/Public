@@ -7,6 +7,7 @@
 #include <cstrike>
 #include <ttt_shop>
 #include <ttt>
+#include <ttt_playerhud>
 #include <multicolors>
 
 #undef REQUIRE_PLUGIN
@@ -32,8 +33,10 @@ ConVar g_cFreezeTraitors = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 ConVar g_cMute = null;
+ConVar g_cGag = null;
 ConVar g_cFreezeVolume = null;
 ConVar g_cUnfreezeVolume = null;
+ConVar g_cHidePlayerHUD = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iOldColors[MAXPLAYERS + 1][4];
@@ -71,8 +74,10 @@ public void OnPluginStart()
     g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
     g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
+    g_cGag = AutoExecConfig_CreateConVar("iceknife_gag", "1", "Gag client during freeze time?", _, true, 0.0, true, 1.0);
     g_cFreezeVolume = AutoExecConfig_CreateConVar("iceknife_freeze_volume", "0.7", "Volume of freeze sound", _, true, 0.1, true, 1.0);
     g_cUnfreezeVolume = AutoExecConfig_CreateConVar("iceknife_unfreeze_volume", "0.7", "Volume of unfreeze sound", _, true, 0.1, true, 1.0);
+    g_cHidePlayerHUD = AutoExecConfig_CreateConVar("iceknife_hide_playerhud", "1", "Hide PlayerHUD during freeze", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -285,6 +290,22 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
                 }
             }
 
+            if (g_cGag.BoolValue)
+            {
+                if (g_bSourceC)
+                {
+                    SourceComms_SetClientGag(iVictim, true, 1, false, "Ice Knife");
+                }
+                else if (g_bBaseC)
+                {
+                    BaseComm_SetClientGag(iVictim, true);
+                }
+                else
+                {
+                    LogError("[%s] (OnTraceAttack) Can't gag \"%L\".", PLUGIN_NAME, iVictim);
+                }
+            }
+
             CreateTimer(g_cFreezeTime.FloatValue, Timer_FreezeEnd, GetClientUserId(iVictim));
         }
 
@@ -298,6 +319,16 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
             return Plugin_Changed;
         }
     }
+    return Plugin_Continue;
+}
+
+public Action TTT_OnHudSend_Pre(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength)
+{
+    if (g_cHidePlayerHUD.BoolValue && g_bFreezed[client])
+    {
+        return Plugin_Handled;
+    }
+
     return Plugin_Continue;
 }
 
@@ -323,6 +354,22 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
             else
             {
                 LogError("[%s] (Timer_FreezeEnd) Can't unmute \"%L\".", PLUGIN_NAME, client);
+            }
+        }
+
+        if (g_cGag.BoolValue)
+        {
+            if (g_bSourceC)
+            {
+                SourceComms_SetClientGag(client, false);
+            }
+            else if (g_bBaseC)
+            {
+                BaseComm_SetClientGag(client, false);
+            }
+            else
+            {
+                LogError("[%s] (Timer_FreezeEnd) Can't ungag \"%L\".", PLUGIN_NAME, client);
             }
         }
 
