@@ -17,8 +17,11 @@
 #define REQUIRE_PLUGIN
 
 #define SHORT_NAME "iceknife"
-
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
+
+#define ICE_MODEL "models/weapons/eminem/ice_cube/ice_cube.mdl"
+#define FREEZE_SOUND "weapons/eminem/ice_cube/explode.wav"
+#define UNFREEZE_SOUND "weapons/eminem/ice_cube/freeze_hit.wav"
 
 ConVar g_cPrice = null;
 ConVar g_cDamage = null;
@@ -29,14 +32,15 @@ ConVar g_cFreezeTraitors = null;
 ConVar g_cLongName = null;
 ConVar g_cDiscount = null;
 ConVar g_cMute = null;
+ConVar g_cFreezeVolume = null;
+ConVar g_cUnfreezeVolume = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iOldColors[MAXPLAYERS + 1][4];
+int g_iIce[MAXPLAYERS + 1] = { -1, ... };
 
 bool g_bFreezed[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIceKnife[MAXPLAYERS + 1] = { false, ... };
-
-char g_sFreezeSound[PLATFORM_MAX_PATH] = "";
 
 bool g_bSourceC = false;
 bool g_bBaseC = false;
@@ -67,6 +71,8 @@ public void OnPluginStart()
     g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
     g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
+    g_cFreezeVolume = AutoExecConfig_CreateConVar("iceknife_freeze_volume", "0.7", "Volume of freeze sound", _, true, 0.1, true, 1.0);
+    g_cUnfreezeVolume = AutoExecConfig_CreateConVar("iceknife_unfreeze_volume", "0.7", "Volume of unfreeze sound", _, true, 0.1, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -104,19 +110,21 @@ public void OnLibraryRemoved(const char[] name)
 
 public void OnMapStart()
 {
-    Handle hConfig = LoadGameConfigFile("funcommands.games");
-    if (hConfig == null)
-    {
-        SetFailState("Unable to load game config funcommands.games");
-        return;
-    }
+    AddFileToDownloadsTable("materials/models/weapons/eminem/ice_cube/ice_cube.vtf");
+    AddFileToDownloadsTable("materials/models/weapons/eminem/ice_cube/ice_cube_normal.vtf");
+    AddFileToDownloadsTable("materials/models/weapons/eminem/ice_cube/ice_cube.vmt");
+    AddFileToDownloadsTable("models/weapons/eminem/ice_cube/ice_cube.phy");
+    AddFileToDownloadsTable("models/weapons/eminem/ice_cube/ice_cube.vvd");
+    AddFileToDownloadsTable("models/weapons/eminem/ice_cube/ice_cube.dx90.vtx");
 
-    if (GameConfGetKeyValue(hConfig, "SoundFreeze", g_sFreezeSound, sizeof(g_sFreezeSound)) && g_sFreezeSound[0])
-    {
-        PrecacheSound(g_sFreezeSound, true);
-    }
+    AddFileToDownloadsTable(ICE_MODEL);
+    PrecacheModel(ICE_MODEL, true);
 
-    delete hConfig;
+    PrecacheSound(FREEZE_SOUND);
+    AddFileToDownloadsTable("sound/" ... FREEZE_SOUND);
+
+    PrecacheSound(UNFREEZE_SOUND);
+    AddFileToDownloadsTable("sound/" ... UNFREEZE_SOUND);
 }
 
 public void OnClientPutInServer(int client)
@@ -141,12 +149,11 @@ public void HookClient(int client)
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
-
 public void OnClientDisconnect(int client)
 {
     if (TTT_IsClientValid(client))
     {
-        ResetIceK(client);
+        ResetIceKnife(client);
     }
 }
 
@@ -157,7 +164,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client))
     {
         GetEntityRenderColor(client, g_iOldColors[client][0], g_iOldColors[client][1], g_iOldColors[client][2], g_iOldColors[client][3]);
-        ResetIceK(client);
+        ResetIceKnife(client);
     }
 }
 
@@ -203,11 +210,13 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-void ResetIceK(int client)
+void ResetIceKnife(int client)
 {
     g_iPCount[client] = 0;
     g_bFreezed[client] = false;
     g_bIceKnife[client] = false;
+
+    RemoveIce(client);
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
@@ -255,7 +264,8 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
         SetEntityRenderColor(iVictim, 0, 128, 255, 135);
 
-        PlayFreezeSound(iVictim);
+        PlaySound(iVictim, true);
+        FreezeModel(iVictim, true);
 
         if (g_cFreezeTime.FloatValue > 0.0)
         {
@@ -297,7 +307,8 @@ public Action Timer_FreezeEnd(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        PlayFreezeSound(client);
+        PlaySound(client, false);
+        FreezeModel(client, false);
 
         if (g_cMute.BoolValue)
         {
@@ -337,15 +348,70 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
-void PlayFreezeSound(int client)
+void PlaySound(int client, bool freeze)
 {
-    if (g_sFreezeSound[0])
+    if (freeze)
     {
         float vec[3];
         GetClientAbsOrigin(client, vec);
         vec[2] += 10;
 
         GetClientEyePosition(client, vec);
-        EmitAmbientSound(g_sFreezeSound, vec, client, SNDLEVEL_RAIDSIREN);
+        EmitAmbientSound(FREEZE_SOUND, vec, client, SNDLEVEL_RAIDSIREN, _, g_cFreezeVolume.FloatValue);
     }
+    else
+    {
+        float vec[3];
+        GetClientAbsOrigin(client, vec);
+        vec[2] += 10;
+
+        GetClientEyePosition(client, vec);
+        EmitAmbientSound(UNFREEZE_SOUND, vec, client, SNDLEVEL_RAIDSIREN, _, g_cUnfreezeVolume.FloatValue);
+    }
+}
+
+
+void FreezeModel(int client, bool freeze)
+{
+    if (freeze)
+    {
+        SpawnIce(client);
+    }
+    else
+    {
+        RemoveIce(client);
+    }
+}
+
+void SpawnIce(int client)
+{
+    float fPos[3];
+    GetClientAbsOrigin(client, fPos);
+
+    int iEntity = CreateEntityByName("prop_dynamic_override");
+    DispatchKeyValue(iEntity, "model", ICE_MODEL);
+    DispatchKeyValue(iEntity, "solid", "0");
+    DispatchKeyValue(iEntity, "spawnflags", "256");
+
+    SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
+
+    if (DispatchSpawn(iEntity))
+    {
+        TeleportEntity(iEntity, fPos, NULL_VECTOR, NULL_VECTOR);
+        AcceptEntityInput(iEntity, "TurnOn", iEntity, iEntity);
+        SetVariantString("!activator");
+        AcceptEntityInput(iEntity, "SetParent", client, iEntity);
+
+        g_iIce[client] = EntIndexToEntRef(iEntity);
+    }
+}
+
+void RemoveIce(int client)
+{
+    if (IsValidEntity(EntRefToEntIndex(g_iIce[client])))
+    {
+        AcceptEntityInput(EntRefToEntIndex(g_iIce[client]), "Kill");
+    }
+
+    g_iIce[client] = -1;
 }
