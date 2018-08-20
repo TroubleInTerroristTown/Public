@@ -33,6 +33,8 @@ ConVar g_cHelm_Long = null;
 ConVar g_cHelm_Discount = null;
 ConVar g_cUSP_Long = null;
 ConVar g_cUSP_Discount = null;
+ConVar g_cMP5SD_Long = null;
+ConVar g_cMP5SD_Discount = null;
 ConVar g_cM4_Long = null;
 ConVar g_cM4_Discount = null;
 ConVar g_cAWP_Long = null;
@@ -56,6 +58,7 @@ ConVar g_cHelm_Price = null;
 ConVar g_cKevHelm_Type = null;
 ConVar g_cKevHelm_Price = null;
 ConVar g_cUSP_Price = null;
+ConVar g_cMP5SD_Price = null;
 ConVar g_cM4_Price = null;
 ConVar g_cAWP_Price = null;
 ConVar g_cAWP_Min_Shots = null;
@@ -72,6 +75,7 @@ ConVar g_cHelm_Prio = null;
 ConVar g_cKnife_Max = null;
 ConVar g_cKnife_Prio = null;
 ConVar g_cUSP_Prio = null;
+ConVar g_cMP5SD_Prio = null;
 ConVar g_cM4_Prio = null;
 ConVar g_cAWP_Prio = null;
 ConVar g_cAK_Prio = null;
@@ -122,6 +126,8 @@ public void OnPluginStart()
     g_cKevHelm_Prio = AutoExecConfig_CreateConVar("kevhelm_sort_prio", "0", "The sorting priority of the kevlar+helm in the shop menu.");
     g_cUSP_Price = AutoExecConfig_CreateConVar("usp_price", "3000", "The amount of credits the USP-S costs. 0 to disable.");
     g_cUSP_Prio = AutoExecConfig_CreateConVar("usp_sort_prio", "0", "The sorting priority of the USP-S in the shop menu.");
+    g_cMP5SD_Price = AutoExecConfig_CreateConVar("mp5sd_price", "3000", "The amount of credits the MP5-SD costs. 0 to disable.");
+    g_cMP5SD_Prio = AutoExecConfig_CreateConVar("mp5sd_sort_prio", "0", "The sorting priority of the MP5-SD in the shop menu.");
     g_cAK_Price = AutoExecConfig_CreateConVar("ak47_price", "3000", "The amount of credits the AK47 costs. 0 to disable.");
     g_cAK_Prio = AutoExecConfig_CreateConVar("ak47_sort_prio", "0", "The sorting priority of the AK47 in the shop menu.");
     g_cDeagle_Price = AutoExecConfig_CreateConVar("deagle_price", "3000", "The amount of credits the Deagle costs. 0 to disable.");
@@ -144,6 +150,7 @@ public void OnPluginStart()
     g_cHelm_Long = AutoExecConfig_CreateConVar("helm_name", "Helm", "The name of the helm in the shop menu.");
     g_cKevHelm_Long = AutoExecConfig_CreateConVar("kevhelm_name", "Kevlar+Helm", "The name of the kevlar+helm in the shop menu.");
     g_cUSP_Long = AutoExecConfig_CreateConVar("usp_name", "USP-S", "The name of the USP-S in the shop menu.");
+    g_cMP5SD_Long = AutoExecConfig_CreateConVar("mp5sd_name", "MP5-SD", "The name of the MP5-SD in the shop menu.");
     g_cAK_Long = AutoExecConfig_CreateConVar("ak47_name", "AK47", "The name of the AK47 in the shop menu.");
     g_cDeagle_Long = AutoExecConfig_CreateConVar("deagle_name", "Deagle", "The name of the Deagle in the shop menu.");
     g_cRevolver_Long = AutoExecConfig_CreateConVar("revolver_name", "Revolver", "The name of the Revolver in the shop menu.");
@@ -156,6 +163,7 @@ public void OnPluginStart()
     g_cHelm_Discount = AutoExecConfig_CreateConVar("helm_discount", "0", "Should helm discountable?", _, true, 0.0, true, 1.0);
     g_cKevHelm_Discount = AutoExecConfig_CreateConVar("kevhelm_discount", "0", "Should kevlar+helm discountable?", _, true, 0.0, true, 1.0);
     g_cUSP_Discount = AutoExecConfig_CreateConVar("usp_discount", "0", "Should USP-S discountable?", _, true, 0.0, true, 1.0);
+    g_cMP5SD_Discount = AutoExecConfig_CreateConVar("mp5sd_discount", "0", "Should MP5-SD discountable?", _, true, 0.0, true, 1.0);
     g_cAK_Discount = AutoExecConfig_CreateConVar("ak47_discount", "0", "Should AK47 discountable?", _, true, 0.0, true, 1.0);
     g_cDeagle_Discount = AutoExecConfig_CreateConVar("deagle_discount", "0", "Should Deagle discountable?", _, true, 0.0, true, 1.0);
     g_cRevolver_Discount = AutoExecConfig_CreateConVar("revolver_discount", "0", "Should Revolver discountable?", _, true, 0.0, true, 1.0);
@@ -260,6 +268,9 @@ void RegisterItem()
     g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue, g_cUSP_Discount.BoolValue);
 
+    g_cMP5SD_Long.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(MP5SD_ITEM_SHORT, sBuffer, g_cMP5SD_Price.IntValue, TTT_TEAM_TRAITOR, g_cMP5SD_Prio.IntValue, g_cMP5SD_Discount.BoolValue);
+
     g_cAK_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(AK_ITEM_SHORT, sBuffer, g_cAK_Price.IntValue, TTT_TEAM_TRAITOR, g_cAK_Prio.IntValue, g_cAK_Discount.BoolValue);
 
@@ -317,6 +328,20 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             }
 
             GivePlayerItem(client, "weapon_usp_silencer");
+        }
+        else if(strcmp(itemshort, MP5SD_ITEM_SHORT, false) == 0)
+        {
+            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
+
+            if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+            {
+                SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+            }
+
+            GivePlayerItem(client, "weapon_mp5sd");
         }
         else if(strcmp(itemshort, AK_ITEM_SHORT, false) == 0)
         {

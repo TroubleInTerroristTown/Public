@@ -21,6 +21,7 @@
 
 // Weapons
 #define USP_ITEM_SHORT "usps"
+#define MP5SD_ITEM_SHORT "mp5sd"
 #define M4_ITEM_SHORT "m4a1s"
 #define AWP_ITEM_SHORT "awp"
 #define KF_ITEM_SHORT "1knife"
