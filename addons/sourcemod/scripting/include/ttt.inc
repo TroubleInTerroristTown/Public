@@ -898,3 +898,33 @@ stock int TTT_GetRoundTimeElapsed()
     ConVar cRoundTime = FindConVar("mp_roundtime");
     return (GetTime() - TTT_GetRoundTimestamp());
 }
+
+stock bool TTT_IsClientStuck(int client)
+{
+	float vOrigin[3], vMins[3], vMaxs[3];
+
+	GetClientAbsOrigin(client, vOrigin);
+
+	GetEntPropVector(client, Prop_Send, "m_vecMins", vMins);
+	GetEntPropVector(client, Prop_Send, "m_vecMaxs", vMaxs);
+	
+	TR_TraceHullFilter(vOrigin, vOrigin, vMins, vMaxs, MASK_ALL, FilterOnlyPlayers, client);
+
+	return TR_DidHit();
+}
+
+public bool FilterOnlyPlayers(int entity, int contentsMask, any data)
+{
+	if(entity != data && TTT_IsClientValid(entity) && TTT_IsClientValid(data))
+	{
+		return false;
+	}
+	else if (entity != data)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

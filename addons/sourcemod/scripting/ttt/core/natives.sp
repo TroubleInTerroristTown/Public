@@ -533,6 +533,7 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
     g_bFound[client] = false;
 
     float fOrigin[3];
+    bool bFound = false;
 
     int iBody[Ragdolls];
     for (int i = 0; i < g_aRagdoll.Length; i++)
@@ -548,14 +549,27 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
             {
                 GetEntPropVector(iRagdoll, Prop_Send, "m_vecOrigin", fOrigin);
                 AcceptEntityInput(iRagdoll, "Kill");
+                bFound = true;
             }
         }
     }
 
-    fOrigin[2] += 73.0;
-    TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
+    if (bFound)
+    {
+        TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
 
-    Call_StartForward(g_hOnPlayerRespawn);
-    Call_PushCell(client);
-    Call_Finish();
+        if (TTT_IsClientStuck(client))
+        {
+            while (TTT_IsClientStuck(client))
+            {
+                fOrigin[2] += 0.5;
+                PrintToChat(client, "Origin[2] = %.1f", fOrigin[2]);
+                TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
+            }
+        }
+
+        Call_StartForward(g_hOnPlayerRespawn);
+        Call_PushCell(client);
+        Call_Finish();
+    }
 }
