@@ -196,6 +196,16 @@ public Action TTT_OnGrabbing(int client, int entity)
             return Plugin_Continue;
         }
 
+        if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+        {
+            return Plugin_Continue;
+        }
+
+        if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
+        {
+            return Plugin_Continue;
+        }
+
         if (g_bInUse[client] || g_hTimer[client] || g_bMenu[target])
         {
             return Plugin_Stop;
@@ -323,6 +333,20 @@ public Action Timer_Revive(Handle timer, DataPack pack)
         return Plugin_Stop;
     }
 
+    if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+    {
+        g_hTimer[client] = null;
+        delete pack;
+        return Plugin_Stop;
+    }
+
+    if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
+    {
+        g_hTimer[client] = null;
+        delete pack;
+        return Plugin_Stop;
+    }
+
     char sMessage[MAX_NAME_LENGTH + 32];
     Format(sMessage, sizeof(sMessage), "Reviving %N...", target);
 
@@ -398,6 +422,16 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
         }
 
         if (!TTT_IsPlayerAlive(client) || !g_bHasRevive[client])
+        {
+            return;
+        }
+
+        if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+        {
+            return;
+        }
+
+        if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
         {
             return;
         }
