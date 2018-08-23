@@ -84,12 +84,12 @@ public void OnPluginStart()
     AddCommandListener(Command_LAW, "+lookatweapon");
     AddCommandListener(Command_Say, "say");
     AddCommandListener(Command_SayTeam, "say_team");
-    AddCommandListener(Command_InterceptSuicide, "kill");
-    AddCommandListener(Command_InterceptSuicide, "explode");
-    AddCommandListener(Command_InterceptSuicide, "spectate");
-    AddCommandListener(Command_InterceptSuicide, "jointeam");
-    AddCommandListener(Command_InterceptSuicide, "explodevector");
-    AddCommandListener(Command_InterceptSuicide, "killvector");
+    AddCommandListener(Command_Kill, "kill");
+    AddCommandListener(Command_Kill, "explode");
+    AddCommandListener(Command_Kill, "spectate");
+    AddCommandListener(Command_Kill, "jointeam");
+    AddCommandListener(Command_Kill, "explodevector");
+    AddCommandListener(Command_Kill, "killvector");
     
     for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
     {
@@ -441,9 +441,9 @@ public void OnCreate(any data)
     }
 }
 
-public Action Command_InterceptSuicide(int client, const char[] command, int args)
+public Action Command_Kill(int client, const char[] command, int args)
 {
-    if (g_cblockSuicide.BoolValue && IsPlayerAlive(client))
+    if (!g_bSelection && g_cblockSuicide.BoolValue && IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s %T", g_sTag, "Suicide Blocked", client);
         return Plugin_Handled;
@@ -807,6 +807,7 @@ public Action Timer_Selection(Handle hTimer)
 {
     g_bRoundEnding = false;
     g_hStartTimer = null;
+    g_bSelection = true;
 
     ArrayList aPlayers = new ArrayList(1);
 
@@ -850,6 +851,8 @@ public Action Timer_Selection(Handle hTimer)
 
         GiveWeaponsOnFailStart();
 
+        g_bSelection = false;
+
         return;
     }
 
@@ -878,6 +881,8 @@ public Action Timer_Selection(Handle hTimer)
         Call_Finish();
 
         GiveWeaponsOnFailStart();
+
+        g_bSelection = false;
 
         return;
     }
@@ -926,7 +931,6 @@ public Action Timer_Selection(Handle hTimer)
     }
 
     g_bRoundStarted = true;
-    g_bSelection = true;
     g_bCheckPlayers = false;
     
     int iTCount = GetTCount(aPlayers);
