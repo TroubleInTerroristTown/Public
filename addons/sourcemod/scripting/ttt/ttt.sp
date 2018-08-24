@@ -443,7 +443,7 @@ public void OnCreate(any data)
 
 public Action Command_Kill(int client, const char[] command, int args)
 {
-    if (!g_bSelection && g_cblockSuicide.BoolValue && IsPlayerAlive(client))
+    if (g_cblockSuicide.BoolValue && IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s %T", g_sTag, "Suicide Blocked", client);
         return Plugin_Handled;
@@ -807,7 +807,6 @@ public Action Timer_Selection(Handle hTimer)
 {
     g_bRoundEnding = false;
     g_hStartTimer = null;
-    g_bSelection = true;
 
     ArrayList aPlayers = new ArrayList(1);
 
@@ -851,8 +850,6 @@ public Action Timer_Selection(Handle hTimer)
 
         GiveWeaponsOnFailStart();
 
-        g_bSelection = false;
-
         return;
     }
 
@@ -881,8 +878,6 @@ public Action Timer_Selection(Handle hTimer)
         Call_Finish();
 
         GiveWeaponsOnFailStart();
-
-        g_bSelection = false;
 
         return;
     }
@@ -931,6 +926,7 @@ public Action Timer_Selection(Handle hTimer)
     }
 
     g_bRoundStarted = true;
+    g_bSelection = true;
     g_bCheckPlayers = false;
     
     int iTCount = GetTCount(aPlayers);
