@@ -443,7 +443,7 @@ public void OnCreate(any data)
 
 public Action Command_Kill(int client, const char[] command, int args)
 {
-    if (g_cblockSuicide.BoolValue && IsPlayerAlive(client))
+    if (!g_bBlockKill && g_cblockSuicide.BoolValue && IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s %T", g_sTag, "Suicide Blocked", client);
         return Plugin_Handled;
@@ -733,6 +733,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     {
         LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d - Time: %f)", g_hRoundTimer, fTime);
     }
+    
+    g_bBlockKill = false;
 }
 
 public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadcast)
@@ -792,6 +794,11 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
         g_hCountdownTimer = null;
         return Plugin_Stop;
+    }
+
+    if (timeLeft <= 5)
+    {
+        g_bBlockKill = true;
     }
 
     LoopValidClients(i)
@@ -921,7 +928,7 @@ public Action Timer_Selection(Handle hTimer)
     {
         if(!IsPlayerAlive(aPlayers.Get(i)))
         {
-            aPlayers.Erase(i--);
+            aPlayers.Erase(i);
         }
     }
 
@@ -1137,6 +1144,7 @@ public Action Timer_Selection(Handle hTimer)
     g_iTeamSelectTime = GetTime();
     
     g_bSelection = false;
+    g_bBlockKill = false;
 
     Call_StartForward(g_hOnRoundStart);
     Call_PushCell(iInnocents);

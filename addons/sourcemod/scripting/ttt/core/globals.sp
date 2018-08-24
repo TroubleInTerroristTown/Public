@@ -17,6 +17,7 @@ char g_sFSSecondary[32];
 char g_sFSPrimary[32];
 
 bool g_bRoundEnded = false;
+bool g_bBlockKill = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
