@@ -167,7 +167,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundEnd(int winner)
+public void TTT_OnRoundEnd(int winner, Handle array)
 {
     LoopValidClients(i)
     {

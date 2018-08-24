@@ -76,7 +76,7 @@ public void OnConfigsExecuted()
     }
 }
 
-public void TTT_OnRoundEnd(int winner)
+public void TTT_OnRoundEnd(int winner, Handle array)
 {
     if (!g_cEnable.BoolValue)
     {

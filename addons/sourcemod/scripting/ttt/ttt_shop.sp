@@ -1044,12 +1044,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public void TTT_OnRoundEnd(int WinningTeam)
+public void TTT_OnRoundEnd(int winner, Handle array)
 {
     LoopValidClients(client)
     {
         TTT_ClearTimer(g_hCreditsTimer[client]);
-        switch (WinningTeam)
+        switch (winner)
         {
             case TTT_TEAM_DETECTIVE:
             {

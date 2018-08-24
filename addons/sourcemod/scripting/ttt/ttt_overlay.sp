@@ -248,7 +248,7 @@ public Action TTT_OnRoundStart_Pre()
     ResetStuff();
 }
 
-public void TTT_OnRoundEnd(int winner)
+public void TTT_OnRoundEnd(int winner, Handle array)
 {
     g_bTimeOverlay = false;
     g_bDisableRoleOverlays = false;

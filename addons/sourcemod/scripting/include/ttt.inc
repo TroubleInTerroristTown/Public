@@ -75,8 +75,9 @@ forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detect
  * Called when the actual TTT round ended.
  *
  * @param winner             The Winning Team.
+ * @param array              Round logs as handle (if you want ArrayList instead of Handle use this: `ArrayList aLogs = view_as<ArrayList>(array);´)
  */
-forward void TTT_OnRoundEnd(int winner);
+forward void TTT_OnRoundEnd(int winner, Handle array);
 
 /**
  * Called when a client's role is assigned.

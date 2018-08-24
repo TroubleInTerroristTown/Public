@@ -248,7 +248,7 @@ public Action Timer_ActivateTasers(Handle timer)
     return Plugin_Stop;
 }
 
-public void TTT_OnRoundEnd(int winner)
+public void TTT_OnRoundEnd(int winner, Handle array)
 {
     TTT_ClearTimer(g_hCooldown);
     g_bTasers = false;

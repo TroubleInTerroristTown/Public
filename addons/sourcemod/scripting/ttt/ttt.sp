@@ -3144,6 +3144,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
     Call_StartForward(g_hOnRoundEnd);
     Call_PushCell(WinningTeam);
+    Call_PushCell(view_as<Handle>(g_aLogs));
     Call_Finish();
 
     if (g_crandomWinner.BoolValue)
