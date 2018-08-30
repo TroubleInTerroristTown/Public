@@ -50,7 +50,7 @@ public void OnPluginStart()
 
     TTT_StartConfig("decoy_teleporter");
     CreateConVar("ttt2_decoy_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cLongName = AutoExecConfig_CreateConVar("dt_name", "Decoy Teleprter", "The name of the Decoy Teleporter in the Shop");
+    g_cLongName = AutoExecConfig_CreateConVar("dt_name", "Decoy Teleporter", "The name of the Decoy Teleporter in the Shop");
     g_cTPrice = AutoExecConfig_CreateConVar("dt_traitor_price", "9000", "The amount of credits for decoy teleporter costs as traitor. 0 to disable.");
     g_cDPrice = AutoExecConfig_CreateConVar("dt_detective_price", "9000", "The amount of credits for decoy teleporter costs as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("dt_traitor_sort_prio", "0", "The sorting priority of the decoy teleporter (Traitor) in the shop menu.");
