@@ -137,6 +137,17 @@ forward void FGrenades_OnGrenadeStart(int owner, int &particle, float pos[3], De
  */
 forward Action FGrenades_OnSwitchMode(int client, DecoyMode previousmode, DecoyMode &newmode, int weapon);
 
+
+/**
+ * Force a client to change the FNade mode
+ * @param client client index
+ * @param newDecoyMode   New mode of decoy
+ * @param newForceFieldMode New mode of forcefield decoy
+ * @param newForceExplosionMode New mode of ForceExplosion decoy
+ * @param newForceImplosionMode New mode of ForceImplosion decoy
+ */
+native void FGrenades_SwitchMode(int client, DecoyMode newDecoyMode, ForceFieldMode newForceFieldMode = ForcefieldMode_Normal, ForceExplosionMode newForceExplosionMode = ForceExplosionMode_Ground, ForceImplosionMode newForceImplosionMode = ForceImplosionMode_Ground);
+
 public SharedPlugin __pl_futuristicgrenades  =
 {
     name = "futuristicgrenades",
@@ -158,5 +169,6 @@ public __pl_futuristicgrenades_SetNTVOptional()
     MarkNativeAsOptional("FGrenades_GetForceImplosionMode");
     MarkNativeAsOptional("FGrenades_GetAmountBlackholes");
     MarkNativeAsOptional("FGrenades_GetAmountForcefields");
+    MarkNativeAsOptional("FGrenades_SwitchMode");
 }
 #endif
