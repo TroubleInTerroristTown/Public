@@ -21,6 +21,7 @@
 #define TTT_LOG_SIZE 512
 
 #include <autoexecconfig>
+#include <cstrike>
 
 enum Ragdolls
 {
