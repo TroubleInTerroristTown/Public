@@ -47,6 +47,7 @@ void InitNatives()
     CreateNative("TTT_GetRoundTimestamp", Native_GetRoundTimestamp);
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
+    CreateNative("TTT_TerminateRound", Native_TerminateRound);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -572,4 +573,12 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
         Call_PushCell(client);
         Call_Finish();
     }
+}
+
+public int Native_TerminateRound(Handle plugin, int numParams)
+{
+    float fDelay = view_as<float>(GetNativeCell(1));
+    CSRoundEndReason rReason = view_as<CSRoundEndReason>(GetNativeCell(2));
+
+    CS_TerminateRound(fDelay, rReason, true);
 }

@@ -385,6 +385,16 @@ native void TTT_RespawnPlayer(int client);
  */
 native int TTT_GetRoundTimestamp();
 
+/**
+ * Forces round to end
+ * Why was this added? To prevent mistakes with blockhook (it doesn't work blockhook = true)
+ *
+ * @param delay           Time (in seconds) to delay before new round starts
+ * @param reason          Reason for the round ending
+ *
+ */
+native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
     if (role == TTT_TEAM_INNOCENT)
