@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <clientprefs>
-#include <cstrike>
 #include <sdkhooks>
 #include <multicolors>
 #include <emitsoundany>

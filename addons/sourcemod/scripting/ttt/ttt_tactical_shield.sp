@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 #include <ttt>
 #include <ttt_shop>
 #include <tacticalshield>

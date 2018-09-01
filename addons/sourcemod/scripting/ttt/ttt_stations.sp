@@ -2,7 +2,6 @@
 #pragma newdecls required
 
 #include <sourcemod>
-#include <cstrike>
 #include <sdkhooks>
 #include <sdktools>
 #include <multicolors>

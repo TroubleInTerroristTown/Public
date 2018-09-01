@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <cstrike>
 #include <multicolors>
 #include <ttt_shop>
 #include <ttt>

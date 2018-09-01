@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Models"

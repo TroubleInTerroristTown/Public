@@ -3,12 +3,10 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 #include <ttt>
 #include <ttt_shop>
 #include <multicolors>
 #include <emitsoundany>
-#include <cstrike>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - C4 & Jihad"
 #define SHORT_NAME_C4 "c4"

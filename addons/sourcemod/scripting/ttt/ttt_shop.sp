@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <cstrike>
 #include <multicolors>
 #include <clientprefs>
 #include <ttt>

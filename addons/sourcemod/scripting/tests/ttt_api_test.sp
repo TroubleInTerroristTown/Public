@@ -1,7 +1,6 @@
 #pragma semicolon 1
 
 #include <sourcemod>
-#include <cstrike>
 #include <ttt>
 #include <ttt_sql>
 #include <ttt_shop>

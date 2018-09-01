@@ -3,9 +3,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <sdkhooks>
-#include <cstrike>
-#include <autoexecconfig>
+#include <sdkhooks>#include <autoexecconfig>
 #include <ttt>
 
 int g_iTurrets[MAXPLAYERS+1]= {-1,...};

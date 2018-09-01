@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
-#include <cstrike>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
 

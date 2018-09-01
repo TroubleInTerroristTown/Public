@@ -3,7 +3,6 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <cstrike>
 #include <ttt_shop>
 #include <ttt>
 #include <ttt_grabbermod>
