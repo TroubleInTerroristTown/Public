@@ -207,7 +207,7 @@ int RandomTeleport(int client)
 
     if (g_bDebug)
     {
-        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d - Ragdoll: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target), g_cRagdoll.BoolValue);
+        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d - Alive: %d - Ragdoll: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target), TTT_IsPlayerAlive(target), g_cRagdoll.BoolValue);
     }
 
     if (TTT_IsPlayerAlive(target))
