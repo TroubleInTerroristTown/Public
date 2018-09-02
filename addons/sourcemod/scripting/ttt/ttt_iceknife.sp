@@ -45,6 +45,8 @@ int g_iIce[MAXPLAYERS + 1] = { -1, ... };
 bool g_bFreezed[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIceKnife[MAXPLAYERS + 1] = { false, ... };
 
+float g_fAngles[MAXPLAYERS + 1][3];
+
 bool g_bSourceC = false;
 bool g_bBaseC = false;
 
@@ -272,6 +274,9 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
             GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
             SetEntityRenderColor(iVictim, 0, 128, 255, 135);
 
+            GetClientEyeAngles(iVictim, g_fAngles[iVictim]);
+            RequestFrame(Frame_SetAngles, GetClientUserId(iVictim));
+
             if (g_cIceCube.BoolValue)
             {
                 PlaySound(iVictim, true);
@@ -324,6 +329,17 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         }
     }
     return Plugin_Continue;
+}
+
+public void Frame_SetAngles(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client) && g_bFreezed[client])
+    {
+        TeleportEntity(client, NULL_VECTOR, g_fAngles[client], NULL_VECTOR);
+        RequestFrame(Frame_SetAngles, GetClientUserId(client));
+    }
 }
 
 public Action TTT_OnHudSend_Pre(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength)

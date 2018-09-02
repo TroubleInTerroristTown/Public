@@ -5,6 +5,9 @@
 #include <sdktools>
 #include <cstrike>
 
+bool g_bRun[MAXPLAYERS + 1] = { false, ... };
+float g_fAngle[MAXPLAYERS + 1][3];
+
 public void OnPluginStart()
 {
     RegConsoleCmd("sm_checkGOTV", Command_CheckGOTV);
@@ -13,6 +16,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_endround", Command_EndRound);
     RegConsoleCmd("sm_give", Command_Give);
     RegConsoleCmd("sm_roundtime", Command_RoundTime);
+    RegConsoleCmd("sm_stone", Command_Stone);
 }
 
 public Action Command_CheckGOTV(int client, int args)
@@ -131,4 +135,44 @@ public Action Command_RoundTime(int client, int args)
 {
     int time = GameRules_GetProp("m_iRoundTime");
     ReplyToCommand(client, "Round Time: %d", time);
+}
+
+
+public Action Command_Stone(int client, int args)
+{
+    if (args != 1)
+    {
+        ReplyToCommand(client, "sm_stone <status 0/1>");
+        return Plugin_Handled;
+    }
+
+    char sBuffer[3];
+    GetCmdArg(1, sBuffer, sizeof(sBuffer));
+    bool status = view_as<bool>(StringToInt(sBuffer));
+
+    GetClientEyeAngles(client, g_fAngle[client]);
+
+    g_bRun[client] = status;
+
+    if (g_bRun[client])
+    {
+        RequestFrame(Frame_SetAngle, GetClientUserId(client));
+    }
+
+    return Plugin_Handled;
+}
+
+public void Frame_SetAngle(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (IsClientInGame(client))
+    {
+        TeleportEntity(client, NULL_VECTOR, g_fAngle[client], NULL_VECTOR);
+
+        if (g_bRun[client])
+        {
+            RequestFrame(Frame_SetAngle, GetClientUserId(client));
+        }
+    }
 }
