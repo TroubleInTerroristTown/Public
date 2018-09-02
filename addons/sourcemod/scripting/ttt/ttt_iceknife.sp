@@ -71,7 +71,7 @@ public void OnPluginStart()
     g_cPrio = AutoExecConfig_CreateConVar("iceknife_sort_prio", "0", "The sorting priority of the Ice Knife in the shop menu.");
     g_cDamage = AutoExecConfig_CreateConVar("iceknife_damage", "0", "Amount of damage with a ice knife. 0 to disable.");
     g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
-    g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time.");
+    g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time. 0.0 - Disabled");
     g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
     g_cGag = AutoExecConfig_CreateConVar("iceknife_gag", "1", "Gag client during freeze time?", _, true, 0.0, true, 1.0);
@@ -261,23 +261,23 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
     if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1)
     {
-        g_bFreezed[iVictim] = true;
-        g_bIceKnife[iAttacker] = false;
-
-        SetEntityMoveType(iVictim, MOVETYPE_NONE);
-        SetEntPropFloat(iVictim, Prop_Data, "m_flLaggedMovementValue", 0.0);
-
-        GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
-        SetEntityRenderColor(iVictim, 0, 128, 255, 135);
-
-        if (g_cIceCube.BoolValue)
-        {
-            PlaySound(iVictim, true);
-            FreezeModel(iVictim, true);
-        }
-
         if (g_cFreezeTime.FloatValue > 0.0)
         {
+            g_bFreezed[iVictim] = true;
+            g_bIceKnife[iAttacker] = false;
+
+            SetEntityMoveType(iVictim, MOVETYPE_NONE);
+            SetEntPropFloat(iVictim, Prop_Data, "m_flLaggedMovementValue", 0.0);
+
+            GetEntityRenderColor(iVictim, g_iOldColors[iVictim][0], g_iOldColors[iVictim][1], g_iOldColors[iVictim][2], g_iOldColors[iVictim][3]);
+            SetEntityRenderColor(iVictim, 0, 128, 255, 135);
+
+            if (g_cIceCube.BoolValue)
+            {
+                PlaySound(iVictim, true);
+                FreezeModel(iVictim, true);
+            }
+
             if (g_cMute.BoolValue)
             {
                 if (g_bSourceC)
