@@ -598,6 +598,8 @@ stock void showPlantMenu(int client)
     }
     
     menu.Pagination = 6;
+    menu.ExitBackButton = false;
+    menu.ExitButton = false;
     menu.Display(client, 10);
 }
 
@@ -620,6 +622,8 @@ stock void showDefuseMenu(int client)
     }
 
     menu.Pagination = 4;
+    menu.ExitBackButton = false;
+    menu.ExitButton = true;
     menu.Display(client, 10);
 }
 
@@ -677,16 +681,18 @@ stock void showPlanterPunishments(int client)
 
     char sBuffer[128];
 
-    Handle menuHandle = CreateMenu(punishmentsBombMenu);
-    SetMenuTitle(menuHandle, "%T", "C4: Choose Punishment", client);
+    Menu menu = new Menu(punishmentsBombMenu);
+    menu.SetTitle("%T", "C4: Choose Punishment", client);
 
     Format(sBuffer, sizeof(sBuffer), "%T", "C4: Slay", client);
-    AddMenuItem(menuHandle, "slay", sBuffer);
+    menu.AddItem("slay", sBuffer);
 
     Format(sBuffer, sizeof(sBuffer), "%T", "C4: Explode", client);
-    AddMenuItem(menuHandle, "explode", sBuffer);
+    menu.AddItem("explode", sBuffer);
 
-    DisplayMenu(menuHandle, client, 10);
+    menu.ExitBackButton = false;
+    menu.ExitButton = false;
+    menu.Display(client, 10);
 }
 
 public int punishmentsBombMenu(Menu menu, MenuAction action, int client, int option)
