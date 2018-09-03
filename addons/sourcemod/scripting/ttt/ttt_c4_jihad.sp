@@ -62,6 +62,8 @@ Handle g_hJihadBomb[MAXPLAYERS + 1] =  { null, ... };
 int g_iPlantSecondsCount;
 char g_sPlantSeconds[12][32];
 
+int g_iC4[MAXPLAYERS + 1] = { -1, ...};
+
 int g_iBeamSprite = -1;
 int g_iHaloSprite = -1;
 
@@ -216,6 +218,7 @@ public void ResetGlobals(int client)
     g_iDefusePlayerIndex[client] = -1;
     g_iWire[client] = -1;
     g_iPCount_C4[client] = 0;
+    g_iC4[client] = -1;
     
     TTT_ClearTimer(g_hExplosionTimer[client]);
     TTT_ClearTimer(g_hJihadBomb[client]);
@@ -485,6 +488,7 @@ public Action explodeC4(Handle timer, Handle pack)
         TeleportEntity(explosionIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
         TeleportEntity(shakeIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
         AcceptEntityInput(bombEnt, "Kill");
+        g_iC4[client] = -1;
         AcceptEntityInput(explosionIndex, "Explode");
         AcceptEntityInput(particleIndex, "Start");
         AcceptEntityInput(shakeIndex, "StartShake");
@@ -524,7 +528,7 @@ public int TTT_OnButtonPress(int client, int button)
     {
         g_bHasActiveBomb[client] = true;
         int bombEnt = CreateEntityByName("prop_physics");
-        if (bombEnt != -1)
+        if (bombEnt != -1 && g_iC4[client] == -1)
         {
             float clientPos[3];
             GetClientAbsOrigin(client, clientPos);
@@ -533,6 +537,7 @@ public int TTT_OnButtonPress(int client, int button)
             DispatchKeyValue(bombEnt, "model", MDL_C4);
             if(DispatchSpawn(bombEnt))
             {
+                g_iC4[client] = EntIndexToEntRef(bombEnt);
                 TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
                 showPlantMenu(client);
             }
@@ -983,6 +988,15 @@ stock void removeBomb(int client)
             continue;
         }
 
-        TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_C4);
+        AcceptEntityInput(iEnt, "Kill");
     }
+
+    int iC4 = EntRefToEntIndex(g_iC4[client]);
+
+    if (IsValidEntity(iC4))
+    {
+        AcceptEntityInput(iC4, "Kill");
+    }
+
+    g_iC4[client] = -1;
 }
