@@ -129,7 +129,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
 
-            if (g_bFreeScanner[client] && g_iCount[client] < g_cFreeCount.IntValue)
+            if (price != 0 && g_bFreeScanner[client] && g_iCount[client] < g_cFreeCount.IntValue)
             {
                 return Plugin_Stop;
             }
