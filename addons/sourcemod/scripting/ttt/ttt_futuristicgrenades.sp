@@ -328,5 +328,9 @@ void ResetFuturistic(int client)
 {
     g_bFuturistic[client] = false;
     g_iGMode[client] = DecoyMode_Normal;
-    FGrenades_SwitchMode(client, DecoyMode_Normal);
+    
+    if (IsClientInGame(client))
+    {
+        FGrenades_SwitchMode(client, DecoyMode_Normal);
+    }
 }
