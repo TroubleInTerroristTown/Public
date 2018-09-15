@@ -815,10 +815,11 @@ public Action Timer_Selection(Handle hTimer)
     g_hStartTimer = null;
 
     ArrayList aPlayers = new ArrayList(1);
+    int iPlayers = 0;
 
     LoopValidClients(i)
     {
-        if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T  || (!g_cDebug.BoolValue && IsFakeClient(i)))
+        if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || (!g_cDebug.BoolValue && IsFakeClient(i)))
         {
             continue;
         }
@@ -836,6 +837,7 @@ public Action Timer_Selection(Handle hTimer)
         }
 
         aPlayers.Push(i);
+        iPlayers++;
 
         if ((g_cDoublePushInno.BoolValue && g_iLastRole[i] == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iLastRole[i] == TTT_TEAM_DETECTIVE))
         {
@@ -859,7 +861,7 @@ public Action Timer_Selection(Handle hTimer)
         return;
     }
 
-    if (aPlayers.Length < g_crequiredPlayers.IntValue)
+    if (iPlayers < g_crequiredPlayers.IntValue)
     {
         g_bInactive = true;
 
@@ -870,16 +872,16 @@ public Action Timer_Selection(Handle hTimer)
             if (g_cPlayerHUDMessage.BoolValue)
             {
                 SetHudTextParams(0.4, 0.53, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
-                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, aPlayers.Length);
+                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, iPlayers);
                 SetHudTextParams(0.33, 0.565, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
-                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - aPlayers.Length));
+                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - iPlayers));
             }
         }
 
         g_bCheckPlayers = true;
 
         Call_StartForward(g_hOnRoundStartFailed);
-        Call_PushCell(aPlayers.Length);
+        Call_PushCell(iPlayers);
         Call_PushCell(g_crequiredPlayers.IntValue);
         Call_Finish();
 
@@ -4114,25 +4116,14 @@ void CheckPlayers()
     }
     else
     {
-        int iPlayers = 0;
-        LoopValidClients(i)
+        if (g_cPlayerHUDMessage.BoolValue)
         {
-            if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T  || (!g_cDebug.BoolValue && IsFakeClient(i)))
-            {
-                continue;
-            }
-
-            iPlayers++;
-        }
-
-        LoopValidClients(i)
-        {
-            if (g_cPlayerHUDMessage.BoolValue)
+            LoopValidClients(i)
             {
                 SetHudTextParams(0.42, 0.53, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
-                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, iPlayers);
+                ShowSyncHudText(i, g_hWeAreSync, "%T", "WE ARE", i, iCount);
                 SetHudTextParams(0.35, 0.565, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
-                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - iPlayers));
+                ShowSyncHudText(i, g_hRemainingSync, "%T", "REMAINING PLAYERS", i, (g_crequiredPlayers.IntValue - iCount));
             }
         }
     }
