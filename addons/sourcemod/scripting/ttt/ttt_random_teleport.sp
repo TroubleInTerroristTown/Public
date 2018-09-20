@@ -176,7 +176,7 @@ int RandomTeleport(int client)
 {
     bool bAlive = true;
     int[] iRagdoll = new int[Ragdolls];
-    float fPlayerPos[3], fTargetPos[3];
+    float fClientPos[3], fTargetPos[3];
 
     if (g_cRagdoll.BoolValue)
     {
@@ -212,11 +212,25 @@ int RandomTeleport(int client)
 
     if (TTT_IsPlayerAlive(target))
     {
-        GetClientAbsOrigin(client, fPlayerPos);
+        GetClientAbsOrigin(client, fClientPos);
         GetClientAbsOrigin(target, fTargetPos);
 
-        TeleportEntity(client, fTargetPos, NULL_VECTOR, NULL_VECTOR);
-        TeleportEntity(target, fPlayerPos, NULL_VECTOR, NULL_VECTOR);
+        LogToFile(g_sLog, "[Random Teleporter] [1/2] Target: \"%L\" - From: %f:%f:%f - To: %f:%f:%f", target, fTargetPos[0], fTargetPos[1], fTargetPos[2], fClientPos[0], fClientPos[1], fClientPos[2]);
+        LogToFile(g_sLog, "[Random Teleporter] [1/2] Client: \"%L\" - From: %f:%f:%f - To: %f:%f:%f", client, fClientPos[0], fClientPos[1], fClientPos[2], fTargetPos[0], fTargetPos[1], fTargetPos[2]);
+
+        DataPack cPack = new DataPack();
+        RequestFrame(Frame_Teleport, cPack);
+        cPack.WriteCell(GetClientUserId(client));
+        cPack.WriteFloat(fTargetPos[0]);
+        cPack.WriteFloat(fTargetPos[1]);
+        cPack.WriteFloat(fTargetPos[2]);
+
+        DataPack tPack = new DataPack();
+        RequestFrame(Frame_Teleport, tPack);
+        tPack.WriteCell(GetClientUserId(target));
+        tPack.WriteFloat(fClientPos[0]);
+        tPack.WriteFloat(fClientPos[1]);
+        tPack.WriteFloat(fClientPos[2]);
     }
     else
     {
@@ -234,8 +248,8 @@ int RandomTeleport(int client)
         }
 
         float fAngles[3], fVelo[3];
-        GetClientAbsOrigin(client, fPlayerPos);
-        fPlayerPos[2] += 30;
+        GetClientAbsOrigin(client, fClientPos);
+        fClientPos[2] += 30;
 
         GetClientAbsAngles(client, fAngles);
         GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", fVelo);
@@ -247,16 +261,38 @@ int RandomTeleport(int client)
         float speed = GetVectorLength(fVelo);
         if (speed >= 500)
         {
-            TeleportEntity(body, fPlayerPos, fAngles, NULL_VECTOR);
+            TeleportEntity(body, fClientPos, fAngles, NULL_VECTOR);
         }
         else
         {
-            TeleportEntity(body, fPlayerPos, fAngles, fVelo);
+            TeleportEntity(body, fClientPos, fAngles, fVelo);
         }
     }
 
     CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
     return target;
+}
+
+public void Frame_Teleport(DataPack pack)
+{
+    pack.Reset();
+
+    int client = GetClientOfUserId(pack.ReadCell());
+
+    if (TTT_IsClientValid(client))
+    {
+        float fOrigin[3];
+
+        fOrigin[0] = pack.ReadFloat();
+        fOrigin[1] = pack.ReadFloat();
+        fOrigin[2] = pack.ReadFloat();
+
+        TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
+
+        LogToFile(g_sLog, "[Random Teleporter] [2/2] Client: \"%L\" - To: %f:%f:%f", client, fOrigin[0], fOrigin[1], fOrigin[2]);
+    }
+
+    delete pack;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)

@@ -4,26 +4,17 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <cstrike>
-#include <autoexecconfig>
-#include <multicolors>
 
-#define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
+#define LoopClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
 
-ConVar g_cRedieTag = null;
-ConVar g_cGhostDMTag = null;
-char g_sRedieTag[64];
-char g_sGhostDMTag[64];
+#define HUD_RADAR ( 1<<12 )
+#define HUD_ALL 2050
 
-#include "ghostdm/globals.sp"
-#include "ghostdm/config.sp"
-#include "ghostdm/stocks.sp"
-#include "ghostdm/redie.sp"
-#include "ghostdm/deathmatch.sp"
+bool g_bRedie[MAXPLAYERS + 1 ] = { false, ... };
 
 public Plugin myinfo =
 {
-    name = "Ghost Deathmatch with Redie",
+    name = "GhostDeathmatch with Redie",
     author = "Bara",
     description = "",
     version = "1.0.0",
@@ -32,136 +23,165 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    CreateNative("GhostDM_IsClientInRedie", Native_IsClientInRedie);
-    CreateNative("GhostDM_IsClientInDM", Native_IsClientInDM);
-    
+    CreateNative("Redie_GetClientStatus", Native_GetClientStatus);
+
     RegPluginLibrary("ghostdm");
     
     return APLRes_Success;
 }
 
-public int Native_IsClientInRedie(Handle plugin, int numParams)
+public int Native_GetClientStatus(Handle plugin, int numParams)
 {
-    int client = GetNativeCell(1);
-    
-    return g_bRedie[client];
-}
-
-public int Native_IsClientInDM(Handle plugin, int numParams)
-{
-    int client = GetNativeCell(1);
-    
-    return g_bDM[client];
+    return g_bRedie[GetNativeCell(1)];
 }
 
 public void OnPluginStart()
 {
-    HookEvent("round_start", Event_RoundStart);
-    HookEvent("round_end", Event_RoundEnd);
-    HookEvent("player_death", Event_PlayerDeath);
-    HookEvent("player_team", Event_PlayerTeam, EventHookMode_Pre);
-    HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Pre);
+    RegConsoleCmd("sm_redie", Command_Redie);
 
-    Config_OnPluginStart();
+    HookEvent("player_spawn", Event_Player);
+    HookEvent("player_death", Event_Player);
 
-    AutoExecConfig_SetCreateDirectory(true);
-    AutoExecConfig_SetCreateFile(true);
-    AutoExecConfig_SetFile("plugin.ghostdm");
-    g_cRedieTag = AutoExecConfig_CreateConVar("ghostdm_redie_tag", "{darkblue}[Redie] {default}", "Redie tag for every message from this plugin");
-    g_cGhostDMTag = AutoExecConfig_CreateConVar("ghostdm_tag", "{darkred}[GhostDM] {default}", "GhostDM tag for every message from this plugin");
-    g_cRedieTag.AddChangeHook(CVar_OnConVarChanged);
-    g_cGhostDMTag.AddChangeHook(CVar_OnConVarChanged);
-    AutoExecConfig_ExecuteFile();
-    AutoExecConfig_CleanFile();
+    AddNormalSoundHook(view_as<NormalSHook>(OnNormalSoundPlayed));
 
-    Redie_OnPluginStart();
-    GhostDM_OnPluginStart();
-}
-
-public void OnConfigsExecuted()
-{
-    g_cRedieTag.GetString(g_sRedieTag, sizeof(g_sRedieTag));
-    g_cGhostDMTag.GetString(g_sGhostDMTag, sizeof(g_sGhostDMTag));
-}
-
-public void CVar_OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-    if (convar == g_cRedieTag)
+    LoopClients(i)
     {
-        g_cRedieTag.GetString(g_sRedieTag, sizeof(g_sRedieTag));
-    }
-    else if (convar == g_cGhostDMTag)
-    {
-        g_cGhostDMTag.GetString(g_sGhostDMTag, sizeof(g_sGhostDMTag));
+        OnClientPutInServer(i);
     }
 }
 
 public void OnClientPutInServer(int client)
 {
-    if (IsClientValid(client))
-    {
-        ResetDM(client);
-        ResetRedie(client);
-        Redie_OnClientPutInServer(client);
-    }
+    ResetClient(client);
+
+    SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 }
 
 public void OnClientDisconnect(int client)
 {
-    ResetDM(client);
-    ResetRedie(client);
+    ResetClient(client);
 }
 
-public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
+public Action Command_Redie(int client, int args)
 {
-    Redie_OnRoundStart();
+    if (!IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+
+    if (g_bRedie[client])
+    {
+        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
+    }
+
+    g_bRedie[client] = !g_bRedie[client];
+
+    PrintToChat(client, "Changed redie status to: %s", g_bRedie[client] ? "On" : "Off");
+
+    if (g_bRedie[client])
+    {
+        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
+    }
+
+    return Plugin_Handled;
 }
 
-public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
-{
-    Redie_OnRoundEnd();
-}
-
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if(IsClientValid(client))
+
+    if (IsClientValid(client))
     {
-        Redie_OnPlayerDeath(client);
+        ResetClient(client);
     }
 }
 
-public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
+public Action OnNormalSoundPlayed(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
 {
-    event.BroadcastDisabled = true;
-    return Plugin_Changed;
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if(IsClientValid(client))
+    if (IsClientValid(client))
     {
-        Redie_OnPlayerSpawn(client);
-    }
-}
-
-public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
-{
-    Redie_OnPlayerRunCmd(client, buttons);
-}
-
-public Action OnNormalSoundPlayed(int[] clients, int &numClients, char[] sample, int &entity, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
-{
-    if(IsClientValid(entity))
-    {
-        if (Redie_OnNormalSoundPlayed(entity))
+        for (int i = 0; i < 1; i++)
         {
-            return Plugin_Stop;
+            PrintToConsoleAll(" ");
         }
+
+        int iTemp = numClients;
+        numClients = 0;
+
+        LoopClients(i)
+        {
+            PrintToConsoleAll("[LoopClients Redie Status] Client: %N (Redie: %d) - i: %N (Redie: %d)", client, g_bRedie[client], i, g_bRedie[i]);
+
+            if (g_bRedie[client] == g_bRedie[i])
+            {
+                clients[numClients] = i;
+                numClients++;
+            }
+        }
+
+        if (numClients == 0)
+        {
+            numClients = iTemp;
+        }
+
+        PrintToConsoleAll("[How many numClients] %N - numClients: %d", client, numClients);
+        for (int i = 0; i < numClients; i++)
+        {
+            PrintToConsoleAll("[numCLients/clients Loop] %N - clients (i - %d): %N (%d)", client, i, clients[i], clients[i]);
+        }
+
+        for (int i = 0; i < 1; i++)
+        {
+            PrintToConsoleAll(" ");
+        }
+
+        return Plugin_Changed;
+    }
+
+    return Plugin_Continue;
+}
+
+public Action OnSetTransmit(int target, int client)
+{
+    if (!IsClientValid(target) || !IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_bRedie[target] != g_bRedie[client])
+    {
+        return Plugin_Handled;
     }
     
     return Plugin_Continue;
+}
+
+void ResetClient(int client)
+{
+    g_bRedie[client] = false;
+
+    if (IsClientInGame(client))
+    {
+        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
+    }
+}
+
+bool IsClientValid(int client, bool nobots = false)
+{
+    if (client > 0 && client <= MaxClients)
+    {
+        if (!IsClientConnected(client) || IsClientSourceTV(client) || !IsClientInGame(client))
+        {
+            return false;
+        }
+        
+        if (nobots && IsFakeClient(client))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    return false;
 }
