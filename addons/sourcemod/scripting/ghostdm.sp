@@ -43,6 +43,7 @@ public void OnPluginStart()
 {
     RegConsoleCmd("sm_redie", Command_Redie);
 
+    HookEvent("round_end", Event_RoundEnd);
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
 
@@ -92,30 +93,17 @@ public Action Command_Redie(int client, int args)
 
     PrintToChat(client, "Changed redie status to: %s", g_bRedie[client] ? "On" : "Off");
 
-    if (g_bRedie[client])
-    {
-        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
-
-        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
-
-        if (IsValidEntity(iWeapon))
-        {
-            char sWeapon[32];
-            GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
-            
-            if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
-            {
-                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() + 9999.9);
-                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
-            }
-        }
-    }
-    else
-    {
-        ResetClient(client);
-    }
+    SetRedie(client);
 
     return Plugin_Handled;
+}
+
+public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
+{
+    LoopClients(i)
+    {
+        ResetClient(i);
+    }
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -124,7 +112,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (IsClientValid(client))
     {
-        ResetClient(client);
+        if (!g_bRedie[client])
+        {
+            ResetClient(client);
+        }
+        else
+        {
+            SetRedie(client);
+        }
     }
 }
 
@@ -134,7 +129,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (IsClientValid(victim))
     {
-        ResetClient(victim);
+        Handle hPlugin = FindPluginByFile("ttt/ttt_hide_radar.smx");
+
+        if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
+        {
+            SetEntProp(victim, Prop_Send, "m_iHideHUD", HUD_ALL);
+        }
     }
 
     int attacker = GetClientOfUserId(event.GetInt("attacker"));
@@ -328,6 +328,32 @@ public void Frame_SetBlock(int ref)
     {
         SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() + 9999.9);
         SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
+    }
+}
+
+void SetRedie(int client)
+{
+    if (g_bRedie[client])
+    {
+        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
+
+        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
+
+        if (IsValidEntity(iWeapon))
+        {
+            char sWeapon[32];
+            GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+            
+            if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
+            {
+                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() + 9999.9);
+                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
+            }
+        }
+    }
+    else
+    {
+        ResetClient(client);
     }
 }
 
