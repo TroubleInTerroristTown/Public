@@ -154,6 +154,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             eEvent.SetBool("headshot", event.GetBool("headshot"));
             eEvent.SetInt("dominated", event.GetInt("dominated"));
             eEvent.SetInt("revenge", event.GetInt("revenge"));
+            eEvent.SetInt("penetrated", event.GetInt("penetrated"));
 
             LoopClients(i)
             {
