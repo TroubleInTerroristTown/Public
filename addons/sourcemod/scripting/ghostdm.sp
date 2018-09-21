@@ -43,8 +43,8 @@ public void OnPluginStart()
 {
     RegConsoleCmd("sm_redie", Command_Redie);
 
-    HookEvent("player_spawn", Event_Player);
-    HookEvent("player_death", Event_Player);
+    HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
 
     AddNormalSoundHook(view_as<NormalSHook>(OnNormalSHook));
 
@@ -118,7 +118,7 @@ public Action Command_Redie(int client, int args)
     return Plugin_Handled;
 }
 
-public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
+public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
@@ -126,6 +126,49 @@ public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
     {
         ResetClient(client);
     }
+}
+
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+
+    if (IsClientValid(victim))
+    {
+        ResetClient(victim);
+    }
+
+    int attacker = GetClientOfUserId(event.GetInt("attacker"));
+
+    if (IsClientValid(attacker) && IsClientValid(victim))
+    {
+        char sWeapon[32];
+        event.GetString("weapon", sWeapon, sizeof(sWeapon));
+
+        Event eEvent = CreateEvent("player_death", true);
+
+        if (eEvent != null)
+        {
+            eEvent.SetInt("userid", event.GetInt("userid"));
+            eEvent.SetInt("attacker", event.GetInt("attacker"));
+            eEvent.SetString("weapon", sWeapon);
+            eEvent.SetBool("headshot", event.GetBool("headshot"));
+            eEvent.SetInt("dominated", event.GetInt("dominated"));
+            eEvent.SetInt("revenge", event.GetInt("revenge"));
+
+            LoopClients(i)
+            {
+                if (g_bRedie[i])
+                {
+                    eEvent.FireToClient(i);
+                }
+            }
+
+            eEvent.Cancel();
+        }
+    }
+
+    event.BroadcastDisabled = true;
+    return Plugin_Handled;
 }
 
 public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
