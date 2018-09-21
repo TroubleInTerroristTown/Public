@@ -66,9 +66,9 @@ public void OnClientPutInServer(int client)
 
     SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
-    SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-    SDKHook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
-    SDKHook(client, SDKHook_WeaponSwitch, OnWeaponCanUse);
+    SDKHook(client, SDKHook_WeaponCanUse, OnWeapon);
+    SDKHook(client, SDKHook_WeaponEquip, OnWeapon);
+    SDKHook(client, SDKHook_WeaponSwitch, OnWeapon);
 }
 
 public void OnClientDisconnect(int client)
@@ -105,10 +105,14 @@ public Action Command_Redie(int client, int args)
             
             if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
             {
-                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() - 0.1);
-                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() - 0.1);
+                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() + 9999.9);
+                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
             }
         }
+    }
+    else
+    {
+        ResetClient(client);
     }
 
     return Plugin_Handled;
@@ -256,7 +260,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     return Plugin_Continue;
 }
 
-public Action OnWeaponCanUse(int client, int weapon)
+public Action OnWeapon(int client, int weapon)
 {
     if(IsClientValid(client) && IsValidEntity(weapon) && g_bRedie[client])
     {
@@ -265,12 +269,22 @@ public Action OnWeaponCanUse(int client, int weapon)
 
         if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1)
         {
-            SetEntDataFloat(weapon, g_iNextPrimaryAttack, GetGameTime() - 0.1);
-            SetEntDataFloat(weapon, g_iNextSecondaryAttack, GetGameTime() - 0.1);
+            RequestFrame(Frame_SetBlock, EntIndexToEntRef(weapon));
         }
     }
     
     return Plugin_Continue;
+}
+
+public void Frame_SetBlock(int ref)
+{
+    int iWeapon = EntRefToEntIndex(ref);
+
+    if (IsValidEntity(iWeapon))
+    {
+        SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() + 9999.9);
+        SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
+    }
 }
 
 void ResetClient(int client)
@@ -280,6 +294,20 @@ void ResetClient(int client)
     if (IsClientInGame(client))
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
+
+        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
+
+        if (IsValidEntity(iWeapon))
+        {
+            char sWeapon[32];
+            GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+            
+            if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
+            {
+                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() - 0.1);
+                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() - 0.1);
+            }
+        }
     }
 }
 
