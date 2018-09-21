@@ -11,10 +11,17 @@
 #define HUD_RADAR ( 1<<12 )
 #define HUD_ALL 2050
 
+// Following settings are just hardcoded and will replaced with convars later....
+#define RESPAWN_DELAY 5.0
+#define SPAWN_PROTECTION 3.0
+
 bool g_bRedie[MAXPLAYERS + 1 ] = { false, ... };
 
 int g_iNextPrimaryAttack = -1;
 int g_iNextSecondaryAttack = -1;
+
+Handle g_hRespawn[MAXPLAYERS + 1] = { null, ...};
+Handle g_hSpawn[MAXPLAYERS + 1] = { null, ...};
 
 public Plugin myinfo =
 {
@@ -44,7 +51,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_redie", Command_Redie);
 
     HookEvent("round_end", Event_RoundEnd);
-    HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
     HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
 
     AddNormalSoundHook(view_as<NormalSHook>(OnNormalSHook));
@@ -129,6 +136,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (IsClientValid(victim))
     {
+        if (g_hRespawn[victim] != null)
+        {
+            ClearTimer(g_hRespawn[victim]);
+        }
+
+        PrintToChat(victim, "You will be respawned in %.1f seconds!", RESPAWN_DELAY);
+        g_hRespawn[victim] = CreateTimer(RESPAWN_DELAY, Timer_Respawn, GetClientUserId(victim), TIMER_FLAG_NO_MAPCHANGE);
+
         Handle hPlugin = FindPluginByFile("ttt/ttt_hide_radar.smx");
 
         if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
@@ -170,6 +185,26 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     event.BroadcastDisabled = true;
     return Plugin_Handled;
+}
+
+public Action Timer_Respawn(Handle timer, int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (IsClientValid(client) && g_hRespawn[client] != null)
+    {
+        if (!g_bRedie[client])
+        {
+            g_hRespawn[client] = null;
+            return Plugin_Stop;
+        }
+
+        CS_RespawnPlayer(client);
+
+        g_hRespawn[client] = null;
+    }
+
+    return Plugin_Stop;
 }
 
 public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
@@ -301,6 +336,11 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Handled;
     }
 
+    if (g_bRedie[iAttacker] && g_hSpawn[iVictim] != null)
+    {
+        return Plugin_Handled;
+    }
+
     return Plugin_Continue;
 }
 
@@ -350,11 +390,26 @@ void SetRedie(int client)
                 SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() + 9999.9);
             }
         }
+
+        PrintToChat(client, "You have now spawn protection for %.1f seconds!", SPAWN_PROTECTION);
+        g_hSpawn[client] = CreateTimer(SPAWN_PROTECTION, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
     }
     else
     {
         ResetClient(client);
     }
+}
+
+public Action Timer_Spawn(Handle timer, int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (IsClientValid(client))
+    {
+        g_hSpawn[client] = null;
+    }
+
+    return Plugin_Stop;
 }
 
 void ResetClient(int client)
@@ -363,6 +418,9 @@ void ResetClient(int client)
 
     if (IsClientInGame(client))
     {
+        ClearTimer(g_hRespawn[client]);
+        ClearTimer(g_hSpawn[client]);
+
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
 
         int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
@@ -379,6 +437,9 @@ void ResetClient(int client)
             }
         }
     }
+
+    g_hRespawn[client] = null;
+    g_hSpawn[client] = null;
 }
 
 bool IsClientValid(int client, bool nobots = false)
@@ -399,4 +460,13 @@ bool IsClientValid(int client, bool nobots = false)
     }
 
     return false;
+}
+
+void ClearTimer(Handle &timer, bool autoClose = false)
+{
+    if (timer != null)
+    {
+        KillTimer(timer, autoClose);
+        timer = null;
+    }
 }
