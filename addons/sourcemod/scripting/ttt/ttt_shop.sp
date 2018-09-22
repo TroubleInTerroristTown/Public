@@ -57,6 +57,9 @@ ConVar g_cCreditsInterval = null;
 ConVar g_cSQLCredits = null;
 ConVar g_cSilentIdRewards = null;
 ConVar g_cMoneyCredits = null;
+ConVar g_cGiveItemFlag = null;
+ConVar g_cSetCreditsFlag = null;
+ConVar g_cResetItemsFlag = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -135,14 +138,12 @@ public void OnPluginStart()
     RegConsoleCmd("sm_roshop", Command_ReopenShop);
     RegConsoleCmd("sm_reshop", Command_ReopenShop);
     RegConsoleCmd("sm_rshop", Command_ReopenShop);
+    RegConsoleCmd("sm_giveitem", Command_GiveItem);
+    RegConsoleCmd("sm_setcredits", Command_SetCredits);
+    RegConsoleCmd("sm_resetitems", Command_ResetItems);
 
     AddCommandListener(Command_Say, "say");
     AddCommandListener(Command_Say, "say_team");
-
-    // TODO: Add cvar in callback for checking flags (customizable)
-    RegAdminCmd("sm_giveitem", Command_GiveItem, ADMFLAG_ROOT);
-    RegAdminCmd("sm_setcredits", Command_SetCredits, ADMFLAG_ROOT);
-    RegAdminCmd("sm_resetitems", Command_ResetItems, ADMFLAG_ROOT);
 
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_death", Event_PlayerDeath);
@@ -181,6 +182,9 @@ public void OnPluginStart()
     g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "0", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
     g_cSilentIdRewards = AutoExecConfig_CreateConVar("ttt_shop_silent_id_rewards", "1", "0 = Disabled, will not reward credits with silent id. 1 = Will reward the client with credits for inspecting the body.", _, true, 0.0, true, 1.0);
     g_cMoneyCredits = AutoExecConfig_CreateConVar("ttt_shop_show_credits_as_money", "1", "Show player credits as csgo money?", _, true, 0.0, true, 1.0);
+    g_cGiveItemFlag = AutoExecConfig_CreateConVar("ttt_shop_give_item_flag", "z", "Admin flags to give players shop items");
+    g_cSetCreditsFlag = AutoExecConfig_CreateConVar("ttt_shop_set_credits_flag", "z", "Admin flags to set players credits");
+    g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -1218,6 +1222,11 @@ public Action Command_GiveItem(int client, int args)
         return Plugin_Handled;
     }
 
+    if (!TTT_CheckCommandAccess(client, "ttt_giveitem", g_cGiveItemFlag, true))
+    {
+        return Plugin_Handled;
+    }
+
     if (args != 2)
     {
         ReplyToCommand(client, "[SM] Usage: sm_giveitem <#userid|name> <item>");
@@ -1266,6 +1275,11 @@ public Action Command_SetCredits(int client, int args)
         return Plugin_Handled;
     }
 
+    if (!TTT_CheckCommandAccess(client, "ttt_setcredits", g_cSetCreditsFlag, true))
+    {
+        return Plugin_Handled;
+    }
+
     if (args != 2)
     {
         ReplyToCommand(client, "[SM] Usage: sm_setcredits <#userid|name> <credits>");
@@ -1307,7 +1321,19 @@ public Action Command_SetCredits(int client, int args)
 
 public Action Command_ResetItems(int client, int args)
 {
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+
+    if (!TTT_CheckCommandAccess(client, "ttt_resetitems", g_cResetItemsFlag, true))
+    {
+        return Plugin_Handled;
+    }
+
     ResetItemsArray("Command_ResetItems", true);
+
+    return Plugin_Continue;
 }
 
 public int Native_GetClientCredits(Handle plugin, int numParams)
