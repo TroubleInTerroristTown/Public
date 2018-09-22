@@ -9,6 +9,7 @@
 #include <ttt>
 #include <ttt_sql>
 #include <ttt_shop>
+#include <ttt_shop_discount>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Shop"
 
@@ -60,6 +61,7 @@ ConVar g_cMoneyCredits = null;
 ConVar g_cGiveItemFlag = null;
 ConVar g_cSetCreditsFlag = null;
 ConVar g_cResetItemsFlag = null;
+ConVar g_cListItemsFlag = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -141,6 +143,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_giveitem", Command_GiveItem);
     RegConsoleCmd("sm_setcredits", Command_SetCredits);
     RegConsoleCmd("sm_resetitems", Command_ResetItems);
+    RegConsoleCmd("sm_listitems", Command_ListItems);
 
     AddCommandListener(Command_Say, "say");
     AddCommandListener(Command_Say, "say_team");
@@ -185,6 +188,7 @@ public void OnPluginStart()
     g_cGiveItemFlag = AutoExecConfig_CreateConVar("ttt_shop_give_item_flag", "z", "Admin flags to give players shop items");
     g_cSetCreditsFlag = AutoExecConfig_CreateConVar("ttt_shop_set_credits_flag", "z", "Admin flags to set players credits");
     g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
+    g_cListItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_list_items_flag", "z", "Admin flags to list all items from shop");
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -207,7 +211,7 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-    // Get some values from ttt.config
+    // Get some values from ttt.cfg
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
@@ -500,8 +504,6 @@ public Action Command_ShowItems(int client, int args)
 
     int temp_item[Item];
 
-    PrintToConsole(client, "ShortName - LongName, Team, Discount");
-
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
         g_aCustomItems.GetArray(i, temp_item[0]);
@@ -545,22 +547,13 @@ public Action Command_Shop(int client, int args)
                     int price = temp_item[Price];
                     
                     bool bDiscount = false;
-                    int iPercents = 0;
-                    ConVar cDEnable = FindConVar("shop_discount_enable");
-                    
-                    if (cDEnable != null && temp_item[Discount])
+                    int iPercents = TTT_GetItemDiscount(client, temp_item[Short]);
+
+                    if (temp_item[Discount] && iPercents > 0)
                     {
-                        ConVar g_cFlags = FindConVar("shop_discount_flags");
-                        
-                        if (TTT_CheckCommandAccess(client, "ttt_purchaseitem", g_cFlags, true))
-                        {
-                            ConVar cDPercents = FindConVar("shop_discount_percents");
-                            iPercents = cDPercents.IntValue;
-                            float fPercents = 1.0 + cDPercents.FloatValue / 100;
-                            int newPrice = RoundToCeil(price / fPercents);
-                            price = newPrice;
-                            bDiscount = true;
-                        }
+                        int iDiscount = RoundToCeil(price * ( view_as<float>(iPercents) / 100 ));
+                        price -= iDiscount;
+                        bDiscount = true;
                     }
                     
                     if (bDiscount)
@@ -1336,6 +1329,35 @@ public Action Command_ResetItems(int client, int args)
     return Plugin_Continue;
 }
 
+public Action Command_ListItems(int client, int args)
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+
+    if (!TTT_CheckCommandAccess(client, "ttt_listitems", g_cListItemsFlag, true))
+    {
+        return Plugin_Handled;
+    }
+
+    PrintToConsole(client, "If you want something the names, make sure you take the right name with the correct team tag (like \"_t\" for traitor)");
+
+    int iItems[Item];
+    for (int i = 0; i < g_aCustomItems.Length; i++)
+    {
+        g_aCustomItems.GetArray(i, iItems[0]);
+        if (strlen(iItems[Short]) > 1)
+        {
+            PrintToConsole(client, "Name: %s \t Short Name: %s \t Price (without discount): %d", iItems[Long], iItems[Short], iItems[Price]);
+        }
+    }
+
+    PrintToConsole(client, "If you want something the names, make sure you take the right name with the correct team tag (like \"_t\" for traitor)");
+
+    return Plugin_Handled;
+}
+
 public int Native_GetClientCredits(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
@@ -1421,6 +1443,34 @@ int GiveClientItem(int client, char[] sItem)
         if (strlen(iItems[Short]) > 1 && StrEqual(iItems[Short], sItem, false))
         {
             ClientBuyItem(client, sItem, false, true);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+stock bool HasFlags(int client, const char[] flags)
+{
+    AdminFlag aFlags[24];
+    FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
+    
+    return _HasFlags(client, aFlags);
+}
+
+stock bool _HasFlags(int client, AdminFlag flags[24])
+{
+    int iFlags = GetUserFlagBits(client);
+
+    if (iFlags & ADMFLAG_ROOT)
+    {
+        return true;
+    }
+
+    for (int i = 0; i < sizeof(flags); i++)
+    {
+        if (iFlags & FlagToBit(flags[i]))
+        {
             return true;
         }
     }

@@ -50,9 +50,8 @@ forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcred
  * @param price             The price of the item.
  * @param role              The optional role to restrict the item to. (Default: 0 - for all)
  * @param sort                The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
- * @param discount            Item discountable for special players? (Default: false - Required: ttt_shop_discount)
  */
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, bool discount = false);
+native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
 
 /*
  * Update shop item.
@@ -60,9 +59,8 @@ native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong
  * @param itemshort         The short-tag identifier to find the item.
  * @param price             The price of the item.
  * @param sort                The priority in Sorting. Buy menu is sorted from high to low.
- * @param discount            Item discountable for special players? (Required: ttt_shop_discount)
  */
-native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0, bool discount = false);
+native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0);
 
 /*
  * Remove shop item.
