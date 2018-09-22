@@ -551,8 +551,9 @@ public Action Command_Shop(int client, int args)
 
                     if (temp_item[Discount] && iPercents > 0)
                     {
-                        int iDiscount = RoundToCeil(price * ( view_as<float>(iPercents) / 100 ));
-                        price -= iDiscount;
+                        float fPercentage = iPercents / 100.0;
+                        int iDiscount = RoundToCeil(price * fPercentage);
+                        price = temp_item[Price] - iDiscount;
                         bDiscount = true;
                     }
                     

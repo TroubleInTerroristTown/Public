@@ -151,8 +151,10 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
             g_aItems.GetArray(i, iItem[0]);
             if (StrEqual(iItem[Short], item, false) && HasFlags(client, iItem[Flag]))
             {
-                int iDiscount = RoundToCeil(price * ( view_as<float>(iItem[Percent]) / 100 ));
-                price -= iDiscount;
+                float fPercentage = iItem[Percent] / 100.0;
+                int iDiscount = RoundToCeil(price * fPercentage);
+                int iOld = price;
+                price = iOld - iDiscount;
                 return Plugin_Changed;
             }
         }
