@@ -44,10 +44,8 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
     
     if (TTT_IsClientValid(client) && TTT_CheckCommandAccess(client, "ttt_purchaseitem", g_cFlags, true) && IsPlayerAlive(client))
     {
-        float fPercents = 1.0 + g_cPercents.FloatValue / 100;
-        int newPrice = RoundToCeil(price / fPercents);
-        price = newPrice;
-        
+        int iDiscount = RoundToCeil(price * ( g_cPercents.FloatValue / 100 ));
+        price -= iDiscount;
         return Plugin_Changed;
     }
     return Plugin_Continue;
