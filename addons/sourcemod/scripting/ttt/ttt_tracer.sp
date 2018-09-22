@@ -20,7 +20,6 @@ bool g_bHasTracer[MAXPLAYERS+1];
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 ConVar g_cCompassShowNameDistance = null;
 ConVar g_cCompassDisorientationDistance = null;
@@ -47,7 +46,6 @@ public void OnPluginStart()
     g_cPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the tracer in the shop menu.");
     g_cCompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
     g_cCompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
-    g_cDiscount = AutoExecConfig_CreateConVar("tracer_traitor", "0", "Should Tracer discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     g_hHUD = CreateHudSynchronizer();
@@ -81,7 +79,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

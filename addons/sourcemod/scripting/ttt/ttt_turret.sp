@@ -15,7 +15,6 @@ bool g_bHasTurret[MAXPLAYERS+1];
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cKillTurretCount = null;
 
 ConVar g_cCheckTeam = null;
@@ -39,7 +38,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("turret_name", "Turret", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("turret_price", "9000", "The amount of credits turret costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("turret_sort_prio", "0", "The sorting priority of the turret in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("turret_traitor", "0", "Should turret discountable?", _, true, 0.0, true, 1.0);
     g_cKillTurretCount = AutoExecConfig_CreateConVar("turret_kill_cash_amount", "800", "Kill turret credits ?");
     HookEvent("player_spawn", Event_PlayerSpawn);
     
@@ -75,7 +73,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
