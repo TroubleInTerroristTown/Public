@@ -24,9 +24,6 @@ ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cICount = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountI = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 
 int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -59,9 +56,6 @@ public void OnPluginStart()
     g_cTPrio = AutoExecConfig_CreateConVar("hs_traitor_sort_prio", "0", "The sorting priority of the healthshots (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("hs_detective_sort_prio", "0", "The sorting priority of the healthshots (Detective) in the shop menu.");
     g_cIPrio = AutoExecConfig_CreateConVar("hs_innocent_sort_prio", "0", "The sorting priority of the healthshots (Innocent) in the shop menu.");
-    g_cDiscountI = AutoExecConfig_CreateConVar("hs_discount_innocent", "0", "Should healthshot discountable for innocents?", _, true, 0.0, true, 1.0);
-    g_cDiscountT = AutoExecConfig_CreateConVar("hs_discount_traitor", "0", "Should healthshot discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("hs_discount_detective", "0", "Should healthshot discountable for detectives?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -92,9 +86,9 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
     
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

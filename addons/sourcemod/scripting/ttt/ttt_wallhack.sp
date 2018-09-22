@@ -25,8 +25,6 @@ ConVar g_cDetectiveCooldown = null;
 ConVar g_cTraitorActive = null;
 ConVar g_cDetectiveActive = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 ConVar g_cColorsT = null;
 ConVar g_cColorsD = null;
 ConVar g_cDefaultRed = null;
@@ -66,8 +64,6 @@ public void OnPluginStart()
     g_cDetectiveActive = AutoExecConfig_CreateConVar("wh_detective_active", "3.0", "Active time for Dective-Wallhack (time in seconds)");
     g_cTraitor_Prio = AutoExecConfig_CreateConVar("wh_traitor_sort_prio", "0", "The sorting priority of the Traitor - Wallhack in the shop menu.");
     g_cDetective_Prio = AutoExecConfig_CreateConVar("wh_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
-    g_cDiscountT = AutoExecConfig_CreateConVar("wh_discount_traitor", "0", "Should wallhack discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("wh_discount_detective", "0", "Should wallhack discountable for detectives?", _, true, 0.0, true, 1.0);
     g_cColorsT = AutoExecConfig_CreateConVar("wh_show_roles_traitor", "1", "Show glows as role colors for traitors?", _, true, 0.0, true, 1.0);
     g_cColorsD = AutoExecConfig_CreateConVar("wh_show_roles_detective", "0", "Show glows as role colors for detectives?", _, true, 0.0, true, 1.0);
     g_cDefaultRed = AutoExecConfig_CreateConVar("wh_default_color_red", "255", "Red color of default glow");
@@ -121,8 +117,8 @@ void RegisterItem()
     {
         char sBuffer[MAX_ITEM_LENGTH];
         g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTraitorPrice.IntValue, TTT_TEAM_TRAITOR, g_cTraitor_Prio.IntValue, g_cDiscountT.BoolValue);
-        TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDetectivePrice.IntValue, TTT_TEAM_DETECTIVE, g_cDetective_Prio.IntValue, g_cDiscountD.BoolValue);
+        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTraitorPrice.IntValue, TTT_TEAM_TRAITOR, g_cTraitor_Prio.IntValue);
+        TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDetectivePrice.IntValue, TTT_TEAM_DETECTIVE, g_cDetective_Prio.IntValue);
     }
     else if (!g_bCPS)
     {

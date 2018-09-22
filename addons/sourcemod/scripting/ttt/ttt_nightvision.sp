@@ -12,7 +12,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 bool g_bNightvision[MAXPLAYERS + 1] =  { false, ... };
 
@@ -36,7 +35,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("nightvision_name", "Night Vision", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("nightvision_price", "3000", "The amount of credits nightvisions costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("nightvision_sort_prio", "0", "The sorting priority of the nightvisions in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("nightvision_discount", "0", "Should nightvision discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     RegConsoleCmd("sm_nvg", Command_NVG);
@@ -54,7 +52,7 @@ void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)

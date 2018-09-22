@@ -38,8 +38,6 @@ ConVar g_cC4Magnitude = null;
 ConVar g_cC4KillRadius = null;
 ConVar g_cJihadDamageRadius = null;
 ConVar g_cJihadMagnitude = null;
-ConVar g_cDiscountC4 = null;
-ConVar g_cDiscountJ = null;
 ConVar g_cC4BeepVolume = null;
 ConVar g_cEnableWires = null;
 ConVar g_cWireCount = null;
@@ -99,8 +97,6 @@ public void OnPluginStart()
     g_cC4Magnitude = AutoExecConfig_CreateConVar("c4_magnitude", "850", "The amount of damage done by the explosion. For C4");
     g_cJihadMagnitude = AutoExecConfig_CreateConVar("jihad_magnitude", "1000", "The amount of damage done by the explosion. For Jihad");
     g_cC4KillRadius = AutoExecConfig_CreateConVar("c4_kill_radius", "275.0", "The kill radius of the C4 explosion.");
-    g_cDiscountC4 = AutoExecConfig_CreateConVar("c4_discount_traitor", "0", "Should c4 discountable?", _, true, 0.0, true, 1.0);
-    g_cDiscountJ = AutoExecConfig_CreateConVar("jihad_discount_detective", "0", "Should jihad bomb discountable?", _, true, 0.0, true, 1.0);
     g_cC4BeepVolume = AutoExecConfig_CreateConVar("c4_beep_volume", "0.6", "Volume of c4 beep sound (0.0 - no sound)", _, true, 0.0, true, 1.0);
     g_cEnableWires = AutoExecConfig_CreateConVar("c4_enable_wires", "1", "Enable wires to defuse c4?", _, true, 0.0, true, 1.0);
     g_cWireCount = AutoExecConfig_CreateConVar("c4_wire_count", "4", "How many wires for defusing?", _, true, 1.0);
@@ -182,10 +178,10 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongName_C4.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_C4, sBuffer, g_cPrice_C4.IntValue, TTT_TEAM_TRAITOR, g_cPrio_C4.IntValue, g_cDiscountC4.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_C4, sBuffer, g_cPrice_C4.IntValue, TTT_TEAM_TRAITOR, g_cPrio_C4.IntValue);
     
     g_cLongName_J.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue, g_cDiscountJ.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_J, sBuffer, g_cPrice_J.IntValue, TTT_TEAM_TRAITOR, g_cPrio_J.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

@@ -23,9 +23,6 @@ ConVar g_cDPrice = null;
 ConVar g_cDPrio = null;
 ConVar g_cTPrice = null;
 ConVar g_cTPrio = null;
-ConVar g_cDiscountI = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 
 float g_fDeathPos[MAXPLAYERS+1][3];
 
@@ -60,9 +57,6 @@ public void OnPluginStart() {
     g_cGrenadeDelay = AutoExecConfig_CreateConVar("md_grenade_delay", "0.25", "The time delay it takes for the grenade to spawn after a player dies. Decimals allowed. (Def. 0.25)");
     g_cDamage = AutoExecConfig_CreateConVar("md_grenade_damage", "99.0", "The damage the grenade does at the explosions center point. Decimals allowed. (Def. 99.0)");
     g_cExplosionSize = AutoExecConfig_CreateConVar("md_explosion_size", "350.0", "The size of the explosion. Decimals allowed. (Def. 350.0)");
-    g_cDiscountT = AutoExecConfig_CreateConVar("martydom_discount_traitor", "0", "Should martydom discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("martydom_discount_detective", "0", "Should martydom discountable for detectives?", _, true, 0.0, true, 1.0);
-    g_cDiscountI = AutoExecConfig_CreateConVar("martydom_discount_innocent", "0", "Should martydom discountable for innocents?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_death", Event_PlayerDeath);
@@ -84,9 +78,9 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

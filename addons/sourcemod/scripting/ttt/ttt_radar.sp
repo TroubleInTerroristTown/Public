@@ -16,7 +16,6 @@ ConVar g_cLongName = null;
 
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
-ConVar g_cDiscount = null;
 ConVar g_cInterval = null;
 ConVar g_cRed = null;
 ConVar g_cGreen = null;
@@ -25,7 +24,6 @@ ConVar g_cAlpha = null;
 
 ConVar g_cTPrice = null;
 ConVar g_cTPrio = null;
-ConVar g_cTDiscount = null;
 ConVar g_cTInterval = null;
 ConVar g_cTRed = null;
 ConVar g_cTGreen = null;
@@ -61,7 +59,6 @@ public void OnPluginStart()
     
     g_cPrice = AutoExecConfig_CreateConVar("radar_price", "9000", "The amount of credits Radar costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("radar_sort_prio", "0", "The sorting priority of the Radar in the detective shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("radar_discount", "0", "Should detective Radar discountable?", _, true, 0.0, true, 1.0);
     g_cInterval = AutoExecConfig_CreateConVar("radar_update_interval", "30", "Time in seconds to update player locations for detective radar");
     g_cRed = AutoExecConfig_CreateConVar("radar_player_color_red", "255", "Red colors for detective radar", _, true, 0.0, true, 255.0);
     g_cGreen = AutoExecConfig_CreateConVar("radar_player_color_green", "0", "Green colors for detective radar", _, true, 0.0, true, 255.0);
@@ -70,7 +67,6 @@ public void OnPluginStart()
     
     g_cTPrice = AutoExecConfig_CreateConVar("radar_price_traitor", "9000", "The amount of credits Radar costs as traitor. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("radar_sort_prio_traitor", "0", "The sorting priority of the Radar in the traitor shop menu.");
-    g_cTDiscount = AutoExecConfig_CreateConVar("radar_discount_traitor", "0", "Should traitor Radar discountable?", _, true, 0.0, true, 1.0);
     g_cTInterval = AutoExecConfig_CreateConVar("radar_update_interval_traitor", "30", "Time in seconds to update player locations for traitor radar");
     g_cTRed = AutoExecConfig_CreateConVar("radar_player_color_traitor_red", "255", "Red colors for traitor radar", _, true, 0.0, true, 255.0);
     g_cTGreen = AutoExecConfig_CreateConVar("radar_player_color_traitor_green", "0", "Green colors for traitor radar", _, true, 0.0, true, 255.0);
@@ -104,8 +100,8 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sName, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sName, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

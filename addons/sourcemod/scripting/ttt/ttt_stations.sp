@@ -47,8 +47,6 @@ ConVar g_cHealthDistance = null;
 ConVar g_cHurtTraitors = null;
 ConVar g_cHurt = null;
 ConVar g_cHealth = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 
 char g_sPluginTag[64];
 
@@ -73,8 +71,6 @@ public void OnPluginStart()
     g_cMaxHealth = AutoExecConfig_CreateConVar("health_station_max_health", "125", "What's the max health for a health station that the player can get?");
     g_cHealth = AutoExecConfig_CreateConVar("health_station_name", "Health Station", "The name of the health station in the menu.");
     g_cHurt = AutoExecConfig_CreateConVar("hurt_station_name", "Hurt Station", "The name of the hurt station in the menu.");
-    g_cDiscountT = AutoExecConfig_CreateConVar("hurt_station_discount", "0", "Should hurt station discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("health_station_discount_detective", "0", "Should health station discountable for detectives?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
@@ -98,10 +94,10 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cHealth.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, sBuffer, g_cHealthPrice.IntValue, TTT_TEAM_DETECTIVE, g_cHealthPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(HEALTH_ITEM_SHORT, sBuffer, g_cHealthPrice.IntValue, TTT_TEAM_DETECTIVE, g_cHealthPrio.IntValue);
     
     g_cHurt.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(HURT_ITEM_SHORT, sBuffer, g_cHurtPrice.IntValue, TTT_TEAM_TRAITOR, g_cHurtPrio.IntValue, g_cDiscountT.BoolValue);
+    TTT_RegisterCustomItem(HURT_ITEM_SHORT, sBuffer, g_cHurtPrice.IntValue, TTT_TEAM_TRAITOR, g_cHurtPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

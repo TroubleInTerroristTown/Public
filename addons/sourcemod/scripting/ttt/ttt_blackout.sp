@@ -17,7 +17,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cStart = null;
 ConVar g_cEnd = null;
 ConVar g_cDensity = null;
@@ -46,7 +45,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("blackout_name", "Blackout", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("blackout_price", "9000", "The amount of credits blackout costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("blackout_sort_prio", "0", "The sorting priority of the blackout in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("blackout_discount", "0", "Should blackout discountable?", _, true, 0.0, true, 1.0);
     g_cStart = AutoExecConfig_CreateConVar("blackout_fog_start", "0", "0 Should be the middle of player(?))");
     g_cEnd = AutoExecConfig_CreateConVar("blackout_fog_end", "150", "Distance from fog_start until the end (visible field for players)");
     g_cDensity = AutoExecConfig_CreateConVar("blackout_fog_density", "0.999", "Density of the fog", _, true, 0.0);
@@ -67,7 +65,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnMapStart()

@@ -14,7 +14,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cOwnDamage = null;
 ConVar g_cTraitorDamage = null;
 ConVar g_cDistance = null;
@@ -44,7 +43,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("posion_smoke_name", "Poison Smoke", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("posion_smoke_price", "9000", "The amount of credits poison smoke costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("posion_smoke_sort_prio", "0", "The sorting priority of the poison smoke in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("posion_smoke_discount", "0", "Should poison smoke discountable?", _, true, 0.0, true, 1.0);
     g_cOwnDamage = AutoExecConfig_CreateConVar("poison_smoke_own_damange", "0", "Allow damage to the owner of poison smoke?", _, true, 0.0, true, 1.0);
     g_cTraitorDamage = AutoExecConfig_CreateConVar("poison_smoke_traitor_damange", "1", "Allow damage to other traitors?", _, true, 0.0, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("poison_smoke_distance", "145", "Distance from the middle which should do damage");
@@ -67,7 +65,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)

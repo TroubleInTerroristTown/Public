@@ -18,8 +18,6 @@ ConVar g_cCPrio = null;
 ConVar g_cDLongName = null;
 ConVar g_cDPrice = null;
 ConVar g_cDPrio = null;
-ConVar g_cDiscountD = null;
-ConVar g_cDiscountC = null;
 
 public Plugin myinfo =
 {
@@ -44,8 +42,6 @@ public void OnPluginStart()
     g_cDLongName = AutoExecConfig_CreateConVar("cad_drone_name", "Drone", "The name of this in Shop");
     g_cDPrice = AutoExecConfig_CreateConVar("cad_drone_price", "9000", "The amount of credits a drone costs as detective. 0 to disable.");
     g_cDPrio = AutoExecConfig_CreateConVar("cad_drone_sort_prio", "0", "The sorting priority of the drone in the shop menu.");
-    g_cDiscountC = AutoExecConfig_CreateConVar("cad_discount_camera", "0", "Should camera discountable?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("cad_discount_drone", "0", "Should drone discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -75,10 +71,10 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cCLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(CAMERA_SHORT_NAME, sBuffer, g_cCPrice.IntValue, TTT_TEAM_DETECTIVE, g_cCPrio.IntValue, g_cDiscountC.BoolValue);
+    TTT_RegisterCustomItem(CAMERA_SHORT_NAME, sBuffer, g_cCPrice.IntValue, TTT_TEAM_DETECTIVE, g_cCPrio.IntValue);
     
     g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(DRONE_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_TRAITOR, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(DRONE_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_TRAITOR, g_cDPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)

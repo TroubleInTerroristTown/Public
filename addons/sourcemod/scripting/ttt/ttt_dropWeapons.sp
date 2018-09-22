@@ -15,7 +15,6 @@
 ConVar g_cLongName = null;
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
-ConVar g_cDiscount = null;
 ConVar g_cCount = null;
 ConVar g_cDistance = null;
 ConVar g_cDropMode = null;
@@ -49,7 +48,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("drop_name", "Drop", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("drop_price", "9000", "The amount of credits a Drop costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("drop_sort_prio", "0", "The sorting priority of the Drop in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("drop_discountable", "0", "Should Drop discountable?", _, true, 0.0, true, 1.0);
     g_cCount = AutoExecConfig_CreateConVar("drop_max_usage", "1", "Usages per round", _, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("drop_distance", "500", "Distance between client and target");
     g_cDropMode = AutoExecConfig_CreateConVar("drop_mode", "1", "0 - Just drop primary weapons, 1 - Drop primary weapons (no pickup for x seconds)", _, true, 0.0, true, 1.0);
@@ -98,7 +96,7 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

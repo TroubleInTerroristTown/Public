@@ -14,7 +14,6 @@
 ConVar g_cLongName = null;
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
-ConVar g_cDiscount = null;
 ConVar g_cForce = null;
 
 public Plugin myinfo =
@@ -37,7 +36,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("tactical_shield_name", "Tactical Shield", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("tactical_shield_price", "9000", "The amount of credits a tactical shield costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("tactical_shield_sort_prio", "0", "The sorting priority of the tactical shield in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("tactical_shield_discountable", "0", "Should tactical shield discountable?", _, true, 0.0, true, 1.0);
     g_cForce = AutoExecConfig_CreateConVar("tactical_shield_force", "0", "Force shield?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
@@ -67,7 +65,7 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
 }
 
 public void OnClientDisconnect(int client)

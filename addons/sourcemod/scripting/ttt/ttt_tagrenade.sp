@@ -22,13 +22,11 @@ ConVar g_cTagrenadeRange = null;
 ConVar g_cTagrenadeTime = null;
 ConVar g_cLongName = null;
 ConVar g_cShowPlayersBehindWalls = null;
-ConVar g_cDiscount = null;
 ConVar g_cDPrice = null;
 ConVar g_cDCount = null;
 ConVar g_cDPrio = null;
 ConVar g_cDTagrenadeRange = null;
 ConVar g_cCountPlayersBehindWalls = null;
-ConVar g_cDDiscount = null;
 ConVar g_cCountInnocents = null;
 ConVar g_cCountTraitors = null;
 ConVar g_cCountDetectives = null;
@@ -78,8 +76,6 @@ public void OnPluginStart()
     g_cTagrenadeTime = AutoExecConfig_CreateConVar("tagrenade_time", "3.5", "How long a player is tagged for in seconds.");
     g_cShowPlayersBehindWalls = AutoExecConfig_CreateConVar("tagrenade_players_behind_walls", "1", "Tag players behind a wall?", _, true, 0.0, true, 1.0);
     g_cCountPlayersBehindWalls = AutoExecConfig_CreateConVar("tagrenade_players_behind_walls_detective", "1", "Count players behind a wall?", _, true, 0.0, true, 1.0);
-    g_cDiscount = AutoExecConfig_CreateConVar("tagrenade_discount", "0", "Should traitors tagrenade discountable?", _, true, 0.0, true, 1.0);
-    g_cDDiscount = AutoExecConfig_CreateConVar("tagrenade_discount_detective", "0", "Should detectives tagrenade discountable?", _, true, 0.0, true, 1.0);
     g_cCountInnocents = AutoExecConfig_CreateConVar("tagrenade_detective_count_innocents", "1", "Count innocents for detectives tagrenade?", _, true, 0.0, true, 1.0);
     g_cCountTraitors = AutoExecConfig_CreateConVar("tagrenade_detective_count_traitors", "1", "Count traitors for detectives tagrenade?", _, true, 0.0, true, 1.0);
     g_cCountDetectives = AutoExecConfig_CreateConVar("tagrenade_detective_count_detectives", "1", "Count detectives for detectives tagrenade?", _, true, 0.0, true, 1.0);
@@ -147,7 +143,7 @@ void RegisterItem()
     
     if (g_bCPS)
     {
-        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscount.BoolValue);
+        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
     }
     else if (!g_bCPS)
     {
@@ -165,7 +161,7 @@ void RegisterItem()
         }
     }
     
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

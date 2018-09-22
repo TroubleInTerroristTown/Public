@@ -12,7 +12,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 bool g_bHasItem[MAXPLAYERS + 1] =  { false, ... };
 
@@ -42,7 +41,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("template_name", "Template", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("template_price", "9000", "The amount of credits TEMPLATE costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("template_sort_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("template_discount", "0", "Should TEMPLATE discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -63,7 +61,7 @@ public void OnConfigsExecuted()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
 }
 
 /* public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

@@ -22,9 +22,6 @@ ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cICount = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
-ConVar g_cDiscountI = null;
 ConVar g_cRagdoll = null;
 ConVar g_cIgnoreRoleTraitor = null;
 ConVar g_cIgnoreRoleInnocent = null;
@@ -71,9 +68,6 @@ public void OnPluginStart()
     g_cTCount = AutoExecConfig_CreateConVar("rt_traitor_count", "1", "The amount of usages for Random Teleports per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("rt_detective_count", "1", "The amount of usages for Random Teleports per round as detective. 0 to disable.");
     g_cICount = AutoExecConfig_CreateConVar("rt_innocent_count", "1", "The amount of usages for Random Teleports per round as innocent. 0 to disable.");
-    g_cDiscountT = AutoExecConfig_CreateConVar("rt_discount_traitor", "0", "Should Random Teleport discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("rt_discount_detective", "0", "Should Random Teleport discountable for detectives?", _, true, 0.0, true, 1.0);
-    g_cDiscountI = AutoExecConfig_CreateConVar("rt_discount_innocent", "0", "Should Random Teleport discountable for innocents?", _, true, 0.0, true, 1.0);
     g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
     g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
     g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
@@ -105,9 +99,9 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

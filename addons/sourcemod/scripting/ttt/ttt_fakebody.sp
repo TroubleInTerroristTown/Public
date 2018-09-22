@@ -21,7 +21,6 @@ ConVar g_cShowTraitorAsDead = null;
 ConVar g_cCount = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -55,7 +54,6 @@ public void OnPluginStart()
     g_cShowFakeMessage = AutoExecConfig_CreateConVar("fb_show_fake_message", "0", "Show the fake message (XXX has found a fake body)?");
     g_cDeleteFakeBodyAfterFound = AutoExecConfig_CreateConVar("fb_delete_fakebody_after_found", "0", "Delete fake body after found?");
     g_cShowTraitorAsDead = AutoExecConfig_CreateConVar("fb_show_traitor_as_dead", "1", "Show traitor as dead after fakebody found?");
-    g_cDiscount = AutoExecConfig_CreateConVar("fb_discount", "0", "Should fake body discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -94,7 +92,7 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

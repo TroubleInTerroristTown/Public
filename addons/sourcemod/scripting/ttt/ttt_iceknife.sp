@@ -30,7 +30,6 @@ ConVar g_cPrio = null;
 ConVar g_cFreezeTime = null;
 ConVar g_cFreezeTraitors = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cMute = null;
 ConVar g_cGag = null;
 ConVar g_cIceCube = null;
@@ -74,7 +73,6 @@ public void OnPluginStart()
     g_cDamage = AutoExecConfig_CreateConVar("iceknife_damage", "0", "Amount of damage with a ice knife. 0 to disable.");
     g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
     g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time. 0.0 - Disabled");
-    g_cDiscount = AutoExecConfig_CreateConVar("iceknife_discount", "0", "Should iceknife discountable?", _, true, 0.0, true, 1.0);
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);
     g_cGag = AutoExecConfig_CreateConVar("iceknife_gag", "1", "Gag client during freeze time?", _, true, 0.0, true, 1.0);
     g_cIceCube = AutoExecConfig_CreateConVar("iceknife_ice_cube", "1", "Set player into a ice cube during freeze?", _, true, 0.0, true, 1.0);
@@ -186,7 +184,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
 
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

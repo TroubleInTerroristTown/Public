@@ -19,7 +19,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cDamage = null;
 ConVar g_cExplosionSize = null;
 ConVar g_cRealBody = null;
@@ -59,7 +58,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("decoy_body_name", "Decoy Body", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("decoy_body_price", "9000", "The amount of credits decoy body costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("decoy_body_sort_prio", "0", "The sorting priority of the decoy body in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("decoy_body_discount", "0", "Should decoy body discountable?", _, true, 0.0, true, 1.0);
     g_cDamage = AutoExecConfig_CreateConVar("decoy_body_grenade_damage", "99", "The damage the grenade does at the explosions center point. (Def. 99)");
     g_cExplosionSize = AutoExecConfig_CreateConVar("decoy_body_explosion_size", "350", "The size of the explosion. (Def. 350)");
     g_cRealBody = AutoExecConfig_CreateConVar("decoy_body_allow_on_real_body", "1", "Allow decoy bodies with real bodies", _, true, 0.0, true, 1.0);
@@ -100,7 +98,7 @@ void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

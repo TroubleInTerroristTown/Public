@@ -22,8 +22,6 @@ ConVar g_cDPrio = null;
 ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 ConVar g_cReviveT = null;
 ConVar g_cReviveD = null;
 ConVar g_cTimeToAccept = null;
@@ -74,8 +72,6 @@ public void OnPluginStart()
     g_cDPrio = AutoExecConfig_CreateConVar("revive_detective_sort_prio", "0", "The sorting priority of the Revive (Detective) in the shop menu.");
     g_cTCount = AutoExecConfig_CreateConVar("revive_traitor_count", "1", "The amount of usages for Revive per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("revive_detective_count", "1", "The amount of usages for Revive per round as detective. 0 to disable.");
-    g_cDiscountT = AutoExecConfig_CreateConVar("revive_discount_traitor", "0", "Should Revive discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("revive_discount_detective", "0", "Should Revive discountable for detectives?", _, true, 0.0, true, 1.0);
     g_cReviveT = AutoExecConfig_CreateConVar("revive_time_traitor", "10", "Revive time for traitors?", _, true, 3.0);
     g_cReviveD = AutoExecConfig_CreateConVar("revive_time_detective", "10", "Revive time for detectives?", _, true, 3.0);
     g_cTimeToAccept = AutoExecConfig_CreateConVar("revive_time_to_accept", "10", "Time in seconds to accept the revive request.", _, true, 5.0);
@@ -109,8 +105,8 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

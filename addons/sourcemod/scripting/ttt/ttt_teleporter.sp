@@ -15,7 +15,6 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cCount = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -47,7 +46,6 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("teleporter_price", "9000", "The amount of credits Teleporter costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("teleporter_sort_prio", "0", "The sorting priority of the Teleporter in the shop menu.");
     g_cCount = AutoExecConfig_CreateConVar("teleporter_count", "2", "How often a players can port him back to the location");
-    g_cDiscount = AutoExecConfig_CreateConVar("teleporter_discount", "0", "Should Teleporter discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     RegConsoleCmd("sm_tele", Command_Tele);
@@ -72,7 +70,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

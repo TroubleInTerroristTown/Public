@@ -24,8 +24,6 @@ ConVar g_cSpeed = null;
 ConVar g_cTime = null;
 ConVar g_cCooldown = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
 
 Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
 Handle g_hCTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -58,8 +56,6 @@ public void OnPluginStart()
     g_cSpeed = AutoExecConfig_CreateConVar("sprint_speed", "1.33", "Float value of sprint speed (X.33 = 33%)");
     g_cTime = AutoExecConfig_CreateConVar("sprint_speed_time", "3.0", "Time in seconds with speed");
     g_cCooldown = AutoExecConfig_CreateConVar("sprint_cooldown_time", "7.0", "Time in seconds until next speed boost");
-    g_cDiscountT = AutoExecConfig_CreateConVar("sprint_discount_traitor", "0", "Should sprint discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("sprint_discount_detective", "0", "Should sprint discountable for detectives?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -82,8 +78,8 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue, g_cDiscountD.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue, g_cDiscountT.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceT.IntValue, TTT_TEAM_DETECTIVE, g_cPrioD.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceD.IntValue, TTT_TEAM_TRAITOR, g_cPrioT.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

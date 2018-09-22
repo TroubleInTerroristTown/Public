@@ -20,8 +20,6 @@ ConVar g_cIPrio = null;
 ConVar g_cLongNameT = null;
 ConVar g_cLongNameI = null;
 ConVar g_cCooldown = null;
-ConVar g_cDiscountI = null;
-ConVar g_cDiscountT = null;
 
 bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
 
@@ -51,8 +49,6 @@ public void OnPluginStart()
     g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "0.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
     g_cLongNameI = AutoExecConfig_CreateConVar("id_name_innocent", "ID", "The name of this in Innocent Shop");
     g_cLongNameT = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
-    g_cDiscountT = AutoExecConfig_CreateConVar("id_discount_traitor", "0", "Should fake id discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountI = AutoExecConfig_CreateConVar("id_discount_innocent", "0", "Should id discountable for innocents?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
@@ -131,10 +127,10 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongNameT.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
     
     g_cLongNameI.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)

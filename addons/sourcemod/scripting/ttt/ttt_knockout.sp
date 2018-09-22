@@ -20,7 +20,6 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 
 int g_iCollisionGroup = -1;
 int g_iFreeze = -1;
@@ -93,7 +92,6 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("knockout_name", "Knockout", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("knockout_price", "9000", "The amount of credits a knockout costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("knockout_sort_prio", "0", "The sorting priority of the knockout in the shop menu.");
-    g_cDiscount = AutoExecConfig_CreateConVar("knockout_discount", "0", "Should knockout discountable?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -142,7 +140,7 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 }
 
 public void OnClientPutInServer(int client)
