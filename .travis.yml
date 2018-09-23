@@ -1,7 +1,6 @@
-os: linux
+sudo: false
 dist: xenial
 group: edge
-sudo: false
 language: c
 
 addons:
