@@ -1,5 +1,6 @@
 os: linux
-dist: trusty
+dist: xenial
+group: edge
 sudo: false
 language: c
 
