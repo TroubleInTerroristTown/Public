@@ -193,13 +193,10 @@ public Action Timer_Respawn(Handle timer, int userid)
 
     if (IsClientValid(client) && g_hRespawn[client] != null)
     {
-        if (!g_bRedie[client])
+        if (g_bRedie[client])
         {
-            g_hRespawn[client] = null;
-            return Plugin_Stop;
+            CS_RespawnPlayer(client);
         }
-
-        CS_RespawnPlayer(client);
 
         g_hRespawn[client] = null;
     }
@@ -216,11 +213,6 @@ public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &
 
         LoopClients(i)
         {
-            if (client == i)
-            {
-                continue;
-            }
-
             if (g_bRedie[client] == g_bRedie[i])
             {
                 clients[numClients] = i;
@@ -392,6 +384,12 @@ void SetRedie(int client)
         }
 
         PrintToChat(client, "You have now spawn protection for %.1f seconds!", SPAWN_PROTECTION);
+
+        if (g_hSpawn[client] != null)
+        {
+            ClearTimer(g_hSpawn[client]);
+        }
+
         g_hSpawn[client] = CreateTimer(SPAWN_PROTECTION, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
     }
     else
