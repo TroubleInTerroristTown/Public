@@ -19,7 +19,7 @@ native bool GhostDM_IsClientInRedie(int client);
  * @param   client          The client index
  * @return                  True if the client in deathmatch mode, otherwise false
  */
-native bool GhostDM_IsClientInDM(int client);
+native bool GhostDM_IsClientInDeathmatch(int client);
 
 public SharedPlugin __pl_ghostdm = 
 {
@@ -36,6 +36,6 @@ public SharedPlugin __pl_ghostdm =
 public void __pl_ghostdm_SetNTVOptional()
 {
     MarkNativeAsOptional("GhostDM_IsClientInRedie");
-    MarkNativeAsOptional("GhostDM_IsClientInDM");
+    MarkNativeAsOptional("GhostDM_IsClientInDeathmatch");
 }
 #endif

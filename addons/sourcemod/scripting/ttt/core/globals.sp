@@ -293,6 +293,7 @@ ConVar g_cShowInnoRDMMenu = null;
 ConVar g_cFlashlightOption = null;
 ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
+ConVar g_cShowURL = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

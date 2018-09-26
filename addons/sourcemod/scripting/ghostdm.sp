@@ -16,6 +16,7 @@
 #define SPAWN_PROTECTION 3.0
 
 bool g_bRedie[MAXPLAYERS + 1 ] = { false, ... };
+bool g_bDM[MAXPLAYERS + 1 ] = { false, ... };
 
 int g_iNextPrimaryAttack = -1;
 int g_iNextSecondaryAttack = -1;
@@ -34,21 +35,28 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    CreateNative("Redie_GetClientStatus", Native_GetClientStatus);
+    CreateNative("GhostDM_IsClientInRedie", Native_IsClientInRedie);
+    CreateNative("GhostDM_IsClientInDeathmatch", Native_IsClientInDeathmatch);
 
     RegPluginLibrary("ghostdm");
     
     return APLRes_Success;
 }
 
-public int Native_GetClientStatus(Handle plugin, int numParams)
+public int Native_IsClientInRedie(Handle plugin, int numParams)
 {
     return g_bRedie[GetNativeCell(1)];
+}
+
+public int Native_IsClientInDeathmatch(Handle plugin, int numParams)
+{
+    return g_bDM[GetNativeCell(1)];
 }
 
 public void OnPluginStart()
 {
     RegConsoleCmd("sm_redie", Command_Redie);
+    RegConsoleCmd("sm_dm", Command_Deathmatch);
 
     HookEvent("round_end", Event_RoundEnd);
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
@@ -91,6 +99,12 @@ public Action Command_Redie(int client, int args)
         return Plugin_Handled;
     }
 
+    if (IsPlayerAlive(client))
+    {
+        ReplyToCommand(client, "You must be dead!");
+        return Plugin_Handled;
+    }
+
     if (g_bRedie[client])
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
@@ -99,8 +113,46 @@ public Action Command_Redie(int client, int args)
     g_bRedie[client] = !g_bRedie[client];
 
     PrintToChat(client, "Changed redie status to: %s", g_bRedie[client] ? "On" : "Off");
+    CS_RespawnPlayer(client);
 
-    SetRedie(client);
+    if (g_bRedie[client])
+    {
+        SetRedie(client);
+    }
+    else
+    {
+        ResetClient(client);
+    }
+
+    return Plugin_Handled;
+}
+
+public Action Command_Deathmatch(int client, int args)
+{
+    if (!IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+
+    if (!g_bRedie[client])
+    {
+        ReplyToCommand(client, "You must be in redie to join deathmatch");
+        return Plugin_Handled;
+    }
+
+    if (g_bDM[client])
+    {
+        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
+    }
+
+    g_bDM[client] = !g_bDM[client];
+
+    PrintToChat(client, "Changed deathmatch status to: %s", g_bDM[client] ? "On" : "Off");
+
+    if (g_bDM[client])
+    {
+        SetRedie(client, true);
+    }
 
     return Plugin_Handled;
 }
@@ -154,7 +206,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     int attacker = GetClientOfUserId(event.GetInt("attacker"));
 
-    if (IsClientValid(attacker) && IsClientValid(victim))
+    if (IsClientValid(attacker) && g_bDM[attacker])
     {
         char sWeapon[32];
         event.GetString("weapon", sWeapon, sizeof(sWeapon));
@@ -173,7 +225,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
             LoopClients(i)
             {
-                if (g_bRedie[i])
+                if (g_bRedie[i] == g_bRedie[attacker])
                 {
                     eEvent.FireToClient(i);
                 }
@@ -181,10 +233,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
             eEvent.Cancel();
         }
+
+        event.BroadcastDisabled = true;
+        return Plugin_Handled;
     }
 
-    event.BroadcastDisabled = true;
-    return Plugin_Handled;
+    return Plugin_Continue;
 }
 
 public Action Timer_Respawn(Handle timer, int userid)
@@ -363,7 +417,7 @@ public void Frame_SetBlock(int ref)
     }
 }
 
-void SetRedie(int client)
+void SetRedie(int client, bool bDeathmatch = false)
 {
     if (g_bRedie[client])
     {
@@ -385,12 +439,15 @@ void SetRedie(int client)
 
         PrintToChat(client, "You have now spawn protection for %.1f seconds!", SPAWN_PROTECTION);
 
-        if (g_hSpawn[client] != null)
+        if (bDeathmatch)
         {
-            ClearTimer(g_hSpawn[client]);
-        }
+            if (g_hSpawn[client] != null)
+            {
+                ClearTimer(g_hSpawn[client]);
+            }
 
-        g_hSpawn[client] = CreateTimer(SPAWN_PROTECTION, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+            g_hSpawn[client] = CreateTimer(SPAWN_PROTECTION, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+        }
     }
     else
     {

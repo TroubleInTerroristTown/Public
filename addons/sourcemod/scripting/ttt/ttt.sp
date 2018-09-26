@@ -8,7 +8,6 @@
 #include <emitsoundany>
 #include <ttt>
 #include <ttt_sql>
-#include <webfix>
 
 #undef REQUIRE_PLUGIN
 #tryinclude <sourcebans>
@@ -2400,7 +2399,13 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                 kvRules.GetString("url", sValue, sizeof(sValue));
                 if (strlen(sValue) > 0)
                 {
-                    WebFix_OpenUrl(client, "TTT Rules", sValue);
+                    LogError("CS:GO has removed the MOTD and Popup function! You should remove all \"url\" parts from your rules.cfg");
+                    PrintToChat(client, "TTT can't open this. CS:GO has removed the MOTD and Popup function! Please contact the technical support from this server.");
+
+                    if (g_cShowURL.BoolValue)
+                    {
+                        PrintToChat(client, "URL: %s", sValue);
+                    }
 
                     if (g_cRulesURLReopenMenu.BoolValue)
                     {
