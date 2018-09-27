@@ -27,8 +27,6 @@ int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
-int g_iCollisionGroup = -1;
-
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
@@ -57,8 +55,6 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
-
-    g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 }
 
 public void OnClientDisconnect(int client)
@@ -137,7 +133,7 @@ void ResetFB(int client)
     g_iPCount[client] = 0;
 }
 
-stock bool SpawnFakeBody(int client)
+bool SpawnFakeBody(int client)
 {
     char sModel[256];
     float pos[3];
@@ -234,9 +230,4 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
         return Plugin_Changed;
     }
     return Plugin_Continue;
-}
-
-stock void SetNoBlock(int client)
-{
-    SetEntData(client, g_iCollisionGroup, 2, 4, true);
 }

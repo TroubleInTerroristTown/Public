@@ -268,7 +268,7 @@ public Action TurretTakeDamage(int victim, int &attacker, int &inflictor, float 
     return Plugin_Continue;
 }
 
-stock int GetTurretTeam(int ent)
+int GetTurretTeam(int ent)
 {
     int iTeam = -1;
     LoopValidClients(i)
@@ -284,7 +284,7 @@ stock int GetTurretTeam(int ent)
 }
 
 
-stock int GetTurretOwner(int ent)
+int GetTurretOwner(int ent)
 {
     
     int iOwner = -1;

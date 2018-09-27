@@ -313,7 +313,7 @@ public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcas
     return Plugin_Continue;
 }
 
-stock bool RemoveC4(int client)
+bool RemoveC4(int client)
 {
     if (!g_bHasC4[client] && !g_bHasJihad[client])
     {
@@ -323,7 +323,7 @@ stock bool RemoveC4(int client)
     return false;
 }
 
-stock void Detonate(int client)
+void Detonate(int client)
 {
     int ExplosionIndex = CreateEntityByName("env_explosion");
     if (ExplosionIndex != -1)
@@ -580,7 +580,7 @@ public int TTT_OnButtonPress(int client, int button)
     }
 }
 
-stock void showPlantMenu(int client)
+void showPlantMenu(int client)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -604,7 +604,7 @@ stock void showPlantMenu(int client)
     menu.Display(client, 10);
 }
 
-stock void showDefuseMenu(int client)
+void showDefuseMenu(int client)
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
@@ -673,7 +673,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
     }
 }
 
-stock void showPlanterPunishments(int client)
+void showPlanterPunishments(int client)
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
@@ -789,7 +789,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
     }
 }
 
-stock float plantBomb(int client, float time)
+float plantBomb(int client, float time)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -849,34 +849,7 @@ stock float plantBomb(int client, float time)
     CPrintToChat(client, "%s %T", g_sPluginTag, "Wire Is", client, g_iWire[client]);
 }
 
-stock int findBombPlanter(int &bomb)
-{
-    int iEnt;
-    while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)
-    {
-        int iPlanter = GetEntProp(iEnt, Prop_Send, "m_hOwnerEntity");
-
-        if (iPlanter <= 0)
-        {
-            continue;
-        }
-
-        char sModelPath[PLATFORM_MAX_PATH];
-        GetEntPropString(iEnt, Prop_Data, "m_ModelName", sModelPath, sizeof(sModelPath));
-
-        if (!StrEqual(MDL_C4, sModelPath))
-        {
-            continue;
-        }
-
-        bomb = iEnt;
-        return iPlanter;
-    }
-
-    return -1;
-}
-
-stock int findBomb(int client)
+int findBomb(int client)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -966,7 +939,7 @@ public Action Timer_Beep(Handle timer, Handle pack)
     return Plugin_Stop;
 }
 
-stock void removeBomb(int client)
+void removeBomb(int client)
 {
     int iEnt;
     while ((iEnt = FindEntityByClassname(iEnt, "prop_physics")) != -1)

@@ -144,7 +144,7 @@ public void StopMapMusic()
     }
 }
 
-stock void StopClientSound(int client, int entity, int channel, const char[] name)
+void StopClientSound(int client, int entity, int channel, const char[] name)
 {
     EmitSoundToClient(client, name, entity, channel, SNDLEVEL_NONE, SND_STOP, 0.0, SNDPITCH_NORMAL, _, _, _, true);
 }

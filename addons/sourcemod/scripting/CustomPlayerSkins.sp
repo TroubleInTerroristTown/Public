@@ -250,7 +250,7 @@ public Action OnShouldDisplay(int skin, int client) {
     return Plugin_Continue;
 }
 
-stock bool NativeCheck_IsClientValid(int client) {
+bool NativeCheck_IsClientValid(int client) {
     if(client <= 0 || client > MaxClients) {
         ThrowNativeError(SP_ERROR_NATIVE, "Client index %i is invalid", client);
         return false;
@@ -262,7 +262,7 @@ stock bool NativeCheck_IsClientValid(int client) {
     return true;
 }
 
-stock void SetCvar(char[] cvar, char[] value) {
+void SetCvar(char[] cvar, char[] value) {
     ConVar convar = FindConVar(cvar);
     if(convar != null) {
         convar.SetString(value, true, false);

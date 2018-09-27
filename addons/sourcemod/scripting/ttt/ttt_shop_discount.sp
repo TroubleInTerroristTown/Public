@@ -162,7 +162,7 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
     return Plugin_Continue;
 }
 
-stock bool HasFlags(int client, const char[] flags)
+bool HasFlags(int client, const char[] flags)
 {
     AdminFlag aFlags[24];
     FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
@@ -170,7 +170,7 @@ stock bool HasFlags(int client, const char[] flags)
     return _HasFlags(client, aFlags);
 }
 
-stock bool _HasFlags(int client, AdminFlag flags[24])
+bool _HasFlags(int client, AdminFlag flags[24])
 {
     int iFlags = GetUserFlagBits(client);
 

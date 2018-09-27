@@ -111,12 +111,12 @@ public void OnMapStart()
     PrecacheSoundAny(sBuffer, true);
 }
 
-stock void Command_Grab(int client)
+void Command_Grab(int client)
 {
     GrabSomething(client);
 }
 
-stock void Command_UnGrab(int client)
+void Command_UnGrab(int client)
 {
     if (ValidGrab(client))
     {
@@ -134,7 +134,7 @@ stock void Command_UnGrab(int client)
     g_fTime[client] = 0.0;
 }
 
-stock void GrabSomething(int client)
+void GrabSomething(int client)
 {
     int ent;
     float VecPos_Ent[3], VecPos_Client[3];
@@ -264,7 +264,7 @@ stock void GrabSomething(int client)
     TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
 }
 
-stock bool ValidGrab(int client)
+bool ValidGrab(int client)
 {
     int iObject = EntRefToEntIndex(g_iObject[client]);
     if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
@@ -274,7 +274,7 @@ stock bool ValidGrab(int client)
     return false;
 }
 
-stock int GetObject(int client, bool hitSelf=true)
+int GetObject(int client, bool hitSelf=true)
 {
     int iEntity = -1;
 
@@ -334,7 +334,7 @@ public bool TraceASDF(int entity, int mask, any data)
     return data != entity;
 }
 
-stock int ReplacePhysicsEntity(int iEntity)
+int ReplacePhysicsEntity(int iEntity)
 {
     float fOrigin[3], fAngle[3];
 
@@ -693,7 +693,7 @@ public int Native_GetGrabEntity(Handle plugin, int numParams)
     return -1;
 }
 
-stock void ThrowObject(int client)
+void ThrowObject(int client)
 {
     if (ValidGrab(client) && !TTT_IsClientValid(EntRefToEntIndex(g_iObject[client])))
     {

@@ -306,7 +306,7 @@ public Action Timer_FixMode(Handle timer, any userid)
     return Plugin_Stop;
 }
 
-stock void DropWeapons(int client)
+void DropWeapons(int client)
 {
     for(int offset = 0; offset < 128; offset += 4)
     {
@@ -388,7 +388,7 @@ void ResetKnockout(int client)
     g_bHasKnockout[client] = false;
 }
 
-stock bool SpawnCamAndAttach(int client, int ragdoll)
+bool SpawnCamAndAttach(int client, int ragdoll)
 {
     char sModel[64];
     Format(sModel, sizeof(sModel), "models/blackout.mdl");

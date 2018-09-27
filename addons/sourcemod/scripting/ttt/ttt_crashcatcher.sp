@@ -75,7 +75,7 @@ public void OnThink(int entity)
     }
 }
 
-stock void KillVelocity(int entity)
+void KillVelocity(int entity)
 {
     int flags = GetEntityFlags(entity);
     SetEntityFlags(entity, flags|FL_FROZEN);

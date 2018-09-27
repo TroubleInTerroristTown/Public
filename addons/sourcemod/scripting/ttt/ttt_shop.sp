@@ -302,7 +302,7 @@ public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error
     }
 }
 
-stock void LoadClientCredits(int client)
+void LoadClientCredits(int client)
 {
     if (TTT_IsClientValid(client) && !IsFakeClient(client))
     {
@@ -394,7 +394,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
     }
 }
 
-stock void UpdatePlayer(int client)
+void UpdatePlayer(int client)
 {
     char sCommunityID[64];
 
@@ -1103,7 +1103,7 @@ public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, boo
     }
 }
 
-stock void addCredits(int client, int credits, bool message = false)
+void addCredits(int client, int credits, bool message = false)
 {
     int newcredits = g_iCredits[client] + credits;
 
@@ -1145,7 +1145,7 @@ stock void addCredits(int client, int credits, bool message = false)
     Call_Finish();
 }
 
-stock void subtractCredits(int client, int credits, bool message = false)
+void subtractCredits(int client, int credits, bool message = false)
 {
     int newcredits = g_iCredits[client] - credits;
 
@@ -1192,7 +1192,7 @@ stock void subtractCredits(int client, int credits, bool message = false)
     Call_Finish();
 }
 
-stock void setCredits(int client, int credits)
+void setCredits(int client, int credits)
 {
     g_iCredits[client] = credits;
 
@@ -1444,34 +1444,6 @@ int GiveClientItem(int client, char[] sItem)
         if (strlen(iItems[Short]) > 1 && StrEqual(iItems[Short], sItem, false))
         {
             ClientBuyItem(client, sItem, false, true);
-            return true;
-        }
-    }
-
-    return false;
-}
-
-stock bool HasFlags(int client, const char[] flags)
-{
-    AdminFlag aFlags[24];
-    FlagBitsToArray(ReadFlagString(flags), aFlags, sizeof(aFlags));
-    
-    return _HasFlags(client, aFlags);
-}
-
-stock bool _HasFlags(int client, AdminFlag flags[24])
-{
-    int iFlags = GetUserFlagBits(client);
-
-    if (iFlags & ADMFLAG_ROOT)
-    {
-        return true;
-    }
-
-    for (int i = 0; i < sizeof(flags); i++)
-    {
-        if (iFlags & FlagToBit(flags[i]))
-        {
             return true;
         }
     }

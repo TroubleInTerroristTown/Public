@@ -45,7 +45,7 @@ public Action Command_Role(int client, int args)
     return Plugin_Continue;
 }
 
-stock void GetRoleNameByID(int role, char[] sRole, int length)
+void GetRoleNameByID(int role, char[] sRole, int length)
 {
     if (role == TTT_TEAM_INNOCENT)
     {

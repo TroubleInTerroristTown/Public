@@ -286,7 +286,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
     return true;
 }
 
-stock int TraceClientViewEntity(int client)
+int TraceClientViewEntity(int client)
 {
     float m_vecOrigin[3];
     float m_angRotation[3];

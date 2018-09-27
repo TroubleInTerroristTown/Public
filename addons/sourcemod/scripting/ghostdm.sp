@@ -419,11 +419,6 @@ public Action OnWeapon(int client, int weapon)
 {
     if(IsClientValid(client) && IsValidEntity(weapon))
     {
-        if (g_bRedie[client] && !g_bDM[client])
-        {
-            return Plugin_Handled;
-        }
-
         if (g_bDM[client])
         {
             char sWeapon[32];
@@ -433,6 +428,11 @@ public Action OnWeapon(int client, int weapon)
             {
                 RequestFrame(Frame_SetBlock, EntIndexToEntRef(weapon));
             }
+        }
+
+        if (g_bRedie[client] && !g_bDM[client])
+        {
+            return Plugin_Handled;
         }
     }
     

@@ -267,7 +267,7 @@ public Action Command_Logs(int client, int args)
     return Plugin_Handled;
 }
 
-stock void ShowLogs(int client)
+void ShowLogs(int client)
 {
     int iSize = g_aLogs.Length;
     if (iSize == 0)
@@ -1215,7 +1215,7 @@ int GetDCount(ArrayList array)
     return iDCount;
 }
 
-stock void TeamInitialize(int client)
+void TeamInitialize(int client)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -1466,7 +1466,7 @@ stock void TeamInitialize(int client)
     Call_Finish();
 }
 
-stock void TeamTag(int client)
+void TeamTag(int client)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -1665,7 +1665,7 @@ public Action OnPostThink(int client)
     }
 }
 
-stock void BanBadPlayerKarma(int client)
+void BanBadPlayerKarma(int client)
 {
     char sReason[512];
     Format(sReason, sizeof(sReason), "%T", "Your Karma is too low", client);
@@ -2257,7 +2257,7 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
     }
 }
 
-stock void ShowRules(int client, int iItem)
+void ShowRules(int client, int iItem)
 {
     if (g_cRulesMenu.BoolValue && g_bRules[client])
     {
@@ -2531,7 +2531,7 @@ public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
     }
 }
 
-stock void AskClientForMicrophone(int client)
+void AskClientForMicrophone(int client)
 {
     if (g_cDRulesMenu.BoolValue && g_bDRules[client])
     {
@@ -3306,7 +3306,7 @@ public int TTT_OnButtonPress(int client, int button)
                             LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, iRagdollC[Victim], attacker, iRagdollC[Attacker]);
                         }
                         
-                        InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName], iRagdollC[AttackerName]);
+                        InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName]);
 
                         if (!iRagdollC[Found] && IsPlayerAlive(client))
                         {
@@ -3537,7 +3537,7 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
     return Plugin_Handled;
 }
 
-stock void InspectBody(int client, int victim, int victimRole, int attacker, int time, const char[] weapon, const char[] victimName, const char[] attackerName)
+void InspectBody(int client, int victim, int victimRole, int attacker, int time, const char[] weapon, const char[] victimName)
 {
     char team[32];
     if (victimRole == TTT_TEAM_TRAITOR)
@@ -3594,7 +3594,7 @@ public int BodyMenuHandler(Menu menu, MenuAction action, int client, int itemNum
     }
 }
 
-stock int addKarma(int client, int karma, bool message = false)
+int addKarma(int client, int karma, bool message = false)
 {
     if (!g_bRoundStarted)
     {
@@ -3633,7 +3633,7 @@ stock int addKarma(int client, int karma, bool message = false)
     return g_iKarma[client];
 }
 
-stock int setKarma(int client, int karma, bool force = false)
+int setKarma(int client, int karma, bool force = false)
 {
     if (!force && !g_bRoundStarted)
     {
@@ -3658,7 +3658,7 @@ stock int setKarma(int client, int karma, bool force = false)
     return g_iKarma[client];
 }
 
-stock int subtractKarma(int client, int karma, bool message = false)
+int subtractKarma(int client, int karma, bool message = false)
 {
     if (!g_bRoundStarted)
     {
@@ -3692,7 +3692,7 @@ stock int subtractKarma(int client, int karma, bool message = false)
     return g_iKarma[client];
 }
 
-stock void addArrayTime(char[] message)
+void addArrayTime(char[] message)
 {
     if (g_iTeamSelectTime > 0)
     {
@@ -3753,7 +3753,7 @@ void SetFlashlight(int client)
     }
 }
 
-stock void manageRDM(int client)
+void manageRDM(int client)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -4199,7 +4199,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
     return Plugin_Continue;
 }
 
-stock void nameCheck(int client, char name[MAX_NAME_LENGTH])
+void nameCheck(int client, char name[MAX_NAME_LENGTH])
 {
     for (int i; i < g_iBadNameCount; i++)
     {
@@ -4296,12 +4296,12 @@ void CheckTeams()
     }
 }
 
-stock void SetNoBlock(int client)
+void SetNoBlock(int client)
 {
     SetEntData(client, g_iCollisionGroup, 2, 4, true);
 }
 
-stock void LoadBadNames()
+void LoadBadNames()
 {
     char sFile[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/badnames.ini");
@@ -4327,7 +4327,7 @@ stock void LoadBadNames()
     delete hFile;
 }
 
-stock void LoadClientKarma(int userid)
+void LoadClientKarma(int userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -4361,7 +4361,7 @@ stock void LoadClientKarma(int userid)
     }
 }
 
-stock void UpdatePlayer(int client)
+void UpdatePlayer(int client)
 {
     char sCommunityID[64];
 
@@ -4393,7 +4393,7 @@ stock void UpdatePlayer(int client)
     }
 }
 
-stock void StripAllWeapons(int client)
+void StripAllWeapons(int client)
 {
     if (!g_cstripWeapons.BoolValue)
     {
@@ -4410,12 +4410,12 @@ stock void StripAllWeapons(int client)
     }
 }
 
-stock void CheckClantag(int client)
+void CheckClantag(int client)
 {
     char sTag[32];
     CS_GetClientClanTag(client, sTag, sizeof(sTag));
 
-    if (!ValidClantag(client, sTag))
+    if (!ValidClantag(sTag))
     {
         if (!g_bRoundStarted)
         {
@@ -4447,7 +4447,7 @@ stock void CheckClantag(int client)
     }
 }
 
-stock bool ValidClantag(int client, const char[] sTag)
+bool ValidClantag(const char[] sTag)
 {
     if (StrContains(sTag, "DETECTIVE", false) != -1 || StrContains(sTag, "TRAITOR", false) != -1 || StrContains(sTag, "INNOCENT", false) != -1 || StrContains(sTag, "UNASSIGNED", false) != -1)
     {

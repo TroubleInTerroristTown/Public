@@ -131,7 +131,7 @@ public Action Event_PlayerTeamPre(Event event, const char[] name, bool dontBroad
     return Plugin_Continue;
 }
 
-stock void ApplyIcons()
+void ApplyIcons()
 {
     LoopValidClients(i)
     {
@@ -142,7 +142,7 @@ stock void ApplyIcons()
     }
 }
 
-stock int CreateIcon(int client, int role)
+int CreateIcon(int client, int role)
 {
     ClearIcon(client);
 
@@ -224,7 +224,7 @@ public Action Hook_SetTransmitT(int entity, int client)
     return Plugin_Handled;
 }
 
-stock void ClearIcon(int client)
+void ClearIcon(int client)
 {
     int role = TTT_GetClientRole(client);
 

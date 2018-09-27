@@ -334,7 +334,7 @@ public void Frame_Reopen(any userid)
     }
 }
 
-stock int TraceClientViewEntity(int client)
+int TraceClientViewEntity(int client)
 {
     float m_vecOrigin[3];
     float m_angRotation[3];
