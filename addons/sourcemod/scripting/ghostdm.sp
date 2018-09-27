@@ -80,7 +80,6 @@ public void OnClientPutInServer(int client)
 {
     ResetClient(client);
 
-    SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
     SDKHook(client, SDKHook_WeaponCanUse, OnWeapon);
     SDKHook(client, SDKHook_WeaponEquip, OnWeapon);
@@ -105,9 +104,10 @@ public Action Command_Redie(int client, int args)
         return Plugin_Handled;
     }
 
-    if (g_bRedie[client])
+    if (g_bRedie[client] && g_bDM[client])
     {
-        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
+        ReplyToCommand(client, "You must leave deathmatch first! Type !dm");
+        return Plugin_Handled;
     }
 
     g_bRedie[client] = !g_bRedie[client];
@@ -138,11 +138,6 @@ public Action Command_Deathmatch(int client, int args)
     {
         ReplyToCommand(client, "You must be in redie to join deathmatch");
         return Plugin_Handled;
-    }
-
-    if (g_bDM[client])
-    {
-        SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
     }
 
     g_bDM[client] = !g_bDM[client];
@@ -178,7 +173,22 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
         else
         {
             SetRedie(client);
+            
+            if (g_bDM[client])
+            {
+                RequestFrame(Frame_GiveWeapons, event.GetInt("userid"));
+            }
         }
+    }
+}
+
+public void Frame_GiveWeapons(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (IsClientValid(client))
+    {
+        // Code...
     }
 }
 
@@ -186,7 +196,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 {
     int victim = GetClientOfUserId(event.GetInt("userid"));
 
-    if (IsClientValid(victim))
+    if (IsClientValid(victim) && g_bDM[victim])
     {
         if (g_hRespawn[victim] != null)
         {
@@ -225,7 +235,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
             LoopClients(i)
             {
-                if (g_bRedie[i] == g_bRedie[attacker])
+                if (g_bDM[i] == (g_bDM[attacker] && g_bDM[victim]))
                 {
                     eEvent.FireToClient(i);
                 }
@@ -247,7 +257,7 @@ public Action Timer_Respawn(Handle timer, int userid)
 
     if (IsClientValid(client) && g_hRespawn[client] != null)
     {
-        if (g_bRedie[client])
+        if (g_bDM[client])
         {
             CS_RespawnPlayer(client);
         }
@@ -262,12 +272,17 @@ public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &
 {
     if (IsClientValid(client))
     {
+        if (g_bRedie[client] && !g_bDM[client])
+        {
+            return Plugin_Stop;
+        }
+
         int iTemp = numClients;
         numClients = 0;
 
         LoopClients(i)
         {
-            if (g_bRedie[client] == g_bRedie[i])
+            if (g_bDM[client] == g_bDM[i])
             {
                 clients[numClients] = i;
                 numClients++;
@@ -299,6 +314,11 @@ public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int nu
         return Plugin_Continue;
     }
 
+    if (g_bRedie[client] && !g_bDM[client])
+    {
+        return Plugin_Stop;
+    }
+
     int[] newClients = new int[MaxClients];
     int nClients = 0;
     
@@ -309,7 +329,7 @@ public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int nu
             continue;
         }
 
-        if (g_bRedie[client] == g_bRedie[i])
+        if (g_bDM[client] == g_bDM[i])
         {
             newClients[nClients++] = i;
         }
@@ -346,7 +366,7 @@ public Action TE_OnEffectDispatch(const char[] te_name, const int[] clients, int
 
     if (IsClientValid(victim))
     {
-        if (g_bRedie[victim])
+        if (g_bDM[victim])
         {
             return Plugin_Handled;
         }
@@ -362,7 +382,7 @@ public Action OnSetTransmit(int target, int client)
         return Plugin_Continue;
     }
 
-    if (g_bRedie[target] != g_bRedie[client])
+    if (g_bDM[target] != g_bDM[client])
     {
         return Plugin_Handled;
     }
@@ -377,12 +397,17 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    if (g_bRedie[iAttacker] != g_bRedie[iVictim])
+    if (g_bRedie[iVictim] && !g_bDM[iVictim])
     {
         return Plugin_Handled;
     }
 
-    if (g_bRedie[iAttacker] && g_hSpawn[iVictim] != null)
+    if (g_bDM[iAttacker] != g_bDM[iVictim])
+    {
+        return Plugin_Handled;
+    }
+
+    if (g_bDM[iAttacker] && g_hSpawn[iVictim] != null)
     {
         return Plugin_Handled;
     }
@@ -392,14 +417,22 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 public Action OnWeapon(int client, int weapon)
 {
-    if(IsClientValid(client) && IsValidEntity(weapon) && g_bRedie[client])
+    if(IsClientValid(client) && IsValidEntity(weapon))
     {
-        char sWeapon[32];
-        GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
-
-        if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1)
+        if (g_bRedie[client] && !g_bDM[client])
         {
-            RequestFrame(Frame_SetBlock, EntIndexToEntRef(weapon));
+            return Plugin_Handled;
+        }
+
+        if (g_bDM[client])
+        {
+            char sWeapon[32];
+            GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
+
+            if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1)
+            {
+                RequestFrame(Frame_SetBlock, EntIndexToEntRef(weapon));
+            }
         }
     }
     
@@ -422,6 +455,7 @@ void SetRedie(int client, bool bDeathmatch = false)
     if (g_bRedie[client])
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
+        SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 
         int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
 
@@ -470,9 +504,12 @@ public Action Timer_Spawn(Handle timer, int userid)
 void ResetClient(int client)
 {
     g_bRedie[client] = false;
+    g_bDM[client] = false;
 
     if (IsClientInGame(client))
     {
+        SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit);
+
         ClearTimer(g_hRespawn[client]);
         ClearTimer(g_hSpawn[client]);
 
