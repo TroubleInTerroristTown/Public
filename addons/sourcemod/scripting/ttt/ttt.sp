@@ -1266,7 +1266,7 @@ void TeamInitialize(int client)
             SetEntityHealth(client, g_cspawnHPD.IntValue);
         }
 
-        if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+        if (TTT_HasClientKnife(client) == -1)
         {
             GivePlayerItem(client, "weapon_knife");
         }
@@ -1309,7 +1309,7 @@ void TeamInitialize(int client)
                 CS_SwitchTeam(client, CS_TEAM_T);
             }
         }
-        if (GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+        if (TTT_HasClientKnife(client) == -1)
         {
             GivePlayerItem(client, "weapon_knife");
         }
@@ -1353,30 +1353,12 @@ void TeamInitialize(int client)
             }
         }
         
-        if (g_cInnocentKnife.BoolValue && GetPlayerWeaponSlot(client, CS_SLOT_KNIFE) == -1)
+        if (g_cInnocentKnife.BoolValue && TTT_HasClientKnife(client) == -1)
         {
             GivePlayerItem(client, "weapon_knife");
         }
         else
         {
-            /* char sBuffer[32];
-            int iEnt = -1;
-            
-            while ((iEnt = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE)) != -1)
-            {
-                GetEntityClassname(iEnt, sBuffer, sizeof(sBuffer));
-                
-                if (StrContains(sBuffer, "knife", false) != -1 || StrContains(sBuffer, "bayonet", false) != -1)
-                {
-                    if (!TTT_SafeRemoveWeapon(client, iEnt, CS_SLOT_KNIFE))
-                    {
-                        LogError("Can't remove knife! Player: \"%L\"", client);
-                    }
-                    
-                    break;
-                }
-            } */
-
             for(int offset = 0; offset < 128; offset += 4)
             {
                 int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);

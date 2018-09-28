@@ -940,3 +940,46 @@ public bool FilterOnlyPlayers(int entity, int contentsMask, any data)
 		return false;
 	}
 }
+
+stock int TTT_HasClientKnife(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
+            {
+                return weapon;
+            }
+        }
+    }
+
+    return -1;
+}
+
+
+stock int TTT_HasClientTaser(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if ((StrContains(sClass, "weapon_taser", false) != -1))
+            {
+                return weapon;
+            }
+        }
+    }
+
+    return -1;
+}
