@@ -29,6 +29,7 @@ addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/tr
 echo -e "\nCompiling addons/sourcemod/scripting/turret_core.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
 
+git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
 VERSION=2.$COUNT
 wget -q $3?version=$VERSION
