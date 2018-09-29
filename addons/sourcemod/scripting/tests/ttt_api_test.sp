@@ -107,11 +107,11 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
     return Plugin_Continue;
 }
 
-public Action TTT_OnItemPurchased((int client, const char[] itemshort, bool count, int price)
+public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(item) > 2)
+    if (TTT_IsClientValid(client) && IsPlayerAlive(client) && strlen(itemshort) > 2)
     {
-        PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d Price: %d", item, count, price);
+        PrintToChat(client, "[TTT_OnItemPurchased] It works! Hooray! Item: %s Count: %d Price: %d", itemshort, count, price);
     }
 
     return Plugin_Continue;
@@ -129,68 +129,74 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
-    PrintToServer("TTT_OnRoundStart was called!");
-    PrintToServer("(TTT_OnRoundStart) innocents: %d - traitors: %d - detective: %d", innocents, traitors, detective);
+    LogMessage("TTT_OnRoundStart was called!");
+    LogMessage("(TTT_OnRoundStart) innocents: %d - traitors: %d - detective: %d", innocents, traitors, detective);
 }
 
 public void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective)
 {
-    PrintToServer("TTT_OnRoundStartFailed was called!");
-    PrintToServer("(TTT_OnRoundStartFailed) players: %d - requiredPlayers: %d - detective: %d", players, requiredPlayers, detective);
+    LogMessage("TTT_OnRoundStartFailed was called!");
+    LogMessage("(TTT_OnRoundStartFailed) players: %d - requiredPlayers: %d - detective: %d", players, requiredPlayers, detective);
 }
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-    PrintToServer("TTT_OnClientGetRole was called!");
-    PrintToServer("(TTT_OnClientGetRole) client: %d - role: %d", client, role);
+    LogMessage("TTT_OnClientGetRole was called!");
+    LogMessage("(TTT_OnClientGetRole) client: %d - role: %d", client, role);
 }
 
 public void TTT_OnClientDeath(int victim, int attacker)
 {
-    PrintToServer("TTT_OnClientDeath was called!");
-    PrintToServer("(TTT_OnClientDeath) victim: %d - attacker: %d", victim, attacker);
+    LogMessage("TTT_OnClientDeath was called!");
+    LogMessage("(TTT_OnClientDeath) victim: %d - attacker: %d", victim, attacker);
 }
 
 public Action TTT_OnClientDeathPre(int victim, int attacker)
 {
-    PrintToServer("TTT_OnClientDeathPre was called!");
-    PrintToServer("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
+    LogMessage("TTT_OnClientDeathPre was called!");
+    LogMessage("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
 }
 
 public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silent)
 {
-    PrintToServer("TTT_OnBodyFound was called!");
-    PrintToServer("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
+    LogMessage("TTT_OnBodyFound was called!");
+    LogMessage("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
 }
 
 public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
 {
-    PrintToServer("TTT_OnBodyScanned was called!");
-    PrintToServer("(TTT_OnBodyScanned) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
+    LogMessage("TTT_OnBodyScanned was called!");
+    LogMessage("(TTT_OnBodyScanned) client: %d - victim: %d - deadPlayer: %s", client, victim, deadPlayer);
 }
 
 public Action TTT_OnPlayerDeath(int victim, int attacker)
 {
-    PrintToServer("TTT_OnPlayerDeath was called!");
-    PrintToServer("(TTT_OnPlayerDeath) victim: %d - attacker: %d", victim, attacker);
+    LogMessage("TTT_OnPlayerDeath was called!");
+    LogMessage("(TTT_OnPlayerDeath) victim: %d - attacker: %d", victim, attacker);
 }
 
 public void TTT_OnSQLConnect(Database db)
 {
-    PrintToServer("TTT_OnSQLConnect was called!");
-    PrintToServer("(TTT_OnSQLConnect) db: %d", db);
+    LogMessage("TTT_OnSQLConnect was called!");
+    LogMessage("(TTT_OnSQLConnect) db: %d", db);
 
     Database dDB = TTT_GetSQLConnection();
-    PrintToServer("(TTT_OnSQLConnect) dDB: %d", dDB);
+    LogMessage("(TTT_OnSQLConnect) dDB: %d", dDB);
 
     if (dDB == db)
     {
-        PrintToServer("(TTT_OnSQLConnect) db and dDB are equal!", db);
+        LogMessage("(TTT_OnSQLConnect) db and dDB are equal!", db);
     }
 }
 
-public bool TTT_OnGrabbing(int client, int entity)
+public Action TTT_OnGrabbing(int client, int entity)
 {
-    PrintToServer("TTT_OnGrabbing was called!");
-    PrintToServer("(TTT_OnGrabbing) Client: %N - Entity: %d", client, entity);
+    LogMessage("TTT_OnGrabbing was called!");
+    LogMessage("(TTT_OnGrabbing) Client: %N - Entity: %d", client, entity);
+}
+
+public void TTT_OnLatestVersion(const char[] version)
+{
+    LogMessage("TTT_OnLatestVersion was called!");
+    LogMessage("(TTT_OnLatestVersion) Version: %s", version);
 }

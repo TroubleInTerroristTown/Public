@@ -202,11 +202,8 @@ public void OnConfigsExecuted()
 
     if (g_cVersionCheck.BoolValue)
     {
-        LogMessage("SteamWorks status: %d", GetExtensionFileStatus("SteamWorks.ext"));
-
         if (GetExtensionFileStatus("SteamWorks.ext") == 1)
         {
-            LogMessage("Found SteamWorks...");
             GetLatestVersion();
         }
         else

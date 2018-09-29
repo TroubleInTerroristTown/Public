@@ -2,13 +2,10 @@ void GetLatestVersion()
 {
     char sURL[64];
     Format(sURL, sizeof(sURL), "https://csgottt.com/version.php");
-    LogMessage("URL: %s", sURL);
 
     Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, sURL);
     bool bTimeout = SteamWorks_SetHTTPRequestNetworkActivityTimeout(hRequest, 10);
     bool bCallback = SteamWorks_SetHTTPCallbacks(hRequest, OnHTTPCallback);
-
-    LogMessage("bTimeout: %d, bCallback: %d", bTimeout, bCallback);
 
     if(!bTimeout || !bCallback)
     {
@@ -60,7 +57,8 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
         return;
     }
 
-    bool bData = SteamWorks_GetHTTPResponseBodyData(hRequest, g_sLatestVersion, iSize);
+    char sVersion[64];
+    bool bData = SteamWorks_GetHTTPResponseBodyData(hRequest, sVersion, iSize);
     if (!bData)
     {
         LogError("[TTT] (OnHTTPCallback) Failure with body data!");
@@ -68,7 +66,12 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
         return;
     }
 
-    LogMessage("[TTT] Latest TTT version is %s", g_sLatestVersion);
+    TrimString(sVersion);
+
+    if (GetCharBytes(sVersion[2]) == 4)
+    {
+        strcopy(g_sLatestVersion, sizeof(g_sLatestVersion), sVersion[3]);
+    }
 
     Call_StartForward(g_hOnVersionCheck);
     Call_PushString(g_sLatestVersion);

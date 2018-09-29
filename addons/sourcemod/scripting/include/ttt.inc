@@ -190,7 +190,7 @@ forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const ch
  *
  * @param version            Latest TTT Version as String
  */
-forward void TTT_OnVersionCheck(const char[] version);
+forward void TTT_OnLatestVersion(const char[] version);
 
 
 
