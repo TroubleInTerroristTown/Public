@@ -96,8 +96,7 @@ enum Item
     String:Short[16],
     Price,
     Role,
-    Sort,
-    bool:Discount
+    Sort
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -509,7 +508,7 @@ public Action Command_ShowItems(int client, int args)
         g_aCustomItems.GetArray(i, temp_item[0]);
         if (strlen(temp_item[Short]) > 1)
         {
-            PrintToConsole(client, "%s - %s, %i, %d", temp_item[Short], temp_item[Long], temp_item[Role], temp_item[Discount]);
+            PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
         }
     }
     return Plugin_Handled;
@@ -549,7 +548,7 @@ public Action Command_Shop(int client, int args)
                     bool bDiscount = false;
                     int iPercents = TTT_GetItemDiscount(client, temp_item[Short]);
 
-                    if (temp_item[Discount] && iPercents > 0)
+                    if (iPercents > 0)
                     {
                         float fPercentage = iPercents / 100.0;
                         int iDiscount = RoundToCeil(price * fPercentage);
@@ -665,8 +664,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                 return false;
             }
             
-            // Reset price if item non discountable
-            if (!free && price > 0 && !temp_item[Discount] && temp_item[Price] != price)
+            if (!free && price > 0  && temp_item[Price] != price)
             {
                 price = temp_item[Price];
             }
@@ -676,7 +674,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
             {
                 if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
                 {
-                    PrintToChat(client, "Item: %s Discount: %d Shop Price: %d Price: %d", temp_item[Long], temp_item[Discount], temp_item[Price], price);
+                    PrintToChat(client, "Item: %s Shop Price: %d Price: %d", temp_item[Long], temp_item[Price], price);
                 }
             }
 
@@ -763,7 +761,6 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
     int temp_price = GetNativeCell(3);
     int temp_role = GetNativeCell(4);
     int temp_sort = GetNativeCell(5);
-    bool temp_discount = view_as<bool>(GetNativeCell(6));
     int temp_item[Item];
 
     LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
@@ -787,7 +784,6 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
     temp_item[Price] = temp_price;
     temp_item[Role] = temp_role;
     temp_item[Sort] = temp_sort;
-    temp_item[Discount] = temp_discount;
     g_aCustomItems.PushArray(temp_item[0]);
 
 
@@ -814,9 +810,8 @@ public int Native_UpdateCustomItem(Handle plugin, int numParams)
             
             temp_item[Price] = GetNativeCell(2);
             temp_item[Sort] = GetNativeCell(3);
-            temp_item[Discount] = view_as<bool>(GetNativeCell(4));
             
-            PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d, Discount: %d", temp_item[Price], temp_item[Role], temp_item[Sort], temp_item[Discount]);
+            PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d", temp_item[Price], temp_item[Role], temp_item[Sort]);
             
             g_aCustomItems.SetArray(i, temp_item[0]);
             
