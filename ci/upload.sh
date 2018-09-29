@@ -9,6 +9,7 @@ LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
 PASS=$5
+FILE=$7
 
 echo -e "Go to build folder\n"
 cd build
@@ -21,3 +22,6 @@ mv $FILE $LATEST
 
 echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
+
+echo -e "Update TTT Version"
+php $FILE?version=$VERSION
