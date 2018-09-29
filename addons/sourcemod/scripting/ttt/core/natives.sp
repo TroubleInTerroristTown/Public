@@ -18,6 +18,7 @@ void InitForwards()
     g_hOnDetectiveMenu = CreateGlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
     g_hOnCheckCommandAccess = CreateGlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
     g_hOnPlayerRespawn = CreateGlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
+    g_hOnVersionCheck = CreateGlobalForward("TTT_OnVersionCheck", ET_Ignore, Param_String);
 }
 
 void InitNatives()
@@ -48,6 +49,7 @@ void InitNatives()
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
     CreateNative("TTT_TerminateRound", Native_TerminateRound);
+    CreateNative("TTT_GetLatestVersion", Native_GetLatestVersion);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -581,4 +583,17 @@ public int Native_TerminateRound(Handle plugin, int numParams)
     CSRoundEndReason rReason = view_as<CSRoundEndReason>(GetNativeCell(2));
 
     CS_TerminateRound(fDelay, rReason, true);
+}
+
+
+public int Native_GetLatestVersion(Handle plugin, int numParams)
+{
+    if (strlen(g_sLatestVersion) < 1)
+    {
+        return false;
+    }
+
+    SetNativeString(1, g_sLatestVersion, GetNativeCell(2));
+
+    return true;
 }

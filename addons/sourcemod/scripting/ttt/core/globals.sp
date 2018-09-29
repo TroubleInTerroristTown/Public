@@ -113,6 +113,7 @@ Handle g_hOnRulesMenu = null;
 Handle g_hOnDetectiveMenu = null;
 Handle g_hOnCheckCommandAccess = null;
 Handle g_hOnPlayerRespawn = null;
+Handle g_hOnVersionCheck = null;
 
 bool g_bSourcebans = false;
 
@@ -294,6 +295,7 @@ ConVar g_cFlashlightOption = null;
 ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
+ConVar g_cVersionCheck = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
@@ -310,3 +312,5 @@ bool g_bRespawn[MAXPLAYERS + 1] = { false, ... };
 
 Handle g_hWeAreSync = null;
 Handle g_hRemainingSync = null;
+
+char g_sLatestVersion[64];

@@ -9,8 +9,12 @@
 #include <ttt>
 #include <ttt_sql>
 
+#undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
+#include <SteamWorks>
 #tryinclude <sourcebans>
+#define REQUIRE_PLUGIN
+#define REQUIRE_EXTENSIONS
 
 #pragma newdecls required
 
@@ -18,6 +22,7 @@
 #include "core/config.sp"
 #include "core/natives.sp"
 #include "core/sql.sp"
+#include "core/version.sp"
 
 public Plugin myinfo =
 {
@@ -193,6 +198,21 @@ public void OnConfigsExecuted()
     if (g_cLogButtons.BoolValue)
     {
         HookEntityOutput("func_button", "OnPressed", OnButtonPressed);
+    }
+
+    if (g_cVersionCheck.BoolValue)
+    {
+        LogMessage("SteamWorks status: %d", GetExtensionFileStatus("SteamWorks.ext"));
+
+        if (GetExtensionFileStatus("SteamWorks.ext") == 1)
+        {
+            LogMessage("Found SteamWorks...");
+            GetLatestVersion();
+        }
+        else
+        {
+            LogError("You need SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 ) for the version check function!");
+        }
     }
 }
 

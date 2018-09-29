@@ -183,7 +183,14 @@ forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
  */
 forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
 
-
+/**
+ * With this forward you get the latest version from csgottt.com(/version.php) as string
+ * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
+ *       must be installed!
+ *
+ * @param version            Latest TTT Version as String
+ */
+forward void TTT_OnVersionCheck(const char[] version);
 
 
 
@@ -395,6 +402,16 @@ native int TTT_GetRoundTimestamp();
  *
  */
 native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
+
+/**
+ * With this naitve you get the latest version from csgottt.com(/version.php) as string
+ * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
+ *       must be installed!
+ *
+ * @param version            Latest TTT Version as String
+ * @param length             Length of the string
+ */
+native bool TTT_GetLatestVersion(const char[] version, int length);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {

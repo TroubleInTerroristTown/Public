@@ -153,7 +153,7 @@ public void OnConnect(Database db, const char[] error, any data)
 {
     if (db == null || strlen(error) > 0)
     {
-        LogError("(OnConnect) Connection to database failed: %s", error);
+        LogMessage("(OnConnect) Connection to database failed: %s", error);
         CreateTimer(5.0, Timer_Retry);
         return;
     }
