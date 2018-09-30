@@ -1239,4 +1239,9 @@
 		"en"		"This server is running an older version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
 	}
 
+	"Revolver: Suicide"
+	{
+		"en"		"An Detective has tried to kill an Innocent with the Revolver"
+	}
+
 }

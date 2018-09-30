@@ -110,11 +110,11 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
     int iHealth = GetClientHealth(target);
     int iKarma = TTT_GetClientKarma(target, false);
 
-    char sKarmaValue[64], sHealthValue[64];
+    char sKarmaValue[128], sHealthValue[128];
     IntToString(iHealth, sHealthValue, sizeof(sHealthValue));
     IntToString(iKarma, sKarmaValue, sizeof(sKarmaValue));
 
-    char sTranslation[64];
+    char sTranslation[128];
 
     if (g_cHealthType.IntValue == 1)
     {
