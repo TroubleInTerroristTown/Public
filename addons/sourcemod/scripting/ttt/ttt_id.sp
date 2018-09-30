@@ -25,7 +25,8 @@ bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
 
 float g_fCooldownPlayer[MAXPLAYERS + 1] = {0.0, ...};
 
-char g_sPluginTag[512] = "";
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
 
 public Plugin myinfo =
 {
@@ -56,6 +57,21 @@ public void OnPluginStart()
     LoadTranslations("ttt.phrases");
 
     HookEvent("player_spawn", Event_PlayerSpawn);
+}
+
+public void OnConfigsExecuted()
+{
+    g_cPluginTag = FindConVar("ttt_plugin_tag");
+    g_cPluginTag.AddChangeHook(OnConVarChanged);
+    g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+    if (convar == g_cPluginTag)
+    {
+        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    }
 }
 
 public Action Command_ID(int client, int args)
