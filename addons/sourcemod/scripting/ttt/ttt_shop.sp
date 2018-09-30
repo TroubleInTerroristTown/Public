@@ -1415,7 +1415,7 @@ void ResetItemsArray(const char[] sFunction, bool initArray = false)
     
     if (initArray)
     {
-        g_aCustomItems = new ArrayList(84);
+        g_aCustomItems = new ArrayList(83);
         RequestFrame(Frame_ShopReady, g_aCustomItems);
     }
 }
