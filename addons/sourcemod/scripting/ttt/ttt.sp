@@ -12,6 +12,7 @@
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
 #include <SteamWorks>
+#include <ghostdm>
 #tryinclude <sourcebans>
 #define REQUIRE_PLUGIN
 #define REQUIRE_EXTENSIONS
@@ -147,6 +148,10 @@ public void OnAllPluginsLoaded()
     {
         g_bSourcebans = true;
     }
+    else if (LibraryExists("ghostdm"))
+    {
+        g_bGhostDM = true;
+    }
 }
 
 public void OnLibraryAdded(const char[] library)
@@ -155,6 +160,10 @@ public void OnLibraryAdded(const char[] library)
     {
         g_bSourcebans = true;
     }
+    else if (StrEqual(library, "ghostdm", false))
+    {
+        g_bGhostDM = true;
+    }
 }
 
 public void OnLibraryRemoved(const char[] library)
@@ -162,6 +171,10 @@ public void OnLibraryRemoved(const char[] library)
     if (StrEqual(library, "sourcebans", false))
     {
         g_bSourcebans = false;
+    }
+    else if (StrEqual(library, "ghostdm", false))
+    {
+        g_bGhostDM = false;
     }
 }
 
@@ -3212,6 +3225,11 @@ public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroa
 public Action OnPlayerRunCmd(int client, int &buttons)
 {
     if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_bGhostDM && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)) && GhostDM_IsClientInDeathmatch(client))
     {
         return Plugin_Continue;
     }

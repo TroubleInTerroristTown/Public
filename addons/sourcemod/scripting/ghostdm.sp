@@ -94,6 +94,7 @@ public void OnClientPutInServer(int client)
 {
     ResetClient(client);
 
+    SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
     SDKHook(client, SDKHook_WeaponCanUse, OnWeapon);
     SDKHook(client, SDKHook_WeaponEquip, OnWeapon);
@@ -396,6 +397,11 @@ public Action OnSetTransmit(int target, int client)
         return Plugin_Continue;
     }
 
+    if (g_bRedie[target] != g_bRedie[client])
+    {
+        return Plugin_Handled;
+    }
+
     if (g_bDM[target] != g_bDM[client])
     {
         return Plugin_Handled;
@@ -469,7 +475,6 @@ void SetRedie(int client, bool bDeathmatch = false)
     if (g_bRedie[client])
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
-        SDKHook(client, SDKHook_SetTransmit, OnSetTransmit);
 
         int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_KNIFE);
 
@@ -485,8 +490,6 @@ void SetRedie(int client, bool bDeathmatch = false)
             }
         }
 
-        PrintToChat(client, "You have now spawn protection for %.1f seconds!", g_fSpawnProt);
-
         if (bDeathmatch)
         {
             if (g_hSpawn[client] != null)
@@ -495,6 +498,8 @@ void SetRedie(int client, bool bDeathmatch = false)
             }
 
             g_hSpawn[client] = CreateTimer(g_fSpawnProt, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+
+            PrintToChat(client, "You have now spawn protection for %.1f seconds!", g_fSpawnProt);
         }
     }
     else
@@ -522,8 +527,6 @@ void ResetClient(int client)
 
     if (IsClientInGame(client))
     {
-        SDKUnhook(client, SDKHook_SetTransmit, OnSetTransmit);
-
         ClearTimer(g_hRespawn[client]);
         ClearTimer(g_hSpawn[client]);
 

@@ -14,8 +14,10 @@ void Config_OnPluginStart()
 
     // Get spawn protection time, respawn time and health value
     g_iHealth = kvConfig.GetNum("Health", 100);
-    g_fRespawn = view_as<float>(kvConfig.GetNum("Respawn Delay", 5));
-    g_fSpawnProt = view_as<float>(kvConfig.GetNum("Spawn Protection", 3));
+    g_fRespawn = kvConfig.GetFloat("Respawn Delay", 5.0);
+    g_fSpawnProt = kvConfig.GetFloat("Spawn Protection", 3.0);
+
+    LogMessage("[GhostDM.General] Health: %d - Respawn Delay: %.f - Spawn Protection: %.f", g_iHealth, g_fRespawn, g_fSpawnProt);
 
     // Get armor and helm value
     if (!kvConfig.JumpToKey("Armor", false))
@@ -29,7 +31,7 @@ void Config_OnPluginStart()
     g_bHelm = view_as<bool>(kvConfig.GetNum("Helm", 0));
     kvConfig.GoBack();
 
-    LogMessage("[GhostDM.General] Health: %d - Chest: %d - Helm: %d", g_iHealth, g_bChest, g_bHelm);
+    LogMessage("[GhostDM.General] Chest: %d - Helm: %d", g_bChest, g_bHelm);
 
     // Get primary weapons
     delete g_smPrimary;

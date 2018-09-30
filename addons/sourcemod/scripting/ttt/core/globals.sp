@@ -116,6 +116,7 @@ Handle g_hOnPlayerRespawn = null;
 Handle g_hOnVersionCheck = null;
 
 bool g_bSourcebans = false;
+bool g_bGhostDM = false;
 
 char g_sRadioCMDs[][] =  {
     "coverme",
