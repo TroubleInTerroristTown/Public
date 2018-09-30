@@ -1,3 +1,10 @@
+/*
+
+    ToDo:
+        - Only allow weapons (primary and secondary)
+
+*/
+
 #pragma semicolon 1
 #pragma newdecls required
 
@@ -11,8 +18,6 @@
 #define HUD_RADAR ( 1<<12 )
 #define HUD_ALL 2050
 
-// Following settings are just hardcoded and will replaced with convars later....
-
 bool g_bRedie[MAXPLAYERS + 1 ] = { false, ... };
 bool g_bDM[MAXPLAYERS + 1 ] = { false, ... };
 
@@ -22,7 +27,6 @@ int g_iNextSecondaryAttack = -1;
 Handle g_hRespawn[MAXPLAYERS + 1] = { null, ...};
 Handle g_hSpawn[MAXPLAYERS + 1] = { null, ...};
 
-// Settings from config.sp
 int g_iHealth = -1;
 float g_fRespawn = 0.0;
 float g_fSpawnProt = 0.0;
@@ -31,8 +35,6 @@ bool g_bHelm = false;
 StringMap g_smPrimary = null;
 StringMap g_smSecondary = null;
 StringMap g_smWeaponLimits = null;
-StringMap g_smGrenade = null;
-StringMap g_smGrenadeLimits = null;
 
 #include "ghostdm/config.sp"
 
