@@ -60,6 +60,14 @@ public void OnConfigsExecuted()
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
 
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+    if (convar == g_cPluginTag)
+    {
+        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    }
+}
+
 public void TTT_OnShopReady()
 {
     RegisterItem();
@@ -71,14 +79,6 @@ void RegisterItem()
     g_cLongName.GetString(sName, sizeof(sName));
     
     TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
-}
-
-public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
-{
-    if (convar == g_cPluginTag)
-    {
-        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-    }
 }
 
 public void OnClientDisconnect(int client)

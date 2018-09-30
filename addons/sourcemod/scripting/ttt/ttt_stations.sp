@@ -48,6 +48,7 @@ ConVar g_cHurtTraitors = null;
 ConVar g_cHurt = null;
 ConVar g_cHealth = null;
 
+ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 public void OnPluginStart()
@@ -82,6 +83,21 @@ public void OnPluginStart()
 public void OnMapStart()
 {
     PrecacheSoundAny(SND_WARNING, true);
+}
+
+public void OnConfigsExecuted()
+{
+    g_cPluginTag = FindConVar("ttt_plugin_tag");
+    g_cPluginTag.AddChangeHook(OnConVarChanged);
+    g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+    if (convar == g_cPluginTag)
+    {
+        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    }
 }
 
 public void TTT_OnShopReady()
