@@ -1506,7 +1506,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
         }
         else if (StrContains(TTT_PLUGIN_VERSION, "VERSION", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "ID", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "COMMIT", false) != -1)
         {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Unknown", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
         }
         else
         {

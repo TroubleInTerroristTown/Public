@@ -1235,7 +1235,7 @@
 
 	"Version Check: Older"
 	{
-		"#format"	"{1:s}"
+		"#format"	"{1:s},{2:s}"
 		"en"		"This server is running an older version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
 	}
 
