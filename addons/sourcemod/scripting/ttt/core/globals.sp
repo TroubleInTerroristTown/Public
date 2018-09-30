@@ -296,6 +296,7 @@ ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
 ConVar g_cVersionCheck = null;
+ConVar g_cVersionMessage = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

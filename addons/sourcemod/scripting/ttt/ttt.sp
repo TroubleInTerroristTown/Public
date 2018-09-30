@@ -1498,6 +1498,22 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
+    if (g_cVersionCheck.BoolValue && g_cVersionMessage.BoolValue && strlen(g_sLatestVersion) > 1)
+    {
+        if (StrEqual(TTT_PLUGIN_VERSION, g_sLatestVersion, false))
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, g_sLatestVersion);
+        }
+        else if (StrContains(TTT_PLUGIN_VERSION, "VERSION", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "ID", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "COMMIT", false) != -1)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
+        }
+        else
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Older", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
+        }
+    }
+
     if (g_bRoundStarted && TTT_IsClientValid(client) && !g_bRespawn[client])
     {
         CS_SetClientClanTag(client, "UNASSIGNED");

@@ -1221,4 +1221,22 @@
 		"en"		"Tasers loaded and enabled!"
 	}
 
+	"Version Check: Current"
+	{
+		"#format"	"{1:s}"
+		"en"		"This server is running the latest version ({1}) of Trouble in Terrorist Town."
+	}
+
+	"Version Check: Unknown"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"This server is running an unknown version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"#format"	"{1:s}"
+		"en"		"This server is running an older version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+	}
+
 }

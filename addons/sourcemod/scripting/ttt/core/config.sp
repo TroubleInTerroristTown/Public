@@ -140,7 +140,8 @@ void SetupConfig()
     g_cRespawnAccess = AutoExecConfig_CreateConVar("ttt_respawn_admin_access", "b", "Admin flags to access respawn command.");
     g_cPlayerHUDMessage = AutoExecConfig_CreateConVar("ttt_players_remaining_hud_message", "1", "Show hud \"We Are / Players Remaining\" message during non active rounds?", _, true, 0.0, true, 1.0);
     g_cShowURL = AutoExecConfig_CreateConVar("ttt_show_url", "1", "Show the URL when a player wants to read the rules? Valve removed the MOTD and Popup-function, so that could be useful", _, true, 0.0, true, 1.0);
-    g_cVersionCheck = AutoExecConfig_CreateConVar("ttt_version_check", "1", "Enable version check? This prints a message to all players on every spawn", _, true, 0.0, true, 1.0);
+    g_cVersionCheck = AutoExecConfig_CreateConVar("ttt_version_check", "1", "Enable version check?", _, true, 0.0, true, 1.0);
+    g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message", "1", "This prints a version message to all players on every spawn", _, true, 0.0, true, 1.0);
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);
