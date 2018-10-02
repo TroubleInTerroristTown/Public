@@ -19,7 +19,7 @@ before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then bash ci/build.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID; fi'
 
 script:
-  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID $PHP_FILE; fi'
+  - 'if [[ $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH == "master" ]]; then bash ci/upload.sh $VERSION "dev" $FTP_HOST $FTP_USER $FTP_PASS $TRAVIS_JOB_ID $PHP_FILE $API_KEY; fi'
 
 notifications:
   email: false
