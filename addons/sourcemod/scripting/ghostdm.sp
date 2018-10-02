@@ -285,6 +285,20 @@ public Action Timer_Respawn(Handle timer, int userid)
     return Plugin_Stop;
 }
 
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
+{
+    if(g_bRedie[client])
+    {
+        if (buttons & IN_ATTACK)
+        {
+            buttons &= ~IN_USE;
+            return Plugin_Changed;
+        }
+    }
+
+    return Plugin_Continue;
+}
+
 public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
 {
     if (IsClientValid(client))
