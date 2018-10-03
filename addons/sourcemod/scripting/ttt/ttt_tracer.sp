@@ -13,16 +13,22 @@
 
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tracer"
-#define SHORT_NAME "Tracer"
 
-bool g_bHasTracer[MAXPLAYERS+1];
+#define SHORT_NAME_TRACER "Tracer_t"
+#define SHORT_NAME_JAMMER "Jammer_d"
+
+bool g_bHasTracer[MAXPLAYERS+1] = { false, ... };
+bool g_bHasJammer[MAXPLAYERS+1] = { false, ... };
 
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-
 ConVar g_cCompassShowNameDistance = null;
 ConVar g_cCompassDisorientationDistance = null;
+
+ConVar g_cJammerPrice = null;
+ConVar g_cJammerPrio = null;
+ConVar g_cJammerLongName = null;
 
 Handle g_hHUD = null;
 
@@ -46,6 +52,9 @@ public void OnPluginStart()
     g_cPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the tracer in the shop menu.");
     g_cCompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
     g_cCompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
+    g_cJammerLongName = AutoExecConfig_CreateConVar("jammer_name", "Jammer", "The name of this in Shop");
+    g_cJammerPrice = AutoExecConfig_CreateConVar("jammer_price", "9000", "The amount of credits jammer costs as traitor. 0 to disable.");
+    g_cJammerPrio = AutoExecConfig_CreateConVar("jammer_sort_prio", "0", "The sorting priority of the jammer in the shop menu.");
     TTT_EndConfig();
 
     g_hHUD = CreateHudSynchronizer();
@@ -61,12 +70,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client))
     {
         g_bHasTracer[client] = false;
+        g_bHasJammer[client] = false;
     }
 }
 
 public void OnClientConnected(int client)
 {
     g_bHasTracer[client] = false;
+    g_bHasJammer[client] = false;
 }
 
 public void TTT_OnShopReady()
@@ -77,16 +88,19 @@ public void TTT_OnShopReady()
 void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
+
     g_cLongName.GetString(sName, sizeof(sName));
-    
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_TRACER, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+
+    g_cJammerLongName.GetString(sName, sizeof(sName));
+    TTT_RegisterCustomItem(SHORT_NAME_JAMMER, sName, g_cJammerPrice.IntValue, TTT_TEAM_TRAITOR, g_cJammerPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
+        if (StrEqual(itemshort, SHORT_NAME_TRACER, false))
         {
             int role = TTT_GetClientRole(client);
             
@@ -96,7 +110,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             }
             
             g_bHasTracer[client] = true;
+        }
+        else if (StrEqual(itemshort, SHORT_NAME_JAMMER, false))
+        {
+            int role = TTT_GetClientRole(client);
             
+            if (role != TTT_TEAM_DETECTIVE)
+            {
+                return Plugin_Stop;
+            }
+            
+            g_bHasJammer[client] = true;
         }
     }
     return Plugin_Continue;
@@ -128,6 +152,11 @@ public Action Tracer_Display(Handle timer)
         }
         
         if(!g_bHasTracer[iClientToShow] || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
+        {
+            continue;
+        }
+
+        if (g_bHasJammer[client])
         {
             continue;
         }
