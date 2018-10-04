@@ -172,7 +172,7 @@ void CreateTurret(int client)
     DispatchKeyValue(ent, "disablereceiveshadows", "1");
     DispatchKeyValue(ent, "disableshadows", "1");
     DispatchKeyValue(ent, "solid", "6");
-    SetEntProp(ent, Prop_Data, "m_CollisionGroup", 1);
+    SetEntProp(ent, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
     SetEntProp(ent, Prop_Send, "m_fEffects", EF_BONEMERGE|EF_NOSHADOW|EF_NORECEIVESHADOW|EF_PARENT_ANIMATES);
     
     

@@ -528,7 +528,7 @@ public int TTT_OnButtonPress(int client, int button)
         {
             float clientPos[3];
             GetClientAbsOrigin(client, clientPos);
-            SetEntProp(bombEnt, Prop_Data, "m_CollisionGroup", 1);
+            SetEntProp(bombEnt, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
             SetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity", client);
             DispatchKeyValue(bombEnt, "model", MDL_C4);
             if(DispatchSpawn(bombEnt))

@@ -3,8 +3,6 @@
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
 
-#define COLLISION_GROUP_DEBRIS_TRIGGER 2
-
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
@@ -57,7 +55,6 @@ Handle g_hRoundTimer = null;
 
 bool g_bInactive = false;
 
-int g_iCollisionGroup = -1;
 int m_flNextPrimaryAttack = -1;
 int m_flNextSecondaryAttack = -1;
 

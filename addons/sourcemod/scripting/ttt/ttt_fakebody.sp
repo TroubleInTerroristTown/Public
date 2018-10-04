@@ -11,8 +11,6 @@
 #define SHORT_NAME "fakebody"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Fake Body"
 
-#define COLLISION_GROUP_DEBRIS_TRIGGER 2
-
 ConVar g_cPrice = null;
 ConVar g_cShowFakeMessage = null;
 ConVar g_cDeleteFakeBodyAfterFound = null;
@@ -146,8 +144,8 @@ bool SpawnFakeBody(int client)
     int iEntity = CreateEntityByName("prop_ragdoll");
     DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
     DispatchKeyValue(iEntity, "targetname", sName);
-    SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
-    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
+    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
 
     if (DispatchSpawn(iEntity))
     {

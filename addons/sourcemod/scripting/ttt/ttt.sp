@@ -60,7 +60,6 @@ public void OnPluginStart()
     g_aForceTraitor = new ArrayList();
     g_aForceDetective = new ArrayList();
 
-    g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
     m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
     m_flNextSecondaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextSecondaryAttack");
 
@@ -1937,8 +1936,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
         int iEntity = CreateEntityByName("prop_ragdoll");
         DispatchKeyValue(iEntity, "model", sModel);
-        SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
+        SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
 
         ActivateEntity(iEntity);
         if (DispatchSpawn(iEntity))
@@ -1958,7 +1957,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
             LogToFileEx(g_sErrorFile, "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
         }
 
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
 
         int iUAttacker = event.GetInt("attacker");
         int iAttacker = GetClientOfUserId(iUAttacker);
@@ -4331,7 +4330,7 @@ void CheckTeams()
 
 void SetNoBlock(int client)
 {
-    SetEntData(client, g_iCollisionGroup, 2, 4, true);
+    SetEntProp(client, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
 }
 
 void LoadBadNames()

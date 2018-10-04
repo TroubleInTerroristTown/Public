@@ -45,6 +45,53 @@ enum KarmaUpdate
     Karma_Subtract
 }
 
+enum Collision_Group_t
+{
+    COLLISION_GROUP_NONE  = 0,
+    COLLISION_GROUP_DEBRIS,			// Collides with nothing but world and static stuff
+    COLLISION_GROUP_DEBRIS_TRIGGER, // Same as debris, but hits triggers
+    COLLISION_GROUP_INTERACTIVE_DEBRIS,	// Collides with everything except other interactive debris or debris
+    COLLISION_GROUP_INTERACTIVE,	// Collides with everything except interactive debris or debris
+    COLLISION_GROUP_PLAYER,
+    COLLISION_GROUP_BREAKABLE_GLASS,
+    COLLISION_GROUP_VEHICLE,
+    COLLISION_GROUP_PLAYER_MOVEMENT,  // For HL2, same as Collision_Group_Player, for
+                                        // TF2, this filters out other players and CBaseObjects
+    COLLISION_GROUP_NPC,			// Generic NPC group
+    COLLISION_GROUP_IN_VEHICLE,		// for any entity inside a vehicle
+    COLLISION_GROUP_WEAPON,			// for any weapons that need collision detection
+    COLLISION_GROUP_VEHICLE_CLIP,	// vehicle clip brush to restrict vehicle movement
+    COLLISION_GROUP_PROJECTILE,		// Projectiles!
+    COLLISION_GROUP_DOOR_BLOCKER,	// Blocks entities not permitted to get near moving doors
+    COLLISION_GROUP_PASSABLE_DOOR,	// Doors that the player shouldn't collide with
+    COLLISION_GROUP_DISSOLVING,		// Things that are dissolving are in this group
+    COLLISION_GROUP_PUSHAWAY,		// Nonsolid on client and server, pushaway in player code
+
+    COLLISION_GROUP_NPC_ACTOR,		// Used so NPCs in scripts ignore the player.
+    COLLISION_GROUP_NPC_SCRIPTED,	// USed for NPCs in scripts that should not collide with each other
+
+    LAST_SHARED_COLLISION_GROUP
+};
+
+// edict->solid values
+// NOTE: Some movetypes will cause collisions independent of SOLID_NOT/SOLID_TRIGGER when the entity moves
+// SOLID only effects OTHER entities colliding with this one when they move - UGH!
+
+// Solid type basically describes how the bounding volume of the object is represented
+// NOTE: SOLID_BBOX MUST BE 2, and SOLID_VPHYSICS MUST BE 6
+// NOTE: These numerical values are used in the FGD by the prop code (see prop_dynamic)
+enum SolidType_t
+{
+    SOLID_NONE			= 0,	// no solid model
+    SOLID_BSP			= 1,	// a BSP tree
+    SOLID_BBOX			= 2,	// an AABB
+    SOLID_OBB			= 3,	// an OBB (not implemented yet)
+    SOLID_OBB_YAW		= 4,	// an OBB, constrained so that it can only yaw
+    SOLID_CUSTOM		= 5,	// Always call into the entity for tests
+    SOLID_VPHYSICS		= 6,	// solid vphysics object, get vcollide from the model and collide with that
+    SOLID_LAST,
+};
+
 /**
  * Called before players roles are picked/assigned.
  * Return Plugin_Handled or higher to prevent round start.
@@ -930,32 +977,32 @@ stock int TTT_GetRoundTimeElapsed()
 
 stock bool TTT_IsClientStuck(int client)
 {
-	float vOrigin[3], vMins[3], vMaxs[3];
+    float vOrigin[3], vMins[3], vMaxs[3];
 
-	GetClientAbsOrigin(client, vOrigin);
+    GetClientAbsOrigin(client, vOrigin);
 
-	GetEntPropVector(client, Prop_Send, "m_vecMins", vMins);
-	GetEntPropVector(client, Prop_Send, "m_vecMaxs", vMaxs);
-	
-	TR_TraceHullFilter(vOrigin, vOrigin, vMins, vMaxs, MASK_ALL, FilterOnlyPlayers, client);
+    GetEntPropVector(client, Prop_Send, "m_vecMins", vMins);
+    GetEntPropVector(client, Prop_Send, "m_vecMaxs", vMaxs);
+    
+    TR_TraceHullFilter(vOrigin, vOrigin, vMins, vMaxs, MASK_ALL, FilterOnlyPlayers, client);
 
-	return TR_DidHit();
+    return TR_DidHit();
 }
 
 public bool FilterOnlyPlayers(int entity, int contentsMask, any data)
 {
-	if(entity != data && TTT_IsClientValid(entity) && TTT_IsClientValid(data))
-	{
-		return false;
-	}
-	else if (entity != data)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+    if(entity != data && TTT_IsClientValid(entity) && TTT_IsClientValid(data))
+    {
+        return false;
+    }
+    else if (entity != data)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 stock int TTT_HasClientKnife(int client)

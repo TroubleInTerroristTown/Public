@@ -21,7 +21,6 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 
-int g_iCollisionGroup = -1;
 int g_iFreeze = -1;
 
 int g_iRagdoll[MAXPLAYERS + 1] =  { -1, ... };
@@ -66,12 +65,6 @@ public int Native_IsClientKnockout(Handle plugin, int numParams)
 public void OnPluginStart()
 {
     TTT_IsGameCSGO();
-
-    g_iCollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
-    if (g_iCollisionGroup == -1)
-    {
-        SetFailState("m_CollisionGroup not found...");
-    }
 
     g_iFreeze = FindSendPropInfo("CBasePlayer", "m_fFlags");
     if (g_iFreeze == -1)
@@ -244,8 +237,8 @@ void KnockoutPlayer(int client)
 
     int iEntity = CreateEntityByName("prop_ragdoll");
     DispatchKeyValue(iEntity, "model", sModel);
-    SetEntProp(iEntity, Prop_Data, "m_nSolidType", 6);
-    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 5);
+    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
     
     char sName[24];
     Format(sName, sizeof(sName), "knockout_ragdoll_%d", GetClientUserId(client));
@@ -255,7 +248,7 @@ void KnockoutPlayer(int client)
     {
         pos[2] -= 16.0;
         TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", 2);
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
 
         g_iRagdoll[client] = iEntity;
         g_bKnockout[client] = true;
@@ -264,7 +257,7 @@ void KnockoutPlayer(int client)
         CreateTimer(0.1, Timer_FixMode, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 
         g_iCollision[client] = GetEntProp(client, Prop_Data, "m_CollisionGroup");
-        SetEntProp(client, Prop_Data, "m_CollisionGroup", 2);
+        SetEntProp(client, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
         
         DropWeapons(client);
         SetEntData(client, g_iFreeze, FL_CLIENT|FL_ATCONTROLS, 4, true);
