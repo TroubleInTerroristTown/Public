@@ -17,7 +17,6 @@ ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
 StringMap g_smMenu = null;
-ArrayList g_alOrder = null;
 
 public Plugin myinfo =
 {
@@ -40,7 +39,6 @@ public void OnPluginStart()
     g_cReloadAccess = AutoExecConfig_CreateConVar("ttt_radio_reload_access", "z", "Admin flags to access reload radio command.");
     TTT_EndConfig();
     
-    g_alOrder = new ArrayList(32);
     g_smMenu = new StringMap();
 
     LoadMenu();
@@ -73,11 +71,6 @@ public Action Command_ReloadRadio(int client, int args)
 
 void LoadMenu()
 {
-    if (g_alOrder != null)
-    {
-        g_alOrder.Clear();
-    }    
-
     if (g_smMenu != null)
     {
         g_smMenu.Clear();
@@ -122,7 +115,6 @@ void LoadMenu()
         kv.GetSectionName(sKey, sizeof(sKey));
         kv.GetString(NULL_STRING, sTranslations, sizeof(sTranslations));
 
-        g_alOrder.PushString(sKey);
         g_smMenu.SetString(sKey, sTranslations);
     }
     while (kv.GotoNextKey(false));
@@ -147,6 +139,11 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action Command_Radio(int client, int args)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
@@ -291,9 +288,11 @@ void ShowRadioMenu(int client)
     char sBuffer[64];
     char sTranslations[128];
 
-    for (int i = 0; i < g_alOrder.Length; i++)
+    StringMapSnapshot smSnapshot = g_smMenu.Snapshot();
+
+    for (int i = 0; i < smSnapshot.Length; i++)
     {
-        g_alOrder.GetString(i, sKey, sizeof(sKey));
+        smSnapshot.GetKey(i, sKey, sizeof(sKey));
         g_smMenu.GetString(sKey, sBuffer, sizeof(sBuffer));
         Format(sTranslations, sizeof(sTranslations), "TTT Radio Menu: %s", sBuffer);
         Format(sTranslations, sizeof(sTranslations), "%T", sTranslations, client);
