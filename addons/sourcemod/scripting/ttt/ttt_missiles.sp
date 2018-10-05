@@ -33,11 +33,11 @@ public Plugin myinfo =
     url = TTT_PLUGIN_URL
 };
 
-ConVar g_cDamage;
-ConVar g_cRadius;
-ConVar g_cSpeed;
-ConVar g_cArc;
-ConVar g_cModel;
+ConVar g_cDamage = null;
+ConVar g_cRadius = null;
+ConVar g_cSpeed = null;
+ConVar g_cArc = null;
+ConVar g_cModel = null;
 
 ConVar g_cPriceT_F = null;
 ConVar g_cPriceD_F = null;
@@ -49,9 +49,7 @@ ConVar g_cAmountT_F = null;
 ConVar g_cAmountD_F = null;
 ConVar g_cAmountI_F = null;
 ConVar g_cName_F = null;
-
 int g_iPAmount_F[MAXPLAYERS + 1] =  { 0, ... };
-
 int g_iMissile_F[MAXPLAYERS + 1] =  { 0, ... };
 
 ConVar g_cPriceT_C = null;
@@ -64,9 +62,7 @@ ConVar g_cAmountT_C = null;
 ConVar g_cAmountD_C = null;
 ConVar g_cAmountI_C = null;
 ConVar g_cName_C = null;
-
 int g_iPAmount_C[MAXPLAYERS + 1] =  { 0, ... };
-
 int g_iMissile_C[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iMissileEnt[MAXPLAYERS +1] = { -1, ... };
@@ -81,14 +77,12 @@ ConVar g_cAmountT = null;
 ConVar g_cAmountD = null;
 ConVar g_cAmountI = null;
 ConVar g_cName = null;
-
 int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
-
 int g_iMissile[MAXPLAYERS + 1] =  { 0, ... };
 
 float g_fMinNadeHull[3] = {-2.5, -2.5, -2.5};
 float g_fMaxNadeHull[3] = {2.5, 2.5, 2.5};
-float g_fMaxWorldLength;
+float g_fMaxWorldLength = 0.0;
 float g_fSpinVel[3] = {0.0, 0.0, 200.0};
 float g_fSmokeOrigin[3] = {-30.0,0.0,0.0};
 float g_fSmokeAngle[3] = {0.0,-180.0,0.0};
@@ -97,49 +91,54 @@ int g_iType[MAXPLAYERS + 1] =  { -1, ... };
 
 public void OnPluginStart()
 {
-    g_cDamage = CreateConVar("missiles_damage", "100", "Sets the maximum amount of damage the missiles can do", _, true, 1.0);
-    g_cRadius = CreateConVar("missiles_radius", "350", "Sets the explosive radius of the missiles", _, true, 1.0);
-    g_cSpeed = CreateConVar("missiles_speed", "500.0", "Sets the speed of the missiles", _, true, 300.0 ,true, 3000.0);
-    g_cArc = CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
-    g_cModel = CreateConVar("missiles_model", "models/props/de_inferno/hr_i/missile/missile_02.mdl", "The model of the missile (You need to add it to the donwloadtable yourself)");
+    TTT_IsGameCSGO();
     
-    g_cPriceT = CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
-    g_cPriceD = CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
-    g_cPriceI = CreateConVar("missiles_price_i", "0", "Price for the missile for Innos", _, true, 0.0);
-    g_cPriorityT = CreateConVar("missiles_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
-    g_cPriorityD = CreateConVar("missiles_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
-    g_cPriorityI = CreateConVar("missiles_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT = CreateConVar("missiles_amount_t", "2", "How much missiles can a traitor buy?");
-    g_cAmountD = CreateConVar("missiles_amount_d", "0", "How much missiles can a detective buy?");
-    g_cAmountI = CreateConVar("missiles_amount_i", "0", "How much missiles can a innocent buy?");
-    g_cName = CreateConVar("missiles_name", "Missile", "The name of the missile in the shop");
-    
-    g_cPriceT_F = CreateConVar("missiles_following_price_t", "10000", "Price for the following missile for Traitors", _, true, 0.0);
-    g_cPriceD_F = CreateConVar("missiles_following_price_d", "0", "Price for the following missile for Detectives", _, true, 0.0);
-    g_cPriceI_F = CreateConVar("missiles_following_price_i", "0", "Price for the following missile for Innos", _, true, 0.0);
-    g_cPriorityT_F = CreateConVar("missiles_following_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
-    g_cPriorityD_F = CreateConVar("missiles_following_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
-    g_cPriorityI_F = CreateConVar("missiles_following_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_F = CreateConVar("missiles_following_amount_t", "2", "How much following missiles can a traitor buy?");
-    g_cAmountD_F = CreateConVar("missiles_following_amount_d", "0", "How much following missiles can a detective buy?");
-    g_cAmountI_F = CreateConVar("missiles_following_amount_i", "0", "How much following missiles can a innocent buy?");
-    g_cName_F = CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
+    LoadTranslations("ttt.phrases");
 
-    g_cPriceT_C = CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
-    g_cPriceD_C = CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
-    g_cPriceI_C = CreateConVar("missiles_control_price_i", "0", "Price for the control missile for Innos", _, true, 0.0);
-    g_cPriorityT_C = CreateConVar("missiles_control_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
-    g_cPriorityD_C = CreateConVar("missiles_control_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
-    g_cPriorityI_C = CreateConVar("missiles_control_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_C = CreateConVar("missiles_control_amount_t", "2", "How much control missiles can a traitor buy?");
-    g_cAmountD_C = CreateConVar("missiles_control_amount_d", "0", "How much control missiles can a detective buy?");
-    g_cAmountI_C = CreateConVar("missiles_control_amount_i", "0", "How much control missiles can a innocent buy?");
-    g_cName_C = CreateConVar("missiles_control_name", "Controlling Missile", "The name of the control missile in the shop");
-        
+    TTT_StartConfig("missiles");
+    CreateConVar("ttt2_missiles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    g_cDamage = AutoExecConfig_CreateConVar("missiles_damage", "100", "Sets the maximum amount of damage the missiles can do", _, true, 1.0);
+    g_cRadius = AutoExecConfig_CreateConVar("missiles_radius", "350", "Sets the explosive radius of the missiles", _, true, 1.0);
+    g_cSpeed = AutoExecConfig_CreateConVar("missiles_speed", "500.0", "Sets the speed of the missiles", _, true, 300.0 ,true, 3000.0);
+    g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
+    g_cModel = AutoExecConfig_CreateConVar("missiles_model", "models/props/de_inferno/hr_i/missile/missile_02.mdl", "The model of the missile (You need to add it to the donwloadtable yourself)");
+
+    g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
+    g_cPriceD = AutoExecConfig_CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
+    g_cPriceI = AutoExecConfig_CreateConVar("missiles_price_i", "0", "Price for the missile for Innos", _, true, 0.0);
+    g_cPriorityT = AutoExecConfig_CreateConVar("missiles_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
+    g_cPriorityD = AutoExecConfig_CreateConVar("missiles_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
+    g_cPriorityI = AutoExecConfig_CreateConVar("missiles_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
+    g_cAmountT = AutoExecConfig_CreateConVar("missiles_amount_t", "2", "How much missiles can a traitor buy?");
+    g_cAmountD = AutoExecConfig_CreateConVar("missiles_amount_d", "0", "How much missiles can a detective buy?");
+    g_cAmountI = AutoExecConfig_CreateConVar("missiles_amount_i", "0", "How much missiles can a innocent buy?");
+    g_cName = AutoExecConfig_CreateConVar("missiles_name", "Missile", "The name of the missile in the shop");
+    
+    g_cPriceT_F = AutoExecConfig_CreateConVar("missiles_following_price_t", "10000", "Price for the following missile for Traitors", _, true, 0.0);
+    g_cPriceD_F = AutoExecConfig_CreateConVar("missiles_following_price_d", "0", "Price for the following missile for Detectives", _, true, 0.0);
+    g_cPriceI_F = AutoExecConfig_CreateConVar("missiles_following_price_i", "0", "Price for the following missile for Innos", _, true, 0.0);
+    g_cPriorityT_F = AutoExecConfig_CreateConVar("missiles_following_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
+    g_cPriorityD_F = AutoExecConfig_CreateConVar("missiles_following_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
+    g_cPriorityI_F = AutoExecConfig_CreateConVar("missiles_following_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
+    g_cAmountT_F = AutoExecConfig_CreateConVar("missiles_following_amount_t", "2", "How much following missiles can a traitor buy?");
+    g_cAmountD_F = AutoExecConfig_CreateConVar("missiles_following_amount_d", "0", "How much following missiles can a detective buy?");
+    g_cAmountI_F = AutoExecConfig_CreateConVar("missiles_following_amount_i", "0", "How much following missiles can a innocent buy?");
+    g_cName_F = AutoExecConfig_CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
+
+    g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
+    g_cPriceD_C = AutoExecConfig_CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
+    g_cPriceI_C = AutoExecConfig_CreateConVar("missiles_control_price_i", "0", "Price for the control missile for Innos", _, true, 0.0);
+    g_cPriorityT_C = AutoExecConfig_CreateConVar("missiles_control_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
+    g_cPriorityD_C = AutoExecConfig_CreateConVar("missiles_control_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
+    g_cPriorityI_C = AutoExecConfig_CreateConVar("missiles_control_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
+    g_cAmountT_C = AutoExecConfig_CreateConVar("missiles_control_amount_t", "2", "How much control missiles can a traitor buy?");
+    g_cAmountD_C = AutoExecConfig_CreateConVar("missiles_control_amount_d", "0", "How much control missiles can a detective buy?");
+    g_cAmountI_C = AutoExecConfig_CreateConVar("missiles_control_amount_i", "0", "How much control missiles can a innocent buy?");
+    g_cName_C = AutoExecConfig_CreateConVar("missiles_control_name", "Controlling Missile", "The name of the control missile in the shop");
+    TTT_EndConfig();
+
     HookEvent("player_spawn", Event_Reset);
     HookEvent("player_death", Event_Reset);
-    
-    AutoExecConfig(true);
 }
 
 public void OnMapStart()
@@ -343,8 +342,8 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         SetEntPropFloat(iEntity, Prop_Send, "m_Opacity", 0.5);
         SetEntPropFloat(iEntity, Prop_Send, "m_SpawnRate", 100.0);
         SetEntPropFloat(iEntity, Prop_Send, "m_ParticleLifetime", 0.5);
-        float smokeRed[3] =  { 0.5, 0.25, 0.25 };
-        SetEntPropVector(iEntity, Prop_Send, "m_StartColor", smokeRed);
+        float fsmokeRed[3] =  { 0.5, 0.25, 0.25 };
+        SetEntPropVector(iEntity, Prop_Send, "m_StartColor", fsmokeRed);
         SetEntPropFloat(iEntity, Prop_Send, "m_StartSize", 5.0);
         SetEntPropFloat(iEntity, Prop_Send, "m_EndSize", 30.0);
         SetEntPropFloat(iEntity, Prop_Send, "m_SpawnRadius", 0.0);
@@ -353,10 +352,10 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         SetEntPropFloat(iEntity, Prop_Send, "m_flFlareScale", 1.0);
         DispatchSpawn(iEntity);
         ActivateEntity(iEntity);
-        char NadeName[20];
-        Format(NadeName, sizeof(NadeName), "Nade_%i", caller);
-        DispatchKeyValue(caller, "targetname", NadeName);
-        SetVariantString(NadeName);
+        char sNadeName[20];
+        Format(sNadeName, sizeof(sNadeName), "Nade_%i", caller);
+        DispatchKeyValue(caller, "targetname", sNadeName);
+        SetVariantString(sNadeName);
         AcceptEntityInput(iEntity, "SetParent");
         TeleportEntity(iEntity, g_fSmokeOrigin, g_fSmokeAngle, NULL_VECTOR);
     }
@@ -466,72 +465,73 @@ public void MissileThink(const char[] output, int caller, int activator, float d
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
         }
         
-        float CurrentVec[3];
-        GetEntPropVector(caller, Prop_Send, "m_vecVelocity", CurrentVec);
-        float FinalVec[3];
+        float fCurrentVec[3];
+        GetEntPropVector(caller, Prop_Send, "m_vecVelocity", fCurrentVec);
+        float fFinalVec[3];
         if (g_cArc.BoolValue && (fClosestDistance > 100.0))
         {
             NormalizeVector(fTargetVec, fTargetVec);
-            NormalizeVector(CurrentVec, CurrentVec);
+            NormalizeVector(fCurrentVec, fCurrentVec);
             ScaleVector(fTargetVec, g_cSpeed.FloatValue / 1000.0);
-            AddVectors(fTargetVec, CurrentVec, FinalVec);
+            AddVectors(fTargetVec, fCurrentVec, fFinalVec);
         }
         else
         {
-            FinalVec = fTargetVec;
+            fFinalVec = fTargetVec;
         }
         
-        NormalizeVector(FinalVec, FinalVec);
-        ScaleVector(FinalVec, g_cSpeed.FloatValue);
-        float FinalAng[3];
-        GetVectorAngles(FinalVec, FinalAng);
-        TeleportEntity(caller, NULL_VECTOR, FinalAng, FinalVec);
+        NormalizeVector(fFinalVec, fFinalVec);
+        ScaleVector(fFinalVec, g_cSpeed.FloatValue);
+        float fFinalAng[3];
+        GetVectorAngles(fFinalVec, fFinalAng);
+        TeleportEntity(caller, NULL_VECTOR, fFinalAng, fFinalVec);
     }
     else if (g_iType[iOwner] == 2)
     {
 
-        float clientAngles[3];
-        float FinalVec[3];
+        float fclientAngles[3];
+        float fFinalVec[3];
         float fTargetVec[3];
-        GetClientEyeAngles(iOwner, clientAngles);
+        GetClientEyeAngles(iOwner, fclientAngles);
 
-        Handle trace = INVALID_HANDLE;
-        trace = TR_TraceRayFilterEx(fNadePos, clientAngles, MASK_SOLID, RayType_Infinite, DontHitOwnerOrNade, caller);
+        Handle hTrace = INVALID_HANDLE;
+        hTrace = TR_TraceRayFilterEx(fNadePos, fclientAngles, MASK_SOLID, RayType_Infinite, DontHitOwnerOrNade, caller);
         
-        if (TR_DidHit(trace) == true)
+        if (TR_DidHit(hTrace) == true)
         {
-            TR_GetEndPosition(FinalVec, trace);
+            TR_GetEndPosition(fFinalVec, hTrace);
             
-            MakeVectorFromPoints(fNadePos, FinalVec, fTargetVec);
+            MakeVectorFromPoints(fNadePos, fFinalVec, fTargetVec);
             NormalizeVector(fTargetVec, fTargetVec);
-            GetVectorAngles(fTargetVec, clientAngles);
+            GetVectorAngles(fTargetVec, fclientAngles);
             ScaleVector(fTargetVec, g_cSpeed.FloatValue * 1.2);
-            TeleportEntity(caller, NULL_VECTOR, clientAngles, fTargetVec);
+            TeleportEntity(caller, NULL_VECTOR, fclientAngles, fTargetVec);
         }
         
-        delete trace;
+        delete hTrace;
 
-/*
-        float clientAngles[3];
+        /*
+        float fclientAngles[3];
         float fMissilePos[3];
-        float vecAngle[3];
+        float fvecAngle[3];
         
-        GetClientEyeAngles(iOwner, clientAngles);
+        GetClientEyeAngles(iOwner, fclientAngles);
         GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fMissilePos);
 
-        vecAngle[0] = fMissilePos[0];
-        vecAngle[1] = fMissilePos[1];
-        vecAngle[2] = fMissilePos[2];
+        fvecAngle[0] = fMissilePos[0];
+        fvecAngle[1] = fMissilePos[1];
+        fvecAngle[2] = fMissilePos[2];
 
-        GetAngleVectors(vecAngle, vecAngle, NULL_VECTOR, NULL_VECTOR);
-        NormalizeVector(vecAngle, vecAngle);
-        ScaleVector(vecAngle, g_cSpeed.FloatValue / 2);
-        AddVectors(fMissilePos, vecAngle, fMissilePos);
+        GetAngleVectors(fvecAngle, fvecAngle, NULL_VECTOR, NULL_VECTOR);
+        NormalizeVector(fvecAngle, fvecAngle);
+        ScaleVector(fvecAngle, g_cSpeed.FloatValue / 2);
+        AddVectors(fMissilePos, fvecAngle, fMissilePos);
 
-        TeleportEntity(caller, NULL_VECTOR, clientAngles, vecAngle);
+        TeleportEntity(caller, NULL_VECTOR, fclientAngles, fvecAngle);
         
         GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fMissilePos);
-        TeleportEntity(caller, fMissilePos, clientAngles, NULL_VECTOR);*/
+        TeleportEntity(caller, fMissilePos, fclientAngles, NULL_VECTOR);
+        */
     }
     AcceptEntityInput(caller, "FireUser1");
 }
@@ -542,9 +542,9 @@ public void OnGameFrame()
     {
         if (TTT_IsPlayerAlive(i) && g_iMissileEnt[i] != -1 && IsValidEntity(g_iMissileEnt[i]))
         {
-            float clientAngles[3];
-            GetClientEyeAngles(i, clientAngles);
-            TeleportEntity(g_iMissileEnt[i], NULL_VECTOR, clientAngles, NULL_VECTOR);
+            float fclientAngles[3];
+            GetClientEyeAngles(i, fclientAngles);
+            TeleportEntity(g_iMissileEnt[i], NULL_VECTOR, fclientAngles, NULL_VECTOR);
         }
     }
 }
