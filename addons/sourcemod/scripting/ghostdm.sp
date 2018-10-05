@@ -12,6 +12,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
+#include <autoexecconfig>
 
 #define LoopClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(IsClientValid(%1))
 
@@ -35,6 +36,9 @@ bool g_bHelm = false;
 StringMap g_smPrimary = null;
 StringMap g_smSecondary = null;
 StringMap g_smWeaponLimits = null;
+
+ConVar g_cEnable = null;
+ConVar g_cListenerMode = null;
 
 #include "ghostdm/config.sp"
 
@@ -69,6 +73,13 @@ public int Native_IsClientInDeathmatch(Handle plugin, int numParams)
 
 public void OnPluginStart()
 {
+    AutoExecConfig_SetCreateDirectory(true);
+    AutoExecConfig_SetCreateFile(true);
+    g_cEnable = AutoExecConfig_CreateConVar("ghostdm_enable", "1", "Enable/Disable GhostDM", _, true, 0.0, true, 1.0);
+    g_cListenerMode = AutoExecConfig_CreateConVar("ghostdm_listener_mode", "1", "Which mode? (0 - redie/ghostdm players can hear living players, 1 - redie/ghostdm players can't hear living players)", _, true, 0.0, true, 1.0);
+    AutoExecConfig_ExecuteFile();
+    AutoExecConfig_CleanFile();
+
     RegConsoleCmd("sm_redie", Command_Redie);
     RegConsoleCmd("sm_dm", Command_Deathmatch);
 
@@ -110,6 +121,11 @@ public void OnClientDisconnect(int client)
 
 public Action Command_Redie(int client, int args)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Handled;
+    }
+
     if (!IsClientValid(client))
     {
         return Plugin_Handled;
@@ -146,6 +162,11 @@ public Action Command_Redie(int client, int args)
 
 public Action Command_Deathmatch(int client, int args)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Handled;
+    }
+
     if (!IsClientValid(client))
     {
         return Plugin_Handled;
@@ -171,14 +192,26 @@ public Action Command_Deathmatch(int client, int args)
 
 public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     LoopClients(i)
     {
         ResetClient(i);
     }
+
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (IsClientValid(client))
@@ -197,6 +230,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             }
         }
     }
+
+    return Plugin_Continue;
 }
 
 public void Frame_GiveWeapons(int userid)
@@ -211,6 +246,11 @@ public void Frame_GiveWeapons(int userid)
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     int victim = GetClientOfUserId(event.GetInt("userid"));
 
     if (IsClientValid(victim) && g_bDM[victim])
@@ -301,6 +341,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+    
     if (IsClientValid(client))
     {
         if (g_bRedie[client] && !g_bDM[client])
@@ -333,6 +378,11 @@ public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &
 
 public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int numClients, float delay)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     if (!StrEqual(te_name, "Shotgun Shot", false))
     {
         return Plugin_Continue;
@@ -393,6 +443,11 @@ public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int nu
 
 public Action TE_OnEffectDispatch(const char[] te_name, const int[] clients, int numClients, float delay)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     int victim = TE_ReadNum("entindex");
 
     if (IsClientValid(victim))
@@ -408,6 +463,11 @@ public Action TE_OnEffectDispatch(const char[] te_name, const int[] clients, int
 
 public Action OnSetTransmit(int target, int client)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     if (!IsClientValid(target) || !IsClientValid(client))
     {
         return Plugin_Continue;
@@ -428,6 +488,11 @@ public Action OnSetTransmit(int target, int client)
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     if (!IsClientValid(iVictim) || !IsClientValid(iAttacker))
     {
         return Plugin_Continue;
@@ -453,6 +518,11 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
 public Action OnWeapon(int client, int weapon)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
     if(IsClientValid(client) && IsValidEntity(weapon))
     {
         if (g_bDM[client])
@@ -517,10 +587,99 @@ void SetRedie(int client, bool bDeathmatch = false)
 
             PrintToChat(client, "You have now spawn protection for %.1f seconds!", g_fSpawnProt);
         }
+        
+        SetListener(client);
     }
     else
     {
         ResetClient(client);
+    }
+}
+
+void SetListener(int client)
+{
+    if (g_bRedie[client])
+    {
+        LoopClients(i)
+        {
+            if (!g_cListenerMode.BoolValue)
+            {
+                // Redie (incl. deathmatch) players can hear living players but can't talk to living players
+                if (IsPlayerAlive(i) && !g_bRedie[client])
+                {
+                    SetListenOverride(client, i, Listen_Yes);
+                    SetListenOverride(i, client, Listen_No);
+                    continue;
+                }
+            }
+            else
+            {
+                // Redie (incl. deathmatch) players can't hear and talk to living players
+                if (IsPlayerAlive(i) && !g_bRedie[client])
+                {
+                    SetListenOverride(client, i, Listen_No);
+                    SetListenOverride(i, client, Listen_No);
+                    continue;
+                }
+            }
+
+            // Deathmatch players can hear and talk to other deathmatch players
+            if (g_bDM[i] && g_bDM[client])
+            {
+                SetListenOverride(client, i, Listen_Yes);
+                SetListenOverride(i, client, Listen_Yes);
+                continue;
+            }
+
+            // Deathmath players can't hear and talk to other non deathmatch players
+            if (g_bDM[i] && !g_bDM[client])
+            {
+                SetListenOverride(client, i, Listen_No);
+                SetListenOverride(i, client, Listen_No);
+                continue;
+            }
+
+            // Redie players can hear and talk to other redie players
+            if (g_bRedie[i] && !g_bDM[i] && !g_bDM[client])
+            {
+                SetListenOverride(client, i, Listen_Yes);
+                SetListenOverride(i, client, Listen_Yes);
+                continue;
+            }
+
+            // Redie players can't hear and talk to other non redie/ghostdeathmatch players
+            if (!g_bRedie[i])
+            {
+                SetListenOverride(client, i, Listen_No);
+                SetListenOverride(i, client, Listen_No);
+                continue;
+            }
+        }
+    }
+    else
+    {
+        // Taken from ttt_talk_override player_team event
+        LoopClients(i)
+        {
+            if (!IsPlayerAlive(client))
+            {
+                if (IsPlayerAlive(i))
+                {
+                    SetListenOverride(i, client, Listen_No);
+                    SetListenOverride(client, i, Listen_Yes);
+                }
+                else
+                {
+                    SetListenOverride(i, client, Listen_Yes);
+                    SetListenOverride(client, i, Listen_Yes);
+                }
+            }
+            else
+            {
+                SetListenOverride(client, i, Listen_Yes);
+                SetListenOverride(i, client, Listen_Yes);
+            }
+        }
     }
 }
 
@@ -545,6 +704,8 @@ void ResetClient(int client)
     {
         ClearTimer(g_hRespawn[client]);
         ClearTimer(g_hSpawn[client]);
+
+        SetListener(client);
 
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_ALL);
 
