@@ -164,7 +164,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
         {
             if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
-                    return Plugin_Stop;
+            {
+                return Plugin_Stop;
+            }
 
             g_bHasWH[client] = true;
             g_bOwnWH[client] = true;
@@ -228,6 +230,11 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 
 public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &overrideColor, int &red, int &green, int &blue, int &alpha)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Handled;
+    }
+
     if (g_bHasWH[client] && g_bOwnWH[client])
     {
         int role = TTT_GetClientRole(client);

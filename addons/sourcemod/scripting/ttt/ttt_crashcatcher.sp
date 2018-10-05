@@ -33,11 +33,11 @@ public void OnEntityCreated(int entity, const char[] classname)
 {
     if (StrEqual(classname, "prop_ragdoll"))
     {
-        SDKHook(entity, SDKHook_SpawnPost, Spawned);
+        SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
     }
 }
 
-public void Spawned(int entity)
+public void OnSpawnPost(int entity)
 {
     SDKHook(entity, SDKHook_Think, OnThink);
 }
@@ -79,10 +79,10 @@ void KillVelocity(int entity)
 {
     int flags = GetEntityFlags(entity);
     SetEntityFlags(entity, flags|FL_FROZEN);
-    CreateTimer(FreezeTime * 1.0, Restore, EntIndexToEntRef(entity));
+    CreateTimer(FreezeTime * 1.0, Timer_Restore, EntIndexToEntRef(entity));
 }
 
-public Action Restore(Handle timer, any ref2)
+public Action Timer_Restore(Handle timer, any ref2)
 {
     int entity = EntRefToEntIndex(ref2);
     if (entity != INVALID_ENT_REFERENCE)

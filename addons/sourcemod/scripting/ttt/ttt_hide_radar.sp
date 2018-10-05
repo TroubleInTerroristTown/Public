@@ -27,10 +27,10 @@ public void OnPluginStart()
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-    CreateTimer(0.0, RemoveRadar, event.GetInt("userid"));
+    CreateTimer(0.0, Timer_RemoveRadar, event.GetInt("userid"));
 }
 
-public Action RemoveRadar(Handle timer, any userid)
+public Action Timer_RemoveRadar(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -48,6 +48,6 @@ public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client) && !IsFakeClient(client) && GetClientTeam(client) > 1)
     {
         float fDuration = GetEntPropFloat(client, Prop_Send, "m_flFlashDuration");
-        CreateTimer(fDuration, RemoveRadar, userid);
+        CreateTimer(fDuration, Timer_RemoveRadar, userid);
     }
 }

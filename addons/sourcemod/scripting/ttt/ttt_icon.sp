@@ -97,6 +97,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 public Action Timer_CreateIcon(Handle timer)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Continue;
+    }
+
     LoopValidClients(client)
     {
         if (IsPlayerAlive(client))
@@ -104,6 +109,8 @@ public Action Timer_CreateIcon(Handle timer)
             g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
         }
     }
+
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundStart()
@@ -126,8 +133,12 @@ public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroa
 public Action Event_PlayerTeamPre(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
+
     if(event.GetInt("team") == CS_TEAM_SPECTATOR)
+    {
         ClearIcon(client);
+    }
+
     return Plugin_Continue;
 }
 

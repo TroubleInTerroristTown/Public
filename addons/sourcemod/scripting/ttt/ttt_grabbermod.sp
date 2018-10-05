@@ -136,6 +136,11 @@ void Command_UnGrab(int client)
 
 void GrabSomething(int client)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
     int ent;
     float VecPos_Ent[3], VecPos_Client[3];
 

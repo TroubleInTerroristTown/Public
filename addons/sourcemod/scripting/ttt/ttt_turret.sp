@@ -52,7 +52,7 @@ public void OnAllPluginsLoaded()
     if(g_cCheckTeam != null)
     {
         g_cCheckTeam.SetInt(3);
-        g_cCheckTeam.AddChangeHook(ConVarChanged);
+        g_cCheckTeam.AddChangeHook(OnConVarChange);
     }
 }
 
@@ -110,7 +110,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public void ConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+public void OnConVarChange(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     if(convar == g_cCheckTeam)
     {
@@ -128,10 +128,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public void Turret_OnTurretDead(int VictimTurretClientIndex,int AttackerClientIndex)
+public void Turret_OnTurretDead(int iOwner,int iAttacker)
 {
-    TTT_AddClientCredits(AttackerClientIndex, g_cKillTurretCount.IntValue);
-    g_bHasTurret[VictimTurretClientIndex] = false;
+    TTT_AddClientCredits(iAttacker, g_cKillTurretCount.IntValue);
+    g_bHasTurret[iOwner] = false;
 }
     
 public void TTT_OnClientGetRole(int client, int role)

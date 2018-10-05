@@ -72,6 +72,11 @@ public void OnConfigsExecuted()
 
 public Action Timer_UpdateText(Handle timer)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Continue;
+    }
+
     LoopValidClients(client)
     {
         if (IsPlayerAlive(client))

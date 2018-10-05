@@ -116,55 +116,79 @@ public Action Command_TVoice(int client, int args)
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
 
     int client = GetClientOfUserId(event.GetInt("userid"));
-    LoopValidClients(i)
+
+    if (TTT_IsClientValid(client))
     {
-        SetListenOverride(i, client, Listen_Yes);
+        LoopValidClients(i)
+        {
+            SetListenOverride(i, client, Listen_Yes);
+        }
     }
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-    int victim = GetClientOfUserId(event.GetInt("userid"));
-    g_bTVoice[victim] = false;
-    LoopValidClients(i)
+    if (!TTT_IsRoundActive())
     {
-        if (IsPlayerAlive(i))
+        return;
+    }
+
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(victim))
+    {
+        g_bTVoice[victim] = false;
+        LoopValidClients(i)
         {
-            SetListenOverride(i, victim, Listen_No);
-        }
-        else
-        {
-            SetListenOverride(i, victim, Listen_Yes);
+            if (IsPlayerAlive(i))
+            {
+                SetListenOverride(i, victim, Listen_No);
+            }
+            else
+            {
+                SetListenOverride(i, victim, Listen_Yes);
+            }
         }
     }
 }
 
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    LoopValidClients(i)
+    if (TTT_IsClientValid(client))
     {
-        if (!IsPlayerAlive(client))
+        LoopValidClients(i)
         {
-            if (IsPlayerAlive(i))
+            if (!IsPlayerAlive(client))
             {
-                SetListenOverride(i, client, Listen_No);
-                SetListenOverride(client, i, Listen_Yes);
+                if (IsPlayerAlive(i))
+                {
+                    SetListenOverride(i, client, Listen_No);
+                    SetListenOverride(client, i, Listen_Yes);
+                }
+                else
+                {
+                    SetListenOverride(i, client, Listen_Yes);
+                    SetListenOverride(client, i, Listen_Yes);
+                }
             }
             else
             {
-                SetListenOverride(i, client, Listen_Yes);
                 SetListenOverride(client, i, Listen_Yes);
+                SetListenOverride(i, client, Listen_Yes);
             }
         }
-        else
-        {
-            SetListenOverride(client, i, Listen_Yes);
-            SetListenOverride(i, client, Listen_Yes);
-        }
     }
-
 }

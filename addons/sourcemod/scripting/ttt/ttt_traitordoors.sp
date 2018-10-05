@@ -46,6 +46,11 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Continue;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Continue;

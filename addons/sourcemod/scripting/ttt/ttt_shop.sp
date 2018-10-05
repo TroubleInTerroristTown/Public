@@ -516,6 +516,11 @@ public Action Command_ShowItems(int client, int args)
 
 public Action Command_Shop(int client, int args)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
@@ -636,6 +641,11 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
 
 bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return false;
+    }
+
     int temp_item[Item];
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {

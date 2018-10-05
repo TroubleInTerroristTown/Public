@@ -356,6 +356,11 @@ public void TTT_OnClientGetRole(int client, int role)
 
 public void TTT_OnPlayerRespawn(int client)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
     if (g_bEnable)
     {
         SetModel(client, TTT_GetClientRole(client));

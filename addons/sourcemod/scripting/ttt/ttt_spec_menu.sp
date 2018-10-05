@@ -77,6 +77,11 @@ public void OnClientDisconnect(int client)
 
 public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (TTT_IsClientValid(client) && !IsFakeClient(client))
@@ -103,6 +108,11 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
 
 public Action Command_SpecMenu(int client, int args)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client) && !IsFakeClient(client))
     {
         return Plugin_Handled;
