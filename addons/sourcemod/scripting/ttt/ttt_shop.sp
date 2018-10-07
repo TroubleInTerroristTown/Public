@@ -99,14 +99,21 @@ enum Item
     Sort
 }
 
-//Contains the credits and items of a player.
+//Contains the item and its amount in the inventory.
+enum InventoryItem
+{
+	amount,
+	Item:eItem
+}
+
+//Contains the credits and inventory items of a player.
 enum Inventory
 {
-	ArrayList aItems,
+	ArrayList:hInvItems, //Of type InventoryItem
 	iPreDeathCredits //Support looting.
 }
 
-Inventory playerInventory[MAXPLAYERS];
+Inventory playerInventory[MAXPLAYERS][Inventory];
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -1467,4 +1474,89 @@ int GiveClientItem(int client, char[] sItem)
     }
 
     return false;
+}
+
+int IsItemInInventory(int client, const char[] itemshort, any[] invItem)
+{
+	any aInvItem[InventoryItem];
+	ArrayList InventoryArray = playerInventory[client][hInvItems];
+	for (int i = 0; i < InventoryArray.Length; i++)
+	{
+		InventoryArray.GetArray(i, aInvItem);
+		if (StrEqual(aInvItem[eItem][Short], itemshort))
+		{
+			invItem = aInvItem;
+			return i;
+		}
+	}
+	
+	return -1;
+}
+
+int AddInventoryItem(int client, const char[] itemshort, bool stack)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return -1;
+	}
+	
+	bool itemExists = false;
+	any iItem[Item];
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, iItem);
+		if (StrEqual(iItem[Short], itemshort))
+		{
+			itemExists = true;
+			break;
+		}	
+	}
+	
+	if (!itemExists)
+	{
+		return -1;
+	}
+	
+	int itemIndex = -1;
+	any invItem[InventoryItem];
+	if (((itemIndex = IsItemInInventory(client, itemshort, invItem) != -1) && !stack) || itemIndex = -1)
+	{
+		return itemIndex;
+	}
+	
+	if (itemIndex != -1) //Item exists and is stackable
+	{
+		invItem[amount]++;
+		playerInventory[client][aInvItems].SetArray(itemIndex, invItem);
+		return itemIntex;
+	}
+	
+	//Register new inventory item.
+	any newInvItem[InventoryItem];
+	newInvItem[amount] = 1;
+	newInvItem[eItem] = iItem;
+	
+	return playerInventory[client][aInvItems].PushArray(newInvItem);
+}
+
+public int Native_InventoryRegister(Handle plugin, int numparams)
+{
+	char itemshort[32];
+	bool stack = GetNativeCell(3);
+	int client = GetNativeCell(1);
+	GetNativeString(2, itemshort, sizeof(itemshort));
+	
+	if (!TTT_IsClientValid(client))
+	{
+		return 0;
+	}
+	
+	if (AddInventoryItem(client, itemshort, stack) == -1)
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
 }
