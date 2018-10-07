@@ -26,6 +26,11 @@ forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const cha
 forward void TTT_OnShopReady();
 
 /*
+ * Called when inventory has been reinitialised after the round has started.
+ */
+forward void TTT_OnInventoryReady();
+
+/*
  * Called after a players credits are modified.
  *
  * @param client            Client index.

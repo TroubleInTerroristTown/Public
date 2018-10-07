@@ -71,6 +71,7 @@ Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnShopReady = null;
+Handle g_hOnInventoryReady = null;
 
 Handle g_hReopenCookie = null;
 
@@ -113,7 +114,7 @@ enum Inventory
 	iPreDeathCredits //Support looting.
 }
 
-Inventory playerInventory[MAXPLAYERS][Inventory];
+any playerInventory[MAXPLAYERS][Inventory];
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -122,6 +123,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
+    g_hOnInventoryReady = CreateGlobalForward("TTT_OnInventoryReady", ET_Ignore);
 
     CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
@@ -1064,6 +1066,23 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         subtractCredits(iAttacker, g_cCreditsDD.IntValue, true);
     }
+}
+
+public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+{
+	//Reset Inventories
+	LoopValidClients(client)
+	{
+		playerInventory[client][iPreDeathCredits] = 0;
+		if (playerInventory[client][hInvItems] != INVALID_HANDLE)
+		{
+			CloseHandle(playerInventory[client][hInvItems]);
+		}
+		
+		playerInventory[client][hInvItems] = CreateArray(view_as<int>(InventoryItem)); //I don't know about this tagging... doof
+		Call_StartForward(g_hOnInventoryReady);
+		Call_Finish();
+	}
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
