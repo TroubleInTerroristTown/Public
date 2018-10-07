@@ -31,6 +31,11 @@ forward void TTT_OnShopReady();
 forward void TTT_OnInventoryReady();
 
 /*
+ * Called when a player selects an item on their inventory. Expected behaviour is to use the item.
+ */
+forward void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort);
+
+/*
  * Called after a players credits are modified.
  *
  * @param client            Client index.
@@ -127,7 +132,7 @@ native bool TTT_GiveClientItem(int client, const char[] item);
  * 
  * @return              Returns item index in inventory if registered successfully or item already exists, else -1 if unique item does not exist in shop or client not in game.
  */
-native int TTT_InventoryRegister(int client, char[] itemshort, bool stack = false);
+native int TTT_InventoryRegister(int client, const char[] itemshort, bool stack = false);
 
 /*
  * Unregisters an item in a player's inventory.
@@ -137,7 +142,7 @@ native int TTT_InventoryRegister(int client, char[] itemshort, bool stack = fals
  *
  * @return              Returns true on success or false if item does not exist in inventory or client not in game.
  */
-native bool TTT_InventoryUnregister(int client, char[] itemshort);
+native bool TTT_InventoryUnregister(int client, const char[] itemshort);
 
 /*
  * Unregisters an item in a player's inventory.

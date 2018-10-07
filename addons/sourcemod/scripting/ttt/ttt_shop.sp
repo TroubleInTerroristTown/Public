@@ -72,6 +72,7 @@ Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnShopReady = null;
 Handle g_hOnInventoryReady = null;
+Handle g_hOnInventoryMenuItemSelect = null;
 
 Handle g_hReopenCookie = null;
 
@@ -124,6 +125,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
     g_hOnInventoryReady = CreateGlobalForward("TTT_OnInventoryReady", ET_Ignore);
+    g_hOnInventoryMenuItemSelect = CreateGlobalForward("TTT_OnInventoryMenuItemSelect", ET_Ignore, Param_Cell, Param_String);
 
     CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
@@ -165,6 +167,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_setcredits", Command_SetCredits);
     RegConsoleCmd("sm_resetitems", Command_ResetItems);
     RegConsoleCmd("sm_listitems", Command_ListItems);
+    RegConsoleCmd("sm_ttt_inventory", Command_Inventory);
 
     AddCommandListener(Command_Say, "say");
     AddCommandListener(Command_Say, "say_team");
@@ -637,6 +640,60 @@ public Action Command_ReopenShop(int client, int args)
     }
 
     return Plugin_Continue;
+}
+
+public Action Command_Inventory(int client, int args)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return Plugin_Handled;
+	}
+	
+	Menu inventoryMenu = CreateMenu(Menu_InventoryHandler);
+	ArrayList playerInv = playerInventory[client][hInvItems];
+	any invItem[InventoryItem];
+	for (int i = 0; i < playerInv.Length; i++)
+	{
+		playerInv.GetArray(i, invItem[0]);
+		if (invItem[amount] == 0)
+		{
+			continue;
+		}
+		
+		inventoryMenu.AddItem(invItem[Short], invItem[Long]);
+	}
+	inventoryMenu.SetTitle("TTT Inventory");
+	inventoryMenu.Display(client, MENU_TIME_FOREVER);
+	
+	return Plugin_Handled;
+}
+
+public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int itemNum)
+{
+	switch (action)
+	{
+		case MenuAction_Select:
+		{
+			if (!IsPlayerAlive(client))
+			{
+				CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
+				return;
+			}
+			
+			char info[16];
+			GetMenuItem(menu, itemNum, info, sizeof(info));
+			
+			Call_StartForward(g_hOnInventoryMenuItemSelect);
+			Call_PushCell(client);
+			Call_PushString(info);
+			Call_Finish();
+		}
+		
+		case MenuAction_End:
+		{
+			CloseHandle(menu);
+		}
+	}
 }
 
 public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum)
