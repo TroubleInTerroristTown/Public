@@ -99,6 +99,15 @@ enum Item
     Sort
 }
 
+//Contains the credits and items of a player.
+enum Inventory
+{
+	ArrayList aItems,
+	iPreDeathCredits //Support looting.
+}
+
+Inventory playerInventory[MAXPLAYERS];
+
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
@@ -118,6 +127,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 
     CreateNative("TTT_GiveClientItem", Native_GiveClientItem);
+    
+    CreateNative("TTT_InventoryRegister", Native_InventoryRegister);
+    CreateNative("TTT_InventoryUnregister", Native_InventoryUnregister);
+    CreateNative("TTT_InventoryUnregisterById", Native_InventoryUnregisterById);
 
     RegPluginLibrary("ttt_shop");
 

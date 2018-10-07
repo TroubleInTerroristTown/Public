@@ -112,3 +112,34 @@ native int TTT_AddClientCredits(int client, int credits);
  * @return                    True item found/valid, false item not found
  */
 native bool TTT_GiveClientItem(int client, const char[] item);
+
+/*
+ * Registers item in a player's inventory.
+ * 
+ * @param client        Client index.
+ * @param itemshort     Unique name for item.
+ * @param stack         Stack duplicate items in same inventory. If false, will ignore if the same item exists.
+ * 
+ * @return              Returns item index in inventory if registered successfully or item already exists, else -1 if unique item does not exist in shop or client not in game.
+ */
+native int TTT_InventoryRegister(int client, char[] itemshort, bool stack = false);
+
+/*
+ * Unregisters an item in a player's inventory.
+ *
+ * @param client        Client index.
+ * @param itemshort     Unique name of item.
+ *
+ * @return              Returns true on success or false if item does not exist in inventory or client not in game.
+ */
+native bool TTT_InventoryUnregister(int client, char[] itemshort);
+
+/*
+ * Unregisters an item in a player's inventory.
+ *
+ * @param client        Client index.
+ * @param index         Item index retrieved from TTT_InventoryRegister.
+ *
+ * @return              Returns true on success or false if item does not exist in inventory or client not in game.
+ */
+native bool TTT_InventoryUnregisterById(int client, int index);
