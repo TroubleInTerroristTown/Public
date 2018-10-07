@@ -649,8 +649,20 @@ public Action Command_Inventory(int client, int args)
 		return Plugin_Handled;
 	}
 	
+	if (!TTT_IsRoundActive())
+	{
+		ReplyToCommand(client, "No active round.");
+		return Plugin_Handled;
+	}
+	
 	Menu inventoryMenu = CreateMenu(Menu_InventoryHandler);
 	ArrayList playerInv = playerInventory[client][hInvItems];
+	if (playerInv == INVALID_HANDLE)
+	{
+		LogError("Inventory for Client %d not initialised.", client);
+		return Plugin_Handled;
+	}
+	
 	any invItem[InventoryItem];
 	for (int i = 0; i < playerInv.Length; i++)
 	{
@@ -1556,6 +1568,12 @@ int IsItemInInventory(int client, const char[] itemshort, any[] invItem)
 {
 	any aInvItem[InventoryItem];
 	ArrayList InventoryArray = playerInventory[client][hInvItems];
+	if (InventoryArray == INVALID_HANDLE)
+	{
+		LogError("Inventory for Client %d not initialised.", client);
+		return -1;
+	}
+	
 	for (int i = 0; i < InventoryArray.Length; i++)
 	{
 		InventoryArray.GetArray(i, aInvItem[0]);
