@@ -103,7 +103,7 @@ enum Item
 enum InventoryItem
 {
 	amount,
-	Item:eItem
+	any:eItem[Item]
 }
 
 //Contains the credits and inventory items of a player.
@@ -1482,10 +1482,16 @@ int IsItemInInventory(int client, const char[] itemshort, any[] invItem)
 	ArrayList InventoryArray = playerInventory[client][hInvItems];
 	for (int i = 0; i < InventoryArray.Length; i++)
 	{
-		InventoryArray.GetArray(i, aInvItem);
+		InventoryArray.GetArray(i, aInvItem[0]);
+		if (aInvItem[amount] == 0)
+		{
+			continue;
+		}
+		
 		if (StrEqual(aInvItem[eItem][Short], itemshort))
 		{
-			invItem = aInvItem;
+			invItem[amount] = aInvItem[amount];
+			invItem[eItem] = aInvItem[eItem];
 			return i;
 		}
 	}
@@ -1504,7 +1510,7 @@ int AddInventoryItem(int client, const char[] itemshort, bool stack)
 	any iItem[Item];
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
-		g_aCustomItems.GetArray(i, iItem);
+		g_aCustomItems.GetArray(i, iItem[0]);
 		if (StrEqual(iItem[Short], itemshort))
 		{
 			itemExists = true;
@@ -1517,9 +1523,9 @@ int AddInventoryItem(int client, const char[] itemshort, bool stack)
 		return -1;
 	}
 	
-	int itemIndex = -1;
 	any invItem[InventoryItem];
-	if (((itemIndex = IsItemInInventory(client, itemshort, invItem) != -1) && !stack) || itemIndex = -1)
+	int itemIndex = IsItemInInventory(client, itemshort, invItem[0]);
+	if (((itemIndex != -1) && !stack) || (itemIndex = -1))
 	{
 		return itemIndex;
 	}
@@ -1527,8 +1533,8 @@ int AddInventoryItem(int client, const char[] itemshort, bool stack)
 	if (itemIndex != -1) //Item exists and is stackable
 	{
 		invItem[amount]++;
-		playerInventory[client][aInvItems].SetArray(itemIndex, invItem);
-		return itemIntex;
+		playerInventory[client][hInvItems].SetArray(itemIndex, invItem[0]);
+		return itemIndex;
 	}
 	
 	//Register new inventory item.
@@ -1536,20 +1542,43 @@ int AddInventoryItem(int client, const char[] itemshort, bool stack)
 	newInvItem[amount] = 1;
 	newInvItem[eItem] = iItem;
 	
-	return playerInventory[client][aInvItems].PushArray(newInvItem);
+	return playerInventory[client][hInvItems].PushArray(newInvItem[0]);
+}
+
+bool RemoveInventoryItem(int client, const char[] itemshort)
+{
+	any invItem[InventoryItem];
+	int invItemIndex = IsItemInInventory(client, itemshort, invItem[0]);
+	
+	if (invItemIndex == -1)
+	{
+		return false;
+	}
+	
+	return RemoveInventoryItemById(client, invItemIndex);
+}
+
+bool RemoveInventoryItemById(int client, int id)
+{
+	if (!TTT_IsClientValid(client))
+	{
+		return false;
+	}
+	
+	any invItem[InventoryItem];
+	playerInventory[client][hInvItems].GetArray(id, invItem[0]);
+	invItem[amount] = 0;
+	playerInventory[client][hInvItems].SetArray(id, invItem[0]);
+	
+	return true;
 }
 
 public int Native_InventoryRegister(Handle plugin, int numparams)
 {
-	char itemshort[32];
+	char itemshort[16];
 	bool stack = GetNativeCell(3);
 	int client = GetNativeCell(1);
 	GetNativeString(2, itemshort, sizeof(itemshort));
-	
-	if (!TTT_IsClientValid(client))
-	{
-		return 0;
-	}
 	
 	if (AddInventoryItem(client, itemshort, stack) == -1)
 	{
@@ -1559,4 +1588,21 @@ public int Native_InventoryRegister(Handle plugin, int numparams)
 	{
 		return 1;
 	}
+}
+
+public int Native_InventoryUnregister(Handle plugin, int numparams)
+{
+	char itemshort[16];
+	int client = GetNativeCell(1);
+	GetNativeString(2, itemshort, sizeof(itemshort));
+	
+	return RemoveInventoryItem(client, itemshort);
+}
+
+public int Native_InventoryUnregisterById(Handle plugin, int numparams)
+{
+	int client = GetNativeCell(1);
+	int id = GetNativeCell(2);
+	
+	return RemoveInventoryItemById(client, id);
 }
