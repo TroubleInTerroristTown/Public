@@ -532,6 +532,7 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
 
     g_bRespawn[client] = true;
     CS_RespawnPlayer(client);
+    TeamInitialize(client, true);
     g_bAlive[client] = true;
     g_bFound[client] = false;
 

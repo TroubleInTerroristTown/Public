@@ -62,6 +62,7 @@ ConVar g_cGiveItemFlag = null;
 ConVar g_cSetCreditsFlag = null;
 ConVar g_cResetItemsFlag = null;
 ConVar g_cListItemsFlag = null;
+ConVar g_cShopCMDs = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -87,10 +88,8 @@ Database g_dDB = null;
 
 char g_sLog[PLATFORM_MAX_PATH+1];
 
-char g_sShopCMDs[][] =  {
-    "menu",
-    "shop"
-};
+int g_iCommands = -1;
+char g_sCommandList[6][32];
 
 enum Item
 {
@@ -145,13 +144,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
     TTT_IsGameCSGO();
-    
-    for (int i = 0; i < sizeof(g_sShopCMDs); i++)
-    {
-        char sBuffer[64];
-        Format(sBuffer, sizeof(sBuffer), "sm_%s", g_sShopCMDs[i]);
-        RegConsoleCmd(sBuffer, Command_Shop);
-    }
 
     RegConsoleCmd("sm_reopenshop", Command_ReopenShop);
     RegConsoleCmd("sm_roshop", Command_ReopenShop);
@@ -207,6 +199,7 @@ public void OnPluginStart()
     g_cSetCreditsFlag = AutoExecConfig_CreateConVar("ttt_shop_set_credits_flag", "z", "Admin flags to set players credits");
     g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
     g_cListItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_list_items_flag", "z", "Admin flags to list all items from shop");
+    g_cShopCMDs = AutoExecConfig_CreateConVar("ttt_shop_commands", "shop;menu", "Commands for ttt shop (up to 6 commands)");
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -257,6 +250,18 @@ public void OnConfigsExecuted()
     if(!CommandExists(sBuffer))
     {
         RegConsoleCmd(sBuffer, Command_ShowItems);
+    }
+
+    char sCVarCMD[64];
+    g_cShopCMDs.GetString(sCVarCMD, sizeof(sCVarCMD));
+
+    g_iCommands = ExplodeString(sCVarCMD, ";", g_sCommandList, sizeof(g_sCommandList), sizeof(g_sCommandList[]));
+
+    for (int i = 0; i < g_iCommands; i++)
+    {
+        char sCommand[32];
+        Format(sCommand, sizeof(sCommand), "sm_%s", g_sCommandList[i]);
+        RegConsoleCmd(sCommand, Command_Shop);
     }
 
     LoopValidClients(i)
@@ -769,11 +774,6 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                 return false;
             }
             
-            if (!free && price > 0  && temp_item[Price] != price)
-            {
-                price = temp_item[Price];
-            }
-            
             ConVar cCVar = FindConVar("ttt_show_debug_messages");
             if (cCVar.BoolValue)
             {
@@ -838,16 +838,17 @@ public Action Command_Say(int client, const char[] command, int argc)
         return Plugin_Continue;
     }
 
-    for (int i = 0; i < sizeof(g_sShopCMDs); i++)
+    for (int i = 0; i < g_iCommands; i++)
     {
-        char sBuffer[64];
-        Format(sBuffer, sizeof(sBuffer), "!%s", g_sShopCMDs[i]);
+        char sCommand[32];
+        Format(sCommand, sizeof(sCommand), "sm_%s", g_sCommandList[i]);
 
-        if (StrEqual(sText, sBuffer, false))
+        if (StrEqual(sText, sCommand, false))
         {
             return Plugin_Handled;
         }
     }
+
     return Plugin_Continue;
 }
 
