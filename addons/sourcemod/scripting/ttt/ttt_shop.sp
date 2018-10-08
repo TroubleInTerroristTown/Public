@@ -650,7 +650,7 @@ public Action Command_Inventory(int client, int args)
 	
 	if (!TTT_IsRoundActive())
 	{
-		ReplyToCommand(client, "No active round.");
+		ReplyToCommand(client, "%T", "RoundInactive");
 		return Plugin_Handled;
 	}
 	
@@ -658,7 +658,7 @@ public Action Command_Inventory(int client, int args)
 	StringMap playerInv = playerInventory[client][hInvItems];
 	if (playerInv == INVALID_HANDLE)
 	{
-		LogError("Inventory for Client %d not initialised.", client);
+		LogToFile(g_sLog, "Function: Command_Inventory - Inventory not intialised for client: %d.", client);
 		return Plugin_Handled;
 	}
 	
@@ -683,7 +683,7 @@ public Action Command_Inventory(int client, int args)
 			inventoryMenu.AddItem(itemShort, itemLong);
 		}
 	}
-	inventoryMenu.SetTitle("TTT Inventory");
+	inventoryMenu.SetTitle("%T", "InventoryTitle");
 	inventoryMenu.Display(client, MENU_TIME_FOREVER);
 	
 	return Plugin_Handled;
@@ -1587,7 +1587,7 @@ bool IsItemInInventory(int client, const char[] itemshort)
 	StringMap InventoryMap = playerInventory[client][hInvItems];
 	if (InventoryMap == INVALID_HANDLE)
 	{
-		LogError("Inventory for Client %d not initialised.", client);
+		LogToFile(g_sLog, "Function: IsItemInInventory - Inventory not intialised for client: %d.", client);
 		return false;
 	}
 	

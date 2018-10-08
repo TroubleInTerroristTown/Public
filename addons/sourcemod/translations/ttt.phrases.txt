@@ -118,6 +118,11 @@
 		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, player committed suicide"
 	}
 
+	"RoundInactive"
+	{
+	    "en"        "No active round."
+	}
+	
 	"Health Station"
 	{
 		"#format"	"{1:d}"
@@ -204,6 +209,11 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"TTT Shop\nYour Credits: {1}"
+	}
+	
+	"InventoryTitle"
+	{
+	    "en"        "TTT Inventory"
 	}
 
 	"credits earned"
