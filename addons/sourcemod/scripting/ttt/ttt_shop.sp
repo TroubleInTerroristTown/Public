@@ -679,11 +679,6 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                 return false;
             }
             
-            if (!free && price > 0  && temp_item[Price] != price)
-            {
-                price = temp_item[Price];
-            }
-            
             ConVar cCVar = FindConVar("ttt_show_debug_messages");
             if (cCVar.BoolValue)
             {
