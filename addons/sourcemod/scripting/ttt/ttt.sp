@@ -1244,7 +1244,7 @@ int GetDCount(ArrayList array)
     return iDCount;
 }
 
-void TeamInitialize(int client)
+void TeamInitialize(int client, bool skipWeapons = false)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -1266,23 +1266,26 @@ void TeamInitialize(int client)
             }
         }
         
-        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
+        if (!skipWeapons)
+        {
+            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
 
-        if (iWeapon == -1)
-        {
-            GivePlayerItem(client, g_sDefaultPrimary);
-        }
-        else
-        {
-            if (g_cPrimaryWeaponUpdate.IntValue == 1)
+            if (iWeapon == -1)
             {
-                SDKHooks_DropWeapon(client, iWeapon);
                 GivePlayerItem(client, g_sDefaultPrimary);
             }
-            else if (g_cPrimaryWeaponUpdate.IntValue == 2)
+            else
             {
-                TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
-                GivePlayerItem(client, g_sDefaultPrimary);
+                if (g_cPrimaryWeaponUpdate.IntValue == 1)
+                {
+                    SDKHooks_DropWeapon(client, iWeapon);
+                    GivePlayerItem(client, g_sDefaultPrimary);
+                }
+                else if (g_cPrimaryWeaponUpdate.IntValue == 2)
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
+                    GivePlayerItem(client, g_sDefaultPrimary);
+                }
             }
         }
 
@@ -1300,23 +1303,26 @@ void TeamInitialize(int client)
             GivePlayerItem(client, "weapon_knife");
         }
 
-        iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+        if (!skipWeapons)
+        {
+            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
 
-        if (iWeapon == -1)
-        {
-            GivePlayerItem(client, g_sDefaultSecondary);
-        }
-        else
-        {
-            if (g_cSecondaryWeaponUpdate.IntValue == 1)
+            if (iWeapon == -1)
             {
-                SDKHooks_DropWeapon(client, iWeapon);
                 GivePlayerItem(client, g_sDefaultSecondary);
             }
-            else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+            else
             {
-                TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                GivePlayerItem(client, g_sDefaultSecondary);
+                if (g_cSecondaryWeaponUpdate.IntValue == 1)
+                {
+                    SDKHooks_DropWeapon(client, iWeapon);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
+                else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
             }
         }
     }
@@ -1343,23 +1349,26 @@ void TeamInitialize(int client)
             GivePlayerItem(client, "weapon_knife");
         }
 
-        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+        if (!skipWeapons)
+        {
+            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
 
-        if (iWeapon == -1)
-        {
-            GivePlayerItem(client, g_sDefaultSecondary);
-        }
-        else
-        {
-            if (g_cSecondaryWeaponUpdate.IntValue == 1)
+            if (iWeapon == -1)
             {
-                SDKHooks_DropWeapon(client, iWeapon);
                 GivePlayerItem(client, g_sDefaultSecondary);
             }
-            else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+            else
             {
-                TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                GivePlayerItem(client, g_sDefaultSecondary);
+                if (g_cSecondaryWeaponUpdate.IntValue == 1)
+                {
+                    SDKHooks_DropWeapon(client, iWeapon);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
+                else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
             }
         }
     }
@@ -1410,23 +1419,26 @@ void TeamInitialize(int client)
             }
         }
 
-        int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+        if (!skipWeapons)
+        {
+            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
 
-        if (iWeapon == -1)
-        {
-            GivePlayerItem(client, g_sDefaultSecondary);
-        }
-        else
-        {
-            if (g_cSecondaryWeaponUpdate.IntValue == 1)
+            if (iWeapon == -1)
             {
-                SDKHooks_DropWeapon(client, iWeapon);
                 GivePlayerItem(client, g_sDefaultSecondary);
             }
-            else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+            else
             {
-                TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                GivePlayerItem(client, g_sDefaultSecondary);
+                if (g_cSecondaryWeaponUpdate.IntValue == 1)
+                {
+                    SDKHooks_DropWeapon(client, iWeapon);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
+                else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    GivePlayerItem(client, g_sDefaultSecondary);
+                }
             }
         }
     }
