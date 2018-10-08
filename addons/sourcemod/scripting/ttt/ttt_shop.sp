@@ -101,17 +101,10 @@ enum Item
     Sort
 }
 
-//Contains the item and its amount in the inventory.
-enum InventoryItem
-{
-	amount,
-	any:eItem[Item]
-}
-
 //Contains the credits and inventory items of a player.
 enum Inventory
 {
-	ArrayList:hInvItems, //Of type InventoryItem
+	StringMap:hInvItems, //Key:Itemshort, Value:AmountofItem
 	iPreDeathCredits //Support looting.
 }
 
@@ -141,7 +134,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     
     CreateNative("TTT_InventoryRegister", Native_InventoryRegister);
     CreateNative("TTT_InventoryUnregister", Native_InventoryUnregister);
-    CreateNative("TTT_InventoryUnregisterById", Native_InventoryUnregisterById);
+    CreateNative("TTT_GetInventoryListing", Native_GetInventoryListing);
+    CreateNative("TTT_GetInventoryCredits", Native_GetInventoryCredits);
 
     RegPluginLibrary("ttt_shop");
 
@@ -656,23 +650,33 @@ public Action Command_Inventory(int client, int args)
 	}
 	
 	Menu inventoryMenu = CreateMenu(Menu_InventoryHandler);
-	ArrayList playerInv = playerInventory[client][hInvItems];
+	StringMap playerInv = playerInventory[client][hInvItems];
 	if (playerInv == INVALID_HANDLE)
 	{
 		LogError("Inventory for Client %d not initialised.", client);
 		return Plugin_Handled;
 	}
 	
-	any invItem[InventoryItem];
-	for (int i = 0; i < playerInv.Length; i++)
+	//any invItem[InventoryItem];
+	
+	StringMapSnapshot inventoryListing = playerInv.Snapshot();
+	for (int i = 0; i < inventoryListing.Length; i++)
 	{
-		playerInv.GetArray(i, invItem[0]);
-		if (invItem[amount] == 0)
+		char itemShort[16];
+		inventoryListing.GetKey(i, itemShort, sizeof(itemShort));
+		
+		int amount = -1;
+		GetTrieValue(inventoryListing, itemShort, amount);
+		if (amount <= 0)
 		{
 			continue;
 		}
 		
-		inventoryMenu.AddItem(invItem[Short], invItem[Long]);
+		char itemLong[32];
+		if (GetItemLong(itemShort, itemLong, sizeof(itemLong)))
+		{
+			inventoryMenu.AddItem(itemShort, itemLong);
+		}
 	}
 	inventoryMenu.SetTitle("TTT Inventory");
 	inventoryMenu.Display(client, MENU_TIME_FOREVER);
@@ -1148,7 +1152,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 			CloseHandle(playerInventory[client][hInvItems]);
 		}
 		
-		playerInventory[client][hInvItems] = CreateArray(view_as<int>(InventoryItem)); //I don't know about this tagging... doof
+		playerInventory[client][hInvItems] = CreateTrie();
 		Call_StartForward(g_hOnInventoryReady);
 		Call_Finish();
 	}
@@ -1538,6 +1542,19 @@ void ResetItemsArray(const char[] sFunction, bool initArray = false)
     }
 }
 
+bool GetItemLong(const char[] itemshort, char[] buffer, int size)
+{
+	any eItem[Item];
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, eItem[0]);
+		strcopy(buffer, size, itemshort);
+		return true;
+	}
+	
+	return false;
+}
+
 public void Frame_ShopReady(ArrayList aItems)
 {
     if (aItems != null && g_aCustomItems != null && aItems == g_aCustomItems) // ¯\_(ツ)_/¯
@@ -1564,40 +1581,31 @@ int GiveClientItem(int client, char[] sItem)
     return false;
 }
 
-int IsItemInInventory(int client, const char[] itemshort, any[] invItem)
+bool IsItemInInventory(int client, const char[] itemshort)
 {
-	any aInvItem[InventoryItem];
-	ArrayList InventoryArray = playerInventory[client][hInvItems];
-	if (InventoryArray == INVALID_HANDLE)
+	StringMap InventoryMap = playerInventory[client][hInvItems];
+	if (InventoryMap == INVALID_HANDLE)
 	{
 		LogError("Inventory for Client %d not initialised.", client);
-		return -1;
+		return false;
 	}
 	
-	for (int i = 0; i < InventoryArray.Length; i++)
+	int amount = 0;
+	bool exists = InventoryMap.GetValue(itemshort, amount);
+	
+	if (exists && amount > 0)
 	{
-		InventoryArray.GetArray(i, aInvItem[0]);
-		if (aInvItem[amount] == 0)
-		{
-			continue;
-		}
-		
-		if (StrEqual(aInvItem[eItem][Short], itemshort))
-		{
-			invItem[amount] = aInvItem[amount];
-			invItem[eItem] = aInvItem[eItem];
-			return i;
-		}
+		return true;
 	}
 	
-	return -1;
+	return false;
 }
 
-int AddInventoryItem(int client, const char[] itemshort, bool stack)
+bool AddInventoryItem(int client, const char[] itemshort, bool stack)
 {
 	if (!TTT_IsClientValid(client))
 	{
-		return -1;
+		return false;
 	}
 	
 	bool itemExists = false;
@@ -1614,57 +1622,57 @@ int AddInventoryItem(int client, const char[] itemshort, bool stack)
 	
 	if (!itemExists)
 	{
-		return -1;
+		return false;
 	}
 	
-	any invItem[InventoryItem];
-	int itemIndex = IsItemInInventory(client, itemshort, invItem[0]);
-	if (((itemIndex != -1) && !stack) || (itemIndex = -1))
-	{
-		return itemIndex;
-	}
-	
-	if (itemIndex != -1) //Item exists and is stackable
-	{
-		invItem[amount]++;
-		playerInventory[client][hInvItems].SetArray(itemIndex, invItem[0]);
-		return itemIndex;
-	}
-	
-	//Register new inventory item.
-	any newInvItem[InventoryItem];
-	newInvItem[amount] = 1;
-	newInvItem[eItem] = iItem;
-	
-	return playerInventory[client][hInvItems].PushArray(newInvItem[0]);
-}
-
-bool RemoveInventoryItem(int client, const char[] itemshort)
-{
-	any invItem[InventoryItem];
-	int invItemIndex = IsItemInInventory(client, itemshort, invItem[0]);
-	
-	if (invItemIndex == -1)
+	bool invItemExists = IsItemInInventory(client, itemshort);
+	if ((invItemExists && !stack) || !invItemExists)
 	{
 		return false;
 	}
 	
-	return RemoveInventoryItemById(client, invItemIndex);
+	if (invItemExists) //Item exists and is stackable
+	{
+		int amount;
+		playerInventory[client][hInvItems].GetValue(itemshort, amount);
+		amount++;
+		playerInventory[client][hInvItems].SetValue(itemshort, amount);
+		
+		return true;
+	}
+	
+	return playerInventory[client][hInvItems].SetValue(itemshort, 1);
 }
 
-bool RemoveInventoryItemById(int client, int id)
+bool RemoveInventoryItem(int client, const char[] itemshort, bool all)
 {
+	bool invItemIndex = IsItemInInventory(client, itemshort);
+	if (!invItemIndex)
+	{
+		return false;
+	}
+	
 	if (!TTT_IsClientValid(client))
 	{
 		return false;
 	}
 	
-	any invItem[InventoryItem];
-	playerInventory[client][hInvItems].GetArray(id, invItem[0]);
-	invItem[amount] = 0;
-	playerInventory[client][hInvItems].SetArray(id, invItem[0]);
-	
-	return true;
+	if (all)
+	{
+		return playerInventory[client][hInvItems].Remove(itemshort);
+	}
+	else
+	{
+		int amount;
+		playerInventory[client][hInvItems].GetValue(itemshort, amount);
+		amount--;
+		if (amount <= 0)
+		{
+			return playerInventory[client][hInvItems].Remove(itemshort);
+		}
+		
+		return playerInventory[client][hInvItems].SetValue(itemshort, amount);
+	}
 }
 
 public int Native_InventoryRegister(Handle plugin, int numparams)
@@ -1674,7 +1682,7 @@ public int Native_InventoryRegister(Handle plugin, int numparams)
 	int client = GetNativeCell(1);
 	GetNativeString(2, itemshort, sizeof(itemshort));
 	
-	if (AddInventoryItem(client, itemshort, stack) == -1)
+	if (!AddInventoryItem(client, itemshort, stack))
 	{
 		return 0;
 	}
@@ -1687,16 +1695,23 @@ public int Native_InventoryRegister(Handle plugin, int numparams)
 public int Native_InventoryUnregister(Handle plugin, int numparams)
 {
 	char itemshort[16];
+	bool all = GetNativeCell(3);
 	int client = GetNativeCell(1);
 	GetNativeString(2, itemshort, sizeof(itemshort));
 	
-	return RemoveInventoryItem(client, itemshort);
+	return RemoveInventoryItem(client, itemshort, all);
 }
 
-public int Native_InventoryUnregisterById(Handle plugin, int numparams)
+public int Native_GetInventoryListing(Handle plugin, int numparams)
 {
 	int client = GetNativeCell(1);
-	int id = GetNativeCell(2);
 	
-	return RemoveInventoryItemById(client, id);
+	return view_as<int>(playerInventory[client][hInvItems].Snapshot());
+}
+
+public int Native_GetInventoryCredits(Handle plugin, int numparams)
+{
+	int client = GetNativeCell(1);
+	
+	return playerInventory[client][iPreDeathCredits];
 }

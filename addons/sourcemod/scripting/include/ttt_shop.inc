@@ -26,6 +26,14 @@ forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const cha
 forward void TTT_OnShopReady();
 
 /*
+ * Called after a players credits are modified.
+ *
+ * @param client            Client index.
+ * @param credits             The new amount of credits.
+ */
+forward void TTT_OnCreditsChanged(int client, int &credits);
+
+/*
  * Called when inventory has been reinitialised after the round has started.
  */
 forward void TTT_OnInventoryReady();
@@ -34,14 +42,6 @@ forward void TTT_OnInventoryReady();
  * Called when a player selects an item on their inventory. Expected behaviour is to use the item.
  */
 forward void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort);
-
-/*
- * Called after a players credits are modified.
- *
- * @param client            Client index.
- * @param credits             The new amount of credits.
- */
-forward void TTT_OnCreditsChanged(int client, int &credits);
 
 /*
  * Called before a players credits are modified.
@@ -142,14 +142,22 @@ native int TTT_InventoryRegister(int client, const char[] itemshort, bool stack 
  *
  * @return              Returns true on success or false if item does not exist in inventory or client not in game.
  */
-native bool TTT_InventoryUnregister(int client, const char[] itemshort);
+native bool TTT_InventoryUnregister(int client, const char[] itemshort, bool all = true);
 
 /*
- * Unregisters an item in a player's inventory.
+ * Retrieves a map of the inventory items of a player.
  *
  * @param client        Client index.
- * @param index         Item index retrieved from TTT_InventoryRegister.
  *
- * @return              Returns true on success or false if item does not exist in inventory or client not in game.
+ * @return              Snapshot of the client's inventory.
  */
-native bool TTT_InventoryUnregisterById(int client, int index);
+native StringMapSnapshot TTT_GetInventoryListing(int client);
+
+/*
+ * Gets the credits the player had before death.
+ *
+ * @param client        Client index.
+ *
+ * @return              The credits in the client's inventory.
+ */
+native int TTT_GetInventoryCredits(int client);
