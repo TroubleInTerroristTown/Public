@@ -8,7 +8,6 @@
 #include <emitsoundany>
 #include <ttt>
 #include <ttt_sql>
-#include <ttt_shop>
 
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
@@ -1983,7 +1982,6 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         iRagdollC[VictimTeam] = g_iRole[client];
         Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sName);
         iRagdollC[Scanned] = false;
-        iRagdollC[Credits] = TTT_GetClientCredits(client);
         
         if (TTT_IsClientValid(iAttacker))
         {
