@@ -35,8 +35,7 @@ enum Ragdolls
     bool:Scanned,
     Float:GameTime,
     String:Weaponused[32],
-    bool:Found,
-    Credits
+    bool:Found
 }
 
 enum KarmaUpdate
