@@ -46,24 +46,24 @@ public void OnPluginStart()
     CreateConVar("no_weapon_fix_version", PLUGIN_VERSION, "No Weapon Fix Version", FCVAR_DONTRECORD|FCVAR_SPONLY|FCVAR_REPLICATED|FCVAR_NOTIFY);
 
     cvEnable = CreateConVar("no_weapon_fix_enable", "1", "Enables this plugin (1: Enable; 0: Disable).");
-    g_bEnable = GetConVarBool(cvEnable);
-    HookConVarChange(cvEnable, OnSettingChanged);
+    g_bEnable = cvEnable.BoolValue;
+    cvEnable.AddChangeHook(OnSettingChanged);
 
     cvBlockGrenades = CreateConVar("no_weapon_fix_block_grenades", "0", "Block all grenades from being throwable (1: Enable; 0: Disable).");
-    g_bBlockGrenades = GetConVarBool(cvBlockGrenades);
-    HookConVarChange(cvBlockGrenades, OnSettingChanged);
+    g_bBlockGrenades = cvBlockGrenades.BoolValue;
+    cvBlockGrenades.AddChangeHook(OnSettingChanged);
 
     cvCooldownLimit = CreateConVar("no_weapon_fix_cooldown_limit", "-5000", "Set this to 0 for instant spam protection.");
-    g_iCooldownLimit = GetConVarInt(cvCooldownLimit);
-    HookConVarChange(cvCooldownLimit, OnSettingChanged);
+    g_iCooldownLimit = cvCooldownLimit.IntValue;
+    cvCooldownLimit.AddChangeHook(OnSettingChanged);
 
     cvCooldownHeat = CreateConVar("no_weapon_fix_cooldown_heat", "100", "Add this amount of heat to the cooldown (heat is reduced by 1 for each OnPlayerRunCmd).");
-    g_iCooldownHeat = GetConVarInt(cvCooldownHeat);
-    HookConVarChange(cvCooldownHeat, OnSettingChanged);
+    g_iCooldownHeat = cvCooldownHeat.IntValue;
+    cvCooldownHeat.AddChangeHook(OnSettingChanged);
 
     cvFakeItemClass = CreateConVar("no_weapon_fix_fake_item_class", "0", "Set to 1 to use weapon_healthshot instead of weapon_decoy as fake items.");
-    g_iFakeItemClass = GetConVarInt(cvFakeItemClass);
-    HookConVarChange(cvFakeItemClass, OnSettingChanged);
+    g_iFakeItemClass = cvFakeItemClass.IntValue;
+    cvFakeItemClass.AddChangeHook(OnSettingChanged);
 
     AutoExecConfig(true, "no_weapon_fix_v32");
 
@@ -99,11 +99,11 @@ public int OnSettingChanged(Handle convar, const char[] oldValue, const char[] n
         g_iFakeItemClass = StringToInt(newValue);
 }
 
-public Action Event_ItemEquip(Handle event, const char[] name, bool dontBroadcast)
+public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+    int client = GetClientOfUserId(event.GetInt("userid"));
 
-    g_bGrenade[client] = GetEventInt(event, "weptype") == 8;
+    g_bGrenade[client] = event.GetInt("weptype") == 8;
 }
 
 public Action OnWeaponCanUse(int client, int weapon)

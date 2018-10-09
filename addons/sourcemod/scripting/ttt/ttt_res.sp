@@ -341,7 +341,7 @@ int LoadSoundsDet()
     Handle hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if (StrContains(name, ".mp3", false) == namelen)
@@ -377,7 +377,7 @@ int LoadSoundsTra()
     Handle hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if (StrContains(name, ".mp3", false) == namelen)
@@ -411,7 +411,7 @@ int LoadSoundsInn()
     Handle hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if(StrContains(name,".mp3",false) == namelen)

@@ -113,7 +113,9 @@ public void OnPluginStart()
     HookEvent("cs_win_panel_match", Event_WinPanel);
     HookEvent("cs_match_end_restart", Event_WinPanel);
 
-    g_hGraceTime = FindConVar("mp_join_grace_time");
+    g_cGraceTime = FindConVar("mp_join_grace_time");
+    g_cFreezeTime = FindConVar("mp_freezetime");
+    g_cRoundTime = FindConVar("mp_roundtime");
 
     g_hRSCookie = RegClientCookie("ttt2_round_slays", "Round Slays Cookie", CookieAccess_Private);
     g_hRules = RegClientCookie("ttt2_rules_menu", "Show rules", CookieAccess_Private);
@@ -371,27 +373,27 @@ void ShowLogs(int client)
         return;
     }
 
-    Handle slPack = CreateDataPack();
+    DataPack slPack = new DataPack();
 
     if (TTT_IsClientValid(client))
     {
-        WritePackCell(slPack, GetClientUserId(client));
+        slPack.WriteCell(GetClientUserId(client));
     }
     else
     {
-        WritePackCell(slPack, 0);
+        slPack.WriteCell(0);
     }
 
-    WritePackCell(slPack, index);
+    slPack.WriteCell(index);
     RequestFrame(OnCreate, slPack);
 }
 
 public void OnCreate(DataPack pack)
 {
-    ResetPack(pack);
+    pack.Reset();
 
-    int userid = ReadPackCell(pack);
-    int index = ReadPackCell(pack);
+    int userid = pack.ReadCell();
+    int index = pack.ReadCell();
 
     delete pack;
 
@@ -449,18 +451,18 @@ public void OnCreate(DataPack pack)
             return;
         }
 
-        Handle slPack = CreateDataPack();
+        DataPack slPack = new DataPack();
 
         if (TTT_IsClientValid(client))
         {
-            WritePackCell(slPack, GetClientUserId(client));
+            slPack.WriteCell(GetClientUserId(client));
         }
         else
         {
-            WritePackCell(slPack, 0);
+            slPack.WriteCell(0);
         }
 
-        WritePackCell(slPack, index);
+        slPack.WriteCell(index);
         RequestFrame(OnCreate, slPack);
     }
 }
@@ -717,7 +719,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         LogMessage("Event_RoundStartPre - 6 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
 
-    float warmupTime = GetConVarFloat(g_hGraceTime) + 5.0;
+    float warmupTime = g_cGraceTime.FloatValue + 5.0;
     g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
 
     if (g_cDebugMessages.BoolValue)
@@ -750,7 +752,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d)", g_hRoundTimer);
     }
     
-    float fTime = GetConVarFloat(FindConVar("mp_freezetime")) + (GetConVarFloat(FindConVar("mp_roundtime")) * 60.0);
+    float fTime = g_cFreezeTime.FloatValue + (g_cRoundTime.FloatValue * 60.0);
     g_hRoundTimer = CreateTimer(fTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
 
     if (g_cDebugMessages.BoolValue)
@@ -2326,7 +2328,7 @@ void ShowRules(int client, int iItem)
         SetFailState("[TTT] Can't open File: %s", g_sRulesFile);
     }
 
-    KeyValues kvRules = CreateKeyValues("Rules");
+    KeyValues kvRules = new KeyValues("Rules");
 
     if (!kvRules.ImportFromFile(g_sRulesFile))
     {
@@ -2369,7 +2371,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
     if (action == MenuAction_Select)
     {
         char sParam[32];
-        GetMenuItem(menu, param, sParam, sizeof(sParam));
+        menu.GetItem(param, sParam, sizeof(sParam));
 
         if (!StrEqual(sParam, "yes", false))
         {
@@ -2381,7 +2383,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                 return 0;
             }
 
-            KeyValues kvRules = CreateKeyValues("Rules");
+            KeyValues kvRules = new KeyValues("Rules");
 
             if (!kvRules.ImportFromFile(g_sRulesFile))
             {
@@ -2465,7 +2467,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                     char sFile[PLATFORM_MAX_PATH + 1];
                     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
 
-                    Handle hRFile = OpenFile(sFile, "rt");
+                    File hRFile = OpenFile(sFile, "rt");
 
                     if (hRFile == null)
                     SetFailState("[TTT] Can't open File: %s", sFile);
@@ -2477,7 +2479,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                     kvRules.GetString("title", sTitle, sizeof(sTitle));
                     rMenu.SetTitle(sTitle);
 
-                    while (!IsEndOfFile(hRFile) && ReadFileLine(hRFile, sLine, sizeof(sLine)))
+                    while (!hRFile.EndOfFile() && hRFile.ReadLine(sLine, sizeof(sLine)))
                     {
                         if (strlen(sLine) > 1)
                         {
@@ -2606,7 +2608,7 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
     if (action == MenuAction_Select)
     {
         char sParam[32];
-        GetMenuItem(menu, param, sParam, sizeof(sParam));
+        menu.GetItem(param, sParam, sizeof(sParam));
 
         if (!StrEqual(sParam, "yes", false))
         {
@@ -3843,7 +3845,7 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
     if (action == MenuAction_Select)
     {
         char info[100];
-        GetMenuItem(menu, option, info, sizeof(info));
+        menu.GetItem(option, info, sizeof(info));
         if (StrEqual(info, "Forgive", false))
         {
             CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
@@ -4347,7 +4349,7 @@ void LoadBadNames()
     char sFile[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/badnames.ini");
 
-    Handle hFile = OpenFile(sFile, "rt");
+    File hFile = OpenFile(sFile, "rt");
 
     if (hFile == null)
     {
@@ -4356,7 +4358,7 @@ void LoadBadNames()
 
     char sLine[MAX_NAME_LENGTH];
 
-    while (!IsEndOfFile(hFile) && ReadFileLine(hFile, sLine, sizeof(sLine)))
+    while (!hFile.EndOfFile() && hFile.ReadLine(sLine, sizeof(sLine)))
     {
         if (strlen(sLine) > 1)
         {

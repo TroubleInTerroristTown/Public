@@ -151,9 +151,9 @@ public int Native_GetFlags(Handle plugin, int args) {
 /**
  * When a player dies we should remove the skin, so there isn't a random prop floating.
  */
-public Action Event_Death(Handle event, const char[] name, bool dontBroadcast) {
+public Action Event_Death(Event event, const char[] name, bool dontBroadcast) {
     //Well what about the custom death flags?
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+    int client = GetClientOfUserId(event.GetInt("userid"));
     if(IsClientInGame(client)) {
         if(!(g_SkinFlags[client] & CPS_IGNOREDEATH)) {
             RemoveSkin(client, CPS_RENDER); //Why would we change the render of a dead person O_o

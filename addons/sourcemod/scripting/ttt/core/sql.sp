@@ -1,6 +1,6 @@
-public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_AlterKarmaColumn(Database db, DBResultSet results, const char[] error, any data)
 {
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         if (StrContains(error, "duplicate column name", false) != -1)
         {
@@ -19,18 +19,9 @@ public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, 
     }
 }
 
-public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any userid)
+public void Callback_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
 {
-    if (hndl == null || strlen(error) > 0)
-    {
-        LogToFileEx(g_sErrorFile, "(Callback_Karma) Query failed: %s", error);
-        return;
-    }
-}
-
-public void Callback_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
-{
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogToFileEx(g_sErrorFile, "(Callback_UpdatePlayer) Query failed: %s", error);
         return;
@@ -46,7 +37,7 @@ public void Callback_UpdatePlayer(Handle owner, Handle hndl, const char[] error,
     }
 }
 
-public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, int userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -55,14 +46,14 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
         return;
     }
 
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
         return;
     }
     else
     {
-        if (!SQL_FetchRow(hndl))
+        if (!results.HasResults)
         {
             g_iKarma[client] = g_cstartKarma.IntValue;
             UpdatePlayer(client);
@@ -77,7 +68,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
                 return;
             }
 
-            int karma = SQL_FetchInt(hndl, 0);
+            int karma = results.FetchInt(0);
 
             if (g_cDebug.BoolValue)
             {

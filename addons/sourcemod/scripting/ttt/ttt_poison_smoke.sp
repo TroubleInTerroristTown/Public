@@ -141,10 +141,12 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
 
 public Action Timer_CheckPlayers(Handle timer, DataPack pack)
 {
-    ResetPack(pack);
+    pack.Reset();
     
-    int attacker = GetClientOfUserId(ReadPackCell(pack));
-    int entity = EntRefToEntIndex(ReadPackCell(pack));
+    int attacker = GetClientOfUserId(pack.ReadCell());
+    int entity = EntRefToEntIndex(pack.ReadCell());
+
+    delete pack;
     
     if (TTT_IsClientValid(attacker) && IsValidEntity(entity))
     {

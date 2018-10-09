@@ -247,16 +247,16 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public void OnTagrenadeDetonate(Handle event, const char[] name, bool dontBroadcast)
+public void OnTagrenadeDetonate(Event event, const char[] name, bool dontBroadcast)
 {
-    int userid = GetEventInt(event, "userid");
+    int userid = event.GetInt("userid");
     
-    Handle pack = CreateDataPack();
-    WritePackCell(pack, userid);
-    WritePackCell(pack, GetEventInt(event, "entityid"));
-    WritePackFloat(pack, GetEventFloat(event, "x"));
-    WritePackFloat(pack, GetEventFloat(event, "y"));
-    WritePackFloat(pack, GetEventFloat(event, "z"));
+    DataPack pack = new DataPack();
+    pack.WriteCell(userid);
+    pack.WriteCell(event.GetInt("entityid"));
+    pack.WriteFloat(event.GetFloat("x"));
+    pack.WriteFloat(event.GetFloat("y"));
+    pack.WriteFloat(event.GetFloat("z"));
     
     CreateTimer(0.0, OnGetTagrenadeTimes, pack);
     
@@ -284,9 +284,9 @@ public Action Timer_ResetTags(Handle timer, any userid)
 
 public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
 {
-    ResetPack(pack);
+    pack.Reset();
 
-    int client = GetClientOfUserId(ReadPackCell(pack));
+    int client = GetClientOfUserId(pack.ReadCell());
     if (client == 0)
     {
         delete pack;
@@ -295,15 +295,15 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
     
     int role = TTT_GetClientRole(client);
 
-    int entity = ReadPackCell(pack);
+    int entity = pack.ReadCell();
 
     float position[3];
     float targetposition[3];
     float distance;
 
-    position[0] = ReadPackFloat(pack);
-    position[1] = ReadPackFloat(pack);
-    position[2] = ReadPackFloat(pack);
+    position[0] = pack.ReadFloat();
+    position[1] = pack.ReadFloat();
+    position[2] = pack.ReadFloat();
     delete pack;
 
     if (role == TTT_TEAM_TRAITOR)

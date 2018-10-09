@@ -285,9 +285,9 @@ void AlterCreditsColumn()
     }
 }
 
-public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_AlterCreditsColumn(Database db, DBResultSet results, const char[] error, int userid)
 {
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         if (StrContains(error, "duplicate column name", false) != -1)
         {
@@ -340,7 +340,7 @@ void LoadClientCredits(int client)
     }
 }
 
-public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, int userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -349,14 +349,14 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
         return;
     }
 
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
         return;
     }
     else
     {
-        if (!SQL_FetchRow(hndl))
+        if (!results.HasResults)
         {
             g_iCredits[client] = g_cStartCredits.IntValue;
             UpdatePlayer(client);
@@ -371,7 +371,7 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
                 return;
             }
 
-            int credits = SQL_FetchInt(hndl, 0);
+            int credits = results.FetchInt(0);
 
             ConVar cvar = FindConVar("ttt_debug_mode");
             if (cvar.BoolValue)
@@ -441,9 +441,9 @@ void UpdatePlayer(int client)
     }
 }
 
-public void SQL_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
 {
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogError("(SQL_UpdatePlayer) Query failed: %s", error);
         return;
@@ -633,7 +633,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
         }
 
         char info[32];
-        GetMenuItem(menu, itemNum, info, sizeof(info));
+        menu.GetItem(itemNum, info, sizeof(info));
 
         ClientBuyItem(client, info, true);
     }

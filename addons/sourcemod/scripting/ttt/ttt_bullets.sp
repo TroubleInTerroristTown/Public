@@ -227,7 +227,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 	int client = GetClientOfUserId(event.GetInt("userid"));
 
 	char weapon[64];
-	GetEventString(event, "weapon", weapon, sizeof(weapon));
+	event.GetString("weapon", weapon, sizeof(weapon));
 
 	if (TTT_IsClientValid(client) && IsWeapon(weapon))
 	{	

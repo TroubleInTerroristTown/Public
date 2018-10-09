@@ -108,7 +108,7 @@ public Action Timer_CreateGrenade(Handle timer, any client)
     }
 }
 
-public Action Event_RoundStart(Handle event, const char[] name, bool inrestart)
+public Action Event_RoundStart(Event event, const char[] name, bool inrestart)
 {
     LoopValidClients(i)
     {
@@ -116,9 +116,9 @@ public Action Event_RoundStart(Handle event, const char[] name, bool inrestart)
     }
 }
 
-public Action Event_PlayerDeath(Handle event, const char[] name, bool inrestart)
+public Action Event_PlayerDeath(Event event, const char[] name, bool inrestart)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+    int client = GetClientOfUserId(event.GetInt("userid"));
     
     if(!TTT_IsClientValid(client))
     {

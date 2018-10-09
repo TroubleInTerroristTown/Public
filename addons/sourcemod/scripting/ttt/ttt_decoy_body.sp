@@ -197,11 +197,13 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 
 public Action Timer_DecoyBody(Handle timer, DataPack pack)
 {
-    ResetPack(pack);
+    pack.Reset();
     
-    int attacker = GetClientOfUserId(ReadPackCell(pack));
-    int body = EntRefToEntIndex(ReadPackCell(pack));
-    bool bReal = view_as<bool>(ReadPackCell(pack));
+    int attacker = GetClientOfUserId(pack.ReadCell());
+    int body = EntRefToEntIndex(pack.ReadCell());
+    bool bReal = view_as<bool>(pack.ReadCell());
+
+    delete pack;
     
     if (TTT_IsClientValid(attacker) && IsValidEntity(body))
     {

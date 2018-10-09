@@ -498,7 +498,7 @@ void LoadWhitelist()
     char sPath[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/whitelist_grabbermod.ini");
 
-    Handle hFile = OpenFile(sPath, "rt");
+    File hFile = OpenFile(sPath, "rt");
 
     if (!FileExists(sPath))
     {
@@ -507,7 +507,7 @@ void LoadWhitelist()
     }
     
     char sBuffer[32];
-    while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+    while(!hFile.EndOfFile() && hFile.ReadLine(sBuffer, sizeof(sBuffer)))
     {
         TrimString(sBuffer);
         
@@ -530,7 +530,7 @@ void LoadBlacklist()
     char sPath[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_grabbermod.ini");
 
-    Handle hFile = OpenFile(sPath, "rt");
+    File hFile = OpenFile(sPath, "rt");
 
     if (!FileExists(sPath))
     {
@@ -539,7 +539,7 @@ void LoadBlacklist()
     }
     
     char sBuffer[32];
-    while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+    while(!hFile.EndOfFile() && hFile.ReadLine(sBuffer, sizeof(sBuffer)))
     {
         TrimString(sBuffer);
         
@@ -562,7 +562,7 @@ void LoadBlacklistModels()
     char sPath[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sPath, sizeof(sPath), "configs/ttt/blacklist_models_grabbermod.ini");
 
-    Handle hFile = OpenFile(sPath, "rt");
+    File hFile = OpenFile(sPath, "rt");
 
     if (!FileExists(sPath))
     {
@@ -571,7 +571,7 @@ void LoadBlacklistModels()
     }
     
     char sBuffer[PLATFORM_MAX_PATH + 1];
-    while(!IsEndOfFile(hFile) && ReadFileLine(hFile, sBuffer, sizeof(sBuffer)))
+    while(!hFile.EndOfFile() && hFile.ReadLine(sBuffer, sizeof(sBuffer)))
     {
         TrimString(sBuffer);
         
