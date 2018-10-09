@@ -195,7 +195,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
     return Plugin_Continue;
 }
 
-public Action Timer_DecoyBody(Handle timer, any pack)
+public Action Timer_DecoyBody(Handle timer, DataPack pack)
 {
     ResetPack(pack);
     

@@ -432,7 +432,7 @@ public Action Timer_Reset(Handle timer, any userid)
     return Plugin_Handled;
 }
 
-public Action explodeC4(Handle timer, Handle pack)
+public Action Timer_ExplodeC4(Handle timer, DataPack pack)
 {
     ResetPack(pack);
     int clientUserId = ReadPackCell(pack);
@@ -824,7 +824,7 @@ float plantBomb(int client, float time)
         TTT_ClearTimer(g_hExplosionTimer[client]);
 
         Handle explosionPack;
-        g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
+        g_hExplosionTimer[client] = CreateDataTimer(time, Timer_ExplodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
         WritePackCell(explosionPack, GetClientUserId(client));
         WritePackCell(explosionPack, bombEnt);
 

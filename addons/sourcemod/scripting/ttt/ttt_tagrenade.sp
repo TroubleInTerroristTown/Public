@@ -282,9 +282,8 @@ public Action Timer_ResetTags(Handle timer, any userid)
     }
 }
 
-public Action OnGetTagrenadeTimes(Handle timer, any data)
+public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
 {
-    Handle pack = view_as<Handle>(data);
     ResetPack(pack);
 
     int client = GetClientOfUserId(ReadPackCell(pack));

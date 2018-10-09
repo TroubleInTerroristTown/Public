@@ -139,7 +139,7 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
     return Plugin_Continue;
 }
 
-public Action Timer_CheckPlayers(Handle timer, any pack)
+public Action Timer_CheckPlayers(Handle timer, DataPack pack)
 {
     ResetPack(pack);
     

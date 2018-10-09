@@ -386,17 +386,14 @@ void ShowLogs(int client)
     RequestFrame(OnCreate, slPack);
 }
 
-public void OnCreate(any data)
+public void OnCreate(DataPack pack)
 {
-    ResetPack(data);
+    ResetPack(pack);
 
-    int userid = ReadPackCell(data);
-    int index = ReadPackCell(data);
+    int userid = ReadPackCell(pack);
+    int index = ReadPackCell(pack);
 
-    if (view_as<Handle>(data) != null)
-    {
-        delete view_as<Handle>(data);
-    }
+    delete pack;
 
     int client;
     if (userid == 0)

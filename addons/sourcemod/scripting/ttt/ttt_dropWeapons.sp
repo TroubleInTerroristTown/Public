@@ -51,7 +51,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("drop_max_usage", "1", "Usages per round", _, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("drop_distance", "500", "Distance between client and target");
     g_cDropMode = AutoExecConfig_CreateConVar("drop_mode", "1", "0 - Just drop primary weapons, 1 - Drop primary weapons (no pickup for x seconds)", _, true, 0.0, true, 1.0);
-    g_cCooldown = AutoExecConfig_CreateConVar("drop_cooldown", "3", "Cooldown to allow pickup again (drop_drop_mode must be higher as 0)");
+    g_cCooldown = AutoExecConfig_CreateConVar("drop_cooldown", "9", "Cooldown to allow pickup again (drop_drop_mode must be higher as 0)");
     g_cDropTraitorWeapons = AutoExecConfig_CreateConVar("drop_traitor_weapons", "0", "Drop all traitor weapons? If it true just the caller does not drop his weapons", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
@@ -141,14 +141,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                             continue;
                         }
 
-                        if (!g_cDropTraitorWeapons.BoolValue && TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+                        if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR && !g_cDropTraitorWeapons.BoolValue)
                         {
                             continue;
                         }
 
                         DropWeapons(i);
 
-                        if (g_cDropMode.BoolValue)
+                        if (g_cDropMode.IntValue == 1)
                         {
                             g_bCooldown[i] = true;
                         }

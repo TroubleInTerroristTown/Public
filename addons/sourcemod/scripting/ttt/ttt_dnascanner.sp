@@ -120,14 +120,14 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     {
         if (StrEqual(itemshort, SHORT_NAME, false))
         {
-            int role = TTT_GetClientRole(client);
-
-            if (role != TTT_TEAM_DETECTIVE)
+            if (g_bHasScanner[client] || (g_bFreeScanner[client] && g_iCount[client] < g_cFreeCount.IntValue))
             {
                 return Plugin_Stop;
             }
+            
+            int role = TTT_GetClientRole(client);
 
-            if (price != 0 && g_bFreeScanner[client] && g_iCount[client] < g_cFreeCount.IntValue)
+            if (role != TTT_TEAM_DETECTIVE)
             {
                 return Plugin_Stop;
             }
@@ -307,10 +307,14 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
     {
         g_iCount[client]++;
 
-        if (g_iCount[client] == 3)
+        if (g_iCount[client] >= g_cFreeCount.IntValue)
         {
             ResetScanner(client);
+            return Plugin_Changed;
         }
+
+        int iLeft = g_cFreeCount.IntValue - g_iCount[client];	
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Free DNA Scanner left", client, iLeft);
     }
 
     return Plugin_Changed;

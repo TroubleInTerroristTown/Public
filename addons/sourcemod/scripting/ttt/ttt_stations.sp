@@ -188,7 +188,7 @@ public void OnClientDisconnect(int client)
     TTT_ClearTimer(g_hRemoveCoolDownTimer[client]);
 }
 
-public Action removeCoolDown(Handle timer, any userid)
+public Action Timer_RemoveCooldown(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
     g_bOnHealingCoolDown[client] = false;
@@ -306,7 +306,7 @@ void checkDistanceFromStation(int client)
             EmitSoundToClientAny(client, SND_WARNING);
             g_iStationCharges[owner]--;
             g_bOnHealingCoolDown[client] = true;
-            g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+            g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, Timer_RemoveCooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
         }
         else
         {
@@ -314,7 +314,7 @@ void checkDistanceFromStation(int client)
             {
                 CPrintToChat(client, g_sPluginTag, "Health Station Out Of Charges", client);
                 g_bOnHealingCoolDown[client] = true;
-                g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, removeCoolDown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+                g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, Timer_RemoveCooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
             }
         }
     }
