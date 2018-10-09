@@ -124,25 +124,26 @@ native int TTT_AddClientCredits(int client, int credits);
 native bool TTT_GiveClientItem(int client, const char[] item);
 
 /*
- * Registers item in a player's inventory.
+ * Adds an item in a player's inventory.
  * 
  * @param client        Client index.
  * @param itemshort     Unique name for item.
- * @param stack         Stack duplicate items in same inventory. If false, will ignore if the same item exists.
+ * @param amount        Quantity of item.
  * 
  * @return              Returns item index in inventory if registered successfully or item already exists, else -1 if unique item does not exist in shop or client not in game.
  */
-native int TTT_InventoryRegister(int client, const char[] itemshort, bool stack = false);
+native bool TTT_AddInventoryItem(int client, const char[] itemshort, int amount = 1);
 
 /*
- * Unregisters an item in a player's inventory.
+ * Removes an item in a player's inventory.
  *
  * @param client        Client index.
  * @param itemshort     Unique name of item.
+ * @param all           If true, removes all of the item from inventory, otherwise will only remove one instance of it.
  *
  * @return              Returns true on success or false if item does not exist in inventory or client not in game.
  */
-native bool TTT_InventoryUnregister(int client, const char[] itemshort, bool all = true);
+native bool TTT_RemoveInventoryItem(int client, const char[] itemshort, bool all = true);
 
 /*
  * Retrieves a map of the inventory items of a player.
@@ -152,12 +153,3 @@ native bool TTT_InventoryUnregister(int client, const char[] itemshort, bool all
  * @return              Snapshot of the client's inventory.
  */
 native StringMapSnapshot TTT_GetInventoryListing(int client);
-
-/*
- * Gets the credits the player had before death.
- *
- * @param client        Client index.
- *
- * @return              The credits in the client's inventory.
- */
-native int TTT_GetInventoryCredits(int client);
