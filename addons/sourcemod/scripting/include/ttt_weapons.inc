@@ -11,9 +11,9 @@
 #define HELM_T_ITEM_SHORT "helmT"
 #define HELM_D_ITEM_SHORT "helmD"
 
-#define KEVHELM_ITEM_SHORT "khelm"
-#define KEVHELM_T_ITEM_SHORT "khelmT"
-#define KEVHELM_D_ITEM_SHORT "kelmD"
+#define KEVHELM_ITEM_SHORT "kevhelm"
+#define KEVHELM_T_ITEM_SHORT "kevhelmT"
+#define KEVHELM_D_ITEM_SHORT "kevhelmD"
 
 #define HEAVY_ITEM_SHORT "heavy"
 #define HEAVY_T_ITEM_SHORT "heavyT"
