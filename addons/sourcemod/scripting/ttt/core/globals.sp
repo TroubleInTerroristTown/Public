@@ -144,10 +144,10 @@ char g_sRadioCMDs[][] =  {
 
 char g_sRemoveEntityList[][] =  {
     "func_bomb_target",
+    "func_buyzone",
     "hostage_entity",
     "func_hostage_rescue",
-    "info_hostage_spawn",
-    "func_buyzone"
+    "info_hostage_spawn"
 };
 
 bool g_bRoundEnding = false;

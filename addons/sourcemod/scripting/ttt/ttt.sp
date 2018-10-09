@@ -4204,7 +4204,7 @@ public void OnEntityCreated(int entity, const char[] name)
             {
                 AcceptEntityInput(entity, "kill");
             }
-            else if (g_cremoveHostages.BoolValue)
+            else if (g_cremoveHostages.BoolValue && (StrEqual("hostage_entity", g_sRemoveEntityList[i], false) || StrEqual("func_hostage_rescue", g_sRemoveEntityList[i], false) || StrEqual("info_hostage_spawn", g_sRemoveEntityList[i], false)))
             {
                 AcceptEntityInput(entity, "kill");
             }
