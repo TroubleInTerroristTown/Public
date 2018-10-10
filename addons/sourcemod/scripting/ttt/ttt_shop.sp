@@ -363,37 +363,40 @@ public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const c
         }
         else
         {
-            char sCommunityID[64];
-
-            if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+            while (results.FetchRow())
             {
-                LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-                return;
-            }
+                char sCommunityID[64];
 
-            int credits = results.FetchInt(0);
+                if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+                {
+                    LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+                    return;
+                }
 
-            ConVar cvar = FindConVar("ttt_debug_mode");
-            if (cvar.BoolValue)
-            {
-                LogMessage("Name: %L has %d credits", client, credits);
-            }
+                int credits = results.FetchInt(0);
 
-            if (credits == 0)
-            {
-                g_iCredits[client] = g_cStartCredits.IntValue;
-            }
-            else
-            {
-                g_iCredits[client] = credits;
-            }
+                ConVar cvar = FindConVar("ttt_debug_mode");
+                if (cvar.BoolValue)
+                {
+                    LogMessage("Name: %L has %d credits", client, credits);
+                }
 
-            if (g_cMoneyCredits.BoolValue)
-            {
-                SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
-            }
+                if (credits == 0)
+                {
+                    g_iCredits[client] = g_cStartCredits.IntValue;
+                }
+                else
+                {
+                    g_iCredits[client] = credits;
+                }
 
-            g_bCredits[client] = true;
+                if (g_cMoneyCredits.BoolValue)
+                {
+                    SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
+                }
+
+                g_bCredits[client] = true;
+            }
         }
     }
 }

@@ -60,33 +60,36 @@ public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const c
         }
         else
         {
-            char sCommunityID[64];
-
-            if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+            while (results.FetchRow())
             {
-                LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-                return;
+                char sCommunityID[64];
+
+                if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+                {
+                    LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+                    return;
+                }
+
+                int karma = results.FetchInt(0);
+
+                if (g_cDebug.BoolValue)
+                {
+                    LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
+                }
+
+                if (karma == 0)
+                {
+                    g_iKarma[client] = g_cstartKarma.IntValue;
+                }
+                else
+                {
+                    g_iKarma[client] = karma;
+                }
+
+                CS_SetClientContributionScore(client, karma);
+
+                g_bKarma[client] = true;
             }
-
-            int karma = results.FetchInt(0);
-
-            if (g_cDebug.BoolValue)
-            {
-                LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
-            }
-
-            if (karma == 0)
-            {
-                g_iKarma[client] = g_cstartKarma.IntValue;
-            }
-            else
-            {
-                g_iKarma[client] = karma;
-            }
-
-            CS_SetClientContributionScore(client, karma);
-
-            g_bKarma[client] = true;
         }
     }
 }
