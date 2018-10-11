@@ -133,13 +133,13 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 			else if (HasBullets(client))
 			{
-				CPrintToChat(client, "%s %t", g_sPluginTag, "Have already");
+				CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Have already");
 				return Plugin_Stop;
 			}
 
 			g_bHasIce[client] = true;
-			g_iBulletsIce[client] += g_cIceNb.IntValue;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Buy bullets", g_iBulletsIce[client], sName);		
+			g_iBulletsIce[client] = g_cIceNb.IntValue;
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Buy bullets", g_iBulletsIce[client], sName);		
 		}
 		
 		else if (StrEqual(itemshort, SHORT_NAME_FIRE, false))
@@ -154,13 +154,13 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 			else if (HasBullets(client))
 			{
-				CPrintToChat(client, "%s %t", g_sPluginTag, "Have already");
+				CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Have already");
 				return Plugin_Stop;
 			}		
 
 			g_bHasFire[client] = true;
-			g_iBulletsFire[client] += g_cFireNb.IntValue;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Buy bullets", g_iBulletsFire[client], sName);					
+			g_iBulletsFire[client] = g_cFireNb.IntValue;
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Buy bullets", g_iBulletsFire[client], sName);					
 		}	
 
 		else if (StrEqual(itemshort, SHORT_NAME_POISON, false))
@@ -175,13 +175,13 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 			}
 			else if (HasBullets(client))
 			{
-				CPrintToChat(client, "%s %t", g_sPluginTag, "Have already");
+				CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Have already");
 				return Plugin_Stop;
 			}			
 
 			g_bHasPoison[client] = true;
-			g_iBulletsPoison[client] += g_cPoisonNb.IntValue;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Buy bullets", g_iBulletsPoison[client], sName);		
+			g_iBulletsPoison[client] = g_cPoisonNb.IntValue;
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Buy bullets", g_iBulletsPoison[client], sName);		
 		}	
 	}
 	return Plugin_Continue;
@@ -236,7 +236,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 			char sName[128];	
 			g_cIceLongName.GetString(sName, sizeof(sName));		
 			g_iBulletsIce[client]--;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Number bullets", sName, g_iBulletsIce[client], g_cIceNb.IntValue);			
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Number bullets", sName, g_iBulletsIce[client], g_cIceNb.IntValue);			
 			if (g_iBulletsIce[client] <= 0)
 			{
 				g_bHasIce[client] = false;
@@ -247,7 +247,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 			char sName[128];	
 			g_cFireLongName.GetString(sName, sizeof(sName));					
 			g_iBulletsFire[client]--;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Number bullets", sName, g_iBulletsFire[client], g_cFireNb.IntValue);
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Number bullets", sName, g_iBulletsFire[client], g_cFireNb.IntValue);
 			if (g_iBulletsFire[client] <= 0)
 			{
 				g_bHasFire[client] = false;
@@ -258,7 +258,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 			char sName[128];	
 			g_cPoisonLongName.GetString(sName, sizeof(sName));			
 			g_iBulletsPoison[client]--;
-			CPrintToChat(client, "%s %t", g_sPluginTag, "Number bullets", sName, g_iBulletsPoison[client], g_cPoisonNb.IntValue);
+			CPrintToChat(client, "%s %T", g_sPluginTag, client, "Bullets: Number bullets", sName, g_iBulletsPoison[client], g_cPoisonNb.IntValue);
 			if (g_iBulletsPoison[client] <= 0)
 			{
 				g_bHasPoison[client] = false;
@@ -321,9 +321,11 @@ public Action TimerPoison(Handle timer, any userid)
 void ResetBullets(int client)
 {
 	g_iTimerPoison[client] = 0;
+	
 	g_iBulletsIce[client] = 0;
 	g_iBulletsFire[client] = 0;
 	g_iBulletsPoison[client] = 0;
+
 	g_bHasIce[client] = false;
 	g_bHasFire[client] = false;
 	g_bHasPoison[client] = false;
@@ -341,18 +343,20 @@ bool HasBullets(int client)
 	return result;
 }
 
-bool IsWeapon(char[] weapon)
+bool IsWeapon(const char[] weapon)
 {
 	bool result = true;
 
-	if (StrContains(weapon, "nade") != -1 
-	|| StrContains(weapon, "knife") != -1 
-	|| StrContains(weapon, "healthshot") != -1 
-	|| StrContains(weapon, "molotov") != -1  
-	|| StrContains(weapon, "decoy") != -1
-	|| StrContains(weapon, "c4") != -1
-	|| StrContains(weapon, "flashbang") != -1
-	|| StrContains(weapon, "taser") != -1)
+	if (
+		StrContains(weapon, "nade") != -1 
+		|| StrContains(weapon, "knife") != -1 
+		|| StrContains(weapon, "healthshot") != -1 
+		|| StrContains(weapon, "molotov") != -1  
+		|| StrContains(weapon, "decoy") != -1
+		|| StrContains(weapon, "c4") != -1
+		|| StrContains(weapon, "flashbang") != -1
+		|| StrContains(weapon, "taser") != -1
+		)
 	{
 		result = false;
 	}	
