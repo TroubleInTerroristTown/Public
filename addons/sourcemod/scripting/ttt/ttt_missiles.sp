@@ -37,7 +37,6 @@ ConVar g_cDamage = null;
 ConVar g_cRadius = null;
 ConVar g_cSpeed = null;
 ConVar g_cArc = null;
-ConVar g_cModel = null;
 
 ConVar g_cPriceT_F = null;
 ConVar g_cPriceD_F = null;
@@ -101,7 +100,6 @@ public void OnPluginStart()
     g_cRadius = AutoExecConfig_CreateConVar("missiles_radius", "350", "Sets the explosive radius of the missiles", _, true, 1.0);
     g_cSpeed = AutoExecConfig_CreateConVar("missiles_speed", "500.0", "Sets the speed of the missiles", _, true, 300.0 ,true, 3000.0);
     g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
-    g_cModel = AutoExecConfig_CreateConVar("missiles_model", "models/props/de_inferno/hr_i/missile/missile_02.mdl", "The model of the missile (You need to add it to the donwloadtable yourself)");
 
     g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
     g_cPriceD = AutoExecConfig_CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
@@ -155,6 +153,7 @@ public void OnMapStart()
     AddFileToDownloadsTable("materials/models/weapons/w_rocketlauncher/w_rocket01.vtf");
     
     PrecacheModel("models/weapons/w_models/w_rocket.mdl");
+    PrecacheModel("models/props/de_inferno/hr_i/missile/missile_02.mdl");
     
     PrecacheSound("weapons/rpg/rocket1.wav");
     PrecacheSound("weapons/hegrenade/explode5.wav");
@@ -323,12 +322,10 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         g_iType[iOwner] = 0;
     }
 
-    char sModel[PLATFORM_MAX_PATH];
-    g_cModel.GetString(sModel, sizeof(sModel));
     // stop the projectile thinking so it doesn't detonate.
     SetEntProp(caller, Prop_Data, "m_nNextThinkTick", -1);
     SetEntityMoveType(caller, MOVETYPE_FLY);
-    SetEntityModel(caller, sModel);
+    SetEntityModel(caller, "models/props/de_inferno/hr_i/missile/missile_02.mdl");
     // make it spin correctly.
     SetEntPropVector(caller, Prop_Data, "m_vecAngVelocity", g_fSpinVel);
     // stop it bouncing when it hits something
