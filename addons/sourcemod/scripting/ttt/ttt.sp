@@ -1245,6 +1245,11 @@ int GetDCount(ArrayList array)
 
 void TeamInitialize(int client, bool skipWeapons = false)
 {
+    if (!g_bRoundStarted)
+    {
+        return;
+    }
+    
     if (!TTT_IsClientValid(client))
     {
         return;
