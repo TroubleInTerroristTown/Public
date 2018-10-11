@@ -10,7 +10,7 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tactical Shield"
 
-#define SHORT_NAME_D "tacticalShield_d"
+#define SHORT_NAME_D "tacShield_d"
 
 ConVar g_cLongName = null;
 ConVar g_cPrice = null;
@@ -69,6 +69,11 @@ void RegisterItem()
     TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
 }
 
+public void OnClientPutInServer(int client)
+{
+    ResetTacticalShield(client);
+}
+
 public void OnClientDisconnect(int client)
 {
     ResetTacticalShield(client);
@@ -81,7 +86,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         if (StrEqual(itemshort, SHORT_NAME_D, false))
         {
             ResetTacticalShield(client);
-
+            
             int role = TTT_GetClientRole(client);
 
             if (role == TTT_TEAM_DETECTIVE)
@@ -101,6 +106,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     }
     return Plugin_Continue;
 }
+
 
 public void Frame_SetShield(int userid)
 {
@@ -124,5 +130,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 void ResetTacticalShield(int client)
 {
-    RemovePlayerShield(client);
+    if (IsClientInGame(client))
+    {
+        RemovePlayerShield(client);
+    }
 }
