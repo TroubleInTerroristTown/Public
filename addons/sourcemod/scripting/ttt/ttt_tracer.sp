@@ -93,7 +93,7 @@ void RegisterItem()
     TTT_RegisterCustomItem(SHORT_NAME_TRACER, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
 
     g_cJammerLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME_JAMMER, sName, g_cJammerPrice.IntValue, TTT_TEAM_TRAITOR, g_cJammerPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME_JAMMER, sName, g_cJammerPrice.IntValue, TTT_TEAM_DETECTIVE, g_cJammerPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
