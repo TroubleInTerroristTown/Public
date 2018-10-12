@@ -49,7 +49,7 @@ ConVar g_cM4_Price = null;
 ConVar g_cAWP_Price = null;
 ConVar g_cAWP_Min_Shots = null;
 ConVar g_cAWP_Max_Shots = null;
-ConVar g_cKF_Price = null;
+ConVar g_cKnife_Price = null;
 ConVar g_cKev_Max = null;
 ConVar g_cHeavy_Max = null;
 ConVar g_cKev_Prio = null;
@@ -128,7 +128,7 @@ public void OnPluginStart()
     g_cAWP_Min_Shots = AutoExecConfig_CreateConVar("awp_min_shots", "1", "The min. amount of shots of traitor awp.");
     g_cAWP_Max_Shots = AutoExecConfig_CreateConVar("awp_max_shots", "3", "The max. amount of shots of traitor awp.");
     g_cAWP_Prio = AutoExecConfig_CreateConVar("awp_sort_prio", "0", "The sorting priority of the AWP in the shop menu.");
-    g_cKF_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
+    g_cKnife_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
     g_cKnife_Max = AutoExecConfig_CreateConVar("oneknife_max", "5", "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
     g_cKnife_Prio = AutoExecConfig_CreateConVar("oneknife_sort_prio", "0", "The sorting priority of the One-Hit Knife in the shop menu.");
     g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
@@ -230,7 +230,7 @@ void RegisterItem()
     }
 
     g_cKF_Long.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKF_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue);
+    TTT_RegisterCustomItem(KF_ITEM_SHORT, sBuffer, g_cKnife_Price.IntValue, TTT_TEAM_TRAITOR, g_cKnife_Prio.IntValue);
 
     g_cM4_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(M4_ITEM_SHORT, sBuffer, g_cM4_Price.IntValue, TTT_TEAM_TRAITOR, g_cM4_Prio.IntValue);
@@ -526,10 +526,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-void GiveArmor(int client)
+void GiveArmor(int client, int armor = 100)
 {
     g_iKevs[client]++;
-    SetEntProp(client, Prop_Data, "m_ArmorValue", 100, 1);
+    SetEntProp(client, Prop_Data, "m_ArmorValue", armor, 1);
 }
 
 void GiveHeavy(int client)

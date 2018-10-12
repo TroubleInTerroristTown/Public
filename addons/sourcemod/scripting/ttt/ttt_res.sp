@@ -338,10 +338,10 @@ int LoadSoundsDet()
     g_cDetPath.GetString(soundpath, sizeof(soundpath));
     
     Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-    Handle hDir = OpenDirectory(soundpath2);
+    DirectoryListing hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if (StrContains(name, ".mp3", false) == namelen)
@@ -374,10 +374,10 @@ int LoadSoundsTra()
     g_cTraPath.GetString(soundpath, sizeof(soundpath));
     
     Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-    Handle hDir = OpenDirectory(soundpath2);
+    DirectoryListing hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if (StrContains(name, ".mp3", false) == namelen)
@@ -408,10 +408,10 @@ int LoadSoundsInn()
     char soundpath2[PLATFORM_MAX_PATH];
     g_cInnPath.GetString(soundpath, sizeof(soundpath));
     Format(soundpath2, sizeof(soundpath2), "sound/%s/", soundpath);
-    Handle hDir = OpenDirectory(soundpath2);
+    DirectoryListing hDir = OpenDirectory(soundpath2);
     if(hDir != null)
     {
-        while (ReadDirEntry(hDir, name, sizeof(name)))
+        while (hDir.GetNext(name, sizeof(name)))
         {
             int namelen = strlen(name) - 4;
             if(StrContains(name,".mp3",false) == namelen)

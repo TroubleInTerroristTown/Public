@@ -432,11 +432,11 @@ public Action Timer_Reset(Handle timer, any userid)
     return Plugin_Handled;
 }
 
-public Action explodeC4(Handle timer, Handle pack)
+public Action Timer_ExplodeC4(Handle timer, DataPack pack)
 {
-    ResetPack(pack);
-    int clientUserId = ReadPackCell(pack);
-    int bombEnt = ReadPackCell(pack);
+    pack.Reset();
+    int clientUserId = pack.ReadCell();
+    int bombEnt = pack.ReadCell();
 
     if (!IsValidEntity(bombEnt))
     {
@@ -502,10 +502,10 @@ public Action explodeC4(Handle timer, Handle pack)
 
             if (GetVectorDistance(clientOrigin, explosionOrigin) <= g_cC4KillRadius.FloatValue)
             {
-                Handle killEvent = CreateEvent("player_death", true);
-                SetEventInt(killEvent, "userid", GetClientUserId(i));
-                SetEventInt(killEvent, "attacker", GetClientUserId(client));
-                FireEvent(killEvent, false);
+                Event killEvent = CreateEvent("player_death", true);
+                killEvent.SetInt("userid", GetClientUserId(i));
+                killEvent.SetInt("attacker", GetClientUserId(client));
+                killEvent.Fire(false);
                 ForcePlayerSuicide(i);
             }
         }
@@ -638,7 +638,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
     if (action == MenuAction_Select)
     {
         char info[100];
-        GetMenuItem(menu, option, info, sizeof(info));
+        menu.GetItem(option, info, sizeof(info));
         
         for(int i = 0; i < g_iPlantSecondsCount; i++)
         {
@@ -706,7 +706,7 @@ public int punishmentsBombMenu(Menu menu, MenuAction action, int client, int opt
     if (action == MenuAction_Select)
     {
         char info[100];
-        GetMenuItem(menu, option, info, sizeof(info));
+        menu.GetItem(option, info, sizeof(info));
         
         if (StrEqual(info, "slay", false))
         {
@@ -748,7 +748,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
         float bombPos[3];
         GetEntPropVector(iBomb, Prop_Data, "m_vecOrigin", bombPos);
         correctWire = g_iWire[planter];
-        GetMenuItem(menu, option, info, sizeof(info));
+        menu.GetItem(option, info, sizeof(info));
         wire = StringToInt(info);
         if (wire == correctWire)
         {
@@ -823,17 +823,17 @@ float plantBomb(int client, float time)
 
         TTT_ClearTimer(g_hExplosionTimer[client]);
 
-        Handle explosionPack;
-        g_hExplosionTimer[client] = CreateDataTimer(time, explodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
-        WritePackCell(explosionPack, GetClientUserId(client));
-        WritePackCell(explosionPack, bombEnt);
+        DataPack explosionPack;
+        g_hExplosionTimer[client] = CreateDataTimer(time, Timer_ExplodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
+        explosionPack.WriteCell(GetClientUserId(client));
+        explosionPack.WriteCell(bombEnt);
 
         if (g_cC4BeepVolume.FloatValue > 0.0)
         {
-            Handle beepPack;
+            DataPack beepPack;
             CreateDataTimer(1.0, Timer_Beep, beepPack);
-            WritePackCell(beepPack, bombEnt);
-            WritePackCell(beepPack, (time - 1));
+            beepPack.WriteCell(bombEnt);
+            beepPack.WriteCell((time - 1));
         }
 
         g_bHasActiveBomb[client] = true;
@@ -877,13 +877,14 @@ int findBomb(int client)
     return -1;
 }
 
-public Action Timer_Beep(Handle timer, Handle pack)
+public Action Timer_Beep(Handle timer, DataPack pack)
 {
     int bombEnt;
     int beeps;
-    ResetPack(pack);
-    bombEnt = ReadPackCell(pack);
-    beeps = ReadPackCell(pack);
+    pack.Reset();
+    bombEnt = pack.ReadCell();
+    beeps = pack.ReadCell();
+
     if (!IsValidEntity(bombEnt))
     {
         return Plugin_Stop;
@@ -932,10 +933,10 @@ public Action Timer_Beep(Handle timer, Handle pack)
         return Plugin_Stop;
     }
 
-    Handle bombBeep2;
+    DataPack bombBeep2 = new DataPack();
     CreateDataTimer(1.0, Timer_Beep, bombBeep2);
-    WritePackCell(bombBeep2, bombEnt);
-    WritePackCell(bombBeep2, beeps);
+    bombBeep2.WriteCell(bombEnt);
+    bombBeep2.WriteCell(beeps);
     return Plugin_Stop;
 }
 

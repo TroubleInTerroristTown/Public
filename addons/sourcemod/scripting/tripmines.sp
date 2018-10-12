@@ -262,14 +262,14 @@ void SetMine(int client)
         Call_Finish();
 
         // Create a datapack
-        DataPack hData = new DataPack();
-        CreateTimer(g_cActTime.FloatValue, TurnBeamOn, hData);
-        hData.WriteCell(client);
-        hData.WriteCell(ent);
-        hData.WriteCell(ent2);
-        hData.WriteFloat(end[0]);
-        hData.WriteFloat(end[1]);
-        hData.WriteFloat(end[2]);
+        DataPack pack = new DataPack();
+        CreateTimer(g_cActTime.FloatValue, Timer_TurnBeamOn, pack);
+        pack.WriteCell(client);
+        pack.WriteCell(ent);
+        pack.WriteCell(ent2);
+        pack.WriteFloat(end[0]);
+        pack.WriteFloat(end[1]);
+        pack.WriteFloat(end[2]);
         
         // Play sound
         EmitSoundToAll(SND_MINEPUT, ent);
@@ -283,12 +283,12 @@ void SetMine(int client)
     }
 }
 
-public Action TurnBeamOn(Handle timer, DataPack hData)
+public Action Timer_TurnBeamOn(Handle timer, DataPack pack)
 {
-    hData.Reset();
-    int client = hData.ReadCell();
-    int ent = hData.ReadCell();
-    int ent2 = hData.ReadCell();
+    pack.Reset();
+    int client = pack.ReadCell();
+    int ent = pack.ReadCell();
+    int ent2 = pack.ReadCell();
 
     if (IsValidEntity(ent))
     {
@@ -299,9 +299,9 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
         AcceptEntityInput(ent2, "TurnOn");
 
         float end[3];
-        end[0] = hData.ReadFloat();
-        end[1] = hData.ReadFloat();
-        end[2] = hData.ReadFloat();
+        end[0] = pack.ReadFloat();
+        end[1] = pack.ReadFloat();
+        end[2] = pack.ReadFloat();
 
         EmitSoundToAll(SND_MINEACT, ent);
 
@@ -312,7 +312,7 @@ public Action TurnBeamOn(Handle timer, DataPack hData)
         Call_Finish();
     }
 
-    delete hData;
+    delete pack;
 }
 
 public void mineBreak(const char[] output, int caller, int activator, float delay)

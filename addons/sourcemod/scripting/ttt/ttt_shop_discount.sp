@@ -93,7 +93,7 @@ public void OnConfigsExecuted()
         SetFailState("[TTT] Can't open File: %s", g_sFile);
     }
 
-    KeyValues kvRules = CreateKeyValues("Rules");
+    KeyValues kvRules = new KeyValues("Rules");
 
     if (!kvRules.ImportFromFile(g_sFile))
     {

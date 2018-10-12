@@ -5,6 +5,8 @@
 #include <sdktools>
 #include <ttt>
 #include <ttt_shop>
+#include <multicolors>
+#undef REQUIRE_PLUGIN
 #include <tripmines>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Tripmines"
@@ -15,6 +17,9 @@ ConVar g_cLongName = null;
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cAmount = null;
+
+ConVar g_cPluginTag = null;
+char g_sPluginTag[64];
 
 public Plugin myinfo =
 {
@@ -38,6 +43,21 @@ public void OnPluginStart()
     g_cPrio = AutoExecConfig_CreateConVar("tripmines_sort_prio", "0", "The sorting priority of the tripmines in the shop menu.");
     g_cAmount = AutoExecConfig_CreateConVar("tripmines_mines", "1", "How mines get the player?", _, true, 1.0);
     TTT_EndConfig();
+}
+
+public void OnConfigsExecuted()
+{
+	g_cPluginTag = FindConVar("ttt_plugin_tag");
+	g_cPluginTag.AddChangeHook(OnConVarChanged);
+	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+}
+
+public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
+{
+	if (convar == g_cPluginTag)
+	{
+		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+	}
 }
 
 public void OnAllPluginsLoaded()

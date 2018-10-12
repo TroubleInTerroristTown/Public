@@ -181,7 +181,7 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
         if (!IsPlayerAlive(client) || IsClientObserver(client))
         {
             char sParam[32];
-            GetMenuItem(menu, param, sParam, sizeof(sParam));
+            menu.GetItem(param, sParam, sizeof(sParam));
 
             if (StrEqual(sParam, "next", false))
             {

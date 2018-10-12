@@ -86,7 +86,7 @@ void SQL_Start()
     {
         LogMessage("Last chance with sqlite. Let me try it!");
 
-        KeyValues kvDatabase = CreateKeyValues("Databases");
+        KeyValues kvDatabase = new KeyValues("Databases");
 
         kvDatabase.SetString("driver", "sqlite");
         kvDatabase.SetString("host", "localhost");

@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-06-11 08:54:50 UTC
+// Date: 2018-07-22 10:23:19 UTC
 // Language: English (en)
 // 
 // To view other translations for this plugin, please visit:
@@ -1102,6 +1102,17 @@
 		"en"		"KOS..."
 	}
 
+	"Place Tripmine"
+	{
+		"en"		"For placing a tripmine, type '/tripmine' into the chat"
+	}
+
+	"Free DNA Scanner left"
+	{
+		"#format"	"{1:d}"
+		"en"		"You used an free dna scanner! {1} uses left."
+	}
+
 	"HUD Health - Invalid"
 	{
 		"en"		"Invalid value"
@@ -1261,13 +1272,13 @@
 	
 	"Bullets: Buy bullets"
 	{
-		"#format"	"{1:d}{2:s}"
+		"#format"	"{1:d},{2:s}"
 		"en"		"You have now {green}{1} {orchid}{2}."
 	}
 	
 	"Bullets: Number bullets"
 	{
-		"#format"	"{1:s}{2:d}{3:d}"
+		"#format"	"{1:s},{2:d},{3:d}"
 		"en"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 

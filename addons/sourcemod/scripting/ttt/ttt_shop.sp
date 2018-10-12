@@ -287,9 +287,9 @@ void AlterCreditsColumn()
     }
 }
 
-public void SQL_AlterCreditsColumn(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_AlterCreditsColumn(Database db, DBResultSet results, const char[] error, int userid)
 {
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         if (StrContains(error, "duplicate column name", false) != -1)
         {
@@ -342,7 +342,7 @@ void LoadClientCredits(int client)
     }
 }
 
-public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, int userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -351,51 +351,54 @@ public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] e
         return;
     }
 
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogError("(SQL_OnClientPostAdminCheck) Query failed: %s", error);
         return;
     }
     else
     {
-        if (!SQL_FetchRow(hndl))
+        if (!results.HasResults)
         {
             g_iCredits[client] = g_cStartCredits.IntValue;
             UpdatePlayer(client);
         }
         else
         {
-            char sCommunityID[64];
-
-            if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+            while (results.FetchRow())
             {
-                LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-                return;
-            }
+                char sCommunityID[64];
 
-            int credits = SQL_FetchInt(hndl, 0);
+                if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+                {
+                    LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+                    return;
+                }
 
-            ConVar cvar = FindConVar("ttt_debug_mode");
-            if (cvar.BoolValue)
-            {
-                LogMessage("Name: %L has %d credits", client, credits);
-            }
+                int credits = results.FetchInt(0);
 
-            if (credits == 0)
-            {
-                g_iCredits[client] = g_cStartCredits.IntValue;
-            }
-            else
-            {
-                g_iCredits[client] = credits;
-            }
+                ConVar cvar = FindConVar("ttt_debug_mode");
+                if (cvar.BoolValue)
+                {
+                    LogMessage("Name: %L has %d credits", client, credits);
+                }
 
-            if (g_cMoneyCredits.BoolValue)
-            {
-                SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
-            }
+                if (credits == 0)
+                {
+                    g_iCredits[client] = g_cStartCredits.IntValue;
+                }
+                else
+                {
+                    g_iCredits[client] = credits;
+                }
 
-            g_bCredits[client] = true;
+                if (g_cMoneyCredits.BoolValue)
+                {
+                    SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
+                }
+
+                g_bCredits[client] = true;
+            }
         }
     }
 }
@@ -443,9 +446,9 @@ void UpdatePlayer(int client)
     }
 }
 
-public void SQL_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
 {
-    if (hndl == null || strlen(error) > 0)
+    if (db == null || strlen(error) > 0)
     {
         LogError("(SQL_UpdatePlayer) Query failed: %s", error);
         return;
@@ -635,7 +638,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
         }
 
         char info[32];
-        GetMenuItem(menu, itemNum, info, sizeof(info));
+        menu.GetItem(itemNum, info, sizeof(info));
 
         ClientBuyItem(client, info, true);
     }

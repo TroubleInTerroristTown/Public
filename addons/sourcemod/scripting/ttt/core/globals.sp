@@ -30,7 +30,9 @@ int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iTeamSelectTime = 0;
 int g_iRoundTime = -1;
 
-Handle g_hGraceTime = null;
+ConVar g_cGraceTime = null;
+ConVar g_cRoundTime = null;
+ConVar g_cFreezeTime = null;
 
 Handle g_hStartTimer = null;
 
@@ -144,10 +146,10 @@ char g_sRadioCMDs[][] =  {
 
 char g_sRemoveEntityList[][] =  {
     "func_bomb_target",
+    "func_buyzone",
     "hostage_entity",
     "func_hostage_rescue",
-    "info_hostage_spawn",
-    "func_buyzone"
+    "info_hostage_spawn"
 };
 
 bool g_bRoundEnding = false;

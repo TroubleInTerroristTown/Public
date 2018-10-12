@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
-
+#undef REQUIRE_PLUGIN
 #include <turret_core>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Turret"

@@ -19,6 +19,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Tripmines remaining: {1}"
+		"de"		"Tripmines verbleibend: {1}"
         	"pt"		"Tripmines restantes: {1}"
 	}
 
