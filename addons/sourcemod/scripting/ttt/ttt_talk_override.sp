@@ -169,26 +169,36 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
     if (TTT_IsClientValid(client))
     {
-        LoopValidClients(i)
+        SetListen(client);
+    }
+}
+
+public void TTT_OnClientGetRole(int client, int role)
+{
+    SetListen(client);
+}
+
+void SetListen(int client)
+{
+    LoopValidClients(i)
+    {
+        if (!IsPlayerAlive(client))
         {
-            if (!IsPlayerAlive(client))
+            if (IsPlayerAlive(i))
             {
-                if (IsPlayerAlive(i))
-                {
-                    SetListenOverride(i, client, Listen_No);
-                    SetListenOverride(client, i, Listen_Yes);
-                }
-                else
-                {
-                    SetListenOverride(i, client, Listen_Yes);
-                    SetListenOverride(client, i, Listen_Yes);
-                }
+                SetListenOverride(i, client, Listen_No);
+                SetListenOverride(client, i, Listen_Yes);
             }
             else
             {
-                SetListenOverride(client, i, Listen_Yes);
                 SetListenOverride(i, client, Listen_Yes);
+                SetListenOverride(client, i, Listen_Yes);
             }
+        }
+        else
+        {
+            SetListenOverride(client, i, Listen_Yes);
+            SetListenOverride(i, client, Listen_Yes);
         }
     }
 }
