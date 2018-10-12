@@ -284,6 +284,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 			giveCredit *= randomFloat;
 			lootedCredits = RoundFloat(giveCredit);
 		}
+		chance[lootchance_credit] *= g_fLootChanceFallOff;
 	}
 	
 	char[][] lootedItems = new char[g_iItemLootMax][16];
@@ -342,10 +343,8 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 				break;
 			}
 		}
+		chance[lootchance_item] *= g_fLootChanceFallOff;
 	}
-	
-	chance[lootchance_credit] *= g_fLootChanceFallOff;
-	chance[lootchance_item] *= g_fLootChanceFallOff;
 	g_PlayerLootChance.SetArray(clientUserId, chance, eLootChance);
 	
 	if (lootedCredits > 0)
