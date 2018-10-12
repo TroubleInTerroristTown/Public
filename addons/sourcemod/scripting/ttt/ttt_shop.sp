@@ -111,7 +111,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
     CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
     CreateNative("TTT_RemoveCustomItem", Native_RemoveCustomItem);
-    CreateNative("TTT_GetItemLong", Native_GetItemLong);
+    CreateNative("TTT_GetItemName", Native_GetItemName);
     CreateNative("TTT_DoesItemExist", Native_DoesItemExist);
 
     CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
@@ -914,7 +914,7 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
     return 0;
 }
 
-public int Native_GetItemLong(Handle plugin, int numParams)
+public int Native_GetItemName(Handle plugin, int numParams)
 {
 	char itemshort[16];
 	int size = GetNativeCell(3);
@@ -946,7 +946,7 @@ public int Native_DoesItemExist(Handle plugin, int numParams)
 		}	
 	}
 	
-	return view_as<int>(itemExists);
+	return itemExists;
 }
 
 public void TTT_OnClientGetRole(int client, int role)

@@ -92,7 +92,7 @@ native int TTT_GetCustomItemRole(const char[] item);
  *
  * @return                  Returns true on success. Will return false if the item is no longer registered in shop or native failed to write to buffer.
  */
-native bool TTT_GetItemLong(const char[] itemshort, char[] buffer, int size);
+native bool TTT_GetItemName(const char[] itemshort, char[] buffer, int size);
 
 /*
  * Checks whether or not item exists.

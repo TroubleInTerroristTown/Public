@@ -79,24 +79,24 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
 	
-	g_cv_EnableCreditLoot = CreateConVar("ttt_enable_loot_credit", "1", "Enables players to loot credits from dead bodies.");
-	g_cv_EnableItemLoot = CreateConVar("ttt_enable_loot_item", "1", "Enables players to loot items from dead bodies.");
-	g_cv_CreditLootMax = CreateConVar("ttt_loot_credit_max", "0", "The amount of credits a player can loot. 0 for unlimited.");
-	g_cv_ItemLootMax = CreateConVar("ttt_loot_item_max", "0", "The amount of items a player can loot per dead body. Duplicates count as an item. 0 for unlimited.");	
-	g_cv_CreditLootChance = CreateConVar("ttt_loot_credit_chance", "0.2", "Chance to loot credits. Default: 0.2 meaning 20%.");
-	g_cv_ItemLootChance = CreateConVar("ttt_loot_item_chance", "0.3", "Chance to loot items. Default: 0.3 meaning 30%.");
-	g_cv_LootChanceFallOff = CreateConVar("ttt_loot_chance_falloff", "0.5", 
+	g_cv_EnableCreditLoot = CreateConVar("inventory_enable_loot_credit", "1", "Enables players to loot credits from dead bodies.");
+	g_cv_EnableItemLoot = CreateConVar("inventory_enable_loot_item", "1", "Enables players to loot items from dead bodies.");
+	g_cv_CreditLootMax = CreateConVar("inventory_loot_credit_max", "0", "The amount of credits a player can loot. 0 for unlimited.");
+	g_cv_ItemLootMax = CreateConVar("inventory_loot_item_max", "0", "The amount of items a player can loot per dead body. Duplicates count as an item. 0 for unlimited.");	
+	g_cv_CreditLootChance = CreateConVar("inventory_loot_credit_chance", "0.2", "Chance to loot credits. Default: 0.2 meaning 20%.");
+	g_cv_ItemLootChance = CreateConVar("inventory_loot_item_chance", "0.3", "Chance to loot items. Default: 0.3 meaning 30%.");
+	g_cv_LootChanceFallOff = CreateConVar("inventory_loot_chance_falloff", "0.5", 
 	"Upon successful looting, the ratio at which your next loot chance is reduced by. Default: 0.5 meaning loot chance is reduced by 50%.");
 	
 	RegConsoleCmd("sm_ttt_inventory", Command_Inventory);
 	
-	HookConVarChange(g_cv_EnableCreditLoot, OnConvarChanged);
-	HookConVarChange(g_cv_EnableItemLoot, OnConvarChanged);
-	HookConVarChange(g_cv_CreditLootMax, OnConvarChanged);
-	HookConVarChange(g_cv_ItemLootMax, OnConvarChanged);
-	HookConVarChange(g_cv_CreditLootChance, OnConvarChanged);
-	HookConVarChange(g_cv_ItemLootChance, OnConvarChanged);
-	HookConVarChange(g_cv_LootChanceFallOff, OnConvarChanged);
+	g_cv_EnableCreditLoot.AddChangeHook(OnConvarChanged);
+	g_cv_EnableItemLoot.AddChangeHook(OnConvarChanged);
+	g_cv_CreditLootMax.AddChangeHook(OnConvarChanged);
+	g_cv_ItemLootMax.AddChangeHook(OnConvarChanged);
+	g_cv_CreditLootChance.AddChangeHook(OnConvarChanged);
+	g_cv_ItemLootChance.AddChangeHook(OnConvarChanged);
+	g_cv_LootChanceFallOff.AddChangeHook(OnConvarChanged);
 	
 	HookEvent("player_death", OnPlayerDeath_Pre, EventHookMode_Pre);
 }
@@ -125,7 +125,7 @@ public Action Command_Inventory(int client, int args)
 	
 	if (!TTT_IsRoundActive())
 	{
-		ReplyToCommand(client, "%T", "RoundInactive");
+		ReplyToCommand(client, "%T", "RoundInactive", client);
 		return Plugin_Handled;
 	}
 	
@@ -148,7 +148,7 @@ public Action Command_Inventory(int client, int args)
 		GetTrieValue(inventoryListing, itemShort, amount);
 		
 		char itemLong[32];
-		if (TTT_GetItemLong(itemShort, itemLong, sizeof(itemLong)))
+		if (TTT_GetItemName(itemShort, itemLong, sizeof(itemLong)))
 		{
 			char display[64];
 			char szAmount[4];
@@ -158,10 +158,10 @@ public Action Command_Inventory(int client, int args)
 			inventoryMenu.AddItem(itemShort, display);
 		}
 	}
-	inventoryMenu.SetTitle("%T", "InventoryTitle");
+	inventoryMenu.SetTitle("%T", "InventoryTitle", client);
 	inventoryMenu.Display(client, MENU_TIME_FOREVER);
 	
-	CloseHandle(inventoryListing);
+	delete inventoryListing;
 	
 	return Plugin_Handled;
 }
@@ -179,7 +179,7 @@ public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int i
 			}
 			
 			char info[16];
-			GetMenuItem(menu, itemNum, info, sizeof(info));
+			menu.GetItem(itemNum, info, sizeof(info));
 			
 			Call_StartForward(g_hOnInventoryMenuItemSelect);
 			Call_PushCell(client);
@@ -255,85 +255,88 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 	}
 	
 	float randomFloat = GetRandomFloat();
-	//Loot Credit
-	if (randomFloat < chance[lootchance_credit])
+	if (g_bCreditLoot)
 	{
-		randomFloat = GetRandomFloat();
-		float giveCredit;
-		if (g_iCreditLootMax == 0)
+		//Loot Credit
+		if (randomFloat < chance[lootchance_credit])
 		{
-			giveCredit = view_as<float>(inventory[availableCredits]);
-		}
-		else if (g_iCreditLootMax > 0)
-		{
-			if (inventory[availableCredits] >= g_iCreditLootMax)
-			{
-				giveCredit = view_as<float>(g_iCreditLootMax);
-			}
-			else
+			randomFloat = GetRandomFloat();
+			float giveCredit;
+			if (g_iCreditLootMax == 0)
 			{
 				giveCredit = view_as<float>(inventory[availableCredits]);
 			}
+			else if (g_iCreditLootMax > 0)
+			{
+				if (inventory[availableCredits] >= g_iCreditLootMax)
+				{
+					giveCredit = view_as<float>(g_iCreditLootMax);
+				}
+				else
+				{
+					giveCredit = view_as<float>(inventory[availableCredits]);
+				}
+			}
+			giveCredit *= randomFloat;
+			lootedCredits = RoundFloat(giveCredit);
 		}
-		
-		giveCredit *= randomFloat;
-		lootedCredits = RoundFloat(giveCredit);
 	}
 	
-	//Loot Items
-	randomFloat = GetRandomFloat();
 	char[][] lootedItems = new char[g_iItemLootMax][16];
 	int itemsLooted = 0;
-	ArrayList lootItemList = CreateArray(16);
-	if (randomFloat < chance[lootchance_item])
+	if (g_bItemLoot)
 	{
-		StringMapSnapshot items = invItems.Snapshot();
-		for (int i = 0; i < items.Length; i++)
+		//Loot Items
+		randomFloat = GetRandomFloat();
+		ArrayList lootItemList = CreateArray(16);
+		if (randomFloat < chance[lootchance_item])
 		{
-			char key[16];
-			items.GetKey(i, key, sizeof(key));
-			
-			int amount;
-			invItems.GetValue(key, amount);
-			
-			for (int j = 0; j < amount; j++)
+			StringMapSnapshot items = invItems.Snapshot();
+			for (int i = 0; i < items.Length; i++)
 			{
-				lootItemList.PushString(key);
-			}
-		}
-		
-		float extraItemChance = chance[lootchance_item] * g_fLootChanceFallOff;
-		int maxLoots = g_iItemLootMax;
-		ArrayList itemIndex = CreateArray();
-		if (lootItemList.Length <= g_iItemLootMax)
-		{
-			maxLoots = lootItemList.Length;
-		}
-		
-		for (; itemsLooted < maxLoots; itemsLooted++) 
-		{
-			char itembuf[16];
-			int randomIndex = GetRandomInt(0, lootItemList.Length - 1);
-			if (itemIndex.FindValue(randomIndex) != -1)
-			{
-				itemsLooted--;
-				continue;
+				char key[16];
+				items.GetKey(i, key, sizeof(key));
+				
+				int amount;
+				invItems.GetValue(key, amount);
+				
+				for (int j = 0; j < amount; j++)
+				{
+					lootItemList.PushString(key);
+				}
 			}
 			
-			lootItemList.GetString(randomIndex, itembuf, sizeof(itembuf));
-			strcopy(lootedItems[itemsLooted], 16, itembuf);
-			itemIndex.Push(randomIndex);
-			
-			randomFloat = GetRandomFloat();
-			if (randomFloat < extraItemChance)
+			float extraItemChance = chance[lootchance_item] * g_fLootChanceFallOff;
+			int maxLoots = g_iItemLootMax;
+			ArrayList itemIndex = CreateArray();
+			if (lootItemList.Length <= g_iItemLootMax)
 			{
-				extraItemChance *= g_fLootChanceFallOff;
-				continue;
+				maxLoots = lootItemList.Length;
 			}
 			
-			break;
+			for (; itemsLooted < maxLoots; itemsLooted++) 
+			{
+				char itembuf[16];
+				int randomIndex = GetRandomInt(0, lootItemList.Length - 1);
+				if (itemIndex.FindValue(randomIndex) != -1)
+				{
+					itemsLooted--;
+					continue;
+				}
+				
+				lootItemList.GetString(randomIndex, itembuf, sizeof(itembuf));
+				strcopy(lootedItems[itemsLooted], 16, itembuf);
+				itemIndex.Push(randomIndex);
+				
+				randomFloat = GetRandomFloat();
+				if (randomFloat < extraItemChance)
+				{
+					extraItemChance *= g_fLootChanceFallOff;
+					continue;
+				}
+				break;
+			}
 		}
-		
 	}
 	
 	if (lootedCredits > 0)
@@ -396,7 +399,7 @@ public int Native_IsItemInInventory(Handle plugin, int numparams)
 	
 	GetNativeString(2, itemshort, sizeof(itemshort));
 	
-	return view_as<int>(IsItemInInventory(client, itemshort));
+	return IsItemInInventory(client, itemshort);
 }
 
 public Action OnPlayerDeath_Pre(Event event, const char[] name, bool dontBroadcast)
@@ -412,7 +415,7 @@ public Action OnPlayerDeath_Pre(Event event, const char[] name, bool dontBroadca
 	}
 	
 	int client = GetClientOfUserId(iUserId);
-	if (!client)
+	if (!TTT_IsClientValid(client))
 	{
 		return Plugin_Continue;
 	}
