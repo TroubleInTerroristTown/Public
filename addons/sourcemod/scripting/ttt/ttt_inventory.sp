@@ -189,7 +189,7 @@ public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int i
 		
 		case MenuAction_End:
 		{
-			CloseHandle(menu);
+			delete menu;
 		}
 	}
 }
@@ -657,7 +657,7 @@ void ClearInventory(const char[] useridkey)
 		return;
 	}
 	
-	CloseHandle(inventory[hInventoryItems]);
+	delete inventory[hInventoryItems];
 	g_PlayerInventory.Remove(useridkey);
 }
 
