@@ -310,6 +310,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 					lootItemList.PushString(key);
 				}
 			}
+			delete items;
 			
 			float extraItemChance = chance[lootchance_item] * g_fLootChanceFallOff;
 			int maxLoots = g_iItemLootMax;
@@ -341,7 +342,6 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 				}
 				break;
 			}
-			delete items;
 		}
 	}
 	
