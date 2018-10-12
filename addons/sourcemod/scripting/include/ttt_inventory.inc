@@ -46,7 +46,7 @@ native bool TTT_RemoveInventoryItem(int client, const char[] itemshort, int amou
 native bool TTT_IsItemInInventory(int client, const char[] itemshort);
 
 /*
- * Retrieves a map of the inventory items of a player.
+ * Retrieves a map of the inventory items of a player. Note: Close Snapshot after use.
  *
  * @param client        Client index.
  *
