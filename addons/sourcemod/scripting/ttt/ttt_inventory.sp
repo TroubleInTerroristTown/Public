@@ -256,7 +256,6 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 	{
 		chance[lootchance_credit] = g_fCreditLootChance;
 		chance[lootchance_item] = g_fItemLootChance;
-		g_PlayerLootChance.SetArray(clientUserId, chance, eLootChance);
 	}
 	
 	float randomFloat = GetRandomFloat();
@@ -344,6 +343,10 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 			}
 		}
 	}
+	
+	chance[lootchance_credit] *= g_fLootChanceFallOff;
+	chance[lootchance_item] *= g_fLootChanceFallOff;
+	g_PlayerLootChance.SetArray(clientUserId, chance, eLootChance);
 	
 	if (lootedCredits > 0)
 	{
