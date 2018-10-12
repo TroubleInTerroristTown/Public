@@ -293,6 +293,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 	{
 		//Loot Items
 		randomFloat = GetRandomFloat();
+		int clientRole = TTT_GetClientRole(client);
 		ArrayList lootItemList = CreateArray(16);
 		if (randomFloat < chance[lootchance_item])
 		{
@@ -307,7 +308,11 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 				
 				for (int j = 0; j < amount; j++)
 				{
-					lootItemList.PushString(key);
+					int itemRole = TTT_GetCustomItemRole(key);
+					if (itemRole == clientRole || itemRole == TTT_TEAM_UNASSIGNED)
+					{
+						lootItemList.PushString(key);
+					}
 				}
 			}
 			delete items;
