@@ -1476,13 +1476,13 @@ bool GetItemLong(const char[] itemshort, char[] buffer, int size)
 	any eItem[Item];
 	for (int i = 0; i < g_aCustomItems.Length; i++)
 	{
+		g_aCustomItems.GetArray(i, eItem[0]);
 		if (!StrEqual(itemshort, eItem[Short]))
 		{
 			continue;
 		}
 		
-		g_aCustomItems.GetArray(i, eItem[0]);
-		strcopy(buffer, size, itemshort);
+		strcopy(buffer, size, eItem[Long]);
 		return true;
 	}
 	
