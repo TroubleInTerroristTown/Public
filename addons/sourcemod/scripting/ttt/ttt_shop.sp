@@ -72,8 +72,6 @@ Handle g_hOnItemPurchase = null;
 Handle g_hOnCreditsGiven_Pre = null;
 Handle g_hOnCreditsGiven = null;
 Handle g_hOnShopReady = null;
-Handle g_hOnInventoryReady = null;
-Handle g_hOnInventoryMenuItemSelect = null;
 
 Handle g_hReopenCookie = null;
 
@@ -100,14 +98,6 @@ enum Item
     Sort
 }
 
-//Contains the credits and inventory items of a player.
-/*enum Inventory
-{
-	StringMap:hInvItems, //Key:Itemshort, Value:AmountofItem
-}*/
-
-StringMap playerInventory[MAXPLAYERS];
-
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     g_hOnItemPurchased = CreateGlobalForward("TTT_OnItemPurchased", ET_Hook, Param_Cell, Param_String, Param_Cell, Param_Cell);
@@ -115,24 +105,20 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
-    g_hOnInventoryReady = CreateGlobalForward("TTT_OnInventoryReady", ET_Ignore);
-    g_hOnInventoryMenuItemSelect = CreateGlobalForward("TTT_OnInventoryMenuItemSelect", ET_Ignore, Param_Cell, Param_String);
 
     CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
     CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
     CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
     CreateNative("TTT_RemoveCustomItem", Native_RemoveCustomItem);
+    CreateNative("TTT_GetItemLong", Native_GetItemLong);
+    CreateNative("TTT_DoesItemExist", Native_DoesItemExist);
 
     CreateNative("TTT_GetClientCredits", Native_GetClientCredits);
     CreateNative("TTT_SetClientCredits", Native_SetClientCredits);
     CreateNative("TTT_AddClientCredits", Native_AddClientCredits);
 
     CreateNative("TTT_GiveClientItem", Native_GiveClientItem);
-    
-    CreateNative("TTT_AddInventoryItem", Native_AddInventoryItem);
-    CreateNative("TTT_RemoveInventoryItem", Native_RemoveInventoryItem);
-    CreateNative("TTT_GetInventoryListing", Native_GetInventoryListing);
 
     RegPluginLibrary("ttt_shop");
 
@@ -151,7 +137,6 @@ public void OnPluginStart()
     RegConsoleCmd("sm_setcredits", Command_SetCredits);
     RegConsoleCmd("sm_resetitems", Command_ResetItems);
     RegConsoleCmd("sm_listitems", Command_ListItems);
-    RegConsoleCmd("sm_ttt_inventory", Command_Inventory);
 
     AddCommandListener(Command_Say, "say");
     AddCommandListener(Command_Say, "say_team");
@@ -639,83 +624,6 @@ public Action Command_ReopenShop(int client, int args)
     return Plugin_Continue;
 }
 
-public Action Command_Inventory(int client, int args)
-{
-	if (!TTT_IsClientValid(client))
-	{
-		return Plugin_Handled;
-	}
-	
-	if (!TTT_IsRoundActive())
-	{
-		ReplyToCommand(client, "%T", "RoundInactive");
-		return Plugin_Handled;
-	}
-	
-	Menu inventoryMenu = CreateMenu(Menu_InventoryHandler);
-	StringMap playerInv = playerInventory[client];
-	if (playerInv == null)
-	{
-		LogToFile(g_sLog, "Function: Command_Inventory - Inventory not intialised for client: %d.", client);
-		return Plugin_Handled;
-	}
-	
-	//any invItem[InventoryItem];
-	
-	StringMapSnapshot inventoryListing = playerInv.Snapshot();
-	for (int i = 0; i < inventoryListing.Length; i++)
-	{
-		char itemShort[16];
-		inventoryListing.GetKey(i, itemShort, sizeof(itemShort));
-		
-		int amount;
-		GetTrieValue(inventoryListing, itemShort, amount);
-		
-		char itemLong[32];
-		if (GetItemLong(itemShort, itemLong, sizeof(itemLong)))
-		{
-			char display[64];
-			char szAmount[4];
-			
-			IntToString(amount, szAmount, sizeof(szAmount));
-			Format(display, sizeof(display), "%s (x%s)", itemLong, szAmount);
-			inventoryMenu.AddItem(itemShort, display);
-		}
-	}
-	inventoryMenu.SetTitle("%T", "InventoryTitle");
-	inventoryMenu.Display(client, MENU_TIME_FOREVER);
-	
-	return Plugin_Handled;
-}
-
-public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int itemNum)
-{
-	switch (action)
-	{
-		case MenuAction_Select:
-		{
-			if (!IsPlayerAlive(client))
-			{
-				CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
-				return;
-			}
-			
-			char info[16];
-			GetMenuItem(menu, itemNum, info, sizeof(info));
-			
-			Call_StartForward(g_hOnInventoryMenuItemSelect);
-			Call_PushCell(client);
-			Call_PushString(info);
-			Call_Finish();
-		}
-		
-		case MenuAction_End:
-		{
-			CloseHandle(menu);
-		}
-	}
-}
-
 public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNum)
 {
     if (action == MenuAction_Select)
@@ -1003,6 +911,41 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
     return 0;
 }
 
+public int Native_GetItemLong(Handle plugin, int numParams)
+{
+	char itemshort[16];
+	int size = GetNativeCell(3);
+	GetNativeString(1, itemshort, sizeof(itemshort));
+	
+	char[] buffer = new char[size];
+	if (GetItemLong(itemshort, buffer, size) && SetNativeString(2, buffer, size) == SP_ERROR_NONE)
+	{
+		return 1;
+	}
+	
+	return 0;
+}
+
+public int Native_DoesItemExist(Handle plugin, int numParams)
+{
+	char itemshort[16];
+	GetNativeString(1, itemshort, sizeof(itemshort));
+	
+	bool itemExists = false;
+	any iItem[Item];
+	for (int i = 0; i < g_aCustomItems.Length; i++)
+	{
+		g_aCustomItems.GetArray(i, iItem[0]);
+		if (StrEqual(iItem[Short], itemshort))
+		{
+			itemExists = true;
+			break;
+		}	
+	}
+	
+	return view_as<int>(itemExists);
+}
+
 public void TTT_OnClientGetRole(int client, int role)
 {
     if (g_cCreditsTimer.BoolValue)
@@ -1139,22 +1082,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         subtractCredits(iAttacker, g_cCreditsDD.IntValue, true);
     }
-}
-
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
-{
-	//Reset Inventories
-	LoopValidClients(client)
-	{
-		if (playerInventory[client] != null)
-		{
-			CloseHandle(playerInventory[client]);
-		}
-		
-		playerInventory[client] = CreateTrie();
-		Call_StartForward(g_hOnInventoryReady);
-		Call_Finish();
-	}
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
@@ -1583,132 +1510,4 @@ int GiveClientItem(int client, char[] sItem)
     }
 
     return false;
-}
-
-bool IsItemInInventory(int client, const char[] itemshort)
-{
-	StringMap InventoryMap = playerInventory[client];
-	if (InventoryMap == null)
-	{
-		LogToFile(g_sLog, "Function: IsItemInInventory - Inventory not intialised for client: %d.", client);
-		return false;
-	}
-	
-	int amount;
-	bool exists = InventoryMap.GetValue(itemshort, amount);
-	
-	if (exists)
-	{
-		return true;
-	}
-	
-	return false;
-}
-
-bool AddInventoryItem(int client, const char[] itemshort, int quantity)
-{
-	if (!TTT_IsClientValid(client))
-	{
-		return false;
-	}
-	
-	bool itemExists = false;
-	any iItem[Item];
-	for (int i = 0; i < g_aCustomItems.Length; i++)
-	{
-		g_aCustomItems.GetArray(i, iItem[0]);
-		if (StrEqual(iItem[Short], itemshort))
-		{
-			itemExists = true;
-			break;
-		}	
-	}
-	
-	if (!itemExists)
-	{
-		return false;
-	}
-	
-	bool invItemExists = IsItemInInventory(client, itemshort);
-	if (invItemExists)
-	{
-		int amount;
-		playerInventory[client].GetValue(itemshort, amount);
-		amount += quantity;
-		playerInventory[client].SetValue(itemshort, amount);
-		
-		return true;
-	}
-	
-	return playerInventory[client].SetValue(itemshort, quantity);
-}
-
-bool RemoveInventoryItem(int client, const char[] itemshort, bool all)
-{
-	bool invItemIndex = IsItemInInventory(client, itemshort);
-	if (!invItemIndex)
-	{
-		return false;
-	}
-	
-	if (!TTT_IsClientValid(client))
-	{
-		return false;
-	}
-	
-	if (all)
-	{
-		return playerInventory[client].Remove(itemshort);
-	}
-	else
-	{
-		int amount;
-		playerInventory[client].GetValue(itemshort, amount);
-		amount--;
-		if (amount <= 0)
-		{
-			return playerInventory[client].Remove(itemshort);
-		}
-		
-		return playerInventory[client].SetValue(itemshort, amount);
-	}
-}
-
-public int Native_AddInventoryItem(Handle plugin, int numparams)
-{
-	char itemshort[16];
-	int client = GetNativeCell(1);
-	int quantity = GetNativeCell(3);
-	GetNativeString(2, itemshort, sizeof(itemshort));
-	
-	if (quantity <= 0)
-	{
-		quantity = 1;
-	}
-	
-	if (!AddInventoryItem(client, itemshort, quantity))
-	{
-		return 0;
-	}
-	else
-	{
-		return 1;
-	}
-}
-
-public int Native_RemoveInventoryItem(Handle plugin, int numparams)
-{
-	char itemshort[16];
-	bool all = GetNativeCell(3);
-	int client = GetNativeCell(1);
-	GetNativeString(2, itemshort, sizeof(itemshort));
-	
-	return RemoveInventoryItem(client, itemshort, all);
-}
-
-public int Native_GetInventoryListing(Handle plugin, int numparams)
-{
-	int client = GetNativeCell(1);
-	
-	return view_as<int>(playerInventory[client].Snapshot());
 }

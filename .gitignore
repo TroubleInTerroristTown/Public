@@ -2,3 +2,4 @@
 addons/sourcemod/scripting/.atom-build.json
 .vscode/
 addons/sourcemod/scripting/tests/logTest.sp
+addons/sourcemod/scripting/tests/ttt_inventory_test.sp

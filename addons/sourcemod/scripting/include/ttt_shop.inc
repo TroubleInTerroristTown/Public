@@ -34,16 +34,6 @@ forward void TTT_OnShopReady();
 forward void TTT_OnCreditsChanged(int client, int &credits);
 
 /*
- * Called when inventory has been reinitialised after the round has started.
- */
-forward void TTT_OnInventoryReady();
-
-/*
- * Called when a player selects an item on their inventory. Expected behaviour is to use the item.
- */
-forward void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort);
-
-/*
  * Called before a players credits are modified.
  *
  * @param client            Client index.
@@ -94,6 +84,26 @@ native int TTT_GetCustomItemPrice(const char[] item);
 native int TTT_GetCustomItemRole(const char[] item);
 
 /*
+ * Gets the display name of the item.
+ *
+ * @param itemshort         Unique name of item.
+ * @param buffer            Buffer to store display name.
+ * @param size              Size of buffer.
+ *
+ * @return                  Returns true on success. Will return false if the item is no longer registered in shop or native failed to write to buffer.
+ */
+native bool TTT_GetItemLong(const char[] itemshort, char[] buffer, int size);
+
+/*
+ * Checks whether or not item exists.
+ *
+ * @param itemshort         Unique name of item.
+ *
+ * @return                  Returns true if item exists, otherwise false.
+ */
+native bool TTT_DoesItemExist(const char[] itemshort);
+
+/*
  * Retrieve a client's credits.
  *
  * @param client            Client index.
@@ -122,34 +132,3 @@ native int TTT_AddClientCredits(int client, int credits);
  * @return                    True item found/valid, false item not found
  */
 native bool TTT_GiveClientItem(int client, const char[] item);
-
-/*
- * Adds an item in a player's inventory.
- * 
- * @param client        Client index.
- * @param itemshort     Unique name for item.
- * @param amount        Quantity of item.
- * 
- * @return              Returns item index in inventory if registered successfully or item already exists, else -1 if unique item does not exist in shop or client not in game.
- */
-native bool TTT_AddInventoryItem(int client, const char[] itemshort, int amount = 1);
-
-/*
- * Removes an item in a player's inventory.
- *
- * @param client        Client index.
- * @param itemshort     Unique name of item.
- * @param all           If true, removes all of the item from inventory, otherwise will only remove one instance of it.
- *
- * @return              Returns true on success or false if item does not exist in inventory or client not in game.
- */
-native bool TTT_RemoveInventoryItem(int client, const char[] itemshort, bool all = true);
-
-/*
- * Retrieves a map of the inventory items of a player.
- *
- * @param client        Client index.
- *
- * @return              Snapshot of the client's inventory.
- */
-native StringMapSnapshot TTT_GetInventoryListing(int client);
