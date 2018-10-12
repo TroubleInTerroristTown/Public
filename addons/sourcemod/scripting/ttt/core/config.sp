@@ -142,6 +142,7 @@ void SetupConfig()
     g_cShowURL = AutoExecConfig_CreateConVar("ttt_show_url", "1", "Show the URL when a player wants to read the rules? Valve removed the MOTD and Popup-function, so that could be useful", _, true, 0.0, true, 1.0);
     g_cVersionCheck = AutoExecConfig_CreateConVar("ttt_version_check", "1", "Enable version check?", _, true, 0.0, true, 1.0);
     g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message", "1", "This prints a version message to all players on every spawn", _, true, 0.0, true, 1.0);
+    g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_data", "1", "Send the Server Port to csgottt.com, server will be listed on csgottt.com", _, true, 0.0, true, 1.0);
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);
