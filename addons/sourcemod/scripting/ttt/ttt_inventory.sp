@@ -61,7 +61,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-	g_PlayerInventory = CreateTrie();
+	g_PlayerInventory = new StringMap();
 	
 	g_hOnInventoryReady = CreateGlobalForward("TTT_OnInventoryReady", ET_Ignore);
 	g_hOnInventoryMenuItemSelect = CreateGlobalForward("TTT_OnInventoryMenuItemSelect", ET_Ignore, Param_Cell, Param_String);
@@ -79,14 +79,17 @@ public void OnPluginStart()
 	TTT_IsGameCSGO();
 	LoadTranslations("ttt.phrases");
 	
-	g_cv_EnableCreditLoot = CreateConVar("inventory_enable_loot_credit", "1", "Enables players to loot credits from dead bodies.");
-	g_cv_EnableItemLoot = CreateConVar("inventory_enable_loot_item", "1", "Enables players to loot items from dead bodies.");
-	g_cv_CreditLootMax = CreateConVar("inventory_loot_credit_max", "0", "The amount of credits a player can loot. 0 for unlimited.");
-	g_cv_ItemLootMax = CreateConVar("inventory_loot_item_max", "0", "The amount of items a player can loot per dead body. Duplicates count as an item. 0 for unlimited.");	
-	g_cv_CreditLootChance = CreateConVar("inventory_loot_credit_chance", "0.2", "Chance to loot credits. Default: 0.2 meaning 20%.");
-	g_cv_ItemLootChance = CreateConVar("inventory_loot_item_chance", "0.3", "Chance to loot items. Default: 0.3 meaning 30%.");
-	g_cv_LootChanceFallOff = CreateConVar("inventory_loot_chance_falloff", "0.5", 
+	TTT_StartConfig("inventory");
+	CreateConVar("ttt2_inventory_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cv_EnableCreditLoot = AutoExecConfig_CreateConVar("inventory_enable_loot_credit", "1", "Enables players to loot credits from dead bodies.");
+	g_cv_EnableItemLoot = AutoExecConfig_CreateConVar("inventory_enable_loot_item", "1", "Enables players to loot items from dead bodies.");
+	g_cv_CreditLootMax = AutoExecConfig_CreateConVar("inventory_loot_credit_max", "0", "The amount of credits a player can loot. 0 for unlimited.");
+	g_cv_ItemLootMax = AutoExecConfig_CreateConVar("inventory_loot_item_max", "0", "The amount of items a player can loot per dead body. Duplicates count as an item. 0 for unlimited.");	
+	g_cv_CreditLootChance = AutoExecConfig_CreateConVar("inventory_loot_credit_chance", "0.2", "Chance to loot credits. Default: 0.2 meaning 20%.");
+	g_cv_ItemLootChance = AutoExecConfig_CreateConVar("inventory_loot_item_chance", "0.3", "Chance to loot items. Default: 0.3 meaning 30%.");
+	g_cv_LootChanceFallOff = AutoExecConfig_CreateConVar("inventory_loot_chance_falloff", "0.5", 
 	"Upon successful looting, the ratio at which your next loot chance is reduced by. Default: 0.5 meaning loot chance is reduced by 50%.");
+	TTT_EndConfig();
 	
 	RegConsoleCmd("sm_ttt_inventory", Command_Inventory);
 	
@@ -213,6 +216,8 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 	
 	Call_StartForward(g_hOnInventoryReady);
 	Call_Finish();
+	
+	delete inventories;
 }
 
 public Action TTT_OnBodyCheck(int client, int[] ragdoll)
@@ -336,6 +341,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 				}
 				break;
 			}
+			delete items;
 		}
 	}
 	
@@ -635,7 +641,7 @@ void CreateNewInventory(int client)
 	any newInventory[eInventory];
 	newInventory[userid] = GetClientUserId(client);
 	newInventory[availableCredits] = 0;
-	newInventory[hInventoryItems] = CreateTrie();
+	newInventory[hInventoryItems] = new StringMap();
 	
 	char key[16];
 	IntToString(newInventory[userid], key, sizeof(key));
