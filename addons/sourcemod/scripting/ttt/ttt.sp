@@ -2191,7 +2191,7 @@ public Action Command_RSlays(int client, int args)
     {
         int target = target_list[i];
 
-        if (target == -1)
+        if (target == -1 || !TTT_IsClientValid(target))
         {
             CReplyToCommand(client, "Invalid target");
             return Plugin_Handled;
@@ -2265,7 +2265,7 @@ public Action Command_Respawn(int client, int args)
 
         if (TTT_IsPlayerAlive(target))
         {
-            CReplyToCommand(client, "%T", "Respawn: Must Dead", client);
+            CReplyToCommand(client, "%T", "Respawn: Must Dead", client, target);
             return Plugin_Handled;
         }
 
