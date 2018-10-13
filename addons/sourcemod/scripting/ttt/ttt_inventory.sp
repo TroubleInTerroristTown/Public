@@ -17,38 +17,19 @@ enum eInventory
 	StringMap:hInventoryItems
 }
 
-enum eLootChance
-{
-	Float:lootchance_credit,
-	Float:lootchance_item
-}
-
-bool g_bCreditLoot;
-bool g_bItemLoot;
+bool g_bCreditLoot = false;
+bool g_bItemLoot = false;
 
 char g_szPluginTag[64];
-
-float g_fCreditLootChance;
-float g_fItemLootChance;
-float g_fLootChanceFallOff;
-
-int g_iCreditLootMax;
-int g_iItemLootMax;
 
 ConVar g_cv_PluginTag = null;
 ConVar g_cv_EnableCreditLoot = null;
 ConVar g_cv_EnableItemLoot = null;
-ConVar g_cv_CreditLootMax = null;
-ConVar g_cv_ItemLootMax = null;
-ConVar g_cv_CreditLootChance = null;
-ConVar g_cv_ItemLootChance = null;
-ConVar g_cv_LootChanceFallOff = null;
 
 Handle g_hOnInventoryReady = null;
 Handle g_hOnInventoryMenuItemSelect = null;
 
 StringMap g_PlayerInventory = null;
-StringMap g_PlayerLootChance = null;
 
 public Plugin myinfo =
 {
@@ -83,36 +64,20 @@ public void OnPluginStart()
 	CreateConVar("ttt2_inventory_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 	g_cv_EnableCreditLoot = AutoExecConfig_CreateConVar("inventory_enable_loot_credit", "1", "Enables players to loot credits from dead bodies.");
 	g_cv_EnableItemLoot = AutoExecConfig_CreateConVar("inventory_enable_loot_item", "1", "Enables players to loot items from dead bodies.");
-	g_cv_CreditLootMax = AutoExecConfig_CreateConVar("inventory_loot_credit_max", "0", "The amount of credits a player can loot. 0 for unlimited.");
-	g_cv_ItemLootMax = AutoExecConfig_CreateConVar("inventory_loot_item_max", "0", "The amount of items a player can loot per dead body. Duplicates count as an item. 0 for unlimited.");	
-	g_cv_CreditLootChance = AutoExecConfig_CreateConVar("inventory_loot_credit_chance", "0.2", "Chance to loot credits. Default: 0.2 meaning 20%.");
-	g_cv_ItemLootChance = AutoExecConfig_CreateConVar("inventory_loot_item_chance", "0.3", "Chance to loot items. Default: 0.3 meaning 30%.");
-	g_cv_LootChanceFallOff = AutoExecConfig_CreateConVar("inventory_loot_chance_falloff", "0.5", 
-	"Upon successful looting, the ratio at which your next loot chance is reduced by. Default: 0.5 meaning loot chance is reduced by 50%.");
 	TTT_EndConfig();
 	
 	RegConsoleCmd("sm_ttt_inventory", Command_Inventory);
 	
 	g_cv_EnableCreditLoot.AddChangeHook(OnConvarChanged);
 	g_cv_EnableItemLoot.AddChangeHook(OnConvarChanged);
-	g_cv_CreditLootMax.AddChangeHook(OnConvarChanged);
-	g_cv_ItemLootMax.AddChangeHook(OnConvarChanged);
-	g_cv_CreditLootChance.AddChangeHook(OnConvarChanged);
-	g_cv_ItemLootChance.AddChangeHook(OnConvarChanged);
-	g_cv_LootChanceFallOff.AddChangeHook(OnConvarChanged);
 	
 	HookEvent("player_death", OnPlayerDeath_Pre, EventHookMode_Pre);
 }
 
 public void OnConfigsExecuted()
 {
-	g_bCreditLoot = GetConVarBool(g_cv_EnableCreditLoot);
-	g_bItemLoot = GetConVarBool(g_cv_EnableItemLoot);
-	g_iCreditLootMax = GetConVarInt(g_cv_CreditLootMax);
-	g_iItemLootMax = GetConVarInt(g_cv_ItemLootMax);
-	g_fCreditLootChance = GetConVarFloat(g_cv_CreditLootChance);
-	g_fItemLootChance = GetConVarFloat(g_cv_ItemLootChance);
-	g_fLootChanceFallOff = GetConVarFloat(g_cv_LootChanceFallOff);
+	g_bCreditLoot = g_cv_EnableCreditLoot.BoolValue;
+	g_bItemLoot = g_cv_EnableItemLoot.BoolValue;
 	
 	g_cv_PluginTag = FindConVar("ttt_plugin_tag");
 	g_cv_PluginTag.AddChangeHook(OnConvarChanged);
@@ -132,7 +97,7 @@ public Action Command_Inventory(int client, int args)
 		return Plugin_Handled;
 	}
 	
-	Menu inventoryMenu = CreateMenu(Menu_InventoryHandler);
+	Menu inventoryMenu = new Menu(Menu_InventoryHandler);
 	StringMap playerInv = GetPlayerInventory(client);
 	if (playerInv == null)
 	{
@@ -248,121 +213,52 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 		return Plugin_Continue;
 	}
 	
-	char clientUserId[16];
-	float chance[eLootChance];
 	int lootedCredits;
-	IntToString(GetClientUserId(client), clientUserId, sizeof(clientUserId));
-	if (!g_PlayerLootChance.GetArray(clientUserId, chance, eLootChance))
-	{
-		chance[lootchance_credit] = g_fCreditLootChance;
-		chance[lootchance_item] = g_fItemLootChance;
-	}
-	
-	float randomFloat = GetRandomFloat();
+	int lootedItems;
 	if (g_bCreditLoot)
 	{
-		//Loot Credit
-		if (randomFloat < chance[lootchance_credit])
+		lootedCredits = inventory[availableCredits];
+		if (lootedCredits > 0)
 		{
-			randomFloat = GetRandomFloat();
-			float giveCredit;
-			if (g_iCreditLootMax == 0)
-			{
-				giveCredit = view_as<float>(inventory[availableCredits]);
-			}
-			else if (g_iCreditLootMax > 0)
-			{
-				if (inventory[availableCredits] >= g_iCreditLootMax)
-				{
-					giveCredit = view_as<float>(g_iCreditLootMax);
-				}
-				else
-				{
-					giveCredit = view_as<float>(inventory[availableCredits]);
-				}
-			}
-			giveCredit *= randomFloat;
-			lootedCredits = RoundFloat(giveCredit);
+			TTT_AddClientCredits(client, lootedCredits);
+			inventory[availableCredits] = 0;
 		}
-		chance[lootchance_credit] *= g_fLootChanceFallOff;
 	}
 	
-	char[][] lootedItems = new char[g_iItemLootMax][16];
-	int itemsLooted = 0;
 	if (g_bItemLoot)
 	{
-		//Loot Items
-		randomFloat = GetRandomFloat();
-		int clientRole = TTT_GetClientRole(client);
-		ArrayList lootItemList = CreateArray(16);
-		if (randomFloat < chance[lootchance_item])
+		StringMapSnapshot items = invItems.Snapshot();
+		for (int i = 0; i < items.Length; i++)
 		{
-			StringMapSnapshot items = invItems.Snapshot();
-			for (int i = 0; i < items.Length; i++)
-			{
-				char key[16];
-				items.GetKey(i, key, sizeof(key));
-				
-				int amount;
-				invItems.GetValue(key, amount);
-				
-				for (int j = 0; j < amount; j++)
-				{
-					int itemRole = TTT_GetCustomItemRole(key);
-					if (itemRole == clientRole || itemRole == TTT_TEAM_UNASSIGNED)
-					{
-						lootItemList.PushString(key);
-					}
-				}
-			}
-			delete items;
+			char key[16];
+			items.GetKey(i, key, sizeof(key));
 			
-			float extraItemChance = chance[lootchance_item] * g_fLootChanceFallOff;
-			int maxLoots = g_iItemLootMax;
-			ArrayList itemIndex = CreateArray();
-			if (lootItemList.Length <= g_iItemLootMax)
+			int clientRole = TTT_GetClientRole(client);
+			int itemRole = TTT_GetCustomItemRole(key);
+			if (clientRole != itemRole || itemRole != TTT_TEAM_UNASSIGNED)
 			{
-				maxLoots = lootItemList.Length;
+				continue;
 			}
 			
-			for (; itemsLooted < maxLoots; itemsLooted++) 
+			int amount;
+			invItems.GetValue(key, amount);
+			for (int j = 0; j < amount; j++)
 			{
-				char itembuf[16];
-				int randomIndex = GetRandomInt(0, lootItemList.Length - 1);
-				if (itemIndex.FindValue(randomIndex) != -1)
-				{
-					itemsLooted--;
-					continue;
-				}
-				
-				lootItemList.GetString(randomIndex, itembuf, sizeof(itembuf));
-				strcopy(lootedItems[itemsLooted], 16, itembuf);
-				itemIndex.Push(randomIndex);
-				
-				randomFloat = GetRandomFloat();
-				if (randomFloat < extraItemChance)
-				{
-					extraItemChance *= g_fLootChanceFallOff;
-					continue;
-				}
-				break;
+				TTT_GiveClientItem(client, key);
 			}
+			
+			invItems.Remove(key);
+			lootedItems++;
 		}
-		chance[lootchance_item] *= g_fLootChanceFallOff;
 	}
-	g_PlayerLootChance.SetArray(clientUserId, chance, eLootChance);
 	
-	if (lootedCredits > 0)
+	g_PlayerInventory.SetArray(ragdollUserIdKey, inventory, eInventory);
+	
+	if (lootedCredits || lootedItems)
 	{
-		TTT_AddClientCredits(client, lootedCredits);
+		CPrintToChat(client, "You have looted %d credits and %d items from %s's corpse.", lootedCredits, lootedItems, ragdoll[VictimName]);
 	}
 	
-	for (int i = 0; i < itemsLooted; i++)
-	{
-		TTT_GiveClientItem(client, lootedItems[i]);
-	}
-	
-	CPrintToChat(client, "You looted %d credits and %d items from %s's corpse!", lootedCredits, itemsLooted, ragdoll[VictimName]);
 	return Plugin_Continue;
 }
 
@@ -470,64 +366,6 @@ public void OnConvarChanged(ConVar convar, const char[] oldValue, const char[] n
 		else
 		{
 			g_bItemLoot = view_as<bool>(val);
-		}
-	}
-	else if (convar == g_cv_CreditLootMax || convar == g_cv_ItemLootMax)
-	{
-		if (StrEqual(oldValue, newValue))
-		{
-			return;
-		}
-			
-		if (!IsCharNumeric(newValue[0]))
-		{
-			return;
-		}
-			
-		int val = StringToInt(newValue);
-		if (val < 0)
-		{
-			return;
-		}
-		
-		if (convar == g_cv_CreditLootMax)
-		{
-			g_iCreditLootMax = val;
-		}
-		else
-		{
-			g_iItemLootMax = val;
-		}
-	}
-	else if (convar == g_cv_CreditLootChance || convar == g_cv_ItemLootChance || convar == g_cv_LootChanceFallOff)
-	{
-		if (StrEqual(oldValue, newValue))
-		{
-			return;
-		}
-			
-		if (!IsCharNumeric(newValue[0]) || !IsCharNumeric(newValue[2]))
-		{
-			return;
-		}
-			
-		float val = StringToFloat(newValue);
-		if (val < 0.0 || val > 1.0)
-		{
-			return;
-		}
-		
-		if (convar == g_cv_CreditLootChance)
-		{
-			g_fCreditLootChance = val;
-		}
-		else if (convar == g_cv_ItemLootChance)
-		{
-			g_fItemLootChance = val;
-		}
-		else
-		{
-			g_fLootChanceFallOff = val;
 		}
 	}
 }
