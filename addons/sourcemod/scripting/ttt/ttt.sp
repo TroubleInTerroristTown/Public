@@ -4234,7 +4234,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
     }
     else
     {
-        if (g_iRole[activator] == TTT_TEAM_INNOCENT || g_iRole[activator] == TTT_TEAM_DETECTIVE || g_iRole[activator] == TTT_TEAM_UNASSIGNED)
+        if (g_iRole[activator] != TTT_TEAM_TRAITOR)
         {
             TTT_AddRoundSlays(activator, g_cRoundSlayDestroyTrigger.IntValue, true);
 
