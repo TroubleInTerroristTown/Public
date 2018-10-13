@@ -189,6 +189,8 @@ public void OnConfigsExecuted()
     g_cRoundStartFontColor.GetString(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor));
     g_cFSPrimary.GetString(g_sFSPrimary, sizeof(g_sFSPrimary));
     g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
+
+    TTT_DisableRounds(g_cDisableRounds.BoolValue);
     
     // Prepare & Format log files
     char sDate[12];
