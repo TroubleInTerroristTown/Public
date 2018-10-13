@@ -250,13 +250,15 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 			invItems.Remove(key);
 			lootedItems++;
 		}
+		
+		delete items;
 	}
 	
 	g_PlayerInventory.SetArray(ragdollUserIdKey, inventory, eInventory);
 	
 	if (lootedCredits || lootedItems)
 	{
-		CPrintToChat(client, "You have looted %d credits and %d items from %s's corpse.", lootedCredits, lootedItems, ragdoll[VictimName]);
+		CPrintToChat(client, "%T", "SuccessfulLoot", client, lootedCredits, lootedItems, ragdoll[VictimName]);
 	}
 	
 	return Plugin_Continue;
