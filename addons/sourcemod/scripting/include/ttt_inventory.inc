@@ -18,22 +18,20 @@ forward void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort);
  * 
  * @param client        Client index.
  * @param itemshort     Unique name for item.
- * @param amount        Quantity of item.
  * 
  * @return              Returns item index in inventory if registered successfully or item already exists, else -1 if unique item does not exist in shop or client not in game.
  */
-native bool TTT_AddInventoryItem(int client, const char[] itemshort, int amount = 1);
+native bool TTT_AddInventoryItem(int client, const char[] itemshort);
 
 /*
  * Removes an item in a player's inventory.
  *
  * @param client        Client index.
  * @param itemshort     Unique name of item.
- * @param all           Amount of the item to remove. Default 0 removes all instance of item.
  *
  * @return              Returns true on success or item already not in inventory. False if it fails to remove item.
  */
-native bool TTT_RemoveInventoryItem(int client, const char[] itemshort, int amount = 0);
+native bool TTT_RemoveInventoryItem(int client, const char[] itemshort);
 
 /*
  * Checks whether or not the item is in the player's inventory.

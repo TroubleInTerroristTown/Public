@@ -240,12 +240,7 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 				continue;
 			}
 			
-			int amount;
-			invItems.GetValue(key, amount);
-			for (int j = 0; j < amount; j++)
-			{
-				TTT_GiveClientItem(client, key);
-			}
+			TTT_GiveClientItem(client, key);
 			
 			invItems.Remove(key);
 			lootedItems++;
@@ -268,25 +263,18 @@ public int Native_AddInventoryItem(Handle plugin, int numparams)
 {
 	char itemshort[16];
 	int client = GetNativeCell(1);
-	int quantity = GetNativeCell(3);
 	GetNativeString(2, itemshort, sizeof(itemshort));
 	
-	if (quantity <= 0)
-	{
-		quantity = 1;
-	}
-	
-	return AddInventoryItem(client, itemshort, quantity);
+	return AddInventoryItem(client, itemshort);
 }
 
 public int Native_RemoveInventoryItem(Handle plugin, int numparams)
 {
 	char itemshort[16];
 	int client = GetNativeCell(1);
-	int amount = GetNativeCell(3);
 	GetNativeString(2, itemshort, sizeof(itemshort));
 	
-	return RemoveInventoryItem(client, itemshort, amount);
+	return RemoveInventoryItem(client, itemshort);
 }
 
 public int Native_GetInventoryListing(Handle plugin, int numparams)
@@ -453,34 +441,24 @@ bool EditInventoryItem(int client, const char[] itemshort, int quantity)
 	return true;
 }
 
-bool AddInventoryItem(int client, const char[] itemshort, int quantity)
+bool AddInventoryItem(int client, const char[] itemshort)
 {
 	if (!TTT_IsClientValid(client))
 	{
 		return false;
 	}
 	
-	if (quantity <= 0)
-	{
-		return false;
-	}
-	
-	return EditInventoryItem(client, itemshort, quantity);
+	return EditInventoryItem(client, itemshort, 1);
 }
 
-bool RemoveInventoryItem(int client, const char[] itemshort, int amount = 0)
+bool RemoveInventoryItem(int client, const char[] itemshort)
 {
 	if (!TTT_IsClientValid(client))
 	{
 		return false;
 	}
 	
-	if (amount < 0)
-	{
-		return false;
-	}
-	
-	return EditInventoryItem(client, itemshort, 0 - amount);
+	return EditInventoryItem(client, itemshort, 0);
 }
 
 void CreateNewInventory(int client)
