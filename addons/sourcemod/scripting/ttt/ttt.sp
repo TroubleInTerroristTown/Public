@@ -649,6 +649,11 @@ public Action Timer_EnableButton(Handle timer, any reference)
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
+    if (g_bDisabled)
+    {
+        return;
+    }
+
     g_iRoundTime = GetTime();
     
     if (g_cDebugMessages.BoolValue)
@@ -4133,6 +4138,11 @@ void CheckPlayers()
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("CheckPlayers - 1 ()");
+    }
+
+    if (g_bDisabled)
+    {
+        return;
     }
     
     int iCount = 0;

@@ -460,6 +460,17 @@ native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
  */
 native bool TTT_GetLatestVersion(const char[] version, int length);
 
+/**
+ * Disable the next TTT round. It has no effect if it's already set.
+ * If you want to close the disabled round:
+ *  - set status to false
+ *  - terminate roundd with TTT_TerminateRound
+ *
+ * @param status            If true, next round will be disabled.
+                            If false, next round will be normal.
+ */
+native bool TTT_DisableRounds(bool status);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
     if (role == TTT_TEAM_INNOCENT)
