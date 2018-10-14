@@ -518,6 +518,38 @@ public Action Timer_ExplodeC4(Handle timer, DataPack pack)
     return Plugin_Continue;
 }
 
+public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon)
+{
+    if (!g_cRemoveBomb.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (buttons & IN_ATTACK && !g_bHasC4[client])
+    {
+        int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+    
+        if (!IsValidEntity(iWeapon))
+        {
+            char sWeapon[32];
+            GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+
+            if (StrContains(sWeapon, "weapon_c4", false) != -1)
+            {
+                buttons &= ~IN_ATTACK;
+                return Plugin_Changed;
+            }
+        }
+    }
+
+    return Plugin_Continue;
+}
+
 public int TTT_OnButtonPress(int client, int button)
 {
     if (button & IN_ATTACK2 && !g_bHasActiveBomb[client] && g_bHasC4[client])
