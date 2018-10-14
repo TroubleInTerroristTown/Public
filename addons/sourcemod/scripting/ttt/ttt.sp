@@ -112,6 +112,7 @@ public void OnPluginStart()
     HookEvent("cs_win_panel_round", Event_WinPanel);
     HookEvent("cs_win_panel_match", Event_WinPanel);
     HookEvent("cs_match_end_restart", Event_WinPanel);
+    HookEvent("item_pickup", Event_ItemPickup);
 
     g_cGraceTime = FindConVar("mp_join_grace_time");
     g_cFreezeTime = FindConVar("mp_freezetime");
@@ -807,6 +808,34 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
 {
     g_bRoundEnding = true;
+}
+
+public Action Event_ItemPickup(Event event, const char[] name, bool dontBroadcast)
+{
+    if (!g_cremoveBomb.BoolValue)
+    {
+        return;
+    }
+
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
+    if (!TTT_IsClientValid(client))
+    {
+        return;
+    }
+
+    char sWeapon[32];
+    event.GetString("item", sWeapon, sizeof(sWeapon));
+
+    if (StrContains(sWeapon, "weapon_c4", false) != -1)
+    {
+        int iC4 = TTT_HasClientWeapon(client, "weapon_c4");
+
+        if (iC4 != -1)
+        {
+            TTT_SafeRemoveWeapon(client, iC4, CS_SLOT_C4);
+        }
+    }
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)

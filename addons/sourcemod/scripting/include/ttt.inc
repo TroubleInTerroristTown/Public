@@ -1037,8 +1037,7 @@ stock int TTT_HasClientKnife(int client)
     return -1;
 }
 
-
-stock int TTT_HasClientTaser(int client)
+stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
 {
     for(int offset = 0; offset < 128; offset += 4)
     {
@@ -1049,7 +1048,7 @@ stock int TTT_HasClientTaser(int client)
             char sClass[32];
             GetEntityClassname(weapon, sClass, sizeof(sClass));
 
-            if ((StrContains(sClass, "weapon_taser", false) != -1))
+            if ((StrContains(sClass, sWeapon, false) != -1))
             {
                 return weapon;
             }
