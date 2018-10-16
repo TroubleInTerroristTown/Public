@@ -3,7 +3,7 @@ set -ev
 
 git fetch --unshallow
 COUNT=$(git rev-list --count HEAD)
-VERSION=2.$COUNT
+VERSION=3.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
 FILE=ttt-$2-$1-$VERSION-$HASH-$6.zip
 
@@ -63,7 +63,7 @@ do
 done
 
 echo -e "Move optional plugins into disabled folder\n"
-mv addons/sourcemod/scripting/README addons/sourcemod/plugins/disabled
+mv addons/sourcemod/scripting/README.md addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled

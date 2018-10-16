@@ -6,6 +6,7 @@
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
+char g_sKarmaFile[PLATFORM_MAX_PATH + 1];
 char g_sTag[64];
 char g_sDefaultPrimary[32];
 char g_sDefaultSecondary[32];

@@ -2,14 +2,14 @@
 set -ev
 
 COUNT=$(git rev-list --count HEAD)
-VERSION=2.$COUNT
+VERSION=3.$COUNT
 HASH="$(git log --pretty=format:%h -n 1)"
 FILE=ttt-$2-$1-$VERSION-$HASH-$6.zip
 LATEST=ttt-latest-$2-$1.zip
 HOST=$3
 USER=$4
 PASS=$5
-FILE=$7
+URL=$7
 KEY=$8
 
 echo -e "Go to build folder\n"
@@ -25,4 +25,4 @@ echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
 
 echo -e "Update TTT Version"
-wget -q $FILE?version=$VERSION&key=$KEY
+wget -q $URL?version=$VERSION&key=$KEY
