@@ -534,7 +534,7 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
     {
         int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
     
-        if (!IsValidEntity(iWeapon))
+        if (iWeapon != -1 && IsValidEdict(iWeapon))
         {
             char sWeapon[32];
             GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
