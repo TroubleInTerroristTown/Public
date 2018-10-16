@@ -86,7 +86,7 @@ public void OnConfigsExecuted()
     }
     else
     {
-        CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT);
+        CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
     }
 }
 
