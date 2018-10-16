@@ -147,15 +147,15 @@ public void OnMapStart()
     GetEntPropVector(0, Prop_Send, "m_WorldMaxs", WorldMaxHull);
     g_fMaxWorldLength = GetVectorDistance(WorldMinHull, WorldMaxHull);
     
-    AddFileToDownloadsTable("sound/weapons/rpg/rocket1.wav");
-    AddFileToDownloadsTable("models/weapons/w_models/w_rocket.mdl");
-    AddFileToDownloadsTable("materials/models/weapons/w_rocketlauncher/w_rocket01.vmt");
-    AddFileToDownloadsTable("materials/models/weapons/w_rocketlauncher/w_rocket01.vtf");
+    //AddFileToDownloadsTable("sound/weapons/rpg/rocket1.wav");
+    //AddFileToDownloadsTable("models/weapons/w_models/w_rocket.mdl");
+    //AddFileToDownloadsTable("materials/models/weapons/w_rocketlauncher/w_rocket01.vmt");
+    //AddFileToDownloadsTable("materials/models/weapons/w_rocketlauncher/w_rocket01.vtf");
     
-    PrecacheModel("models/weapons/w_models/w_rocket.mdl");
+    //PrecacheModel("models/weapons/w_models/w_rocket.mdl");
     PrecacheModel("models/props/de_inferno/hr_i/missile/missile_02.mdl");
     
-    PrecacheSound("weapons/rpg/rocket1.wav");
+    //PrecacheSound("weapons/rpg/rocket1.wav");
     PrecacheSound("weapons/hegrenade/explode5.wav");
 }
 
