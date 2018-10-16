@@ -96,8 +96,8 @@ public void OnPluginStart()
 
     TTT_StartConfig("missiles");
     CreateConVar("ttt2_missiles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDamage = AutoExecConfig_CreateConVar("missiles_damage", "100", "Sets the maximum amount of damage the missiles can do", _, true, 1.0);
-    g_cRadius = AutoExecConfig_CreateConVar("missiles_radius", "350", "Sets the explosive radius of the missiles", _, true, 1.0);
+    g_cDamage = AutoExecConfig_CreateConVar("missiles_damage", "850", "Sets the maximum amount of damage the missiles can do", _, true, 1.0);
+    g_cRadius = AutoExecConfig_CreateConVar("missiles_radius", "600", "Sets the explosive radius of the missiles", _, true, 1.0);
     g_cSpeed = AutoExecConfig_CreateConVar("missiles_speed", "500.0", "Sets the speed of the missiles", _, true, 300.0 ,true, 3000.0);
     g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
 

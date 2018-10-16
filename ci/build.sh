@@ -63,7 +63,7 @@ do
 done
 
 echo -e "Move optional plugins into disabled folder\n"
-mv addons/sourcemod/scripting/README addons/sourcemod/plugins/disabled
+mv addons/sourcemod/scripting/README.md addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled

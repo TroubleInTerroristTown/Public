@@ -5,9 +5,26 @@ void GetLatestVersion()
 
     Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, sURL);
     bool bTimeout = SteamWorks_SetHTTPRequestNetworkActivityTimeout(hRequest, 10);
+
+    bool bPort = false;
+
+    if (g_cSendServerData.BoolValue)
+    {
+        int iPieces[4];
+        char sIP[32], sPort[8];
+        SteamWorks_GetPublicIP(iPieces);
+        Format(sIP, sizeof(sIP), "%d.%d.%d.%d", iPieces[0], iPieces[1], iPieces[2], iPieces[3]);
+
+        ConVar cvar = FindConVar("hostport");
+        cvar.GetString(sPort, sizeof(sPort));
+        
+        /* You can abuse it, but all server requires a manual approval. */
+        bPort = SteamWorks_SetHTTPRequestGetOrPostParameter(hRequest, "serverPort", sPort);
+    }
+
     bool bCallback = SteamWorks_SetHTTPCallbacks(hRequest, OnHTTPCallback);
 
-    if(!bTimeout || !bCallback)
+    if(!bTimeout || !bCallback || (g_cSendServerData.BoolValue && !bPort))
     {
         LogError("[TTT] (GetLatestVersion) Error in setting request properties, cannot send request");
         delete hRequest;

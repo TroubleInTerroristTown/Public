@@ -6,6 +6,7 @@
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
+char g_sKarmaFile[PLATFORM_MAX_PATH + 1];
 char g_sTag[64];
 char g_sDefaultPrimary[32];
 char g_sDefaultSecondary[32];
@@ -16,6 +17,7 @@ char g_sFSPrimary[32];
 
 bool g_bRoundEnded = false;
 bool g_bBlockKill = false;
+bool g_bDisabled = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -297,6 +299,8 @@ ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
 ConVar g_cVersionCheck = null;
 ConVar g_cVersionMessage = null;
+ConVar g_cSendServerData = null;
+ConVar g_cDisableRounds = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

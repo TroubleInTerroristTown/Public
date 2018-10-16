@@ -142,6 +142,8 @@ void SetupConfig()
     g_cShowURL = AutoExecConfig_CreateConVar("ttt_show_url", "1", "Show the URL when a player wants to read the rules? Valve removed the MOTD and Popup-function, so that could be useful", _, true, 0.0, true, 1.0);
     g_cVersionCheck = AutoExecConfig_CreateConVar("ttt_version_check", "1", "Enable version check?", _, true, 0.0, true, 1.0);
     g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message", "1", "This prints a version message to all players on every spawn", _, true, 0.0, true, 1.0);
+    g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_data", "1", "Send the Server Port to csgottt.com, server will be listed on csgottt.com", _, true, 0.0, true, 1.0);
+    g_cDisableRounds = AutoExecConfig_CreateConVar("ttt_disable_rounds", "0", "Disable TTT Rounds? This will require an map change, server restart or plugin that can execute TTT_TerminateRound.", _, true, 0.0, true, 1.0);
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);
@@ -155,43 +157,41 @@ void SetupConfig()
     g_cSetRole.AddChangeHook(OnConVarChanged);
     g_cKarmaReset.AddChangeHook(OnConVarChanged);
     g_cSetKarma.AddChangeHook(OnConVarChanged);
+    g_cDisableRounds.AddChangeHook(OnConVarChanged);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
     if (convar == g_cpluginTag)
     {
-        g_cpluginTag.GetString(g_sTag, sizeof(g_sTag));
+        Format(g_sTag, sizeof(g_sTag), newValue);
     }
-
-    if (convar == g_cdefaultPriD)
+    else if (convar == g_cdefaultPriD)
     {
-        g_cdefaultPriD.GetString(g_sDefaultPrimary, sizeof(g_sDefaultPrimary));
+        Format(g_sDefaultPrimary, sizeof(g_sDefaultPrimary), newValue);
     }
-
-    if (convar == g_cdefaultSec)
+    else if (convar == g_cdefaultSec)
     {
-        g_cdefaultSec.GetString(g_sDefaultSecondary, sizeof(g_sDefaultSecondary));
+        Format(g_sDefaultSecondary, sizeof(g_sDefaultSecondary), newValue);
     }
-
-    if (convar == g_cRoundStartedFontColor)
+    else if (convar == g_cRoundStartedFontColor)
     {
-        g_cRoundStartedFontColor.GetString(g_sRoundStartedFontColor, sizeof(g_sRoundStartedFontColor));
+        Format(g_sRoundStartedFontColor, sizeof(g_sRoundStartedFontColor), newValue);
     }
-
-    if (convar == g_cRoundStartFontColor)
+    else if (convar == g_cRoundStartFontColor)
     {
-        g_cRoundStartFontColor.GetString(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor));
+        Format(g_sRoundStartFontColor, sizeof(g_sRoundStartFontColor), newValue);
     }
-
-    if (convar == g_cFSPrimary)
+    else if (convar == g_cFSPrimary)
     {
-        g_cFSPrimary.GetString(g_sFSPrimary, sizeof(g_sFSPrimary));
+        Format(g_sFSPrimary, sizeof(g_sFSPrimary), newValue);
     }
-
-    if (convar == g_cFSSecondary)
+    else if (convar == g_cFSSecondary)
     {
-        g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
+        Format(g_sFSSecondary, sizeof(g_sFSSecondary), newValue);
     }
-
+    else if (convar == g_cDisableRounds)
+    {
+        TTT_DisableRounds(view_as<bool>(StringToInt(newValue)));
+    }
 }

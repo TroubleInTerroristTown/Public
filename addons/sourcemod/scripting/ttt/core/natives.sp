@@ -50,6 +50,7 @@ void InitNatives()
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
     CreateNative("TTT_TerminateRound", Native_TerminateRound);
     CreateNative("TTT_GetLatestVersion", Native_GetLatestVersion);
+    CreateNative("TTT_DisableRounds", Native_DisableRounds);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -597,4 +598,10 @@ public int Native_GetLatestVersion(Handle plugin, int numParams)
     SetNativeString(1, g_sLatestVersion, GetNativeCell(2));
 
     return true;
+}
+
+public int Native_DisableRounds(Handle plugin, int numParams)
+{
+    g_bDisabled = view_as<bool>(GetNativeCell(1));
+    return g_bDisabled;
 }
