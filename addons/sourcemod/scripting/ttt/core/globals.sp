@@ -3,8 +3,6 @@
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
 
-#define COLLISION_GROUP_DEBRIS_TRIGGER 2
-
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
@@ -17,6 +15,8 @@ char g_sFSSecondary[32];
 char g_sFSPrimary[32];
 
 bool g_bRoundEnded = false;
+bool g_bBlockKill = false;
+bool g_bDisabled = false;
 
 int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
 Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
@@ -29,8 +29,11 @@ int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iTeamSelectTime = 0;
+int g_iRoundTime = -1;
 
-Handle g_hGraceTime = null;
+ConVar g_cGraceTime = null;
+ConVar g_cRoundTime = null;
+ConVar g_cFreezeTime = null;
 
 Handle g_hStartTimer = null;
 
@@ -55,7 +58,6 @@ Handle g_hRoundTimer = null;
 
 bool g_bInactive = false;
 
-int g_iCollisionGroup = -1;
 int m_flNextPrimaryAttack = -1;
 int m_flNextSecondaryAttack = -1;
 
@@ -101,7 +103,7 @@ Handle g_hOnClientGetRole = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnClientDeathPre = null;
 Handle g_hOnBodyFound = null;
-Handle g_hOnBodyChecked = null;
+Handle g_hOnBodyCheck = null;
 Handle g_hOnButtonPress = null;
 Handle g_hOnButtonRelease = null;
 Handle g_hOnModelUpdate = null;
@@ -110,42 +112,45 @@ Handle g_hOnKarmaUpdate = null;
 Handle g_hOnRulesMenu = null;
 Handle g_hOnDetectiveMenu = null;
 Handle g_hOnCheckCommandAccess = null;
+Handle g_hOnPlayerRespawn = null;
+Handle g_hOnVersionCheck = null;
 
 bool g_bSourcebans = false;
+bool g_bGhostDM = false;
 
 char g_sRadioCMDs[][] =  {
-	"coverme",
-	"takepoint",
-	"holdpos",
-	"regroup",
-	"followme",
-	"takingfire",
-	"go",
-	"fallback",
-	"sticktog",
-	"getinpos",
-	"stormfront",
-	"report",
-	"roger",
-	"enemyspot",
-	"needbackup",
-	"sectorclear",
-	"inposition",
-	"reportingin",
-	"getout",
-	"negative",
-	"enemydown",
-	"compliment",
-	"thanks",
-	"cheer"
+    "coverme",
+    "takepoint",
+    "holdpos",
+    "regroup",
+    "followme",
+    "takingfire",
+    "go",
+    "fallback",
+    "sticktog",
+    "getinpos",
+    "stormfront",
+    "report",
+    "roger",
+    "enemyspot",
+    "needbackup",
+    "sectorclear",
+    "inposition",
+    "reportingin",
+    "getout",
+    "negative",
+    "enemydown",
+    "compliment",
+    "thanks",
+    "cheer"
 };
 
 char g_sRemoveEntityList[][] =  {
-	"func_bomb_target",
-	"hostage_entity",
-	"func_hostage_rescue",
-	"info_hostage_spawn",
-	"func_buyzone"
+    "func_bomb_target",
+    "func_buyzone",
+    "hostage_entity",
+    "func_hostage_rescue",
+    "info_hostage_spawn"
 };
 
 bool g_bRoundEnding = false;
@@ -287,6 +292,14 @@ ConVar g_cNameChangePunish = null;
 ConVar g_cNameChangeLength = null;
 ConVar g_cIdentifyLog = null;
 ConVar g_cShowInnoRDMMenu = null;
+ConVar g_cFlashlightOption = null;
+ConVar g_cRespawnAccess = null;
+ConVar g_cPlayerHUDMessage = null;
+ConVar g_cShowURL = null;
+ConVar g_cVersionCheck = null;
+ConVar g_cVersionMessage = null;
+ConVar g_cSendServerData = null;
+ConVar g_cDisableRounds = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
@@ -298,3 +311,10 @@ Handle g_hRSCookie = null;
 int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bPressed[2048] = { false, ... };
+
+bool g_bRespawn[MAXPLAYERS + 1] = { false, ... };
+
+Handle g_hWeAreSync = null;
+Handle g_hRemainingSync = null;
+
+char g_sLatestVersion[64];

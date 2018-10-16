@@ -1,10 +1,11 @@
 Current developers
 ---
-| User | Steam | Github |
-| --------- |:--------:|-------:|
-| Bara | https://steamcommunity.com/profiles/76561198041923231/ | https://github.com/Bara |
-| good_live | https://steamcommunity.com/profiles/76561198060485155/ | https://github.com/good-live |
-| whocodes | https://steamcommunity.com/profiles/76561197987263853/ | https://github.com/whocodes |
+| Steam | Github |
+|:-----:|:------:|
+| [Bara](https://steamcommunity.com/profiles/76561198041923231/) | https://github.com/Bara |
+| [good_live](https://steamcommunity.com/profiles/76561198060485155/) | https://github.com/good-live |
+| [whocodes](https://steamcommunity.com/profiles/76561197987263853/) | https://github.com/whocodes |
+
 
 Previous developers/Authors of useful plugins
 ---
@@ -16,18 +17,19 @@ Previous developers/Authors of useful plugins
 - [Keplyx](https://github.com/Keplyx) for [Cameras and Drones](https://forums.alliedmods.net/showthread.php?p=2537127)
 - [Any contributors](https://github.com/Bara/TroubleinTerroristTown/graphs/contributors)
 
+
 Communities with ttt servers or contribute with ideas
 ---
-| Community | Homepage | Server |
-| --------- |:--------:|-------:|
-| Painlessgaming | https://painlessgaming.eu/ | 89.163.145.160:27016 |
-| Prestige Gaming | https://www.prestige-gaming.org/ | 74.91.113.113:27015 |
-| HeLLsGamers | https://hellsgamers.com/ | 67.228.181.74:27015 |
-| Dream Community | https://dream-community.de/ | csgo.dream-com.de:26266 |
-| Skynet Gaming | https://skynetgaming.net/ | 173.234.30.235:27016 |
-| Games For Life | https://gflclan.com/ | 192.223.26.133:27015 |
-| Classy Wolves | https://clwo.eu | ttt.clwo.eu |
-| Surfburken | https://surfburken.se/ | 81.231.9.34:27015 |
-| Frag Haven | https://fraghaven.net | Unknown |
-| Allied Gaming | https://allied-gaming.com/ | No server |
-| Slayers Gaming | https://www.slayersgaming.com/ | No server |
+| Community | Server |
+|:---------:|:------:|
+| [Painlessgaming](https://painlessgaming.eu/) | 89.163.145.160:27016 |
+| [Prestige Gaming](https://www.prestige-gaming.org/) | 74.91.113.113:27015 |
+| [HeLLsGamers](https://hellsgamers.com/) | 67.228.181.74:27015 |
+| [Dream Community](https://dream-community.de/) | csgo.dream-com.de:26266 |
+| [Skynet Gaming](https://skynetgaming.net/) | 173.234.30.235:27016 |
+| [Classy Wolves](https://clwo.eu) | ttt.clwo.eu |
+| [Surfburken](https://surfburken.se/) | RIP |
+| [Games For Life](https://gflclan.com/) | No server |
+| [Frag Haven](https://fraghaven.net) | No server |
+| [Allied Gaming](https://allied-gaming.com/) | No server |
+| [Slayers Gaming](https://www.slayersgaming.com/) | No server |

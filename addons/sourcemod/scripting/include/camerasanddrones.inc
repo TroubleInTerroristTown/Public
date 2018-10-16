@@ -21,24 +21,53 @@
 #endif
 
 #define _camerasanddrones_included
- 
+
+public SharedPlugin __pl_camerasanddrones = 
+{
+	name = "cameras-and-drones",
+	file = "cameras-and-drones.smx",
+#if defined REQUIRE_PLUGIN
+	required = 1,
+#else
+	required = 0,
+#endif
+};
+
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_camerasanddrones_SetNTVOptional()
+{
+	MarkNativeAsOptional("BuyPlayerGear");
+	MarkNativeAsOptional("OverridePlayerGear");
+	MarkNativeAsOptional("IsPlayerInGear");
+}
+#endif
 
 /**
  * Give player the gear (camera or drone) depending on its team
  * It is the same as the command cd_buy but without using money.
  *
- * @param client	Client index.
+ * @param client		Client index.
  * @return
- * @error	Invalid client.
+ * @error				Invalid client.
  */
 native void BuyPlayerGear(int client);
 
 /**
- * Adds two numbers together.
+ * Override the gear for the specified player.
  *
- * @param client	Client index.
- * @param override	Override parameter: -1= no gear, 0= no override, 1= force cameras, 2= force drones.
+ * @param client		Client index.
+ * @param override		Override parameter: -1= no gear, 0= no override, 1= force cameras, 2= force drones.
  * @return
- * @error	Invalid client.
+ * @error				Invalid client.
  */
 native void OverridePlayerGear(int client, int override);
+
+/**
+ * Checks if the specified player is using his gear.
+ *
+ * @param client		Client index.
+ * @return				True if the plyer if using his gear, false otherwise.
+ * @error				Invalid client.
+ */
+native bool IsPlayerInGear(int client);

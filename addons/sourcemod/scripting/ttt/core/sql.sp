@@ -1,101 +1,95 @@
-public void SQL_AlterKarmaColumn(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_AlterKarmaColumn(Database db, DBResultSet results, const char[] error, any data)
 {
-	if (hndl == null || strlen(error) > 0)
-	{
-		if (StrContains(error, "duplicate column name", false) != -1)
-		{
-			LateLoadClients(false);
-		}
-		else
-		{
-			LogError("(SQL_AlterKarmaColumn) Query failed: %s", error);
-		}
-		
-		return;
-	}
-	else
-	{
-		LateLoadClients(false);
-	}
+    if (db == null || strlen(error) > 0)
+    {
+        if (StrContains(error, "duplicate column name", false) != -1)
+        {
+            LateLoadClients(false);
+        }
+        else
+        {
+            LogError("(SQL_AlterKarmaColumn) Query failed: %s", error);
+        }
+        
+        return;
+    }
+    else
+    {
+        LateLoadClients(false);
+    }
 }
 
-public void Callback_Karma(Handle owner, Handle hndl, const char[] error, any userid)
+public void Callback_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
 {
-	if (hndl == null || strlen(error) > 0)
-	{
-		LogToFileEx(g_sErrorFile, "(Callback_Karma) Query failed: %s", error);
-		return;
-	}
+    if (db == null || strlen(error) > 0)
+    {
+        LogToFileEx(g_sErrorFile, "(Callback_UpdatePlayer) Query failed: %s", error);
+        return;
+    }
+    else
+    {
+        int client = GetClientOfUserId(userid);
+
+        if (TTT_IsClientValid(client))
+        {
+            g_bKarma[client] = true;
+        }
+    }
 }
 
-public void Callback_UpdatePlayer(Handle owner, Handle hndl, const char[] error, any userid)
+public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, int userid)
 {
-	if (hndl == null || strlen(error) > 0)
-	{
-		LogToFileEx(g_sErrorFile, "(Callback_UpdatePlayer) Query failed: %s", error);
-		return;
-	}
-	else
-	{
-		int client = GetClientOfUserId(userid);
+    int client = GetClientOfUserId(userid);
 
-		if (TTT_IsClientValid(client))
-		{
-			g_bKarma[client] = true;
-		}
-	}
-}
+    if (!client || !TTT_IsClientValid(client) || IsFakeClient(client))
+    {
+        return;
+    }
 
-public void SQL_OnClientPostAdminCheck(Handle owner, Handle hndl, const char[] error, any userid)
-{
-	int client = GetClientOfUserId(userid);
+    if (db == null || strlen(error) > 0)
+    {
+        LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
+        return;
+    }
+    else
+    {
+        if (!results.HasResults)
+        {
+            g_iKarma[client] = g_cstartKarma.IntValue;
+            UpdatePlayer(client);
+        }
+        else
+        {
+            while (results.FetchRow())
+            {
+                char sCommunityID[64];
 
-	if (!client || !TTT_IsClientValid(client) || IsFakeClient(client))
-	{
-		return;
-	}
+                if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+                {
+                    LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+                    return;
+                }
 
-	if (hndl == null || strlen(error) > 0)
-	{
-		LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Query failed: %s", error);
-		return;
-	}
-	else
-	{
-		if (!SQL_FetchRow(hndl))
-		{
-			g_iKarma[client] = g_cstartKarma.IntValue;
-			UpdatePlayer(client);
-		}
-		else
-		{
-			char sCommunityID[64];
+                int karma = results.FetchInt(0);
 
-			if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
-			{
-				LogToFileEx(g_sErrorFile, "(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-				return;
-			}
+                if (g_cDebug.BoolValue)
+                {
+                    LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
+                }
 
-			int karma = SQL_FetchInt(hndl, 0);
+                if (karma == 0)
+                {
+                    g_iKarma[client] = g_cstartKarma.IntValue;
+                }
+                else
+                {
+                    g_iKarma[client] = karma;
+                }
 
-			if (g_cDebug.BoolValue)
-			{
-				LogToFileEx(g_sLogFile, "Name: %L has %d karma", client, karma);
-			}
+                CS_SetClientContributionScore(client, karma);
 
-			if (karma == 0)
-			{
-				g_iKarma[client] = g_cstartKarma.IntValue;
-			}
-			else
-			{
-				g_iKarma[client] = karma;
-			}
-
-			CS_SetClientContributionScore(client, karma);
-
-			g_bKarma[client] = true;
-		}
-	}
+                g_bKarma[client] = true;
+            }
+        }
+    }
 }

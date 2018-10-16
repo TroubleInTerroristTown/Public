@@ -25,6 +25,18 @@
 		"en"		"MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
 	}
 
+	"WE ARE"
+	{
+		"#format"	"{1:d}"
+		"en"		"We are {1} player(s)!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"#format"	"{1:d}"
+		"en"		"Remaining player(s) to start a round: {1}"
+	}
+
 	"Your Team is DETECTIVES"
 	{
 		"en"		"You are a {darkblue}DETECTIVE"
@@ -641,7 +653,7 @@
 
 	"Hud PlayerHealth"
 	{
-		"#format"	"{1:d}"
+		"#format"	"{1:s}"
 		"en"		"{1}"
 	}
 
@@ -652,7 +664,7 @@
 
 	"Hud PlayerKarma"
 	{
-		"#format"	"{1:d}"
+		"#format"	"{1:s}"
 		"en"		"{1}"
 	}
 
@@ -1089,6 +1101,175 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You used an free dna scanner! {1} uses left."
+	}
+
+	"HUD Health - Invalid"
+	{
+		"en"		"Invalid value"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"en"		"Near Death"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"en"		"Badly Wounded"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"en"		"Wounded"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"en"		"Hurt"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"en"		"Healthy"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"en"		"Invalid value"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"en"		"Liability"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"en"		"Dangerous"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"en"		"Trigger-Happy"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"en"		"Crude"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"en"		"Reputable"
+	}
+
+	"Revive: Before to Target"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} wants to revive you, wait {2} seconds until you can accept it."
+	}
+
+	"Revive: Before to Player"
+	{
+		"#format"	"{1:N}"
+		"en"		"You'll revive {1}."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} must accept your revive request."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"#format"	"{1:N},{2:d}"
+		"en"		"{1} wants to revive you.\nDo you accept this request?\nYou've {2} seconds..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"en"		"Yes, I want!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"en"		"No, thank you!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"#format"	"{1:N}"
+		"en"		"Menu timed out... No response from {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} accepted your request and is now back ingame!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} declined your request!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"#format"	"{1:N}"
+		"en"		"{1} is not dead!"
+	}
+
+	"Respawn: Player"
+	{
+		"#format"	"{1:N},{2:N}"
+		"en"		"{1} respawned {2}!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"en"		"Tasers loaded and enabled!"
+	}
+
+	"Version Check: Current"
+	{
+		"#format"	"{1:s}"
+		"en"		"This server is running the latest version ({1}) of Trouble in Terrorist Town."
+	}
+
+	"Version Check: Unknown"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"This server is running an unknown version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"This server is running an older version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+	}
+
+	"Revolver: Suicide"
+	{
+		"en"		"An Detective has tried to kill an Innocent with the Revolver"
+	}
+
+	"Bullets: Have already"
+	{
+		"en"		"You have already one type of bullets."
+	}
+	
+	"Bullets: Buy bullets"
+	{
+		"#format"	"{1:d},{2:s}"
+		"en"		"You have now {green}{1} {orchid}{2}."
+	}
+	
+	"Bullets: Number bullets"
+	{
+		"#format"	"{1:s},{2:d},{3:d}"
+		"en"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 
 }

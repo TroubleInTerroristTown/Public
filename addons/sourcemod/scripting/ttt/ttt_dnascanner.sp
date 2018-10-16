@@ -14,7 +14,6 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cPrintTo = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscount = null;
 ConVar g_cRoleColor = null;
 ConVar g_cStartWith = null;
 ConVar g_cFreeCount = null;
@@ -47,7 +46,6 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
     g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
-    g_cDiscount = AutoExecConfig_CreateConVar("dna_discount", "0", "Should dna scanner discountable?", _, true, 0.0, true, 1.0);
     g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
     g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "1", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
     g_cFreeCount = AutoExecConfig_CreateConVar("dna_free_scanner_count", "3", "Limited the free dna scanner to X usages? (0 - disabled/unlimited)", _, true, 0.0);
@@ -72,7 +70,7 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cDiscount.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -146,7 +144,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public Action TTT_OnBodyChecked(int client, int[] iRagdollC)
+public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 {
     if (iRagdollC[Scanned])
     {

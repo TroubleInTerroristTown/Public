@@ -31,6 +31,7 @@ sv_allow_thirdperson 1
 sv_allow_votes 0
 sv_allow_wait_command 0
 sv_alltalk 1
+sv_damage_print_enable 0
 sv_deadtalk 0
 sv_holiday_mode 0
 sv_ignoregrenaderadio 1

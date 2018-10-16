@@ -67,6 +67,7 @@ mv addons/sourcemod/scripting/README addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_dronescameras.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_futuristicgrenades.smx addons/sourcemod/plugins/disabled
 mv addons/sourcemod/plugins/ttt/ttt_parachute.smx addons/sourcemod/plugins/disabled
+mv addons/sourcemod/plugins/ttt/ttt_tactical_shield.smx addons/sourcemod/plugins/disabled
 
 echo -e "Remove build folder if exists\n"
 if [ -d "build" ]; then

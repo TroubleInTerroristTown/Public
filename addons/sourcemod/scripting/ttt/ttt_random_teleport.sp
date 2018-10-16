@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <cstrike>
 #include <ttt_shop>
 #include <ttt>
 #include <multicolors>
@@ -23,10 +22,10 @@ ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cICount = null;
 ConVar g_cLongName = null;
-ConVar g_cDiscountT = null;
-ConVar g_cDiscountD = null;
-ConVar g_cDiscountI = null;
 ConVar g_cRagdoll = null;
+ConVar g_cIgnoreRoleTraitor = null;
+ConVar g_cIgnoreRoleInnocent = null;
+ConVar g_cIgnoreRoleDetective = null;
 
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -69,10 +68,10 @@ public void OnPluginStart()
     g_cTCount = AutoExecConfig_CreateConVar("rt_traitor_count", "1", "The amount of usages for Random Teleports per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("rt_detective_count", "1", "The amount of usages for Random Teleports per round as detective. 0 to disable.");
     g_cICount = AutoExecConfig_CreateConVar("rt_innocent_count", "1", "The amount of usages for Random Teleports per round as innocent. 0 to disable.");
-    g_cDiscountT = AutoExecConfig_CreateConVar("rt_discount_traitor", "0", "Should Random Teleport discountable for traitors?", _, true, 0.0, true, 1.0);
-    g_cDiscountD = AutoExecConfig_CreateConVar("rt_discount_detective", "0", "Should Random Teleport discountable for detectives?", _, true, 0.0, true, 1.0);
-    g_cDiscountI = AutoExecConfig_CreateConVar("rt_discount_innocent", "0", "Should Random Teleport discountable for innocents?", _, true, 0.0, true, 1.0);
     g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
+    g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -100,9 +99,9 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cDiscountT.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDiscountD.BoolValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cDiscountI.BoolValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -171,7 +170,7 @@ int RandomTeleport(int client)
 {
     bool bAlive = true;
     int[] iRagdoll = new int[Ragdolls];
-    float fPlayerPos[3], fTargetPos[3];
+    float fClientPos[3], fTargetPos[3];
 
     if (g_cRagdoll.BoolValue)
     {
@@ -179,10 +178,19 @@ int RandomTeleport(int client)
     }
 
     int target = -1;
+    int iRole = TTT_GetClientRole(client);
 
-    while ((target = TTT_GetRandomPlayer(bAlive)) == client)
+    if (iRole == TTT_TEAM_TRAITOR)
     {
-        PrintToChat(client, "You're the random player...  Let's try again...");
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleTraitor.IntValue);
+    }
+    else if (iRole == TTT_TEAM_INNOCENT)
+    {
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleInnocent.IntValue);
+    }
+    else if (iRole == TTT_TEAM_DETECTIVE)
+    {
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleDetective.IntValue);
     }
 
     if (target == -1 || !TTT_IsClientValid(target))
@@ -193,16 +201,30 @@ int RandomTeleport(int client)
 
     if (g_bDebug)
     {
-        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d - Ragdoll: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target), g_cRagdoll.BoolValue);
+        LogToFile(g_sLog, "[Random Teleport] Target: \"%L\" - UserID: %d - Index: %d - Valid: %d - Alive: %d - Ragdoll: %d", target, GetClientUserId(target), target, TTT_IsClientValid(target), TTT_IsPlayerAlive(target), g_cRagdoll.BoolValue);
     }
 
     if (TTT_IsPlayerAlive(target))
     {
-        GetClientAbsOrigin(client, fPlayerPos);
+        GetClientAbsOrigin(client, fClientPos);
         GetClientAbsOrigin(target, fTargetPos);
 
-        TeleportEntity(client, fTargetPos, NULL_VECTOR, NULL_VECTOR);
-        TeleportEntity(target, fPlayerPos, NULL_VECTOR, NULL_VECTOR);
+        LogToFile(g_sLog, "[Random Teleporter] [1/2] Target: \"%L\" - From: %f:%f:%f - To: %f:%f:%f", target, fTargetPos[0], fTargetPos[1], fTargetPos[2], fClientPos[0], fClientPos[1], fClientPos[2]);
+        LogToFile(g_sLog, "[Random Teleporter] [1/2] Client: \"%L\" - From: %f:%f:%f - To: %f:%f:%f", client, fClientPos[0], fClientPos[1], fClientPos[2], fTargetPos[0], fTargetPos[1], fTargetPos[2]);
+
+        DataPack cPack = new DataPack();
+        RequestFrame(Frame_Teleport, cPack);
+        cPack.WriteCell(GetClientUserId(client));
+        cPack.WriteFloat(fTargetPos[0]);
+        cPack.WriteFloat(fTargetPos[1]);
+        cPack.WriteFloat(fTargetPos[2]);
+
+        DataPack tPack = new DataPack();
+        RequestFrame(Frame_Teleport, tPack);
+        tPack.WriteCell(GetClientUserId(target));
+        tPack.WriteFloat(fClientPos[0]);
+        tPack.WriteFloat(fClientPos[1]);
+        tPack.WriteFloat(fClientPos[2]);
     }
     else
     {
@@ -220,8 +242,8 @@ int RandomTeleport(int client)
         }
 
         float fAngles[3], fVelo[3];
-        GetClientAbsOrigin(client, fPlayerPos);
-        fPlayerPos[2] += 30;
+        GetClientAbsOrigin(client, fClientPos);
+        fClientPos[2] += 30;
 
         GetClientAbsAngles(client, fAngles);
         GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", fVelo);
@@ -233,16 +255,38 @@ int RandomTeleport(int client)
         float speed = GetVectorLength(fVelo);
         if (speed >= 500)
         {
-            TeleportEntity(body, fPlayerPos, fAngles, NULL_VECTOR);
+            TeleportEntity(body, fClientPos, fAngles, NULL_VECTOR);
         }
         else
         {
-            TeleportEntity(body, fPlayerPos, fAngles, fVelo);
+            TeleportEntity(body, fClientPos, fAngles, fVelo);
         }
     }
 
     CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
     return target;
+}
+
+public void Frame_Teleport(DataPack pack)
+{
+    pack.Reset();
+
+    int client = GetClientOfUserId(pack.ReadCell());
+
+    if (TTT_IsClientValid(client))
+    {
+        float fOrigin[3];
+
+        fOrigin[0] = pack.ReadFloat();
+        fOrigin[1] = pack.ReadFloat();
+        fOrigin[2] = pack.ReadFloat();
+
+        TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
+
+        LogToFile(g_sLog, "[Random Teleporter] [2/2] Client: \"%L\" - To: %f:%f:%f", client, fOrigin[0], fOrigin[1], fOrigin[2]);
+    }
+
+    delete pack;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)

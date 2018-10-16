@@ -1,3 +1,4 @@
 *.smx
 addons/sourcemod/scripting/.atom-build.json
 .vscode/
+addons/sourcemod/scripting/tests/logTest.sp

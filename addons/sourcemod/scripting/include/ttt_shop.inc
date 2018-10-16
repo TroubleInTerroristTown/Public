@@ -1,5 +1,5 @@
 #if defined _ttt_shop_included
-	#endinput
+    #endinput
 #endif
 #define _ttt_shop_included
 
@@ -29,7 +29,7 @@ forward void TTT_OnShopReady();
  * Called after a players credits are modified.
  *
  * @param client            Client index.
- * @param credits     	    The new amount of credits.
+ * @param credits             The new amount of credits.
  */
 forward void TTT_OnCreditsChanged(int client, int &credits);
 
@@ -38,7 +38,7 @@ forward void TTT_OnCreditsChanged(int client, int &credits);
  *
  * @param client            Client index.
  * @param oldcredits        The old amount of credits.
- * @param newcredits     	 The new amount of credits.
+ * @param newcredits          The new amount of credits.
  */
 forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
 
@@ -49,26 +49,24 @@ forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcred
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
  * @param role              The optional role to restrict the item to. (Default: 0 - for all)
- * @param sort				The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
- * @param discount			Item discountable for special players? (Default: false - Required: ttt_shop_discount)
+ * @param sort                The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
  */
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, bool discount = false);
+native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
 
 /*
  * Update shop item.
  *
  * @param itemshort         The short-tag identifier to find the item.
  * @param price             The price of the item.
- * @param sort				The priority in Sorting. Buy menu is sorted from high to low.
- * @param discount			Item discountable for special players? (Required: ttt_shop_discount)
+ * @param sort                The priority in Sorting. Buy menu is sorted from high to low.
  */
-native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0, bool discount = false);
+native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0);
 
 /*
  * Remove shop item.
  *
  * @param itemshort         The short-tag identifier to find the item.
- * @return					True it was removed, otherwise shop item not found
+ * @return                    True it was removed, otherwise shop item not found
  */
 native bool TTT_RemoveCustomItem(const char[] itemshort);
 
@@ -109,8 +107,8 @@ native int TTT_AddClientCredits(int client, int credits);
 /*
  * Add item to client (without any costs)
  *
- * @param client			Client Index
- * @param item				Short Item name
- * @return					True item found/valid, false item not found
+ * @param client            Client Index
+ * @param item                Short Item name
+ * @return                    True item found/valid, false item not found
  */
 native bool TTT_GiveClientItem(int client, const char[] item);

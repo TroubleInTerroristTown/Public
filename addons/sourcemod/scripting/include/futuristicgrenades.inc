@@ -5,81 +5,81 @@
 
 enum DecoyMode
 {
-	DecoyMode_Normal = 0,
-	DecoyMode_Blackhole,
-	DecoyMode_Forcefield,
-	DecoyMode_ForceExplosion,
-	DecoyMode_ForceImplosion,
-	DecoyMode_Max
+    DecoyMode_Normal = 0,
+    DecoyMode_Blackhole,
+    DecoyMode_Forcefield,
+    DecoyMode_ForceExplosion,
+    DecoyMode_ForceImplosion,
+    DecoyMode_Max
 }
 
 enum ForceFieldMode
 {
-	ForcefieldMode_Normal = 0,
-	ForcefieldMode_Self,
-	ForcefieldMode_Max
+    ForcefieldMode_Normal = 0,
+    ForcefieldMode_Self,
+    ForcefieldMode_Max
 }
 
 enum ForceExplosionMode
 {
-	ForceExplosionMode_Ground = 0,
-	ForceExplosionMode_World,
-	ForceExplosionMode_Max
+    ForceExplosionMode_Ground = 0,
+    ForceExplosionMode_World,
+    ForceExplosionMode_Max
 }
 
 enum ForceImplosionMode
 {
-	ForceImplosionMode_Ground = 0,
-	ForceImplosionMode_World,
-	ForceImplosionMode_Max
+    ForceImplosionMode_Ground = 0,
+    ForceImplosionMode_World,
+    ForceImplosionMode_Max
 }
 
 /**
  * Returns if friendly fire is activated
  *
- * @return  bool				friendly fire convar
+ * @return  bool                friendly fire convar
  */
 native bool FGrenades_IsFriendlyFire();
 
 /**
  * Returns clients grenade mode
  *
- * @return  DecoyMode			client decoy mode
+ * @return  DecoyMode            client decoy mode
  */
 native DecoyMode FGrenades_GetMode(int client);
 
 /**
  * Returns clients forcefield mode
  *
- * @return  ForceFieldMode		client forcefield mode
+ * @return  ForceFieldMode        client forcefield mode
  */
 native ForceFieldMode FGrenades_GetForcefieldMode(int client);
 
 /**
  * Returns clients force explosion mode
  *
- * @return  ForceExplosionMode	client force explosion mode
+ * @return  ForceExplosionMode    client force explosion mode
  */
 native ForceExplosionMode FGrenades_GetForceExplosionMode(int client);
 
 /**
  * Returns clients force implosion mode
  *
- * @return  ForceImplosionMode	client force implosion mode
+ * @return  ForceImplosionMode    client force implosion mode
  */
 native ForceImplosionMode FGrenades_GetForceImplosionMode(int client);
 
 /**
  * Returns the amount of active black holes
  *
- * @return  int					amount of active black holes
+ * @return  int                    amount of active black holes
  */
 native int FGrenades_GetAmountBlackholes();
 
 /**
  * Returns the amount of active force fields
  *
- * @return  int					amount of active force fields
+ * @return  int                    amount of active force fields
  */
 native int FGrenades_GetAmountForcefields();
 
@@ -137,26 +137,38 @@ forward void FGrenades_OnGrenadeStart(int owner, int &particle, float pos[3], De
  */
 forward Action FGrenades_OnSwitchMode(int client, DecoyMode previousmode, DecoyMode &newmode, int weapon);
 
+
+/**
+ * Force a client to change the FNade mode
+ * @param client client index
+ * @param newDecoyMode   New mode of decoy
+ * @param newForceFieldMode New mode of forcefield decoy
+ * @param newForceExplosionMode New mode of ForceExplosion decoy
+ * @param newForceImplosionMode New mode of ForceImplosion decoy
+ */
+native void FGrenades_SwitchMode(int client, DecoyMode newDecoyMode, ForceFieldMode newForceFieldMode = ForcefieldMode_Normal, ForceExplosionMode newForceExplosionMode = ForceExplosionMode_Ground, ForceImplosionMode newForceImplosionMode = ForceImplosionMode_Ground);
+
 public SharedPlugin __pl_futuristicgrenades  =
 {
-	name = "futuristicgrenades",
-	file = "futuristicgrenades.smx",
+    name = "futuristicgrenades",
+    file = "futuristicgrenades.smx",
 #if defined REQUIRE_PLUGIN
-	required = 1
+    required = 1
 #else
-	required = 0
+    required = 0
 #endif
 };
 
 #if !defined REQUIRE_PLUGIN
 public void __pl_futuristicgrenades_SetNTVOptional()
-{	
-	MarkNativeAsOptional("FGrenades_IsFriendlyFire");
-	MarkNativeAsOptional("FGrenades_GetMode");
-	MarkNativeAsOptional("FGrenades_GetForcefieldMode");
-	MarkNativeAsOptional("FGrenades_GetForceExplosionMode");
-	MarkNativeAsOptional("FGrenades_GetForceImplosionMode");
-	MarkNativeAsOptional("FGrenades_GetAmountBlackholes");
-	MarkNativeAsOptional("FGrenades_GetAmountForcefields");
+{    
+    MarkNativeAsOptional("FGrenades_IsFriendlyFire");
+    MarkNativeAsOptional("FGrenades_GetMode");
+    MarkNativeAsOptional("FGrenades_GetForcefieldMode");
+    MarkNativeAsOptional("FGrenades_GetForceExplosionMode");
+    MarkNativeAsOptional("FGrenades_GetForceImplosionMode");
+    MarkNativeAsOptional("FGrenades_GetAmountBlackholes");
+    MarkNativeAsOptional("FGrenades_GetAmountForcefields");
+    MarkNativeAsOptional("FGrenades_SwitchMode");
 }
 #endif

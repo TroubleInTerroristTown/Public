@@ -1,5 +1,5 @@
 #if defined _ttt_icon_included
-	#endinput
+    #endinput
 #endif
 #define _ttt_icon_included
 

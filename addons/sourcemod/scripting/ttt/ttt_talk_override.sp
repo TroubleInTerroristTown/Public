@@ -17,154 +17,188 @@ char g_sPluginTag[128];
 
 public Plugin myinfo =
 {
-	name = PLUGIN_NAME,
-	author = TTT_PLUGIN_AUTHOR,
-	description = TTT_PLUGIN_DESCRIPTION,
-	version = TTT_PLUGIN_VERSION,
-	url = TTT_PLUGIN_URL
+    name = PLUGIN_NAME,
+    author = TTT_PLUGIN_AUTHOR,
+    description = TTT_PLUGIN_DESCRIPTION,
+    version = TTT_PLUGIN_VERSION,
+    url = TTT_PLUGIN_URL
 };
 
 public void OnPluginStart()
 {
-	TTT_IsGameCSGO();
+    TTT_IsGameCSGO();
 
-	TTT_StartConfig("talk_override");
-	CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-	g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
-	TTT_EndConfig();
+    TTT_StartConfig("talk_override");
+    CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
+    TTT_EndConfig();
 
-	if (g_cEnableTVoice.BoolValue)
-	{
-		RegConsoleCmd("sm_tvoice", Command_TVoice);
-	}
+    if (g_cEnableTVoice.BoolValue)
+    {
+        RegConsoleCmd("sm_tvoice", Command_TVoice);
+    }
 
-	HookEvent("player_death", Event_PlayerDeath);
-	HookEvent("player_spawn", Event_PlayerSpawn);
-	HookEvent("player_team", Event_PlayerTeam);
+    HookEvent("player_death", Event_PlayerDeath);
+    HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("player_team", Event_PlayerTeam);
 
-	LoadTranslations("ttt.phrases");
+    LoadTranslations("ttt.phrases");
 }
 
 public void OnConfigsExecuted()
 {
-	g_cPluginTag = FindConVar("ttt_plugin_tag");
-	g_cPluginTag.AddChangeHook(OnConVarChanged);
-	g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    g_cPluginTag = FindConVar("ttt_plugin_tag");
+    g_cPluginTag.AddChangeHook(OnConVarChanged);
+    g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
 {
-	if (convar == g_cPluginTag)
-	{
-		g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-	}
+    if (convar == g_cPluginTag)
+    {
+        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+    }
 }
 
 public Action Command_TVoice(int client, int args)
 {
-	if (!TTT_IsClientValid(client))
-	{
-		return Plugin_Handled;
-	}
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
 
-	if (!TTT_IsRoundActive())
-	{
-		return Plugin_Handled;
-	}
+    if (!TTT_IsRoundActive())
+    {
+        return Plugin_Handled;
+    }
 
-	if (!IsPlayerAlive(client))
-	{
-		return Plugin_Handled;
-	}
+    if (!IsPlayerAlive(client))
+    {
+        return Plugin_Handled;
+    }
 
-	if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-	{
-		return Plugin_Handled;
-	}
+    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+    {
+        return Plugin_Handled;
+    }
 
-	if (g_bTVoice[client])
-	{
-		CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
-		g_bTVoice[client] = false;
-		LoopValidClients(i)
-		{
-			SetListenOverride(i, client, Listen_Yes);
-			if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-			{
-				CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
-			}
-		}
-	}
-	else
-	{
-		g_bTVoice[client] = true;
-		CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
-		LoopValidClients(i)
-		{
-			if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
-			{
-				SetListenOverride(i, client, Listen_No);
-			}
-			else
-			{
-				CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
-			}
-		}
-	}
-	return Plugin_Continue;
+    if (g_bTVoice[client])
+    {
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
+        g_bTVoice[client] = false;
+        LoopValidClients(i)
+        {
+            SetListenOverride(i, client, Listen_Yes);
+            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+            {
+                CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
+            }
+        }
+    }
+    else
+    {
+        g_bTVoice[client] = true;
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
+        LoopValidClients(i)
+        {
+            if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
+            {
+                SetListenOverride(i, client, Listen_No);
+            }
+            else
+            {
+                CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
+            }
+        }
+    }
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
 
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	LoopValidClients(i)
-	{
-		SetListenOverride(i, client, Listen_Yes);
-	}
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(client))
+    {
+        LoopValidClients(i)
+        {
+            SetListenOverride(i, client, Listen_Yes);
+        }
+    }
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-	int victim = GetClientOfUserId(event.GetInt("userid"));
-	g_bTVoice[victim] = false;
-	LoopValidClients(i)
-	{
-		if (IsPlayerAlive(i))
-		{
-			SetListenOverride(i, victim, Listen_No);
-		}
-		else
-		{
-			SetListenOverride(i, victim, Listen_Yes);
-		}
-	}
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(victim))
+    {
+        g_bTVoice[victim] = false;
+        LoopValidClients(i)
+        {
+            if (IsPlayerAlive(i))
+            {
+                SetListenOverride(i, victim, Listen_No);
+            }
+            else
+            {
+                SetListenOverride(i, victim, Listen_Yes);
+            }
+        }
+    }
 }
 
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
-	int client = GetClientOfUserId(event.GetInt("userid"));
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
 
-	LoopValidClients(i)
-	{
-		if (!IsPlayerAlive(client))
-		{
-			if (IsPlayerAlive(i))
-			{
-				SetListenOverride(i, client, Listen_No);
-				SetListenOverride(client, i, Listen_Yes);
-			}
-			else
-			{
-				SetListenOverride(i, client, Listen_Yes);
-				SetListenOverride(client, i, Listen_Yes);
-			}
-		}
-		else
-		{
-			SetListenOverride(client, i, Listen_Yes);
-			SetListenOverride(i, client, Listen_Yes);
-		}
-	}
+    int client = GetClientOfUserId(event.GetInt("userid"));
 
+    if (TTT_IsClientValid(client))
+    {
+        SetListen(client);
+    }
+}
+
+public void TTT_OnClientGetRole(int client, int role)
+{
+    SetListen(client);
+}
+
+void SetListen(int client)
+{
+    LoopValidClients(i)
+    {
+        if (!IsPlayerAlive(client))
+        {
+            if (IsPlayerAlive(i))
+            {
+                SetListenOverride(i, client, Listen_No);
+                SetListenOverride(client, i, Listen_Yes);
+            }
+            else
+            {
+                SetListenOverride(i, client, Listen_Yes);
+                SetListenOverride(client, i, Listen_Yes);
+            }
+        }
+        else
+        {
+            SetListenOverride(client, i, Listen_Yes);
+            SetListenOverride(i, client, Listen_Yes);
+        }
+    }
 }

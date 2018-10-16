@@ -3,7 +3,6 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <cstrike>
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Models"
@@ -352,6 +351,19 @@ public void TTT_OnClientGetRole(int client, int role)
     if (g_bEnable)
     {
         SetModel(client, role);
+    }
+}
+
+public void TTT_OnPlayerRespawn(int client)
+{
+    if (!TTT_IsRoundActive())
+    {
+        return;
+    }
+
+    if (g_bEnable)
+    {
+        SetModel(client, TTT_GetClientRole(client));
     }
 }
 
