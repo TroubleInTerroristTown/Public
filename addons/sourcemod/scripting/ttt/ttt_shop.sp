@@ -356,47 +356,44 @@ public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const c
     }
     else
     {
-        if (!results.HasResults)
+        if (results.RowCount > 0 && results.FetchRow())
         {
-            g_iCredits[client] = g_cStartCredits.IntValue;
-            UpdatePlayer(client);
+            char sCommunityID[64];
+
+            if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+            {
+                LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
+                return;
+            }
+
+            int credits = results.FetchInt(0);
+
+            ConVar cvar = FindConVar("ttt_debug_mode");
+            if (cvar.BoolValue)
+            {
+                LogMessage("Name: %L has %d credits", client, credits);
+            }
+
+            if (credits == 0)
+            {
+                g_iCredits[client] = g_cStartCredits.IntValue;
+            }
+            else
+            {
+                g_iCredits[client] = credits;
+            }
+
+            if (g_cMoneyCredits.BoolValue)
+            {
+                SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
+            }
+
+            g_bCredits[client] = true;
         }
         else
         {
-            while (results.FetchRow())
-            {
-                char sCommunityID[64];
-
-                if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
-                {
-                    LogError("(SQL_OnClientPostAdminCheck) Auth failed: #%d", client);
-                    return;
-                }
-
-                int credits = results.FetchInt(0);
-
-                ConVar cvar = FindConVar("ttt_debug_mode");
-                if (cvar.BoolValue)
-                {
-                    LogMessage("Name: %L has %d credits", client, credits);
-                }
-
-                if (credits == 0)
-                {
-                    g_iCredits[client] = g_cStartCredits.IntValue;
-                }
-                else
-                {
-                    g_iCredits[client] = credits;
-                }
-
-                if (g_cMoneyCredits.BoolValue)
-                {
-                    SetEntProp(client, Prop_Send, "m_iAccount", g_iCredits[client]);
-                }
-
-                g_bCredits[client] = true;
-            }
+            g_iCredits[client] = g_cStartCredits.IntValue;
+            UpdatePlayer(client);
         }
     }
 }
