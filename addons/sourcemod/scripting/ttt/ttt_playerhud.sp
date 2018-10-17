@@ -67,7 +67,7 @@ public void OnAllPluginsLoaded()
 
 public void OnConfigsExecuted()
 {
-    CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT);
+    CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT |  TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public Action Timer_UpdateText(Handle timer)
