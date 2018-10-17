@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-07-22 10:23:17 UTC
+// Date: 2018-10-17 12:47:28 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -1001,6 +1001,171 @@
 	"Free DNA Scanner left"
 	{
 		"de"		"Du hast einen kostenlose DNA-Scanner benutzt! {1} Nutzung(en) verbleibend."
+	}
+
+	"WE ARE"
+	{
+		"de"		"Wir sind {2} Spieler!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"de"		"Verbleibende Spieler für eine Runde: {1}"
+	}
+
+	"HUD Health - Invalid"
+	{
+		"de"		"Ungültiger Wert"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"de"		"Vorm Tot"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"de"		"Stark Verwundet"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"de"		"Verwundet"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"de"		"Verletzt"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"de"		"Gesund"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"de"		"Ungültiger Wert"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"de"		"Liability"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"de"		"Gefährlich"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"de"		"Schießwütig"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"de"		"Grob"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"de"		"Seriös"
+	}
+
+	"Revive: Before to Target"
+	{
+		"de"		"{1} möchte dich wiederbeleben, warte {1} Sekunde(n) bis du dies akzeptieren kannst."
+	}
+
+	"Revive: Before to Player"
+	{
+		"de"		"Du belebst {1} wieder."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"de"		"{1} muss deine Anfrage akzeptieren."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"de"		"{1} möchte dich wiederbeleben.\nAkzeptierst du diese Anfrage?\nDu hast {1} Sekunden..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"de"		"Ja, ich will!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"de"		"Nein, danke!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"de"		"Menü abgelaufen... Keine Antwort von {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"de"		"{1} hat die Anfrage angenommen und ist wieder im Spiel!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"de"		"{1} hat deine Anfrage abgelehnt!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"de"		"{1} ist nicht tot!"
+	}
+
+	"Respawn: Player"
+	{
+		"de"		"{1} hat {2} wiederbelebt!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"de"		"Taser sind geladen und bereit!"
+	}
+
+	"Version Check: Current"
+	{
+		"de"		"Dieser Server verwendet die aktuelle Version ({1}) von Trouble in Terrorist Town."
+	}
+
+	"Version Check: Unknown"
+	{
+		"de"		"Der Server verwendet eine unbekannte Version ({1}) von Trouble in Terrorist Town. Aktuellste Version ist: {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"de"		"Der Server benutzt eine ältere Version ({1}) von Trouble in Terrorist Town. Aktuellste Version ist {2}."
+	}
+
+	"Revolver: Suicide"
+	{
+		"de"		"Ein Detektive hat versucht ein Innocent mit dem Revolver zu töten."
+	}
+
+	"Bullets: Have already"
+	{
+		"de"		"Sie haben bereits eine Patronen Sorte."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"de"		"Du hast jetzt {green}{1} {orchid}{2} Patronen."
+	}
+
+	"Bullets: Number bullets"
+	{
+		"de"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 
 }

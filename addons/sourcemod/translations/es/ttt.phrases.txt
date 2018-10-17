@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-07-22 10:23:17 UTC
+// Date: 2018-10-17 12:47:28 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -10,7 +10,7 @@
 
 	"Your karma is"
 	{
-		"es"		"Tu KARMA es: {orchid}{1}"
+		"es"		"Tu KARMA: {orchid}{1}"
 	}
 
 	"TEAMS HAS BEEN SELECTED"
@@ -20,97 +20,97 @@
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
-		"es"		"MÍNIMO DE JUGADORES PARA JUGAR: {orchid}{1}"
+		"es"		"MINIMO DE JUGADORES PARA JUGAR: {orchid}{1}"
 	}
 
 	"Your Team is DETECTIVES"
 	{
-		"es"		"Eres un {darkblue}DETECTIVE"
+		"es"		"Sos un {darkblue}DETECTIVE"
 	}
 
 	"Your Team is TRAITORS"
 	{
-		"es"		"Eres un {darkred}TRAIDOR"
+		"es"		"Sos un {darkred}TRAIDOR"
 	}
 
 	"Your Team is INNOCENTS"
 	{
-		"es"		"Eres un {green}INOCENTE"
+		"es"		"Sos un {green}INOCENTE"
 	}
 
 	"Your credits is"
 	{
-		"es"		"Tus CRÉDITOS son: {orchid}{1}"
+		"es"		"CREDITOS: {orchid}{1}"
 	}
 
 	"Your killer is a Traitor"
 	{
-		"es"		"Tu ha asesino fue un {darkred} TRAIDOR!"
+		"es"		"Te mato un {darkred}TRAIDOR!"
 	}
 
 	"Your killer is a Detective"
 	{
-		"es"		"Tu asesino fué un {darkblue}DETECTIVE!"
+		"es"		"Te mato un {darkblue}DETECTIVE!"
 	}
 
 	"Your killer is an Innocent"
 	{
-		"es"		"Tu asesino fué un {green}INOCENTE!"
+		"es"		"Te mato un {green}INOCENTE!"
 	}
 
 	"You killed a Traitor"
 	{
-		"es"		"Has matado a un {darkred}TRAIDOR!"
+		"es"		"Mataste un {darkred}TRAIDOR!"
 	}
 
 	"You killed a Detective"
 	{
-		"es"		"Has asesinado un {darkblue}DETECTIVE!"
+		"es"		"Mataste un {darkblue}DETECTIVE!"
 	}
 
 	"You killed an Innocent"
 	{
-		"es"		"Has matado a un {green}INOCENTE!"
+		"es"		"Mataste un {green}INOCENTE!"
 	}
 
 	"You hurt a Traitor"
 	{
-		"es"		"Has usado el detector en el Jugador {darkred}{1} {lightgreen}y el es un {darkred}TRAIDOR!"
+		"es"		"Usaste el detector en{darkred}{1} {lightgreen}y el es un {darkred}TRAIDOR!"
 	}
 
 	"You hurt a Detective"
 	{
-		"es"		"Has usado el detector en el Jugador{darkblue} {1} {lightgreen} y es un {darkblue}DETECTIVE!"
+		"es"		"Usaste el detector en{darkblue} {1} {lightgreen}y el es un {darkblue}DETECTIVE!"
 	}
 
 	"You hurt an Innocent"
 	{
-		"es"		"Has usado el detector en el Jugador{green} {1} {lightgreen}y es {green}INOCENTE!"
+		"es"		"Usaste el detector en{green} {1} {lightgreen}y el es un {green}INOCENTE!"
 	}
 
 	"Detective scan found body"
 	{
-		"es"		"El DETECTIVE{darkblue} {1} {lightgreen}ha Escaneado un cuerpo, el Asesino es el Jugador{darkred} {2} {lightgreen}con el arma{orchid} {3}"
+		"es"		"DETECTIVE{darkblue} {1} {lightgreen}scaneo un cuerpo, ASESINADO:{darkred} {2} {lightgreen}CON ARMA{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"es"		"El DETECTIVE{darkblue} {1} {lightgreen} ha Escaneado el cuerpo, el jugador se suicidó"
+		"es"		"DETECTIVE{darkblue} {1} {lightgreen}scaneo un cuerpo, el jugador se habia suicidado"
 	}
 
 	"Health Station"
 	{
-		"es"		"Puesto de Salud - {1}"
+		"es"		"Health Station - {1}"
 	}
 
 	"Please wait till your team is assigned"
 	{
-		"es"		"Por favor espera hasta que tu equipo esté asignado"
+		"es"		"Espera hasta que se te asigne un equipo"
 	}
 
 	"You don't have enough money"
 	{
-		"es"		"No tienes suficientes creditos!"
+		"es"		"No tenes creditos suficientes!"
 	}
 
 	"Traitors"
@@ -130,27 +130,27 @@
 
 	"Inspected body. The extracted data are the following"
 	{
-		"es"		"Cuerpo inspeccionado. La información extrída fué la siguiente:"
+		"es"		"Cuerpo inspeccionado. Los datos extraídos fueron los siguientes.:"
 	}
 
 	"Victim name"
 	{
-		"es"		"Nombre de la víctima: {1}"
+		"es"		"Nombre victima: {1}"
 	}
 
 	"Team victim"
 	{
-		"es"		"Equipo: {1}"
+		"es"		"Team: {1}"
 	}
 
 	"Elapsed since his death"
 	{
-		"es"		"Han pasado {1} segundos desde su muerte"
+		"es"		"Tiempo transcurrido desde su muerte {1} segundos"
 	}
 
 	"The weapon used has been"
 	{
-		"es"		"El arma usada ha sido: {1}"
+		"es"		"El arma que se uso fue: {1}"
 	}
 
 	"The weapon used has been"
@@ -160,7 +160,7 @@
 
 	"The weapon used has been: himself (suicide)"
 	{
-		"es"		"El arma que ha sido usada: el mismo (suicidio)"
+		"es"		"(SUICIDIO)"
 	}
 
 	"T channel"
@@ -180,112 +180,112 @@
 
 	"TTT Shop"
 	{
-		"es"		"Tienda TTT"
+		"es"		"TTT Shop\nTus creditos: {1}"
 	}
 
 	"credits earned"
 	{
-		"es"		"Has ganado {1} crédito\nTus créditos son: {2}"
+		"es"		"Ganaste{1} creditos\nTus creditos son: {2}"
 	}
 
 	"lost credits"
 	{
-		"es"		"Has perdido {1} creditos\n Tienes {2} creditos"
+		"es"		"Perdiste {1} creditos\nTus creditos son: {2}"
 	}
 
 	"karma earned"
 	{
-		"es"		"Has obtenido {1} de karma\n Tu karma es: {2}"
+		"es"		"Ganaste {1} karma\nTu karma es: {2}"
 	}
 
 	"lost karma"
 	{
-		"es"		"Has perdido {1} de karma\nTu karma es: {2}"
+		"es"		"Perdiste {1} karma\nTu karma ahora es: {2}"
 	}
 
 	"no logs yet"
 	{
-		"es"		"Aún no hay logs"
+		"es"		"No hay logs aun"
 	}
 
 	"See your console"
 	{
-		"es"		"Logs recividos! Mira en la consola para ver los logs"
+		"es"		"Logs recibidos, mira la consola!"
 	}
 
 	"you cant see logs"
 	{
-		"es"		"No puedes ver los logs ahora, necesitas estar muerto o la ronda estar inactiva"
+		"es"		"No podes ver los logs ahora, tenes que estar muerto"
 	}
 
 	"Receiving logs"
 	{
-		"es"		"Reciviendo logs... por favor espera"
+		"es"		"Recibiendo logs... espera un momento"
 	}
 
 	"Found Innocent"
 	{
-		"es"		"{orchid}{1} {lightgreen} ha encontrado el cuerpo de {green}{2}. {lightgreen} Era un {green} INOCENTE!"
+		"es"		"{orchid}{1} {lightgreen}encontro a {green}{2}. {lightgreen}Era un {green}Inocente!"
 	}
 
 	"Found Detective"
 	{
-		"es"		"{orchid}{1} {lightgreen}ha econtrado el cuerpo de {darkblue}{2}. {lightgreen}Era un {darkblue}DETECTIVE!"
+		"es"		"{orchid}{1} {lightgreen}encontro a {darkblue}{2}. {lightgreen}Era un {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor"
 	{
-		"es"		"{orchid}{1} {lightgreen}ha encontrado el cuerpo de {darkred}{2}. {lightgreen}Era un {darkred}Traidor!"
+		"es"		"{orchid}{1} {lightgreen}encontro a {darkred}{2}. {lightgreen}Era un {darkred}Traidor!"
 	}
 
 	"Your bomb is not armed."
 	{
-		"es"		"Tu bomba no está armada."
+		"es"		"Tu bomba no fue armada."
 	}
 
 	"Your bomb is now armed."
 	{
-		"es"		"Tu bomba esta armada."
+		"es"		"Tu bomba ya ha sido armada."
 	}
 
 	"bomb will arm in 60 seconds, double tab F to explode"
 	{
-		"es"		"la bomba se armara en 60 segundos, pulsa dos veces F para hacerla explotar"
+		"es"		"60 segundos para armar la bomba, luego activala apretando dos veces la F"
 	}
 
 	"Your Karma is too low"
 	{
-		"es"		"Has sido baneado porque tu karma es muy bajo!"
+		"es"		"Fuiste baneado por karma bajo! Lee las reglas www.jbrage.tk/reglas_ttt.txt"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"
 	{
-		"es"		"{darkred}{1} TRAIDORES{lightgreen}HAN SIDO ESCOGIDOS"
+		"es"		"{darkred}{1} TRAIDORES {lightgreen}HAN SIDO SELECCIONADOS"
 	}
 
 	"Suicide Blocked"
 	{
-		"es"		"El suicidio está bloqueado"
+		"es"		"Suicidio bloqueado"
 	}
 
 	"Right click to plant the C4"
 	{
-		"es"		"Click derecho para plantar la C4!"
+		"es"		"APRETA EL CLICK DERECHO PARA PLANTAR LA BOMBA!"
 	}
 
 	"You already have an active Health Station"
 	{
-		"es"		"Ya tienes un Puesto de Salud activo!"
+		"es"		"Ya tenes un Health Station!"
 	}
 
 	"The player who RDM'd you is no longer available"
 	{
-		"es"		"El jugador que te hizo RDM ya no está disponible!"
+		"es"		"El jugador que te hizo RDM no esta mas!"
 	}
 
 	"You were RDM'd"
 	{
-		"es"		"{1} te ha hecho RDM!"
+		"es"		"El jugador que te hizo RDM fue {1}!"
 	}
 
 	"Forgive"
@@ -295,67 +295,67 @@
 
 	"Punish"
 	{
-		"es"		"Castigar"
+		"es"		"Slayear"
 	}
 
 	"Choose Punish"
 	{
-		"es"		"{1} ha escogido castigar a {2} por hacerle RDM!"
+		"es"		"{1} fue slayeado por {2} por RDM!"
 	}
 
 	"Choose Forgive Victim"
 	{
-		"es"		"Has perdonado a {1} por hacerte RDM!"
+		"es"		"Perdonaste al hdp de {1}que te hizo RDM!"
 	}
 
 	"Choose Forgive Attacker"
 	{
-		"es"		"{1} ha escogido perdonarte por hacer RDM!"
+		"es"		"{1} TE PERDONO POR HACERLE RDM! TENES SUERTE EH!"
 	}
 
 	"Player is Now Traitor"
 	{
-		"es"		"{orchid}{1} {lightgreen}es ahora un {darkred}Traidor!"
+		"es"		"{orchid}{1} {lightgreen}es ahora {darkred}Traidor!"
 	}
 
 	"Player is Now Detective"
 	{
-		"es"		"{orchid}{1} {lightgreen}es ahora un {darkblue}Detective!"
+		"es"		"{orchid}{1} {lightgreen}es ahora {darkblue}Detective!"
 	}
 
 	"You Are Unassigned"
 	{
-		"es"		"Aún no te han asignado un rol!"
+		"es"		"Tu rol no fue asignado todavia!"
 	}
 
 	"You Are Now Innocent"
 	{
-		"es"		"Eres un {green}Inocente!"
+		"es"		"Sos un {green}Innocent!"
 	}
 
 	"You Are Now Traitor"
 	{
-		"es"		"Eres un {darkred} Traidor!"
+		"es"		"Sos un {darkred}Traitor!"
 	}
 
 	"You Are Now Detective"
 	{
-		"es"		"Eres un {darkblue}Detective!"
+		"es"		"Sos un {darkblue}Detective!"
 	}
 
 	"Triggered Falling Building"
 	{
-		"es"		"{1} ha activado la caída de la construcción como un No-Traidor."
+		"es"		"{1} triggered the falling building as a Non-Traitor."
 	}
 
 	"Bomb Detonated"
 	{
-		"es"		"Tu bomba ha explotado!"
+		"es"		"TU BOMBA EXPLOTO!"
 	}
 
 	"Set C4 Timer"
 	{
-		"es"		"Coloca el temporizador C4..."
+		"es"		"Elegi cuanto tiempo queres para usar la bomba..."
 	}
 
 	"Seconds"
@@ -365,7 +365,7 @@
 
 	"Defuse C4"
 	{
-		"es"		"Defusa el C4!"
+		"es"		"Defusear el C4!"
 	}
 
 	"C4 Wire"
@@ -375,67 +375,67 @@
 
 	"You Defused Bomb"
 	{
-		"es"		"Has defusado la {lightgreen}bomba de {orchid}{1}!"
+		"es"		"Defuseaste la bomba de {orchid}{1}"
 	}
 
 	"Has Defused Bomb"
 	{
-		"es"		"{orchid}{1} {lightgreen}ha defusado la bomba!"
+		"es"		"{orchid}{1} {lightgreen}defuseo tu bomba!"
 	}
 
 	"Failed Defuse"
 	{
-		"es"		"Fallo al defusar!"
+		"es"		"Fallo al defusear!"
 	}
 
 	"Alive to Plant"
 	{
-		"es"		"Debes estar vivo para plantar la bomba!"
+		"es"		"Tenes que estar vivo para plantar una bomba!"
 	}
 
 	"Will Explode In"
 	{
-		"es"		"Colocando un c4 que explotará en {orchid}{1} {lightgreen}segundos."
+		"es"		"Plantano un C4 que explotara en {orchid}{1} {lightgreen}segundos."
 	}
 
 	"Bomb Was Not Found"
 	{
-		"es"		"Tu bomba no fué encontrada!"
+		"es"		"No bomba no fue encontrada!"
 	}
 
 	"Wire Is"
 	{
-		"es"		"El cable para defusar es {orchid}{1} {lightgreen}!"
+		"es"		"El cable para defusear es {orchid}{1} {lightgreen}!"
 	}
 
 	"Your Traitor Partners"
 	{
-		"es"		"Tus compañeros traidores son:"
+		"es"		"Tus jugadores traidores son:"
 	}
 
 	"No Traitor Partners"
 	{
-		"es"		"No tienes compañeros."
+		"es"		"No tenes amigos traidores."
 	}
 
 	"Kick Bad Name"
 	{
-		"es"		"Quita la palabra {1} de tu nombre!"
+		"es"		"Saca la palabra {1} de tu nombre!!!"
 	}
 
 	"Health Station Deployed"
 	{
-		"es"		"Estación de Sanación desplegada. Quédate cerca para recuperar HP!"
+		"es"		"Health Station activado, estate cerca para tener HP!"
 	}
 
 	"Healing From"
 	{
-		"es"		"Curando de la {lightgreen}'s Health Station!Estación de Sanación de {orchid}{1}!"
+		"es"		"Siendo curado por el Health Station de {orchid}{1}!"
 	}
 
 	"Health Station Out Of Charges"
 	{
-		"es"		"Esta Estación de Sanación no tiene más cargas! Espera hasta que se recargue!"
+		"es"		"Estamos recargando el Health Station! Espera un poco!"
 	}
 
 	"Traitor List"
@@ -445,32 +445,32 @@
 
 	"Welcome Menu"
 	{
-		"es"		"Hola {1}, \neste es un servidor de TTT\n escrito por {2}\n\nEstás familiarizado con las reglas?"
+		"es"		"Hola! {1},\neste es un server con el plugin TTT\ncreado por {2}\n\nEstas familiarizado con las reglas?"
 	}
 
 	"WM Yes"
 	{
-		"es"		"Sí, estoy familiarizado con las reglas!"
+		"es"		"Si! Me se las reglas!"
 	}
 
 	"WM Kick Message"
 	{
-		"es"		"Estás inactivo o has cerrado las reglas!"
+		"es"		"No aceptaste las reglas! Entra y aceptalas nuevamente"
 	}
 
 	"AM Question"
 	{
-		"es"		"Quieres jugar como detective?\nNecesitas lo siguiente:\n\n-Un micrófono\n-Hablar con otros jugadores\n-Juego activo\n\nPuedes confirmar esto?"
+		"es"		"Queres jugar como detective?\nEntonces necesitas:\n\n-microfono\n-hablar con otros jugadores\n-jugar activamente\n\nPodes confirmar esto?"
 	}
 
 	"AM Yes"
 	{
-		"es"		"Sí, puedo confirmarlo."
+		"es"		"Si, confirmo esto!"
 	}
 
 	"AM No"
 	{
-		"es"		"No, no puedo confirmar esto."
+		"es"		"No, no confirmo esto."
 	}
 
 	"WM No"
@@ -480,87 +480,87 @@
 
 	"next round in"
 	{
-		"es"		"La próxima ronda empezará en {1} segundos!"
+		"es"		"LA RONDA EMPIEZA EN {1} SEGUNDOS!!"
 	}
 
 	"Hurt Station Deployed"
 	{
-		"es"		"Estación de Daño ha sido desplegada! Dañará a los jugadores cercanos!"
+		"es"		"Hurt station ha sido desplegado! Lastimara a cualquiera que se acerque"
 	}
 
 	"You reached limit"
 	{
-		"es"		"Sólo puedes comprar un {1} por ronda!"
+		"es"		"Solo podes comprar {1} vez/veces por ronda!"
 	}
 
 	"All karma has been updated"
 	{
-		"es"		"EL KARMA SE HA ACTUALIZADO!"
+		"es"		"EL KARMA SE ACTUALIZO!"
 	}
 
 	"ID: Need to be Alive"
 	{
-		"es"		"Necesitas estar vivo para usar este comando."
+		"es"		"Tenes que estar vivo para usar el comando."
 	}
 
 	"ID: Need to buy ID"
 	{
-		"es"		"No tienes una tarjeta ID. Compra una en la Tienda."
+		"es"		"No tenes una identificacion, compra una en la tienda escribiendo !shop."
 	}
 
 	"ID: Shows ID"
 	{
-		"es"		"{1} es Inocente"
+		"es"		"ATENCION! {orchid}{1}{lightgreen} ES INOCENTE!!"
 	}
 
 	"Found Fake"
 	{
-		"es"		"{orchid}{1} {lightgreen}ha encontrado un cuerpo falso!"
+		"es"		"{orchid}{1} {lightgreen}encontro un cuerpo falso!"
 	}
 
 	"TaserMax"
 	{
-		"es"		"Has alcanzado el límite de táseres! (Uso(s) por ronda: {1})"
+		"es"		"Ya no podes comprar mas teasers (Limite por ronda: {1})"
 	}
 
 	"AdminSet"
 	{
-		"es"		"Has dado {orchid}{1} {green}{2} {lightgreen} {3}!"
+		"es"		"Diste {orchid}{1} {green}{2} {lightgreen} {3}!"
 	}
 
 	"ID: Buy Message"
 	{
-		"es"		"Escribe !id para mostrar tu inocencia."
+		"es"		"Escribi !id para mostrar tu inocencia en el chat"
 	}
 
 	"RoundStartCenter"
 	{
-		"es"		"La ronda empieza en {3} segundos"
+		"es"		"<font size='{1}' color='#{2}'>La ronda empieza en {3} segundos</font>"
 	}
 
 	"RoundStartedCenter"
 	{
-		"es"		"GO GO GO !!!"
+		"es"		"<font size='{1}' color='#{2}'><bold>VAMOS VAMOS VAMOS !!!</bold></font>"
 	}
 
 	"YouAreDead"
 	{
-		"es"		"No puedes usar esto estando muerto"
+		"es"		"No podes usar esto estando muerto"
 	}
 
 	"Bought All"
 	{
-		"es"		"Has alcanzado el límite de {1} {orchid}({2})"
+		"es"		"Alcanzaste el limite de {1}'s {orchid}({2})"
 	}
 
 	"DT: Invalid Position"
 	{
-		"es"		"La posición de la Decoy no es correcta. (Problema de atasco)"
+		"es"		"La posicion de tu decoy es incorrecta. (Se atasco)"
 	}
 
 	"SpecMenu: Title"
 	{
-		"es"		"Menú de espectador"
+		"es"		"Spec Menu"
 	}
 
 	"SpecMenu: Player"
@@ -575,12 +575,12 @@
 
 	"SpecMenu: Prev"
 	{
-		"es"		"Jugador previo"
+		"es"		"Anterior jugador"
 	}
 
 	"SpecMenu: Mute"
 	{
-		"es"		"Mutea este jugador"
+		"es"		"Mutear este jugador"
 	}
 
 	"Hud Name"
@@ -590,7 +590,7 @@
 
 	"Hud Health"
 	{
-		"es"		"Salud"
+		"es"		"Vida"
 	}
 
 	"Hud PlayerHealth"
@@ -610,72 +610,172 @@
 
 	"You tased a Traitor"
 	{
-		"es"		"El jugador {lightgreen} {1} usó un detector en jugador {darkred} {2} {lightgreen} y él es un {darkred} TRAIDOR!"
+		"es"		"{lightgreen}{1} uso un detector en{darkred}{2} {lightgreen}y es {darkred}TRAIDOR!"
+	}
+
+	"You tased a Detective"
+	{
+		"es"		"Player {lightgreen}{1} uso un detector en{darkblue} {2} {lightgreen}y es {darkblue}DETECTIVE!"
+	}
+
+	"You tased an Innocent"
+	{
+		"es"		"Player {lightgreen}{1} uso un detector en{green} {2} {lightgreen}y es {green}INOCENTE!"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"es"		"{1} esta hablando en el chat de voz de traidores!"
 	}
 
 	"stopped talking in Traitor Voice Chat"
 	{
-		"es"		"{1} dejó de hablar en el chat de voz de Traidores"
+		"es"		"{1} dejo de hablar en el chat de voz de traidores"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"es"		"Chat de voz de traidores: desactivado!"
+	}
+
+	"Traitor Voice Chat: Enabled!"
+	{
+		"es"		"Chat de voz de traidores: Activado!"
+	}
+
+	"ID: Cooldown"
+	{
+		"es"		"Tenes que esperar antes de usar este comando de nuevo."
 	}
 
 	"SpecMenu: Unmute Dead"
 	{
-		"es"		"Dejar de silenciar a los jugadores muertos"
+		"es"		"Desmutear jugadores muertos"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"es"		"Mutear jugadores muertos"
 	}
 
 	"SpecMenu: Unmute Alive"
 	{
-		"es"		"Dejar de silenciar jugadores vivos"
+		"es"		"Desmutear jugadores vivos"
 	}
 
 	"SpecMenu: Mute Alive"
 	{
-		"es"		"Silenciar jugadores vivos"
+		"es"		"Mutear jugadores vivos"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"es"		"Shop will no longer open after buying an item."
+	}
+
+	"Reopen Shop activated"
+	{
+		"es"		"Shop will open again after buying an item."
 	}
 
 	"You already have an active Station"
 	{
-		"es"		"¡Ya tienes una estación activa!"
+		"es"		"Ya tenes una Station activada!"
 	}
 
 	"Item bought! (NEW)"
 	{
-		"es"		"¡Artículo {2} comprado por {3} créditos! Créditos remanentes: {1}"
+		"es"		"{2} comprado por {3} creditos! Creditos restantes: {1}"
+	}
+
+	"watching logs alive"
+	{
+		"es"		"{green}{1} {default}esta {darkred}vivo {default}y esta mirando los logs."
 	}
 
 	"Player is Now Innocent"
 	{
-		"es"		"{orchid}{1} {lightgreen}és ahora {green}INOCENTE!"
+		"es"		"{orchid}{1} {lightgreen}es ahora {green}Inocente!"
 	}
 
 	"AdminSetRoundSlays"
 	{
-		"es"		"{lightgreen}¡{orchid}{1} {lightgreen}fue asesinado por {orchid}{2} {lightgreen}durante {orchid}{3} {lightgreen}rondas!"
+		"es"		"{orchid}{1} {lightgreen}fue slayeado por {orchid}{2} {lightgreen}por {orchid}{3} {lightgreen}rondas!"
+	}
+
+	"RS - Slayed"
+	{
+		"es"		"Fuiste slayeado! Rondas restantes: {orchid}{1}"
+	}
+
+	"Shop Discount Price"
+	{
+		"es"		"({1}%% APAGADO)"
+	}
+
+	"Sprint active"
+	{
+		"es"		"Podes correr por {1} segundos!"
+	}
+
+	"Sprint cooldown"
+	{
+		"es"		"Vas a poder correr en {1} segundos."
+	}
+
+	"Sprint available"
+	{
+		"es"		"YA PODES CORRER!!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"es"		"Encontramos:"
 	}
 
 	"TAGrenade Innocents"
 	{
-		"es"		"{green}{1} Inocentes"
+		"es"		"{green}{1} inocentes"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"es"		"{darkred}{1} traidores"
 	}
 
 	"TAGrenade Detectives"
 	{
-		"es"		"{darkblue} {1} Detectives"
+		"es"		"{darkblue}{1} detectives"
+	}
+
+	"Location Saved"
+	{
+		"es"		"Escribi '{orchid}!tele{lightgreen}' en el chat para ser teletransportado."
 	}
 
 	"Teleport Max"
 	{
-		"es"		"¡Has llegado al límite! {orchid}({1})"
+		"es"		"Alcanzaste el limite! {orchid}({1})"
 	}
 
 	"Radar Updated"
 	{
-		"es"		"¡Radar actualizado!"
+		"es"		"Radar actualizado!"
 	}
 
 	"Decoy Body Active"
 	{
-		"es"		"¡Has encontrado un cuerpo de señuelo! ¡CORRE!"
+		"es"		"ENCONTRASTE UN CUERPO EXPLOSIVO! CORRE!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"es"		"TTT VERSION: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"es"		"TTT Radio Commands"
 	}
 
 	"TTT Radio Menu: Yes"
@@ -688,19 +788,44 @@
 		"es"		"No"
 	}
 
+	"TTT Radio Menu: Maybe"
+	{
+		"es"		"Quizas"
+	}
+
 	"TTT Radio Menu: Help"
 	{
-		"es"		"Help"
+		"es"		"Ayuda"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"es"		"Checkear"
 	}
 
 	"TTT Radio Menu: Im With"
 	{
-		"es"		"Estoy con..."
+		"es"		"Im with..."
 	}
 
 	"TTT Radio Menu: Suspect"
 	{
-		"es"		"Sospechar..."
+		"es"		"Sospechoso..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"es"		"Traidor..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"es"		"Inocente..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"es"		"Veo..."
 	}
 
 	"TTT Radio: Yes"
@@ -715,72 +840,337 @@
 
 	"TTT Radio: Maybe"
 	{
-		"es"		"Tal vez"
+		"es"		"Quizas"
+	}
+
+	"TTT Radio: Help"
+	{
+		"es"		"Ayuda"
 	}
 
 	"TTT Radio: Check"
 	{
-		"es"		"Comprobar"
+		"es"		"Checkear"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"es"		"Im with {1}"
 	}
 
 	"TTT Radio: Suspect"
 	{
-		"es"		"{1} actúa sospechoso"
+		"es"		"{1} actua sospechosamente."
 	}
 
 	"TTT Radio: Traitor"
 	{
-		"es"		"¡{1} es el traidor!"
+		"es"		"{1} ES EL TRAIDOR!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"es"		"{1} is inocente."
+	}
+
+	"TTT Radio: See"
+	{
+		"es"		"Veo a {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"es"		"Can't find an ragdoll"
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"es"		"Cambiaste de posicion con {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"es"		"DETECTIVE{darkblue} {1} {lightgreen}scaneo un cuerpo, el asesino fue{green} {2} {lightgreen}con el arma{orchid} {3}"
 	}
 
 	"Detective scan found body Detective"
 	{
-		"es"		"DETECTIVE {darkblue} {1} {lightgreen} Escaneó un cuerpo, el asesino es el jugador {darkblue} {2} {lightgreen} usó el arma{orchid} {3}"
+		"es"		"DETECTIVE{darkblue} {1} {lightgreen}scaneo un cuerpo, el asesino fue{darkblue} {2} {lightgreen}con el arma{orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"es"		"DETECTIVE{darkblue} {1} {lightgreen}scaneo un cuerpo, el asesino fue{darkred} {2} {lightgreen}con el arma{orchid} {3}"
 	}
 
 	"No karma hurt traitor"
 	{
-		"es"		"No perdiste Karma porque el {darkred} TRAIDOR {lightgreen} te lastimó antes."
+		"es"		"No perdiste karma porque el {darkred}TRAIDOR {lightgreen}te lastimo primero."
+	}
+
+	"No karma hurt innocent"
+	{
+		"es"		"No perdiste karma porque el {green}INOCENTE {lightgreen}te lastimo primero."
+	}
+
+	"No karma hurt detective"
+	{
+		"es"		"No perdiste karma porque el {darkblue}DETECTIVE {lightgreen}te lastimo primero."
 	}
 
 	"Shop Item not found"
 	{
-		"es"		"No se puede encontrar '{1}' como un artículo de compra válido"
+		"es"		"No se pudo encontrar '{1}' como un objeto valido"
+	}
+
+	"TTT Radio: KOS"
+	{
+		"es"		"KOS {1}!"
 	}
 
 	"Found Innocent Silent"
 	{
-		"es"		"{lightgreen} Has encontrado silenciosamente el cuerpo de {green} {1}. {lightgreen} ¡Era {green}INOCENTE!"
+		"es"		"{lightgreen}En silencio encontraste el cuerpo de {green}{1}. {lightgreen}Era un {green}INOCENTE!"
+	}
+
+	"Found Detective Silent"
+	{
+		"es"		"{lightgreen}En silencio encontraste el cuerpo de {darkblue}{1}. {lightgreen}Era un {darkblue}DETECTIVE!"
 	}
 
 	"Found Traitor Silent"
 	{
-		"es"		"{lightgreen} Has encontrado silenciosamente el cuerpo de {darkred} {1}. {lightgreen} ¡Era un {darkred}Traidor !"
+		"es"		"{lightgreen}En silencio encontraste el cuerpo de {darkred}{1}. {lightgreen}Era un {darkred}Traidor!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"es"		"Elige castigos:"
+	}
+
+	"C4: Slay"
+	{
+		"es"		"Slayear jugador"
+	}
+
+	"C4: Explode"
+	{
+		"es"		"Explotar bomba C4"
 	}
 
 	"Name Change Kick Reason"
 	{
-		"es"		"¡El cambio de nombre no está permitido durante una ronda activa!"
+		"es"		"No podes cambiarte el nombre en una RONDA ACTIVA!"
 	}
 
 	"Name Change Reason"
 	{
-		"es"		"Cambio de nombre durante la ronda activa"
+		"es"		"Name change during active round"
+	}
+
+	"Name Change Message"
+	{
+		"es"		"{orchid}{1} {lightgreen}cambio su nombre a {orchid}{2}!"
 	}
 
 	"No tripmines"
 	{
-		"es"		"Usted no tiene ninguna mina."
+		"es"		"No tenes minas."
 	}
 
 	"Invalid location"
 	{
-		"es"		"La ubicación no es válida para colocar la mina."
+		"es"		"Localizacion indevida de la mina"
 	}
 
 	"AlreadyTaser"
 	{
-		"es"		"¡Ya tienes una pistola eléctrica en tu inventario!"
+		"es"		"Ya tenes un teaser en tu inventario!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"es"		"Minas restantes: {1}"
+	}
+
+	"TTT Radio Menu: KOS"
+	{
+		"es"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"es"		"Para plantar una mina, escribi '/tripmine' en el chat"
+	}
+
+	"Free DNA Scanner left"
+	{
+		"es"		"Usaste un scaner de cadaveres! {1} restantes."
+	}
+
+	"WE ARE"
+	{
+		"es"		"We are {1} player(s)!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"es"		"Jugadores restantes para empezar la ronda: {1}"
+	}
+
+	"HUD Health - Invalid"
+	{
+		"es"		"Valor indevido"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"es"		"Cercano a la muerte"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"es"		"Mal herido"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"es"		"Herido"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"es"		"Lastimado"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"es"		"Sanado"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"es"		"Valor invalido"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"es"		"Responsabilidad"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"es"		"Peligroso"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"es"		"Trigger-Happy"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"es"		"Crudo"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"es"		"Reputable"
+	}
+
+	"Revive: Before to Target"
+	{
+		"es"		"{1} quiere revivirte, espera {2} segundos hasta que aceptes."
+	}
+
+	"Revive: Before to Player"
+	{
+		"es"		"Vas a revivir a {1}."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"es"		"{1} tiene que aceptar la invitacion de revivir."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"es"		"{1} quiere revivirte.\nAceptas la peticion?\nTenes {2} segundos..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"es"		"Si, quiero!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"es"		"No, gracias!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"es"		"TIEMPO! NO hubo respuesta de {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"es"		"{1} acepto tu peticion y ahora esta de nuevo en el juego!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"es"		"{1} no acepto tu peticion!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"es"		"{1} no esta muerto!"
+	}
+
+	"Respawn: Player"
+	{
+		"es"		"{1} respawneo {2}!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"es"		"Teasers cargados y activados!"
+	}
+
+	"Version Check: Current"
+	{
+		"es"		"Este servidor esta corriendo la ultima version del TTT ({1})."
+	}
+
+	"Version Check: Unknown"
+	{
+		"es"		"Este server esta ejecutando una version desconocida del TTT ({1}). Ultima version es {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"es"		"Este server esta ejecutando una version vieja del TTT ({1}). Ultima version es {2}"
+	}
+
+	"Revolver: Suicide"
+	{
+		"es"		"Un detective intento matar un inocente con un revolver"
+	}
+
+	"Bullets: Have already"
+	{
+		"es"		"Ya tienes un tipo de balas.."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"es"		"Ahora tenes {green}{1} {orchid}{2}."
+	}
+
+	"Bullets: Number bullets"
+	{
+		"es"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 
 }

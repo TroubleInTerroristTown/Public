@@ -1,0 +1,336 @@
+// Exported from SourceMod Translator
+// Date: 2018-10-17 12:47:29 UTC
+// Language: Danish (da)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"da"		"MIN. SPILLERE KRÆVET FOR AT SPILLE: {orchid}{1}"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"da"		"Du er en {darkred}FORRÆDER"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"da"		"Du er en {green}USKYLDIG"
+	}
+
+	"Your credits is"
+	{
+		"da"		"Dine MØNTER er: {orchid}{1}"
+	}
+
+	"Your killer is a Detective"
+	{
+		"da"		"Din drabsmand var en {darkblue}DETEKTIV!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"da"		"Din drabsmand var en {green}USKYLDIG!"
+	}
+
+	"You killed a Detective"
+	{
+		"da"		"Du dræbte en {darkblue}DETEKTIV!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"da"		"Du har brugt en detector mod Spiller {darkred}{1} {lightgreen}og han er en {darkred}FORRÆDER!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"da"		"Du har brugt en detektor på Spiller{green} {1} {lightgreen}og han er {green}USKYLDIG!"
+	}
+
+	"Detective scan found body"
+	{
+		"da"		"DETEKTIV{darkblue} {1} {lightgreen}Skannede en krop, Drabsmanden er Spiller{darkred} {2} {lightgreen}med våbnet{orchid} {3}"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"da"		"Vent venligst til dit hold er blevet tildelt"
+	}
+
+	"You don't have enough money"
+	{
+		"da"		"Du har ikke nok mønter!"
+	}
+
+	"Traitors"
+	{
+		"da"		"FORRÆDERE"
+	}
+
+	"Detectives"
+	{
+		"da"		"DETEKTIVER"
+	}
+
+	"Innocents"
+	{
+		"da"		"USKYLDIGE"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"da"		"Undersøgte krop. Det udvundne data var følgende:"
+	}
+
+	"Victim name"
+	{
+		"da"		"Offers navn: {1}"
+	}
+
+	"Team victim"
+	{
+		"da"		"Hold: {1}"
+	}
+
+	"Elapsed since his death"
+	{
+		"da"		"Tid siden dødsfald: {1} sekunder"
+	}
+
+	"T channel"
+	{
+		"da"		"{darkred}*FORRÆDER* {1}:{green} {2}"
+	}
+
+	"TTT Shop"
+	{
+		"da"		"TTT Shop\nDine Mønter: {1}"
+	}
+
+	"TTT Shop"
+	{
+		"da"		"TTT Shop\nDin Mønter: {1}"
+	}
+
+	"credits earned"
+	{
+		"da"		"Du vandt {1} mønter\nDit antal mønter er nu: {2}"
+	}
+
+	"lost credits"
+	{
+		"da"		"Du tabte {1} mønter\nDine mønter er nu: {2}"
+	}
+
+	"no logs yet"
+	{
+		"da"		"Ingen logbøger endnu"
+	}
+
+	"no logs yet"
+	{
+		"da"		"Ingen logbør endnu"
+	}
+
+	"you cant see logs"
+	{
+		"da"		"Du kan ikke se logbogen nu, du skal enten være død eller runden skal være ovre."
+	}
+
+	"Receiving logs"
+	{
+		"da"		"Modtager logbøger... vent et øjeblik"
+	}
+
+	"Found Innocent"
+	{
+		"da"		"{orchid}{1} {lightgreen}har fundet kroppen af {green}{2}. {lightgreen}Det var en {green}USKYLDIG!"
+	}
+
+	"Found Traitor"
+	{
+		"da"		"{orchid}{1} {lightgreen}har fundet kroppen af {darkred}{2}. {lightgreen}Det var en {darkred}Forræder!"
+	}
+
+	"Your bomb is not armed."
+	{
+		"da"		"Din bombe er ikke armeret."
+	}
+
+	"Your bomb is now armed."
+	{
+		"da"		"Din bombe er nu armeret."
+	}
+
+	"Your Karma is too low"
+	{
+		"da"		"Du blev udvist, da din karma er for lav!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"da"		"{darkred}{1} FORRÆDERE {lightgreen}ER BLEVET VALGT"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"da"		"{darkred}{1} FORRÆDERNE {lightgreen}ER BLEVET VALGT"
+	}
+
+	"Suicide Blocked"
+	{
+		"da"		"Selvmord blokeret"
+	}
+
+	"Right click to plant the C4"
+	{
+		"da"		"Højre-klik for at plante bomben!"
+	}
+
+	"You were RDM'd"
+	{
+		"da"		"Du blev RDMet af {1}!"
+	}
+
+	"Forgive"
+	{
+		"da"		"Tilgiv"
+	}
+
+	"Punish"
+	{
+		"da"		"Straf"
+	}
+
+	"Choose Punish"
+	{
+		"da"		"{1} er blevet udvalgt til at straffe {2} for at RDMe dem!"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"da"		"Du har valgt at tilgive {1} for RDMe dig!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"da"		"{orchid}{1} {lightgreen}er nu {darkred}Forræder!"
+	}
+
+	"Player is Now Detective"
+	{
+		"da"		"{orchid}{1} {lightgreen}er nu {darkblue}Detektiv!"
+	}
+
+	"You Are Unassigned"
+	{
+		"da"		"Din rolle er ikke blevet tildelt endnu!"
+	}
+
+	"You Are Now Detective"
+	{
+		"da"		"Du er en {darkblue}Detektiv!"
+	}
+
+	"Bomb Detonated"
+	{
+		"da"		"Din bombe eksploderede!"
+	}
+
+	"Set C4 Timer"
+	{
+		"da"		"Sæt bombe timer..."
+	}
+
+	"Seconds"
+	{
+		"da"		"{1} sekunder"
+	}
+
+	"C4 Wire"
+	{
+		"da"		"Ledning {1}"
+	}
+
+	"Has Defused Bomb"
+	{
+		"da"		"{orchid}{1} {lightgreen}har desarmeret bomben!"
+	}
+
+	"Failed Defuse"
+	{
+		"da"		"Desarmeringen mislykkedes!"
+	}
+
+	"Alive to Plant"
+	{
+		"da"		"Du skal være i live for at placere en bombe!"
+	}
+
+	"Bomb Was Not Found"
+	{
+		"da"		"Din bombe blev ikke fundet!"
+	}
+
+	"Wire Is"
+	{
+		"da"		"Desarmeringsledningen er{orchid}{1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"da"		"Dine medforrædere er:"
+	}
+
+	"Traitor List"
+	{
+		"da"		"{darkred} {1}"
+	}
+
+	"WM Yes"
+	{
+		"da"		"Ja, jeg er bekendt med reglerne!"
+	}
+
+	"WM Kick Message"
+	{
+		"da"		"Du er inaktiv eller lukkede regel menuen!"
+	}
+
+	"AM Yes"
+	{
+		"da"		"Ja, jeg bekræfter dette."
+	}
+
+	"AM No"
+	{
+		"da"		"Nej, jeg kan ikke bekræfte dette."
+	}
+
+	"next round in"
+	{
+		"da"		"Næste runde starter om {1} sekunder!"
+	}
+
+	"All karma has been updated"
+	{
+		"da"		"KARMA BLEV OPDATERET!"
+	}
+
+	"SpecMenu: Player"
+	{
+		"da"		"Spiller: {1}"
+	}
+
+	"Player is Now Innocent"
+	{
+		"da"		"{orchid}{1} {lightgreen}er nu {green}Uskyldig!"
+	}
+
+}

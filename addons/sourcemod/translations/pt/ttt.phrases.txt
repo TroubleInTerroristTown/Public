@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-07-22 10:23:18 UTC
+// Date: 2018-10-17 12:47:30 UTC
 // Language: Brazilian Portuguese (pt)
 // 
 // To view other translations for this plugin, please visit:
@@ -986,6 +986,176 @@
 	"Remaining Tripmines"
 	{
 		"pt"		"Tripmines restantes: {1}"
+	}
+
+	"TTT Radio Menu: KOS"
+	{
+		"pt"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"pt"		"Para plantar uma Tripmine, digite '/tripmine' no chat "
+	}
+
+	"Free DNA Scanner left"
+	{
+		"pt"		"Você utilizou um Scanner de DNA gratuito! {1} usos restantes."
+	}
+
+	"WE ARE"
+	{
+		"pt"		"Nós somos {1} jogador(s)!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"pt"		"Jogador(s) restante(s) para iniciar a partida: {1}"
+	}
+
+	"HUD Health - Invalid"
+	{
+		"pt"		"Valor inválido"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"pt"		"Perto da morte"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"pt"		"Ferido gravemente"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"pt"		"Ferido"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"pt"		"Machucado"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"pt"		"Saudável"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"pt"		"Valor inválido"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"pt"		"Perigoso"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"pt"		"No gatilho"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"pt"		"Respeitável"
+	}
+
+	"Revive: Before to Target"
+	{
+		"pt"		"{1} quer reviver você, espere {2} segundos para poder aceitar."
+	}
+
+	"Revive: Before to Player"
+	{
+		"pt"		"Você vai reviver {1}. "
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"pt"		"{1} precisa aceitar seu pedido para reviver."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"pt"		"{1} deseja reviver você.\nVocê quer aceitar esse pedido?\nVocê tem {2} segundos..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"pt"		"Sim, eu quero!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"pt"		"Não, obrigado!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"pt"		"Menu expirou... Nenhuma resposta de {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"pt"		"{1} aceitou seu pedido e voltou ao jogo!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"pt"		"{1} recusou o seu pedido!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"pt"		"{1} não está morto!"
+	}
+
+	"Respawn: Player"
+	{
+		"pt"		"{1} reviveu {2}!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"pt"		"Tasers carregados e habilitados!"
+	}
+
+	"Version Check: Current"
+	{
+		"pt"		" Este servidor está rodando a última versão ({1}) de Trouble in Terrorist Town."
+	}
+
+	"Version Check: Unknown"
+	{
+		"pt"		"Este servidor está rodando uma versão desconhecida ({1}) de Trouble in Terrorist Town. A versão mais atual é {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"pt"		"Este servidor está rodando uma versão antiga ({1}) de Trouble in Terrorist Town. A versão mais atual é {2}"
+	}
+
+	"Revolver: Suicide"
+	{
+		"pt"		"Um Detetive tentou matar um Inocente com um Revolver"
+	}
+
+	"Bullets: Have already"
+	{
+		"pt"		"Você já tem um tipo de bala."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"pt"		"Agora você tem {green}{1} {orchid}{2}."
+	}
+
+	"Bullets: Number bullets"
+	{
+		"pt"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 
 }

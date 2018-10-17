@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-07-22 10:23:18 UTC
+// Date: 2018-10-17 12:47:30 UTC
 // Language: Hebrew (he)
 // 
 // To view other translations for this plugin, please visit:
@@ -7,6 +7,11 @@
 //
 "Phrases"
 {
+
+	"You killed an Innocent"
+	{
+		"he"		"הרגת {green} חף מפשע!"
+	}
 
 	"credits earned"
 	{
@@ -16,6 +21,16 @@
 	"credits earned"
 	{
 		"he"		"מספר"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"he"		"{darkred} {1} בוגד(ים) {lightrgreen} נבחרו"
+	}
+
+	"Kick Bad Name"
+	{
+		"he"		"תמחק את המילה {1"
 	}
 
 }
