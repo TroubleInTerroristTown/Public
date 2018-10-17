@@ -15,6 +15,7 @@
 #define SHORT_NAMEC_I "missile_c_i"
 
 #define FSOLID_NOT_SOLID 0x0004
+#define MISSILE_MODEL "models/props/de_inferno/hr_i/missile/missile_02.mdl"
 
 #include <sourcemod>
 #include <sdktools>
@@ -147,7 +148,12 @@ public void OnMapStart()
     GetEntPropVector(0, Prop_Send, "m_WorldMaxs", WorldMaxHull);
     g_fMaxWorldLength = GetVectorDistance(WorldMinHull, WorldMaxHull);
     
-    PrecacheModel("models/props/de_inferno/hr_i/missile/missile_02.mdl");
+    int iIndex = PrecacheModel(MISSILE_MODEL);
+
+    if (iIndex == 0)
+    {
+        SetFailState("Can't precache missile moedl!");
+    }
     
     PrecacheSound("weapons/rpg/rocket1.wav");
     PrecacheSound("weapons/hegrenade/explode5.wav");
@@ -319,7 +325,7 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     // stop the projectile thinking so it doesn't detonate.
     SetEntProp(caller, Prop_Data, "m_nNextThinkTick", -1);
     SetEntityMoveType(caller, MOVETYPE_FLY);
-    SetEntityModel(caller, "models/props/de_inferno/hr_i/missile/missile_02.mdl");
+    SetEntityModel(caller, MISSILE_MODEL);
     // make it spin correctly.
     SetEntPropVector(caller, Prop_Data, "m_vecAngVelocity", g_fSpinVel);
     // stop it bouncing when it hits something
