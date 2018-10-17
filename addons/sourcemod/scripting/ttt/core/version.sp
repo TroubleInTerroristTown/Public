@@ -7,6 +7,7 @@ void GetLatestVersion()
     bool bTimeout = SteamWorks_SetHTTPRequestNetworkActivityTimeout(hRequest, 10);
 
     bool bPort = false;
+    bool bVersion = false;
 
     if (g_cSendServerData.BoolValue)
     {
@@ -20,11 +21,12 @@ void GetLatestVersion()
         
         /* You can abuse it, but all server requires a manual approval. */
         bPort = SteamWorks_SetHTTPRequestGetOrPostParameter(hRequest, "serverPort", sPort);
+        bVersion = SteamWorks_SetHTTPRequestGetOrPostParameter(hRequest, "tttVersion", TTT_PLUGIN_VERSION);
     }
 
     bool bCallback = SteamWorks_SetHTTPCallbacks(hRequest, OnHTTPCallback);
 
-    if(!bTimeout || !bCallback || (g_cSendServerData.BoolValue && !bPort))
+    if(!bTimeout || !bCallback || (g_cSendServerData.BoolValue && !bVersion && !bPort))
     {
         LogError("[TTT] (GetLatestVersion) Error in setting request properties, cannot send request");
         delete hRequest;
