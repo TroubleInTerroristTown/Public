@@ -198,18 +198,21 @@ public void OnConfigsExecuted()
     
     g_clogFile.GetString(g_sLogFile, sizeof(g_sLogFile));
     g_cerrFile.GetString(g_sErrorFile, sizeof(g_sErrorFile));
+    g_cKarmaFile.GetString(g_sKarmaFile, sizeof(g_sKarmaFile));
     
     ReplaceString(g_sLogFile, sizeof(g_sLogFile), "<DATE>", sDate, true);
     ReplaceString(g_sErrorFile, sizeof(g_sErrorFile), "<DATE>", sDate, true);
+    ReplaceString(g_sKarmaFile, sizeof(g_sKarmaFile), "<DATE>", sDate, true);
 
     BuildPath(Path_SM, g_sLogFile, sizeof(g_sLogFile), g_sLogFile);
     BuildPath(Path_SM, g_sErrorFile, sizeof(g_sErrorFile), g_sErrorFile);
-    BuildPath(Path_SM, g_sKarmaFile, sizeof(g_sKarmaFile), "logs/ttt/ttt-karma-%s.log", sDate);
+    BuildPath(Path_SM, g_sKarmaFile, sizeof(g_sKarmaFile), g_sKarmaFile);
     
     if (g_cDebug.BoolValue)
     {
         LogMessage("Log File: \"%s\"", g_sLogFile);
         LogMessage("Error File :\"%s\"", g_sErrorFile);
+        LogMessage("Karma File :\"%s\"", g_sKarmaFile);
     }
 
     if (g_cLogButtons.BoolValue)
@@ -1661,14 +1664,14 @@ public void OnClientPutInServer(int client)
     }
     
     HookClient(client);
-    if (g_cDebugMessages.BoolValue)
+    if (g_cDebug.BoolValue)
     {
         LogToFileEx(g_sKarmaFile, "OnClientPutInServer - 1 (%N)", client);
     }
 
     if (g_dDB != null)
     {
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "OnClientPutInServer - 2 (%N), Valid Database", client);
         }
@@ -1680,14 +1683,14 @@ void LateLoadClients(bool bHook = false)
 {
     LoopValidClients(i)
     {
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "LateLoadClients - 1 (%N)", i);
         }
 
         if (g_dDB != null)
         {
-            if (g_cDebugMessages.BoolValue)
+            if (g_cDebug.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "LateLoadClients - 2 (%N), Valid Database", i);
             }
@@ -2135,7 +2138,7 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "Timer_OnClientPutInServer - 1 (%N)", client);
         }
@@ -4132,7 +4135,7 @@ public Action Timer_5(Handle timer)
             iKarma *= -1;
         }
 
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(Timer_5) - 1 Client: \"%L\", g_bKarma: %d, g_cKarmaBan: %d, iKarma: %d (g_iKarma: %d)", i, g_bKarma[i], g_ckarmaBan.IntValue, iKarma, g_iKarma[i]);
         }
@@ -4418,7 +4421,7 @@ void LoadClientKarma(int userid)
 
     if (!IsFakeClient(client))
     {
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1 Client: \"%L\"", client);
         }
@@ -4427,7 +4430,7 @@ void LoadClientKarma(int userid)
 
         if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
         {
-            if (g_cDebugMessages.BoolValue)
+            if (g_cDebug.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1.1 Client: \"%L\"", client);
             }
@@ -4437,19 +4440,19 @@ void LoadClientKarma(int userid)
 
         char sQuery[2048];
         Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 2 Client: \"%L\", Query: \"%s\"", client, sQuery);
         }
 
-        if (g_cDebugMessages.BoolValue)
+        if (g_cDebug.BoolValue)
         {
             LogToFileEx(g_sLogFile, sQuery);
         }
 
         if (g_dDB != null)
         {
-            if (g_cDebugMessages.BoolValue)
+            if (g_cDebug.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 3 Client: \"%L\", Valid Database", client);
             }
