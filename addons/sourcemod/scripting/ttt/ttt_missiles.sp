@@ -152,7 +152,7 @@ public void OnMapStart()
 
     if (iIndex == 0)
     {
-        SetFailState("Can't precache missile moedl!");
+        SetFailState("Can't precache missile model!");
     }
     
     PrecacheSound("weapons/rpg/rocket1.wav");
