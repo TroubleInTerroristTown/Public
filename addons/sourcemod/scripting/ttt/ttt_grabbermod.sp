@@ -141,32 +141,32 @@ void GrabSomething(int client)
         return;
     }
 
-    int ent;
+    int iEntity = -1;
     float VecPos_Ent[3], VecPos_Client[3];
 
-    ent = GetObject(client, false);
+    iEntity = GetObject(client, false);
 
-    if (ent == -1)
+    if (iEntity == -1)
     {
         return;
     }
 
-    ent = EntRefToEntIndex(ent);
+    iEntity = EntRefToEntIndex(iEntity);
 
-    if (ent == INVALID_ENT_REFERENCE)
+    if (iEntity == INVALID_ENT_REFERENCE)
     {
         return;
     }
 
-    GetEntPropVector(ent, Prop_Send, "m_vecOrigin", VecPos_Ent);
+    GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", VecPos_Ent);
     GetClientEyePosition(client, VecPos_Client);
     if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > g_cGrabDistance.FloatValue)
     {
         return;
     }
-    
+
     char sName[128];
-    GetEdictClassname(ent, sName, sizeof(sName));
+    GetEdictClassname(iEntity, sName, sizeof(sName));
     
     // We block doors and buttons by default
     if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1)
@@ -177,7 +177,7 @@ void GrabSomething(int client)
     Action res = Plugin_Continue;
     Call_StartForward(g_hOnGrabbing);
     Call_PushCell(client);
-    Call_PushCell(ent);
+    Call_PushCell(iEntity);
     Call_Finish(res);
 
     if (res == Plugin_Handled || res == Plugin_Stop)
@@ -186,7 +186,15 @@ void GrabSomething(int client)
     }
     
     // true is a positive found on the blacklist(models) or negative found on the whitelist 
-    if (CheckLists(client, ent, sName))
+    if (CheckLists(client, iEntity, sName))
+    {
+        return;
+    }
+
+    char sGlobal[128];
+    GetEntPropString(iEntity, Prop_Data, "m_iGlobalname", sGlobal, sizeof(sGlobal));
+
+    if (CheckLists(client, iEntity, sGlobal))
     {
         return;
     }
@@ -199,29 +207,29 @@ void GrabSomething(int client)
         }
     }
 
-    if (g_cBlockPush.BoolValue && GetEntityMoveType(ent) == MOVETYPE_PUSH)
+    if (g_cBlockPush.BoolValue && GetEntityMoveType(iEntity) == MOVETYPE_PUSH)
     {
         return;
     }
     
     if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
     {
-        if (IsValidEdict(ent) && IsValidEntity(ent))
+        if (IsValidEdict(iEntity) && IsValidEntity(iEntity))
         {
-            ent = ReplacePhysicsEntity(ent);
+            iEntity = ReplacePhysicsEntity(iEntity);
 
-            SetEntPropEnt(ent, Prop_Data, "m_hPhysicsAttacker", client);
-            SetEntPropFloat(ent, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
+            SetEntPropEnt(iEntity, Prop_Data, "m_hPhysicsAttacker", client);
+            SetEntPropFloat(iEntity, Prop_Data, "m_flLastPhysicsInfluenceTime", GetEngineTime());
         }
     }
     
     if (StrContains(sName, "ragdoll", false) != -1 || StrContains(sName, "player", false) != -1)
     {
         char sTargetname[32];
-        GetEntPropString(ent, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
+        GetEntPropString(iEntity, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
         
         // true is a positive found on the blacklist(models) or negative found on the whitelist 
-        if (CheckLists(client, ent, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
+        if (CheckLists(client, iEntity, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
         {
             return;
         }
@@ -229,30 +237,30 @@ void GrabSomething(int client)
     
     if (!g_cGrabAlive.BoolValue)
     {
-        if (TTT_IsClientValid(ent) && IsPlayerAlive(ent))
+        if (TTT_IsClientValid(iEntity) && IsPlayerAlive(iEntity))
         {
-            if (!g_cGrabNonMoveAlive.BoolValue || (g_cGrabNonMoveAlive.BoolValue && GetEntityMoveType(ent) != MOVETYPE_NONE))
+            if (!g_cGrabNonMoveAlive.BoolValue || (g_cGrabNonMoveAlive.BoolValue && GetEntityMoveType(iEntity) != MOVETYPE_NONE))
             {
                 return;
             }
         }
     }
 
-    if (GetEntityMoveType(ent) == MOVETYPE_NONE)
+    if (GetEntityMoveType(iEntity) == MOVETYPE_NONE)
     {
         if (strncmp("player", sName, 5, false) != 0)
         {
-            SetEntityMoveType(ent, MOVETYPE_VPHYSICS);
+            SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
             PrintHintText(client, "Object ist now Unfreezed");
         }
         else
         {
-            SetEntityMoveType(ent, MOVETYPE_WALK);
+            SetEntityMoveType(iEntity, MOVETYPE_WALK);
             return;
         }
     }
 
-    g_iObject[client] = EntIndexToEntRef(ent);
+    g_iObject[client] = EntIndexToEntRef(iEntity);
     SDKHook(client, SDKHook_PreThink, OnPreThink);
 
     char sSound[PLATFORM_MAX_PATH + 1];
@@ -266,7 +274,7 @@ void GrabSomething(int client)
     g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
     float position[3];
-    TeleportEntity(ent, NULL_VECTOR, NULL_VECTOR, position);
+    TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, position);
 }
 
 bool ValidGrab(int client)
