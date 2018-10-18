@@ -173,6 +173,17 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
     }
 }
 
+public void TTT_OnRoundEnd(int winner, Handle array)
+{
+    LoopValidClients(i)
+    {
+        LoopValidClients(j)
+        {
+            SetListenOverride(i, j, Listen_Default);
+        }
+    }
+}
+
 public void TTT_OnClientGetRole(int client, int role)
 {
     SetListen(client);
