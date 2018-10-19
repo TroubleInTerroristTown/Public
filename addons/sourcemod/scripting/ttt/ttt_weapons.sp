@@ -147,6 +147,11 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     LoadTranslations("ttt.phrases");
+
+    LoopValidClients(i)
+    {
+        SDKHook(i, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
+    }
 }
 
 public void OnMapStart()
