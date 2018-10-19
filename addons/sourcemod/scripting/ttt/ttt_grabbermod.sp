@@ -31,6 +31,7 @@ ConVar g_cThrowSoundVol = null;
 ConVar g_cGrabDistance = null;
 ConVar g_cAllowThrow = null;
 ConVar g_cThrowForce = null;
+ConVar g_cReloadFlag = null;
 
 int g_iSprite = -1;
 
@@ -88,15 +89,12 @@ public void OnPluginStart()
     g_cGrabDistance = AutoExecConfig_CreateConVar("gbm_grab_distance", "150.0", "How long should be max the grab distance?");
     g_cAllowThrow = AutoExecConfig_CreateConVar("gbm_allow_throw", "1", "Allow throwing of props?", _, true, 0.0, true, 1.0);
     g_cThrowForce = AutoExecConfig_CreateConVar("gbm_throw_force", "1000.0", "How strong should the throw of a prop?");
+    g_cReloadFlag = AutoExecConfig_CreateConVar("gbm_reload_flag", "z", "Admin flags to reload the white/blacklist");
     TTT_EndConfig();
-    
-    g_aWhitelist = new ArrayList(32);
-    g_aBlacklist = new ArrayList(32);
-    g_aBlacklistModels = new ArrayList(PLATFORM_MAX_PATH + 1);
     
     LoadLists();
 
-    // CreateTimer(0.1, Timer_Adjust, _, TIMER_REPEAT);
+    RegConsoleCmd("sm_reloadgrablist", Command_ReloadGrablist);
 }
 
 public void OnMapStart()
@@ -109,6 +107,25 @@ public void OnMapStart()
 
     g_cThrowSound.GetString(sBuffer, sizeof(sBuffer));
     PrecacheSoundAny(sBuffer, true);
+}
+
+public Action Command_ReloadGrablist(int client, int args)
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Handled;
+    }
+
+    if (!TTT_CheckCommandAccess(client, "sm_reloadgrablist", g_cReloadFlag, true))
+    {
+        return Plugin_Handled;
+    }
+
+    LoadLists();
+
+    ReplyToCommand(client, "White/Blacklist reloaded!");
+
+    return Plugin_Continue;
 }
 
 void Command_Grab(int client)
@@ -169,7 +186,7 @@ void GrabSomething(int client)
     GetEdictClassname(iEntity, sName, sizeof(sName));
     
     // We block doors and buttons by default
-    if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1)
+    if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1 || StrContains(sName, "player", false) != -1)
     {
         return;
     }
@@ -194,7 +211,7 @@ void GrabSomething(int client)
     char sGlobal[128];
     GetEntPropString(iEntity, Prop_Data, "m_iGlobalname", sGlobal, sizeof(sGlobal));
 
-    if (CheckLists(client, iEntity, sGlobal))
+    if (strlen(sGlobal) > 1 && CheckLists(client, iEntity, sGlobal))
     {
         return;
     }
@@ -203,7 +220,7 @@ void GrabSomething(int client)
     {
         if (TTT_CheckCommandAccess(client, "gbm_output", g_cFlags, true))
         {
-            CPrintToChat(client, "Name of Entity: %s", sName);
+            CPrintToChat(client, "Name of Entity: %s (GetEdictClassname), %s (m_iGlobalname)", sName, sGlobal);
         }
     }
 
@@ -496,6 +513,33 @@ public void OnClientDisconnect(int client)
 
 void LoadLists()
 {
+    if (g_aWhitelist == null)
+    {
+        g_aWhitelist = new ArrayList(32);
+    }
+    else
+    {
+        g_aWhitelist.Clear();
+    }
+
+    if (g_aBlacklist == null)
+    {
+        g_aBlacklist = new ArrayList(32);
+    }
+    else
+    {
+        g_aBlacklist.Clear();
+    }
+
+    if (g_aBlacklistModels == null)
+    {
+        g_aBlacklistModels = new ArrayList(PLATFORM_MAX_PATH + 1);
+    }
+    else
+    {
+        g_aBlacklistModels.Clear();
+    }
+
     LoadWhitelist();
     LoadBlacklist();
     LoadBlacklistModels();
