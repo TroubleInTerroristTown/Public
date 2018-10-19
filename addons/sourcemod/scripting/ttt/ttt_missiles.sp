@@ -16,12 +16,14 @@
 
 #define FSOLID_NOT_SOLID 0x0004
 #define MISSILE_MODEL "models/props/de_inferno/hr_i/missile/missile_02.mdl"
+#define MISSILE_SOUND "weapons/rpg/rocket1.wav"
 
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
 #include <ttt>
 #include <ttt_shop>
+#include <emitsoundany>
 
 #pragma newdecls required
 
@@ -38,6 +40,7 @@ ConVar g_cDamage = null;
 ConVar g_cRadius = null;
 ConVar g_cSpeed = null;
 ConVar g_cArc = null;
+ConVar g_cVolume = null;
 
 ConVar g_cPriceT_F = null;
 ConVar g_cPriceD_F = null;
@@ -101,6 +104,7 @@ public void OnPluginStart()
     g_cRadius = AutoExecConfig_CreateConVar("missiles_radius", "600", "Sets the explosive radius of the missiles", _, true, 1.0);
     g_cSpeed = AutoExecConfig_CreateConVar("missiles_speed", "500.0", "Sets the speed of the missiles", _, true, 300.0 ,true, 3000.0);
     g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
+    g_cVolume = AutoExecConfig_CreateConVar("missile_volume", "1.0", "Sound volume of the missile", _, true, 0.1, true, 1.0);
 
     g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
     g_cPriceD = AutoExecConfig_CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
@@ -155,7 +159,9 @@ public void OnMapStart()
         SetFailState("Can't precache missile model!");
     }
     
-    PrecacheSound("weapons/rpg/rocket1.wav");
+    PrecacheSound(MISSILE_SOUND);
+    AddFileToDownloadsTable("sound/" ... MISSILE_SOUND);
+
     PrecacheSound("weapons/hegrenade/explode5.wav");
 }
 
@@ -359,26 +365,33 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
+
     float fAngles[3];
     GetClientEyeAngles(iOwner, fAngles);
+
     float fPosition[3];
-    GetClientEyePosition(iOwner, fPosition);
+    GetClientAbsOrigin(iOwner, fPosition);
+    fPosition[2] += 50.0;
+
     TR_TraceRayFilter(fPosition, fAngles, MASK_SOLID, RayType_Infinite, DontHitOwnerOrNade, caller);
+
     float fInitPos[3];
     TR_GetEndPosition(fInitPos);
+
     float fInitVec[3];
     MakeVectorFromPoints(fNadePos, fInitPos, fInitVec);
     NormalizeVector(fInitVec, fInitVec);
     ScaleVector(fInitVec, g_cSpeed.FloatValue);
+
     float fInitAng[3];
-    
     GetVectorAngles(fInitVec, fInitAng);
     TeleportEntity(caller, NULL_VECTOR, fInitAng, fInitVec);
 
     fInitAng[1] + 90.0;
     DispatchKeyValueVector(caller, "Angles", fInitAng);
     
-    EmitSoundToAll("weapons/rpg/rocket1.wav", caller, 1, 90);
+    // EmitSoundToAll("weapons/rpg/rocket1.wav", caller, 1, 90);
+    EmitAmbientSoundAny(MISSILE_SOUND, fAngles, caller, 90, _, g_cVolume.FloatValue);
     
     HookSingleEntityOutput(caller, "OnUser2", MissileThink);
     
@@ -436,7 +449,8 @@ public void MissileThink(const char[] output, int caller, int activator, float d
                 }
 
                 float fEnemyPos[3];
-                GetClientEyePosition(i, fEnemyPos);
+                GetClientAbsOrigin(i, fEnemyPos);
+                fEnemyPos[2] += 50.0;
                 TR_TraceHullFilter(fNadePos, fEnemyPos, g_fMinNadeHull, g_fMaxNadeHull, MASK_SOLID, DontHitOwnerOrNade, caller);
                 if (TR_GetEntityIndex() == i)
                 {
@@ -458,7 +472,8 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         else
         {
             float fEnemyPos[3];
-            GetClientEyePosition(iClosestEnemy, fEnemyPos);
+            GetClientAbsOrigin(iClosestEnemy, fEnemyPos);
+            fEnemyPos[2] += 50.0;
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
         }
         
@@ -554,14 +569,15 @@ public bool DontHitOwnerOrNade(int entity, int contentsMask, any data)
 
 public Action OnStartTouch(int entity, int other) 
 {
+    PrintToChatAll("Entity: %d, Other: %d", entity, other);
     if (other == 0)
     {
-        StopSound(entity, 1, "weapons/rpg/rocket1.wav");
+        // StopSound(entity, 1, "weapons/rpg/rocket1.wav");
         CreateExplosion(entity);
     } 
     else if((GetEntProp(other, Prop_Data, "m_nSolidType") != view_as<int>(SOLID_NONE)) && (!(GetEntProp(other, Prop_Data, "m_usSolidFlags") & FSOLID_NOT_SOLID)))
     {
-        StopSound(entity, 1, "weapons/rpg/rocket1.wav");
+        // StopSound(entity, 1, "weapons/rpg/rocket1.wav");
         CreateExplosion(entity);
         
     }
@@ -589,7 +605,9 @@ void CreateExplosion(int entity)
     int iExplosion = CreateEntityByName("env_explosion");
     if (iExplosion != -1)
     {
-        DispatchKeyValue(iExplosion,"classname", "hegrenade_projectile");
+        DispatchKeyValue(iExplosion, "classname", "hegrenade_projectile");
+
+        SetEntPropString(iExplosion, Prop_Data, "m_iGlobalname", "Missile");
         
         SetEntProp(iExplosion, Prop_Data, "m_spawnflags", 6146);
         SetEntProp(iExplosion, Prop_Data, "m_iMagnitude", g_cDamage.IntValue);
