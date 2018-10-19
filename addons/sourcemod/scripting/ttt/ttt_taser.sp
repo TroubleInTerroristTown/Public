@@ -51,7 +51,6 @@ bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
 
 /* Block taser stuff or so... */
 Handle g_hCooldown = null;
-bool g_bTasers = false;
 int m_flNextPrimaryAttack = -1;
 int m_flNextSecondaryAttack = -1;
 
@@ -211,8 +210,6 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
 public Action Timer_ActivateTasers(Handle timer)
 {
-    g_bTasers = true;
-
     LoopValidClients(i)
     {
         for(int offset = 0; offset < 128; offset += 4)
@@ -244,7 +241,6 @@ public Action Timer_ActivateTasers(Handle timer)
 public void TTT_OnRoundEnd(int winner, Handle array)
 {
     TTT_ClearTimer(g_hCooldown);
-    g_bTasers = false;
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -310,7 +306,7 @@ public Action OnWeaponCanUse(int client, int weapon)
         return Plugin_Continue;
     }
 
-    if (g_bTasers)
+    if (g_hCooldown == null)
     {
         return Plugin_Continue;
     }
@@ -541,10 +537,37 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     return Plugin_Continue;
 }
 
+public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3], float angles[3], int& weapon, int& subtype, int& cmdnum, int& tickcount, int& seed, int mouse[2])
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_hCooldown != null && buttons & IN_ATTACK)
+    {
+        if (weapon == -1 || !IsValidEntity(weapon))
+        {
+            return Plugin_Continue;
+        }
+
+        char sWeapon[32];
+        GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
+
+        if (StrEqual(sWeapon, "weapon_taser", false))
+        {
+            BlockTaser(weapon);
+            return Plugin_Handled;
+        }
+    }
+
+    return Plugin_Continue;
+}
+
 void BlockTaser(int weapon)
 {
-    SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + g_cTaserCooldown.FloatValue);
-    SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + g_cTaserCooldown.FloatValue);
+    SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
+    SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
 }
 
 void UnblockTaser(int weapon)
