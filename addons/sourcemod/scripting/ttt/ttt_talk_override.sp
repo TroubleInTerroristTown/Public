@@ -45,6 +45,16 @@ public void OnPluginStart()
     LoadTranslations("ttt.phrases");
 }
 
+public void OnClientPutInServer(int client)
+{
+    g_bTVoice[client] = false;
+}
+
+public void OnClientDisconnect(int client)
+{
+    g_bTVoice[client] = false;
+}
+
 public void OnConfigsExecuted()
 {
     g_cPluginTag = FindConVar("ttt_plugin_tag");
@@ -72,7 +82,7 @@ public Action Command_TVoice(int client, int args)
         return Plugin_Handled;
     }
 
-    if (!IsPlayerAlive(client))
+    if (!TTT_IsPlayerAlive(client))
     {
         return Plugin_Handled;
     }
@@ -85,10 +95,13 @@ public Action Command_TVoice(int client, int args)
     if (g_bTVoice[client])
     {
         CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
+
         g_bTVoice[client] = false;
+
         LoopValidClients(i)
         {
             SetListenOverride(i, client, Listen_Yes);
+
             if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
             {
                 CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
@@ -98,7 +111,9 @@ public Action Command_TVoice(int client, int args)
     else
     {
         g_bTVoice[client] = true;
+
         CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
+
         LoopValidClients(i)
         {
             if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
@@ -146,7 +161,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         g_bTVoice[victim] = false;
         LoopValidClients(i)
         {
-            if (IsPlayerAlive(i))
+            if (TTT_IsPlayerAlive(i))
             {
                 SetListenOverride(i, victim, Listen_No);
             }
@@ -193,9 +208,9 @@ void SetListen(int client)
 {
     LoopValidClients(i)
     {
-        if (!IsPlayerAlive(client))
+        if (!TTT_IsPlayerAlive(client))
         {
-            if (IsPlayerAlive(i))
+            if (TTT_IsPlayerAlive(i))
             {
                 SetListenOverride(i, client, Listen_No);
                 SetListenOverride(client, i, Listen_Yes);
