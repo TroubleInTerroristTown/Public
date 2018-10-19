@@ -47,6 +47,8 @@ bool g_bHasIce[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasFire[MAXPLAYERS + 1] =  { false, ... };
 bool g_bHasPoison[MAXPLAYERS + 1] =  { false, ... };
 
+int g_iDefaultColor[MAXPLAYERS + 1][4];
+
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
@@ -83,8 +85,16 @@ public void OnPluginStart()
     TTT_EndConfig();	
 
     HookEvent("player_spawn", Event_PlayerSpawn);
-    HookEvent("weapon_fire", Event_WeaponFire);
-    HookEvent("player_hurt", Event_PlayerHurt);
+    
+    LoopValidClients(i)
+    {
+        SDKHook(i, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
+
+        if (IsPlayerAlive(i))
+        {
+            GetEntityRenderColor(i, g_iDefaultColor[i][0], g_iDefaultColor[i][1], g_iDefaultColor[i][2], g_iDefaultColor[i][3]);
+        }
+    }
 }
 
 public void OnConfigsExecuted()
@@ -100,6 +110,11 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     {
         g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
     }
+}
+
+public void OnClientPutInServer(int client)
+{
+    SDKHook(client, SDKHook_OnTakeDamageAlive, OnTakeDamageAlive);
 }
 
 public void TTT_OnShopReady()
@@ -194,81 +209,83 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client))
     {
         ResetBullets(client);
+        GetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
     }
 }
 
-public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
+public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType, int &iWeapon, float fDamageForce[3], float fDamagePosition[3])
 {
-    int client = GetClientOfUserId(event.GetInt("userid"));
-    int attacker = GetClientOfUserId(event.GetInt("attacker"));
-
-    if (TTT_IsClientValid(client))
+    if(!TTT_IsRoundActive())
     {
-        if (g_bHasIce[attacker])
-        {
-            SetEntityMoveType(client, MOVETYPE_NONE);
-            SetEntityRenderColor(client, 0, 128, 255, 192);
-            CreateTimer(g_cIceTimer.FloatValue, TimerIce, GetClientUserId(client));
-        }
-        else if (g_bHasFire[attacker])
-        {
-            IgniteEntity(client, g_cFireTimer.FloatValue);
-        }
-        else if (g_bHasPoison[attacker])
-        {
-            CreateTimer(1.0, TimerPoison, GetClientUserId(client), TIMER_REPEAT); 
-        }			
+        return Plugin_Continue;
     }
+
+    if(!TTT_IsClientValid(iVictim) || !TTT_IsClientValid(iAttacker))
+    {
+        return Plugin_Continue;
+    }
+    
+    if (iWeapon == -1 || !IsValidEntity(iWeapon))
+    {
+        return Plugin_Continue;
+    }
+
+    char sWeapon[32];
+    GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+
+    if (!IsValidWeapon(sWeapon))
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_bHasIce[iAttacker])
+    {
+        char sName[128];	
+        g_cIceLongName.GetString(sName, sizeof(sName));		
+        g_iBulletsIce[iAttacker]--;
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsIce[iAttacker], g_cIceNb.IntValue);			
+        if (g_iBulletsIce[iAttacker] <= 0)
+        {
+            g_bHasIce[iAttacker] = false;
+        }
+
+        SetEntityMoveType(iVictim, MOVETYPE_NONE);
+
+        SetEntityRenderMode(iVictim, RENDER_TRANSCOLOR);
+        SetEntityRenderColor(iVictim, 55, 77, 99, 255);
+
+        CreateTimer(g_cIceTimer.FloatValue, Timer_Ice, GetClientUserId(iVictim));
+    }
+    else if (g_bHasFire[iAttacker])
+    {
+        char sName[128];	
+        g_cFireLongName.GetString(sName, sizeof(sName));					
+        g_iBulletsFire[iAttacker]--;
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsFire[iAttacker], g_cFireNb.IntValue);
+        if (g_iBulletsFire[iAttacker] <= 0)
+        {
+            g_bHasFire[iAttacker] = false;
+        }
+        
+        IgniteEntity(iVictim, g_cFireTimer.FloatValue);
+    }
+    else if (g_bHasPoison[iAttacker])
+    {
+        char sName[128];	
+        g_cPoisonLongName.GetString(sName, sizeof(sName));			
+        g_iBulletsPoison[iAttacker]--;
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsPoison[iAttacker], g_cPoisonNb.IntValue);
+        if (g_iBulletsPoison[iAttacker] <= 0)
+        {
+            g_bHasPoison[iAttacker] = false;
+        }	
+        
+        CreateTimer(1.0, Timer_Poison, GetClientUserId(iVictim), TIMER_REPEAT); 
+    }			
     return Plugin_Continue;	
 }
 
-public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    char weapon[64];
-    event.GetString("weapon", weapon, sizeof(weapon));
-
-    if (TTT_IsClientValid(client) && IsWeapon(weapon))
-    {	
-        if (g_bHasIce[client])
-        {
-            char sName[128];	
-            g_cIceLongName.GetString(sName, sizeof(sName));		
-            g_iBulletsIce[client]--;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Number bullets", client, sName, g_iBulletsIce[client], g_cIceNb.IntValue);			
-            if (g_iBulletsIce[client] <= 0)
-            {
-                g_bHasIce[client] = false;
-            }
-        }
-        else if (g_bHasFire[client])
-        {
-            char sName[128];	
-            g_cFireLongName.GetString(sName, sizeof(sName));					
-            g_iBulletsFire[client]--;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Number bullets", client, sName, g_iBulletsFire[client], g_cFireNb.IntValue);
-            if (g_iBulletsFire[client] <= 0)
-            {
-                g_bHasFire[client] = false;
-            }
-        }
-        else if (g_bHasPoison[client])
-        {
-            char sName[128];	
-            g_cPoisonLongName.GetString(sName, sizeof(sName));			
-            g_iBulletsPoison[client]--;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Number bullets", client, sName, g_iBulletsPoison[client], g_cPoisonNb.IntValue);
-            if (g_iBulletsPoison[client] <= 0)
-            {
-                g_bHasPoison[client] = false;
-            }	
-        }	
-    }
-    return Plugin_Continue;
-}
-
-public Action TimerIce(Handle timer, any userid)
+public Action Timer_Ice(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -277,13 +294,15 @@ public Action TimerIce(Handle timer, any userid)
         if (IsPlayerAlive(client))
         {
             SetEntityMoveType(client, MOVETYPE_WALK);
-            SetEntityRenderColor(client);
+            
+            SetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
+            SetEntityRenderMode(client, RENDER_NORMAL);
         }
     }
     return Plugin_Handled;
 }
 
-public Action TimerPoison(Handle timer, any userid)
+public Action Timer_Poison(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
     Action result = Plugin_Stop;
@@ -294,24 +313,31 @@ public Action TimerPoison(Handle timer, any userid)
         {
             if (g_iTimerPoison[client] <= g_cPoisonTimer.IntValue)
             {
-                int calcul = GetClientHealth(client) - g_cPoisonDmg.IntValue;
-                if (calcul <= 0)
+                int iHealth = GetClientHealth(client) - g_cPoisonDmg.IntValue;
+
+
+                if (iHealth <= 0)
                 {
                     ForcePlayerSuicide(client);
                     g_iTimerPoison[client] = 0;	
                 }
                 else
                 {
-                    SetEntityRenderColor(client, 255, 75, 75, 255);
-                    SetEntityHealth(client, calcul);
-                    SetEntityRenderColor(client);
+                    SetEntityHealth(client, iHealth);
+
+                    SetEntityRenderMode(client, RENDER_TRANSCOLOR);
+                    SetEntityRenderColor(client, 0, 255, 20, 255);
+
                     g_iTimerPoison[client]++;	
                     result = Plugin_Continue;
                 }
             }
             else
             {
-                g_iTimerPoison[client] = 0;	
+                g_iTimerPoison[client] = 0;
+
+                SetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
+                SetEntityRenderMode(client, RENDER_NORMAL);
             }
         }	
     }	
@@ -343,7 +369,7 @@ bool HasBullets(int client)
     return result;
 }
 
-bool IsWeapon(const char[] weapon)
+bool IsValidWeapon(const char[] weapon)
 {
     bool result = true;
 
