@@ -400,15 +400,18 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
         
         g_iRoundSlays[client] = rounds;
         
-        if (g_bRoundStarted && force && IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
+        if (g_bRoundStarted || force)
         {
-            ForcePlayerSuicide(client);
-            g_iRoundSlays[client]--;
-            
-            if (g_iRoundSlays[client] > 0)
+            if (IsPlayerAlive(client) && g_iRoundSlays[client] > 0)
             {
-                CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
-                LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", client, g_iRoundSlays[client]);
+                ForcePlayerSuicide(client);
+                g_iRoundSlays[client]--;
+                
+                if (g_iRoundSlays[client] > 0)
+                {
+                    CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iRoundSlays[client]);
+                    LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", client, g_iRoundSlays[client]);
+                }
             }
         }
         
