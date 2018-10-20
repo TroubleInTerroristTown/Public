@@ -2205,7 +2205,8 @@ public Action Command_RSlays(int client, int args)
 
     if (args < 2 || args > 3)
     {
-        ReplyToCommand(client, "[SM] Usage: sm_rslays <#userid|name> <rounds> <0 - Slay Next Round, 1 - Instant Slay>");
+        ReplyToCommand(client, "[SM] Usage: sm_rslays <#userid|name> <rounds> <0 (Default) - Slay on next team selection, 1 - Instant slays>");
+        ReplyToCommand(client, "3rd parameter is just useful for inactive round, it has no effect in running round.");
         return Plugin_Handled;
     }
 
