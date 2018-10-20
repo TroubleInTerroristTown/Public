@@ -898,6 +898,52 @@ public Action Timer_Selection(Handle hTimer)
         return;
     }
 
+    LoopValidClients(i)
+    {
+        if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
+        {
+            if (g_iRoundSlays[i] < 0)
+            {
+                g_iRoundSlays[i] = 0;
+                UpdateRoundSlaysCookie(i);
+                continue;
+            }
+            else if (g_iRoundSlays[i] == 0)
+            {
+                UpdateRoundSlaysCookie(i);
+                continue;
+            }
+
+            ForcePlayerSuicide(i);
+            g_iRoundSlays[i]--;
+
+            // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
+            iPlayers--;
+
+            if (g_iRoundSlays[i] > 0)
+            {
+                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
+                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
+            }
+
+            UpdateRoundSlaysCookie(i);
+
+            if (g_cOpenRulesOnPunish.BoolValue)
+            {
+                TTT_ClientOpenRules(i);
+            }
+        }
+    }
+
+    //Check if there are any slain players
+    for (int i = 0; i < aPlayers.Length; i++)
+    {
+        if(!IsPlayerAlive(aPlayers.Get(i)))
+        {
+            aPlayers.Erase(i);
+        }
+    }
+
     if (iPlayers < g_crequiredPlayers.IntValue)
     {
         g_bInactive = true;
@@ -925,49 +971,6 @@ public Action Timer_Selection(Handle hTimer)
         GiveWeaponsOnFailStart();
 
         return;
-    }
-
-    LoopValidClients(i)
-    {
-        if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
-        {
-            if (g_iRoundSlays[i] < 0)
-            {
-                g_iRoundSlays[i] = 0;
-                UpdateRoundSlaysCookie(i);
-                continue;
-            }
-            else if (g_iRoundSlays[i] == 0)
-            {
-                UpdateRoundSlaysCookie(i);
-                continue;
-            }
-
-            ForcePlayerSuicide(i);
-            g_iRoundSlays[i]--;
-
-            if (g_iRoundSlays[i] > 0)
-            {
-                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
-                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
-            }
-
-            UpdateRoundSlaysCookie(i);
-
-            if (g_cOpenRulesOnPunish.BoolValue)
-            {
-                TTT_ClientOpenRules(i);
-            }
-        }
-    }
-
-    //Check if there are any slain players
-    for (int i = 0; i < aPlayers.Length; i++)
-    {
-        if(!IsPlayerAlive(aPlayers.Get(i)))
-        {
-            aPlayers.Erase(i);
-        }
     }
 
     g_bRoundStarted = true;
