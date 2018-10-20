@@ -25,6 +25,14 @@
 #include <ttt_shop>
 #include <emitsoundany>
 
+enum MissileType
+{
+    tNone = -1,
+    tNormal = 0,
+    tFollow = 1,
+    tControl = 2
+}
+
 #pragma newdecls required
 
 public Plugin myinfo = 
@@ -90,7 +98,7 @@ float g_fSpinVel[3] = {0.0, 0.0, 200.0};
 float g_fSmokeOrigin[3] = {-30.0,0.0,0.0};
 float g_fSmokeAngle[3] = {0.0,-180.0,0.0};
 
-int g_iType[MAXPLAYERS + 1] =  { -1, ... };
+MissileType g_iType[MAXPLAYERS + 1] =  { tNone, ... };
 
 public void OnPluginStart()
 {
@@ -307,7 +315,7 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         return;
     }
     
-    if ((!g_iMissile[iOwner] && !g_iMissile_F[iOwner] && !g_iMissile_C[iOwner]) || g_iType[iOwner] != -1)
+    if ((!g_iMissile[iOwner] && !g_iMissile_F[iOwner] && !g_iMissile_C[iOwner]) || g_iType[iOwner] != tNone)
     {
         return;
     }
@@ -315,17 +323,17 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     if(g_iMissile_C[iOwner])
     {
         g_iMissile_C[iOwner]--;
-        g_iType[iOwner] = 2;
+        g_iType[iOwner] = tControl;
     }
     else if(g_iMissile_F[iOwner])
     {
         g_iMissile_F[iOwner]--;
-        g_iType[iOwner] = 1;
+        g_iType[iOwner] = tFollow;
     }
     else
     {
         g_iMissile[iOwner]--;
-        g_iType[iOwner] = 0;
+        g_iType[iOwner] = tNormal;
     }
 
     // stop the projectile thinking so it doesn't detonate.
@@ -362,10 +370,10 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         AcceptEntityInput(iEntity, "SetParent");
         TeleportEntity(iEntity, g_fSmokeOrigin, g_fSmokeAngle, NULL_VECTOR);
     }
-    
+
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
-
+    
     float fAngles[3];
     GetClientEyeAngles(iOwner, fAngles);
 
@@ -403,7 +411,7 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     
     SDKHook(caller, SDKHook_StartTouch, OnStartTouch);
     
-    if(g_iType[iOwner] == 2)
+    if(g_iType[iOwner] == tControl)
     {
         g_iMissileEnt[iOwner] = caller;
         SetClientViewEntity(iOwner, caller);
@@ -432,7 +440,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
     
-    if (g_iType[iOwner] == 1)
+    if (g_iType[iOwner] == tFollow)
     {
         float fClosestDistance = g_fMaxWorldLength;
         float fTargetVec[3];
@@ -498,7 +506,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         GetVectorAngles(fFinalVec, fFinalAng);
         TeleportEntity(caller, NULL_VECTOR, fFinalAng, fFinalVec);
     }
-    else if (g_iType[iOwner] == 2)
+    else if (g_iType[iOwner] == tControl)
     {
 
         float fclientAngles[3];
@@ -593,13 +601,13 @@ void CreateExplosion(int entity)
     int iMissileOwner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
     int iMissileTeam = GetEntProp(entity, Prop_Send, "m_iTeamNum");
     
-    if(g_iType[iMissileOwner] == 2)
+    if(g_iType[iMissileOwner] == tControl)
     {
         SetClientViewEntity(iMissileOwner, iMissileOwner);
         g_iMissileEnt[iMissileOwner] = -1;
     }
 
-    g_iType[iMissileOwner] = -1;
+    g_iType[iMissileOwner] = tNone;
     
     
     int iExplosion = CreateEntityByName("env_explosion");
@@ -681,5 +689,5 @@ void ResetClient(int client)
     g_iMissile[client] = 0;
     g_iPAmount_F[client] = 0;
     g_iMissile_F[client] = 0;
-    g_iType[client] = -1;
+    g_iType[client] = tNone;
 }
