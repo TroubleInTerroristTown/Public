@@ -214,6 +214,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FUTURISTIC_T, false)) ||
             (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FUTURISTIC_D, false)))
         {
+            if (g_bFuturistic[client] || g_iGMode[client] != DecoyMode_Normal)
+            {
+                return Plugin_Stop;
+            }
+
             g_bFuturistic[client] = true;
             
             if (g_cGiveDecoy.BoolValue)
@@ -227,6 +232,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FF_SNAME_T, false)) ||
             (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FF_SNAME_D, false)))
         {
+            if (g_bFuturistic[client] || g_iGMode[client] != DecoyMode_Normal)
+            {
+                return Plugin_Stop;
+            }
+            
             g_iGMode[client] = DecoyMode_Forcefield;
             FGrenades_SwitchMode(client, DecoyMode_Forcefield);
             
@@ -241,6 +251,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, BH_SNAME_T, false)) ||
             (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, BH_SNAME_D, false)))
         {
+            if (g_bFuturistic[client] || g_iGMode[client] != DecoyMode_Normal)
+            {
+                return Plugin_Stop;
+            }
+            
             g_iGMode[client] = DecoyMode_Blackhole;
             FGrenades_SwitchMode(client, DecoyMode_Blackhole);
             
@@ -255,6 +270,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FE_SNAME_T, false)) ||
             (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FE_SNAME_D, false)))
         {
+            if (g_bFuturistic[client] || g_iGMode[client] != DecoyMode_Normal)
+            {
+                return Plugin_Stop;
+            }
+            
             g_iGMode[client] = DecoyMode_ForceExplosion;
             FGrenades_SwitchMode(client, DecoyMode_ForceExplosion);
             
@@ -269,6 +289,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FI_SNAME_T, false)) ||
             (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FI_SNAME_D, false)))
         {
+            if (g_bFuturistic[client] || g_iGMode[client] != DecoyMode_Normal)
+            {
+                return Plugin_Stop;
+            }
+            
             g_iGMode[client] = DecoyMode_ForceImplosion;
             FGrenades_SwitchMode(client, DecoyMode_ForceImplosion);
             
