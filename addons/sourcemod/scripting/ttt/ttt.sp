@@ -2192,17 +2192,18 @@ public Action Command_RSlays(int client, int args)
         return Plugin_Handled;
     }
 
-    if (args < 2 || args > 3)
+    if (args != 3)
     {
-        ReplyToCommand(client, "[SM] Usage: sm_rslays <#userid|name> <rounds>");
-
+        ReplyToCommand(client, "[SM] Usage: sm_rslays <#userid|name> <rounds> <0 - Slay Next Round, 1 - Instant Slay>");
         return Plugin_Handled;
     }
 
     char arg1[32];
-    char arg2[32];
+    char arg2[12];
+    char arg3[12];
     GetCmdArg(1, arg1, sizeof(arg1));
     GetCmdArg(2, arg2, sizeof(arg2));
+    GetCmdArg(3, arg3, sizeof(arg3));
 
     char target_name[MAX_TARGET_LENGTH];
     int target_list[MAXPLAYERS];
@@ -2233,7 +2234,7 @@ public Action Command_RSlays(int client, int args)
             return Plugin_Handled;
         }
 
-        TTT_SetRoundSlays(target, rounds, true);
+        TTT_SetRoundSlays(target, rounds, view_as<bool>(StringToInt(arg3)));
 
         LoopValidClients(j)
         {
