@@ -384,10 +384,11 @@ native int TTT_AddRoundSlays(int client, int rounds, bool force);
  *
  * @param client             The client index.
  * @param rounds             The amount of rounds.
- * @param force             Begin directly if client is alive.
+ * @param force              Begin directly if client is alive (Default: false).
+ *                           This works now in a inactive round, when force is true
  * @return Returns the amount of rounds, otherwise the client index is invalid
  */
-native int TTT_SetRoundSlays(int client, int rounds, bool force);
+native int TTT_SetRoundSlays(int client, int rounds, bool force = false);
 
 /**
  * Open rules menu for the client
