@@ -689,5 +689,8 @@ void ResetClient(int client)
     g_iMissile[client] = 0;
     g_iPAmount_F[client] = 0;
     g_iMissile_F[client] = 0;
+    g_iPAmount_C[client] = 0;
+    g_iMissile_C[client] = 0;
+    g_iMissileEnt[client] = -1;
     g_iType[client] = tNone;
 }
