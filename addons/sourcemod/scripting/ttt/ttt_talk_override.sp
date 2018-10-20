@@ -72,12 +72,12 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action Command_TVoice(int client, int args)
 {
-    if (!TTT_IsClientValid(client))
+    if (!TTT_IsRoundActive())
     {
         return Plugin_Handled;
     }
 
-    if (!TTT_IsRoundActive())
+    if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
     }
@@ -131,11 +131,6 @@ public Action Command_TVoice(int client, int args)
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
-    if (!TTT_IsRoundActive())
-    {
-        return;
-    }
-
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (TTT_IsClientValid(client))
@@ -149,11 +144,6 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-    if (!TTT_IsRoundActive())
-    {
-        return;
-    }
-
     int victim = GetClientOfUserId(event.GetInt("userid"));
 
     if (TTT_IsClientValid(victim))
@@ -175,11 +165,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 {
-    if (!TTT_IsRoundActive())
-    {
-        return;
-    }
-
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (TTT_IsClientValid(client))
