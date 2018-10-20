@@ -657,6 +657,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 {
     if (g_bDisabled)
     {
+        g_iStatus = Round_Inactive;
         return;
     }
 
@@ -728,6 +729,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     {
         LogMessage("Event_RoundStartPre - 6 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
+
+    g_iStatus = Round_Warmup;
 
     float warmupTime = g_cGraceTime.FloatValue + 5.0;
     g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
@@ -810,6 +813,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
 {
     g_bRoundEnding = true;
+    g_iStatus = Round_Ending;
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)
@@ -895,6 +899,8 @@ public Action Timer_Selection(Handle hTimer)
 
         GiveWeaponsOnFailStart();
 
+        g_iStatus = Round_Inactive;
+
         return;
     }
 
@@ -969,6 +975,8 @@ public Action Timer_Selection(Handle hTimer)
         Call_Finish();
 
         GiveWeaponsOnFailStart();
+
+        g_iStatus = Round_Inactive;
 
         return;
     }
@@ -1119,7 +1127,7 @@ public Action Timer_Selection(Handle hTimer)
     }
 
     delete aPlayers;
-
+    g_iStatus = Round_Active;
 
     LoopValidClients(i)
     {
@@ -3156,6 +3164,7 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
 public void OnMapEnd()
 {
     g_bRoundEnding = false;
+    g_iStatus = Round_Inactive;
     if (g_hRoundTimer != null)
     {
         delete g_hRoundTimer;
@@ -3261,6 +3270,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
     }
 
     g_bRoundEnding = true;
+    g_iStatus = Round_Ending;
 
     return Plugin_Changed;
 }
@@ -4183,6 +4193,7 @@ void CheckPlayers()
 
     if (g_bDisabled)
     {
+        g_iStatus = Round_Inactive;
         return;
     }
     

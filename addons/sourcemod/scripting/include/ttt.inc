@@ -45,6 +45,14 @@ enum KarmaUpdate
     Karma_Subtract
 }
 
+enum RoundStatus
+{
+    Round_Inactive = -1,
+    Round_Warmup,
+    Round_Active,
+    Round_Ending
+}
+
 enum Collision_Group_t
 {
     COLLISION_GROUP_NONE  = 0,
@@ -468,9 +476,15 @@ native bool TTT_GetLatestVersion(const char[] version, int length);
  *  - terminate roundd with TTT_TerminateRound
  *
  * @param status            If true, next round will be disabled.
-                            If false, next round will be normal.
+ *                          If false, next round will be normal.
  */
 native bool TTT_DisableRounds(bool status);
+
+/**
+ * Returns the current status of the round
+ *
+ */
+native RoundStatus TTT_GetRoundStatus();
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {

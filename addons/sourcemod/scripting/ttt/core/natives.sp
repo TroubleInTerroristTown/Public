@@ -51,6 +51,7 @@ void InitNatives()
     CreateNative("TTT_TerminateRound", Native_TerminateRound);
     CreateNative("TTT_GetLatestVersion", Native_GetLatestVersion);
     CreateNative("TTT_DisableRounds", Native_DisableRounds);
+    CreateNative("TTT_GetRoundStatus", Native_GetRoundStatus);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -607,4 +608,10 @@ public int Native_DisableRounds(Handle plugin, int numParams)
 {
     g_bDisabled = view_as<bool>(GetNativeCell(1));
     return g_bDisabled;
+}
+
+
+public int Native_GetRoundStatus(Handle plugin, int numParams)
+{
+    return view_as<int>(g_iStatus);
 }
