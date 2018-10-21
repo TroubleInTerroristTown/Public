@@ -26,5 +26,5 @@ echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
 
 echo -e "Update TTT Version"
-wget $UPDATE -O version.log
+wget -q $UPDATE -O version.log
 rm version.log

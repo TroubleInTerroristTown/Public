@@ -1,14 +1,14 @@
 #!/bin/bash
 set -ev
 
-echo -e "Download und extract sourcemod\n"
+echo -e "Download und extract sourcemod"
 wget "http://www.sourcemod.net/latest.php?version=$1&os=linux" -O sourcemod.tar.gz
 tar -xzf sourcemod.tar.gz
 
-echo -e "Give compiler rights for compile\n"
+echo -e "Give compiler rights for compile"
 chmod +x addons/sourcemod/scripting/spcomp
 
-echo -e "Compile ttt plugins\n"
+echo -e "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
   echo -e "\nCompiling $file..." 
