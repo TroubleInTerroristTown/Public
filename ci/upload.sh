@@ -11,6 +11,7 @@ USER=$4
 PASS=$5
 URL=$7
 KEY=$8
+UPDATE="$URL?version=$VERSION&key=$KEY"
 
 echo -e "Go to build folder"
 cd build
@@ -25,5 +26,5 @@ echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
 
 echo -e "Update TTT Version"
-wget '$URL?version=$VERSION&key=$KEY' -O version.log
+wget $UPDATE -O version.log
 rm version.log
