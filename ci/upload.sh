@@ -12,17 +12,17 @@ PASS=$5
 URL=$7
 KEY=$8
 
-echo -e "Go to build folder\n"
+echo -e "Go to build folder"
 cd build
 
-echo -e "Upload file\n"
+echo -e "Upload file"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
 
-echo -e "Add latest build\n"
+echo -e "Add latest build"
 mv $FILE $LATEST
 
 echo -e "Upload latest build"
 lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
 
 echo -e "Update TTT Version"
-wget -q $URL?version=$VERSION&key=$KEY
+wget $URL?version=$VERSION&key=$KEY
