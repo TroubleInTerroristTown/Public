@@ -185,7 +185,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
     if (g_cTaserCooldown.FloatValue > 0.0)
     {
-        g_hCooldown = CreateTimer(g_cTaserCooldown.FloatValue, Timer_ActivateTasers, _, TIMER_FLAG_NO_MAPCHANGE);
+        g_hCooldown = CreateTimer(g_cTaserCooldown.FloatValue, Timer_ActivateTasers);
 
         LoopValidClients(i)
         {
