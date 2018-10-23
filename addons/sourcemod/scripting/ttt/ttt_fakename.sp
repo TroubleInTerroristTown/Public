@@ -105,6 +105,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     {
         if (StrEqual(itemshort, SHORT_NAME, false))
         {
+            if (!CheckPlayerID())
+            {
+                return Plugin_Stop;
+            }
+
             int role = TTT_GetClientRole(client);
 
             char sName[128];
@@ -149,6 +154,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         }
         else if (StrEqual(itemshort, SHORT_NAME_INVI, false))
         {
+            if (!CheckPlayerID())
+            {
+                return Plugin_Stop;
+            }
+
             int role = TTT_GetClientRole(client);
 
             char sName[128];
@@ -256,4 +266,16 @@ void ResetInvisible(int client)
     }
 
     g_hInviTimer[client] = null;
+}
+
+bool CheckPlayerID()
+{
+    ConVar cvar = FindConVar("mp_playerid");
+
+    if (cvar.IntValue == 2)
+    {
+        return true;
+    }
+
+    return false;
 }
