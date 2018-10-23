@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-17 12:47:28 UTC
+// Date: 2018-10-23 15:38:30 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -1166,6 +1166,16 @@
 	"Bullets: Number bullets"
 	{
 		"de"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
+	}
+
+	"Fake Name: New Name"
+	{
+		"de"		"Dein neuer Name für {orchid}{1} Sekunden {green} ist: {orchid}{2}"
+	}
+
+	"Fake Name: Name expired"
+	{
+		"de"		"Dein Name ist abgelaufen! Du hast nun dein alten Namen wieder."
 	}
 
 }
