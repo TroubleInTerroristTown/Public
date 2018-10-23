@@ -29,7 +29,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
+    g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_CellByRef, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
 
     RegPluginLibrary("ttt_playerhud");
 
@@ -266,7 +266,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
     Call_PushStringEx(sName, iNameLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
     Call_PushCell(iNameLength);
     Call_PushStringEx(sPlayerName, iPlayerNameLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
-    Call_PushCell(iPlayerNameLength);
+    Call_PushCellRef(iPlayerNameLength);
     Call_PushStringEx(sHealth, iHealthLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
     Call_PushCell(iHealthLength);
     Call_PushStringEx(sPlayerHealth, iPlayerHealthLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);

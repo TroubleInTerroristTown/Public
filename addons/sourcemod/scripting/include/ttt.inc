@@ -820,7 +820,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int targetRole = -1)
 
     if (clientCount == 0)
     {
-         return -1;
+        return -1;
     }
 
     return clients[GetRandomInt(0, clientCount-1)];

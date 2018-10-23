@@ -1272,4 +1272,15 @@
 		"en"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
 	}
 
+	"Fake Name: New Name"
+	{
+		"#format"	"{1:.1f},{2:s}"
+		"en"		"Your new name for {orchid}{1} seconds {green}is: {orchid}{2}"
+	}
+
+	"Fake Name: Name expired"
+	{
+		"en"		"Your new name is expired. You've your old name back!"
+	}
+
 }
