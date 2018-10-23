@@ -12,8 +12,9 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Fake Name"
 #define SHORT_NAME "fakename_t"
+#define SHORT_NAME_INVI "invisName_t"
 
-/* ConVars of the plugin */
+/* ConVars of fakename */
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cCount = null;
@@ -21,12 +22,22 @@ ConVar g_cTimer = null;
 ConVar g_cLongName = null;
 ConVar g_cIgnoreRole = null;
 
+int g_iCount[MAXPLAYERS + 1] = { 0, ... };
+Handle g_hTimer[MAXPLAYERS + 1] = { null, ... };
+char g_sName[MAXPLAYERS +  1][MAX_NAME_LENGTH];
+
+/* ConVars of invisible name */
+ConVar g_cInviPrice = null;
+ConVar g_cInviPrio = null;
+ConVar g_cInviCount = null;
+ConVar g_cInviTimer = null;
+ConVar g_cInviLongName = null;
+
+int g_iInviCount[MAXPLAYERS + 1] = { 0, ... };
+Handle g_hInviTimer[MAXPLAYERS + 1] = { null, ... };
+
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-
-int g_iCount[MAXPLAYERS + 1] = { 0, ... };
-char g_sName[MAXPLAYERS +  1][MAX_NAME_LENGTH];
-Handle g_hTimer[MAXPLAYERS + 1] = { null, ... };
 
 public Plugin myinfo =
 {
@@ -51,7 +62,13 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("fakename_count", "5", "The number of fakename that the player can use in a round");
     g_cTimer = AutoExecConfig_CreateConVar("fakename_timer", "15.0", "The time the target should be renamed");
     g_cIgnoreRole = AutoExecConfig_CreateConVar("fakename_ignore_role", "4", "Which role should be ignored when traitor use fakename? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
-    TTT_EndConfig();	
+
+    g_cInviLongName = AutoExecConfig_CreateConVar("invisible_name_name", "Fake Name", "The name of this in Shop");
+    g_cInviPrice = AutoExecConfig_CreateConVar("invisible_name_price", "5000", "The amount of credits invisiblename costs as traitor. 0 to disable.");
+    g_cInviPrio = AutoExecConfig_CreateConVar("invisible_name_sort_prio", "0", "The sorting priority of the invisiblename in the shop menu.");
+    g_cInviCount = AutoExecConfig_CreateConVar("invisible_name_count", "5", "The number of invisiblename that the player can use in a round");
+    g_cInviTimer = AutoExecConfig_CreateConVar("invisible_name_timer", "15.0", "The time the target should have a invisible name");
+    TTT_EndConfig();
 
     HookEvent("player_spawn", Event_Player);
     HookEvent("player_death", Event_Player);
@@ -77,6 +94,9 @@ public void TTT_OnShopReady()
     char sName[128];
     g_cLongName.GetString(sName, sizeof(sName));	
     TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+
+    g_cInviLongName.GetString(sName, sizeof(sName));	
+    TTT_RegisterCustomItem(SHORT_NAME_INVI, sName, g_cInviPrice.IntValue, TTT_TEAM_TRAITOR, g_cInviPrio.IntValue);
 }
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
@@ -89,51 +109,70 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
             char sName[128];
             g_cLongName.GetString(sName, sizeof(sName));
-
-            PrintToChatAll("FakeName - 1");
             
             if (role != TTT_TEAM_TRAITOR)
             {
                 return Plugin_Stop;
             }
 
-            PrintToChatAll("FakeName - 2");
+            if (g_hTimer[client] != null || g_hInviTimer[client] != null)
+            {
+                return Plugin_Stop;
+            }
             
             if (g_iCount[client] >= g_cCount.IntValue)
             {
                 return Plugin_Stop;
             }
-
-            PrintToChatAll("FakeName - 3");
             
             int iTarget = TTT_GetRandomPlayer(false, g_cIgnoreRole.IntValue);
 
             while (iTarget == client)
             {
                 iTarget = TTT_GetRandomPlayer(false, g_cIgnoreRole.IntValue);
-                PrintToChatAll("iTarget: %d", iTarget);
             }
-
-            PrintToChatAll("FakeName - 4");
 
             if (!TTT_IsClientValid(iTarget))
             {
                 return Plugin_Stop;
             }
 
-            PrintToChatAll("FakeName - 5");
-
             if (!GetClientName(iTarget, g_sName[client], sizeof(g_sName[])))
             {
                 return Plugin_Stop;
             }
 
-            PrintToChatAll("FakeName - 6");
-
             CPrintToChat(client, "%s %T", g_sPluginTag, "Fake Name: New Name", client, g_cTimer.FloatValue, g_sName[client]);
 
             g_iCount[client]++;
             g_hTimer[client] = CreateTimer(g_cTimer.FloatValue, Timer_ResetName, GetClientUserId(client));
+        }
+        else if (StrEqual(itemshort, SHORT_NAME_INVI, false))
+        {
+            int role = TTT_GetClientRole(client);
+
+            char sName[128];
+            g_cLongName.GetString(sName, sizeof(sName));
+            
+            if (role != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
+
+            if (g_hTimer[client] != null || g_hInviTimer[client] != null)
+            {
+                return Plugin_Stop;
+            }
+            
+            if (g_iInviCount[client] >= g_cInviCount.IntValue)
+            {
+                return Plugin_Stop;
+            }
+
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Invisible Name: Start", client, g_cTimer.FloatValue);
+
+            g_iCount[client]++;
+            g_hInviTimer[client] = CreateTimer(g_cInviTimer.FloatValue, Timer_ResetInvi, GetClientUserId(client));
         }
     }
     return Plugin_Continue;
@@ -153,12 +192,30 @@ public Action Timer_ResetName(Handle timer, int userid)
     return Plugin_Stop;
 }
 
+public Action Timer_ResetInvi(Handle timer, int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client))
+    {
+        g_hInviTimer[client] = null;
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Invisible Name: Stop", client);
+    }
+
+    return Plugin_Stop;
+}
+
 public Action TTT_OnHudSend_Pre(int client, int target, char[] sName, int iNameLength, char[] sPlayerName, int &iPlayerNameLength, char[] sHealth, int iHealthLength, char[] sPlayerHealth, int iPlayerHealthLength, char[] sKarma, int iKarmaLength, char[] sPlayerKarma, int iPlayerKarmaLength)
 {
     if (g_hTimer[target] != null && strlen(g_sName[target]) > 1)
     {
         iPlayerNameLength = sizeof(g_sName[]);
         Format(sPlayerName, iPlayerNameLength, g_sName[target]);
+    }
+
+    if (g_hInviTimer[target])
+    {
+        return Plugin_Handled;
     }
 
     return Plugin_Continue;
@@ -171,6 +228,7 @@ public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
     if (TTT_IsClientValid(client))
     {
         ResetFakename(client);
+        ResetInvisible(client);
     }
 }
 
@@ -185,4 +243,17 @@ void ResetFakename(int client)
 
     g_hTimer[client] = null;
     Format(g_sName[client], sizeof(g_sName[]), "");
+}
+
+
+void ResetInvisible(int client)
+{
+    g_iInviCount[client] = 0;
+
+    if (g_hInviTimer[client] != null)
+    {
+        KillTimer(g_hInviTimer[client]);
+    }
+
+    g_hInviTimer[client] = null;
 }

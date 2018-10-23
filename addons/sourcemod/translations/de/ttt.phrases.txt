@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-23 15:38:30 UTC
+// Date: 2018-10-23 15:59:40 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -1176,6 +1176,16 @@
 	"Fake Name: Name expired"
 	{
 		"de"		"Dein Name ist abgelaufen! Du hast nun dein alten Namen wieder."
+	}
+
+	"Invisible Name: Start"
+	{
+		"de"		"Dein name ist für {orchid}{1} Sekunden unsichtbar{green}."
+	}
+
+	"Invisible Name: Stop"
+	{
+		"de"		"Dein Name ist {orchid}nicht mehr unsichtbar{green}!"
 	}
 
 }

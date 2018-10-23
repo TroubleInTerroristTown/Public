@@ -1283,4 +1283,15 @@
 		"en"		"Your new name is expired. You've your old name back!"
 	}
 
+	"Invisible Name: Start"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"Your name is now for {orchid}{1} seconds invisible{green}."
+	}
+
+	"Invisible Name: Stop"
+	{
+		"en"		"Your name is {orchid}no longer invisible{green}!"
+	}
+
 }
