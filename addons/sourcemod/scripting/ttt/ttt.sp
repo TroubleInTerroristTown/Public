@@ -211,8 +211,8 @@ public void OnConfigsExecuted()
     if (g_cDebug.BoolValue)
     {
         LogMessage("Log File: \"%s\"", g_sLogFile);
-        LogMessage("Error File :\"%s\"", g_sErrorFile);
-        LogMessage("Karma File :\"%s\"", g_sKarmaFile);
+        LogMessage("Error File: \"%s\"", g_sErrorFile);
+        LogMessage("Karma File: \"%s\"", g_sKarmaFile);
     }
 
     if (g_cLogButtons.BoolValue)

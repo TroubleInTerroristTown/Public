@@ -179,7 +179,11 @@ public void HookClient(int client)
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
-    TTT_ClearTimer(g_hCooldown);
+    if (g_hCooldown != null)
+    {
+        KillTimer(g_hCooldown);
+    }
+    g_hCooldown = null;
 
     g_smGlow.Clear();
 
@@ -240,7 +244,11 @@ public Action Timer_ActivateTasers(Handle timer)
 
 public void TTT_OnRoundEnd(int winner, Handle array)
 {
-    TTT_ClearTimer(g_hCooldown);
+    if (g_hCooldown != null)
+    {
+        KillTimer(g_hCooldown);
+    }
+    g_hCooldown = null;
 }
 
 public void TTT_OnClientGetRole(int client, int role)

@@ -100,6 +100,8 @@ float g_fSmokeAngle[3] = {0.0,-180.0,0.0};
 
 MissileType g_iType[MAXPLAYERS + 1] =  { tNone, ... };
 
+ConVar g_cNoblock = null;
+
 public void OnPluginStart()
 {
     TTT_IsGameCSGO();
@@ -171,6 +173,11 @@ public void OnMapStart()
     AddFileToDownloadsTable("sound/" ... MISSILE_SOUND);
 
     PrecacheSound("weapons/hegrenade/explode5.wav");
+}
+
+public void OnConfigsExecuted()
+{
+    g_cNoblock = FindConVar("ttt_enable_noblock");
 }
 
 public void TTT_OnShopReady()
@@ -505,6 +512,37 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         float fFinalAng[3];
         GetVectorAngles(fFinalVec, fFinalAng);
         TeleportEntity(caller, NULL_VECTOR, fFinalAng, fFinalVec);
+
+        if (g_cNoblock == null)
+        {
+            g_cNoblock = FindConVar("ttt_enable_noblock");
+        }
+
+        if (g_cNoblock.BoolValue)
+        {
+            float fEnemyPos[3];
+            GetClientAbsOrigin(iClosestEnemy, fEnemyPos);
+            fEnemyPos[2] += 50.0;
+
+            Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
+            int iTarget = -1;
+            float fDistance = 0.0;
+
+            if (TR_DidHit(hTrace))
+            {
+                iTarget = TR_GetEntityIndex(hTrace);
+                fDistance = GetVectorDistance(fNadePos, fEnemyPos);
+
+                // PrintToChatAll("Target: %d, Distance: %f", iClosestEnemy, fDistance);
+
+                if (iTarget == iClosestEnemy)
+                {
+                    CreateExplosion(caller);
+                }
+            }
+
+            delete hTrace;
+        }
     }
     else if (g_iType[iOwner] == tControl)
     {
@@ -517,7 +555,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         Handle hTrace = INVALID_HANDLE;
         hTrace = TR_TraceRayFilterEx(fNadePos, fclientAngles, MASK_SOLID, RayType_Infinite, DontHitOwnerOrNade, caller);
         
-        if (TR_DidHit(hTrace) == true)
+        if (TR_DidHit(hTrace))
         {
             TR_GetEndPosition(fFinalVec, hTrace);
             
@@ -556,6 +594,11 @@ public void MissileThink(const char[] output, int caller, int activator, float d
     AcceptEntityInput(caller, "FireUser1");
 }
 
+public bool TR_DontHitSelf(int entity, int mask, int data)
+{
+    return (entity != data);
+}
+
 public void OnGameFrame()
 {
     LoopValidClients(i)
@@ -577,7 +620,6 @@ public bool DontHitOwnerOrNade(int entity, int contentsMask, any data)
 
 public Action OnStartTouch(int entity, int other) 
 {
-    PrintToChatAll("Entity: %d, Other: %d", entity, other);
     if (other == 0)
     {
         // StopSound(entity, 1, "weapons/rpg/rocket1.wav");
@@ -608,7 +650,6 @@ void CreateExplosion(int entity)
     }
 
     g_iType[iMissileOwner] = tNone;
-    
     
     int iExplosion = CreateEntityByName("env_explosion");
     if (iExplosion != -1)

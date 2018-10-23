@@ -305,15 +305,11 @@ int TraceClientViewEntity(int client)
     if (TR_DidHit(tr))
     {
         pEntity = TR_GetEntityIndex(tr);
-        delete(tr);
+        delete tr;
         return pEntity;
     }
 
-    if (tr != null)
-    {
-        delete(tr);
-    }
-
+    delete tr;
     return -1;
 }
 
