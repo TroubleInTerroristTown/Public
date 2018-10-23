@@ -526,13 +526,14 @@ public void MissileThink(const char[] output, int caller, int activator, float d
 
             Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
             int iTarget = -1;
-            float fDistance = 0.0;
+            
+            // float fDistance = 0.0;
 
             if (TR_DidHit(hTrace))
             {
                 iTarget = TR_GetEntityIndex(hTrace);
-                fDistance = GetVectorDistance(fNadePos, fEnemyPos);
 
+                // fDistance = GetVectorDistance(fNadePos, fEnemyPos);
                 // PrintToChatAll("Target: %d, Distance: %f", iClosestEnemy, fDistance);
 
                 if (iTarget == iClosestEnemy)
