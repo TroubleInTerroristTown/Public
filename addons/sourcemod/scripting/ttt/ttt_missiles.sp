@@ -524,17 +524,21 @@ public void MissileThink(const char[] output, int caller, int activator, float d
             GetClientAbsOrigin(iClosestEnemy, fEnemyPos);
             fEnemyPos[2] += 50.0;
 
-            Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
-            int iTarget = -1;
-            
-            // float fDistance = 0.0;
+            float fDistance = 0.0;
+            fDistance = GetVectorDistance(fNadePos, fEnemyPos);
+            PrintToChatAll("Target: %d, Distance: %f", iClosestEnemy, fDistance);
+
+            if(fDistance < 34.0)
+            {
+                CreateExplosion(caller);
+            }
+
+             /*Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
+            int iTarget = -1; 
 
             if (TR_DidHit(hTrace))
             {
                 iTarget = TR_GetEntityIndex(hTrace);
-
-                // fDistance = GetVectorDistance(fNadePos, fEnemyPos);
-                // PrintToChatAll("Target: %d, Distance: %f", iClosestEnemy, fDistance);
 
                 if (iTarget == iClosestEnemy)
                 {
@@ -542,7 +546,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
                 }
             }
 
-            delete hTrace;
+            delete hTrace; */
         }
     }
     else if (g_iType[iOwner] == tControl)
