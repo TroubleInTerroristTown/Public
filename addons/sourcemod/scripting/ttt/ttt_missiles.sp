@@ -526,7 +526,6 @@ public void MissileThink(const char[] output, int caller, int activator, float d
 
             float fDistance = 0.0;
             fDistance = GetVectorDistance(fNadePos, fEnemyPos);
-            PrintToChatAll("Target: %d, Distance: %f", iClosestEnemy, fDistance);
 
             if(fDistance < 34.0)
             {
