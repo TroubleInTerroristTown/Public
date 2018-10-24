@@ -14,6 +14,7 @@
 
 ConVar g_cMenuTime = null;
 ConVar g_cAutoOpen = null;
+ConVar g_cEnableNextPrev = null;
 
 bool g_bMutedAlive[MAXPLAYERS + 1] =  { false, ... };
 bool g_bMutedDead[MAXPLAYERS + 1] =  { false, ... };
@@ -39,12 +40,18 @@ public void OnPluginStart()
     CreateConVar("ttt2_spec_menu_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cAutoOpen = AutoExecConfig_CreateConVar("specmenu_auto_open", "1", "Show spec menu automatically after death?", _, true, 0.0, true, 1.0);
     g_cMenuTime = AutoExecConfig_CreateConVar("specmenu_menu_time", "0", "Time (in seconds) to autoclose the menu (0 - FOREVER)");
+    g_cEnableNextPrev = AutoExecConfig_CreateConVar("specmenu_enable_new_spec_nextprev", "1", "Enables the new method for spec_next and spec_prev", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoadTranslations("ttt.phrases");
+    LoadTranslations("common.phrases");
 
     RegConsoleCmd("sm_specmenu", Command_SpecMenu);
     RegConsoleCmd("sm_spm", Command_SpecMenu);
+
+    AddCommandListener(Command_SpecNext, "spec_next");
+    AddCommandListener(Command_SpecPrev, "spec_prev");
+    AddCommandListener(Command_SpecPlayer, "spec_player");
 
     HookEvent("player_death", Event_PlayerDeath, EventHookMode_Post);
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
@@ -104,6 +111,92 @@ public void Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast
             ShowSpecMenu(client);
         }
     }
+}
+
+public Action Command_SpecNext(int client, const char[] command, int argc)
+{
+    if (!g_cEnableNextPrev.BoolValue || !TTT_IsClientValid(client) || IsPlayerAlive(client))
+    {
+        return Plugin_Handled;
+    }
+    
+    int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+    int nextTarget = GetNextClient(target, true);
+    
+    if (nextTarget != -1)
+    {
+        SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", nextTarget);
+    }
+    
+    return Plugin_Handled;
+}
+
+public Action Command_SpecPrev(int client, const char[] command, int argc)
+{
+    if (!g_cEnableNextPrev.BoolValue || !TTT_IsClientValid(client) || IsPlayerAlive(client))
+    {
+        return Plugin_Handled;
+    }
+    
+    int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+    int nextTarget = GetNextClient(target, false);
+    
+    if (nextTarget != -1)
+    {
+        SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", nextTarget);
+    }
+    
+    return Plugin_Handled;
+}
+
+public Action Command_SpecPlayer(int client, const char[] command, int argc)
+{
+    if (!TTT_IsClientValid(client) || IsPlayerAlive(client))
+    {
+        return Plugin_Handled;
+    }
+    
+    char arg[128];
+    GetCmdArg(1, arg, sizeof(arg));
+    if (arg[0])
+    {
+        char targetName[128];
+        int targets[MAXPLAYERS];
+        bool tn_is_ml;
+        int numTargets = ProcessTargetString(arg, client, targets, MaxClients, COMMAND_FILTER_CONNECTED, targetName, sizeof(targetName), tn_is_ml);
+        
+        if (numTargets <= 0)
+        {
+            ReplyToTargetError(client, numTargets);
+            
+            int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+            int nextTarget = GetNextClient(target, true);
+            
+            if (nextTarget != -1)
+            {
+                SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", nextTarget);
+            }
+
+            return Plugin_Handled;
+        }
+        
+        if (numTargets != 1)
+        {
+            int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+            int nextTarget = GetNextClient(target, true);
+            
+            if (nextTarget != -1)
+            {
+                SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", nextTarget);
+            }
+
+            return Plugin_Handled;
+        }
+        
+        SetEntPropEnt(client, Prop_Send, "m_hObserverTarget", TTT_GetRandomPlayer(true));
+    }
+    
+    return Plugin_Handled;
 }
 
 public Action Command_SpecMenu(int client, int args)
@@ -349,4 +442,27 @@ int GetObservTarget(int client)
         }
     }
     return 0;
+}
+
+/* Taken from zipcore's Prop Hunt */
+stock int GetNextClient(int client, bool nextClient = true)
+{
+    int iPlus = (nextClient ? 1 : -1);
+    int iClient = client + iPlus;
+    int iBegin = (nextClient ? 1 : MaxClients);
+    int iLimit = (nextClient ? MaxClients + 1 : 0);
+
+    while (!TTT_IsPlayerAlive(iClient))
+    {
+        // move index; if index == iLimit, move it to the beginning
+        iClient = (iClient + iPlus == iLimit ? iBegin : iClient + iPlus);
+        
+        // we made a full circle. no suitable client found
+        if (iClient == client)
+        {
+            return -1;
+        }
+    }
+    
+    return iClient;
 }
