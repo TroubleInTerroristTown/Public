@@ -17,6 +17,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_give", Command_Give);
     RegConsoleCmd("sm_roundtime", Command_RoundTime);
     RegConsoleCmd("sm_stone", Command_Stone);
+    RegConsoleCmd("sm_ghost", Command_Ghost);
 }
 
 public Action Command_CheckGOTV(int client, int args)
@@ -175,4 +176,11 @@ public void Frame_SetAngle(int userid)
             RequestFrame(Frame_SetAngle, GetClientUserId(client));
         }
     }
+}
+
+public Action Command_Ghost(int client, int args)
+{
+    PrintToChat(client, "Ghost: %d", GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
+    SetEntProp(client, Prop_Send, "m_bIsPlayerGhost", !GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
+    PrintToChat(client, "Ghost: %d", GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
 }
