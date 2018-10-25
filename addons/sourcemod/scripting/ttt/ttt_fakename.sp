@@ -76,14 +76,7 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-    ConVar cvar = FindConVar("mp_playerid");
-
-    if (cvar.IntValue != 2)
-    {
-        LogError("Fake Name and Invisible Name requires \"mp_playerid 2\". Both items has been unloaded!");
-        TTT_RemoveCustomItem(SHORT_NAME);
-        TTT_RemoveCustomItem(SHORT_NAME_INVI);
-    }
+    CheckPlayerID();
 
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
@@ -280,6 +273,11 @@ void ResetInvisible(int client)
 bool CheckPlayerID()
 {
     ConVar cvar = FindConVar("mp_playerid");
+
+    if (cvar == null)
+    {
+        return false;
+    }
 
     if (cvar.IntValue == 2)
     {

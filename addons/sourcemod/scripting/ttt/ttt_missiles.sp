@@ -532,7 +532,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
                 CreateExplosion(caller);
             }
 
-             /*Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
+            /* Handle hTrace = TR_TraceRayFilterEx(fNadePos, fEnemyPos, MASK_PLAYERSOLID, RayType_Infinite, TR_DontHitSelf, caller);
             int iTarget = -1; 
 
             if (TR_DidHit(hTrace))
