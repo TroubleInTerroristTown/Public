@@ -43,7 +43,7 @@ public void OnPluginStart()
     g_cEnableNextPrev = AutoExecConfig_CreateConVar("specmenu_enable_new_spec_nextprev", "1", "Enables the new method for spec_next and spec_prev", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
     LoadTranslations("common.phrases");
 
     RegConsoleCmd("sm_specmenu", Command_SpecMenu);

@@ -34,7 +34,7 @@ public void OnPluginStart()
 {
     TTT_IsGameCSGO();
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
     
     TTT_StartConfig("template_item");
     CreateConVar("ttt2_template_item_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);

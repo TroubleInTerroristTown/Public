@@ -42,7 +42,7 @@ public void OnPluginStart()
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_team", Event_PlayerTeam);
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 }
 
 public void OnClientPutInServer(int client)

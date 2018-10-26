@@ -184,7 +184,7 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 
     char sDate[12];
     FormatTime(sDate, sizeof(sDate), "%y-%m-%d");

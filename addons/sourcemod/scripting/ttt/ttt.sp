@@ -50,7 +50,7 @@ public void OnPluginStart()
 
     BuildPath(Path_SM, g_sRulesFile, sizeof(g_sRulesFile), "configs/ttt/rules/start.cfg");
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
     LoadTranslations("common.phrases");
 
     LoadBadNames();

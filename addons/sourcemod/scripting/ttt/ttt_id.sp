@@ -54,7 +54,7 @@ public void OnPluginStart()
 
     RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
 }

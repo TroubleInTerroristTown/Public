@@ -78,7 +78,7 @@ public void OnPluginStart()
         SetFailState("Failure with UserMessage Fade...");
     }
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 
     TTT_StartConfig("knockout");
     CreateConVar("ttt2_knockout_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);

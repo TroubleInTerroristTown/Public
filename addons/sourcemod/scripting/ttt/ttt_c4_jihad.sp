@@ -78,8 +78,6 @@ public void OnPluginStart()
 {
     TTT_IsGameCSGO();
 
-    LoadTranslations("ttt.phrases");
-
     TTT_StartConfig("c4_jihad");
     g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
     g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
@@ -110,7 +108,7 @@ public void OnPluginStart()
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_death", Event_PlayerDeath);
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 }
 
 public void OnMapStart()

@@ -146,7 +146,7 @@ public void OnPluginStart()
     g_cKF_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
     TTT_EndConfig();
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 
     LoopValidClients(i)
     {

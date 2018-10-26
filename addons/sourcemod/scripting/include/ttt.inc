@@ -1072,3 +1072,17 @@ stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
 
     return -1;
 }
+
+stock bool TTT_LoadTranslations()
+{
+    char sFile[PLATFORM_MAX_PATH + 1];
+    BuildPath(Path_SM, sFile, sizeof(sFile), "translations/ttt.custom.phrases.txt");
+
+    if (FileExists(sFile))
+    {
+        LoadTranslations("ttt.custom.phrases");
+        LogMessage("Custom translation file loaded.");
+    }
+
+    LoadTranslations("ttt.phrases");
+}

@@ -1,0 +1,18 @@
+"Phrases"
+{
+
+	"WE ARE"
+	{
+		"#format"	"{1:d}"
+		"en"		"We are {1} players!"
+		"de"		"Wir sind {2} Spieler!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"#format"	"{1:d}"
+		"en"		"Remaining players to start a round: {1}"
+		"de"		"Verbleibende Spieler für eine neue Runde: {1}"
+	}
+
+}

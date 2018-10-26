@@ -43,7 +43,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
     
     TTT_StartConfig("tracer");
     CreateConVar("ttt2_tracer_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);

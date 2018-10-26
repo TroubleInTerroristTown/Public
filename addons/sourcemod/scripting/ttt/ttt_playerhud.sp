@@ -51,7 +51,7 @@ public void OnPluginStart()
     g_cTimer = AutoExecConfig_CreateConVar("hud_timer_check", "0.2", "Check each x seconds.");
     TTT_EndConfig();
 
-    LoadTranslations("ttt.phrases");
+    TTT_LoadTranslations();
 }
 
 public void OnAllPluginsLoaded()
