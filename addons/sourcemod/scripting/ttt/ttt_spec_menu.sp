@@ -117,7 +117,7 @@ public Action Command_SpecNext(int client, const char[] command, int argc)
 {
     if (!g_cEnableNextPrev.BoolValue || !TTT_IsClientValid(client) || IsPlayerAlive(client))
     {
-        return Plugin_Handled;
+        return Plugin_Continue;
     }
     
     int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
@@ -135,7 +135,7 @@ public Action Command_SpecPrev(int client, const char[] command, int argc)
 {
     if (!g_cEnableNextPrev.BoolValue || !TTT_IsClientValid(client) || IsPlayerAlive(client))
     {
-        return Plugin_Handled;
+        return Plugin_Continue;
     }
     
     int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
@@ -151,9 +151,9 @@ public Action Command_SpecPrev(int client, const char[] command, int argc)
 
 public Action Command_SpecPlayer(int client, const char[] command, int argc)
 {
-    if (!TTT_IsClientValid(client) || IsPlayerAlive(client))
+    if (!g_cEnableNextPrev.BoolValue || !TTT_IsClientValid(client) || IsPlayerAlive(client))
     {
-        return Plugin_Handled;
+        return Plugin_Continue;
     }
     
     char arg[128];
