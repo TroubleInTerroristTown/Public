@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-23 15:59:40 UTC
+// Date: 2018-10-26 20:36:42 UTC
 // Language: German (de)
 // 
 // To view other translations for this plugin, please visit:
@@ -1186,6 +1186,26 @@
 	"Invisible Name: Stop"
 	{
 		"de"		"Dein Name ist {orchid}nicht mehr unsichtbar{green}!"
+	}
+
+	"ClanTag: Traitor"
+	{
+		"de"		"TRAITOR"
+	}
+
+	"ClanTag: Detective"
+	{
+		"de"		"DETEKTIV"
+	}
+
+	"ClanTag: Unassigned"
+	{
+		"de"		"UNASSIGNED"
+	}
+
+	"ClanTag: Innocent"
+	{
+		"de"		"INNOCENT"
 	}
 
 }

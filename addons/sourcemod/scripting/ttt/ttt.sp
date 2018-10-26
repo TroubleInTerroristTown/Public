@@ -1521,21 +1521,9 @@ void TeamTag(int client)
         return;
     }
 
-    if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+    if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_TRAITOR || g_iRole[client] == TTT_TEAM_INNOCENT || g_iRole[client] == TTT_TEAM_UNASSIGNED)
     {
-        CS_SetClientClanTag(client, "DETECTIVE");
-    }
-    else if (g_iRole[client] == TTT_TEAM_TRAITOR)
-    {
-        CS_SetClientClanTag(client, "TRAITOR");
-    }
-    else if (g_iRole[client] == TTT_TEAM_INNOCENT)
-    {
-        CS_SetClientClanTag(client, "INNOCENT");
-    }
-    else if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
-    {
-        CS_SetClientClanTag(client, "UNASSIGNED");
+        SetClanTag(client, g_iRole[client]);
     }
     else
     {
@@ -1565,7 +1553,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 
     if (g_bRoundStarted && TTT_IsClientValid(client) && !g_bRespawn[client])
     {
-        CS_SetClientClanTag(client, "UNASSIGNED");
+        SetClanTag(client, TTT_TEAM_UNASSIGNED);
         return Plugin_Stop;
     }
 
@@ -1591,7 +1579,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
                 
                 RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
                 
-                CS_SetClientClanTag(client, "UNASSIGNED");
+                SetClanTag(client, TTT_TEAM_UNASSIGNED);
                 DispatchKeyValue(client, "targetname", "UNASSIGNED");
             }
         }
@@ -2131,7 +2119,7 @@ public void OnClientPostAdminCheck(int client)
     g_iRole[client] = TTT_TEAM_UNASSIGNED;
     
     DispatchKeyValue(client, "targetname", "UNASSIGNED");
-    CS_SetClientClanTag(client, "UNASSIGNED");
+    SetClanTag(client, TTT_TEAM_UNASSIGNED);
 
     if (g_cshowRulesMenu.BoolValue)
     {
@@ -3112,7 +3100,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
     {
-        CS_SetClientClanTag(client, "UNASSIGNED");
+        SetClanTag(client, TTT_TEAM_UNASSIGNED);
         g_bFound[client] = true;
     }
 
@@ -4358,7 +4346,7 @@ void CheckTeams()
         {
             if (g_iRole[i] == TTT_TEAM_DETECTIVE)
             {
-                CS_SetClientClanTag(i, "DETECTIVE");
+                SetClanTag(i, TTT_TEAM_DETECTIVE);
                 iD++;
             }
             else if (g_iRole[i] == TTT_TEAM_TRAITOR)
@@ -4375,7 +4363,7 @@ void CheckTeams()
             if (g_iRole[i] == TTT_TEAM_UNASSIGNED)
             {
                 g_bFound[i] = true;
-                CS_SetClientClanTag(i, "UNASSIGNED");
+                SetClanTag(i, TTT_TEAM_UNASSIGNED);
             }
         }
     }
@@ -4551,11 +4539,11 @@ void CheckClantag(int client)
             {
                 if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
                 {
-                    CS_SetClientClanTag(client, "UNASSIGNED");
+                    SetClanTag(client, TTT_TEAM_UNASSIGNED);
                 }
                 else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
                 {
-                    CS_SetClientClanTag(client, "DETECTIVE");
+                    SetClanTag(client, TTT_TEAM_DETECTIVE);
                 }
                 else
                 {
@@ -4617,4 +4605,16 @@ void UpdateRoundSlaysCookie(int client)
     char sBuffer[12];
     IntToString(g_iRoundSlays[client], sBuffer, sizeof(sBuffer));
     SetClientCookie(client, g_hRSCookie, sBuffer);
+}
+
+void SetClanTag(int client, int role)
+{
+    char sRole[32], sBuffer[32];
+    
+    TTT_GetRoleNameByID(role, sRole, sizeof(sRole));
+
+    Format(sBuffer, sizeof(sBuffer), "ClanTag: %s", sRole);
+    Format(sRole, sizeof(sRole), "%t", sBuffer);
+
+    CS_SetClientClanTag(client, sRole);
 }

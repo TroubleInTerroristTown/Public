@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-23 15:59:45 UTC
+// Date: 2018-10-26 20:36:52 UTC
 // Language: Chinese (Traditional) (zho)
 // 
 // To view other translations for this plugin, please visit:

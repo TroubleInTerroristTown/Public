@@ -1294,4 +1294,24 @@
 		"en"		"Your name is {orchid}no longer invisible{green}!"
 	}
 
+	"ClanTag: Traitor"
+	{
+		"en"		"TRAITOR"
+	}
+
+	"ClanTag: Detective"
+	{
+		"en"		"DETECTIVE"
+	}
+
+	"ClanTag: Innocent"
+	{
+		"en"		"INNOCENT"
+	}
+
+	"ClanTag: Unassigned"
+	{
+		"en"		"UNASSIGNED"
+	}
+
 }
