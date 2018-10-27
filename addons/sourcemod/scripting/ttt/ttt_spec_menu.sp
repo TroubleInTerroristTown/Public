@@ -451,9 +451,12 @@ stock int GetNextClient(int client, bool nextClient = true)
     int iClient = client + iPlus;
     int iBegin = (nextClient ? 1 : MaxClients);
     int iLimit = (nextClient ? MaxClients + 1 : 0);
+    bool bCheck[MAXPLAYERS + 1] = { false, ... };
 
-    while (!TTT_IsPlayerAlive(iClient))
+    while (!TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
     {
+        bCheck[iClient] = true;
+
         // move index; if index == iLimit, move it to the beginning
         iClient = (iClient + iPlus == iLimit ? iBegin : iClient + iPlus);
         
