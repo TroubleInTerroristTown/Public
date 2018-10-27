@@ -32,6 +32,7 @@ ConVar g_cGrabDistance = null;
 ConVar g_cAllowThrow = null;
 ConVar g_cThrowForce = null;
 ConVar g_cReloadFlag = null;
+ConVar g_cAllowFreeze = null;
 
 int g_iSprite = -1;
 
@@ -43,6 +44,7 @@ float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 ArrayList g_aWhitelist = null;
 ArrayList g_aBlacklist = null;
 ArrayList g_aBlacklistModels = null;
+ArrayList g_aBlocklist = null;
 
 Handle g_hOnGrabbing = null;
 
@@ -90,11 +92,15 @@ public void OnPluginStart()
     g_cAllowThrow = AutoExecConfig_CreateConVar("gbm_allow_throw", "1", "Allow throwing of props?", _, true, 0.0, true, 1.0);
     g_cThrowForce = AutoExecConfig_CreateConVar("gbm_throw_force", "1000.0", "How strong should the throw of a prop?");
     g_cReloadFlag = AutoExecConfig_CreateConVar("gbm_reload_flag", "z", "Admin flags to reload the white/blacklist");
+    g_cAllowFreeze = AutoExecConfig_CreateConVar("gbm_allow_freeze", "1", "Allow freeze while grabbing?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
     
     LoadLists();
 
     RegConsoleCmd("sm_reloadgrablist", Command_ReloadGrablist);
+
+    delete g_aBlocklist;
+    g_aBlocklist = new ArrayList();
 }
 
 public void OnMapStart()
@@ -107,6 +113,12 @@ public void OnMapStart()
 
     g_cThrowSound.GetString(sBuffer, sizeof(sBuffer));
     PrecacheSoundAny(sBuffer, true);
+}
+
+public void TTT_OnRoundStart()
+{
+    delete g_aBlocklist;
+    g_aBlocklist = new ArrayList();
 }
 
 public Action Command_ReloadGrablist(int client, int args)
@@ -138,7 +150,7 @@ void Command_UnGrab(int client)
     if (ValidGrab(client))
     {
         char sName[128];
-        GetEdictClassname(EntRefToEntIndex(g_iObject[client]), sName, 128);
+        GetEdictClassname(EntRefToEntIndex(g_iObject[client]), sName, sizeof(sName));
 
         if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
         {
@@ -184,6 +196,11 @@ void GrabSomething(int client)
 
     char sName[128];
     GetEdictClassname(iEntity, sName, sizeof(sName));
+
+    if (g_aBlocklist.FindValue(EntIndexToEntRef(iEntity)) != -1)
+    {
+        return;
+    }
     
     // We block doors and buttons by default
     if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1 || StrContains(sName, "player", false) != -1)
@@ -268,6 +285,7 @@ void GrabSomething(int client)
         if (strncmp("player", sName, 5, false) != 0)
         {
             SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+            AcceptEntityInput(iEntity, "EnableMotion");
             PrintHintText(client, "Object ist now Unfreezed");
         }
         else
@@ -423,17 +441,37 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         {
             Command_Grab(client);
         }
-        else if (IsPlayerAlive(client) && ValidGrab(client) && g_cAllowThrow.BoolValue)
+        else if (IsPlayerAlive(client) && ValidGrab(client))
         {
-            buttons &= ~IN_ATTACK;
-
-            if (buttons & IN_ATTACK2)
+            if (g_cAllowFreeze.BoolValue && buttons & IN_ATTACK)
             {
-                buttons &= ~IN_ATTACK2;
-                ThrowObject(client);
+                buttons &= ~IN_ATTACK;
+                buttons &= ~IN_USE;
+
+                int iEntity = EntRefToEntIndex(g_iObject[client]);
+                SetEntityMoveType(iEntity, MOVETYPE_NONE);
+                AcceptEntityInput(iEntity, "DisableMotion");
+
+                TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, view_as<float>({0.0, 0.0, 0.0}));
+
+                g_aBlocklist.Push(g_iObject[client]);
+
+                CreateTimer(1.0, Timer_Unblock, g_iObject[client]);
+
+                Command_UnGrab(client);
+
+                return Plugin_Changed;
             }
 
-            return Plugin_Changed;
+            if (g_cAllowThrow.BoolValue && buttons & IN_ATTACK2)
+            {
+                buttons &= ~IN_ATTACK2;
+                buttons &= ~IN_USE;
+
+                ThrowObject(client);
+
+                return Plugin_Changed;
+            }
         }
     }
     else if (ValidGrab(client))
@@ -442,6 +480,16 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     }
 
     return Plugin_Continue;
+}
+
+public Action Timer_Unblock(Handle timer, int refIndex)
+{
+    int iIndex = g_aBlocklist.FindValue(refIndex);
+
+    if (iIndex != -1)
+    {
+        g_aBlocklist.Erase(iIndex);
+    }
 }
 
 // public Action Timer_Adjust(Handle timer)
