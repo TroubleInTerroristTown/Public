@@ -239,6 +239,8 @@ void KnockoutPlayer(int client)
     DispatchKeyValue(iEntity, "model", sModel);
     SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
     SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+    SetEntityMoveType(iEntity, MOVETYPE_NONE);
+    AcceptEntityInput(iEntity, "DisableMotion");
     
     char sName[24];
     Format(sName, sizeof(sName), "knockout_ragdoll_%d", GetClientUserId(client));
@@ -249,6 +251,8 @@ void KnockoutPlayer(int client)
         pos[2] -= 16.0;
         TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+        AcceptEntityInput(iEntity, "EnableMotion");
+        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
 
         g_iRagdoll[client] = iEntity;
         g_bKnockout[client] = true;

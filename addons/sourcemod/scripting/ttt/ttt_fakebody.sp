@@ -146,6 +146,8 @@ bool SpawnFakeBody(int client)
     DispatchKeyValue(iEntity, "targetname", sName);
     SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
     SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+    SetEntityMoveType(iEntity, MOVETYPE_NONE);
+    AcceptEntityInput(iEntity, "DisableMotion");
 
     if (DispatchSpawn(iEntity))
     {
@@ -153,6 +155,8 @@ bool SpawnFakeBody(int client)
         TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+        AcceptEntityInput(iEntity, "EnableMotion");
+        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
     
         int iRagdollC[Ragdolls];
         iRagdollC[Ent] = EntIndexToEntRef(iEntity);
