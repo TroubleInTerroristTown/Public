@@ -453,7 +453,12 @@ stock int GetNextClient(int client, bool nextClient = true)
     int iLimit = (nextClient ? MaxClients + 1 : 0);
     bool bCheck[MAXPLAYERS + 1] = { false, ... };
 
-    while (!TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
+    if (iClient == -1)
+    {
+        return -1;
+    }
+
+    while (iClient == -1 && !TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
     {
         bCheck[iClient] = true;
 
