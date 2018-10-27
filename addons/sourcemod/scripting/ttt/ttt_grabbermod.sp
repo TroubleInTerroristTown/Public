@@ -203,7 +203,7 @@ void GrabSomething(int client)
     }
     
     // We block doors and buttons by default
-    if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1 || StrContains(sName, "player", false) != -1)
+    if (StrContains(sName, "door", false) != -1 || StrContains(sName, "button", false) != -1 || StrContains(sName, "_player", false) != -1)
     {
         return;
     }
