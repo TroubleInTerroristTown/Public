@@ -1989,6 +1989,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         DispatchKeyValue(iEntity, "model", sModel);
         SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+        SetEntityMoveType(iEntity, MOVETYPE_NONE);
+        AcceptEntityInput(iEntity, "DisableMotion");
 
         ActivateEntity(iEntity);
         if (DispatchSpawn(iEntity))
@@ -2009,6 +2011,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         }
 
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+        AcceptEntityInput(iEntity, "EnableMotion");
+        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
 
         int iUAttacker = event.GetInt("attacker");
         int iAttacker = GetClientOfUserId(iUAttacker);
