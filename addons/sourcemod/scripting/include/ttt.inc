@@ -823,7 +823,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int targetRole = -1)
         return -1;
     }
 
-    SortIntegers(clients, sizeof(clients), Sort_Random);
+    SortIntegers(clients, clientCount-1, Sort_Random);
 
     return clients[GetRandomInt(0, clientCount-1)];
 } 
