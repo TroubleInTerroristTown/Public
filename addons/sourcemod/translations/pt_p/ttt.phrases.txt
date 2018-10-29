@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-26 20:36:50 UTC
+// Date: 2018-10-29 19:44:59 UTC
 // Language: Portuguese (pt_p)
 // 
 // To view other translations for this plugin, please visit:

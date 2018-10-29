@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-26 20:36:51 UTC
+// Date: 2018-10-29 19:44:59 UTC
 // Language: Polish (pl)
 // 
 // To view other translations for this plugin, please visit:
@@ -991,6 +991,226 @@
 	"TTT Radio Menu: KOS"
 	{
 		"pl"		"KOS..."
+	}
+
+	"Place Tripmine"
+	{
+		"pl"		"Aby podłożyć tripmine, wpisz '/tripmine' na czacie"
+	}
+
+	"Free DNA Scanner left"
+	{
+		"pl"		"Użyłeś darmowego skanera dna! Pozostało {1} użyć."
+	}
+
+	"WE ARE"
+	{
+		"pl"		"My jesteśmy {1} graczami!"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"pl"		"Pozostali gracze, do rozpoczęcia rundy"
+	}
+
+	"HUD Health - Invalid"
+	{
+		"pl"		"Niepoprawna wartość"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"pl"		"Bliski śmierci"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"pl"		"Poważnie zraniony"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"pl"		"Ranny"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"pl"		"Ból"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"pl"		"Zdrowy"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"pl"		"Nieprawidłowa wartość"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"pl"		"Odpowiedzialność"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"pl"		"Niebezpieczny"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"pl"		"Trigger-Szczęśliwy"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"pl"		"Surowy"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"pl"		"Renomowany"
+	}
+
+	"Revive: Before to Target"
+	{
+		"pl"		"{1} chce Cię wskrzesić, zaczekaj {2} sekund zanim będziesz mógł zaakceptować."
+	}
+
+	"Revive: Before to Player"
+	{
+		"pl"		"Wskrzesisz {1}."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"pl"		"{1} musi zatwierdzić Twoje wezwanie."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"pl"		"{1} chce Cię wskrzesić.\nAkceptujesz to wezwanie?\nMasz na to {2} sekund..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"pl"		"Tak, chcę!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"pl"		"Nie, dziękuje!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"pl"		"Czas upłyną... Brak odpowiedzi od {1}"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"pl"		"{1} zaakceptował Twoje zaproszenie i jest teraz w grze!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"pl"		"{1} odrzucił Twoje wezwanie!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"pl"		"{1} wciąż żyje!"
+	}
+
+	"Respawn: Player"
+	{
+		"pl"		"{1} wskrzesił {2}!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"pl"		"Tasery naładowane i włączone!"
+	}
+
+	"Version Check: Current"
+	{
+		"pl"		"Ten serwer używa najnowszej wersji ({1}) pluginu Trouble in Terrorist Town."
+	}
+
+	"Version Check: Unknown"
+	{
+		"pl"		"Ten serwer używa nieznanej wersji ({1}) pluginu Trouble in Terrorist Town. Najnowsza to {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"pl"		"Ten serwer używa starszej wersji ({1}) pluginu Trouble in Terrorist Town. Najnowsza to {2}"
+	}
+
+	"Revolver: Suicide"
+	{
+		"pl"		"Detektyw spróbował zabić niewinnego z Revolvera"
+	}
+
+	"Bullets: Have already"
+	{
+		"pl"		"Masz już jeden rodzaj pocisków."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"pl"		"Teraz masz {green}{1} {orchid}{2}."
+	}
+
+	"Bullets: Number bullets"
+	{
+		"pl"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
+	}
+
+	"Fake Name: New Name"
+	{
+		"pl"		"Twój nowy nick przez {orchid}{1} sekund {green}to: {orchid}{2}"
+	}
+
+	"Fake Name: Name expired"
+	{
+		"pl"		"Twój nowy nick już wygasł. Twój oryginalny nick wrócił!"
+	}
+
+	"Invisible Name: Start"
+	{
+		"pl"		"Twój nick jest przez {orchid}{1} sekund niewidoczny{green}."
+	}
+
+	"Invisible Name: Start"
+	{
+		"pl"		"Your name is now for {orchid}{1} seconds invisible{green}."
+	}
+
+	"Invisible Name: Stop"
+	{
+		"pl"		"Twój nick już {orchid}nie jest widoczny{green}!"
+	}
+
+	"ClanTag: Traitor"
+	{
+		"pl"		"ZDRAJCA"
+	}
+
+	"ClanTag: Detective"
+	{
+		"pl"		"DETEKTYW"
+	}
+
+	"ClanTag: Unassigned"
+	{
+		"pl"		"BRAK"
+	}
+
+	"ClanTag: Innocent"
+	{
+		"pl"		"NIEWINNY"
 	}
 
 }
