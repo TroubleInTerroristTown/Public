@@ -24,7 +24,7 @@ public Action Command_CheckGOTV(int client, int args)
 {
     for (int i = 1; i <= MaxClients; i++)
     {
-        ReplyToCommand(client, "i: %d, Name: %N, IsFakeClient: %d, IsClientSourceTV: %d, IsClientConnected: %d, IsClientInGame: %d, IsPlayerAlive: %d", i, i, IsFakeClient(i), IsClientSourceTV(i), IsClientConnected(i), IsClientInGame(i), IsPlayerAlive(i));
+        ReplyToCommand(client, "i: %d, Name: %N, IsFakeClient: %d, IsClientSourceTV: %d, IsClientInGame: %d, IsPlayerAlive: %d", i, i, IsFakeClient(i), IsClientSourceTV(i), IsClientInGame(i), IsPlayerAlive(i));
     }
 }
 

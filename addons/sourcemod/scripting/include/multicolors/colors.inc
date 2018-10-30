@@ -630,7 +630,7 @@ stock int C_ShowActivity(int client, const char[] format, any ...)
     bool display_in_chat = false;
     if (client != 0)
     {
-        if (client < 0 || client > MaxClients || !IsClientConnected(client))
+        if (client < 0 || client > MaxClients || !IsClientInGame(client))
             ThrowError("Client index %d is invalid", client);
 
         GetClientName(client, name, sizeof(name));
@@ -744,7 +744,7 @@ stock int C_ShowActivityEx(int client, const char[] tag, const char[] format, an
     bool display_in_chat = false;
     if (client != 0)
     {
-        if (client < 0 || client > MaxClients || !IsClientConnected(client))
+        if (client < 0 || client > MaxClients || !IsClientInGame(client))
             ThrowError("Client index %d is invalid", client);
 
         GetClientName(client, name, sizeof(name));
@@ -859,7 +859,7 @@ stock int C_ShowActivity2(int client, const char[] tag, const char[] format, any
     char sign[MAX_NAME_LENGTH] = "ADMIN";
     if (client != 0)
     {
-        if (client < 0 || client > MaxClients || !IsClientConnected(client))
+        if (client < 0 || client > MaxClients || !IsClientInGame(client))
             ThrowError("Client index %d is invalid", client);
 
         GetClientName(client, name, sizeof(name));

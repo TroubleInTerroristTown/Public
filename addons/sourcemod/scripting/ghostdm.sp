@@ -732,7 +732,7 @@ bool IsClientValid(int client, bool nobots = false)
 {
     if (client > 0 && client <= MaxClients)
     {
-        if (!IsClientConnected(client) || IsClientSourceTV(client) || !IsClientInGame(client))
+        if (IsClientSourceTV(client) || !IsClientInGame(client))
         {
             return false;
         }
