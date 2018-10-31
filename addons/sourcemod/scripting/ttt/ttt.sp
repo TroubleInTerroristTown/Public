@@ -1958,7 +1958,8 @@ bool IsDamageForbidden()
 
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(event.GetInt("userid"));
+    int userid = event.GetInt("userid");
+    int client = GetClientOfUserId(userid);
     
     if (!TTT_IsClientValid)
     {
@@ -1976,76 +1977,17 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
     {
         g_bAlive[client] = false;
-        char sModel[128];
-        GetClientModel(client, sModel, sizeof(sModel));
-
-        float origin[3], angles[3], velocity[3];
-
-        GetClientAbsOrigin(client, origin);
-        GetClientAbsAngles(client, angles);
-        GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", velocity);
-
-        int iEntity = CreateEntityByName("prop_ragdoll");
-        DispatchKeyValue(iEntity, "model", sModel);
-        SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
-        SetEntityMoveType(iEntity, MOVETYPE_NONE);
-        AcceptEntityInput(iEntity, "DisableMotion");
-
-        ActivateEntity(iEntity);
-        if (DispatchSpawn(iEntity))
-        {
-            float speed = GetVectorLength(velocity);
-            if (speed >= 500)
-            {
-                TeleportEntity(iEntity, origin, angles, NULL_VECTOR);
-            }
-            else
-            {
-                TeleportEntity(iEntity, origin, angles, velocity);
-            }
-        }
-        else
-        {
-            LogToFileEx(g_sErrorFile, "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
-        }
-
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-        AcceptEntityInput(iEntity, "EnableMotion");
-        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
 
         int iUAttacker = event.GetInt("attacker");
         int iAttacker = GetClientOfUserId(iUAttacker);
-        int iARole = 0;
-        char sName[MAX_NAME_LENGTH];
-        GetClientName(client, sName, sizeof(sName));
-        int iRagdollC[Ragdolls];
-        iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-        iRagdollC[Victim] = GetClientUserId(client);
-        iRagdollC[VictimTeam] = g_iRole[client];
-        Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sName);
-        iRagdollC[Scanned] = false;
-        
-        if (TTT_IsClientValid(iAttacker))
-        {
-            GetClientName(iAttacker, sName, sizeof(sName));
-            iARole = g_iRole[iAttacker];
-        }
-        else
-        {
-            Format(sName, sizeof(sName), "Unknown attacker");
-            iUAttacker = 0;
-        }
-        
-        iRagdollC[Attacker] = iUAttacker;
-        iRagdollC[AttackerTeam] = iARole;
-        Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sName);
-        iRagdollC[GameTime] = GetGameTime();
-        event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
-        
-        g_aRagdoll.PushArray(iRagdollC[0]);
+        char sWeapon[32];
+        event.GetString("weapon", sWeapon, sizeof(sWeapon));
 
-        SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
+        DataPack pack = new DataPack();
+        RequestFrame(Frame_CreateRagdoll, pack);
+        pack.WriteCell(userid);
+        pack.WriteCell(iUAttacker);
+        pack.WriteString(sWeapon);
 
         Action res = Plugin_Continue;
 
@@ -2109,6 +2051,92 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
     event.BroadcastDisabled = true;
     return Plugin_Changed;
+}
+
+public void Frame_CreateRagdoll(DataPack pack)
+{
+    pack.Reset();
+    int client = GetClientOfUserId(pack.ReadCell());
+    int iUAttacker = pack.ReadCell();
+    int iAttacker = GetClientOfUserId(iUAttacker);
+
+    char sWeapon[32];
+    pack.ReadString(sWeapon, sizeof(sWeapon));
+    delete pack;
+
+    if (!TTT_IsClientValid(client))
+    {
+        return;
+    }
+
+    char sModel[128];
+    GetClientModel(client, sModel, sizeof(sModel));
+
+    float origin[3], angles[3], velocity[3];
+    GetClientAbsOrigin(client, origin);
+    GetClientAbsAngles(client, angles);
+    GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", velocity);
+
+    int iEntity = CreateEntityByName("prop_ragdoll");
+    DispatchKeyValue(iEntity, "model", sModel);
+    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+    SetEntityMoveType(iEntity, MOVETYPE_NONE);
+    AcceptEntityInput(iEntity, "DisableMotion");
+
+    ActivateEntity(iEntity);
+    if (DispatchSpawn(iEntity))
+    {
+        float speed = GetVectorLength(velocity);
+        if (speed >= 500)
+        {
+            TeleportEntity(iEntity, origin, angles, NULL_VECTOR);
+        }
+        else
+        {
+            TeleportEntity(iEntity, origin, angles, velocity);
+        }
+    }
+    else
+    {
+        LogToFileEx(g_sErrorFile, "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
+    }
+
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+    AcceptEntityInput(iEntity, "EnableMotion");
+    SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+
+    
+    int iARole = 0;
+    char sName[MAX_NAME_LENGTH];
+    GetClientName(client, sName, sizeof(sName));
+    int iRagdollC[Ragdolls];
+    iRagdollC[Ent] = EntIndexToEntRef(iEntity);
+    iRagdollC[Victim] = GetClientUserId(client);
+    iRagdollC[VictimTeam] = g_iRole[client];
+    Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sName);
+    iRagdollC[Scanned] = false;
+    
+    if (TTT_IsClientValid(iAttacker))
+    {
+        GetClientName(iAttacker, sName, sizeof(sName));
+        iARole = g_iRole[iAttacker];
+    }
+    else
+    {
+        Format(sName, sizeof(sName), "Unknown attacker");
+        iUAttacker = 0;
+    }
+    
+    iRagdollC[Attacker] = iUAttacker;
+    iRagdollC[AttackerTeam] = iARole;
+    Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sName);
+    iRagdollC[GameTime] = GetGameTime();
+    strcopy(iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]), sWeapon);
+    
+    g_aRagdoll.PushArray(iRagdollC[0]);
+
+    SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -3350,7 +3378,6 @@ public int TTT_OnButtonPress(int client, int button)
 
     if (button & IN_USE)
     {
-
         int iEntity = GetClientAimTarget(client, false);
         if (iEntity > 0)
         {
@@ -3380,6 +3407,7 @@ public int TTT_OnButtonPress(int client, int button)
                     if (IsPlayerAlive(client) && !g_bIsChecking[client])
                     {
                         g_bIsChecking[client] = true;
+                        
                         Action res = Plugin_Continue;
                         Call_StartForward(g_hOnBodyCheck);
                         Call_PushCell(client);
