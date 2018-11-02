@@ -409,9 +409,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    if (!g_bTaser[iAttacker] || g_hCooldown != null)
+    if (!g_bTaser[iAttacker])
     {
         return Plugin_Continue;
+    }
+
+    if (g_hCooldown != null)
+    {
+        return Plugin_Handled;
     }
 
     if (g_cInflictor.BoolValue && iAttacker != inflictor)
