@@ -1261,7 +1261,7 @@ public Action Command_GiveItem(int client, int args)
 
         if (!GiveClientItem(target, sItem))
         {
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Shop: Item not found", client, sItem);
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Shop Item not found", client, sItem);
         }
     }
 
