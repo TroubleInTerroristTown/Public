@@ -327,7 +327,7 @@ void LoadClientCredits(int client)
         char sQuery[2048];
         Format(sQuery, sizeof(sQuery), "SELECT `credits` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
 
-        cvar = FindConVar("ttt_debug_mode");
+        cvar = FindConVar("ttt_show_debug_messages");
         if (cvar != null && cvar.BoolValue)
         {
             LogMessage(sQuery);
@@ -368,7 +368,7 @@ public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const c
 
             int credits = results.FetchInt(0);
 
-            ConVar cvar = FindConVar("ttt_debug_mode");
+            ConVar cvar = FindConVar("ttt_show_debug_messages");
             if (cvar.BoolValue)
             {
                 LogMessage("Name: %L has %d credits", client, credits);
@@ -424,7 +424,7 @@ void UpdatePlayer(int client)
         Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, credits) VALUES (\"%s\", %d);", sCommunityID, g_iCredits[client], g_iCredits[client]);
     }
 
-    ConVar cvar = FindConVar("ttt_debug_mode");
+    ConVar cvar = FindConVar("ttt_show_debug_messages");
     if (cvar.BoolValue)
     {
         LogMessage(sQuery);

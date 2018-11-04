@@ -11,7 +11,7 @@
 #define SHORT_NAME_D "sprint_d"
 #define SHORT_NAME_T "sprint_t"
 
-ConVar g_cDebug = null;
+ConVar g_cDebugMessages = null;
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 
@@ -63,7 +63,7 @@ public void OnPluginStart()
 
 public void OnConfigsExecuted()
 {
-    g_cDebug = FindConVar("ttt_debug_mode");
+    g_cDebugMessages = FindConVar("ttt_show_debug_messages");
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
@@ -127,7 +127,7 @@ public int TTT_OnButtonPress(int client, int button)
     {
         if (g_hCTimer[client] != null)
         {
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 PrintToChat(client, "Cooldown is active...");
             }
@@ -137,7 +137,7 @@ public int TTT_OnButtonPress(int client, int button)
         
         if (g_hTimer[client] != null)
         {
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 PrintToChat(client, "Sprint is active...");
             }
@@ -169,7 +169,7 @@ public Action Timer_Sprint(Handle timer, any userid)
                 g_hCTimer[client] = CreateTimer(g_cCooldown.FloatValue, Timer_Cooldown, GetClientUserId(client));
             }
             
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 PrintToChat(client, "Sprint over");
             }
@@ -191,7 +191,7 @@ public Action Timer_Cooldown(Handle timer, any userid)
         
         CPrintToChat(client, "%s %T", g_sPluginTag, "Sprint available", client);
         
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             PrintToChat(client, "Cooldown over");
         }

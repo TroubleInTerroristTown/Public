@@ -132,7 +132,7 @@ public void OnPluginStart()
 
     if (TTT_GetSQLConnection() != null)
     {
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogMessage("(OnPluginStart) Handle is not null");
         }
@@ -208,7 +208,7 @@ public void OnConfigsExecuted()
     BuildPath(Path_SM, g_sErrorFile, sizeof(g_sErrorFile), g_sErrorFile);
     BuildPath(Path_SM, g_sKarmaFile, sizeof(g_sKarmaFile), g_sKarmaFile);
     
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Log File: \"%s\"", g_sLogFile);
         LogMessage("Error File: \"%s\"", g_sErrorFile);
@@ -663,7 +663,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
     g_iRoundTime = GetTime();
     
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 1 (Warmup: %d)", TTT_IsWarmUp());
     }
@@ -673,7 +673,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         g_aRagdoll.Clear();
     }
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 2 (g_aRagdoll: %d)", g_aRagdoll.Length);
     }
@@ -681,7 +681,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     g_bInactive = false;
     g_bRoundEnded = false;
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 3 (g_bInactive: %d - g_bRoundEnded: %d)", g_bInactive, g_bRoundEnded);
     }
@@ -704,7 +704,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         CS_SetClientClanTag(i, " ");
         
 
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogMessage("Event_RoundStartPre - 4 (Player: %N)", i);
         }
@@ -715,7 +715,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         TTT_ClearTimer(g_hStartTimer);
     }
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 5 (g_hStartTimer: %d)", g_hStartTimer);
     }
@@ -725,7 +725,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         TTT_ClearTimer(g_hCountdownTimer);
     }
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 6 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
@@ -735,7 +735,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     float warmupTime = g_cGraceTime.FloatValue + 5.0;
     g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 7 (g_hStartTimer: %d - Time: %f)", g_hStartTimer, warmupTime);
     }
@@ -743,14 +743,14 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     g_fRealRoundStart = GetGameTime() + warmupTime;
     g_hCountdownTimer = CreateTimer(0.5, Timer_SelectionCountdown, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 8 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
 
     g_bRoundStarted = false;
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 9 (g_bRoundStarted: %d)", g_bRoundStarted);
     }
@@ -760,7 +760,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         TTT_ClearTimer(g_hRoundTimer);
     }
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d)", g_hRoundTimer);
     }
@@ -768,7 +768,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     float fTime = g_cFreezeTime.FloatValue + (g_cRoundTime.FloatValue * 60.0);
     g_hRoundTimer = CreateTimer(fTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
 
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d - Time: %f)", g_hRoundTimer, fTime);
     }
@@ -1663,14 +1663,14 @@ public void OnClientPutInServer(int client)
     }
     
     HookClient(client);
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogToFileEx(g_sKarmaFile, "OnClientPutInServer - 1 (%N)", client);
     }
 
     if (g_dDB != null)
     {
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "OnClientPutInServer - 2 (%N), Valid Database", client);
         }
@@ -1682,14 +1682,14 @@ void LateLoadClients(bool bHook = false)
 {
     LoopValidClients(i)
     {
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "LateLoadClients - 1 (%N)", i);
         }
 
         if (g_dDB != null)
         {
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "LateLoadClients - 2 (%N), Valid Database", i);
             }
@@ -2141,7 +2141,7 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "Timer_OnClientPutInServer - 1 (%N)", client);
         }
@@ -3398,7 +3398,7 @@ public int TTT_OnButtonPress(int client, int button)
                         int victim = GetClientOfUserId(iRagdollC[Victim]);
                         int attacker = GetClientOfUserId(iRagdollC[Attacker]);
                         
-                        if (g_cDebug.BoolValue)
+                        if (g_cDebugMessages.BoolValue)
                         {
                             LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, iRagdollC[Victim], attacker, iRagdollC[Attacker]);
                         }
@@ -4149,7 +4149,7 @@ public Action Timer_5(Handle timer)
             iKarma *= -1;
         }
 
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(Timer_5) - 1 Client: \"%L\", g_bKarma: %d, g_cKarmaBan: %d, iKarma: %d (g_iKarma: %d)", i, g_bKarma[i], g_ckarmaBan.IntValue, iKarma, g_iKarma[i]);
         }
@@ -4160,7 +4160,7 @@ public Action Timer_5(Handle timer)
         }
     }
     
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("g_bRoundStarted: %d - g_bRoundEnding: %d - g_bInactive: %d - g_hStartTimer: %d - g_hCountdownTimer: %d - g_hRoundTimer: %d", g_bRoundStarted, g_bRoundEnding, g_bInactive, g_hStartTimer, g_hCountdownTimer, g_hRoundTimer);
     }
@@ -4179,7 +4179,7 @@ public Action Timer_5(Handle timer)
 
 void CheckPlayers()
 {
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("CheckPlayers - 1 ()");
     }
@@ -4206,7 +4206,7 @@ void CheckPlayers()
         iCount++;
     }
     
-    if (g_cDebug.BoolValue)
+    if (g_cDebugMessages.BoolValue)
     {
         LogMessage("CheckPlayers - 2 (iCount: %d - Required: %d)", iCount, g_crequiredPlayers.IntValue);
     }
@@ -4215,7 +4215,7 @@ void CheckPlayers()
     {
         g_bCheckPlayers = false;
         
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogMessage("CheckPlayers - 3 (CS_TerminateRound)");
         }
@@ -4436,7 +4436,7 @@ void LoadClientKarma(int userid)
 
     if (!IsFakeClient(client))
     {
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1 Client: \"%L\"", client);
         }
@@ -4445,7 +4445,7 @@ void LoadClientKarma(int userid)
 
         if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
         {
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1.1 Client: \"%L\"", client);
             }
@@ -4455,19 +4455,19 @@ void LoadClientKarma(int userid)
 
         char sQuery[2048];
         Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 2 Client: \"%L\", Query: \"%s\"", client, sQuery);
         }
 
-        if (g_cDebug.BoolValue)
+        if (g_cDebugMessages.BoolValue)
         {
             LogToFileEx(g_sLogFile, sQuery);
         }
 
         if (g_dDB != null)
         {
-            if (g_cDebug.BoolValue)
+            if (g_cDebugMessages.BoolValue)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 3 Client: \"%L\", Valid Database", client);
             }
