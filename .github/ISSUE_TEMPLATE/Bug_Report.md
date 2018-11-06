@@ -3,7 +3,7 @@ name: Bug Report
 about: Create a bug report for Trouble in Terrorist Town
 
 ---
-If you found a bug or have some others problems, we need some details about your server (like version of metamod, sourcemod and ttt) and  the issue.
+If you found a bug or have some others problems, we need some details about your server (like version of metamod, sourcemod and ttt) and  the issue. __Please just one bug/issue or whatever otherwise the issue will be closed without any fix or feedback__
 
 Here's is a list what we need ( __Please use [Pastebin.com](https://pastebin.com), [hastebin](https://hastebin.com) or other online paste tools for the following things__ ):
 - Version of MetaMod  (meta version)
