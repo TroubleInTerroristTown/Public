@@ -730,6 +730,11 @@ void GiveGrenade(int client)
 
 void ResetClient(int client)
 {
+    if(g_iType[client] == tControl || g_iMissileEnt[client] != -1)
+    {
+        SetClientViewEntity(client, client);
+    }
+    
     g_iPAmount[client] = 0;
     g_iMissile[client] = 0;
     g_iPAmount_F[client] = 0;
@@ -739,3 +744,4 @@ void ResetClient(int client)
     g_iMissileEnt[client] = -1;
     g_iType[client] = tNone;
 }
+
