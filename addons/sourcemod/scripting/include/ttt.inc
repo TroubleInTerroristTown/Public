@@ -148,8 +148,9 @@ forward void TTT_OnClientGetRole(int client, int role);
  *
  * @param victim            Person who died.
  * @param attacker          Attacker.
+ * @param badAction         If kill was a bad action (example: Innocent killed Detective)
  */
-forward void TTT_OnClientDeath(int victim, int attacker);
+forward void TTT_OnClientDeath(int victim, int attacker, bool badAction);
 
 /**
  * Called when a client dies, before Karma process

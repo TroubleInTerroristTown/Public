@@ -2982,6 +2982,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     event.GetString("weapon", sWeapon, sizeof(sWeapon));
     
     char sAttackerID[32], sClientID[32];
+
+    bool badAction = false;
     
     if (g_cAddSteamIDtoLogs.BoolValue)
     {
@@ -3012,6 +3014,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
         
         if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
@@ -3032,6 +3036,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
         
         if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
@@ -3053,6 +3059,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Traitor) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
         addArrayTime(iItem);
         
+        badAction = true;
+        
         if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
         } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3072,6 +3080,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
         
         if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
@@ -3092,6 +3102,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
         
         if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
@@ -3113,6 +3125,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     Call_StartForward(g_hOnClientDeath);
     Call_PushCell(client);
     Call_PushCell(iAttacker);
+    Call_PushCell(view_as<int>(badAction));
     Call_Finish();
 }
 

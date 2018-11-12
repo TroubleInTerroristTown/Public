@@ -5,7 +5,7 @@ void InitForwards()
     g_hOnRoundStartFailed = CreateGlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnRoundEnd = CreateGlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnClientGetRole = CreateGlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
-    g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell);
+    g_hOnClientDeath = CreateGlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
     g_hOnClientDeathPre = CreateGlobalForward("TTT_OnClientDeathPre", ET_Event, Param_Cell, Param_Cell);
     g_hOnBodyFound = CreateGlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_String, Param_Cell);
     g_hOnBodyCheck = CreateGlobalForward("TTT_OnBodyCheck", ET_Event, Param_Cell, Param_Array);
