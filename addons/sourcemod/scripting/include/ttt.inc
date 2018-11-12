@@ -144,6 +144,17 @@ forward void TTT_OnRoundEnd(int winner, Handle array);
 forward void TTT_OnClientGetRole(int client, int role);
 
 /**
+ * Called when a client take damage
+ *
+ * @param victim            Person who take damage.
+ * @param attacker          Attacker.
+ * @param damage            How much damage
+ * @param weapon            Weapon index
+ * @param badAction         If damage was a bad action (example: Innocent damaged Detective)
+ */
+forward void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon, bool badAction);
+
+/**
  * Called when a client dies, after Karma process
  *
  * @param victim            Person who died.

@@ -1838,10 +1838,14 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
         }
     }
 
+    bool badAction = false;
+
     if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
 
         if (g_cEnableDamageKarma.BoolValue)
         {
@@ -1862,6 +1866,8 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
 
         if (g_cEnableDamageKarma.BoolValue)
         {
@@ -1884,6 +1890,8 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
         Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Traitor) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
         addArrayTime(iItem);
 
+        badAction = true;
+
         if (g_cEnableDamageKarma.BoolValue)
         {
             subtractKarma(iAttacker, g_cDamageKarmaTT.IntValue, false);
@@ -1904,6 +1912,8 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
         addArrayTime(iItem);
+
+        badAction = true;
 
         if (g_cEnableDamageKarma.BoolValue)
         {
@@ -1926,19 +1936,31 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
         addArrayTime(iItem);
 
+        badAction = true;
+
         if (g_cEnableDamageKarma.BoolValue)
         {
             subtractKarma(iAttacker, g_cDamageKarmaDD.IntValue, false);
         }
     }
     
+    Action action = Plugin_Continue;
+
     if (fDamage != damage)
     {
         damage = fDamage;
-        return Plugin_Changed;
+        action = Plugin_Changed;
     }
 
-    return Plugin_Continue;
+    Call_StartForward(g_hOnTakeDamage);
+    Call_PushCell(iVictim);
+    Call_PushCell(iAttacker);
+    Call_PushCell(view_as<int>(fDamage));
+    Call_PushCell(iWeapon);
+    Call_PushCell(view_as<int>(badAction));
+    Call_Finish();
+
+    return action;
 }
 
 bool IsDamageForbidden()

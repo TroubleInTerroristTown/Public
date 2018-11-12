@@ -101,6 +101,7 @@ Handle g_hOnRoundStart = null;
 Handle g_hOnRoundStartFailed = null;
 Handle g_hOnRoundEnd = null;
 Handle g_hOnClientGetRole = null;
+Handle g_hOnTakeDamage = null;
 Handle g_hOnClientDeath = null;
 Handle g_hOnClientDeathPre = null;
 Handle g_hOnBodyFound = null;
