@@ -21,11 +21,6 @@ float g_fStart[MAXPLAYERS + 1][3];
 
 int g_iSprite = -1;
 
-public void OnPluginStart()
-{
-    g_iSprite = PrecacheModel(MODEL_SPRITE);
-}
-
 public void OnMapStart()
 {
     g_iSprite = PrecacheModel(MODEL_SPRITE);

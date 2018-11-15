@@ -17,6 +17,8 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Knockout"
 #define SHORT_NAME "knockout"
 
+#define MODEL_BLACKOUT "models/blackout.mdl"
+
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
@@ -122,6 +124,11 @@ public void OnLibraryRemoved(const char[] name)
     {
         g_bBaseC = false;
     }
+}
+
+public void OnMapStart()
+{
+    PrecacheModel(MODEL_BLACKOUT, true);
 }
 
 public void TTT_OnShopReady()
@@ -387,10 +394,6 @@ void ResetKnockout(int client)
 
 bool SpawnCamAndAttach(int client, int ragdoll)
 {
-    char sModel[64];
-    Format(sModel, sizeof(sModel), "models/blackout.mdl");
-    PrecacheModel(sModel, true);
-
     char sModelName[64];
     Format(sModelName, sizeof(sModelName), "fpd_ragdoll%d", client);
     DispatchKeyValue(ragdoll, "targetname", sModelName);
@@ -406,7 +409,7 @@ bool SpawnCamAndAttach(int client, int ragdoll)
 
     DispatchKeyValue(entity, "targetname", sEntityName);
     DispatchKeyValue(entity, "parentname", sModelName);
-    DispatchKeyValue(entity, "model",      sModel);
+    DispatchKeyValue(entity, "model",      MODEL_BLACKOUT);
     DispatchKeyValue(entity, "solid",      "0");
     DispatchKeyValue(entity, "rendermode", "10");
     DispatchKeyValue(entity, "disableshadows", "1");
@@ -416,7 +419,7 @@ bool SpawnCamAndAttach(int client, int ragdoll)
     Format(CamTargetAngles, 64, "%f %f %f", angles[0], angles[1], angles[2]);
     DispatchKeyValue(entity, "angles", CamTargetAngles);
 
-    SetEntityModel(entity, sModel);
+    SetEntityModel(entity, MODEL_BLACKOUT);
     
     DispatchSpawn(entity);
     SetVariantString(sModelName);

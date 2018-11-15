@@ -59,7 +59,7 @@ public void OnPluginEnd()
     }
 }
 
-public void OnConfigsExecuted()
+public void OnMapStart()
 {
     char sBuffer[PLATFORM_MAX_PATH];
     
