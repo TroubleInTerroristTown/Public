@@ -1955,7 +1955,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
     Call_StartForward(g_hOnTakeDamage);
     Call_PushCell(iVictim);
     Call_PushCell(iAttacker);
-    Call_PushCell(view_as<int>(fDamage));
+    Call_PushFloat(fDamage);
     Call_PushCell(iWeapon);
     Call_PushCell(view_as<int>(badAction));
     Call_Finish();
