@@ -29,6 +29,11 @@ public void OnPluginStart()
     CreateConVar("ttt2_crashcatcher_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnEntityCreated(int entity, const char[] classname)
 {
     if (StrEqual(classname, "prop_ragdoll"))

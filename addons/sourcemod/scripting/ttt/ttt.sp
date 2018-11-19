@@ -220,10 +220,7 @@ public void OnConfigsExecuted()
         HookEntityOutput("func_button", "OnPressed", OnButtonPressed);
     }
 
-    if (g_cVersionCheck.BoolValue)
-    {
-        GetLatestVersion();
-    }
+    GetLatestVersion();
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -1532,7 +1529,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    if (g_cVersionCheck.BoolValue && g_cVersionMessage.BoolValue && strlen(g_sLatestVersion) > 1)
+    if (g_cVersionMessage.BoolValue && strlen(g_sLatestVersion) > 1)
     {
         if (StrEqual(TTT_PLUGIN_VERSION, g_sLatestVersion, false))
         {

@@ -103,6 +103,11 @@ public void OnPluginStart()
     g_aBlocklist = new ArrayList();
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnMapStart()
 {
     g_iSprite = PrecacheModel("materials/sprites/laserbeam.vmt");

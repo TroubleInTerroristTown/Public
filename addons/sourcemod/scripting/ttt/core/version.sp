@@ -98,6 +98,14 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
         strcopy(g_sLatestVersion, sizeof(g_sLatestVersion), sVersion[3]);
     }
 
+    char sSplit[2][12];
+    ExplodeString(g_sLatestVersion, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[1]))
+    {
+        g_iGit = StringToInt(sSplit[1]);
+    }
+
     Call_StartForward(g_hOnVersionCheck);
     Call_PushString(g_sLatestVersion);
     Call_Finish();

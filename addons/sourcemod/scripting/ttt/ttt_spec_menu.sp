@@ -57,6 +57,11 @@ public void OnPluginStart()
     HookEvent("player_spawn", Event_PlayerSpawn, EventHookMode_Post);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));

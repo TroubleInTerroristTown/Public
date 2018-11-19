@@ -54,6 +54,11 @@ public void OnPluginStart()
     TTT_LoadTranslations();
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnAllPluginsLoaded()
 {
     char sFile[] = "ttt_player_hud.smx";

@@ -74,6 +74,11 @@ public void OnPluginStart()
     HookEvent("player_death", Event_Player);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnConfigsExecuted()
 {
     CheckPlayerID();

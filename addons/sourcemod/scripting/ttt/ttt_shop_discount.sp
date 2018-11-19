@@ -84,6 +84,11 @@ public void OnPluginStart()
     g_aItems = new ArrayList(18);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnConfigsExecuted()
 {
     Handle hFile = OpenFile(g_sFile, "rt");

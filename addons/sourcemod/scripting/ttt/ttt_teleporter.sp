@@ -53,6 +53,11 @@ public void OnPluginStart()
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnConfigsExecuted()
 {
     g_cPluginTag = FindConVar("ttt_plugin_tag");

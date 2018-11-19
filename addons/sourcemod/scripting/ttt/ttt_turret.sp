@@ -45,6 +45,11 @@ public void OnPluginStart()
     TTT_EndConfig();
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnAllPluginsLoaded()
 {
     g_cCheckTeam = FindConVar("sd_turret_checkteam");

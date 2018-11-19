@@ -51,6 +51,11 @@ public void OnPluginStart()
     CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnPluginEnd()
 {
     LoopValidClients(i)

@@ -75,6 +75,11 @@ public void OnPluginStart()
     AddTempEntHook("Shotgun Shot", Hook_ShotgunShot);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void TTT_OnShopReady()
 {
     RegisterItem();

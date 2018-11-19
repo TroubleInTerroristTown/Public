@@ -61,6 +61,11 @@ public void OnPluginStart()
     HookEvent("decoy_started", Event_DecoyStarted, EventHookMode_Pre);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnClientDisconnect(int client)
 {
     ResetDecoyCount(client);

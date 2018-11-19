@@ -482,6 +482,12 @@ native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
 native bool TTT_GetLatestVersion(const char[] version, int length);
 
 /**
+ * Returns latest git commit count.
+ *
+ */
+native int TTT_GetCommitsCount();
+
+/**
  * Disable the next TTT round. It has no effect if it's already set.
  * If you want to close the disabled round:
  *  - set status to false
@@ -1094,4 +1100,73 @@ stock bool TTT_LoadTranslations()
     }
 
     LoadTranslations("ttt.phrases");
+}
+
+stock bool TTT_CheckVersion(const char[] version, int git)
+{
+    int iGit = -1;
+    char sSplit[2][12];
+    ExplodeString(version, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[1]))
+    {
+        iGit = StringToInt(sSplit[1]);
+    }
+
+    LogMessage("Version: %s, git: %d, iGit: %d", version, git, iGit);
+
+    if (StrEqual(version, "<VERSION>", false))
+    {
+        return true;
+    }
+
+    if (git != -1 && git != iGit)
+    {
+        SetFailState("This plugin use a different version as ttt.smx");
+        return false;
+    }
+
+    return true;
+}
+
+stock bool IsStringNumeric(const char[] str)
+{
+	int x=0;
+	int dotsFound=0;
+	int numbersFound=0;
+
+	if (str[x] == '+' || str[x] == '-')
+    {
+		x++;
+	}
+
+	while (str[x] != '\0') {
+
+		if (IsCharNumeric(str[x]))
+        {
+			numbersFound++;
+		}
+		else if (str[x] == '.')
+        {
+			dotsFound++;
+
+			if (dotsFound > 1)
+            {
+				return false;
+			}
+		}
+		else
+        {
+			return false;
+		}
+
+		x++;
+	}
+
+	if (!numbersFound)
+    {
+		return false;
+	}
+
+	return true;
 }

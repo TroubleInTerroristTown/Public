@@ -105,6 +105,11 @@ public void OnPluginStart()
     HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnMapStart()
 {
     char sBuffer[PLATFORM_MAX_PATH];

@@ -51,6 +51,7 @@ void InitNatives()
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
     CreateNative("TTT_TerminateRound", Native_TerminateRound);
     CreateNative("TTT_GetLatestVersion", Native_GetLatestVersion);
+    CreateNative("TTT_GetCommitsCount", Native_GetCommitsCount);
     CreateNative("TTT_DisableRounds", Native_DisableRounds);
     CreateNative("TTT_GetRoundStatus", Native_GetRoundStatus);
 }
@@ -592,7 +593,6 @@ public int Native_TerminateRound(Handle plugin, int numParams)
     CS_TerminateRound(fDelay, rReason, true);
 }
 
-
 public int Native_GetLatestVersion(Handle plugin, int numParams)
 {
     if (strlen(g_sLatestVersion) < 1)
@@ -603,6 +603,11 @@ public int Native_GetLatestVersion(Handle plugin, int numParams)
     SetNativeString(1, g_sLatestVersion, GetNativeCell(2));
 
     return true;
+}
+
+public int Native_GetCommitsCount(Handle plugin, int numParams)
+{
+    return g_iGit;
 }
 
 public int Native_DisableRounds(Handle plugin, int numParams)

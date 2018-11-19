@@ -299,7 +299,6 @@ ConVar g_cFlashlightOption = null;
 ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
-ConVar g_cVersionCheck = null;
 ConVar g_cVersionMessage = null;
 ConVar g_cSendServerData = null;
 ConVar g_cDisableRounds = null;
@@ -321,5 +320,6 @@ Handle g_hWeAreSync = null;
 Handle g_hRemainingSync = null;
 
 char g_sLatestVersion[64];
+int g_iGit = -1;
 
 RoundStatus g_iStatus = Round_Inactive;

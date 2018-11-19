@@ -33,6 +33,11 @@ public void OnPluginStart()
     RegAdminCmd("sm_reloadbuttons", Command_Reload, ADMFLAG_ROOT);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public Action Command_Reload(int client, int args)
 {
     ReplyToCommand(client, "Reloading buttons...");

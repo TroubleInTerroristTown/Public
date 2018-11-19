@@ -25,6 +25,11 @@ public void OnPluginStart()
     HookEvent("player_blind", Event_PlayerBlind, EventHookMode_Post);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     CreateTimer(0.0, Timer_RemoveRadar, event.GetInt("userid"));

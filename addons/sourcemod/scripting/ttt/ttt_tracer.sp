@@ -63,6 +63,12 @@ public void OnPluginStart()
     
     CreateTimer(1.0, Tracer_Display, _, TIMER_REPEAT);
 }
+
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));

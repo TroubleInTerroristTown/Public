@@ -80,6 +80,11 @@ public void OnPluginStart()
     CreateTimer(5.0, Timer_AddCharge, _, TIMER_REPEAT);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnMapStart()
 {
     PrecacheSoundAny(SND_WARNING, true);

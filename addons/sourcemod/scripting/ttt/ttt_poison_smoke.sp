@@ -55,6 +55,11 @@ public void OnPluginStart()
     HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void TTT_OnShopReady()
 {
     RegisterItem();

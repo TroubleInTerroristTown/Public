@@ -37,6 +37,11 @@ public void OnPluginStart()
     BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt/ttt_models_%s.log", sDate);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public void OnMapStart()
 {
     char sFile[PLATFORM_MAX_PATH + 1];
