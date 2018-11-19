@@ -1113,8 +1113,6 @@ stock bool TTT_CheckVersion(const char[] version, int git)
         iGit = StringToInt(sSplit[1]);
     }
 
-    LogMessage("Version: %s, git: %d, iGit: %d", version, git, iGit);
-
     if (StrEqual(version, "<VERSION>", false))
     {
         return true;
