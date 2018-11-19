@@ -6,12 +6,12 @@
 #include <sdkhooks>
 #include <multicolors>
 #include <emitsoundany>
+#include <SteamWorks>
 #include <ttt>
 #include <ttt_sql>
 
 #undef REQUIRE_EXTENSIONS
 #undef REQUIRE_PLUGIN
-#include <SteamWorks>
 #include <ghostdm>
 #tryinclude <sourcebans>
 #define REQUIRE_PLUGIN
@@ -222,14 +222,7 @@ public void OnConfigsExecuted()
 
     if (g_cVersionCheck.BoolValue)
     {
-        if (GetExtensionFileStatus("SteamWorks.ext") == 1)
-        {
-            GetLatestVersion();
-        }
-        else
-        {
-            LogError("You need SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 ) for the version check function!");
-        }
+        GetLatestVersion();
     }
 }
 
@@ -367,7 +360,9 @@ void ShowLogs(int client)
     if (end)
     {
         if (client == 0)
+        {
             LogToFileEx(g_sLogFile, "--------------------------------------");
+        }
         else
         {
             CPrintToChat(client, "%s %T", g_sTag, "See your console", client);
@@ -445,7 +440,9 @@ public void OnCreate(DataPack pack)
         if (end)
         {
             if (client == 0)
+            {
                 LogToFileEx(g_sLogFile, "--------------------------------------");
+            }
             else
             {
                 CPrintToChat(client, "%s %T", g_sTag, "See your console", client);

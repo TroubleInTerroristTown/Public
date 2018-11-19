@@ -100,16 +100,17 @@ public Action Command_HUD(int client, int args)
 
 public Action Command_EndRound(int client, int args)
 {
-    if (args != 1)
+    if (args != 2)
     {
-        ReplyToCommand(client, "sm_endround <delay in seconds>");
+        ReplyToCommand(client, "sm_endround <delay in seconds>, <hook 0 - yes, 1 - no>");
         return Plugin_Handled;
     }
 
-    char sArg[12];
+    char sArg[12], sArg2[12];
     GetCmdArg(1, sArg, sizeof(sArg));
+    GetCmdArg(2, sArg2, sizeof(sArg2));
 
-    CS_TerminateRound(StringToFloat(sArg), CSRoundEnd_Draw, true);
+    CS_TerminateRound(StringToFloat(sArg), CSRoundEnd_Draw, view_as<bool>(StringToInt(sArg2)));
 
     return Plugin_Handled;
 }

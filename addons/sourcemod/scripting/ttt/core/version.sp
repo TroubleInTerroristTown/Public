@@ -87,6 +87,12 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
 
     TrimString(sVersion);
 
+    if (StrContains(sVersion, "Banned", false) != -1)
+    {
+        SetFailState("Your server was banned!");
+        return;
+    }
+
     if (GetCharBytes(sVersion[2]) == 4)
     {
         strcopy(g_sLatestVersion, sizeof(g_sLatestVersion), sVersion[3]);
