@@ -35,6 +35,13 @@ public void OnPluginStart()
     RegAdminCmd("sm_endround", Command_EndRound, ADMFLAG_ROOT);
 }
 
+public void TTT_OnLatestVersion(const char[] version)
+{
+    LogMessage("TTT_OnLatestVersion was called!");
+    LogMessage("(TTT_OnLatestVersion) version: %s", version);
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
 public Action Command_TRole(int client, int args)
 {
     int iRole = TTT_GetClientRole(client);
@@ -127,6 +134,11 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
     }
 }
 
+public Action TTT_OnRoundStart_Pre()
+{
+    LogMessage("TTT_OnRoundStart_Pre was called!");
+}
+
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
     LogMessage("TTT_OnRoundStart was called!");
@@ -139,10 +151,22 @@ public void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detecti
     LogMessage("(TTT_OnRoundStartFailed) players: %d - requiredPlayers: %d - detective: %d", players, requiredPlayers, detective);
 }
 
+public void TTT_OnRoundEnd(int winner, Handle array)
+{
+    LogMessage("TTT_OnRoundEnd was called!");
+    LogMessage("(TTT_OnRoundEnd) winner: %d - array: %d", winner, array);
+}
+
 public void TTT_OnClientGetRole(int client, int role)
 {
     LogMessage("TTT_OnClientGetRole was called!");
     LogMessage("(TTT_OnClientGetRole) client: %d - role: %d", client, role);
+}
+
+public void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon, bool badAction)
+{
+    LogMessage("TTT_OnTakeDamage was called!");
+    LogMessage("(TTT_OnTakeDamage) victim: %d - attacker: %d, damage: %f, weapon: %d, badAction: %d", victim, attacker, damage, weapon, badAction);
 }
 
 public void TTT_OnClientDeath(int victim, int attacker)
@@ -163,6 +187,48 @@ public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, boo
     LogMessage("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
 }
 
+public Action TTT_OnRulesMenu(int client, bool &show)
+{
+    LogMessage("TTT_OnRulesMenu was called!");
+    LogMessage("(TTT_OnRulesMenu) client: %d, show: %d", client, show);
+}
+
+public Action TTT_OnDetectiveMenu(int client, bool &show)
+{
+    LogMessage("TTT_OnDetectiveMenu was called!");
+    LogMessage("(TTT_OnDetectiveMenu) client: %d, show: %d", client, show);
+}
+
+public Action TTT_OnBodyCheck(int client, int[] ragdoll)
+{
+    LogMessage("TTT_OnBodyCheck was called!");
+    LogMessage("(TTT_OnBodyCheck) client: %d, ragdoll: %d", client, ragdoll);
+}
+
+public void TTT_OnModelUpdate(int client, const char[] model)
+{
+    LogMessage("TTT_OnModelUpdate was called!");
+    LogMessage("(TTT_OnModelUpdate) client: %d, model: %s", client, model);
+}
+
+public void TTT_OnPlayerRespawn(int client)
+{
+    LogMessage("TTT_OnPlayerRespawn was called!");
+    LogMessage("(TTT_OnPlayerRespawn) client: %d", client);
+}
+
+public int TTT_OnButtonPress(int client, int button)
+{
+    LogMessage("TTT_OnButtonPress was called!");
+    LogMessage("(TTT_OnButtonPress) client: %d, button: %s", client, button);
+}
+
+public int TTT_OnButtonRelease(int client, int button)
+{
+    LogMessage("TTT_OnButtonRelease was called!");
+    LogMessage("(TTT_OnButtonRelease) client: %d, button: %s", client, button);
+}
+
 public void TTT_OnBodyScanned(int client, int victim, const char[] deadPlayer)
 {
     LogMessage("TTT_OnBodyScanned was called!");
@@ -173,6 +239,18 @@ public Action TTT_OnPlayerDeath(int victim, int attacker)
 {
     LogMessage("TTT_OnPlayerDeath was called!");
     LogMessage("(TTT_OnPlayerDeath) victim: %d - attacker: %d", victim, attacker);
+}
+
+public void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma)
+{
+    LogMessage("TTT_OnKarmaUpdate was called!");
+    LogMessage("(TTT_OnKarmaUpdate) client: %d - type: %d - karma: %d", client, type, karma);
+}
+
+public bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access)
+{
+    LogMessage("TTT_OnCheckCommandAccess was called!");
+    LogMessage("(TTT_OnCheckCommandAccess) client: %d - command: %d - flags: %d - access", client, command, flags, access);
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -193,10 +271,4 @@ public Action TTT_OnGrabbing(int client, int entity)
 {
     LogMessage("TTT_OnGrabbing was called!");
     LogMessage("(TTT_OnGrabbing) Client: %N - Entity: %d", client, entity);
-}
-
-public void TTT_OnLatestVersion(const char[] version)
-{
-    LogMessage("TTT_OnLatestVersion was called!");
-    LogMessage("(TTT_OnLatestVersion) Version: %s", version);
 }

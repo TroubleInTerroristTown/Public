@@ -7,5 +7,3 @@ addons/sourcemod/scripting/include/vphysics.inc
 addons/sourcemod/scripting/tests/vphysics.sp
 addons/sourcemod/scripting/tests/accelerator.sp
 addons/sourcemod/scripting/ttt/ttt_ranking.sp
-addons/sourcemod/scripting/include/ttt_discord.inc
-addons/sourcemod/scripting/ttt/ttt_discord.sp
