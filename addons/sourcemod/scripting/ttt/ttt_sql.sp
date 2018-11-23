@@ -222,7 +222,7 @@ void SetCharsetAndCollate()
 public int Native_Query(Handle plugin, int numParams)
 {
     char sDebug[128];
-    char sQuery[1024];
+    char sQuery[2048];
     GetNativeString(1, sDebug, sizeof(sDebug));
     GetNativeString(2, sQuery, sizeof(sQuery));
 
