@@ -221,22 +221,27 @@ void SetCharsetAndCollate()
 
 public int Native_Query(Handle plugin, int numParams)
 {
-    char debugname[32];
-    char query[1024];
-    GetNativeString(1, debugname, sizeof(debugname));
-    GetNativeString(2, query, sizeof(query));
+    char sDebug[128];
+    char sQuery[1024];
+    GetNativeString(1, sDebug, sizeof(sDebug));
+    GetNativeString(2, sQuery, sizeof(sQuery));
 
-    g_dDatabase.Query(SQL_QueryCB, query, StringToInt(debugname));
+    DataPack pack = new DataPack();
+    g_dDatabase.Query(SQL_QueryCB, sQuery, pack);
+    pack.WriteString(sDebug);
 
     return 0;
 }
 
-public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, any data)
+public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, DataPack pack)
 {
     if (db == null || strlen(error) > 0)
     {
+        pack.Reset();
         char sBuffer[128];
-        IntToString(data, sBuffer, sizeof(sBuffer));
+        pack.ReadString(sBuffer, sizeof(sBuffer));
+        delete pack;
+
         LogError("[TTT] (%s) Query failed: %s", sBuffer, error);
         return;
     }
