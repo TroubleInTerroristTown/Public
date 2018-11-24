@@ -3217,7 +3217,7 @@ public Action Timer_OnRoundEnd(Handle timer)
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-    if (g_bRoundStarted)
+    if (!g_cDebug.BoolValue && g_bRoundStarted)
     {
         return Plugin_Handled;
     }

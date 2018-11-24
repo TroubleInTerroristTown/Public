@@ -250,7 +250,7 @@ public void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma)
 public bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access)
 {
     LogMessage("TTT_OnCheckCommandAccess was called!");
-    LogMessage("(TTT_OnCheckCommandAccess) client: %d - command: %d - flags: %d - access", client, command, flags, access);
+    LogMessage("(TTT_OnCheckCommandAccess) client: %d - command: %s - flags: %d - access", client, command, flags, access);
 }
 
 public void TTT_OnSQLConnect(Database db)
