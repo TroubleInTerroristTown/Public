@@ -181,10 +181,10 @@ public Action TTT_OnClientDeathPre(int victim, int attacker)
     LogMessage("(TTT_OnClientDeathPre) victim: %d - attacker: %d", victim, attacker);
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silent)
+public void TTT_OnBodyFound(int client, int victim, int[] ragdoll, bool silent)
 {
     LogMessage("TTT_OnBodyFound was called!");
-    LogMessage("(TTT_OnBodyFound) client: %d - victim: %d - deadPlayer: %s - silent: %b", client, victim, deadPlayer, silent);
+    LogMessage("(TTT_OnBodyFound) client: %d - victim: %d - ragdoll: %d - silent: %b", client, victim, ragdoll, silent);
 }
 
 public Action TTT_OnRulesMenu(int client, bool &show)

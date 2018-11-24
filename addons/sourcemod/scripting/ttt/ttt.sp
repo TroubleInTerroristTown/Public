@@ -3576,7 +3576,7 @@ public int TTT_OnButtonPress(int client, int button)
                                 Call_PushCell(-1);
                             }
                             
-                            Call_PushString(iRagdollC[VictimName]);
+                            Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
                             Call_PushCell(silentID);
                             Call_Finish();
                         }

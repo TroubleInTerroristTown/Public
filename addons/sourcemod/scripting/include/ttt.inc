@@ -176,10 +176,10 @@ forward Action TTT_OnClientDeathPre(int victim, int attacker);
  *
  * @param client            The client who identified the body.
  * @param victim            The client whom the body belongs to. (-1 for invalid index)
- * @param deadPlayer        The name of the victim.
+ * @param ragdoll           The Array with Ragdoll informations (by reference).
  * @param silentID          True if body was silenced id and false if normal inspect
  */
-forward void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID);
+forward void TTT_OnBodyFound(int client, int victim, int[] ragdoll, bool silentID);
 
 /**
  * Called before we create rules menu.

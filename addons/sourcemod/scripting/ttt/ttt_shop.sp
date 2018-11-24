@@ -1106,7 +1106,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
     }
 }
 
-public void TTT_OnBodyFound(int client, int victim, const char[] deadPlayer, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int[] ragdoll, bool silentID)
 {
     if (!silentID || (g_cSilentIdRewards.BoolValue && silentID))
     {
