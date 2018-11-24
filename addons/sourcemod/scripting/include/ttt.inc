@@ -504,6 +504,15 @@ native bool TTT_DisableRounds(bool status);
  */
 native RoundStatus TTT_GetRoundStatus();
 
+
+/**
+ * Called after a player was round slayed.
+ *
+ * @param client            The client index.
+ * @param remaining         Amount of rounds left
+ */
+native int TTT_OnRoundSlay(int client, int remaining);
+
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
     if (role == TTT_TEAM_INNOCENT)

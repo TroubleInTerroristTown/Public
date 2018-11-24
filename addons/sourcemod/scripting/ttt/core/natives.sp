@@ -20,6 +20,7 @@ void InitForwards()
     g_hOnCheckCommandAccess = CreateGlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
     g_hOnPlayerRespawn = CreateGlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
     g_hOnVersionCheck = CreateGlobalForward("TTT_OnLatestVersion", ET_Ignore, Param_String);
+    g_hOnRoundSlay = CreateGlobalForward("TTT_OnRoundSlay", ET_Ignore, Param_Cell, Param_Cell);
 }
 
 void InitNatives()

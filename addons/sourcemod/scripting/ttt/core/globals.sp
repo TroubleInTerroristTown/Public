@@ -116,6 +116,7 @@ Handle g_hOnDetectiveMenu = null;
 Handle g_hOnCheckCommandAccess = null;
 Handle g_hOnPlayerRespawn = null;
 Handle g_hOnVersionCheck = null;
+Handle g_hOnRoundSlay = null;
 
 bool g_bSourcebans = false;
 bool g_bGhostDM = false;

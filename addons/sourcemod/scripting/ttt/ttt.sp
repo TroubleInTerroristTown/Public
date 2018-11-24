@@ -917,6 +917,11 @@ public Action Timer_Selection(Handle hTimer)
             ForcePlayerSuicide(i);
             g_iRoundSlays[i]--;
 
+            Call_StartForward(g_hOnRoundSlay);
+            Call_PushCell(i);
+            Call_PushCell(g_iRoundSlays[i]);
+            Call_Finish();
+
             // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
             iPlayers--;
 
