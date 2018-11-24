@@ -511,7 +511,7 @@ native RoundStatus TTT_GetRoundStatus();
  * @param client            The client index.
  * @param remaining         Amount of rounds left
  */
-native int TTT_OnRoundSlay(int client, int remaining);
+forward int TTT_OnRoundSlay(int client, int remaining);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
