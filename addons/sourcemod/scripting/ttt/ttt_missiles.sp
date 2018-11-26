@@ -25,6 +25,8 @@
 #include <ttt_shop>
 #include <emitsoundany>
 
+#pragma newdecls required
+
 enum MissileType
 {
     tNone = -1,
@@ -32,17 +34,6 @@ enum MissileType
     tFollow = 1,
     tControl = 2
 }
-
-#pragma newdecls required
-
-public Plugin myinfo = 
-{
-    name = PLUGIN_NAME, 
-    author = TTT_PLUGIN_AUTHOR,
-    description = TTT_PLUGIN_DESCRIPTION, 
-    version = PLUGIN_AUTHOR, 
-    url = TTT_PLUGIN_URL
-};
 
 ConVar g_cDamage = null;
 ConVar g_cRadius = null;
@@ -95,12 +86,20 @@ float g_fMinNadeHull[3] = {-2.5, -2.5, -2.5};
 float g_fMaxNadeHull[3] = {2.5, 2.5, 2.5};
 float g_fMaxWorldLength = 0.0;
 float g_fSpinVel[3] = {0.0, 0.0, 200.0};
-float g_fSmokeOrigin[3] = {-30.0,0.0,0.0};
-float g_fSmokeAngle[3] = {0.0,-180.0,0.0};
+float g_fClientAngles[MAXPLAYERS + 1][3];
 
 MissileType g_iType[MAXPLAYERS + 1] =  { tNone, ... };
 
 ConVar g_cNoblock = null;
+
+public Plugin myinfo = 
+{
+    name = PLUGIN_NAME, 
+    author = TTT_PLUGIN_AUTHOR,
+    description = TTT_PLUGIN_DESCRIPTION, 
+    version = PLUGIN_AUTHOR, 
+    url = TTT_PLUGIN_URL
+};
 
 public void OnPluginStart()
 {
@@ -346,6 +345,8 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     {
         g_iMissile[iOwner]--;
         g_iType[iOwner] = tNormal;
+        GetClientEyeAngles(iOwner, g_fClientAngles[iOwner]);
+        g_fClientAngles[iOwner][1] -= 90.0;
     }
 
     // stop the projectile thinking so it doesn't detonate.
@@ -358,30 +359,6 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     SetEntPropFloat(caller, Prop_Send, "m_flElasticity", 0.0);
     SetEntPropVector(caller, Prop_Send, "m_vecMins", g_fMinNadeHull);
     SetEntPropVector(caller, Prop_Send, "m_vecMaxs", g_fMaxNadeHull);
-    
-    int iEntity = CreateEntityByName("env_rockettrail");
-    if (iEntity != -1)
-    {
-        SetEntPropFloat(iEntity, Prop_Send, "m_Opacity", 0.5);
-        SetEntPropFloat(iEntity, Prop_Send, "m_SpawnRate", 100.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_ParticleLifetime", 0.5);
-        float fsmokeRed[3] =  { 0.5, 0.25, 0.25 };
-        SetEntPropVector(iEntity, Prop_Send, "m_StartColor", fsmokeRed);
-        SetEntPropFloat(iEntity, Prop_Send, "m_StartSize", 5.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_EndSize", 30.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_SpawnRadius", 0.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_MinSpeed", 0.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_MaxSpeed", 10.0);
-        SetEntPropFloat(iEntity, Prop_Send, "m_flFlareScale", 1.0);
-        DispatchSpawn(iEntity);
-        ActivateEntity(iEntity);
-        char sNadeName[20];
-        Format(sNadeName, sizeof(sNadeName), "Nade_%i", caller);
-        DispatchKeyValue(caller, "targetname", sNadeName);
-        SetVariantString(sNadeName);
-        AcceptEntityInput(iEntity, "SetParent");
-        TeleportEntity(iEntity, g_fSmokeOrigin, g_fSmokeAngle, NULL_VECTOR);
-    }
 
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
@@ -405,10 +382,16 @@ public int InitMissile(const char[] output, int caller, int activator, float del
 
     float fInitAng[3];
     GetVectorAngles(fInitVec, fInitAng);
-    TeleportEntity(caller, NULL_VECTOR, fInitAng, fInitVec);
-
-    fInitAng[1] + 90.0;
-    DispatchKeyValueVector(caller, "Angles", fInitAng);
+    fInitAng[1] -= 90.0;
+    if (g_iType[iOwner] != tNormal)
+    {
+        TeleportEntity(caller, NULL_VECTOR, fInitAng, fInitVec);
+    }
+    else
+    {
+        TeleportEntity(caller, NULL_VECTOR, g_fClientAngles[iOwner], fInitVec);
+    }
+    // DispatchKeyValueVector(caller, "Angles", fInitAng);
     
     // EmitSoundToAll("weapons/rpg/rocket1.wav", caller, 1, 90);
     EmitAmbientSoundAny(MISSILE_SOUND, fAngles, caller, 90, _, g_cVolume.FloatValue);
@@ -451,8 +434,12 @@ public void MissileThink(const char[] output, int caller, int activator, float d
     
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
-    
-    if (g_iType[iOwner] == tFollow)
+
+    if (g_iType[iOwner] == tNormal)
+    {
+        TeleportEntity(caller, NULL_VECTOR, g_fClientAngles[iOwner], NULL_VECTOR);
+    }
+    else if (g_iType[iOwner] == tFollow)
     {
         float fClosestDistance = g_fMaxWorldLength;
         float fTargetVec[3];
@@ -495,14 +482,14 @@ public void MissileThink(const char[] output, int caller, int activator, float d
             GetClientAbsOrigin(iClosestEnemy, fEnemyPos);
             fEnemyPos[2] += 50.0;
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
+            NormalizeVector(fTargetVec, fTargetVec);
         }
         
-        float fCurrentVec[3];
-        GetEntPropVector(caller, Prop_Send, "m_vecVelocity", fCurrentVec);
         float fFinalVec[3];
         if (g_cArc.BoolValue && (fClosestDistance > 100.0))
         {
-            NormalizeVector(fTargetVec, fTargetVec);
+            float fCurrentVec[3];
+            GetEntPropVector(caller, Prop_Send, "m_vecVelocity", fCurrentVec);
             NormalizeVector(fCurrentVec, fCurrentVec);
             ScaleVector(fTargetVec, g_cSpeed.FloatValue / 1000.0);
             AddVectors(fTargetVec, fCurrentVec, fFinalVec);
@@ -516,6 +503,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         ScaleVector(fFinalVec, g_cSpeed.FloatValue);
         float fFinalAng[3];
         GetVectorAngles(fFinalVec, fFinalAng);
+        fFinalAng[1] -= 90.0;
         TeleportEntity(caller, NULL_VECTOR, fFinalAng, fFinalVec);
 
         if (g_cNoblock == null)
