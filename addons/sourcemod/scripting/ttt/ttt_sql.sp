@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt>
+#include <ttt_stock>
 #include <ttt_sql>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - SQL Manager"
@@ -52,11 +52,6 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     g_iRetries = 0;
-}
-
-public void TTT_OnLatestVersion(const char[] version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
 }
 
 public void OnConfigsExecuted()

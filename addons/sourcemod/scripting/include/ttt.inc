@@ -5,12 +5,6 @@
 
 #define LoopValidClients(%1) for(int %1 = 1; %1 <= MaxClients; %1++) if(TTT_IsClientValid(%1))
 
-#define TTT_PLUGIN_NAME "Trouble in Terrorist Town"
-#define TTT_PLUGIN_AUTHOR "TTT-Contributors"
-#define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
-#define TTT_PLUGIN_VERSION "<VERSION>"
-#define TTT_PLUGIN_URL "https://github.com/Bara/TroubleinTerroristTown"
-
 #define TTT_TEAM_UNASSIGNED (1 << 0)
 #define TTT_TEAM_INNOCENT (1 << 1)
 #define TTT_TEAM_TRAITOR (1 << 2)
@@ -20,7 +14,7 @@
 #define MAX_ITEM_LENGTH 64
 #define TTT_LOG_SIZE 512
 
-#include <autoexecconfig>
+#include <ttt_stock>
 #include <cstrike>
 
 enum Ragdolls
@@ -671,15 +665,6 @@ stock bool TTT_IsClientValid(int client)
     return false;
 }
 
-stock void TTT_IsGameCSGO()
-{
-    if (GetEngineVersion() != Engine_CSGO)
-    {
-        SetFailState("Only CS:GO Support!");
-        return;
-    }
-}
-
 #pragma deprecated TTT_HasCVarFlags is "unsafe". Please use TTT_CheckCommandAccess
 stock bool TTT_HasCVarFlags(int client, ConVar cFlags)
 {
@@ -887,19 +872,6 @@ stock void TTT_ClearTimer(Handle &timer, bool autoClose = false)
         KillTimer(timer, autoClose);
         timer = null;
     }
-}
-
-stock void TTT_StartConfig(char[] file, char[] directory = "ttt")
-{
-    AutoExecConfig_SetCreateDirectory(true);
-    AutoExecConfig_SetCreateFile(true);
-    AutoExecConfig_SetFile(file, directory);
-}
-
-stock void TTT_EndConfig()
-{
-    AutoExecConfig_ExecuteFile();
-    AutoExecConfig_CleanFile();
 }
 
 stock bool TTT_IsWarmUp()
