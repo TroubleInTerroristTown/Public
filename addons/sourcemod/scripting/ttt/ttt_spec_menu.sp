@@ -463,7 +463,7 @@ stock int GetNextClient(int client, bool nextClient = true)
         return -1;
     }
 
-    while (iClient == -1 && !TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
+    while (!TTT_IsClientValid(iClient) && !TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
     {
         bCheck[iClient] = true;
 
