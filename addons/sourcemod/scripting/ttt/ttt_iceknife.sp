@@ -20,8 +20,8 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Ice Knife"
 
 #define ICE_MODEL "models/weapons/eminem/ice_cube/ice_cube.mdl"
-#define FREEZE_SOUND "weapons/eminem/ice_cube/explode.wav"
-#define UNFREEZE_SOUND "weapons/eminem/ice_cube/freeze_hit.wav"
+#define FREEZE_SOUND "weapons/eminem/ice_cube/freeze.wav"
+#define UNFREEZE_SOUND "weapons/eminem/ice_cube/unfreeze.wav"
 
 ConVar g_cPrice = null;
 ConVar g_cDamage = null;
