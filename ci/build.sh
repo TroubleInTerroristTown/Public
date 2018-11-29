@@ -15,7 +15,7 @@ echo -e "Give compiler rights for compile"
 chmod +x addons/sourcemod/scripting/spcomp
 
 echo -e "Set plugins version"
-for file in addons/sourcemod/scripting/include/ttt.inc
+for file in addons/sourcemod/scripting/include/ttt_stock.inc
 do
   sed -i "s/<VERSION>/$VERSION/g" $file > output.txt
   rm output.txt
