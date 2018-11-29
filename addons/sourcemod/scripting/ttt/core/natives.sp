@@ -608,7 +608,15 @@ public int Native_GetLatestVersion(Handle plugin, int numParams)
 
 public int Native_GetCommitsCount(Handle plugin, int numParams)
 {
-    return g_iGit;
+    char sSplit[2][12];
+    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[1]))
+    {
+        return StringToInt(sSplit[1]);
+    }
+
+    return -1;
 }
 
 public int Native_DisableRounds(Handle plugin, int numParams)

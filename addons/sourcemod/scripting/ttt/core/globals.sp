@@ -321,6 +321,5 @@ Handle g_hWeAreSync = null;
 Handle g_hRemainingSync = null;
 
 char g_sLatestVersion[64];
-int g_iGit = -1;
 
 RoundStatus g_iStatus = Round_Inactive;

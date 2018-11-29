@@ -476,7 +476,7 @@ native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
 native bool TTT_GetLatestVersion(const char[] version, int length);
 
 /**
- * Returns latest git commit count.
+ * Returns current ttt version. -1 = custom version
  *
  */
 native int TTT_GetCommitsCount();
