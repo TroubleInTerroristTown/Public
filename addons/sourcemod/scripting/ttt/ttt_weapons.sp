@@ -85,6 +85,10 @@ ConVar g_cAxe_Prio = null;
 ConVar g_cAxe_Price = null;
 ConVar g_cAxe_Type = null;
 ConVar g_cAxe_Long = null;
+ConVar g_cSpanner_Prio = null;
+ConVar g_cSpanner_Price = null;
+ConVar g_cSpanner_Type = null;
+ConVar g_cSpanner_Long = null;
 
 bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 
@@ -170,6 +174,10 @@ public void OnPluginStart()
     g_cAxe_Price = AutoExecConfig_CreateConVar("axe_price", "3000", "The amount of credits the Axe costs. 0 to disable.");
     g_cAxe_Prio = AutoExecConfig_CreateConVar("axe_sort_prio", "0", "The sorting priority of the Axe in the shop menu.");
     g_cAxe_Type = AutoExecConfig_CreateConVar("axe_type", "1", "Type of Axe configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+    g_cSpanner_Long = AutoExecConfig_CreateConVar("spanner_name", "Spanner", "The name of the Spanner in the shop menu.");
+    g_cSpanner_Price = AutoExecConfig_CreateConVar("spanner_price", "3000", "The amount of credits the Spanner costs. 0 to disable.");
+    g_cSpanner_Prio = AutoExecConfig_CreateConVar("spanner_sort_prio", "0", "The sorting priority of the Spanner in the shop menu.");
+    g_cSpanner_Type = AutoExecConfig_CreateConVar("spanner_type", "1", "Type of Spanner configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     TTT_EndConfig();
 
     TTT_LoadTranslations();
@@ -324,6 +332,21 @@ void RegisterItem()
     {
         TTT_RegisterCustomItem(AXE_ITEM_SHORT, sBuffer, g_cAxe_Price.IntValue, TTT_TEAM_TRAITOR, g_cAxe_Prio.IntValue);
     }
+
+    g_cSpanner_Long.GetString(sBuffer, sizeof(sBuffer));
+    if(g_cSpanner_Type.IntValue == 0)
+    {
+        TTT_RegisterCustomItem(SPANNER_ITEM_SHORT, sBuffer, g_cSpanner_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cSpanner_Prio.IntValue);
+    }
+    else if(g_cSpanner_Type.IntValue == 1)
+    {
+        TTT_RegisterCustomItem(SPANNER_ITEM_SHORT, sBuffer, g_cSpanner_Price.IntValue, TTT_TEAM_TRAITOR, g_cSpanner_Prio.IntValue);
+        TTT_RegisterCustomItem(SPANNER_ITEM_SHORT, sBuffer, g_cSpanner_Price.IntValue, TTT_TEAM_DETECTIVE, g_cSpanner_Prio.IntValue);
+    }
+    else if(g_cSpanner_Type.IntValue == 2)
+    {
+        TTT_RegisterCustomItem(SPANNER_ITEM_SHORT, sBuffer, g_cSpanner_Price.IntValue, TTT_TEAM_TRAITOR, g_cSpanner_Prio.IntValue);
+    }
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -454,6 +477,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             }
 
             GivePlayerItem(client, "weapon_axe");
+        }
+        else if(strcmp(itemshort, SPANNER_ITEM_SHORT, false) == 0)
+        {
+            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
+
+            GivePlayerItem(client, "weapon_spanner");
         }
         else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
         {
