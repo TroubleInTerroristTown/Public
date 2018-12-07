@@ -30,3 +30,4 @@
 #define REVOLVER_ITEM_SHORT "revolver"
 #define SCOUT_ITEM_SHORT "sg008"
 #define HAMMER_ITEM_SHORT "hammer"
+#define BREACHCHARGE_ITEM_SHORT "breach"

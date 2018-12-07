@@ -30,6 +30,7 @@ ConVar g_cUSP_Long = null;
 ConVar g_cMP5SD_Long = null;
 ConVar g_cM4_Long = null;
 ConVar g_cAWP_Long = null;
+ConVar g_cBC_Long = null;
 ConVar g_cKF_Long = null;
 ConVar g_cAK_Long = null;
 ConVar g_cDeagle_Long = null;
@@ -50,6 +51,9 @@ ConVar g_cM4_Price = null;
 ConVar g_cAWP_Price = null;
 ConVar g_cAWP_Min_Shots = null;
 ConVar g_cAWP_Max_Shots = null;
+ConVar g_cBC_Price = null;
+ConVar g_cBC_Min = null;
+ConVar g_cBC_Max = null;
 ConVar g_cKnife_Price = null;
 ConVar g_cKev_Max = null;
 ConVar g_cHeavy_Max = null;
@@ -65,6 +69,7 @@ ConVar g_cUSP_Prio = null;
 ConVar g_cMP5SD_Prio = null;
 ConVar g_cM4_Prio = null;
 ConVar g_cAWP_Prio = null;
+ConVar g_cBC_Prio = null;
 ConVar g_cAK_Prio = null;
 ConVar g_cAK_Price = null;
 ConVar g_cDeagle_Prio = null;
@@ -135,6 +140,10 @@ public void OnPluginStart()
     g_cAWP_Min_Shots = AutoExecConfig_CreateConVar("awp_min_shots", "1", "The min. amount of shots of traitor awp.");
     g_cAWP_Max_Shots = AutoExecConfig_CreateConVar("awp_max_shots", "3", "The max. amount of shots of traitor awp.");
     g_cAWP_Prio = AutoExecConfig_CreateConVar("awp_sort_prio", "0", "The sorting priority of the AWP in the shop menu.");
+    g_cBC_Price = AutoExecConfig_CreateConVar("bc_price", "3000", "The amount of credits the Breachcharge costs. 0 to disable.");
+    g_cBC_Min = AutoExecConfig_CreateConVar("bc_min", "1", "The min. amount of breachcharges.");
+    g_cBC_Max = AutoExecConfig_CreateConVar("bc_max", "3", "The max. amount of breachcharges.");
+    g_cBC_Prio = AutoExecConfig_CreateConVar("bc_sort_prio", "0", "The sorting priority of the Breachharge in the shop menu.");
     g_cKnife_Price = AutoExecConfig_CreateConVar("oneknife_price", "3000", "The amount of credits the One-Hit Knife costs. 0 to disable.");
     g_cKnife_Max = AutoExecConfig_CreateConVar("oneknife_max", "5", "The max amount of times a player can purchase 1-knife in one round. 0 for unlimited.");
     g_cKnife_Prio = AutoExecConfig_CreateConVar("oneknife_sort_prio", "0", "The sorting priority of the One-Hit Knife in the shop menu.");
@@ -151,6 +160,7 @@ public void OnPluginStart()
     g_cHammer_Long = AutoExecConfig_CreateConVar("hammer_name", "Hammer", "The name of the Hammer in the shop menu.");
     g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
     g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
+    g_cBC_Long = AutoExecConfig_CreateConVar("bc_name", "Breachcharge", "The name of the Breachcharge in the shop menu.");
     g_cKF_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
     TTT_EndConfig();
 
@@ -255,6 +265,9 @@ void RegisterItem()
 
     g_cAWP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(AWP_ITEM_SHORT, sBuffer, g_cAWP_Price.IntValue, TTT_TEAM_TRAITOR, g_cAWP_Prio.IntValue);
+
+    g_cBC_Long.GetString(sBuffer, sizeof(sBuffer));
+    TTT_RegisterCustomItem(BREACHCHARGE_ITEM_SHORT, sBuffer, g_cBC_Price.IntValue, TTT_TEAM_TRAITOR, g_cBC_Prio.IntValue);
 
     g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue);
@@ -445,6 +458,29 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             else
             {
                 TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cAWP_Price.IntValue);
+            }
+        }if(strcmp(itemshort, BREACHCHARGE_ITEM_SHORT, false) == 0)
+        {
+            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
+            if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+            {
+                SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+            }
+
+            int iBC = GivePlayerItem(client, "weapon_breachcharge");
+
+            if(iBC != -1)
+            {
+                EquipPlayerWeapon(client, iBC);
+                SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
+                SetEntProp(iBC, Prop_Send, "m_iClip1", GetRandomInt(g_cBC_Min.IntValue, g_cBC_Max.IntValue));
+            }
+            else
+            {
+                TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBC_Price.IntValue);
             }
         }
         else if(strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
