@@ -36,7 +36,6 @@ ConVar g_cAK_Long = null;
 ConVar g_cDeagle_Long = null;
 ConVar g_cRevolver_Long = null;
 ConVar g_cScout_Long = null;
-ConVar g_cHammer_Long = null;
 ConVar g_cKev_Type = null;
 ConVar g_cKev_Price = null;
 ConVar g_cHeavy_Type = null;
@@ -81,6 +80,11 @@ ConVar g_cScout_Price = null;
 ConVar g_cHammer_Prio = null;
 ConVar g_cHammer_Price = null;
 ConVar g_cHammer_Type = null;
+ConVar g_cHammer_Long = null;
+ConVar g_cAxe_Prio = null;
+ConVar g_cAxe_Price = null;
+ConVar g_cAxe_Type = null;
+ConVar g_cAxe_Long = null;
 
 bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 
@@ -131,9 +135,6 @@ public void OnPluginStart()
     g_cRevolver_Prio = AutoExecConfig_CreateConVar("revolver_sort_prio", "0", "The sorting priority of the Revolver in the shop menu.");
     g_cScout_Price = AutoExecConfig_CreateConVar("scout_price", "3000", "The amount of credits the Scout costs. 0 to disable.");
     g_cScout_Prio = AutoExecConfig_CreateConVar("scout_sort_prio", "0", "The sorting priority of the Scout in the shop menu.");
-    g_cHammer_Price = AutoExecConfig_CreateConVar("hammer_price", "3000", "The amount of credits the Hammer costs. 0 to disable.");
-    g_cHammer_Prio = AutoExecConfig_CreateConVar("hammer_sort_prio", "0", "The sorting priority of the Hammer in the shop menu.");
-    g_cHammer_Type = AutoExecConfig_CreateConVar("hammer_type", "1", "Type of hammer configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cM4_Price = AutoExecConfig_CreateConVar("m4a1_price", "3000", "The amount of credits the M4A1-S costs. 0 to disable.");
     g_cM4_Prio = AutoExecConfig_CreateConVar("m4a1_sort_prio", "0", "The sorting priority of the M4A1-S in the shop menu.");
     g_cAWP_Price = AutoExecConfig_CreateConVar("awp_price", "3000", "The amount of credits the AWP costs. 0 to disable.");
@@ -157,11 +158,18 @@ public void OnPluginStart()
     g_cDeagle_Long = AutoExecConfig_CreateConVar("deagle_name", "Deagle", "The name of the Deagle in the shop menu.");
     g_cRevolver_Long = AutoExecConfig_CreateConVar("revolver_name", "Revolver", "The name of the Revolver in the shop menu.");
     g_cScout_Long = AutoExecConfig_CreateConVar("scout_name", "Scout", "The name of the Scout in the shop menu.");
-    g_cHammer_Long = AutoExecConfig_CreateConVar("hammer_name", "Hammer", "The name of the Hammer in the shop menu.");
     g_cM4_Long = AutoExecConfig_CreateConVar("m4a1_name", "M4A1-S", "The name of the M4A1-S in the shop menu.");
     g_cAWP_Long = AutoExecConfig_CreateConVar("awp_name", "AWP", "The name of the AWP in the shop menu.");
     g_cBC_Long = AutoExecConfig_CreateConVar("bc_name", "Breachcharge", "The name of the Breachcharge in the shop menu.");
     g_cKF_Long = AutoExecConfig_CreateConVar("oneknife_name", "1-Hit Knife", "The name of the 1-hit knife in the shop menu.");
+    g_cHammer_Long = AutoExecConfig_CreateConVar("hammer_name", "Hammer", "The name of the Hammer in the shop menu.");
+    g_cHammer_Price = AutoExecConfig_CreateConVar("hammer_price", "3000", "The amount of credits the Hammer costs. 0 to disable.");
+    g_cHammer_Prio = AutoExecConfig_CreateConVar("hammer_sort_prio", "0", "The sorting priority of the Hammer in the shop menu.");
+    g_cHammer_Type = AutoExecConfig_CreateConVar("hammer_type", "1", "Type of hammer configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+    g_cAxe_Long = AutoExecConfig_CreateConVar("axe_name", "Axe", "The name of the Axe in the shop menu.");
+    g_cAxe_Price = AutoExecConfig_CreateConVar("axe_price", "3000", "The amount of credits the Axe costs. 0 to disable.");
+    g_cAxe_Prio = AutoExecConfig_CreateConVar("axe_sort_prio", "0", "The sorting priority of the Axe in the shop menu.");
+    g_cAxe_Type = AutoExecConfig_CreateConVar("axe_type", "1", "Type of Axe configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     TTT_EndConfig();
 
     TTT_LoadTranslations();
@@ -301,6 +309,21 @@ void RegisterItem()
     {
         TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_TRAITOR, g_cHammer_Prio.IntValue);
     }
+
+    g_cAxe_Long.GetString(sBuffer, sizeof(sBuffer));
+    if(g_cAxe_Type.IntValue == 0)
+    {
+        TTT_RegisterCustomItem(AXE_ITEM_SHORT, sBuffer, g_cAxe_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cAxe_Prio.IntValue);
+    }
+    else if(g_cAxe_Type.IntValue == 1)
+    {
+        TTT_RegisterCustomItem(AXE_ITEM_SHORT, sBuffer, g_cAxe_Price.IntValue, TTT_TEAM_TRAITOR, g_cAxe_Prio.IntValue);
+        TTT_RegisterCustomItem(AXE_ITEM_SHORT, sBuffer, g_cAxe_Price.IntValue, TTT_TEAM_DETECTIVE, g_cAxe_Prio.IntValue);
+    }
+    else if(g_cAxe_Type.IntValue == 2)
+    {
+        TTT_RegisterCustomItem(AXE_ITEM_SHORT, sBuffer, g_cAxe_Price.IntValue, TTT_TEAM_TRAITOR, g_cAxe_Prio.IntValue);
+    }
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -422,6 +445,15 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             }
 
             GivePlayerItem(client, "weapon_hammer");
+        }
+        else if(strcmp(itemshort, AXE_ITEM_SHORT, false) == 0)
+        {
+            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
+
+            GivePlayerItem(client, "weapon_axe");
         }
         else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
         {
