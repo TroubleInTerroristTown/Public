@@ -75,6 +75,7 @@ ConVar g_cScout_Prio = null;
 ConVar g_cScout_Price = null;
 ConVar g_cHammer_Prio = null;
 ConVar g_cHammer_Price = null;
+ConVar g_cHammer_Type = null;
 
 bool g_bHasKnife[MAXPLAYERS + 1] =  { false, ... };
 
@@ -127,6 +128,7 @@ public void OnPluginStart()
     g_cScout_Prio = AutoExecConfig_CreateConVar("scout_sort_prio", "0", "The sorting priority of the Scout in the shop menu.");
     g_cHammer_Price = AutoExecConfig_CreateConVar("hammer_price", "3000", "The amount of credits the Hammer costs. 0 to disable.");
     g_cHammer_Prio = AutoExecConfig_CreateConVar("hammer_sort_prio", "0", "The sorting priority of the Hammer in the shop menu.");
+    g_cHammer_Type = AutoExecConfig_CreateConVar("hammer_type", "1", "Type of hammer configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cM4_Price = AutoExecConfig_CreateConVar("m4a1_price", "3000", "The amount of credits the M4A1-S costs. 0 to disable.");
     g_cM4_Prio = AutoExecConfig_CreateConVar("m4a1_sort_prio", "0", "The sorting priority of the M4A1-S in the shop menu.");
     g_cAWP_Price = AutoExecConfig_CreateConVar("awp_price", "3000", "The amount of credits the AWP costs. 0 to disable.");
@@ -273,7 +275,19 @@ void RegisterItem()
     TTT_RegisterCustomItem(SCOUT_ITEM_SHORT, sBuffer, g_cScout_Price.IntValue, TTT_TEAM_TRAITOR, g_cScout_Prio.IntValue);
 
     g_cHammer_Long.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_TRAITOR, g_cHammer_Prio.IntValue);
+    if(g_cHammer_Type.IntValue == 0)
+    {
+        TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cHammer_Prio.IntValue);
+    }
+    else if(g_cHammer_Type.IntValue == 1)
+    {
+        TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_TRAITOR, g_cHammer_Prio.IntValue);
+        TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_DETECTIVE, g_cHammer_Prio.IntValue);
+    }
+    else if(g_cHammer_Type.IntValue == 2)
+    {
+        TTT_RegisterCustomItem(HAMMER_ITEM_SHORT, sBuffer, g_cHammer_Price.IntValue, TTT_TEAM_TRAITOR, g_cHammer_Prio.IntValue);
+    }
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
