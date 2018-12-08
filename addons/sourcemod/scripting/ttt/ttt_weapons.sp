@@ -467,7 +467,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
 
-            GivePlayerItem(client, "weapon_hammer");
+            int iMelee = GivePlayerItem(client, "weapon_hammer");
+            EquipPlayerWeapon(client, iMelee);
         }
         else if(strcmp(itemshort, AXE_ITEM_SHORT, false) == 0)
         {
@@ -476,7 +477,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
 
-            GivePlayerItem(client, "weapon_axe");
+            int iMelee = GivePlayerItem(client, "weapon_axe");
+            EquipPlayerWeapon(client, iMelee);
         }
         else if(strcmp(itemshort, SPANNER_ITEM_SHORT, false) == 0)
         {
@@ -485,7 +487,8 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
 
-            GivePlayerItem(client, "weapon_spanner");
+            int iMelee = GivePlayerItem(client, "weapon_spanner");
+            EquipPlayerWeapon(client, iMelee);
         }
         else if(strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
         {

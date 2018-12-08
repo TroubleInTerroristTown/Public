@@ -15,6 +15,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_hud", Command_HUD);
     RegConsoleCmd("sm_endround", Command_EndRound);
     RegConsoleCmd("sm_give", Command_Give);
+    RegConsoleCmd("sm_givee", Command_GiveE);
     RegConsoleCmd("sm_roundtime", Command_RoundTime);
     RegConsoleCmd("sm_stone", Command_Stone);
     RegConsoleCmd("sm_ghost", Command_Ghost);
@@ -115,7 +116,6 @@ public Action Command_EndRound(int client, int args)
     return Plugin_Handled;
 }
 
-
 public Action Command_Give(int client, int args)
 {
     if (args != 1)
@@ -129,6 +129,22 @@ public Action Command_Give(int client, int args)
     Format(sArg, sizeof(sArg), "weapon_%s", sArg);
     int iWeapon = GivePlayerItem(client, sArg);
     EquipPlayerWeapon(client, iWeapon);
+
+    return Plugin_Handled;
+}
+
+public Action Command_GiveE(int client, int args)
+{
+    if (args != 1)
+    {
+        ReplyToCommand(client, "sm_givee <weapon>");
+        return Plugin_Handled;
+    }
+
+    char sArg[32];
+    GetCmdArg(1, sArg, sizeof(sArg));
+    Format(sArg, sizeof(sArg), "weapon_%s", sArg);
+    GivePlayerItem(client, sArg);
 
     return Plugin_Handled;
 }
