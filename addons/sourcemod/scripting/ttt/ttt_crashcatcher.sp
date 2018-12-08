@@ -5,6 +5,8 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <ttt>
+#undef REQUIRE_EXTENSIONS
+#tryinclude <vphysics>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Crash Catcher"
 
@@ -99,3 +101,22 @@ public Action Timer_Restore(Handle timer, any ref2)
         }
     }
 }
+
+#if defined _sdktools_phys_included
+public void Phys_OnObjectWake(int entity)
+{
+    if (IsValidEntity(entity))
+    {
+        char sClass[64];
+        GetEntityClassname(entity, sClass, sizeof(sClass));
+
+        if (StrEqual(sClass, "prop_ragdoll", false))
+        {
+            if (Phys_IsPhysicsObject(entity))
+            {
+                Phys_Sleep(entity);
+            }
+        }
+    }
+}
+#endif
