@@ -19,6 +19,7 @@ public void OnPluginStart()
     RegConsoleCmd("sm_roundtime", Command_RoundTime);
     RegConsoleCmd("sm_stone", Command_Stone);
     RegConsoleCmd("sm_ghost", Command_Ghost);
+    RegConsoleCmd("sm_classname", Command_Classname);
 }
 
 public Action Command_CheckGOTV(int client, int args)
@@ -200,4 +201,16 @@ public Action Command_Ghost(int client, int args)
     PrintToChat(client, "Ghost: %d", GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
     SetEntProp(client, Prop_Send, "m_bIsPlayerGhost", !GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
     PrintToChat(client, "Ghost: %d", GetEntProp(client, Prop_Send, "m_bIsPlayerGhost"));
+}
+
+public Action Command_Classname(int client, int args)
+{
+    int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+
+    if (IsValidEntity(iWeapon))
+    {
+        char sClass[32];
+        GetEntityClassname(iWeapon, sClass, sizeof(sClass));
+        PrintToChat(client, "Index: %d, Class: %s", iWeapon, sClass);
+    }
 }
