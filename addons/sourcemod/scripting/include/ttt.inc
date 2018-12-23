@@ -15,6 +15,7 @@
 #define TTT_LOG_SIZE 512
 
 #include <ttt_stock>
+#include <sdktools>
 #include <cstrike>
 
 enum Ragdolls
