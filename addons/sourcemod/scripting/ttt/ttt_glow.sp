@@ -49,6 +49,8 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     g_bCPS = LibraryExists("CustomPlayerSkins");
+
+    HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -92,6 +94,33 @@ public void OnConfigsExecuted()
     else
     {
         CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
+    }
+}
+
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(client))
+    {
+        int iSkin = CPS_GetSkin(client);
+
+        if (IsValidEntity(iSkin))
+        {
+            SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
+
+            int iOffset = -1;
+
+            if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
+            {
+                return;
+            }
+
+            SetEntData(iSkin, iOffset, 0, _, true);
+            SetEntData(iSkin, iOffset + 1, 0, _, true);
+            SetEntData(iSkin, iOffset + 2, 0, _, true);
+            SetEntData(iSkin, iOffset + 3, 0, _, true);
+        }
     }
 }
 
