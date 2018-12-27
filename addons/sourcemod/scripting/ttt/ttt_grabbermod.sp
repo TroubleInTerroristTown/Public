@@ -231,9 +231,16 @@ void GrabSomething(int client)
     }
 
     char sGlobal[128];
+    char sTargetname[32];
+    GetEntPropString(iEntity, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
     GetEntPropString(iEntity, Prop_Data, "m_iGlobalname", sGlobal, sizeof(sGlobal));
 
     if (strlen(sGlobal) > 1 && CheckLists(client, iEntity, sGlobal))
+    {
+        return;
+    }
+
+    if (strlen(sTargetname) > 1 && CheckLists(client, iEntity, sTargetname))
     {
         return;
     }
