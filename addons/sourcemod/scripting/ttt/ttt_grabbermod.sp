@@ -271,9 +271,6 @@ void GrabSomething(int client)
     
     if (StrContains(sName, "ragdoll", false) != -1 || StrContains(sName, "player", false) != -1)
     {
-        char sTargetname[32];
-        GetEntPropString(iEntity, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
-        
         // true is a positive found on the blacklist(models) or negative found on the whitelist 
         if (CheckLists(client, iEntity, sTargetname) || StrContains(sTargetname, "fpd_ragdoll", false) != -1)
         {
