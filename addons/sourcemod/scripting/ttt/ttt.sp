@@ -55,7 +55,7 @@ public void OnPluginStart()
 
     LoadBadNames();
 
-    g_aRagdoll = new ArrayList(104);
+    g_aRagdoll = new ArrayList(296);
     g_aLogs = new ArrayList(512);
     g_aForceTraitor = new ArrayList();
     g_aForceDetective = new ArrayList();
