@@ -566,6 +566,7 @@ public int TTT_OnButtonPress(int client, int button)
             SetEntProp(bombEnt, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
             SetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity", client);
             DispatchKeyValue(bombEnt, "model", MDL_C4);
+            DispatchKeyValue(bombEnt, "targetname", "c4_bomb");
             if(DispatchSpawn(bombEnt))
             {
                 g_iC4[client] = EntIndexToEntRef(bombEnt);
