@@ -105,7 +105,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
-
+    
     CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
     CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
@@ -188,7 +188,7 @@ public void OnPluginStart()
 
     char sDate[12];
     FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
-    BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt_shop_%s.log", sDate);
+    BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt/shop_%s.log", sDate);
 
     g_hReopenCookie = RegClientCookie("ttt_reopen_shop", "Cookie to reopen shop menu", CookieAccess_Private);
 

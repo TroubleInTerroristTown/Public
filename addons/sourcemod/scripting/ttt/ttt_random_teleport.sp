@@ -54,7 +54,7 @@ public void OnPluginStart()
 
     char sDate[12];
     FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
-    BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt_random_teleporter_%s.log", sDate);
+    BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt/random_teleporter_%s.log", sDate);
 
     TTT_StartConfig("random_teleporter");
     CreateConVar("ttt2_random_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);

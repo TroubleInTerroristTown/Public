@@ -137,7 +137,7 @@ public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
 
 Action OnWeaponEquip(int client, int weapon)
 {
-    if (TTT_IsClientValid(client) && g_aListHS.FindValue(weapon) != -1)
+    if (TTT_IsClientValid(client) && g_aListHS.FindValue(EntIndexToEntRef(weapon)) != -1)
     {
         g_bHasHS[client] = true;
     }
@@ -147,7 +147,7 @@ Action OnWeaponEquip(int client, int weapon)
 
 Action OnWeaponDrop(int client, int weapon)
 {
-    if (TTT_IsClientValid(client) && g_aListHS.FindValue(weapon) != -1)
+    if (TTT_IsClientValid(client) && g_aListHS.FindValue(EntIndexToEntRef(weapon)) != -1)
     {
         g_bHasHS[client] = false;
     }
@@ -205,7 +205,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             }
             
             int ent = GivePlayerItem(client, "weapon_healthshot");
-            g_aListHS.Push(ent);
+            g_aListHS.Push(EntIndexToEntRef(ent));
             CS_DropWeapon(client, ent, false, false);
 
             if (count)
