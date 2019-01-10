@@ -10,17 +10,11 @@
 
 char g_sFile[PLATFORM_MAX_PATH + 1];
 
-enum Item
-{
-    String:Short[16],
-    Percent,
-    String:Flag[16]
-}
+StringMap g_smPercent = null;
+StringMap g_smFlag = null;
 
 ConVar g_cPercents = null;
 ConVar g_cFlags = null;
-
-ArrayList g_aItems = null;
 
 public Plugin myinfo =
 {
@@ -48,21 +42,22 @@ public int Native_GetItemDiscount(Handle plugin, int numParams)
 
     if (TTT_IsClientValid(client))
     {
-        int iItem[Item];
-        for (int i = 0; i < g_aItems.Length; i++)
+        char sFlag[16];
+        g_smFlag.GetString(sItem, sFlag, sizeof(sFlag));
+        
+        int iPercent = 0;
+        
+        if (!HasFlags(client, sFlag))
         {
-            g_aItems.GetArray(i, iItem[0]);
-            
-            if (StrEqual(iItem[Short], sItem, false))
-            {
-                if (!HasFlags(client, iItem[Flag]))
-                {
-                    return 0;
-                }
-                
-                return iItem[Percent];
-            }
+            return iPercent;
         }
+        
+        if (g_smPercent.GetValue(sItem, iPercent))
+        {
+            return iPercent;
+        }
+        
+        return iPercent;
     }
     
     return -1;
@@ -81,7 +76,11 @@ public void OnPluginStart()
     TTT_EndConfig();
 
     BuildPath(Path_SM, g_sFile, sizeof(g_sFile), "configs/ttt/shop_discounts.ini");
-    g_aItems = new ArrayList(18);
+    
+    delete g_smPercent;
+    delete g_smFlag;
+    g_smPercent = new StringMap();
+    g_smFlag = new StringMap();
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -133,11 +132,8 @@ public void OnConfigsExecuted()
 
         if (strlen(sShort) > 1 && iPercent >= 1 && iPercent <= 100)
         {
-            int iItem[Item];
-            Format(iItem[Short], sizeof(sShort), "%s", sShort);
-            iItem[Percent] = iPercent;
-            Format(iItem[Flag], sizeof(sFlag), "%s", sFlag);
-            g_aItems.PushArray(iItem[0]);
+            g_smPercent.SetValue(sShort, iPercent, true);
+            g_smFlag.SetString(sShort, sFlag, true);
         }
     }
     while (kvRules.GotoNextKey());
@@ -146,22 +142,18 @@ public void OnConfigsExecuted()
     delete hFile;
 }
 
-public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item)
+public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] sItem)
 {
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {
-        int iItem[Item];
-        for (int i = 0; i < g_aItems.Length; i++)
+        int iPercent = 0;
+        if (g_smPercent.GetValue(sItem, iPercent))
         {
-            g_aItems.GetArray(i, iItem[0]);
-            if (StrEqual(iItem[Short], item, false) && HasFlags(client, iItem[Flag]))
-            {
-                float fPercentage = iItem[Percent] / 100.0;
-                int iDiscount = RoundToCeil(price * fPercentage);
-                int iOld = price;
-                price = iOld - iDiscount;
-                return Plugin_Changed;
-            }
+            float fPercentage = iPercent / 100.0;
+            int iDiscount = RoundToCeil(price * fPercentage);
+            int iOld = price;
+            price = iOld - iDiscount;
+            return Plugin_Changed;
         }
     }
     return Plugin_Continue;

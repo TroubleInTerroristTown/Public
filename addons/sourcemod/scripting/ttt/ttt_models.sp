@@ -54,13 +54,16 @@ public void OnMapStart()
     }
     
     KeyValues kvConfig = new KeyValues("TTT-Models");
-    g_smModels = new StringMap();
     
     if (!kvConfig.ImportFromFile(sFile))
     {
+    	delete kvConfig;
         SetFailState("[TTT-Models] Something went wrong with: \"%s\"", sFile);
         return;
     }
+    
+    delete g_smModels;
+    g_smModels = new StringMap();
 
     if (kvConfig.JumpToKey("Models"))
     {

@@ -93,11 +93,17 @@ void SQL_Start()
         kvDatabase.SetString("database", "ttt");
         kvDatabase.SetString("user", "root");
 
+        // Delete g_dDatabase to prevent memory leaks
+        delete g_dDatabase;
+
         char sError[255];
         g_dDatabase = SQL_ConnectCustom(kvDatabase, sError, sizeof(sError), true);
+        
+        delete kvDatabase;
 
         if (strlen(sError) > 1)
         {
+            delete g_dDatabase; // Delete Database handle when we've a error
             LogError("(SQL_Start) Error: %s", sError);
         }
 
@@ -119,12 +125,16 @@ void SQL_Start()
     if (!SQL_CheckConfig(sEntry) && g_iRetries < g_cRetries.IntValue)
     {
         LogError("(SQL_Start) Couldn't find an \"%s\"-entry in your databases.cfg...", sEntry);
+        
+        // Delete g_dDatabase to prevent memory leaks
+        delete g_dDatabase;
 
         char sError[255];
         g_dDatabase = SQL_Connect(sEntry, true, sError, sizeof(sError));
 
         if (strlen(sError) > 1)
         {
+            delete g_dDatabase; // Delete Database handle when we've a error
             LogError("(SQL_Start) Error: %s", sError);
         }
 
@@ -167,7 +177,12 @@ public void OnConnect(Database db, const char[] error, any data)
         return;
     }
 
-    g_dDatabase = db;
+    delete g_dDatabase;
+
+    if (db != null)
+    {
+        g_dDatabase = db;
+    }
 
     CheckAndCreateTables();
 }
@@ -235,11 +250,11 @@ public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, Da
         pack.Reset();
         char sBuffer[128];
         pack.ReadString(sBuffer, sizeof(sBuffer));
-        delete pack;
 
         LogError("[TTT] (%s) Query failed: %s", sBuffer, error);
-        return;
     }
+    
+    delete pack;
 }
 
 public int Native_GetConnectionType(Handle plugin, int numParams)
