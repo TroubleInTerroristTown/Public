@@ -255,7 +255,7 @@
 
 	"Your Karma is too low"
 	{
-		"es"		"Fuiste baneado por karma bajo! Lee las reglas www.jbrage.tk/reglas_ttt.txt"
+		"es"		"Fuiste baneado por karma bajo!"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"
