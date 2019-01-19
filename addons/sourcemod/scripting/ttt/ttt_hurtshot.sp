@@ -137,21 +137,37 @@ public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
 
 Action OnWeaponEquip(int client, int weapon)
 {
-    if (TTT_IsClientValid(client) && g_aListHS.FindValue(EntIndexToEntRef(weapon)) != -1)
+    int iRef = EntIndexToEntRef(weapon);
+    int iIndex = g_aListHS.FindValue(iRef);
+    
+    if (iIndex != -1)
     {
-        g_bHasHS[client] = true;
+        int iArrayRef = g_aListHS.Get(iIndex);
+        
+        if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+        {
+            g_bHasHS[client] = true;
+        }
     }
-
+    
     return Plugin_Handled;
 }
 
 Action OnWeaponDrop(int client, int weapon)
 {
-    if (TTT_IsClientValid(client) && g_aListHS.FindValue(EntIndexToEntRef(weapon)) != -1)
+    int iRef = EntIndexToEntRef(weapon);
+    int iIndex = g_aListHS.FindValue(iRef);
+    
+    if (iIndex != -1)
     {
-        g_bHasHS[client] = false;
+        int iArrayRef = g_aListHS.Get(iIndex);
+        
+        if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+        {
+            g_bHasHS[client] = false;
+        }
     }
-
+    
     return Plugin_Handled;
 }
 
