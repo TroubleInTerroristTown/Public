@@ -135,7 +135,7 @@ public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
     return Plugin_Continue;
 }
 
-Action OnWeaponEquip(int client, int weapon)
+public Action OnWeaponEquip(int client, int weapon)
 {
     int iRef = EntIndexToEntRef(weapon);
     int iIndex = g_aListHS.FindValue(iRef);
@@ -153,7 +153,7 @@ Action OnWeaponEquip(int client, int weapon)
     return Plugin_Handled;
 }
 
-Action OnWeaponDrop(int client, int weapon)
+public Action OnWeaponDrop(int client, int weapon)
 {
     int iRef = EntIndexToEntRef(weapon);
     int iIndex = g_aListHS.FindValue(iRef);
