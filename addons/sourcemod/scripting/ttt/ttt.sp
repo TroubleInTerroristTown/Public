@@ -55,7 +55,7 @@ public void OnPluginStart()
 
     LoadBadNames();
 
-    g_aRagdoll = new ArrayList(296);
+    g_aRagdoll = new ArrayList(104);
     g_aLogs = new ArrayList(512);
     g_aForceTraitor = new ArrayList();
     g_aForceDetective = new ArrayList();
@@ -3384,13 +3384,15 @@ public int TTT_OnButtonPress(int client, int button)
 
     if (button & IN_USE)
     {
-
         int iEntity = GetClientAimTarget(client, false);
+        
         if (iEntity > 0)
         {
             float OriginG[3], TargetOriginG[3];
+            
             GetClientEyePosition(client, TargetOriginG);
             GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", OriginG);
+            
             if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
             {
                 return;

@@ -137,16 +137,19 @@ public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
 
 public Action OnWeaponEquip(int client, int weapon)
 {
-    int iRef = EntIndexToEntRef(weapon);
-    int iIndex = g_aListHS.FindValue(iRef);
-    
-    if (iIndex != -1)
+    if (IsValidEntity(weapon))
     {
-        int iArrayRef = g_aListHS.Get(iIndex);
+        int iRef = EntIndexToEntRef(weapon);
+        int iIndex = g_aListHS.FindValue(iRef);
         
-        if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+        if (iIndex != -1)
         {
-            g_bHasHS[client] = true;
+            int iArrayRef = g_aListHS.Get(iIndex);
+            
+            if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+            {
+                g_bHasHS[client] = true;
+            }
         }
     }
     
@@ -155,16 +158,19 @@ public Action OnWeaponEquip(int client, int weapon)
 
 public Action OnWeaponDrop(int client, int weapon)
 {
-    int iRef = EntIndexToEntRef(weapon);
-    int iIndex = g_aListHS.FindValue(iRef);
-    
-    if (iIndex != -1)
+    if (IsValidEntity(weapon))
     {
-        int iArrayRef = g_aListHS.Get(iIndex);
+        int iRef = EntIndexToEntRef(weapon);
+        int iIndex = g_aListHS.FindValue(iRef);
         
-        if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+        if (iIndex != -1)
         {
-            g_bHasHS[client] = false;
+            int iArrayRef = g_aListHS.Get(iIndex);
+            
+            if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
+            {
+                g_bHasHS[client] = false;
+            }
         }
     }
     
