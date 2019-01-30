@@ -139,11 +139,24 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
             int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
             if (iWeapon != -1)
             {
-                TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
+                char sWeapon[32];
+                GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+                
+                if (StrEqual(sWeapon, "weapon_awp", false))
+                {
+                    g_iWeapon[client] = iWeapon;
+                }
+                else
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
+                }
             }
-
-            g_iWeapon[client] = GivePlayerItem(client, "weapon_awp");
-            EquipPlayerWeapon(client, g_iWeapon[client]);
+            
+            if (!IsValidEntity(g_iWeapon[client]))
+            {
+                g_iWeapon[client] = GivePlayerItem(client, "weapon_awp");
+                EquipPlayerWeapon(client, g_iWeapon[client]);
+            }
 
             int max = 0;
             int min = 0;
