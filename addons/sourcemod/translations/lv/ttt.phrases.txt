@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-29 19:44:59 UTC
+// Date: 2019-02-01 15:59:50 UTC
 // Language: Latvian (lv)
 // 
 // To view other translations for this plugin, please visit:

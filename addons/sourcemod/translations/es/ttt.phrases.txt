@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-29 19:44:57 UTC
+// Date: 2019-02-01 15:59:49 UTC
 // Language: Spanish (es)
 // 
 // To view other translations for this plugin, please visit:
@@ -150,7 +150,7 @@
 
 	"The weapon used has been"
 	{
-		"es"		"El arma que se uso fue: {1}"
+		"es"		"El arma usada ha sido: {1}"
 	}
 
 	"The weapon used has been"

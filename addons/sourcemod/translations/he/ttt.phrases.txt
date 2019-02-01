@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-29 19:45:00 UTC
+// Date: 2019-02-01 15:59:51 UTC
 // Language: Hebrew (he)
 // 
 // To view other translations for this plugin, please visit:
@@ -23,9 +23,19 @@
 		"he"		"מספר"
 	}
 
+	"karma earned"
+	{
+		"he"		"אתה השגת {1} קרמה לכמות הקארמה שלך כרגע"
+	}
+
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"he"		"{darkred} {1} בוגד(ים) {lightrgreen} נבחרו"
+	}
+
+	"Has Defused Bomb"
+	{
+		"he"		"{orchid}{1} {lightgreen} נטרל את הפצצה!"
 	}
 
 	"Kick Bad Name"

@@ -1,0 +1,76 @@
+// Exported from SourceMod Translator
+// Date: 2019-02-01 15:59:51 UTC
+// Language: Greek (el)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"Your Team is DETECTIVES"
+	{
+		"el"		"Είσαι ένας {darkblue}ΝΤΕΤΕΚΤΙΒ"
+	}
+
+	"You killed a Detective"
+	{
+		"el"		"Σκότωσες έναν {darkblue} ΝΤΕΤΕΚΤΙΒ!"
+	}
+
+	"Team victim"
+	{
+		"el"		"Ομάδα: {1}"
+	}
+
+	"Your bomb is not armed."
+	{
+		"el"		"Η βόμβα σου δεν είναι οπλυσμένη."
+	}
+
+	"Your Karma is too low"
+	{
+		"el"		"Σου απαγορέυεται η είσοδος επειδή το κάρμα σου είναι πολύ χαμηλό!"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"el"		"{darkred}{1} ΟΙ ΠΡΟΔΟΤΕΣ {lightgreen} ΕΠΙΛΕΧΘΗΚΑΝ"
+	}
+
+	"Forgive"
+	{
+		"el"		"Συγχώρα"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"el"		"Επέλεξες να συγχωρέσεις τον/την {} για το RDM!"
+	}
+
+	"next round in"
+	{
+		"el"		"Ο επόμενος γύρος αρχίζει σε {} δευτερόλεπτα!"
+	}
+
+	"You reached limit"
+	{
+		"el"		"Μπορείς να αγοράσεις μονο {} απο αυτό ανά γύρο!"
+	}
+
+	"All karma has been updated"
+	{
+		"el"		"ΤΟ ΚΑΡΜΑ ΑΝΑΝΕΩΘΗΚΕ!"
+	}
+
+	"ID: Shows ID"
+	{
+		"el"		"{1} είναι αθώος"
+	}
+
+	"Found Fake"
+	{
+		"el"		"{orchid}{1} {lightgreen} βρήκε ένα ψέυτικο πτώμα!"
+	}
+
+}

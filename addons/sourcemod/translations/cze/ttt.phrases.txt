@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2018-10-29 19:44:59 UTC
+// Date: 2019-02-01 15:59:50 UTC
 // Language: Czech (cze)
 // 
 // To view other translations for this plugin, please visit:
@@ -220,12 +220,7 @@
 
 	"Found Innocent"
 	{
-		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {green}NEVINNY!"
-	}
-
-	"Found Innocent"
-	{
-		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {green}NEVINNY!"
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lightgreen}Tento hrac byl {green}NEVINNY!"
 	}
 
 	"Found Detective"
@@ -235,7 +230,7 @@
 
 	"Found Traitor"
 	{
-		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {green}{2}. {lighgreen}Tento hrac byl {darkred}ZRADCE!"
+		"cze"		"{orchid}{1} {lightgreen}nasel mrtvolu hrace {darkred}{2}. {lightgreen}Tento hrac byl {darkred}ZRADCE!"
 	}
 
 	"Your bomb is not armed."
@@ -460,12 +455,7 @@
 
 	"AM Question"
 	{
-		"cze"		"Chtel by jsi hrat jako detektiv ?\nPotom musis udelat nasledujici: \n\n-fungující mikrofónq\n-mluvit s ostatními hráci\n-aktivne hrat\n\nMuzes to potvrdit ?"
-	}
-
-	"AM Question"
-	{
-		"cze"		"Chtel by jsi hrat jako detektiv ?\nPotom musis udelat nasledujici: \n\n-fungující mikrofónq\n-mluvit s ostatními hráci\n-aktivne hrat\n\nMuzes to potvrdit ?"
+		"cze"		"Chtel by jsi hrat jako detektiv ?\nPotom musis splnovat nasledujici: \n\n-fungující mikrofón\n-mluvit s ostatními hráci\n-aktivne hrat\n\nMuzes to potvrdit ?"
 	}
 
 	"AM Yes"
@@ -650,12 +640,12 @@
 
 	"Traitor Voice Chat: Disabled!"
 	{
-		"cze"		"Chat Zdradcu: Vypnut !"
+		"cze"		"Chat Zradcu: Vypnut !"
 	}
 
 	"Traitor Voice Chat: Enabled!"
 	{
-		"cze"		"Chat Zdradcu: Zapnut !"
+		"cze"		"Chat Zradcu: Zapnut !"
 	}
 
 	"ID: Cooldown"
@@ -693,9 +683,114 @@
 		"cze"		"Obchod bude znovu dostupny po zakoupeni predmetu."
 	}
 
+	"You already have an active Station"
+	{
+		"cze"		"Uz mas aktivni stanici!"
+	}
+
+	"Item bought! (NEW)"
+	{
+		"cze"		"Koupil sis {2} za {3} kreditu! Stav kreditu: {1}"
+	}
+
+	"watching logs alive"
+	{
+		"cze"		"{green}{1} {default} je {darkred}nazivu {default} a prohlizi si zapisy z tohoto kola."
+	}
+
 	"Player is Now Innocent"
 	{
 		"cze"		"{orchid}{1} {lightgreen}je nyni {green}NEVINNY!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"cze"		"{orchid}{1} {lightgreen} byl zabit adminem {orchid}{2} {lightgreen} na {orchid}{3} {lightgreen}kola!"
+	}
+
+	"RS - Slayed"
+	{
+		"cze"		"Byl jsi zabit! Kolikrat jeste budes zabit: {orchid}{1}"
+	}
+
+	"Shop Discount Price"
+	{
+		"cze"		"(Sleva {1}%%)"
+	}
+
+	"Sprint active"
+	{
+		"cze"		"sprint je k dispozici po dobu {1} sekund!"
+	}
+
+	"Sprint cooldown"
+	{
+		"cze"		"Sprint bude k dispozici za {1} sekund."
+	}
+
+	"Sprint available"
+	{
+		"cze"		"Sprint je nyni k dispozici!"
+	}
+
+	"TAGrenade We Found"
+	{
+		"cze"		"Nasli jsme:"
+	}
+
+	"TAGrenade Innocents"
+	{
+		"cze"		"{green}1 nevinnych"
+	}
+
+	"TAGrenade Traitors"
+	{
+		"cze"		"{darkred}{1} zradcu"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"cze"		"{darkblue}{1} Detektivu"
+	}
+
+	"Location Saved"
+	{
+		"cze"		"Pozice ulozena! Napis '{orchid}!tele{lightgreen}' do chatu pro teleport."
+	}
+
+	"Teleport Max"
+	{
+		"cze"		"Dosahl jsi limitu! {orchid}({1})"
+	}
+
+	"Radar Updated"
+	{
+		"cze"		"Radar aktualizovany!"
+	}
+
+	"Decoy Body Active"
+	{
+		"cze"		"Nasel jsi falesne telo! UTIKEJ!"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"cze"		"Trouble in Terrorist Town - Verze: {1}"
+	}
+
+	"Player Spawn TTT Version"
+	{
+		"cze"		"Trouble in Terrorist Town - Verze: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"cze"		"TTT Radiove prikazy"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"cze"		"Ano"
 	}
 
 	"TTT Radio Menu: No"
@@ -703,9 +798,434 @@
 		"cze"		"Ne"
 	}
 
+	"TTT Radio Menu: Maybe"
+	{
+		"cze"		"Mozna"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"cze"		"Pomoc"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"cze"		"Zkontrolovat"
+	}
+
+	"TTT Radio Menu: Im With"
+	{
+		"cze"		"Jsem s..."
+	}
+
+	"TTT Radio Menu: Suspect"
+	{
+		"cze"		"Podezrely..."
+	}
+
+	"TTT Radio Menu: Traitor"
+	{
+		"cze"		"Zradce..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"cze"		"Nevinny..."
+	}
+
+	"TTT Radio Menu: Innocent"
+	{
+		"cze"		"Nevinny..."
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"cze"		"Vidim..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"cze"		"Ano"
+	}
+
+	"TTT Radio: No"
+	{
+		"cze"		"Ne"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"cze"		"Mozna"
+	}
+
+	"TTT Radio: Help"
+	{
+		"cze"		"Pomoc"
+	}
+
+	"TTT Radio: Check"
+	{
+		"cze"		"Zkontrolovat"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"cze"		"Jsem s {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"cze"		"{1} se chova podezrele."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"cze"		"{1} je zradce!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"cze"		"{1} je nevinny."
+	}
+
+	"TTT Radio: See"
+	{
+		"cze"		"Vidim {1}"
+	}
+
+	"Random Teleporter: Cant find ragdoll"
+	{
+		"cze"		"Nemohu najit mrtvolu."
+	}
+
+	"Random Teleporter: Teleport"
+	{
+		"cze"		"Vymenil sis pozici s {green}{1}"
+	}
+
+	"Detective scan found body Innocent"
+	{
+		"cze"		"DETEKTIV{darkblue} {1} {lightgreen}oskenoval mrtvolu, vrahem je {green} {2} {lightgreen}se zbrani{orchid} {3} "
+	}
+
+	"Detective scan found body Detective"
+	{
+		"cze"		"DETEKTIV{darkblue} {1} {lightgreen}oskenoval mrtvolu, vrahem je {darkblue} {2} {lightgreen}se zbrani {orchid} {3}"
+	}
+
+	"Detective scan found body Traitor"
+	{
+		"cze"		"DETEKTIV{darkblue} {1} {lightgreen}oskenoval mrtvolu, vrahem je {darkred} {2} {lightgreen}se zbrani {orchid} {3}"
+	}
+
+	"No karma hurt traitor"
+	{
+		"cze"		"Neprisel jsi o zadnou karmu, protoze te {darkred}ZRADCE {lightgreen}zranil jako prvni."
+	}
+
+	"No karma hurt innocent"
+	{
+		"cze"		"Neprisel jsi o zadnou karmu, protoze te {green}NEVINNY {lightgreen}zranil jako prvni."
+	}
+
+	"No karma hurt detective"
+	{
+		"cze"		"Neprisel jsi o zadnou karmu, protoze te {darkblue}DETEKTIV {lightgreen}zranil jako prvni."
+	}
+
+	"Shop Item not found"
+	{
+		"cze"		"Nemuzu najit '{1}' jako item v obchode"
+	}
+
+	"TTT Radio: KOS"
+	{
+		"cze"		"Zabijte na potkani {1}!"
+	}
+
+	"Found Innocent Silent"
+	{
+		"cze"		"{lightgreen}Potichu jsi nasel telo {green}{1}. {lightgreen}Tento hrac byl {green}NEVINNY!"
+	}
+
+	"Found Detective Silent"
+	{
+		"cze"		"{lightgreen}Potichu jsi nasel telo {darkblue}{1}. {lightgreen}Tento hrac byl {darkblue}Zradce!"
+	}
+
+	"Found Traitor Silent"
+	{
+		"cze"		"{lightgreen}Potichu jsi nasel telo {darkred}{1}. {lightgreen}Tento hrac byl {darkred}Zradce!"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"cze"		"Vyber trest:"
+	}
+
+	"C4: Slay"
+	{
+		"cze"		"Zabit hrace"
+	}
+
+	"C4: Explode"
+	{
+		"cze"		"Výbušná bomba"
+	}
+
+	"Name Change Kick Reason"
+	{
+		"cze"		"Behem kola neni povoleno menit si jmeno."
+	}
+
+	"Name Change Reason"
+	{
+		"cze"		"Zmena jmena behem kola"
+	}
+
+	"Name Change Message"
+	{
+		"cze"		"{orchid}{1} {lightgreen} si zmenil jmeno na {orchid}{2}!"
+	}
+
+	"No tripmines"
+	{
+		"cze"		"Nemas zadne dalsi miny."
+	}
+
+	"Invalid location"
+	{
+		"cze"		"Neplatne misto pro polozeni miny"
+	}
+
 	"AlreadyTaser"
 	{
 		"cze"		"Jiz mas taser ve svem inventari!"
+	}
+
+	"Remaining Tripmines"
+	{
+		"cze"		"Pocet zbyvajicich min: {1}"
+	}
+
+	"TTT Radio Menu: KOS"
+	{
+		"cze"		"Zabijte na potkání..."
+	}
+
+	"Place Tripmine"
+	{
+		"cze"		"Pro polozeni miny napis '/tripmine' do chatu"
+	}
+
+	"Free DNA Scanner left"
+	{
+		"cze"		"Pouzil jsi dna scanner! Zbyva pouziti: {1}"
+	}
+
+	"WE ARE"
+	{
+		"cze"		"Je nas {1} !"
+	}
+
+	"REMAINING PLAYERS"
+	{
+		"cze"		"Pocet hracu potrebny pro zacatek hry: {1}"
+	}
+
+	"HUD Health - Invalid"
+	{
+		"cze"		"Neplatna hodnota"
+	}
+
+	"HUD Health - NearDeath"
+	{
+		"cze"		"Blizko smrti"
+	}
+
+	"HUD Health - BadlyWounded"
+	{
+		"cze"		"Tezce zranen"
+	}
+
+	"HUD Health - Wounded"
+	{
+		"cze"		"Zraneny"
+	}
+
+	"HUD Health - Hurt"
+	{
+		"cze"		"Zraneny"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"cze"		"Zdravy"
+	}
+
+	"HUD Karma - Invalid"
+	{
+		"cze"		"Neplatna hodnota"
+	}
+
+	"HUD Karma - Liability"
+	{
+		"cze"		"Odpovednost"
+	}
+
+	"HUD Karma - Dangerous"
+	{
+		"cze"		"Nebezpecny"
+	}
+
+	"HUD Karma - TriggerHappy"
+	{
+		"cze"		"Trigger-Happy"
+	}
+
+	"HUD Karma - Crude"
+	{
+		"cze"		"Surovy"
+	}
+
+	"HUD Karma - Reputable"
+	{
+		"cze"		"Seriozni"
+	}
+
+	"Revive: Before to Target"
+	{
+		"cze"		"{1} te chce ozivit, pockej {2} sekund, nez to budes moct prijmout."
+	}
+
+	"Revive: Before to Player"
+	{
+		"cze"		"Ozivis {1}."
+	}
+
+	"Revive: Waiting of accepting"
+	{
+		"cze"		"{1} musi prijmout tvou zadost o oziveni."
+	}
+
+	"Revive: Menu - Title"
+	{
+		"cze"		"{1} te chce ozivit.\nPrijimas tuto zadost?\nMas jeste {2} sekundy..."
+	}
+
+	"Revive: Menu - Yes"
+	{
+		"cze"		"Ano, chci!"
+	}
+
+	"Revive: Menu - No"
+	{
+		"cze"		"Ne, diky!"
+	}
+
+	"Revive: Menu - No response"
+	{
+		"cze"		"Cas na odpoved vyprsel.. {1} nereagoval"
+	}
+
+	"Revive: Menu - Accepted"
+	{
+		"cze"		"{1} Prijal tvou zadost a nyni je opet zivy!"
+	}
+
+	"Revive: Menu - Declined"
+	{
+		"cze"		"{1} zamitl tvou zadost!"
+	}
+
+	"Respawn: Must Dead"
+	{
+		"cze"		"{1} neni mrtvy!"
+	}
+
+	"Respawn: Player"
+	{
+		"cze"		"{1} ozivil {2}!"
+	}
+
+	"Tasers: Enabled"
+	{
+		"cze"		"Tasery jsou povoleny!"
+	}
+
+	"Version Check: Current"
+	{
+		"cze"		"Tento server pouziva nejnovejsi verzi {1} TTT."
+	}
+
+	"Version Check: Unknown"
+	{
+		"cze"		"Tento server pouziva neznamou verzi ({1}) TTT. Nejnovejsi verze je {2}"
+	}
+
+	"Version Check: Older"
+	{
+		"cze"		"Tento server pouziva starsi verzi ({1}) TTT. Nejnovejsi verze je {2}"
+	}
+
+	"Revolver: Suicide"
+	{
+		"cze"		"Detektiv se pokusil zabit nevinneho pomoci Revolveru."
+	}
+
+	"Bullets: Have already"
+	{
+		"cze"		"Uz mas jeden typ kulek."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"cze"		"Nyni mas {green}{1} {orchid}{2}."
+	}
+
+	"Bullets: Number bullets"
+	{
+		"cze"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
+	}
+
+	"Fake Name: New Name"
+	{
+		"cze"		"Tve nove jmeno je ted po dobu {orchid}{1} sekund{green}: {orchid}{2}."
+	}
+
+	"Fake Name: Name expired"
+	{
+		"cze"		"Platnost noveho jmena vyprsela. Mas nazpet stare."
+	}
+
+	"Invisible Name: Start"
+	{
+		"cze"		"Tve jmeno je ted po dobu {orchid}{1} sekund neviditelne{green}."
+	}
+
+	"Invisible Name: Stop"
+	{
+		"cze"		"Tve jmeno {orchid}uz neni neviditelne {green}!"
+	}
+
+	"ClanTag: Traitor"
+	{
+		"cze"		"ZRADCE"
+	}
+
+	"ClanTag: Detective"
+	{
+		"cze"		"DETEKTIV"
+	}
+
+	"ClanTag: Unassigned"
+	{
+		"cze"		"BEZ ROLE"
+	}
+
+	"ClanTag: Innocent"
+	{
+		"cze"		"NEVINNY"
 	}
 
 }
