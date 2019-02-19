@@ -228,4 +228,4 @@ methodmap DiscordBot < StringMap {
 	public native void GetGuildMembersAll(char[] guild, OnGetMembers fCallback, int perPage=250, char[] afterUserID="");
 	
 	public native void GetGuildRoles(char[] guild, DiscordGuildGetRoles fCallback, any data);
-}
+};

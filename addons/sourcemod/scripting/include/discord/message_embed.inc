@@ -125,4 +125,4 @@ methodmap MessageEmbed < Handle {
 	public void SetURL(const char[] url) {
 		json_object_set_new(this, "url", json_string(url));
 	}
-}
+};

@@ -139,4 +139,4 @@ methodmap DiscordWebHook < Handle {
 	}*/
 
 	public native void Send();
-}
+};

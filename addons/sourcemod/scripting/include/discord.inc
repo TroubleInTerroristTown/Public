@@ -67,7 +67,7 @@ methodmap Role < Handle {
 	public bool Mentionable() {
 		return JsonObjectGetBool(this, "mentionable");
 	}
-}
+};
 
 methodmap RoleList < Handle {
 	property int Size {
@@ -84,7 +84,7 @@ methodmap RoleList < Handle {
 		return this.GetRole(i);
 	}
 	
-}
+};
 
 /*
 {
@@ -116,7 +116,7 @@ methodmap DiscordUser < Handle {
 	public native void GetEmail(char[] buffer, int maxlength);
 	
 	public native bool IsBot();
-}
+};
 
 /*
 
@@ -132,7 +132,7 @@ methodmap DiscordMessage < Handle {
 	public native void GetContent(char[] buffer, int maxlength);
 	
 	public native void GetChannelID(char[] buffer, int maxlength);
-}
+};
 
 #include <discord/channel>
 #include <discord/message_embed>

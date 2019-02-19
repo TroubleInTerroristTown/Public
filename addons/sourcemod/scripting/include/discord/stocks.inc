@@ -65,7 +65,8 @@ stock bool JsonObjectGetBool(Handle hElement, char[] key, bool defaultvalue=fals
 
 stock float JsonObjectGetFloat(Handle hJson, char[] key, float defaultValue=0.0) {
 	Handle hObject = json_object_get(hJson, key);
-	if(hObject == INVALID_HANDLE) return defaultValue;
+	if(hObject == INVALID_HANDLE)
+		return defaultValue;
 	
 	float value = defaultValue;
 	if(json_is_integer(hObject)) {

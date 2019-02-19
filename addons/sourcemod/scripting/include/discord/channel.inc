@@ -74,4 +74,4 @@ methodmap DiscordChannel < StringMap {
 			return this.Type == GUILD_TEXT;
 		}
 	}
-}
+};
