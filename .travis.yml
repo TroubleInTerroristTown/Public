@@ -6,7 +6,8 @@ language: c
 addons:
   apt:
     packages:
-    - lftp
+    # - lftp
+    - curl
     - lib32z1
     - lib32stdc++6
 

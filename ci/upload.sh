@@ -16,14 +16,20 @@ UPDATE="$URL?version=$VERSION&key=$KEY"
 echo -e "Go to build folder"
 cd build
 
-echo -e "Upload file"
-lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
+# echo -e "(LFTP) Upload file"
+# lftp -c "open -u $USER,$PASS $HOST; put -O downloads/$2/ $FILE"
+
+echo -e "(CURL) Upload file"
+curl -T $FILE -u $USER:$PASS ftp://$HOST/downloads/$2/
 
 echo -e "Add latest build"
 mv $FILE $LATEST
 
-echo -e "Upload latest build"
-lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
+# echo -e "(LFTP) Upload latest build"
+# lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
+
+echo -e "(CURL) UUpload latest build"
+curl -T $LATEST -u $USER:$PASS ftp://$HOST/downloads/
 
 echo -e "Update TTT Version"
 wget -q $UPDATE -O version.log
