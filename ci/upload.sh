@@ -28,7 +28,7 @@ mv $FILE $LATEST
 # echo -e "(LFTP) Upload latest build"
 # lftp -c "open -u $USER,$PASS $HOST; put -O downloads/ $LATEST"
 
-echo -e "(CURL) UUpload latest build"
+echo -e "(CURL) Upload latest build"
 curl -T $LATEST -u $USER:$PASS ftp://$HOST/downloads/
 
 echo -e "Update TTT Version"
