@@ -5,6 +5,7 @@ mp_autoteambalance 0
 mp_backup_round_file 0
 mp_backup_round_file_last 0
 mp_backup_round_file_pattern 0
+mp_equipment_reset_rounds 1
 sm_cvar mp_footsteps 1
 mp_free_armor 0
 mp_freezetime 1
