@@ -1081,6 +1081,11 @@ public Action Timer_Selection(Handle hTimer)
         {
             for (int i = 0; i < aPlayers.Length; i++)
             {
+                if(g_bAvoidDetective[client])
+                {
+                    continue;
+                }
+                
                 g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
                 g_iLastRole[client] = TTT_TEAM_DETECTIVE;
                 iDetectives++;
@@ -1095,7 +1100,7 @@ public Action Timer_Selection(Handle hTimer)
         {
             if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
             {
-                if (g_bAvoidDetective[client] == true)
+                if (g_bAvoidDetective[client])
                 {
                     g_iLastRole[client] = TTT_TEAM_INNOCENT;
                     g_iRole[client] = TTT_TEAM_INNOCENT;
