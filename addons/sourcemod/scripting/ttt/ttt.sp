@@ -4270,8 +4270,6 @@ public void OnEntityCreated(int entity, const char[] name)
             {
                 AcceptEntityInput(entity, "kill");
             }
-
-            break;
         }
     }
 }
