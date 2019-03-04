@@ -115,68 +115,107 @@ public void OnMapStart()
     char sBuffer[PLATFORM_MAX_PATH];
     
     g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
     
     g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    PrecacheDecal(sBuffer, true);
-
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
 
     g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
     
     g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    PrecacheDecal(sBuffer, true);
-
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
 
     g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
     
     g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    PrecacheDecal(sBuffer, true);
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
+    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
 
     g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
-
-    PrecacheDecal(sBuffer, true);
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
 
 
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
 
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    PrecacheDecal(sBuffer, true);
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
 
 
     g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
 
     g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
 
-    PrecacheDecal(sBuffer, true);
+    if (strlen(sBuffer) > 2)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
 
     g_iCTWin = 0;
     g_iTWin = 0;
@@ -221,16 +260,19 @@ void PrecacheTimeOverlays()
         kv.GetSectionName(sTime, sizeof(sTime));
         kv.GetString(NULL_STRING, sOverlay, sizeof(sOverlay));
 
-        char sFullPath[PLATFORM_MAX_PATH];
-        Format(sFullPath, sizeof(sFullPath), "materials/%s.vmt", sOverlay);
-        AddFileToDownloadsTable(sFullPath);
-        Format(sFullPath, sizeof(sFullPath), "materials/%s.vtf", sOverlay);
-        AddFileToDownloadsTable(sFullPath);
-        PrecacheDecal(sFullPath, true);
+        if (strlen(sOverlay) > 2)
+        {
+            char sFullPath[PLATFORM_MAX_PATH];
+            Format(sFullPath, sizeof(sFullPath), "materials/%s.vmt", sOverlay);
+            AddFileToDownloadsTable(sFullPath);
+            Format(sFullPath, sizeof(sFullPath), "materials/%s.vtf", sOverlay);
+            AddFileToDownloadsTable(sFullPath);
+            PrecacheDecal(sFullPath, true);
 
-        g_smTimeOverlays.SetString(sTime, sOverlay);
+            g_smTimeOverlays.SetString(sTime, sOverlay);
 
-        LogMessage("[Time-Overlays] Time: %s, Overlay: %s", sTime, sOverlay);
+            LogMessage("[Time-Overlays] Time: %s, Overlay: %s", sTime, sOverlay);
+        }
     }
     while (kv.GotoNextKey(false));
 
