@@ -112,7 +112,6 @@ void SetupConfig()
     g_cPrimaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_primary_weapon_update", "0", "What should happen on round start with the primary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
     g_cSecondaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_secondary_weapon_update", "0", "What should happen on round start with the secondary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
     g_cAdvert = AutoExecConfig_CreateConVar("ttt_show_advert_message", "1", "Print a message on player spawn with some ttt details (like \"Trouble in Terrorist Town Version X.X.XXXX\")", _, true, 0.0, true, 1.0);
-    g_cInnocentKnife = AutoExecConfig_CreateConVar("ttt_give_innocent_knife", "1", "Give innocent a knife?", _, true, 0.0, true, 1.0);
     g_cEnableDamageKarma = AutoExecConfig_CreateConVar("ttt_damage_karma_enable", "0", "Add/Del karma on damage?", _, true, 0.0, true, 1.0);
     g_cDamageKarmaII = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_innocent_subtract", "1", "The amount of karma an innocent will lose for damage an innocent.");
     g_cDamageKarmaIT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_traitor_add", "1", "The amount of karma an innocent will recieve for damage a traitor.");
@@ -144,6 +143,9 @@ void SetupConfig()
     g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message", "1", "This prints a version message to all players on every spawn", _, true, 0.0, true, 1.0);
     g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_data", "1", "Send the Server Port to csgottt.com, server will be listed on csgottt.com", _, true, 0.0, true, 1.0);
     g_cDisableRounds = AutoExecConfig_CreateConVar("ttt_disable_rounds", "0", "Disable TTT Rounds? This will require an map change, server restart or plugin that can execute TTT_TerminateRound.", _, true, 0.0, true, 1.0);
+    g_cStartMelee = AutoExecConfig_CreateConVar("ttt_start_melee_weapon", "fists", "Spawn with which melee weapon?");
+    g_cAdditionalMeleeRole = AutoExecConfig_CreateConVar("ttt_additional_melee_role", "14", "Who gets the additional melee weapon? (Useful: https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 0.0, true, 14.0);
+    g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_additional_melee_weapon", "knife", "Which additional weapon?");
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);

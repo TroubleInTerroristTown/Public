@@ -271,7 +271,6 @@ ConVar g_cCheckDuringWarmup = null;
 ConVar g_cPrimaryWeaponUpdate = null;
 ConVar g_cSecondaryWeaponUpdate = null;
 ConVar g_cAdvert = null;
-ConVar g_cInnocentKnife = null;
 ConVar g_cEnableDamageKarma = null;
 ConVar g_cDamageKarmaII = null;
 ConVar g_cDamageKarmaIT = null;
@@ -303,6 +302,9 @@ ConVar g_cShowURL = null;
 ConVar g_cVersionMessage = null;
 ConVar g_cSendServerData = null;
 ConVar g_cDisableRounds = null;
+ConVar g_cStartMelee = null;
+ConVar g_cAdditionalMeleeRole = null;
+ConVar g_cAdditionalMeleeWeapon = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

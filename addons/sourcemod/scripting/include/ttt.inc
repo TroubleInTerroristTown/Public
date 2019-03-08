@@ -13,6 +13,7 @@
 #define ROLE_LENGTH 16
 #define MAX_ITEM_LENGTH 64
 #define TTT_LOG_SIZE 512
+#define CS_SLOT_MELEE CS_SLOT_KNIFE
 
 #include <ttt_stock>
 #include <sdktools>
@@ -726,6 +727,25 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
     }
     
     return false;
+}
+
+stock void TTT_RemoveMeleeWeapons(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
+            {
+                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
+            }
+        }
+    }
 }
 
 stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)

@@ -1301,19 +1301,19 @@ void TeamInitialize(int client, bool skipWeapons = false)
 
             if (iWeapon == -1)
             {
-                GivePlayerItem(client, g_sDefaultPrimary);
+                RequestFrame(Frame_GivePrimary, GetClientUserId(client));
             }
             else
             {
                 if (g_cPrimaryWeaponUpdate.IntValue == 1)
                 {
                     SDKHooks_DropWeapon(client, iWeapon);
-                    GivePlayerItem(client, g_sDefaultPrimary);
+                    RequestFrame(Frame_GivePrimary, GetClientUserId(client));
                 }
                 else if (g_cPrimaryWeaponUpdate.IntValue == 2)
                 {
                     TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
-                    GivePlayerItem(client, g_sDefaultPrimary);
+                    RequestFrame(Frame_GivePrimary, GetClientUserId(client));
                 }
             }
         }
@@ -1327,10 +1327,7 @@ void TeamInitialize(int client, bool skipWeapons = false)
             SetEntityHealth(client, g_cspawnHPD.IntValue);
         }
 
-        if (TTT_HasClientKnife(client) == -1)
-        {
-            GivePlayerItem(client, "weapon_knife");
-        }
+        GiveMelee(client);
 
         if (!skipWeapons)
         {
@@ -1338,19 +1335,19 @@ void TeamInitialize(int client, bool skipWeapons = false)
 
             if (iWeapon == -1)
             {
-                GivePlayerItem(client, g_sDefaultSecondary);
+                RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
             }
             else
             {
                 if (g_cSecondaryWeaponUpdate.IntValue == 1)
                 {
                     SDKHooks_DropWeapon(client, iWeapon);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
                     TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
@@ -1373,10 +1370,8 @@ void TeamInitialize(int client, bool skipWeapons = false)
                 CS_SwitchTeam(client, CS_TEAM_T);
             }
         }
-        if (TTT_HasClientKnife(client) == -1)
-        {
-            GivePlayerItem(client, "weapon_knife");
-        }
+
+        GiveMelee(client);
 
         if (!skipWeapons)
         {
@@ -1384,19 +1379,19 @@ void TeamInitialize(int client, bool skipWeapons = false)
 
             if (iWeapon == -1)
             {
-                GivePlayerItem(client, g_sDefaultSecondary);
+                RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
             }
             else
             {
                 if (g_cSecondaryWeaponUpdate.IntValue == 1)
                 {
                     SDKHooks_DropWeapon(client, iWeapon);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
                     TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
@@ -1420,33 +1415,7 @@ void TeamInitialize(int client, bool skipWeapons = false)
             }
         }
         
-        if (g_cInnocentKnife.BoolValue && TTT_HasClientKnife(client) == -1)
-        {
-            GivePlayerItem(client, "weapon_knife");
-        }
-        else
-        {
-            for(int offset = 0; offset < 128; offset += 4)
-            {
-                int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-        
-                if (IsValidEntity(weapon))
-                {
-                    char sClass[32];
-                    GetEntityClassname(weapon, sClass, sizeof(sClass));
-        
-                    if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
-                    {
-                        if (!TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE))
-                        {
-                            LogError("Can't remove knife! Player: \"%L\"", client);
-                        }
-                        
-                        break;
-                    }
-                }
-            }
-        }
+        GiveMelee(client);
 
         if (!skipWeapons)
         {
@@ -1454,19 +1423,19 @@ void TeamInitialize(int client, bool skipWeapons = false)
 
             if (iWeapon == -1)
             {
-                GivePlayerItem(client, g_sDefaultSecondary);
+                RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
             }
             else
             {
                 if (g_cSecondaryWeaponUpdate.IntValue == 1)
                 {
                     SDKHooks_DropWeapon(client, iWeapon);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
                     TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
-                    GivePlayerItem(client, g_sDefaultSecondary);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
@@ -4624,4 +4593,44 @@ void SetClanTag(int client, int role)
     Format(sRole, sizeof(sRole), "%t", sBuffer);
 
     CS_SetClientClanTag(client, sRole);
+}
+
+void GiveMelee(int client)
+{
+    TTT_RemoveMeleeWeapons(client);
+
+    char sWeapon[32];
+    g_cStartMelee.GetString(sWeapon, sizeof(sWeapon));
+    Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+
+    int iWeapon = GivePlayerItem(client, sWeapon);
+    EquipPlayerWeapon(client, iWeapon);
+
+    if (g_cAdditionalMeleeRole.IntValue & g_iRole[client])
+    {
+        g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
+        Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+        iWeapon = GivePlayerItem(client, sWeapon);
+        EquipPlayerWeapon(client, iWeapon);
+    }
+}
+
+public void Frame_GivePrimary(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
+    {
+        GivePlayerItem(client, g_sDefaultPrimary);
+    }
+}
+
+public void Frame_GiveSecondary(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
+    {
+        GivePlayerItem(client, g_sDefaultSecondary);
+    }
 }
