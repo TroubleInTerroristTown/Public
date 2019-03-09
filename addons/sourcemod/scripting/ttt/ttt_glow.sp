@@ -19,8 +19,6 @@ ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
 ConVar g_cDebug = null;
 
-ConVar g_cForceTransmitPlayers = null;
-
 int g_iPlayerModels[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE,...};
 int g_iPlayerModelsIndex[MAXPLAYERS+1] = {-1,...};
 
@@ -46,9 +44,6 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	g_cForceTransmitPlayers = FindConVar("sv_force_transmit_players");
-	g_cForceTransmitPlayers.SetString("1", true, false);
-	
 	TTT_IsGameCSGO();
 	
 	TTT_StartConfig("glow");
@@ -72,6 +67,9 @@ public void OnPluginEnd()
 public void OnConfigsExecuted()
 {
     g_cDebug = FindConVar("ttt_debug_mode");
+    
+    ConVar cvar = FindConVar("sv_force_transmit_players");
+    cvar.SetBool(true, true, false);
 }
 
 public void TTT_OnClientGetRole(int client, int role)
