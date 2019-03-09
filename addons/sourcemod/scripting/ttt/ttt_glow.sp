@@ -46,7 +46,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	g_cForceTransmitPlayers = FindConVar("g_cForceTransmitPlayers");
+	g_cForceTransmitPlayers = FindConVar("sv_force_transmit_players");
 	
 	TTT_IsGameCSGO();
 	
