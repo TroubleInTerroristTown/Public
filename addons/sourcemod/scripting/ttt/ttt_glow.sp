@@ -110,17 +110,17 @@ public void createGlows() {
 			continue;
 		}
 		
-		int g_iPlayerRole = TTT_GetClientRole(client);
-		if(g_iPlayerRole <= 1) {
+		int iRole = TTT_GetClientRole(client);
+		if(iRole <= 1) {
 			continue;
 		}
 		
-		if (!g_cDGlow.BoolValue && g_iPlayerRole == TTT_TEAM_DETECTIVE)
+		if (!g_cDGlow.BoolValue && iRole == TTT_TEAM_DETECTIVE)
 		{
 		    continue;
 		}
 		
-		if (!g_cTGlow.BoolValue && g_iPlayerRole == TTT_TEAM_TRAITOR)
+		if (!g_cTGlow.BoolValue && iRole == TTT_TEAM_TRAITOR)
 		{
 		    continue;
 		}
@@ -128,9 +128,8 @@ public void createGlows() {
 		GetClientModel(client, model, sizeof(model));
 		skin = CreatePlayerModelProp(client, model);
 		if(skin > MaxClients) {
-			g_iPlayerRole = TTT_GetClientRole(client);
 			if(SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_All)) {
-				setGlowTeam(skin, g_iPlayerRole, client);
+				setGlowTeam(skin, iRole, client);
 			}
 		}
 	}
