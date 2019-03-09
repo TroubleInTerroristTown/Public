@@ -11,7 +11,7 @@
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
-    author = "good_live",
+    author = TTT_PLUGIN_AUTHOR,
     description = TTT_PLUGIN_DESCRIPTION,
     version = TTT_PLUGIN_VERSION,
     url = TTT_PLUGIN_URL
