@@ -102,7 +102,7 @@ public void OnPluginStart()
     g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
     g_cGlowPlayer = AutoExecConfig_CreateConVar("ta_glow_player_after_taser", "1", "Glow player on taser? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
     g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
-    g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all (ta_broadcast_taser_result must be 1 for this)? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
+    g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
@@ -521,7 +521,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
         if (g_cGlowPlayer.BoolValue)
         {
-            if (g_cBroadcastTaserResult.BoolValue && g_cGlowToAll.BoolValue)
+            if (g_cGlowToAll.BoolValue)
             {
                 LoopValidClients(i)
                 {
