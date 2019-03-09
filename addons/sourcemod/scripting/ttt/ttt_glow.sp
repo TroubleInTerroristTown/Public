@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
@@ -72,7 +73,7 @@ public void OnConfigsExecuted()
     g_cDebug = FindConVar("ttt_debug_mode");
 }
 
-public void TTT_OnClientGetRole(client, role)
+public void TTT_OnClientGetRole(int client, int role)
 {
     checkGlows();
 }
@@ -233,7 +234,7 @@ public void setGlowTeam(int skin, int team, int client) {
 }
 
 public void SetupGlow(int skin, int color[4]) {
-	static offset;
+	int offset;
 	// Get sendprop offset for prop_dynamic_override
 	if (!offset && (offset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1) {
 		LogError("Unable to find property offset: \"m_clrGlow\"!");
