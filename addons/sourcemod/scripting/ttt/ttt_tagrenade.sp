@@ -7,7 +7,6 @@
 #include <ttt_shop>
 #include <ttt>
 #include <ttt_glow>
-#include <CustomPlayerSkins>
 #include <multicolors>
 
 #define SHORT_NAME_T "tagrenade_t"
@@ -32,7 +31,6 @@ ConVar g_cCountTraitors = null;
 ConVar g_cCountDetectives = null;
 ConVar g_cRequiredPlayers = null;
 
-bool g_bCPS = false;
 bool g_bGlow = false;
 
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
@@ -87,7 +85,6 @@ public void OnPluginStart()
     HookEvent("round_end", Event_RoundReset);
     HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
 
-    g_bCPS = LibraryExists("CustomPlayerSkins");
     g_bGlow = LibraryExists("ttt_glow");
 }
 
@@ -98,11 +95,6 @@ public void TTT_OnLatestVersion(const char[] version)
 
 public void OnLibraryAdded(const char[] name)
 {
-    if (StrEqual(name, "CustomPlayerSkins"))
-    {
-        g_bCPS = true;
-    }
-    
     if (StrEqual(name, "ttt_glow"))
     {
         g_bGlow = true;
@@ -111,11 +103,6 @@ public void OnLibraryAdded(const char[] name)
 
 public void OnLibraryRemoved(const char[] name)
 {
-    if (StrEqual(name, "CustomPlayerSkins"))
-    {
-        g_bCPS = false;
-    }
-    
     if (StrEqual(name, "ttt_glow"))
     {
         g_bGlow = false;
@@ -146,15 +133,11 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
     
-    if (g_bCPS)
+    if (g_bGlow)
     {
         TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
     }
-    else if (!g_bCPS)
-    {
-        SetFailState("CustomPlayerSkins not loaded!");
-    }
-    else if (!g_bGlow)
+    else
     {
         if (!LibraryExists("ttt_glow"))
         {
