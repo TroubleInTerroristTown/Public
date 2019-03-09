@@ -216,7 +216,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAME_D, false))
         {
@@ -226,7 +225,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAME_I, false))
         {
@@ -236,7 +234,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEF_T, false))
         {
@@ -246,7 +243,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveFollowingMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEF_D, false))
         {
@@ -256,7 +252,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveFollowingMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEF_I, false))
         {
@@ -266,7 +261,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveFollowingMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEC_T, false))
         {
@@ -276,7 +270,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveControlMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEC_D, false))
         {
@@ -286,7 +279,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveControlMissile(client);
-            GiveGrenade(client);
         }
         else if(StrEqual(itemshort, SHORT_NAMEC_I, false))
         {
@@ -296,8 +288,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             }
             
             GiveControlMissile(client);
-            GiveGrenade(client);
         }
+
+        GiveGrenade(client);
     }
     return Plugin_Continue;
 }
@@ -480,7 +473,19 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         {
             float fEnemyPos[3];
             GetClientAbsOrigin(iClosestEnemy, fEnemyPos);
-            fEnemyPos[2] += 50.0;
+
+            bool bDucked = view_as<bool>(GetEntProp(iClosestEnemy, Prop_Send, "m_bDucked"));
+            bool bDucking = view_as<bool>(GetEntProp(iClosestEnemy, Prop_Send, "m_bDucking"));
+
+            if (bDucked || bDucking)
+            {
+                fEnemyPos[2] += 36.0;
+            }
+            else
+            {
+                fEnemyPos[2] += 50.0;
+            }
+            
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
             NormalizeVector(fTargetVec, fTargetVec);
         }
@@ -715,10 +720,10 @@ void GiveGrenade(int client)
         GivePlayerItem(client, "weapon_hegrenade");
     }
     
-    if (iAmmo)
+    /* if (iAmmo)
     {
         SetEntProp(client, Prop_Send, "m_iAmmo", g_iMissile[client] + g_iMissile_F[client], 4, 11);
-    }
+    } */
 }
 
 void ResetClient(int client)

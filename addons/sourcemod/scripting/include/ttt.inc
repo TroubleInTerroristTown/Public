@@ -1080,7 +1080,7 @@ stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
             char sClass[32];
             GetEntityClassname(weapon, sClass, sizeof(sClass));
 
-            if ((StrContains(sClass, sWeapon, false) != -1))
+            if (StrContains(sClass, sWeapon, false) != -1)
             {
                 return weapon;
             }
