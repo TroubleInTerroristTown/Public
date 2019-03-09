@@ -4,11 +4,14 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <ttt>
-#include <CustomPlayerSkins>
 
-int g_iColorInnocent[3] =  {0, 255, 0};
-int g_iColorTraitor[3] =  {255, 0, 0};
-int g_iColorDetective[3] =  {0, 0, 255};
+int g_iColorInnocent[4] =  {0, 255, 0};
+int g_iColorTraitor[4] =  {255, 0, 0};
+int g_iColorDetective[4] =  {0, 0, 255};
+
+#define EF_BONEMERGE                (1 << 0)
+#define EF_NOSHADOW                 (1 << 4)
+#define EF_NORECEIVESHADOW          (1 << 6)
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Glow"
 
@@ -16,7 +19,8 @@ ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
 ConVar g_cDebug = null;
 
-bool g_bCPS = false;
+int g_iPlayerModels[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE,...};
+int g_iPlayerModelsIndex[MAXPLAYERS+1] = {-1,...};
 
 Handle g_hOnGlowCheck = null;
 
@@ -40,17 +44,14 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-    TTT_IsGameCSGO();
-
-    TTT_StartConfig("glow");
-    CreateConVar("ttt2_glow_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDGlow = AutoExecConfig_CreateConVar("glow_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
-    g_cTGlow = AutoExecConfig_CreateConVar("glow_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
-    TTT_EndConfig();
-
-    g_bCPS = LibraryExists("CustomPlayerSkins");
-
-    HookEvent("player_death", Event_PlayerDeath, EventHookMode_Pre);
+	TTT_IsGameCSGO();
+	
+	TTT_StartConfig("glow");
+	CreateConVar("ttt2_glow_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+	g_cDGlow = AutoExecConfig_CreateConVar("glow_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
+	g_cTGlow = AutoExecConfig_CreateConVar("glow_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
+	TTT_EndConfig();
+	
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -60,196 +61,76 @@ public void TTT_OnLatestVersion(const char[] version)
 
 public void OnPluginEnd()
 {
-    LoopValidClients(i)
-    {
-        UnHookSkin(i);
-        CPS_RemoveSkin(i);
-    }
-}
-
-public void OnLibraryAdded(const char[] name)
-{
-    if (StrEqual(name, "CustomPlayerSkins"))
-    {
-        g_bCPS = true;
-    }
-}
-
-public void OnLibraryRemoved(const char[] name)
-{
-    if (StrEqual(name, "CustomPlayerSkins"))
-    {
-        g_bCPS = false;
-    }
+    destoryGlows();
 }
 
 public void OnConfigsExecuted()
 {
     g_cDebug = FindConVar("ttt_debug_mode");
     
-    if (!g_bCPS)
-    {
-        SetFailState("CustomPlayerSkins not loaded!");
-    }
-    else
-    {
-        CreateTimer(0.3, Timer_SetupGlow, _, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-    }
+    ConVar cvar = FindConVar("sv_force_transmit_players");
+    cvar.SetBool(true, true, false);
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public void TTT_OnClientGetRole(int client, int role)
 {
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        int iSkin = CPS_GetSkin(client);
-
-        if (IsValidEntity(iSkin))
-        {
-            SetEntProp(iSkin, Prop_Send, "m_bShouldGlow", false, true);
-
-            int iOffset = -1;
-
-            if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
-            {
-                return;
-            }
-
-            SetEntData(iSkin, iOffset, 0, _, true);
-            SetEntData(iSkin, iOffset + 1, 0, _, true);
-            SetEntData(iSkin, iOffset + 2, 0, _, true);
-            SetEntData(iSkin, iOffset + 3, 0, _, true);
-        }
-    }
+    checkGlows();
 }
 
-public Action Timer_SetupGlow(Handle timer, any data)
+public Action TTT_OnPlayerDeath(int victim, int attacker)
 {
-    if(!TTT_IsRoundActive())
-    {
-        return Plugin_Continue;
-    }
-
-    LoopValidClients(i)
-    {
-        SetupGlowSkin(i);
-    }
-
-    return Plugin_Continue;
+    checkGlows();
 }
 
-void SetupGlowSkin(int client)
-{
-    UnHookSkin(client);
-    CPS_RemoveSkin(client);
-
-    if (!TTT_IsRoundActive())
-    {
-        return;
-    }
-
-    if (!g_cDebug.BoolValue && (IsFakeClient(client) || IsClientSourceTV(client)))
-    {
-        return;
-    }
-
-    if (!IsPlayerAlive(client))
-    {
-        return;
-    }
-    
-    int role = TTT_GetClientRole(client);
-    
-    if (role != TTT_TEAM_DETECTIVE && role != TTT_TEAM_INNOCENT && role != TTT_TEAM_TRAITOR)
-    {
-        return;
-    }
-    
-    if (!g_cDGlow.BoolValue && role == TTT_TEAM_DETECTIVE)
-    {
-        return;
-    }
-
-    if (!g_cTGlow.BoolValue && role == TTT_TEAM_TRAITOR)
-    {
-        return;
-    }
-
-    char model[PLATFORM_MAX_PATH];
-    GetClientModel(client, model, sizeof(model));
-    int skin = CPS_SetSkin(client, model, CPS_RENDER);
-
-    if(skin == -1)
-    {
-        return;
-    }
-    
-    if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin))
-    {
-        SetupGlow(client, skin);
-    }
+public void checkGlows() {
+	destoryGlows();
+	createGlows();
 }
 
-void UnHookSkin(int client)
-{
-    if(CPS_HasSkin(client))
-    {
-        int skin = EntRefToEntIndex(CPS_GetSkin(client));
-
-        if(IsValidEntity(skin))
-        {
-            SDKUnhook(skin, SDKHook_SetTransmit, OnSetTransmit_GlowSkin);
-        }
-    }
+public void destoryGlows() {
+	for(int client = 1; client <= MaxClients; client++) {
+		if(IsClientInGame(client)) {
+			RemoveSkin(client);
+		}
+	}
 }
 
-void SetupGlow(int client, int skin)
-{
-    int iOffset;
-
-    if ((iOffset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1)
-    {
-        return;
-    }
-
-    SetEntProp(skin, Prop_Send, "m_bShouldGlow", true, true);
-    SetEntProp(skin, Prop_Send, "m_nGlowStyle", 0);
-    SetEntPropFloat(skin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
-
-    int iRed = 255;
-    int iGreen = 255;
-    int iBlue = 255;
-    
-    if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-    {
-        iRed = g_iColorDetective[0];
-        iGreen = g_iColorDetective[1];
-        iBlue = g_iColorDetective[2];
-    }
-    else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-    {
-        iRed = g_iColorTraitor[0];
-        iGreen = g_iColorTraitor[1];
-        iBlue = g_iColorTraitor[2];
-    }
-    else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-    {
-        iRed = g_iColorInnocent[0];
-        iGreen = g_iColorInnocent[1];
-        iBlue = g_iColorInnocent[2];
-    }
-
-    SetEntData(skin, iOffset, iRed, _, true);
-    SetEntData(skin, iOffset + 1, iGreen, _, true);
-    SetEntData(skin, iOffset + 2, iBlue, _, true);
-    SetEntData(skin, iOffset + 3, 255, _, true);
+public void createGlows() {
+	char model[PLATFORM_MAX_PATH];
+	int skin = -1;
+	for(int client = 1; client <= MaxClients; client++) {
+		if(!IsClientInGame(client) || !IsPlayerAlive(client)) {
+			continue;
+		}
+		
+		int iRole = TTT_GetClientRole(client);
+		if(iRole <= 1) {
+			continue;
+		}
+		
+		if (!g_cDGlow.BoolValue && iRole == TTT_TEAM_DETECTIVE)
+		{
+		    continue;
+		}
+		
+		if (!g_cTGlow.BoolValue && iRole == TTT_TEAM_TRAITOR)
+		{
+		    continue;
+		}
+		
+		GetClientModel(client, model, sizeof(model));
+		skin = CreatePlayerModelProp(client, model);
+		if(skin > MaxClients) {
+			if(SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_All)) {
+				setGlowTeam(skin, iRole, client);
+			}
+		}
+	}
 }
 
-public Action OnSetTransmit_GlowSkin(int skin, int client)
-{
+public Action OnSetTransmit_All(int skin, int client) {
     int iRole = TTT_GetClientRole(client);
-    
+
     int target = -1;
     
     LoopValidClients(i)
@@ -274,12 +155,7 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
             continue;
         }
 
-        if (!CPS_HasSkin(i))
-        {
-            continue;
-        }
-
-        if (EntRefToEntIndex(CPS_GetSkin(i)) != skin)
+        if (g_iPlayerModelsIndex[i] != skin)
         {
             continue;
         }
@@ -324,31 +200,76 @@ public Action OnSetTransmit_GlowSkin(int skin, int client)
     Call_PushCellRef(style);
     Call_Finish();
     
-    if (seeTarget && override)
-    {
-        int iSkin = EntRefToEntIndex(CPS_GetSkin(target));
-
-        if(IsValidEntity(iSkin))
-        {
-            int iOffset;
-    
-            if ((iOffset = GetEntSendPropOffs(iSkin, "m_clrGlow")) == -1)
-            {
-                return Plugin_Handled;
-            }
-            
-            SetEntData(iSkin, iOffset, red, _, true);
-            SetEntData(iSkin, iOffset + 1, green, _, true);
-            SetEntData(iSkin, iOffset + 2, blue, _, true);
-            SetEntData(iSkin, iOffset + 3, alpha, _, true);
-            SetEntProp(iSkin, Prop_Send, "m_nGlowStyle", style);
-        }
-    }
-    
     if (seeTarget)
     {
         return Plugin_Continue;
     }
     
     return Plugin_Handled;
+}
+
+public void setGlowTeam(int skin, int team, int client) {
+	if(team >= 2) {
+	    if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+	    {
+	        SetupGlow(skin, g_iColorDetective);
+	    }
+	    else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+	    {
+	        SetupGlow(skin, g_iColorTraitor);
+	    }
+	    else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+	    {
+	        SetupGlow(skin, g_iColorInnocent);
+	    }
+	}
+}
+
+public void SetupGlow(int skin, int color[4]) {
+	int offset;
+	// Get sendprop offset for prop_dynamic_override
+	if (!offset && (offset = GetEntSendPropOffs(skin, "m_clrGlow")) == -1) {
+		LogError("Unable to find property offset: \"m_clrGlow\"!");
+		return;
+	}
+
+	// Enable glow for custom skin
+	SetEntProp(skin, Prop_Send, "m_bShouldGlow", true, true);
+	SetEntProp(skin, Prop_Send, "m_nGlowStyle", 0);
+	SetEntPropFloat(skin, Prop_Send, "m_flGlowMaxDist", 10000000.0);
+
+	// So now setup given glow colors for the skin
+	for(int i=0;i<3;i++) {
+		SetEntData(skin, offset + i, color[i], _, true); 
+	}
+}
+
+public int CreatePlayerModelProp(int client, char[] sModel) {
+	RemoveSkin(client);
+	int skin = CreateEntityByName("prop_dynamic_override");
+	DispatchKeyValue(skin, "model", sModel);
+	DispatchKeyValue(skin, "disablereceiveshadows", "1");
+	DispatchKeyValue(skin, "disableshadows", "1");
+	DispatchKeyValue(skin, "solid", "0");
+	DispatchKeyValue(skin, "spawnflags", "256");
+	SetEntProp(skin, Prop_Send, "m_CollisionGroup", 0);
+	DispatchSpawn(skin);
+	SetEntityRenderMode(skin, RENDER_TRANSALPHA);
+	SetEntityRenderColor(skin, 0, 0, 0, 0);
+	SetEntProp(skin, Prop_Send, "m_fEffects", EF_BONEMERGE|EF_NOSHADOW|EF_NORECEIVESHADOW);
+	SetVariantString("!activator");
+	AcceptEntityInput(skin, "SetParent", client, skin);
+	SetVariantString("primary");
+	AcceptEntityInput(skin, "SetParentAttachment", skin, skin, 0);
+	g_iPlayerModels[client] = EntIndexToEntRef(skin);
+	g_iPlayerModelsIndex[client] = skin;
+	return skin;
+}
+
+public void RemoveSkin(int client) {
+	if(IsValidEntity(g_iPlayerModels[client])) {
+		AcceptEntityInput(g_iPlayerModels[client], "Kill");
+	}
+	g_iPlayerModels[client] = INVALID_ENT_REFERENCE;
+	g_iPlayerModelsIndex[client] = -1;
 }
