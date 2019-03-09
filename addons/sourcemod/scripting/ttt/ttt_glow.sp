@@ -47,6 +47,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 public void OnPluginStart()
 {
 	g_cForceTransmitPlayers = FindConVar("sv_force_transmit_players");
+	g_cForceTransmitPlayers.SetString("1", true, false);
 	
 	TTT_IsGameCSGO();
 	
@@ -84,13 +85,7 @@ public Action TTT_OnPlayerDeath(int victim, int attacker)
 }
 
 public void checkGlows() {
-	for(int client = 1; client <= MaxClients; client++) {
-		if(!IsClientInGame(client)) {
-			continue;
-		}
-	}
 	destoryGlows();
-	g_cForceTransmitPlayers.SetString("1", true, false);
 	createGlows();
 }
 
