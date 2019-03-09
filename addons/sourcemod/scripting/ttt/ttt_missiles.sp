@@ -51,6 +51,8 @@ ConVar g_cAmountT_F = null;
 ConVar g_cAmountD_F = null;
 ConVar g_cAmountI_F = null;
 ConVar g_cName_F = null;
+ConVar g_cStandOffset_F = null;
+ConVar g_cDuckOffset_F = null;
 int g_iPAmount_F[MAXPLAYERS + 1] =  { 0, ... };
 int g_iMissile_F[MAXPLAYERS + 1] =  { 0, ... };
 
@@ -136,6 +138,8 @@ public void OnPluginStart()
     g_cAmountD_F = AutoExecConfig_CreateConVar("missiles_following_amount_d", "0", "How much following missiles can a detective buy?");
     g_cAmountI_F = AutoExecConfig_CreateConVar("missiles_following_amount_i", "0", "How much following missiles can a innocent buy?");
     g_cName_F = AutoExecConfig_CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
+    g_cStandOffset_F = AutoExecConfig_CreateConVar("missiles_following_stand_position_offset", "50", "Units from the ground where the missile hits the player while he's standing. (Default: 50)");
+    g_cDuckOffset_F = AutoExecConfig_CreateConVar("missiles_following_duck_position_offset", "35", "Units from the ground where the missile hits the player while he's ducked. (Default: 35)");
 
     g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
     g_cPriceD_C = AutoExecConfig_CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
@@ -479,13 +483,13 @@ public void MissileThink(const char[] output, int caller, int activator, float d
 
             if (bDucked || bDucking)
             {
-                fEnemyPos[2] += 36.0;
+                fEnemyPos[2] += g_cDuckOffset_F.FloatValue;
             }
             else
             {
-                fEnemyPos[2] += 50.0;
+                fEnemyPos[2] += g_cStandOffset_F.FloatValue;
             }
-            
+
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
             NormalizeVector(fTargetVec, fTargetVec);
         }
