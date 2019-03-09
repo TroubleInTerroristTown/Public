@@ -548,7 +548,12 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         }
         else
         {
-            damage = g_cTDamage.IntValue + 0.0;
+            if (g_cTDamage.IntValue == 0)
+            {
+                return Plugin_Handled;
+            }
+
+            damage = g_cTDamage.FloatValue;
             return Plugin_Changed;
         }
     }
