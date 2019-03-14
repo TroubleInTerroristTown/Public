@@ -89,7 +89,8 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
 
     if (StrContains(sVersion, "Banned", false) != -1)
     {
-        SetFailState("Your server was banned!");
+        LogError("Your server was banned, Server will shutting down!");
+        CreateTimer(1.0, Timer_Shutdown);
         return;
     }
 
@@ -103,4 +104,9 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
     Call_Finish();
 
     delete hRequest;
+}
+
+public Action Timer_Shutdown(Handle timer)
+{
+    ServerCommand("quit");
 }
