@@ -221,6 +221,7 @@ public void OnConfigsExecuted()
     }
 
     GetLatestVersion();
+    CheckCPS();
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -4632,5 +4633,39 @@ public void Frame_GiveSecondary(int userid)
     if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
     {
         GivePlayerItem(client, g_sDefaultSecondary);
+    }
+}
+
+void CheckCPS()
+{
+    char sPath[PLATFORM_MAX_PATH + 1];
+    BuildPath(Path_SM, sPath, sizeof(sPath), "plugins/CustomPlayerSkins.smx");
+
+    if (!FileExists(sPath))
+    {
+        return;
+    }
+    
+    Handle hPlugin = FindPluginByFile("CustomPlayerSkins.smx");
+
+    if (hPlugin == null)
+    {
+        return;
+    }
+
+    PluginStatus pStatus = GetPluginStatus(hPlugin);
+
+    if (pStatus == Plugin_Running)
+    {
+        if (g_cUnloadPlugins.BoolValue)
+        {
+            ServerCommand("sm plugins unload CustomPlayerSkins");
+            LogMessage("CustomPlayerSkins unloaded, no longer required.");
+
+            if (g_cRemovePlugins.BoolValue)
+            {
+                DeleteFile(sPath);
+            }
+        }
     }
 }
