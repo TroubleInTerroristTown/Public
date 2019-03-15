@@ -221,7 +221,11 @@ public void OnConfigsExecuted()
     }
 
     GetLatestVersion();
-    CheckCPS();
+
+    if (g_cUnloadPlugins.BoolValue)
+    {
+        CheckCPS();
+    }
 }
 
 public void TTT_OnSQLConnect(Database db)
@@ -4657,15 +4661,12 @@ void CheckCPS()
 
     if (pStatus == Plugin_Running)
     {
-        if (g_cUnloadPlugins.BoolValue)
-        {
-            ServerCommand("sm plugins unload CustomPlayerSkins");
-            LogMessage("CustomPlayerSkins unloaded, no longer required.");
+        ServerCommand("sm plugins unload CustomPlayerSkins");
+        LogMessage("CustomPlayerSkins unloaded, no longer required.");
 
-            if (g_cRemovePlugins.BoolValue)
-            {
-                DeleteFile(sPath);
-            }
+        if (g_cRemovePlugins.BoolValue)
+        {
+            DeleteFile(sPath);
         }
     }
 }
