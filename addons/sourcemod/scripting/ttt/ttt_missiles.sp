@@ -294,7 +294,10 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort)
             GiveControlMissile(client);
         }
 
-        GiveGrenade(client);
+        if(strncmp(itemshort,"missile_",8,false) == 0)
+        {
+            GiveGrenade(client);
+        }
     }
     return Plugin_Continue;
 }
