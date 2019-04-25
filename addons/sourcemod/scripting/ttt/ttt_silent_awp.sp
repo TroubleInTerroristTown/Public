@@ -57,7 +57,7 @@ public void OnPluginStart()
     g_cMinShotsT = AutoExecConfig_CreateConVar("silent_awp_min_t", "1", "Minimum shots for the AWP for Traitors");
     g_cMaxShotsT = AutoExecConfig_CreateConVar("silent_awp_max_t", "2", "Maximum shots for the AWP for Traitors");
     g_cPriorityT = AutoExecConfig_CreateConVar("silent_awp_priority_t", "0", "Priority in shop list for Traitors");
-    g_cPriceT = AutoExecConfig_CreateConVar("silent_awp_price_t", "10000", "Price for the silenced AWP for Traitors");
+    g_cPriceT = AutoExecConfig_CreateConVar("silent_awp_price_t", "5000", "Price for the silenced AWP for Traitors");
     g_cAmountD = AutoExecConfig_CreateConVar("silent_awp_amount_d", "0", "How many AWPs can detectives buy?");
     g_cMinShotsD = AutoExecConfig_CreateConVar("silent_awp_min_d", "1", "Minimum shots for the AWP for Detectives");
     g_cMaxShotsD = AutoExecConfig_CreateConVar("silent_awp_max_d", "2", "Maximum shots for the AWP for Detectives");

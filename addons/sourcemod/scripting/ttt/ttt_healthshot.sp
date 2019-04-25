@@ -47,9 +47,9 @@ public void OnPluginStart()
     TTT_StartConfig("healthshot");
     CreateConVar("ttt2_healthshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("hs_name", "Healthshot", "The name of the Healtshot in the Shop");
-    g_cTPrice = AutoExecConfig_CreateConVar("hs_traitor_price", "9000", "The amount of credits for healthshot costs as traitor. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("hs_detective_price", "9000", "The amount of credits for healthshot costs as detective. 0 to disable.");
-    g_cIPrice = AutoExecConfig_CreateConVar("hs_innocent_price", "9000", "The amount of credits for healthshot costs as innocent. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("hs_traitor_price", "4000", "The amount of credits for healthshot costs as traitor. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("hs_detective_price", "4000", "The amount of credits for healthshot costs as detective. 0 to disable.");
+    g_cIPrice = AutoExecConfig_CreateConVar("hs_innocent_price", "2000", "The amount of credits for healthshot costs as innocent. 0 to disable.");
     g_cTCount = AutoExecConfig_CreateConVar("hs_traitor_count", "1", "The amount of usages for healthshots per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("hs_detective_count", "1", "The amount of usages for healthshots per round as detective. 0 to disable.");
     g_cICount = AutoExecConfig_CreateConVar("hs_innocent_count", "1", "The amount of usages for healthshots per round as innocent. 0 to disable.");

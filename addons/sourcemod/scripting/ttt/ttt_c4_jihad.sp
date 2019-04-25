@@ -80,15 +80,15 @@ public void OnPluginStart()
 
     TTT_StartConfig("c4_jihad");
     g_cLongName_C4 = AutoExecConfig_CreateConVar("c4_name", "C4", "The name of the C4 in the Shop");
-    g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "9000", "The amount of credits a c4 costs as traitor. 0 to disable.");
+    g_cPrice_C4 = AutoExecConfig_CreateConVar("c4_price", "6000", "The amount of credits a c4 costs as traitor. 0 to disable.");
     g_cPrio_C4 = AutoExecConfig_CreateConVar("c4_sort_prio", "0", "The sorting priority of the C4 in the shop menu.");
     g_cCount_C4 = AutoExecConfig_CreateConVar("c4_count", "3", "The amount of c4's a traitor can buy.");
     g_cC4ShakeRadius = AutoExecConfig_CreateConVar("c4_shake_radius", "5000", "The 'shake' radius of the C4 explosion.");
     g_cC4DamageRadius = AutoExecConfig_CreateConVar("c4_damage_radius", "850", "The damage radius of the C4 explosion.");
     g_cLongName_J = AutoExecConfig_CreateConVar("jihad_name", "Jihad Bomb", "The name of the Jihad in the Shop");
-    g_cPrice_J = AutoExecConfig_CreateConVar("jihad_price", "9000", "The amount of credits a jihad costs as traitor. 0 to disable.");
+    g_cPrice_J = AutoExecConfig_CreateConVar("jihad_price", "6000", "The amount of credits a jihad costs as traitor. 0 to disable.");
     g_cPrio_J = AutoExecConfig_CreateConVar("jihad_sort_prio", "0", "The sorting priority of the Jihad in the shop menu.");
-    g_cJihadPreparingTime = AutoExecConfig_CreateConVar("jihad_preparing_time", "60.0", "The amount of time in seconds until the jihad bomb is ready after buying it. 0.0 - immediately");
+    g_cJihadPreparingTime = AutoExecConfig_CreateConVar("jihad_preparing_time", "15.0", "The amount of time in seconds until the jihad bomb is ready after buying it. 0.0 - immediately");
     g_cRemoveBomb = AutoExecConfig_CreateConVar("remove_bomb_on_spawn", "1", "Remove the bomb from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
     g_cJihadDamageRadius = AutoExecConfig_CreateConVar("jihad_damage_radius", "600", "The damage radius of the Jihad explosion.");
     g_cSlayPlayer = AutoExecConfig_CreateConVar("jihad_slay_player", "1", "Slay player on own jihad explosion?", _, true, 0.0, true, 1.0);

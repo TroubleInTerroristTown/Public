@@ -46,7 +46,7 @@ public void OnPluginStart()
     TTT_StartConfig("drop");
     CreateConVar("ttt2_drop_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("drop_name", "Drop", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("drop_price", "9000", "The amount of credits a Drop costs as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("drop_price", "0", "The amount of credits a Drop costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("drop_sort_prio", "0", "The sorting priority of the Drop in the shop menu.");
     g_cCount = AutoExecConfig_CreateConVar("drop_max_usage", "1", "Usages per round", _, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("drop_distance", "500", "Distance between client and target");

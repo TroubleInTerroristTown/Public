@@ -35,7 +35,7 @@ public void OnPluginStart()
     TTT_StartConfig("tactical_shield");
     CreateConVar("ttt2_tactical_shield_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("tactical_shield_name", "Tactical Shield", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("tactical_shield_price", "9000", "The amount of credits a tactical shield costs as detective. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("tactical_shield_price", "0", "The amount of credits a tactical shield costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("tactical_shield_sort_prio", "0", "The sorting priority of the tactical shield in the shop menu.");
     g_cForce = AutoExecConfig_CreateConVar("tactical_shield_force", "0", "Force shield?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();

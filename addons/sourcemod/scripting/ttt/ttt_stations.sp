@@ -58,7 +58,7 @@ public void OnPluginStart()
 
     TTT_StartConfig("stations");
     CreateConVar("ttt2_stations_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cHealthPrice = AutoExecConfig_CreateConVar("health_station_price", "3000", "The price of the Health Station in the shop for detectives. 0 to disable.");
+    g_cHealthPrice = AutoExecConfig_CreateConVar("health_station_price", "0", "The price of the Health Station in the shop for detectives. 0 to disable.");
     g_cHurtPrice = AutoExecConfig_CreateConVar("hurt_station_price", "0", "The price of the Hurt Station in the shop for traitors. 0 to disable. Recommended is double health price.");
     g_cHealthPrio = AutoExecConfig_CreateConVar("health_sort_prio", "0", "The sorting priority of the Health Station in the shop menu.");
     g_cHurtPrio = AutoExecConfig_CreateConVar("hurt_sort_prio", "0", "The sorting priority of the Hurt Station in the shop menu.");

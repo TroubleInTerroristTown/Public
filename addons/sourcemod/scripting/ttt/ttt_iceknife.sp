@@ -67,10 +67,10 @@ public void OnPluginStart()
     TTT_StartConfig("ice_knife");
     CreateConVar("ttt2_ice_knife_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("iceknife_name", "Ice Knife", "The name of the Ice Knife in the Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("iceknife_price", "9000", "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("iceknife_price", "2000", "The amount of credits a Ice Knife costs as traitor. 0 to disable.");
     g_cCount = AutoExecConfig_CreateConVar("iceknife_count", "1", "The amount of usages for Ice Knifes per round as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("iceknife_sort_prio", "0", "The sorting priority of the Ice Knife in the shop menu.");
-    g_cDamage = AutoExecConfig_CreateConVar("iceknife_damage", "0", "Amount of damage with a ice knife. 0 to disable.");
+    g_cDamage = AutoExecConfig_CreateConVar("iceknife_damage", "15", "Amount of damage with a ice knife. 0 to disable.");
     g_cFreezeTraitors = AutoExecConfig_CreateConVar("iceknife_freeze_traitors", "0", "Allow to freeze other traitors?", _, true, 0.0, true, 1.0);
     g_cFreezeTime = AutoExecConfig_CreateConVar("iceknife_freeze_time", "5.0", "Length of the freeze time. 0.0 - Disabled");
     g_cMute = AutoExecConfig_CreateConVar("iceknife_mute", "1", "Mute client during freeze time?", _, true, 0.0, true, 1.0);

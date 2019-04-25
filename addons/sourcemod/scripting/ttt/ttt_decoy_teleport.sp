@@ -48,13 +48,13 @@ public void OnPluginStart()
     TTT_StartConfig("decoy_teleporter");
     CreateConVar("ttt2_decoy_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("dt_name", "Decoy Teleporter", "The name of the Decoy Teleporter in the Shop");
-    g_cTPrice = AutoExecConfig_CreateConVar("dt_traitor_price", "9000", "The amount of credits for decoy teleporter costs as traitor. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("dt_detective_price", "9000", "The amount of credits for decoy teleporter costs as detective. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("dt_traitor_price", "2000", "The amount of credits for decoy teleporter costs as traitor. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("dt_detective_price", "0", "The amount of credits for decoy teleporter costs as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("dt_traitor_sort_prio", "0", "The sorting priority of the decoy teleporter (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("dt_detective_sort_prio", "0", "The sorting priority of the decoy teleporter (Detective) in the shop menu.");
-    g_cTCount = AutoExecConfig_CreateConVar("dt_traitor_count", "1", "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
-    g_cDCount = AutoExecConfig_CreateConVar("dt_detective_count", "1", "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
-    g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Credits back, 2 = New decoy");
+    g_cTCount = AutoExecConfig_CreateConVar("dt_traitor_count", "2", "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
+    g_cDCount = AutoExecConfig_CreateConVar("dt_detective_count", "0", "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
+    g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "1", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Credits back, 2 = New decoy");
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);

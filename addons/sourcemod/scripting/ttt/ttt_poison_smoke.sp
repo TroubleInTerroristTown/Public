@@ -44,7 +44,7 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("posion_smoke_price", "9000", "The amount of credits poison smoke costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("posion_smoke_sort_prio", "0", "The sorting priority of the poison smoke in the shop menu.");
     g_cOwnDamage = AutoExecConfig_CreateConVar("poison_smoke_own_damange", "0", "Allow damage to the owner of poison smoke?", _, true, 0.0, true, 1.0);
-    g_cTraitorDamage = AutoExecConfig_CreateConVar("poison_smoke_traitor_damange", "1", "Allow damage to other traitors?", _, true, 0.0, true, 1.0);
+    g_cTraitorDamage = AutoExecConfig_CreateConVar("poison_smoke_traitor_damange", "0", "Allow damage to other traitors?", _, true, 0.0, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("poison_smoke_distance", "145", "Distance from the middle which should do damage");
     g_cDamageInterval = AutoExecConfig_CreateConVar("poison_smoke_damage_interval", "1.0", "Damage interval in seconds", _, true, 1.0);
     g_cDamage = AutoExecConfig_CreateConVar("poison_smoke_damage_per_interval", "10", "Damage per interval by poison smoke");

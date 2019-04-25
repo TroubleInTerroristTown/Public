@@ -43,8 +43,8 @@ public void OnPluginStart()
     TTT_StartConfig("fakebody");
     CreateConVar("ttt2_fakebody_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("fb_name", "Fakebody", "The name of the Fakebody in the Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("fb_price", "9000", "The amount of credits a fake body costs as traitor. 0 to disable.");
-    g_cCount = AutoExecConfig_CreateConVar("fb_count", "1", "The amount of usages for fake bodys per round as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("fb_price", "0", "The amount of credits a fake body costs as traitor. 0 to disable.");
+    g_cCount = AutoExecConfig_CreateConVar("fb_count", "0", "The amount of usages for fake bodys per round as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("fb_sort_prio", "0", "The sorting priority of the fake body in the shop menu.");
     g_cAllowProofByTraitors = AutoExecConfig_CreateConVar("fb_allow_proof_by_all", "1", "Allow fake body scan for traitors players?");
     g_cShowFakeMessage = AutoExecConfig_CreateConVar("fb_show_fake_message", "0", "Show the fake message (XXX has found a fake body)?");

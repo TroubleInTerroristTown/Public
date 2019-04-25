@@ -36,7 +36,7 @@ public void OnPluginStart()
     TTT_StartConfig("turret");
     CreateConVar("ttt2_turret_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("turret_name", "Turret", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("turret_price", "9000", "The amount of credits turret costs as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("turret_price", "0", "The amount of credits turret costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("turret_sort_prio", "0", "The sorting priority of the turret in the shop menu.");
     g_cKillTurretCount = AutoExecConfig_CreateConVar("turret_kill_cash_amount", "800", "Kill turret credits ?");
     HookEvent("player_spawn", Event_PlayerSpawn);

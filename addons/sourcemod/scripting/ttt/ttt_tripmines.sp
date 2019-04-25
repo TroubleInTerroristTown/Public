@@ -39,9 +39,9 @@ public void OnPluginStart()
     TTT_StartConfig("tripmines");
     CreateConVar("ttt2_tripmines_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("tripmines_name", "Tripmines", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("tripmines_price", "9000", "The amount of credits a tripmines costs as detective. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("tripmines_price", "0", "The amount of credits a tripmines costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("tripmines_sort_prio", "0", "The sorting priority of the tripmines in the shop menu.");
-    g_cAmount = AutoExecConfig_CreateConVar("tripmines_mines", "1", "How mines get the player?", _, true, 1.0);
+    g_cAmount = AutoExecConfig_CreateConVar("tripmines_mines", "0", "How mines get the player?", _, true, 1.0);
     TTT_EndConfig();
 }
 

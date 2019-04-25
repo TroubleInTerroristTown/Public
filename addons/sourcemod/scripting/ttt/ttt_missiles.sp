@@ -117,37 +117,37 @@ public void OnPluginStart()
     g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
     g_cVolume = AutoExecConfig_CreateConVar("missile_volume", "1.0", "Sound volume of the missile", _, true, 0.1, true, 1.0);
 
-    g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
+    g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "0", "Price for the missile for Traitors", _, true, 0.0);
     g_cPriceD = AutoExecConfig_CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
     g_cPriceI = AutoExecConfig_CreateConVar("missiles_price_i", "0", "Price for the missile for Innos", _, true, 0.0);
     g_cPriorityT = AutoExecConfig_CreateConVar("missiles_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD = AutoExecConfig_CreateConVar("missiles_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
     g_cPriorityI = AutoExecConfig_CreateConVar("missiles_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT = AutoExecConfig_CreateConVar("missiles_amount_t", "2", "How much missiles can a traitor buy?");
+    g_cAmountT = AutoExecConfig_CreateConVar("missiles_amount_t", "0", "How much missiles can a traitor buy?");
     g_cAmountD = AutoExecConfig_CreateConVar("missiles_amount_d", "0", "How much missiles can a detective buy?");
     g_cAmountI = AutoExecConfig_CreateConVar("missiles_amount_i", "0", "How much missiles can a innocent buy?");
     g_cName = AutoExecConfig_CreateConVar("missiles_name", "Missile", "The name of the missile in the shop");
     
-    g_cPriceT_F = AutoExecConfig_CreateConVar("missiles_following_price_t", "10000", "Price for the following missile for Traitors", _, true, 0.0);
+    g_cPriceT_F = AutoExecConfig_CreateConVar("missiles_following_price_t", "0", "Price for the following missile for Traitors", _, true, 0.0);
     g_cPriceD_F = AutoExecConfig_CreateConVar("missiles_following_price_d", "0", "Price for the following missile for Detectives", _, true, 0.0);
     g_cPriceI_F = AutoExecConfig_CreateConVar("missiles_following_price_i", "0", "Price for the following missile for Innos", _, true, 0.0);
     g_cPriorityT_F = AutoExecConfig_CreateConVar("missiles_following_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD_F = AutoExecConfig_CreateConVar("missiles_following_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
     g_cPriorityI_F = AutoExecConfig_CreateConVar("missiles_following_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_F = AutoExecConfig_CreateConVar("missiles_following_amount_t", "2", "How much following missiles can a traitor buy?");
+    g_cAmountT_F = AutoExecConfig_CreateConVar("missiles_following_amount_t", "0", "How much following missiles can a traitor buy?");
     g_cAmountD_F = AutoExecConfig_CreateConVar("missiles_following_amount_d", "0", "How much following missiles can a detective buy?");
     g_cAmountI_F = AutoExecConfig_CreateConVar("missiles_following_amount_i", "0", "How much following missiles can a innocent buy?");
     g_cName_F = AutoExecConfig_CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
     g_cStandOffset_F = AutoExecConfig_CreateConVar("missiles_following_stand_position_offset", "50", "Units from the ground where the missile hits the player while he's standing. (Default: 50)");
     g_cDuckOffset_F = AutoExecConfig_CreateConVar("missiles_following_duck_position_offset", "35", "Units from the ground where the missile hits the player while he's ducked. (Default: 35)");
 
-    g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
+    g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "0", "Price for the control missile for Traitors", _, true, 0.0);
     g_cPriceD_C = AutoExecConfig_CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
     g_cPriceI_C = AutoExecConfig_CreateConVar("missiles_control_price_i", "0", "Price for the control missile for Innos", _, true, 0.0);
     g_cPriorityT_C = AutoExecConfig_CreateConVar("missiles_control_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD_C = AutoExecConfig_CreateConVar("missiles_control_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
     g_cPriorityI_C = AutoExecConfig_CreateConVar("missiles_control_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_C = AutoExecConfig_CreateConVar("missiles_control_amount_t", "2", "How much control missiles can a traitor buy?");
+    g_cAmountT_C = AutoExecConfig_CreateConVar("missiles_control_amount_t", "0", "How much control missiles can a traitor buy?");
     g_cAmountD_C = AutoExecConfig_CreateConVar("missiles_control_amount_d", "0", "How much control missiles can a detective buy?");
     g_cAmountI_C = AutoExecConfig_CreateConVar("missiles_control_amount_i", "0", "How much control missiles can a innocent buy?");
     g_cName_C = AutoExecConfig_CreateConVar("missiles_control_name", "Controlling Missile", "The name of the control missile in the shop");

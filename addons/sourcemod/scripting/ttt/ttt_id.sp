@@ -43,8 +43,8 @@ public void OnPluginStart()
 
     TTT_StartConfig("id");
     CreateConVar("ttt2_id_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "1000", "The amount of credits for fake ID costs as traitor. 0 to disable.");
-    g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "1000", "The amount of credits for ID costs as innocent. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "0", "The amount of credits for fake ID costs as traitor. 0 to disable.");
+    g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "4000", "The amount of credits for ID costs as innocent. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("id_traitor_sort_prio", "0", "The sorting priority of the fake ID in the shop menu.");
     g_cIPrio = AutoExecConfig_CreateConVar("id_innocent_sort_prio", "0", "The sorting priority of the ID in the shop menu.");
     g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "0.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");

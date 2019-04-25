@@ -37,10 +37,10 @@ public void OnPluginStart()
     TTT_StartConfig("dronesandcameras");
     CreateConVar("ttt2_drones_and_cameras_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cCLongName = AutoExecConfig_CreateConVar("cad_camera_name", "Camera", "The name of this in Shop");
-    g_cCPrice = AutoExecConfig_CreateConVar("cad_camera_price", "9000", "The amount of credits a camera costs as detective. 0 to disable.");
+    g_cCPrice = AutoExecConfig_CreateConVar("cad_camera_price", "0", "The amount of credits a camera costs as detective. 0 to disable.");
     g_cCPrio = AutoExecConfig_CreateConVar("cad_camera_sort_prio", "0", "The sorting priority of the camera in the shop menu.");
     g_cDLongName = AutoExecConfig_CreateConVar("cad_drone_name", "Drone", "The name of this in Shop");
-    g_cDPrice = AutoExecConfig_CreateConVar("cad_drone_price", "9000", "The amount of credits a drone costs as detective. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("cad_drone_price", "0", "The amount of credits a drone costs as detective. 0 to disable.");
     g_cDPrio = AutoExecConfig_CreateConVar("cad_drone_sort_prio", "0", "The sorting priority of the drone in the shop menu.");
     TTT_EndConfig();
 

@@ -82,8 +82,8 @@ public void OnPluginStart()
 
     TTT_StartConfig("taser");
     CreateConVar("ttt2_taser_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDPrice = AutoExecConfig_CreateConVar("ta_detective_price", "9000", "The amount of credits a taser costs as detective. 0 to disable.");
-    g_cIPrice = AutoExecConfig_CreateConVar("ta_innocent_price", "9000", "The amount of credits a taser costs as innocent. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("ta_detective_price", "2000", "The amount of credits a taser costs as detective. 0 to disable.");
+    g_cIPrice = AutoExecConfig_CreateConVar("ta_innocent_price", "3000", "The amount of credits a taser costs as innocent. 0 to disable.");
     g_cTPrice = AutoExecConfig_CreateConVar("ta_traitor_price", "0", "The amount of credits a taser costs as traitor. 0 to disable.");
     g_cDPrio = AutoExecConfig_CreateConVar("ta_detective_sort_prio", "0", "The sorting priority of the taser (Detective) in the shop menu.");
     g_cIPrio = AutoExecConfig_CreateConVar("ta_innocent_sort_prio", "0", "The sorting priority of the taser (Innocent) in the shop menu.");
@@ -97,12 +97,12 @@ public void OnPluginStart()
     g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
     g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
     g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
-    g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
-    g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
+    g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "1500", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
+    g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "0.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
     g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
     g_cGlowPlayer = AutoExecConfig_CreateConVar("ta_glow_player_after_taser", "1", "Glow player on taser? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
-    g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
-    g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
+    g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "3", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
+    g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "0", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");

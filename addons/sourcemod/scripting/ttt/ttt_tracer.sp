@@ -47,7 +47,7 @@ public void OnPluginStart()
     
     TTT_StartConfig("tracer");
     CreateConVar("ttt2_tracer_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cLongName = AutoExecConfig_CreateConVar("tracer_name", "Tracer", "The name of this in Shop");
+    g_cLongName = AutoExecConfig_CreateConVar("tracer_name", "Compass", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("tracer_price", "9000", "The amount of credits tracer costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the tracer in the shop menu.");
     g_cCompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");

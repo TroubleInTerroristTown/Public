@@ -48,9 +48,9 @@ public void OnPluginStart() {
     TTT_StartConfig("martydom");
     CreateConVar("ttt2_martydom_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("martydom_name", "Martydom", "The name of this item in the shop.");
-    g_cIPrice = AutoExecConfig_CreateConVar("md_i_price", "2000", "The amount of credits martydom costs as innocent. 0 to disable.");    
+    g_cIPrice = AutoExecConfig_CreateConVar("md_i_price", "0", "The amount of credits martydom costs as innocent. 0 to disable.");    
     g_cTPrice = AutoExecConfig_CreateConVar("md_t_price", "2000", "The amount of credits martydom costs as traitor. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("md_d_price", "2000", "The amount of credits martydom costs as detective. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("md_d_price", "0", "The amount of credits martydom costs as detective. 0 to disable.");
     g_cIPrio = AutoExecConfig_CreateConVar("md_i_sort_prio", "0", "The sorting priority of the martydom in the shop menu for innocents.");
     g_cTPrio = AutoExecConfig_CreateConVar("md_t_sort_prio", "0", "The sorting priority of the martydom in the shop menu for traitors.");
     g_cDPrio = AutoExecConfig_CreateConVar("md_d_sort_prio", "0", "The sorting priority of the martydom in the shop menu for detectives.");

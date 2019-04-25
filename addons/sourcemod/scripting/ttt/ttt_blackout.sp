@@ -43,7 +43,7 @@ public void OnPluginStart()
     TTT_StartConfig("blackout");
     CreateConVar("ttt2_blackout_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("blackout_name", "Blackout", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("blackout_price", "9000", "The amount of credits blackout costs as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("blackout_price", "0", "The amount of credits blackout costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("blackout_sort_prio", "0", "The sorting priority of the blackout in the shop menu.");
     g_cStart = AutoExecConfig_CreateConVar("blackout_fog_start", "0", "0 Should be the middle of player(?))");
     g_cEnd = AutoExecConfig_CreateConVar("blackout_fog_end", "150", "Distance from fog_start until the end (visible field for players)");

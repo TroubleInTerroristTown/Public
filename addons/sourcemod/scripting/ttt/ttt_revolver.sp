@@ -39,7 +39,7 @@ public void OnPluginStart()
 
     TTT_StartConfig("revolver");
     CreateConVar("ttt2_revolver_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cPrice = AutoExecConfig_CreateConVar("revolver_detective_price", "6000", "The price of the revolver");
+    g_cPrice = AutoExecConfig_CreateConVar("revolver_detective_price", "0", "The price of the revolver");
     g_cName = AutoExecConfig_CreateConVar("revolver_detective_name", "Revolver","The name of the revolver");
     g_cShots = AutoExecConfig_CreateConVar("revolver_detective_shots", "1", "The amount of shots that the revolver should have");
     g_cPrio = AutoExecConfig_CreateConVar("revolver_detective_prio", "100", "The priority off the revolver");

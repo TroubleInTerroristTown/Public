@@ -43,7 +43,7 @@ public void OnPluginStart()
     TTT_StartConfig("hurtshot");
     CreateConVar("hurtshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cName = AutoExecConfig_CreateConVar("hurtshot_name", "Hurtshot", "The name of the Hurtshot in the Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("hurtshot_traitor_price", "5000", "The amount of credits for hurtshots costs as traitor. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("hurtshot_traitor_price", "3000", "The amount of credits for hurtshots costs as traitor. 0 to disable.");
     g_cCount = AutoExecConfig_CreateConVar("hurtshot_traitor_count", "1", "The amount of usages for hurtshots per round as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("hurtshot_traitor_sort_prio", "0", "The sorting priority of the hurtshots (Traitor) in the shop menu.");
     g_cDamage = AutoExecConfig_CreateConVar("hurtshot_traitor_damage", "50", "The damage of the hurtshot");

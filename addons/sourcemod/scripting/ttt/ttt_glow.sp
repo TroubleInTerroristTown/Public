@@ -48,7 +48,7 @@ public void OnPluginStart()
     
     TTT_StartConfig("glow");
     CreateConVar("ttt2_glow_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDGlow = AutoExecConfig_CreateConVar("glow_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
+    g_cDGlow = AutoExecConfig_CreateConVar("glow_detective_enable", "0", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
     g_cTGlow = AutoExecConfig_CreateConVar("glow_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
     

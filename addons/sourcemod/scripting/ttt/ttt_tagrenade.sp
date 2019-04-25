@@ -63,10 +63,10 @@ public void OnPluginStart()
     TTT_StartConfig("tagrenade");
     CreateConVar("ttt2_tagrenade_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("tagrenade_name", "TA-Grenade", "The name of the TA-Grenade in the Shop");
-    g_cTPrice = AutoExecConfig_CreateConVar("tagrenade_traitor_price", "9000", "The amount of credits for tagrenade costs as traitor. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("tagrenade_detective_price", "9000", "The amount of credits for tagrenade costs as detective. 0 to disable.");
-    g_cTCount = AutoExecConfig_CreateConVar("tagrenade_traitor_count", "1", "The amount of usages for tagrenade per round as traitor. 0 to disable.");
-    g_cDCount = AutoExecConfig_CreateConVar("tagrenade_detective_count", "1", "The amount of usages for tagrenade per round as detective. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("tagrenade_traitor_price", "0", "The amount of credits for tagrenade costs as traitor. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("tagrenade_detective_price", "0", "The amount of credits for tagrenade costs as detective. 0 to disable.");
+    g_cTCount = AutoExecConfig_CreateConVar("tagrenade_traitor_count", "0", "The amount of usages for tagrenade per round as traitor. 0 to disable.");
+    g_cDCount = AutoExecConfig_CreateConVar("tagrenade_detective_count", "0", "The amount of usages for tagrenade per round as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("tagrenade_traitor_sort_prio", "0", "The sorting priority of the tagrenade (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("tagrenade_detective_sort_prio", "0", "The sorting priority of the tagrenade (Detective) in the shop menu.");
     g_cTagrenadeRange = AutoExecConfig_CreateConVar("tagrenade_distance", "1000.0", "Sets the proximity in which the tactical grenade will tag an opponent.");

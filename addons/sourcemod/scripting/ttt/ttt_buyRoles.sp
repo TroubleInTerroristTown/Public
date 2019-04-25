@@ -47,10 +47,10 @@ public void OnPluginStart()
     g_cTiLongName = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_name", "Buy Traitor Role Instantly", "The name of the buy traitor role in the Shop");
     g_cDLongName = AutoExecConfig_CreateConVar("buyroles_detective_name", "Buy Detective Role", "The name of the buy detective role in the Shop");
     g_cDiLongName = AutoExecConfig_CreateConVar("buyroles_detective_instantly_name", "Buy Detective Role Instantly", "The name of the buy detective role in the Shop");
-    g_cTPrice = AutoExecConfig_CreateConVar("buyroles_traitor_price", "9000", "The amount of credits that cost to buy the traitor role. 0 to disable.");
-    g_cTiPrice = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_price", "40000", "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("buyroles_detective_price", "9000", "The amount of credits that cost to buy the detective role. 0 to disable.");
-    g_cDiPrice = AutoExecConfig_CreateConVar("buyroles_detective_instantly_price", "10000", "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("buyroles_traitor_price", "0", "The amount of credits that cost to buy the traitor role. 0 to disable.");
+    g_cTiPrice = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_price", "0", "The amount of credits that cost to buy the traitor instantly role. 0 to disable.");
+    g_cDPrice = AutoExecConfig_CreateConVar("buyroles_detective_price", "0", "The amount of credits that cost to buy the detective role. 0 to disable.");
+    g_cDiPrice = AutoExecConfig_CreateConVar("buyroles_detective_instantly_price", "0", "The amount of credits that cost to buy the detective instantly role. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("buyroles_traitor_prio", "0", "The sorting priority of the buy traitor role in the shop menu.");
     g_cTiPrio = AutoExecConfig_CreateConVar("buyroles_traitor_instantly_prio", "0", "The sorting priority of the buy traitor instantly role in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("buyroles_detective_prio", "0", "The sorting priority of the buy detective role in the shop menu.");

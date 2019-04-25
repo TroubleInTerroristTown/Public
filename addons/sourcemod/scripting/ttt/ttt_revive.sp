@@ -66,7 +66,7 @@ public void OnPluginStart()
     TTT_StartConfig("revive");
     CreateConVar("ttt2_revive_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("revive_name", "Revive", "The name of the Revive in the Shop");
-    g_cTPrice = AutoExecConfig_CreateConVar("revive_traitor_price", "9000", "The amount of credits for Revive costs as traitor. 0 to disable.");
+    g_cTPrice = AutoExecConfig_CreateConVar("revive_traitor_price", "0", "The amount of credits for Revive costs as traitor. 0 to disable.");
     g_cDPrice = AutoExecConfig_CreateConVar("revive_detective_price", "0", "The amount of credits for Revive costs as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("revive_traitor_sort_prio", "0", "The sorting priority of the Revive (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("revive_detective_sort_prio", "0", "The sorting priority of the Revive (Detective) in the shop menu.");

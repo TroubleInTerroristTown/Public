@@ -48,14 +48,14 @@ public void OnPluginStart()
     TTT_StartConfig("sprint");
     CreateConVar("ttt2_sprint_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("sprint_name", "Sprint", "The name of this in Shop");
-    g_cPriceD = AutoExecConfig_CreateConVar("sprint_price_detective", "9000", "The amount of credits sprint costs as detective. 0 to disable.");
-    g_cPriceT = AutoExecConfig_CreateConVar("sprint_price_traitor", "9000", "The amount of credits sprint costs as traitor. 0 to disable.");
+    g_cPriceD = AutoExecConfig_CreateConVar("sprint_price_detective", "2000", "The amount of credits sprint costs as detective. 0 to disable.");
+    g_cPriceT = AutoExecConfig_CreateConVar("sprint_price_traitor", "3000", "The amount of credits sprint costs as traitor. 0 to disable.");
     g_cPrioD = AutoExecConfig_CreateConVar("sprint_sort_prio_detective", "0", "The sorting priority of the sprint in the shop menu for detectives.");
     g_cPrioT = AutoExecConfig_CreateConVar("sprint_sort_prio_traitor", "0", "The sorting priority of the sprint in the shop menu for traitors.");
     g_cNormal = AutoExecConfig_CreateConVar("sprint_normal_speed", "1.0", "Float value of default speed");
     g_cSpeed = AutoExecConfig_CreateConVar("sprint_speed", "1.33", "Float value of sprint speed (X.33 = 33%)");
     g_cTime = AutoExecConfig_CreateConVar("sprint_speed_time", "3.0", "Time in seconds with speed");
-    g_cCooldown = AutoExecConfig_CreateConVar("sprint_cooldown_time", "7.0", "Time in seconds until next speed boost");
+    g_cCooldown = AutoExecConfig_CreateConVar("sprint_cooldown_time", "5.0", "Time in seconds until next speed boost");
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);

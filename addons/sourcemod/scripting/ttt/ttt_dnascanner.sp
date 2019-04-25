@@ -43,12 +43,12 @@ public void OnPluginStart()
     TTT_StartConfig("dnascanner");
     CreateConVar("ttt2_dna_scanner_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("dna_name", "Dnascanner", "The name of the Dnascanner in the Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("dna_price", "5000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
     g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
-    g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
-    g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "1", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
-    g_cFreeCount = AutoExecConfig_CreateConVar("dna_free_scanner_count", "3", "Limited the free dna scanner to X usages? (0 - disabled/unlimited)", _, true, 0.0);
+    g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "1", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
+    g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "0", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
+    g_cFreeCount = AutoExecConfig_CreateConVar("dna_free_scanner_count", "0", "Limited the free dna scanner to X usages? (0 - disabled/unlimited)", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);

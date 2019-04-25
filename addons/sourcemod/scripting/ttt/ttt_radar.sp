@@ -57,7 +57,7 @@ public void OnPluginStart()
     CreateConVar("ttt2_radar_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("radar_name", "Radar", "The name of this in Shop");
     
-    g_cPrice = AutoExecConfig_CreateConVar("radar_price", "9000", "The amount of credits Radar costs as detective. 0 to disable.");
+    g_cPrice = AutoExecConfig_CreateConVar("radar_price", "0", "The amount of credits Radar costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("radar_sort_prio", "0", "The sorting priority of the Radar in the detective shop menu.");
     g_cInterval = AutoExecConfig_CreateConVar("radar_update_interval", "30", "Time in seconds to update player locations for detective radar");
     g_cRed = AutoExecConfig_CreateConVar("radar_player_color_red", "255", "Red colors for detective radar", _, true, 0.0, true, 255.0);
