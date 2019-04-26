@@ -112,3 +112,15 @@ native int TTT_AddClientCredits(int client, int credits);
  * @return                    True item found/valid, false item not found
  */
 native bool TTT_GiveClientItem(int client, const char[] item);
+
+/*
+ * Called after registers a custom item in the menu/shop.
+ *
+ * @param itemshort         The short-tag identifier of the item (must be unique).
+ * @param itemlong          The long fancy name for the item.
+ * @param price             The price of the item.
+ * @param role              The optional role to restrict the item to. (Default: 0 - for all)
+ * @param sort                The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ */
+forward void TTT_OnRegisterCustomItemPost(const char[] itemshort, const char[] itemlong, const int price, const int role, const int sort);
+
