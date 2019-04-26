@@ -75,6 +75,8 @@ Handle g_hOnShopReady = null;
 
 Handle g_hReopenCookie = null;
 
+Handle g_OnRegisterCustomItemPost = null;
+
 Handle g_hCreditsTimer[MAXPLAYERS + 1] =  { null, ... };
 
 int g_iCredits[MAXPLAYERS + 1] =  { 0, ... };
@@ -105,8 +107,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven_Pre = CreateGlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
-    
+    g_OnRegisterCustomItemPost = CreateGlobalForward("TTT_OnRegisterCustomItemPost", ET_Ignore, Param_String, Param_String,Param_Cell,Param_Cell,Param_Cell); //TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
     CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
+    
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
     CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
     CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
@@ -795,6 +798,7 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
         }
     }
 
+
     Format(temp_item[Short], sizeof(temp_short), "%s", temp_short);
     Format(temp_item[Long], sizeof(temp_long), "%s", temp_long);
     temp_item[Price] = temp_price;
@@ -802,11 +806,19 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
     temp_item[Sort] = temp_sort;
     g_aCustomItems.PushArray(temp_item[0]);
 
-
+    Call_StartForward(g_OnRegisterCustomItemPost);
+    Call_PushString(temp_short);
+    Call_PushString(temp_long);
+    Call_PushCell(temp_price);
+    Call_PushCell(temp_role);
+    Call_PushCell(temp_sort);
+    Call_Finish();
+    
     if (g_cSortItems.IntValue)
     {
         SortADTArrayCustom(g_aCustomItems, Sorting);
     }
+
 
     return true;
 }
