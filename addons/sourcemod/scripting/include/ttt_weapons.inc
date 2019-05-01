@@ -33,3 +33,4 @@
 #define AXE_ITEM_SHORT "axe"
 #define SPANNER_ITEM_SHORT "spanner"
 #define BREACHCHARGE_ITEM_SHORT "breach"
+#define BUMPMINE_ITEM_SHORT "bumpmine"
