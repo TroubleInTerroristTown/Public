@@ -199,6 +199,11 @@ public void TTT_OnRegisterCustomItemPost(const char[] itemshort, const char[] it
 	if(CheckItemInArray(itemshort))
 		return;
 
+	if (StrEqual(itemshort, SHORT_NAMEt, false) || StrEqual(itemshort, SHORT_NAMEd, false) || StrEqual(itemshort, SHORT_NAMEi, false))	
+	{
+		return;
+	}
+	
 	int ItemInfo[sItemInfo];
 	Format(ItemInfo[szitemshort], 32, itemshort);
 	Format(ItemInfo[szitemlong], 64, itemlong);
