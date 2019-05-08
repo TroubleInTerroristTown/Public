@@ -1,4 +1,5 @@
 #pragma semicolon 1
+#pragma newdecls required
 
 #include <sourcemod>
 #include <sdkhooks>
@@ -50,7 +51,7 @@ methodmap Cookie < Handle
 			LogError("[SM] Tried to get a cookie with an invalid cookie handle!");
 	}
 
-}
+};
 
 ArrayList g_TTTitemsList = null;
 
