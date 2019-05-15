@@ -146,6 +146,14 @@ public Action TTT_OnItemPurchase(int client, int &price, bool &count, const char
 {
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {
+        char sFlag[16];
+        g_smFlag.GetString(sItem, sFlag, sizeof(sFlag));
+        
+        if (strlen(sFlag) > 0 && !HasFlags(client, sFlag))
+        {
+            return Plugin_Continue;
+        }
+        
         int iPercent = 0;
         if (g_smPercent.GetValue(sItem, iPercent))
         {
