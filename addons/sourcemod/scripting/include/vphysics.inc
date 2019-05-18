@@ -1,7 +1,7 @@
-#if defined _sdktools_phys_included
+#if defined _vphysics_included
   #endinput
 #endif
-#define _sdktools_phys_included
+#define _vphysics_included
 
 native bool Phys_IsPhysicsObject(int iEntity);
 
@@ -115,3 +115,52 @@ public Extension __ext_vphysics =
 		required = 0,
 	#endif
 }
+
+#if !defined REQUIRE_EXTENSIONS
+public void __ext_vphysics_SetNTVOptional()
+{
+	MarkNativeAsOptional("Phys_IsPhysicsObject");
+	MarkNativeAsOptional("Phys_IsStatic");
+	MarkNativeAsOptional("Phys_IsAsleep");
+	MarkNativeAsOptional("Phys_IsHinged");
+	MarkNativeAsOptional("Phys_IsCollisionEnabled");
+	MarkNativeAsOptional("Phys_IsGravityEnabled");
+	MarkNativeAsOptional("Phys_IsDragEnabled");
+	MarkNativeAsOptional("Phys_IsMotionEnabled");
+	MarkNativeAsOptional("Phys_EnableCollisions");
+	MarkNativeAsOptional("Phys_EnableGravity");
+	MarkNativeAsOptional("Phys_EnableDrag");
+	MarkNativeAsOptional("Phys_EnableMotion");
+	MarkNativeAsOptional("Phys_Wake");
+	MarkNativeAsOptional("Phys_Sleep");
+	MarkNativeAsOptional("Phys_SetMass");
+	MarkNativeAsOptional("Phys_GetMass");
+	MarkNativeAsOptional("Phys_SetMaterialIndex");
+	MarkNativeAsOptional("Phys_GetMaterialIndex");
+	MarkNativeAsOptional("Phys_BecomeHinged");
+	MarkNativeAsOptional("Phys_RemoveHinged");
+	MarkNativeAsOptional("Phys_LocalToWorld");
+	MarkNativeAsOptional("Phys_WorldToLocal");
+	MarkNativeAsOptional("Phys_CalculateForceOffset");
+	MarkNativeAsOptional("Phys_CalculateVelocityOffset");
+	MarkNativeAsOptional("Phys_ApplyForceCenter");
+	MarkNativeAsOptional("Phys_ApplyTorqueCenter");
+	MarkNativeAsOptional("Phys_AddVelocity");
+	MarkNativeAsOptional("Phys_SetVelocity");
+	MarkNativeAsOptional("Phys_GetEnvironmentGravity");
+	MarkNativeAsOptional("Phys_SetEnvironmentGravity");
+	MarkNativeAsOptional("Phys_GetEnvironmentAirDensity");
+	MarkNativeAsOptional("Phys_SetEnvironmentAirDensity");
+	MarkNativeAsOptional("Phys_CreateConstraintGroup");
+	MarkNativeAsOptional("Phys_CreateSpring");
+	MarkNativeAsOptional("Phys_CreateFixedConstraint");
+	MarkNativeAsOptional("Phys_CreateLengthConstraint");
+	MarkNativeAsOptional("Phys_CreateHingeConstraint");
+	MarkNativeAsOptional("Phys_CreateFrictionSnapshot");
+	MarkNativeAsOptional("Phys_IsFrictionSnapshotValid");
+	MarkNativeAsOptional("Phys_NextFrictionData");
+	MarkNativeAsOptional("Phys_GetTouchingEntity");
+	MarkNativeAsOptional("Phys_GetContactPoint");
+	MarkNativeAsOptional("Phys_GetIndexOfMaterial");
+}
+#endif
