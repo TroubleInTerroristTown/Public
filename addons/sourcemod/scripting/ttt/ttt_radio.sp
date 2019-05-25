@@ -303,6 +303,8 @@ void ShowRadioMenu(int client)
         Format(sTranslations, sizeof(sTranslations), "%T", sTranslations, client);
         menu.AddItem(sKey, sTranslations);
     }
+
+    delete smSnapshot;
     
     menu.ExitButton = true;
     menu.Display(client, MENU_TIME_FOREVER);
