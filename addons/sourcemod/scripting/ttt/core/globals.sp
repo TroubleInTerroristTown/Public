@@ -307,6 +307,7 @@ ConVar g_cAdditionalMeleeRole = null;
 ConVar g_cAdditionalMeleeWeapon = null;
 ConVar g_cUnloadPlugins = null;
 ConVar g_cRemovePlugins = null;
+ConVar g_cFixThirdperson = null;
 
 Handle g_hRules = null;
 bool g_bRules[MAXPLAYERS + 1] =  { false, ... };

@@ -1619,6 +1619,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             g_iArmor[client] = 0;
         }
 
+        if (g_cFixThirdperson.BoolValue)
+        {
+            ClientCommand(client, "firstperson");
+        }
+
         g_bRespawn[client] = false;
     }
 }

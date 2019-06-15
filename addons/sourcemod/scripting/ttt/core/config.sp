@@ -148,6 +148,7 @@ void SetupConfig()
     g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_additional_melee_weapon", "knife", "Which additional weapon?");
     g_cUnloadPlugins = AutoExecConfig_CreateConVar("ttt_unload_plugins", "1", "Unload old/obsolete plugins?", _, true, 0.0, true, 1.0);
     g_cRemovePlugins = AutoExecConfig_CreateConVar("ttt_remove_plugins", "1", "Remove old/obsolete plugins (ttt_remove_plugins must be 1)?", _, true, 0.0, true, 1.0);
+    g_cFixThirdperson = AutoExecConfig_CreateConVar("ttt_fix_thirdperson_view", "1", "Reset thirdperson view back to firstperson, if players comes from other servers with thirdperson view (Zombie, Prop Hunt, ...)", _, true, 0.0, true, 1.0);
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);
