@@ -95,8 +95,21 @@ rm build/addons/sourcemod/*.txt
 echo -e "Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package"
 cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/
 
+echo -e "Download steamworks"
+wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
+tar xfv steamworks_linux.tar.gz
+wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
+unzip -o steamworks_windows.zip
+
+echo -e "Move SteamWorks.ext.so into package"
+mkdir -p builds/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/SteamWorks.ext.so builds/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/SteamWorks.ext.dll builds/addons/sourcemod/extensions/
+
 echo -e "Clean root folder"
 rm sourcemod.tar.gz
+rm steamworks_linux.tar.gz
+rm steamworks_windows.zip
 
 echo -e "Go to build folder"
 cd build
