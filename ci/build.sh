@@ -101,10 +101,10 @@ tar xfv steamworks_linux.tar.gz
 wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
 unzip -o steamworks_windows.zip
 
-echo -e "Move SteamWorks.ext.so into package"
-mkdir -p builds/addons/sourcemod/extensions/
-cp addons/sourcemod/extensions/SteamWorks.ext.so builds/addons/sourcemod/extensions/
-cp addons/sourcemod/extensions/SteamWorks.ext.dll builds/addons/sourcemod/extensions/
+echo -e "Move SteamWorks files into build package"
+mkdir -p build/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
 
 echo -e "Clean root folder"
 rm sourcemod.tar.gz
