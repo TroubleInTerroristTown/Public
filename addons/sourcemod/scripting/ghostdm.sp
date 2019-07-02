@@ -327,6 +327,11 @@ public Action Timer_Respawn(Handle timer, int userid)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon)
 {
+    if (!g_cEnable.BoolValue)
+    {
+        return Plugin_Continue;
+    }
+    
     if(g_bRedie[client])
     {
         if (buttons & IN_ATTACK)

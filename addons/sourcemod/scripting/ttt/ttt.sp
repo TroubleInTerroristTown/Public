@@ -3860,14 +3860,14 @@ void manageRDM(int client)
     Format(sForgive, sizeof(sForgive), "%T", "Forgive", client);
     Format(sPunish, sizeof(sPunish), "%T", "Punish", client);
 
-    Menu menu = new Menu(manageRDMHandle);
+    Menu menu = new Menu(Menu_RDM);
     menu.SetTitle(display);
     menu.AddItem("Forgive", sForgive);
     menu.AddItem("Punish", sPunish);
     menu.Display(client, 10);
 }
 
-public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
+public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 {
     if (!TTT_IsClientValid(client))
     {
@@ -3888,13 +3888,22 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
             CPrintToChat(iAttacker, "%s %T", g_sTag, "Choose Forgive Attacker", iAttacker, client);
+
+            TTT_SetRoundSlays(iAttacker, 0, true);
+
             g_iRDMAttacker[client] = -1;
         }
         if (StrEqual(info, "Punish", false))
         {
             LoopValidClients(i)
+            {
                 CPrintToChat(i, "%s %T", g_sTag, "Choose Punish", i, client, iAttacker);
+            }
+
             TTT_AddRoundSlays(iAttacker, g_cRoundSlayPlayerRDM.IntValue, true);
+
+            TTT_SetRoundSlays(iAttacker, 0, true);
+
             g_iRDMAttacker[client] = -1;
         }
     }
@@ -3902,14 +3911,20 @@ public int manageRDMHandle(Menu menu, MenuAction action, int client, int option)
     {
         CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
         CPrintToChat(iAttacker, "%s %T", g_sTag, "Choose Forgive Attacker", iAttacker, client);
+
         g_iRDMAttacker[client] = -1;
+
+        TTT_SetRoundSlays(iAttacker, 0, true);
     }
     else if (action == MenuAction_End)
     {
         delete menu;
         CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
         CPrintToChat(iAttacker, "%s %T", g_sTag, "Choose Forgive Attacker", iAttacker, client);
+
         g_iRDMAttacker[client] = -1;
+        
+        TTT_SetRoundSlays(iAttacker, 0, true);
         
         delete menu;
     }
