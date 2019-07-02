@@ -54,7 +54,7 @@ void RegisterItem()
     TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue);
 }
 
-public void OnClientPuInServer(int client)
+public void OnClientPutInServer(int client)
 {
     ResetExojump(client);
 }

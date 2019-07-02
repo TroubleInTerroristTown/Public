@@ -146,6 +146,7 @@ public void OnConfigsExecuted()
     g_cAdditionalMeleeRole = FindConVar("ttt_additional_melee_role");
     g_cAdditionalMeleeWeapon = FindConVar("ttt_additional_melee_weapon");
 }
+
 public void TTT_OnShopReady()
 {
     RegisterItem();
