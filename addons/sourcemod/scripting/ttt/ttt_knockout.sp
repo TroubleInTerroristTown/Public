@@ -23,6 +23,10 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 
+ConVar g_cStartMelee = null;
+ConVar g_cAdditionalMeleeRole = null;
+ConVar g_cAdditionalMeleeWeapon = null;
+
 int g_iFreeze = -1;
 
 int g_iRagdoll[MAXPLAYERS + 1] =  { -1, ... };
@@ -136,6 +140,12 @@ public void OnMapStart()
     PrecacheModel(MODEL_BLACKOUT, true);
 }
 
+public void OnConfigsExecuted()
+{
+    g_cStartMelee = FindConVar("ttt_start_melee_weapon");
+    g_cAdditionalMeleeRole = FindConVar("ttt_additional_melee_role");
+    g_cAdditionalMeleeWeapon = FindConVar("ttt_additional_melee_weapon");
+}
 public void TTT_OnShopReady()
 {
     RegisterItem();
@@ -378,16 +388,7 @@ public Action Timer_Delete(Handle timer, any userid)
             SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
             SetEntityRenderMode(client, g_rmRenderMode[client]);
             
-            ConVar g_cInnocentKnife = FindConVar("ttt_give_innocent_knife");
-            
-            if (g_cInnocentKnife.BoolValue && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-            {
-                GivePlayerItem(client, "weapon_knife");
-            }
-            else if (TTT_GetClientRole(client) != TTT_TEAM_INNOCENT)
-            {
-                GivePlayerItem(client, "weapon_knife");
-            }
+            GiveMelee(client);
         }
     }
 }
@@ -476,4 +477,29 @@ void PerformBlind(int client, int amount)
     }
 
     EndMessage();
+}
+
+void GiveMelee(int client)
+{
+    TTT_RemoveMeleeWeapons(client);
+
+    if (g_cStartMelee == null || g_cAdditionalMeleeRole == null || g_cAdditionalMeleeWeapon == null)
+    {
+        return;
+    }
+
+    char sWeapon[32];
+    g_cStartMelee.GetString(sWeapon, sizeof(sWeapon));
+    Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+
+    int iWeapon = GivePlayerItem(client, sWeapon);
+    EquipPlayerWeapon(client, iWeapon);
+
+    if (g_cAdditionalMeleeRole.IntValue & TTT_GetClientRole(client))
+    {
+        g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
+        Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+        iWeapon = GivePlayerItem(client, sWeapon);
+        EquipPlayerWeapon(client, iWeapon);
+    }
 }

@@ -226,9 +226,17 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
             
-            int ent = GivePlayerItem(client, "weapon_healthshot");
-            g_aListHS.Push(EntIndexToEntRef(ent));
-            CS_DropWeapon(client, ent, false, false);
+            int iEntity = GivePlayerItem(client, "weapon_healthshot");
+            SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
+
+            int iRef = EntIndexToEntRef(iEntity);
+
+            g_aListHS.Push(iRef);
+
+            DataPack pack = new DataPack();
+            pack.WriteCell(GetClientUserId(client));
+            pack.WriteCell(iRef);
+            RequestFrame(Frame_DropEntity, pack);
 
             if (count)
             {
@@ -237,6 +245,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         }
     }
     return Plugin_Continue;
+}
+
+public void Frame_DropEntity(DataPack pack)
+{
+    pack.Reset();
+    int client = GetClientOfUserId(pack.ReadCell());
+    int iEntity = EntRefToEntIndex(pack.ReadCell());
+
+    if (TTT_IsClientValid(client) && IsValidEntity(iEntity))
+    {
+        CS_DropWeapon(client, iEntity, false, false);
+    }
 }
 
 void ResetHurtshot(int client)
