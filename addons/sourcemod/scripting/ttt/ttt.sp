@@ -3902,8 +3902,6 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 
             TTT_AddRoundSlays(iAttacker, g_cRoundSlayPlayerRDM.IntValue, true);
 
-            TTT_SetRoundSlays(iAttacker, 0, true);
-
             g_iRDMAttacker[client] = -1;
         }
     }
