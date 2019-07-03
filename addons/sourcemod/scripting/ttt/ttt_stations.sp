@@ -317,7 +317,7 @@ void checkDistanceFromStation(int client)
         {
             if (!hurt)
             {
-                CPrintToChat(client, g_sPluginTag, "Health Station Out Of Charges", client);
+                CPrintToChat(client, "%s %T", g_sPluginTag, "Health Station Out Of Charges", client);
                 g_bOnHealingCoolDown[client] = true;
                 g_hRemoveCoolDownTimer[client] = CreateTimer(1.0, Timer_RemoveCooldown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
             }
