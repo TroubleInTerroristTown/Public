@@ -252,6 +252,7 @@ public void Frame_DropEntity(DataPack pack)
     pack.Reset();
     int client = GetClientOfUserId(pack.ReadCell());
     int iEntity = EntRefToEntIndex(pack.ReadCell());
+    delete pack;
 
     if (TTT_IsClientValid(client) && IsValidEntity(iEntity))
     {

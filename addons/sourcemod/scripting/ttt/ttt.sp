@@ -2828,6 +2828,8 @@ public void Frame_RechangeName(DataPack pack)
 
     char sName[MAX_NAME_LENGTH];
     pack.ReadString(sName, sizeof(sName));
+    
+    delete pack;
 
     int client = GetClientOfUserId(userid);
 
@@ -3458,9 +3460,9 @@ public int TTT_OnButtonPress(int client, int button)
                             
                             if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
                             {
-                            	char sBuffer[32];
-                            	Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimRole);
-                            	
+                                char sBuffer[32];
+                                Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimRole);
+                                
                                 LoopValidClients(j)
                                 {
                                     CPrintToChat(j, "%s %T", g_sTag, sBuffer, j, client, iRagdollC[VictimName]);
@@ -3489,7 +3491,7 @@ public int TTT_OnButtonPress(int client, int button)
                             
                             if (bSetColor)
                             {
-                            	if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
+                                if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
                                 {
                                     SetEntityRenderColor(iEntity, 0, 255, 0, 255);
                                 }

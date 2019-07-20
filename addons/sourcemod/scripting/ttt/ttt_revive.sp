@@ -281,46 +281,42 @@ public Action Timer_Revive(Handle timer, DataPack pack)
 
     int client = GetClientOfUserId(pack.ReadCell());
     int entity = EntRefToEntIndex(pack.ReadCell());
+    
+    delete pack;
 
     if (!TTT_IsClientValid(client) || !g_bHasRevive[client])
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
     
     if (g_hTimer[client] == null)
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
 
     if (g_iEndTime[client] == -1 || g_iStartTime[client] == -1 || g_iCountdown[client] == -1)
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
     
     if (!IsValidEntity(entity))
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
     
     if (!g_bInUse[client])
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
     
     if (g_iRagdoll[client] == TTT_GetGrabEntity(client))
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
 
@@ -329,21 +325,18 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     if (!TTT_IsClientValid(target))
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
 
     if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
 
     if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
     {
         g_hTimer[client] = null;
-        delete pack;
         return Plugin_Stop;
     }
 
@@ -364,7 +357,6 @@ public Action Timer_Revive(Handle timer, DataPack pack)
     }
 
     g_hTimer[client] = null;
-    delete pack;
     return Plugin_Stop;
 }
 
