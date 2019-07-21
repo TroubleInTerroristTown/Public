@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2019-02-01 15:59:50 UTC
+// Date: 2019-07-21 18:56:52 UTC
 // Language: ua (ua)
 // 
 // To view other translations for this plugin, please visit:
@@ -493,9 +493,119 @@
 		"ua"		"Đã update điểm Karma!"
 	}
 
+	"AdminSet"
+	{
+		"ua"		"Ви дали {orchid}{1} {green}{2} {lightgreen} {3}! "
+	}
+
 	"Player is Now Innocent"
 	{
 		"ua"		"{orchid}{1} {lightgreen}đã trở thành {green}INNOCENT!"
+	}
+
+	"AdminSetRoundSlays"
+	{
+		"ua"		"{orchid}{1} {lightgreen}буде вбито від {orchid}{2} {lightgreen}на {orchid}{3} {lightgreen}раундів! "
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"ua"		"ТТТ Радіо команди"
+	}
+
+	"TTT Radio Menu: Yes"
+	{
+		"ua"		"Так"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"ua"		"Ні"
+	}
+
+	"TTT Radio Menu: Maybe"
+	{
+		"ua"		"Можливо"
+	}
+
+	"TTT Radio Menu: Help"
+	{
+		"ua"		"Допомога"
+	}
+
+	"TTT Radio Menu: Check"
+	{
+		"ua"		"Перевір"
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"ua"		"Бачу..."
+	}
+
+	"TTT Radio: Yes"
+	{
+		"ua"		"Так"
+	}
+
+	"TTT Radio: No"
+	{
+		"ua"		"Ні"
+	}
+
+	"TTT Radio: Maybe"
+	{
+		"ua"		"Можливо"
+	}
+
+	"TTT Radio: Help"
+	{
+		"ua"		"Допомога"
+	}
+
+	"TTT Radio: Check"
+	{
+		"ua"		"Перевір"
+	}
+
+	"TTT Radio: Im With"
+	{
+		"ua"		"Я з {1}"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"ua"		"{1} діє підозріло."
+	}
+
+	"TTT Radio: Traitor"
+	{
+		"ua"		"{1} я бачу зрадника!"
+	}
+
+	"TTT Radio: Innocent"
+	{
+		"ua"		"{1} невинний."
+	}
+
+	"TTT Radio: See"
+	{
+		"ua"		"Я бачу {1}"
+	}
+
+	"AlreadyTaser"
+	{
+		"ua"		"Ви вже маєте тазер у своєму інвентарі!"
+	}
+
+	"Bullets: Have already"
+	{
+		"ua"		"У вас вже є один тип куль."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"ua"		"У вас зараз є {green}{1} {orchid}{2}."
 	}
 
 }

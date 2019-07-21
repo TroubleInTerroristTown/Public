@@ -1,0 +1,351 @@
+// Exported from SourceMod Translator
+// Date: 2019-07-21 18:56:52 UTC
+// Language: Lithuanian (lt)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"MIN PLAYERS REQUIRED FOR PLAY"
+	{
+		"lt"		"MAŽIAUSIAI ŽAIDĖJŲ PRADĖTI ŽAIDIMUI REIK: {orchid}{1}"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"lt"		"Jūs esate {green}CIVILIS"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"lt"		"Jus nužudė {darkred}IŠDAVIKAS!"
+	}
+
+	"Your killer is a Detective"
+	{
+		"lt"		"Jus nužudė {darkblue}DETEKTYVAS!"
+	}
+
+	"You killed a Traitor"
+	{
+		"lt"		"Jūs nužudėte {darkred}IŠDAVIKĄ!"
+	}
+
+	"You killed a Detective"
+	{
+		"lt"		"Jūs nužudėte {darkblue}DETEKTYVĄ!"
+	}
+
+	"You hurt a Traitor"
+	{
+		"lt"		"Jūs patikrinote žaidėją {darkred}{1} {lightgreen}ir jis yra {darkred}IŠDAVIKAS!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"lt"		"Jūs patikrinote žaidėją {green}{1} {lightgreen}ir jis yra {green}CIVILIS!"
+	}
+
+	"You don't have enough money"
+	{
+		"lt"		"Jūs neturite pakankamai kreditų!"
+	}
+
+	"Traitors"
+	{
+		"lt"		"IŠDAVIKAI"
+	}
+
+	"Detectives"
+	{
+		"lt"		"DETEKTYVAI"
+	}
+
+	"Innocents"
+	{
+		"lt"		"CIVILIAI"
+	}
+
+	"Elapsed since his death"
+	{
+		"lt"		"Laiko praėjo nuo jo mirties: {1} sekundžių"
+	}
+
+	"The weapon used has been"
+	{
+		"lt"		"Panaudotas ginklas buvo: {1}"
+	}
+
+	"The weapon used has been: himself (suicide)"
+	{
+		"lt"		"Šis žaidėjas nusižudė"
+	}
+
+	"D channel"
+	{
+		"lt"		"{darkblue}*DETEKTYVAI* {1}:{green} {2}"
+	}
+
+	"You dont have it!"
+	{
+		"lt"		"Jūs šio daikto neturite!"
+	}
+
+	"TTT Shop"
+	{
+		"lt"		"TTT Parduotuvė\nJūsų kreditai: {1}"
+	}
+
+	"credits earned"
+	{
+		"lt"		"Jūs laimėjote {1} kreditų\nJūsų dabartinis kreditų likutis yra: {2}"
+	}
+
+	"karma earned"
+	{
+		"lt"		"Jūs gavote {1} karmos\nDabartinė jūsų karma yra: {2}"
+	}
+
+	"lost karma"
+	{
+		"lt"		"Jūs praradote {1} karmos\nJūsų karma dabar yra: {2}"
+	}
+
+	"you cant see logs"
+	{
+		"lt"		"Jūs negalite šiuo metu matyti sąrašo, jūs turitr būti miręs arba raundas turi neprasidėti"
+	}
+
+	"Receiving logs"
+	{
+		"lt"		"Gaunamas sąrašas... palaukite"
+	}
+
+	"Found Innocent"
+	{
+		"lt"		"{orchid}{1} {lightgreen}rado kūną žaidėjo {orchid}{2}. {lightgreen}Šis žaidėjas buvo {green}CIVILIS!"
+	}
+
+	"Found Detective"
+	{
+		"lt"		"{orchid}{1} {lightgreen}rado kūną žaidėjo {darkblue}{2}. {lightgreen}Šis žaidėjas buvo {darkblue}DETEKTYVAS!"
+	}
+
+	"Right click to plant the C4"
+	{
+		"lt"		"Kad padėtumėte bombą, paspauskite dešinį pėlytės mygtuką!"
+	}
+
+	"The player who RDM'd you is no longer available"
+	{
+		"lt"		"Žaidėjas, kuris jus nužudė be priežasties išėjo iš serverio!"
+	}
+
+	"Forgive"
+	{
+		"lt"		"Atleisti"
+	}
+
+	"Choose Punish"
+	{
+		"lt"		"{1} nusprendė nubausti {2} už tai, kad jį nužudė be priežasties"
+	}
+
+	"Player is Now Detective"
+	{
+		"lt"		"{orchid}{1} {lightgreen} dabar yra {darkblue}Detektyvas!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"lt"		"Jūs esats {green}Civilis!"
+	}
+
+	"Bomb Detonated"
+	{
+		"lt"		"Jūsų bombą sprogo!"
+	}
+
+	"Defuse C4"
+	{
+		"lt"		"Išminuokite bombą!"
+	}
+
+	"C4 Wire"
+	{
+		"lt"		"Laidas {1}"
+	}
+
+	"Failed Defuse"
+	{
+		"lt"		"Jums nepavyko išminuoti bombos!"
+	}
+
+	"Alive to Plant"
+	{
+		"lt"		"Jūs privalote būti gyvas, kad padėtumėte bombą!"
+	}
+
+	"Will Explode In"
+	{
+		"lt"		"Padedama bomba, kuri sprogs už {orchid}{1} {lightgreen} sekundžių."
+	}
+
+	"Wire Is"
+	{
+		"lt"		"Laidas išminuosiantis bombą yra {orchid}{1} {lightgreen}!"
+	}
+
+	"No Traitor Partners"
+	{
+		"lt"		"Jūs neturite partnerių."
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"lt"		"Ši Gyvybių Stotis išsikrovė! Palaukite kol ji vėl pasikraus!"
+	}
+
+	"AM Question"
+	{
+		"lt"		"Jūs norite žaisti kaip detektyvas?\nTuomet jum reikės visko, kas išvardinta žemiau:\n\n-veikiantį mikrafoną\n-kalbėti su kitais žaidėjais\n-aktyviai žaisti\n\nAr jūs galite visą tai patvirtinti?"
+	}
+
+	"next round in"
+	{
+		"lt"		"Kitas roundas prasidės už {1} sekundžių!"
+	}
+
+	"Hurt Station Deployed"
+	{
+		"lt"		"Žalojanti Stotis buvo padėta! Ji sužeis visus žaidėjus šalia jos!"
+	}
+
+	"You reached limit"
+	{
+		"lt"		"Jūs galite nusipirkti tik {1} šių daiktų per roundą!"
+	}
+
+	"All karma has been updated"
+	{
+		"lt"		"KARMA BUVO ATNAUJINTA!"
+	}
+
+	"ID: Need to be Alive"
+	{
+		"lt"		"Jūs privalote būti gyvas, kad naudotumėte šią komandą."
+	}
+
+	"RoundStartCenter"
+	{
+		"lt"		"Žaidimas prasidės už {3} sekundžių"
+	}
+
+	"YouAreDead"
+	{
+		"lt"		"Jūs negalite to naudoti kaip miręs žaidėjas"
+	}
+
+	"SpecMenu: Title"
+	{
+		"lt"		"Žiūrovų meniu"
+	}
+
+	"SpecMenu: Player"
+	{
+		"lt"		"Žaidėjas: {1}"
+	}
+
+	"Hud Name"
+	{
+		"lt"		"Vardas"
+	}
+
+	"Hud Health"
+	{
+		"lt"		"Gyvybės"
+	}
+
+	"Hud PlayerHealth"
+	{
+		"lt"		"{1}"
+	}
+
+	"You tased a Traitor"
+	{
+		"lt"		"Žaidėjas {lightgreen}{1} patikrino žaidėją {darkred}{2} {lightgreen}ir jis yra {darkred}IŠDAVIKAS!"
+	}
+
+	"You tased a Detective"
+	{
+		"lt"		"Žaidėjas {lightgreen}{1} patikrino žaidėją {darkred}{2} {lightgreen}ir jis yra {darkblue}DETEKTYVAS!"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"lt"		"{1} dabar kalba tik su kitais išdavikais"
+	}
+
+	"stopped talking in Traitor Voice Chat"
+	{
+		"lt"		"{1} baigė kalbėti tik su kitais išdavikais"
+	}
+
+	"Traitor Voice Chat: Disabled!"
+	{
+		"lt"		"Išdavikų balso kambarys: Išjungtas!"
+	}
+
+	"ID: Cooldown"
+	{
+		"lt"		"Jūs privalote palaukti prieš naudojant tą komandą ir vėl."
+	}
+
+	"SpecMenu: Unmute Dead"
+	{
+		"lt"		"Atitildykite mirusius žaidėjus"
+	}
+
+	"SpecMenu: Mute Dead"
+	{
+		"lt"		"Užtildykite mirusius žaidėjus"
+	}
+
+	"Reopen Shop deactivated"
+	{
+		"lt"		"Parduotuvė nebeatsidarys  po to, kai kažką nusipirksite."
+	}
+
+	"Reopen Shop activated"
+	{
+		"lt"		"Parduotuvė vėl atsidarys nusipirkus kažką iš jos."
+	}
+
+	"watching logs alive"
+	{
+		"lt"		"{green}{1} {default}yra {darkred}gyvas {default}ir žiūri šio roundo sąrašą."
+	}
+
+	"TAGrenade Traitors"
+	{
+		"lt"		"{darkred}{1} Išdavikai"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"lt"		"TTT radijo komandos"
+	}
+
+	"TTT Radio: Help"
+	{
+		"lt"		"Padėkite"
+	}
+
+	"TTT Radio: Suspect"
+	{
+		"lt"		"{1} atrodo įtartinas."
+	}
+
+}

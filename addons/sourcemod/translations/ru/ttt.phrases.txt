@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2019-02-01 15:59:51 UTC
+// Date: 2019-07-21 18:56:53 UTC
 // Language: Russian (ru)
 // 
 // To view other translations for this plugin, please visit:
@@ -881,6 +881,16 @@
 	"AlreadyTaser"
 	{
 		"ru"		"У вас в инвентаре уже есть тазер!"
+	}
+
+	"Bullets: Have already"
+	{
+		"ru"		"У вас уже есть один тип пуль."
+	}
+
+	"Bullets: Buy bullets"
+	{
+		"ru"		"У тебя сейчас {green}{1} {orchid}{2}."
 	}
 
 }

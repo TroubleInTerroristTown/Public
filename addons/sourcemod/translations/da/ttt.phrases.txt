@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2019-02-01 15:59:50 UTC
+// Date: 2019-07-21 18:56:52 UTC
 // Language: Danish (da)
 // 
 // To view other translations for this plugin, please visit:
@@ -110,7 +110,7 @@
 
 	"TTT Shop"
 	{
-		"da"		"TTT Shop\nDine Mønter: {1}"
+		"da"		"TTT Shop\nDin Mønter: {1}"
 	}
 
 	"TTT Shop"
@@ -130,7 +130,7 @@
 
 	"no logs yet"
 	{
-		"da"		"Ingen logbøger endnu"
+		"da"		"Ingen logbør endnu"
 	}
 
 	"no logs yet"
@@ -175,7 +175,7 @@
 
 	"TRAITORS HAS BEEN SELECTED"
 	{
-		"da"		"{darkred}{1} FORRÆDERE {lightgreen}ER BLEVET VALGT"
+		"da"		"{darkred}{1} FORRÆDERNE {lightgreen}ER BLEVET VALGT"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"

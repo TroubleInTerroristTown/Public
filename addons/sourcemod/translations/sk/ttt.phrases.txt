@@ -1,0 +1,321 @@
+// Exported from SourceMod Translator
+// Date: 2019-07-21 18:56:53 UTC
+// Language: Slovak (sk)
+// 
+// To view other translations for this plugin, please visit:
+// http://translator.mitchdempsey.com/sourcemod_plugins/158
+//
+"Phrases"
+{
+
+	"TEAMS HAS BEEN SELECTED"
+	{
+		"sk"		"Tímy boli vybraté!"
+	}
+
+	"Your Team is DETECTIVES"
+	{
+		"sk"		"Si {darkblue] Detektív"
+	}
+
+	"Your Team is TRAITORS"
+	{
+		"sk"		"Si {darkred}Traitor!"
+	}
+
+	"Your Team is INNOCENTS"
+	{
+		"sk"		"Si {green}INNOCENT"
+	}
+
+	"Your credits is"
+	{
+		"sk"		"Tvoje kredity sú: Itzfifko"
+	}
+
+	"Your killer is a Traitor"
+	{
+		"sk"		"Tvôj vrah bol {darkred} Traitor!"
+	}
+
+	"Your killer is an Innocent"
+	{
+		"sk"		"Váš vrah bol {green} INNOCENT!"
+	}
+
+	"You killed a Detective"
+	{
+		"sk"		"Zabili ste {darkblue} Detektíva!"
+	}
+
+	"You killed an Innocent"
+	{
+		"sk"		"Zabil si {green} INNOCENT!"
+	}
+
+	"You killed an Innocent"
+	{
+		"sk"		"Zabil si {green} INNOCENT!"
+	}
+
+	"You hurt an Innocent"
+	{
+		"sk"		"Použili ste detektor na hráča {green} {1} {lightgreen} a on je {green} INNOCENT!"
+	}
+
+	"Please wait till your team is assigned"
+	{
+		"sk"		"Počkajte, kým nebude priradený váš tím"
+	}
+
+	"Detectives"
+	{
+		"sk"		"Detektívi"
+	}
+
+	"Detectives"
+	{
+		"sk"		"Detektívi"
+	}
+
+	"Innocents"
+	{
+		"sk"		"Nevinný"
+	}
+
+	"Inspected body. The extracted data are the following"
+	{
+		"sk"		"Kontrolované telo. Extrahované údaje boli nasledovné:"
+	}
+
+	"Team victim"
+	{
+		"sk"		"Povrázok"
+	}
+
+	"The weapon used has been"
+	{
+		"sk"		"Použitá zbraň bola: {1}"
+	}
+
+	"T channel"
+	{
+		"sk"		"{darkred}*TRAITORY* {1}:{green} {2}"
+	}
+
+	"D channel"
+	{
+		"sk"		"{darkblue}* Detektívi* {1}:{green} {2}"
+	}
+
+	"credits earned"
+	{
+		"sk"		"Vyhrali ste {1} kreditov a vaše súčasné kredity sú: {2}"
+	}
+
+	"lost credits"
+	{
+		"sk"		"Stratíte {1} kreditov, vaša súčasná kreditná suma je: {2}"
+	}
+
+	"lost credits"
+	{
+		"sk"		"Stratíte {1} kreditov, vaša súčasná kreditná suma je: {2}"
+	}
+
+	"lost karma"
+	{
+		"sk"		"Stratil si {1} karma, teraz máš {2} karma"
+	}
+
+	"no logs yet"
+	{
+		"sk"		"Zatiaľ nie sú žiadne denníky"
+	}
+
+	"you cant see logs"
+	{
+		"sk"		"Nemôžete vidieť protokoly, musíte byť mŕtvi alebo kolo musí byť neaktívne"
+	}
+
+	"Receiving logs"
+	{
+		"sk"		"Prijímanie denníkov ... chvíľu počkajte"
+	}
+
+	"Found Innocent"
+	{
+		"sk"		"{orchid}{1} {lightgreen}našiel telo patrilo {green}{2}. {lightgreen}A bol to{green}INNOCENT!"
+	}
+
+	"Found Detective"
+	{
+		"sk"		"{orchid}{1} {lightgreen}našiel telo{darkblue}{2}. {lightgreen}Bol to{darkblue}Detektív!"
+	}
+
+	"Your bomb is now armed."
+	{
+		"sk"		"Vaša bomba je teraz ozbrojená."
+	}
+
+	"bomb will arm in 60 seconds, double tab F to explode"
+	{
+		"sk"		"Bomba za 60 sekúnd vybuchne, dvakrát stlačte F, aby explodovala"
+	}
+
+	"TRAITORS HAS BEEN SELECTED"
+	{
+		"sk"		"{darkred}{1} TRAITORY {lightgreen} BOLI VYBRANÝ"
+	}
+
+	"Suicide Blocked"
+	{
+		"sk"		"Samovražda je zablokovaná"
+	}
+
+	"Right click to plant the C4"
+	{
+		"sk"		"Kliknite pravým tlačidlom myši na položenie zariadenie C4!"
+	}
+
+	"Right click to plant the C4"
+	{
+		"sk"		"Kliknite pravým tlačidlom myši na položenie zariadenie C4!"
+	}
+
+	"You already have an active Health Station"
+	{
+		"sk"		"Už máš aktívnu zdravotnú stanicu!"
+	}
+
+	"You were RDM'd"
+	{
+		"sk"		"Boli ste RDM od {1}!"
+	}
+
+	"Forgive"
+	{
+		"sk"		"Odpustiť"
+	}
+
+	"Choose Forgive Victim"
+	{
+		"sk"		"Rozhodli ste sa odpustiť vám {1} pre RDMing!"
+	}
+
+	"Player is Now Traitor"
+	{
+		"sk"		"{orchid} {1} {lightgreen} je teraz {darkred} Traitor!"
+	}
+
+	"You Are Now Innocent"
+	{
+		"sk"		"Si {green} INNOCENT!"
+	}
+
+	"You Are Now Traitor"
+	{
+		"sk"		"Si {darkred}Traitor!"
+	}
+
+	"Bomb Detonated"
+	{
+		"sk"		"Vaša bomba vybuchla!"
+	}
+
+	"Set C4 Timer"
+	{
+		"sk"		"Ahoj, som slovenský prekladateľ sourcemodu! :P"
+	}
+
+	"Seconds"
+	{
+		"sk"		"{1} sekundy"
+	}
+
+	"Defuse C4"
+	{
+		"sk"		"Zneškodni bombu!"
+	}
+
+	"C4 Wire"
+	{
+		"sk"		"Drôt"
+	}
+
+	"Has Defused Bomb"
+	{
+		"sk"		"{orchid}{1} {lightgreen} zneškodňuje bombu!"
+	}
+
+	"Failed Defuse"
+	{
+		"sk"		"Nepodarilo sa zneškodniť!"
+	}
+
+	"Wire Is"
+	{
+		"sk"		"Zneškodňovací drôt je {orchid} {1} {lightgreen}!"
+	}
+
+	"Your Traitor Partners"
+	{
+		"sk"		"Vaši Traitor partneri sú:"
+	}
+
+	"No Traitor Partners"
+	{
+		"sk"		"Nemáš žiadnych partnerov."
+	}
+
+	"Kick Bad Name"
+	{
+		"sk"		"Odstráňte slovo {1} z vášho mena!"
+	}
+
+	"Health Station Out Of Charges"
+	{
+		"sk"		"Táto zdravotná stanica je bez poplatkov! Počkajte, kým sa dobije!"
+	}
+
+	"Welcome Menu"
+	{
+		"sk"		"Ahoj {1}, je to problém v serveri Terorist Town Server, ktorý napísal {2} Poznáte pravidlá?"
+	}
+
+	"WM Yes"
+	{
+		"sk"		"Áno, poznám pravidlá!"
+	}
+
+	"WM Yes"
+	{
+		"sk"		"Áno, poznám pravidlá!"
+	}
+
+	"WM Kick Message"
+	{
+		"sk"		"Ste neaktívny alebo ste zavreli menu pravidiel!"
+	}
+
+	"AM Question"
+	{
+		"sk"		"Chcete hrať ako detektív, potom budete potrebovať nasledujúce veci: funkčný mikrofón, - rozprávanie s ostatnými hráčmi, - aktívne hranie, - môžete to potvrdiť?"
+	}
+
+	"WM No"
+	{
+		"sk"		"Nie, ukážte mi pravidlá!"
+	}
+
+	"next round in"
+	{
+		"sk"		"Ďalšie kolo začína za {1} sekundu!"
+	}
+
+	"Player is Now Innocent"
+	{
+		"sk"		"{orchid}{1} {lightgreen} je teraz {green}Innocent!"
+	}
+
+}

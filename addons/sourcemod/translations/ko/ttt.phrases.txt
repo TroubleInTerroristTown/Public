@@ -1,5 +1,5 @@
 // Exported from SourceMod Translator
-// Date: 2019-02-01 15:59:51 UTC
+// Date: 2019-07-21 18:56:52 UTC
 // Language: Korean (ko)
 // 
 // To view other translations for this plugin, please visit:
@@ -493,9 +493,99 @@
 		"ko"		"아니오, 규칙을 보여주세요!"
 	}
 
+	"TaserMax"
+	{
+		"ko"		"테이저를 모두 사용했습니다. (한 라운당 제한 갯수: {1})"
+	}
+
+	"ID: Buy Message"
+	{
+		"ko"		"!id를 입력하여 당신이 시민인지를 보여주세요"
+	}
+
+	"SpecMenu: Player"
+	{
+		"ko"		"플레이어: {1}"
+	}
+
+	"SpecMenu: Next"
+	{
+		"ko"		"다음 플레이어"
+	}
+
+	"SpecMenu: Mute"
+	{
+		"ko"		"이 플레이어를 벙어리 먹이기"
+	}
+
+	"Hud Name"
+	{
+		"ko"		"이름"
+	}
+
+	"Hud PlayerKarma"
+	{
+		"ko"		"{1}"
+	}
+
+	"is now talking in Traitor Voice Chat"
+	{
+		"ko"		"{1}님은 트레이버 채팅방에서 대화를 하고 있습니다."
+	}
+
+	"SpecMenu: Unmute Alive"
+	{
+		"ko"		"살아있는 플레이어 뮤트 해제"
+	}
+
 	"Player is Now Innocent"
 	{
 		"ko"		"{orchid}{1}{lightgreen}님은 {green}이노센트{lightgreen}입니다!"
+	}
+
+	"Sprint active"
+	{
+		"ko"		"{1}초 동안 달리기가 활성화 됬습니다!"
+	}
+
+	"TAGrenade Detectives"
+	{
+		"ko"		"{darkblue}탐정: {1}"
+	}
+
+	"TTT Radio Menu: Commands"
+	{
+		"ko"		"TTT 라디오 명령어"
+	}
+
+	"TTT Radio Menu: No"
+	{
+		"ko"		"아니요"
+	}
+
+	"TTT Radio Menu: See"
+	{
+		"ko"		"봤어..."
+	}
+
+	"TTT Radio: Help"
+	{
+		"ko"		"도움말"
+	}
+
+	"C4: Choose Punishment"
+	{
+		"ko"		"처벌을 선택해주세요 :"
+	}
+
+	"HUD Health - Healthy"
+	{
+		"ko"		"체력"
+	}
+
+	"Respawn: Player"
+	{
+		"ko"		"{1}님이 {2}님을 부활시켰습니다."
 	}
 
 }
