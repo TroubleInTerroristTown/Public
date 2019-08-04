@@ -55,6 +55,11 @@ public void OnClientPutInServer(int client)
     g_bTVoice[client] = false;
 }
 
+public void OnClientPostAdminCheck(int client)
+{
+    SetListen(client);
+}
+
 public void OnClientDisconnect(int client)
 {
     g_bTVoice[client] = false;
