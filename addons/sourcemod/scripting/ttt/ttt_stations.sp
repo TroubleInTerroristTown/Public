@@ -290,9 +290,9 @@ void checkDistanceFromStation(int client)
         if (g_iStationCharges[owner] > 0 && ((hurt == false) || (client != owner)))
         {
             newHealth = (hurt ? (curHealth - g_cHurtDamage.IntValue) : (curHealth + g_cHealthHeal.IntValue));
-            if (newHealth >= 125)
+            if (newHealth >= g_cMaxHealth.IntValue)
             {
-                SetEntityHealth(client, 125);
+                SetEntityHealth(client, g_cMaxHealth.IntValue);
             }
             else if (newHealth <= 0)
             {
