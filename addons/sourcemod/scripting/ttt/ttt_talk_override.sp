@@ -38,7 +38,6 @@ public void OnPluginStart()
         RegConsoleCmd("sm_tvoice", Command_TVoice);
     }
 
-    HookEvent("player_death", Event_PlayerDeath);
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_team", Event_PlayerTeam);
 
@@ -152,24 +151,27 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+public void TTT_OnClientGetRole(int client, int role)
 {
-    int victim = GetClientOfUserId(event.GetInt("userid"));
+    SetListen(client);
+}
 
+public void TTT_OnPlayerRespawn(int client)
+{
+    SetListen(client);
+}
+
+public int TTT_OnRoundSlay(int client, int remaining)
+{
+    SetListen(client);
+}
+
+public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
+{
     if (TTT_IsClientValid(victim))
     {
         g_bTVoice[victim] = false;
-        LoopValidClients(i)
-        {
-            if (TTT_IsPlayerAlive(i))
-            {
-                SetListenOverride(i, victim, Listen_No);
-            }
-            else
-            {
-                SetListenOverride(i, victim, Listen_Yes);
-            }
-        }
+        SetListen(victim);
     }
 }
 
@@ -192,11 +194,6 @@ public void TTT_OnRoundEnd(int winner, Handle array)
             SetListenOverride(i, j, Listen_Default);
         }
     }
-}
-
-public void TTT_OnClientGetRole(int client, int role)
-{
-    SetListen(client);
 }
 
 void SetListen(int client)
