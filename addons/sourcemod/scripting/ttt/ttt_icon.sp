@@ -69,22 +69,33 @@ public void OnMapStart()
     char sBuffer[PLATFORM_MAX_PATH];
     
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
+    if (strlen(sBuffer) > 0)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
 
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
-    PrecacheModel(sBuffer);
+    if (strlen(sBuffer) > 0)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheModel(sBuffer);
+    }
+    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+    if (strlen(sBuffer) > 0)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+    }
 
     g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
-
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-    AddFileToDownloadsTable(sBuffer);
-    PrecacheModel(sBuffer);
+    if (strlen(sBuffer) > 0)
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheModel(sBuffer);
+    }
 }
 
 public void OnClientDisconnect(int client)
@@ -187,11 +198,15 @@ int CreateIcon(int client, int role)
     if (role == TTT_TEAM_DETECTIVE)
     {
         g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+        if (strlen(sBuffer) == 0)
+            return -1;
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
     else if (role == TTT_TEAM_TRAITOR)
     {
         g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+        if (strlen(sBuffer) == 0)
+            return -1;
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
 
