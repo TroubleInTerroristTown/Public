@@ -34,6 +34,7 @@ ConVar g_cBroadcastTaserResult = null;
 ConVar g_cTDamage = null;
 ConVar g_cInflictor = null;
 ConVar g_cLongName = null;
+ConVar g_cRoundKeep = null;
 ConVar g_cTKDamage = null;
 ConVar g_cTaserCooldown = null;
 ConVar g_cGlowPlayer = null;
@@ -48,6 +49,7 @@ int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
 int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
 bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
+bool g_bRoundTaser[MAXPLAYERS + 1] =  { false, ... };
 
 /* Block taser stuff or so... */
 Handle g_hCooldown = null;
@@ -97,6 +99,7 @@ public void OnPluginStart()
     g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
     g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
     g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
+    g_cRoundKeep = AutoExecConfig_CreateConVar("ta_keep_to_next_round", "1", "Give the Innocents a tasers if they had one before round end?");
     g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
     g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
     g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
@@ -154,7 +157,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public void OnClientDisconnect(int client)
 {
-    ResetTaser(client);
+    ResetTaser(client, true);
 }
 
 public void OnClientPutInServer(int client)
@@ -254,6 +257,14 @@ public void TTT_OnRoundEnd(int winner, Handle array)
         KillTimer(g_hCooldown);
     }
     g_hCooldown = null;
+    
+    LoopValidClients(i)
+	{
+		if (IsPlayerAlive(i) && g_bTaser[i])
+		{
+			g_bRoundTaser[i] = true;
+		}
+	}
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -267,7 +278,19 @@ public void TTT_OnClientGetRole(int client, int role)
 
         GivePlayerItem(client, "weapon_taser");
         g_iDPCount[client]++;
+    } 
+	else if (g_cRoundKeep.BoolValue) 
+	{
+        if (!g_bRoundTaser[client])
+        {
+            return;
+        }
+        
+        GivePlayerItem(client, "weapon_taser");
+        g_iDPCount[client]++;
     }
+    
+    g_bRoundTaser[client] = false;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -276,7 +299,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (TTT_IsClientValid(client))
     {
-        ResetTaser(client);
+        ResetTaser(client, false);
     }
 }
 
@@ -388,13 +411,18 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-void ResetTaser(int client)
+void ResetTaser(int client, bool fullReset)
 {
     g_iDPCount[client] = 0;
     g_iIPCount[client] = 0;
     g_iTPCount[client] = 0;
 
     g_bTaser[client] = false;
+    
+    if (fullReset)
+    {
+        g_bRoundTaser[client] = false;
+    }
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
