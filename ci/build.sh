@@ -25,7 +25,12 @@ echo -e "Compile ttt plugins"
 for file in addons/sourcemod/scripting/ttt/*.sp
 do
   echo -e -e "\nCompiling $file..." 
-  addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 $file
+  
+  if [ $1 == "1.9" ] then
+    addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 $file
+  else
+    addons/sourcemod/scripting/spcomp -w234 -O2 -v2 $file
+  fi
 done
 
 echo -e "\nCompile 3rd-party-plugins"
