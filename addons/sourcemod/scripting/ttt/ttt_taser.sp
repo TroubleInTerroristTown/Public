@@ -70,7 +70,7 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
-    
+
     RegPluginLibrary("ttt_taser");
 
     return APLRes_Success;
@@ -140,7 +140,7 @@ public void TTT_OnShopReady()
 void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
-    
+
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
     TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
@@ -204,12 +204,12 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
             for(int offset = 0; offset < 128; offset += 4)
             {
                 int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-        
+
                 if (IsValidEntity(weapon))
                 {
                     char sClass[32];
                     GetEntityClassname(weapon, sClass, sizeof(sClass));
-        
+
                     if (StrContains(sClass, "taser", false) != -1)
                     {
                         BlockTaser(weapon);
@@ -227,12 +227,12 @@ public Action Timer_ActivateTasers(Handle timer)
         for(int offset = 0; offset < 128; offset += 4)
         {
             int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-    
+
             if (IsValidEntity(weapon))
             {
                 char sClass[32];
                 GetEntityClassname(weapon, sClass, sizeof(sClass));
-    
+
                 if (StrContains(sClass, "taser", false) != -1)
                 {
                     UnblockTaser(weapon);
@@ -257,14 +257,14 @@ public void TTT_OnRoundEnd(int winner, Handle array)
         KillTimer(g_hCooldown);
     }
     g_hCooldown = null;
-    
+
     LoopValidClients(i)
-	{
-		if (IsPlayerAlive(i) && g_bTaser[i])
-		{
-			g_bRoundTaser[i] = true;
-		}
-	}
+    {
+        if (IsPlayerAlive(i) && g_bTaser[i])
+        {
+            g_bRoundTaser[i] = true;
+        }
+    }
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -278,18 +278,18 @@ public void TTT_OnClientGetRole(int client, int role)
 
         GivePlayerItem(client, "weapon_taser");
         g_iDPCount[client]++;
-    } 
-	else if (g_cRoundKeep.BoolValue) 
-	{
+    }
+    else if (g_cRoundKeep.BoolValue)
+    {
         if (!g_bRoundTaser[client])
         {
             return;
         }
-        
+
         GivePlayerItem(client, "weapon_taser");
         g_iDPCount[client]++;
     }
-    
+
     g_bRoundTaser[client] = false;
 }
 
@@ -418,7 +418,7 @@ void ResetTaser(int client, bool fullReset)
     g_iTPCount[client] = 0;
 
     g_bTaser[client] = false;
-    
+
     if (fullReset)
     {
         g_bRoundTaser[client] = false;
@@ -464,7 +464,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     if (StrContains(sWeapon, "taser", false) != -1)
     {
         char sAttackerID[32], sVictimID[32];
-        
+
         ConVar hTag = FindConVar("ttt_steamid_add_to_logs");
         if (hTag.BoolValue)
         {
@@ -484,14 +484,14 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
                 GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
                 GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
             }
-            
+
             if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
             {
                 Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
                 Format(sVictimID, sizeof(sVictimID), " (%s)", sVictimID);
             }
         }
-        
+
         // TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
         if (iRole == TTT_TEAM_TRAITOR)
         {
@@ -505,7 +505,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
             {
                 CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
             }
-            
+
             TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
         }
         else if (iRole == TTT_TEAM_DETECTIVE)
@@ -534,7 +534,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
                 CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
             }
         }
-        
+
         Call_StartForward(g_hOnTased);
         Call_PushCell(iAttacker);
         Call_PushCell(iVictim);
