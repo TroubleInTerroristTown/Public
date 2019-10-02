@@ -26,7 +26,7 @@ for file in addons/sourcemod/scripting/ttt/*.sp
 do
   echo -e -e "\nCompiling $file..." 
   
-  if [ $1 == "1.9" ] then
+  if [ $1 == "1.9" ]; then
     addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 $file
   else
     addons/sourcemod/scripting/spcomp -w234 -O2 -v2 $file
