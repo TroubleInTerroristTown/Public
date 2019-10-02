@@ -99,7 +99,7 @@ public void OnPluginStart()
     g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
     g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
     g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
-    g_cRoundKeep = AutoExecConfig_CreateConVar("ta_keep_to_next_round", "1", "Give the Innocents a tasers if they had one before round end?");
+    g_cRoundKeep = AutoExecConfig_CreateConVar("ta_keep_to_next_round", "0", "Give the Innocents a tasers if they had one before round end?", _, true, 0.0, true, 1.0);
     g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
     g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
     g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
