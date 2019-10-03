@@ -30,6 +30,9 @@ ConVar g_cCountdown = null;
 ConVar g_cBeepVolume = null;
 ConVar g_cExplosionVolume = null;
 ConVar g_cShowMessage = null;
+ConVar g_cBlockOwnBodyIdentify = null;
+ConVar g_cBlockTDecoyIdentify = null;
+ConVar g_cNoTraitorDecoyDamage = null;
 
 int g_iCountdown[MAXPLAYERS + 1] =  { -1, ... };
 
@@ -69,6 +72,9 @@ public void OnPluginStart()
     g_cBeepVolume = AutoExecConfig_CreateConVar("decoy_body_beep_volume", "0.6", "Volume of beep sound", _, true, 0.0, true, 1.0);
     g_cExplosionVolume = AutoExecConfig_CreateConVar("decoy_body_explosion_volume", "0.6", "Volume of explosion sound", _, true, 0.0, true, 1.0);
     g_cShowMessage = AutoExecConfig_CreateConVar("decoy_body_show_message", "1", "Show message on decoy body found?", _, true, 0.0, true, 1.0);
+    g_cBlockOwnBodyIdentify = AutoExecConfig_CreateConVar("decoy_body_block_own_identify", "1", "Block decoy body identify for own bodies?", _, true, 0.0, true, 1.0);
+    g_cBlockTDecoyIdentify = AutoExecConfig_CreateConVar("decoy_body_block_t_identify", "0", "Block decoy body effeect if a Traitor identify a decoy body?", _, true, 0.0, true, 1.0);
+    g_cNoTraitorDecoyDamage = AutoExecConfig_CreateConVar("decoy_body_block_traitor_decoy_damage", "1", "No traitor damage if decoy body explode?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -145,6 +151,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 public Action TTT_OnBodyCheck(int client, int[] ragdoll)
 {
+    if (g_cBlockOwnBodyIdentify.BoolValue && (client && GetClientOfUserId(ragdoll[Victim])))
+    {
+        return Plugin_Continue;
+    }
+
     bool bReal = false;
     int attacker = -1;
     
@@ -172,6 +183,11 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
         }
         
         if (!g_cFakeBody.BoolValue && !bReal)
+        {
+            return Plugin_Continue;
+        }
+
+        if (g_cBlockTDecoyIdentify.BoolValue && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
             return Plugin_Continue;
         }
@@ -275,6 +291,11 @@ void CreateExplosion(int body)
         DispatchKeyValue(entity, "rendermode", "5");
         SetEntProp(entity, Prop_Data, "m_iMagnitude", g_cDamage.IntValue);
         SetEntProp(entity, Prop_Data, "m_iRadiusOverride", g_cExplosionSize.IntValue);
+
+        if (g_cNoTraitorDecoyDamage.BoolValue)
+        {
+            SetEntProp(entity, Prop_Data, "m_iTeamNum", TTT_TEAM_TRAITOR);
+        }
         
         float fPos[3];
         GetEntPropVector(body, Prop_Send, "m_vecOrigin", fPos);
