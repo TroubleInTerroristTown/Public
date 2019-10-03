@@ -126,7 +126,7 @@ public Action Command_SpecNext(int client, const char[] command, int argc)
     }
     
     int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-    int nextTarget = GetNextClient(target, true);
+    int nextTarget = GetNextClient(client, target, true);
     
     if (nextTarget != -1)
     {
@@ -144,7 +144,7 @@ public Action Command_SpecPrev(int client, const char[] command, int argc)
     }
     
     int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-    int nextTarget = GetNextClient(target, false);
+    int nextTarget = GetNextClient(client, target, false);
     
     if (nextTarget != -1)
     {
@@ -175,7 +175,7 @@ public Action Command_SpecPlayer(int client, const char[] command, int argc)
             ReplyToTargetError(client, numTargets);
             
             int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-            int nextTarget = GetNextClient(target, true);
+            int nextTarget = GetNextClient(client, target, true);
             
             if (nextTarget != -1)
             {
@@ -188,7 +188,7 @@ public Action Command_SpecPlayer(int client, const char[] command, int argc)
         if (numTargets != 1)
         {
             int target = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
-            int nextTarget = GetNextClient(target, true);
+            int nextTarget = GetNextClient(client, target, true);
             
             if (nextTarget != -1)
             {
@@ -450,32 +450,41 @@ int GetObservTarget(int client)
 }
 
 /* Taken from zipcore's Prop Hunt */
-stock int GetNextClient(int client, bool nextClient = true)
+int GetNextClient(int client, int current, bool nextClient = true)
 {
     int iPlus = (nextClient ? 1 : -1);
-    int iClient = client + iPlus;
+    int iClient = current;
     int iBegin = (nextClient ? 1 : MaxClients);
     int iLimit = (nextClient ? MaxClients + 1 : 0);
-    bool bCheck[MAXPLAYERS + 1] = { false, ... };
 
-    if (iClient == -1)
+    int iMax = MaxClients;
+
+    while (iMax > 0)
     {
-        return -1;
-    }
+        iMax--;
 
-    while (!TTT_IsClientValid(iClient) && !TTT_IsPlayerAlive(iClient) && !bCheck[iClient])
-    {
-        bCheck[iClient] = true;
-
-        // move index; if index == iLimit, move it to the beginning
         iClient = (iClient + iPlus == iLimit ? iBegin : iClient + iPlus);
         
-        // we made a full circle. no suitable client found
-        if (iClient == client)
+        if (iClient != client && IsValidTarget(iClient))
         {
-            return -1;
+            return iClient;
         }
     }
     
-    return iClient;
+    return -1;
+}
+
+bool IsValidTarget(int client)
+{
+    if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
+    {
+        int iRole = TTT_GetClientRole(client);
+
+        if (iRole == TTT_TEAM_TRAITOR || iRole == TTT_TEAM_INNOCENT || iRole == TTT_TEAM_DETECTIVE)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
