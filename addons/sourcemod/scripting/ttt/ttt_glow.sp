@@ -17,9 +17,9 @@ int g_iColorDetective[4] =  {0, 0, 255};
 
 ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
-ConVar g_cDebug = null;
 
-int g_iPlayerModels[MAXPLAYERS+1] = {INVALID_ENT_REFERENCE,...};
+int g_iSkinRef[MAXPLAYERS+1] = {-1,...};
+int g_iSkinClient[MAXPLAYERS + 1] = { -1 , ... };
 
 Handle g_hOnGlowCheck = null;
 
@@ -64,8 +64,6 @@ public void OnPluginEnd()
 
 public void OnConfigsExecuted()
 {
-    g_cDebug = FindConVar("ttt_debug_mode");
-    
     ConVar cvar = FindConVar("sv_force_transmit_players");
     cvar.SetBool(true, true, false);
 }
@@ -123,37 +121,7 @@ public Action OnSetTransmit_All(int skin, int client)
 {
     int iRole = TTT_GetClientRole(client);
 
-    int target = -1;
-    
-    LoopValidClients(i)
-    {
-        if (i < 1)
-        {
-            continue;
-        }
-
-        if (client == i)
-        {
-            continue;
-        }
-
-        if (!g_cDebug.BoolValue && IsFakeClient(i))
-        {
-            continue;
-        }
-
-        if (!IsPlayerAlive(i))
-        {
-            continue;
-        }
-
-        if (EntRefToEntIndex(g_iPlayerModels[i]) != skin)
-        {
-            continue;
-        }
-        
-        target = i;
-    }
+    int target = g_iSkinClient[skin];
     
     if (target == -1)
     {
@@ -270,7 +238,8 @@ int CreatePlayerModelProp(int client)
         pack.WriteCell(EntIndexToEntRef(skin));
         RequestFrame(Frame_SetParent, pack);
 
-        g_iPlayerModels[client] = EntIndexToEntRef(skin);
+        g_iSkinRef[client] = EntIndexToEntRef(skin);
+        g_iSkinClient[skin] = client;
 
         return skin;
     }
@@ -305,12 +274,13 @@ void DeleteAllGlowProps()
 
 void DeleteGlowProp(int client)
 {
-    int iEntity = EntRefToEntIndex(g_iPlayerModels[client]);
+    int iEntity = EntRefToEntIndex(g_iSkinRef[client]);
     if(IsValidEntity(iEntity))
     {
         SDKUnhook(iEntity, SDKHook_SetTransmit, OnSetTransmit_All);
         AcceptEntityInput(iEntity, "Kill");
     }
 
-    g_iPlayerModels[client] = INVALID_ENT_REFERENCE;
+    g_iSkinRef[client] = -1;
+    g_iSkinClient[client] = -1;
 }
