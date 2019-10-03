@@ -3429,7 +3429,7 @@ public int TTT_OnButtonPress(int client, int button)
                         
                         InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName]);
 
-                        if (!iRagdollC[Found] && IsPlayerAlive(client))
+                        if (!iRagdollC[Found])
                         {
                             bool bInWalk = ((button & IN_SPEED) > 0);
                             bool silentID = false;
