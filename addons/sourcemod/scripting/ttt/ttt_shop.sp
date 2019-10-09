@@ -717,7 +717,10 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
 
                     char sClientID[32], sRole[ROLE_LENGTH];
                     TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
-                    
+
+                    ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+                    ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
+
                     if (cAddLogs.BoolValue)
                     {
                         if (cLogFormat.IntValue == 1)
