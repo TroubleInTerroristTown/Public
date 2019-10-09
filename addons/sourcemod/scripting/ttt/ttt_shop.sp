@@ -715,17 +715,41 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                         CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
                     }
 
+                    char sClientID[32], sRole[ROLE_LENGTH];
+                    TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+                    
+                    if (cAddLogs.BoolValue)
+                    {
+                        if (cLogFormat.IntValue == 1)
+                        {
+                            GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+                        }
+                        else if (cLogFormat.IntValue == 2)
+                        {
+                            GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+                        }
+                        else if (cLogFormat.IntValue == 3)
+                        {
+                            GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                        }
+                        
+                        if (strlen(sClientID) > 2)
+                        {
+                            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                        }
+                    }
+
                     if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
                     {
-                        TTT_LogString("-> [%N%s (Detective) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     }
                     else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
                     {
-                        TTT_LogString("-> [%N%s (Traitor) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     }
                     else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
                     {
-                        TTT_LogString("-> [%N%s (Innocent) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     }
                     
                     return true;
