@@ -714,6 +714,19 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                     {
                         CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
                     }
+
+                    if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+                    {
+                        TTT_LogString("-> [%N%s (Detective) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                    }
+                    else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+                    {
+                        TTT_LogString("-> [%N%s (Traitor) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                    }
+                    else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+                    {
+                        TTT_LogString("-> [%N%s (Innocent) purchased an item from the shop: %s]", client, sClientID, temp_item[Long]);
+                    }
                     
                     return true;
                 }
