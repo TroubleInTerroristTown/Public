@@ -741,19 +741,8 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                             Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
                         }
                     }
-
-                    if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-                    {
-                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
-                    }
-                    else if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-                    {
-                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
-                    }
-                    else if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
-                    {
-                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
-                    }
+                    
+                    TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     
                     return true;
                 }
