@@ -63,6 +63,8 @@ ConVar g_cSetCreditsFlag = null;
 ConVar g_cResetItemsFlag = null;
 ConVar g_cListItemsFlag = null;
 ConVar g_cShopCMDs = null;
+ConVar g_cAddLogs = null;
+ConVar g_cLogFormat = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -215,7 +217,10 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-    
+
+    g_cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+    g_cLogFormat = FindConVar("ttt_steamid_log_format");
+
     char sBuffer[32];
     g_cCredits.GetString(sBuffer, sizeof(sBuffer));
     Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
@@ -714,6 +719,32 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                     {
                         CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
                     }
+
+                    char sClientID[32], sRole[ROLE_LENGTH];
+                    TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+
+                    if (g_cAddLogs != null && g_cAddLogs.BoolValue)
+                    {
+                        if (g_cLogFormat.IntValue == 1)
+                        {
+                            GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+                        }
+                        else if (g_cLogFormat.IntValue == 2)
+                        {
+                            GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+                        }
+                        else if (g_cLogFormat.IntValue == 3)
+                        {
+                            GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                        }
+                        
+                        if (strlen(sClientID) > 2)
+                        {
+                            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                        }
+                    }
+                    
+                    TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     
                     return true;
                 }
