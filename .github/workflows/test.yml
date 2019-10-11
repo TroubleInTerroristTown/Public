@@ -12,7 +12,7 @@ jobs:
     env:
       COUNT: $(git rev-list --count HEAD)
       VERSION: 3.$COUNT
-      FILE: ttt-${{ github.ref }}-1.10-3.-$VERSION-${GITHUB_SHA::8}.zip
+      FILE: ttt-1.10-$VERSION-${GITHUB_SHA::8}.zip
 
     steps:
     - uses: actions/checkout@v1
