@@ -9,9 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      COUNT: $(git rev-list --count HEAD)
-      SHA8: ${GITHUB_SHA::8}
 
     steps:
     - uses: actions/checkout@v1
@@ -114,8 +111,14 @@ jobs:
         cd build
         echo ttt-1.10-3.$COUNT-$SHA8.zip
         zip -9rq ttt-1.10-3.$COUNT-$SHA8.zip addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+      env:
+        COUNT: $(git rev-list --count HEAD)
+        SHA8: ${GITHUB_SHA::8}
       
     - uses: actions/upload-artifact@master
       with:
         name: ttt_sm1.10-zip
         path: build/ttt-1.10-3.$COUNT-$SHA8.zip
+      env:
+        COUNT: $(git rev-list --count HEAD)
+        SHA8: ${GITHUB_SHA::8}
