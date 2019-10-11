@@ -106,13 +106,7 @@ jobs:
         rm steamworks_linux.tar.gz
         rm steamworks_windows.zip
       
-    - name: Compress the build package
-      run: |
-        cd build
-        echo ttt-1.10-${{ github.sha }}.zip
-        zip -9rq ttt-1.10-${{ github.sha }}.zip addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
-      
     - uses: actions/upload-artifact@master
       with:
         name: ttt_sm1.10-zip
-        path: build/ttt-1.10-${{ github.sha }}.zip
+        path: build/
