@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      FILE: ttt-1.10-3.$(git rev-list --count HEAD)-GITHUB_SHA.zip
+      FILE: ttt-1.10-3.${{ git rev-list --count HEAD }}-${{ github.GITHUB_SHA }}.zip
 
     steps:
     - uses: actions/checkout@v1
