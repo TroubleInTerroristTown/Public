@@ -9,6 +9,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      COUNT: $(git rev-list --count HEAD)
+      VERSION: 3.$COUNT
+      FILE: ttt-${{ github.ref }}-1.10-3.-$VERSION-${GITHUB_SHA::8}.zip
+
     steps:
     - uses: actions/checkout@v1
     - name: Download sourcemod
@@ -39,12 +44,9 @@ jobs:
         addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
       
     - name: Let's prepare packaging
-      run: echo Count-$COUNT Version-$VERSION Hash-$HASH File-$FILE
-      env:
-        COUNT: $(git rev-list --count HEAD)
-        VERSION: 3.$COUNT
-        HASH: "$(git log --pretty=format:%h -n 1)"
-        FILE: ttt-$2-$1-$VERSION-$HASH-$6.zip
+      run: |
+        echo Count-$COUNT Version-$VERSION Hash-$HASH File-$FILE
+        echo Count-$(git rev-list --count HEAD) Version-$VERSION Hash-${GITHUB_SHA::8} File-$FILE
 
     - name: Remove plugins folder and create new ones
       run: |
