@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      FILE: ttt-1.10-3.${{ git rev-list --count HEAD }}-${{ github.GITHUB_SHA }}.zip
+      COUNT: $(git rev-list --count HEAD)
+      SHA8: ${GITHUB_SHA::8}
 
     steps:
     - uses: actions/checkout@v1
@@ -111,10 +112,10 @@ jobs:
     - name: Compress the build package
       run: |
         cd build
-        echo $FILE
-        zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+        echo ttt-1.10-3.$COUNT-$SHA8.zip
+        zip -9rq ttt-1.10-3.$COUNT-$SHA8.zip addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
       
     - uses: actions/upload-artifact@master
       with:
         name: ttt_sm1.10-zip
-        path: build/$FILE
+        path: build/ttt-1.10-3.$COUNT-$SHA8.zip
