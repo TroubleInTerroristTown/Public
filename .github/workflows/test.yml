@@ -10,8 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      COUNT: $(git rev-list --count HEAD)
-      VERSION: 3.$COUNT
+      COUNT: 
+      VERSION: 3.$(git rev-list --count HEAD)
       FILE: ttt-1.10-$VERSION-${GITHUB_SHA::8}.zip
 
     steps:
@@ -42,11 +42,6 @@ jobs:
         addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/tripmines.sp
         echo -e "\nCompiling addons/sourcemod/scripting/turret_core.sp..."
         addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
-      
-    - name: Let's prepare packaging
-      run: |
-        echo Count-$COUNT Version-$VERSION Hash-$HASH File-$FILE
-        echo Count-$(git rev-list --count HEAD) Version-$VERSION Hash-${GITHUB_SHA::8} File-$FILE
 
     - name: Remove plugins folder and create new ones
       run: |
@@ -118,6 +113,7 @@ jobs:
     - name: Compress the build package
       run: |
         cd build
+        echo $FILE
         zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
       
     - uses: actions/upload-artifact@master
