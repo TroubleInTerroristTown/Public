@@ -40,7 +40,6 @@ jobs:
       
     - name: Let's prepare packaging
       run: |
-        git fetch --unshallow
         COUNT=$(git rev-list --count HEAD)
         VERSION=3.$COUNT
         HASH="$(git log --pretty=format:%h -n 1)"
