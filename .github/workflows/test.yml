@@ -108,5 +108,5 @@ jobs:
       
     - uses: actions/upload-artifact@master
       with:
-        name: ttt_sm1.10-zip
+        name: ttt.1.10.${{ github.sha }}-zip
         path: build/
