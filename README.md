@@ -1,9 +1,9 @@
 # [TroubleinTerroristTown](http://csgottt.com/)
 
 
-| Status | Build Status | Discord |
-|:------:|:------------:|:-------:|
-| Fixes Only | [![Build Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara/TroubleinTerroristTown) | [![Discord](https://img.shields.io/discord/388685157286019072.svg)](https://discord.gg/eCsqjcD) |
+| Status | Travis Build | Action Status | Discord |
+|:------:|:------------:|:-------------:|:-------:|
+| Fixes Only | [![Travis Status](https://travis-ci.org/Bara/TroubleinTerroristTown.svg?branch=master)](https://travis-ci.org/Bara/TroubleinTerroristTown) | [![Action Status](https://github.com/Bara/TroubleinTerroristTown/workflows/Compile%20with%20SourceMod%201.10/badge.svg)](https://github.com/Bara/TroubleinTerroristTown/actions) | [![Discord](https://img.shields.io/discord/388685157286019072.svg)](https://discord.gg/eCsqjcD) |
 
 ## Links
 - [AlliedModders Thread](https://forums.alliedmods.net/showthread.php?t=273960)
