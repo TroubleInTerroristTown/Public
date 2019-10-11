@@ -19,7 +19,7 @@ ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
 
 int g_iSkinRef[MAXPLAYERS+1] = {-1,...};
-int g_iSkinClient[MAXPLAYERS + 1] = { -1 , ... };
+int g_iSkinClient[2048] = { -1 , ... };
 
 Handle g_hOnGlowCheck = null;
 
