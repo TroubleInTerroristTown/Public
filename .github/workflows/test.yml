@@ -9,12 +9,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sm_version: [1.9, 1.10]
 
     steps:
     - uses: actions/checkout@v1
     - name: Download sourcemod
       run: |
-        wget "http://www.sourcemod.net/latest.php?version=1.10&os=linux" -O sourcemod.tar.gz
+        wget "http://www.sourcemod.net/latest.php?version=${{ matrix.sm_version }}&os=linux" -O sourcemod.tar.gz
         tar -xzf sourcemod.tar.gz --exclude='addons/sourcemod/translations'
     - name: Give spcomp the required permissions
       run: chmod +x addons/sourcemod/scripting/spcomp
@@ -108,5 +111,5 @@ jobs:
       
     - uses: actions/upload-artifact@master
       with:
-        name: ttt.1.10.${{ github.sha }}-zip
+        name: ttt.${{ matrix.sm_version }}.${{ github.sha }}-zip
         path: build/
