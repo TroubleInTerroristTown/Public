@@ -14,7 +14,7 @@ jobs:
     - name: Download sourcemod
       run: |
         wget "http://www.sourcemod.net/latest.php?version=1.10&os=linux" -O sourcemod.tar.gz
-        tar -xzf sourcemod.tar.gz
+        tar -xzf sourcemod.tar.gz --exclude='addons/sourcemod/translations'
     - name: Give spcomp the required permissions
       run: chmod +x addons/sourcemod/scripting/spcomp
     - name: Compiling of all TTT related plugins
@@ -38,3 +38,87 @@ jobs:
         echo -e "\nCompiling addons/sourcemod/scripting/turret_core.sp..."
         addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
       
+    - name: Let's prepare packaging
+      run: |
+        git fetch --unshallow
+        COUNT=$(git rev-list --count HEAD)
+        VERSION=3.$COUNT
+        HASH="$(git log --pretty=format:%h -n 1)"
+        FILE=ttt-$2-$1-$VERSION-$HASH-$6.zip
+
+    - name: Remove plugins folder and create new ones
+      run: |
+        if [ -d "addons/sourcemod/plugins" ]; then
+          rm -r addons/sourcemod/plugins
+        fi
+        mkdir addons/sourcemod/plugins
+        mkdir addons/sourcemod/plugins/disabled
+        mkdir addons/sourcemod/plugins/ttt
+        
+    - name: Move all TTT smx files into the plugins folder
+      run: |
+        for file in ttt*.smx
+        do
+          mv $file addons/sourcemod/plugins/ttt
+        done
+      
+    - name: Move 3rd-party-plugins into the plugins folder
+      run: |
+        for file in *.smx
+        do
+          mv $file addons/sourcemod/plugins
+        done
+        
+    - name: Remove build folder and create new one
+      run: |
+        if [ -d "build" ]; then
+          rm -r build
+        fi
+        mkdir build
+      
+    - name: Move addons, materials, models and sound folder
+      run: mv addons materials models sound build/
+    
+    - name: Remove sourcemod folders
+      run: |
+        rm -r build/addons/metamod
+        rm -r build/addons/sourcemod/bin
+        rm -r build/addons/sourcemod/configs/geoip
+        rm -r build/addons/sourcemod/configs/sql-init-scripts
+        rm -r build/addons/sourcemod/configs/*.txt
+        rm -r build/addons/sourcemod/configs/*.ini
+        rm -r build/addons/sourcemod/configs/*.cfg
+        rm -r build/addons/sourcemod/data
+        rm -r build/addons/sourcemod/extensions
+        rm -r build/addons/sourcemod/gamedata
+        rm -r build/addons/sourcemod/scripting
+        rm build/addons/sourcemod/*.txt
+        
+    - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
+      run: cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/
+    
+    - name: Download steamworks and move into the build package
+      run: |
+        wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
+        tar xfv steamworks_linux.tar.gz
+        wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
+        unzip -o steamworks_windows.zip
+        mkdir -p build/addons/sourcemod/extensions/
+        cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
+        cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
+      
+    - name: Clean up root directory
+      run: |
+        rm sourcemod.tar.gz
+        rm steamworks_linux.tar.gz
+        rm steamworks_windows.zip
+      
+    - name: Compress the build package
+      run: |
+        cd build
+        zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+      
+    - uses: actions/upload-artifact@master
+      with:
+        name: ttt_sm1.10-zip
+        path: build/$FILE
