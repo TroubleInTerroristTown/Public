@@ -70,28 +70,28 @@ jobs:
         if [ -d "build" ]; then
           rm -r build
         fi
-        mkdir build
+        mkdir -p build/${{ matrix.sm_version }}/
       
     - name: Move addons, materials, models and sound folder
-      run: mv addons materials models sound build/
+      run: mv addons materials models sound build/${{ matrix.sm_version }}/
     
     - name: Remove sourcemod folders
       run: |
-        rm -r build/addons/metamod
-        rm -r build/addons/sourcemod/bin
-        rm -r build/addons/sourcemod/configs/geoip
-        rm -r build/addons/sourcemod/configs/sql-init-scripts
-        rm -r build/addons/sourcemod/configs/*.txt
-        rm -r build/addons/sourcemod/configs/*.ini
-        rm -r build/addons/sourcemod/configs/*.cfg
-        rm -r build/addons/sourcemod/data
-        rm -r build/addons/sourcemod/extensions
-        rm -r build/addons/sourcemod/gamedata
-        rm -r build/addons/sourcemod/scripting
-        rm build/addons/sourcemod/*.txt
+        rm -r build/${{ matrix.sm_version }}/addons/metamod
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/bin
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/geoip
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/sql-init-scripts
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.txt
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.ini
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.cfg
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/data
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/extensions
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/gamedata
+        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/scripting
+        rm build/${{ matrix.sm_version }}/addons/sourcemod/*.txt
         
     - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
-      run: cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/
+      run: cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/${{ matrix.sm_version }}/
     
     - name: Download steamworks and move into the build package
       run: |
@@ -99,9 +99,9 @@ jobs:
         tar xfv steamworks_linux.tar.gz
         wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
         unzip -o steamworks_windows.zip
-        mkdir -p build/addons/sourcemod/extensions/
-        cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
-        cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
+        mkdir -p build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
+        cp addons/sourcemod/extensions/SteamWorks.ext.so build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
+        cp addons/sourcemod/extensions/SteamWorks.ext.dll build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
       
     - name: Clean up root directory
       run: |
@@ -112,4 +112,4 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: ttt.${{ matrix.sm_version }}.${{ github.sha }}-zip
-        path: build/
+        path: build/${{ matrix.sm_version }}/
