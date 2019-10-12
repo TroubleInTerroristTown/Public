@@ -1,4 +1,4 @@
-name: Compile with SourceMod 1.10
+name: Compile with SourceMod
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
         for file in addons/sourcemod/scripting/ttt/*.sp
         do
           echo -e "\nCompiling $file..." 
-          addons/sourcemod/scripting/spcomp -E -w234 -w241 -O2 -v2 $file
+          addons/sourcemod/scripting/spcomp -w241 -E -O2 -v2 $file
         done
         
     - name: Compile 3rd-party-plugins
