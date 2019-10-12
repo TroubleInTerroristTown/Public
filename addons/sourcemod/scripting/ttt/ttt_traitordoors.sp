@@ -7,6 +7,10 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Traitor Doors"
 
+ConVar g_cLogDoorUse = null;
+ConVar g_cAddLogs = null;
+ConVar g_cLogFormat = null;
+
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
@@ -18,12 +22,23 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
+    TTT_IsGameCSGO();
+
+    TTT_StartConfig("traitordoors");
     CreateConVar("ttt2_traitor_door_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    g_cLogDoorUse = AutoExecConfig_CreateConVar("traitordoor_log_use", "1", "Log use of traitor doors?", _, true, 0.0, true, 1.0);
+    TTT_EndConfig();
 }
 
 public void TTT_OnLatestVersion(const char[] version)
 {
     TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+}
+
+public void OnConfigsExecuted()
+{
+    g_cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+    g_cLogFormat = FindConVar("ttt_steamid_log_format");
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
@@ -92,6 +107,31 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         AcceptEntityInput(target, "Unlock");
         AcceptEntityInput(target, "Open");
         AcceptEntityInput(target, "Lock");
+
+        if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue)
+        {
+            char sClientID[32];
+
+            if (g_cLogFormat.IntValue == 1)
+            {
+                GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 2)
+            {
+                GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 3)
+            {
+                GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+            }
+            
+            if (strlen(sClientID) > 2)
+            {
+                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+            }
+
+            TTT_LogString("-> [%N%s (Traitor) opened a traitor door: %s]", client, sClientID, sName);
+        }
     }
 
     return Plugin_Continue;
@@ -107,4 +147,32 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
     AcceptEntityInput(caller, "Unlock");
     AcceptEntityInput(caller, "Open");
     AcceptEntityInput(caller, "Lock");
+
+    if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue)
+    {
+        char sClientID[32];
+
+        if (g_cLogFormat.IntValue == 1)
+        {
+            GetClientAuthId(attacker, AuthId_Steam2, sClientID, sizeof(sClientID));
+            }
+        else if (g_cLogFormat.IntValue == 2)
+        {
+            GetClientAuthId(attacker, AuthId_Steam3, sClientID, sizeof(sClientID));
+        }
+        else if (g_cLogFormat.IntValue == 3)
+        {
+            GetClientAuthId(attacker, AuthId_SteamID64, sClientID, sizeof(sClientID));
+        }
+        
+        if (strlen(sClientID) > 2)
+        {
+            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+        }
+
+        char sName[64];
+        GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
+
+        TTT_LogString("-> [%N%s (Traitor) opened a traitor door: %s]", attacker, sClientID, sName);
+    }
 }
