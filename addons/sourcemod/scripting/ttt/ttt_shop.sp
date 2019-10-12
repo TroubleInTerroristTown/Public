@@ -749,7 +749,10 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                             }
                         }
                         
-                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
+                        if ((StrContains(temp_item[Short], "buyTRole", false) == -1) && (StrContains(temp_item[Short], "buyCTRole", false) == -1))
+                        {
+                            TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
+                        }
                     }
                     
                     return true;
