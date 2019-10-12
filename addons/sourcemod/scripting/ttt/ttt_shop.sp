@@ -187,7 +187,7 @@ public void OnPluginStart()
     g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
     g_cListItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_list_items_flag", "z", "Admin flags to list all items from shop");
     g_cShopCMDs = AutoExecConfig_CreateConVar("ttt_shop_commands", "shop;menu", "Commands for ttt shop (up to 6 commands)");
-    g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 1.0);
+    g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 2.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
