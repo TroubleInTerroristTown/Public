@@ -17,6 +17,8 @@ ConVar g_cLongName = null;
 ConVar g_cRoleColor = null;
 ConVar g_cStartWith = null;
 ConVar g_cFreeCount = null;
+ConVar g_cAddLogs = null;
+ConVar g_cLogFormat = null;
 
 bool g_bHasScanner[MAXPLAYERS + 1] =  { false, ... };
 bool g_bFreeScanner[MAXPLAYERS + 1] = { false, ...};
@@ -64,6 +66,9 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    g_cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+    g_cLogFormat = FindConVar("ttt_steamid_log_format");
 }
 
 public void TTT_OnShopReady()
@@ -171,25 +176,22 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 
     if (attacker > 0 && attacker != victim)
     {
-        ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
-        ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
-
         char sAttackerID[32], sClientID[32], sRole[ROLE_LENGTH];
         TTT_GetRoleNameByID(TTT_GetClientRole(attacker), sRole, sizeof(sRole));
         
-        if (cAddLogs.BoolValue)
+        if (g_cAddLogs != null && g_cAddLogs.BoolValue)
         {
-            if (cLogFormat.IntValue == 1)
+            if (g_cLogFormat.IntValue == 1)
             {
                 GetClientAuthId(attacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
                 GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
             }
-            else if (cLogFormat.IntValue == 2)
+            else if (g_cLogFormat.IntValue == 2)
             {
                 GetClientAuthId(attacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
                 GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
             }
-            else if (cLogFormat.IntValue == 3)
+            else if (g_cLogFormat.IntValue == 3)
             {
                 GetClientAuthId(attacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
                 GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
@@ -255,22 +257,19 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
     }
     else
     {
-        ConVar cAddLogs = FindConVar("ttt_steamid_add_to_logs");
-        ConVar cLogFormat = FindConVar("ttt_steamid_log_format");
-
         char sClientID[32];
         
-        if (cAddLogs.BoolValue)
+        if (g_cAddLogs != null && g_cAddLogs.BoolValue)
         {
-            if (cLogFormat.IntValue == 1)
+            if (g_cLogFormat.IntValue == 1)
             {
                 GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
             }
-            else if (cLogFormat.IntValue == 2)
+            else if (g_cLogFormat.IntValue == 2)
             {
                 GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
             }
-            else if (cLogFormat.IntValue == 3)
+            else if (g_cLogFormat.IntValue == 3)
             {
                 GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
             }
