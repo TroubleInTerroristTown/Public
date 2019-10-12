@@ -19,6 +19,8 @@ ConVar g_cLongName = null;
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bTeleport[MAXPLAYERS + 1] =  { false, ... };
+bool g_bDuck[MAXPLAYERS + 1] =  { false, ... };
+bool g_bInTeleport[MAXPLAYERS + 1] =  { false, ... };
 
 float g_fLocation[MAXPLAYERS + 1][3];
 
@@ -104,6 +106,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
             
+            g_bDuck[client] = view_as<bool>(GetEntProp(client, Prop_Send, "m_bDucked"));
             GetClientAbsOrigin(client, g_fLocation[client]);
             
             g_bTeleport[client] = true;
@@ -138,7 +141,10 @@ public Action Command_Tele(int client, int args)
         return Plugin_Handled;
     }
     
-    TeleportEntity(client, g_fLocation[client], NULL_VECTOR, NULL_VECTOR);
+    if (g_bDuck[client])
+    {
+        g_bInTeleport[client] = true;
+    }
     g_iPCount[client]++;
     
     return Plugin_Continue;
@@ -147,5 +153,49 @@ public Action Command_Tele(int client, int args)
 void ResetTeleporter(int client)
 {
     g_bTeleport[client] = false;
+    g_bDuck[client] = false;
+    g_bInTeleport[client] = false;
     g_iPCount[client] = 0;
+}
+
+public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
+{
+    if (TTT_IsClientValid(client))
+    {
+        if (g_bDuck[client] && g_bInTeleport[client])
+        {
+            if (!(buttons & IN_DUCK))
+			{
+				buttons ^= IN_DUCK;
+			}
+            
+            RequestFrame(Frame_Teleport, GetClientUserId(client));
+            return Plugin_Changed;
+        }
+    }
+
+    return Plugin_Continue;
+}
+
+public void Frame_Teleport(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
+    {
+        TeleportEntity(client, g_fLocation[client], NULL_VECTOR, NULL_VECTOR);
+        RequestFrame(Frame_Reset, userid);
+    }
+}
+
+
+public void Frame_Reset(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client))
+    {
+        g_bDuck[client] = false;
+        g_bInTeleport[client] = false;
+    }
 }
