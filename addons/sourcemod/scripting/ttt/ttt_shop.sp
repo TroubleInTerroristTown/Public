@@ -65,6 +65,7 @@ ConVar g_cListItemsFlag = null;
 ConVar g_cShopCMDs = null;
 ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
+ConVar g_cLogPurchases = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -186,6 +187,7 @@ public void OnPluginStart()
     g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
     g_cListItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_list_items_flag", "z", "Admin flags to list all items from shop");
     g_cShopCMDs = AutoExecConfig_CreateConVar("ttt_shop_commands", "shop;menu", "Commands for ttt shop (up to 6 commands)");
+    g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 2.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -720,31 +722,35 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                         CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
                     }
 
-                    char sClientID[32], sRole[ROLE_LENGTH];
-                    TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
-
-                    if (g_cAddLogs != null && g_cAddLogs.BoolValue)
+                    int iTeam = TTT_GetClientRole(client);
+                    if (g_cLogPurchases != null && (g_cLogPurchases.IntValue == 1 || (g_cLogPurchases.IntValue == 2 && (iTeam == TTT_TEAM_TRAITOR || iTeam == TTT_TEAM_DETECTIVE))))
                     {
-                        if (g_cLogFormat.IntValue == 1)
+                        char sClientID[32], sRole[ROLE_LENGTH];
+                        TTT_GetRoleNameByID(iTeam, sRole, sizeof(sRole));
+
+                        if (g_cAddLogs != null && g_cAddLogs.BoolValue)
                         {
-                            GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
-                        }
-                        else if (g_cLogFormat.IntValue == 2)
-                        {
-                            GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
-                        }
-                        else if (g_cLogFormat.IntValue == 3)
-                        {
-                            GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                            if (g_cLogFormat.IntValue == 1)
+                            {
+                                GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+                            }
+                            else if (g_cLogFormat.IntValue == 2)
+                            {
+                                GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+                            }
+                            else if (g_cLogFormat.IntValue == 3)
+                            {
+                                GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                            }
+                            
+                            if (strlen(sClientID) > 2)
+                            {
+                                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                            }
                         }
                         
-                        if (strlen(sClientID) > 2)
-                        {
-                            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
-                        }
+                        TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     }
-                    
-                    TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
                     
                     return true;
                 }
