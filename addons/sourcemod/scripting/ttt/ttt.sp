@@ -637,6 +637,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
     TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
     GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));    
     Format(iItem, sizeof(iItem), "-> [%N%s (%s) pressed the button %s (%d)]", client, sClientID, sRole, sName, entity);
+    addArrayTime(iItem);
     
     g_bPressed[entity] = true;
     CreateTimer(g_cLogButtonsSpam.FloatValue, Timer_EnableButton, EntIndexToEntRef(entity));
