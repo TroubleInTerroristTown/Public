@@ -112,24 +112,27 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         {
             char sClientID[32];
 
-            if (g_cLogFormat.IntValue == 1)
+            if (g_cAddLogs != null && g_cAddLogs.BoolValue)
             {
-                GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
-            }
-            else if (g_cLogFormat.IntValue == 2)
-            {
-                GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
-            }
-            else if (g_cLogFormat.IntValue == 3)
-            {
-                GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                if (g_cLogFormat.IntValue == 1)
+                {
+                    GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+                }
+                else if (g_cLogFormat.IntValue == 2)
+                {
+                    GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+                }
+                else if (g_cLogFormat.IntValue == 3)
+                {
+                    GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                }
+                
+                if (strlen(sClientID) > 2)
+                {
+                    Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                }
             }
             
-            if (strlen(sClientID) > 2)
-            {
-                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
-            }
-
             TTT_LogString("-> [%N%s (Traitor) opened a traitor door: %s]", client, sClientID, sName);
         }
     }
@@ -152,22 +155,25 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
     {
         char sClientID[32];
 
-        if (g_cLogFormat.IntValue == 1)
+        if (g_cAddLogs != null && g_cAddLogs.BoolValue)
         {
-            GetClientAuthId(attacker, AuthId_Steam2, sClientID, sizeof(sClientID));
+            if (g_cLogFormat.IntValue == 1)
+            {
+                GetClientAuthId(attacker, AuthId_Steam2, sClientID, sizeof(sClientID));
             }
-        else if (g_cLogFormat.IntValue == 2)
-        {
-            GetClientAuthId(attacker, AuthId_Steam3, sClientID, sizeof(sClientID));
-        }
-        else if (g_cLogFormat.IntValue == 3)
-        {
-            GetClientAuthId(attacker, AuthId_SteamID64, sClientID, sizeof(sClientID));
-        }
-        
-        if (strlen(sClientID) > 2)
-        {
-            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+            else if (g_cLogFormat.IntValue == 2)
+            {
+                GetClientAuthId(attacker, AuthId_Steam3, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 3)
+            {
+                GetClientAuthId(attacker, AuthId_SteamID64, sClientID, sizeof(sClientID));
+            }
+            
+            if (strlen(sClientID) > 2)
+            {
+                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+            }
         }
 
         char sName[64];
