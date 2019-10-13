@@ -145,6 +145,11 @@ public Action Command_Tele(int client, int args)
     {
         g_bInTeleport[client] = true;
     }
+    else
+    {
+        TeleportEntity(client, g_fLocation[client], NULL_VECTOR, NULL_VECTOR);
+    }
+    
     g_iPCount[client]++;
     
     return Plugin_Continue;
