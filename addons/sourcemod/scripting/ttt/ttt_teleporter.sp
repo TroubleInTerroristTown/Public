@@ -15,8 +15,10 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cCount = null;
 ConVar g_cLongName = null;
+ConVar g_cAmount = null;
 
 int g_iPCount[MAXPLAYERS + 1] =  { 0, ... };
+int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
 
 bool g_bTeleport[MAXPLAYERS + 1] =  { false, ... };
 bool g_bDuck[MAXPLAYERS + 1] =  { false, ... };
@@ -48,6 +50,7 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("teleporter_price", "9000", "The amount of credits Teleporter costs as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("teleporter_sort_prio", "0", "The sorting priority of the Teleporter in the shop menu.");
     g_cCount = AutoExecConfig_CreateConVar("teleporter_count", "2", "How often a players can port him back to the location");
+    g_cAmount = AutoExecConfig_CreateConVar("teleporter_amount", "1", "How many teleporters can a traitor buy?");
     TTT_EndConfig();
 
     RegConsoleCmd("sm_tele", Command_Tele);
@@ -100,23 +103,36 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         if (StrEqual(itemshort, SHORT_NAME, false))
         {
             int role = TTT_GetClientRole(client);
-
+            
             if (role != TTT_TEAM_TRAITOR)
             {
                 return Plugin_Stop;
             }
-            
+
+            if (g_iPAmount[client] >= g_cAmount.IntValue)
+            {
+                char sName[MAX_ITEM_LENGTH], sTag[64];
+                g_cLongName.GetString(sName, sizeof(sName));
+
+                ConVar hTag = FindConVar("ttt_plugin_tag");
+                hTag.GetString(sTag, sizeof(sTag));
+
+                CPrintToChat(client, "%s %T", sTag, "Bought All", client, sName, g_cAmount.IntValue);
+                return Plugin_Stop;
+            }
+
             g_bDuck[client] = view_as<bool>(GetEntProp(client, Prop_Send, "m_bDucked"));
             GetClientAbsOrigin(client, g_fLocation[client]);
             
             g_bTeleport[client] = true;
             g_iPCount[client] = 0;
+            g_iPAmount[client]++;
 
             CPrintToChat(client, "%s %T", g_sPluginTag, "Location Saved", client);
         }
     }
     return Plugin_Continue;
-}
+} 
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
@@ -140,7 +156,7 @@ public Action Command_Tele(int client, int args)
         CPrintToChat(client, "%s %T", g_sPluginTag, "Teleport Max", client, g_cCount.IntValue);
         return Plugin_Handled;
     }
-    
+
     if (g_bDuck[client])
     {
         g_bInTeleport[client] = true;
@@ -151,7 +167,7 @@ public Action Command_Tele(int client, int args)
     }
     
     g_iPCount[client]++;
-    
+
     return Plugin_Continue;
 }
 
@@ -161,6 +177,7 @@ void ResetTeleporter(int client)
     g_bDuck[client] = false;
     g_bInTeleport[client] = false;
     g_iPCount[client] = 0;
+    g_iPAmount[client] = 0;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
