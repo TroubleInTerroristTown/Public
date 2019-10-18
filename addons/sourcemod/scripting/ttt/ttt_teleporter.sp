@@ -103,6 +103,11 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
         if (StrEqual(itemshort, SHORT_NAME, false))
         {
             int role = TTT_GetClientRole(client);
+            
+            if (role != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Stop;
+            }
 
             if (g_iPAmount[client] >= g_cAmount.IntValue)
             {
