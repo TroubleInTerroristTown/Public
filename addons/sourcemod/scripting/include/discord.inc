@@ -146,17 +146,19 @@ stock bool GetWebHook(const char[] sWebhook, char[] sUrl, int iLength)
     KeyValues kv = new KeyValues("Discord");
 
     char sFile[PLATFORM_MAX_PATH];
-    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/Discord.cfg");
+    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/Discord.cfg");
 
     if (!FileExists(sFile))
     {
         SetFailState("[GetWebHook] \"%s\" not found!", sFile);
+		delete kv;
         return false;
     }
 
     if (!kv.ImportFromFile(sFile))
     {
         SetFailState("[GetWebHook] Can't read: \"%s\"!", sFile);
+		delete kv;
         return false;
     }
 
@@ -164,6 +166,7 @@ stock bool GetWebHook(const char[] sWebhook, char[] sUrl, int iLength)
 
     if (strlen(sUrl) > 2)
     {
+		delete kv;
         return true;
     }
 
