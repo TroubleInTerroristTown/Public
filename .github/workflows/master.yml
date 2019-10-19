@@ -114,5 +114,5 @@ jobs:
       
     - uses: actions/upload-artifact@master
       with:
-        name: ttt.${{ matrix.sm_version }}.${{ github.sha }}-zip
+        name: ttt.${{ matrix.sm_version }}.${{ github.sha }}
         path: build/${{ matrix.sm_version }}/
