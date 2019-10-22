@@ -217,7 +217,7 @@ public Action TTT_OnGrabbing(int client, int entity)
         if (StrEqual(sClass, "prop_ragdoll", false))
         {
             g_bInUse[client] = true;
-            g_iRagdoll[client] = entity;
+            g_iRagdoll[client] = EntIndexToEntRef(entity);
 
             DataPack pack = new DataPack();
             g_hTimer[client] = CreateTimer(1.0, Timer_Revive, pack, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
