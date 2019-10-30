@@ -124,7 +124,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
     {
         if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
         {
@@ -400,7 +400,7 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
 {
     if (action == MenuAction_Select)
     {
-        if (!TTT_IsRoundActive() || TTT_IsPlayerAlive(target))
+        if (!TTT_IsRoundActive() || IsPlayerAlive(target))
         {
             return;
         }
@@ -422,7 +422,7 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
             }
         }
 
-        if (!TTT_IsPlayerAlive(client) || !g_bHasRevive[client])
+        if (!IsPlayerAlive(client) || !g_bHasRevive[client])
         {
             return;
         }

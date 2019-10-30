@@ -431,7 +431,7 @@ public int Native_IsPlayerAlive(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
 
-    if (TTT_IsClientValid(client))
+    if (TTT_IsClientValid(client) && (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_INNOCENT || g_iRole[client] == TTT_TEAM_TRAITOR))
     {
         return g_bAlive[client];
     }
