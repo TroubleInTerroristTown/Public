@@ -3418,7 +3418,9 @@ public int TTT_OnButtonPress(int client, int button)
                         }
                         else if (res == Plugin_Changed)
                         {
-                            g_aRagdoll.SetArray(i, iRagdollC[0]);
+                            // g_aRagdoll.SetArray(i, iRagdollC[0]);
+                            g_aRagdoll.Erase(i);
+                            g_aRagdoll.PushArray(iRagdollC[0]);
                             return;
                         }
                         
@@ -3535,7 +3537,9 @@ public int TTT_OnButtonPress(int client, int button)
                             Call_PushCell(silentID);
                             Call_Finish();
                         }
-                        g_aRagdoll.SetArray(i, iRagdollC[0]);
+                        // g_aRagdoll.SetArray(i, iRagdollC[0]);
+                        g_aRagdoll.Erase(i);
+                        g_aRagdoll.PushArray(iRagdollC[0]);
                         break;
                     }
                 }
