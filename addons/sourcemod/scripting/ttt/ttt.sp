@@ -1285,6 +1285,8 @@ void TeamInitialize(int client, bool skipWeapons = false)
     {
         return;
     }
+
+    CS_SetClientClanTag(client, " ");
     
     g_bFound[client] = false;
     g_bAlive[client] = true;
