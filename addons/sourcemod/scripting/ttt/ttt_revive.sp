@@ -372,7 +372,7 @@ void ShowReviveMenu(int client, int target)
 {
     if (!g_bHasRevive[client] || g_bWait[client] || g_bMenu[target])
     {
-        PrintToChat(client, "[Revive] Something went wrong here. (g_bHasRevive: %d, g_bWait: %d, g_bWg_bMenuait: %d)", g_bHasRevive[client], g_bMenu[target]);
+        PrintToChat(client, "[Revive] Something went wrong here. (g_bHasRevive: %d, g_bWait: %d, g_bMenu: %d)", g_bHasRevive[client], g_bWait[client], g_bMenu[target]);
         return;
     }
 
