@@ -51,8 +51,8 @@ bool g_bCheckPlayers = false;
 int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
 bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
 
-int g_bHurtedPlayer1[MAXPLAYERS + 1] =  { -1, ... };
-int g_bHurtedPlayer2[MAXPLAYERS + 1] =  { -1, ... };
+int g_iHurtedPlayer1[MAXPLAYERS + 1] =  { -1, ... };
+int g_iHurtedPlayer2[MAXPLAYERS + 1] =  { -1, ... };
 bool g_bResetHurt[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRoundTimer = null;

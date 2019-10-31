@@ -695,8 +695,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         g_iDetectiveKills[i] = 0;
         g_bImmuneRDMManager[i] = false;
         
-        g_bHurtedPlayer1[i] = -1;
-        g_bHurtedPlayer2[i] = -1;
+        g_iHurtedPlayer1[i] = -1;
+        g_iHurtedPlayer2[i] = -1;
         g_bResetHurt[i] = false;
         g_bRespawn[i] = false;
         
@@ -1645,6 +1645,8 @@ public void OnClientPutInServer(int client)
     {
         return;
     }
+
+    ClearClientData(client);
     
     HookClient(client);
     if (g_cDebugMessages.BoolValue)
@@ -2720,7 +2722,7 @@ public void OnClientDisconnect(int client)
     if (IsClientInGame(client))
     {
         g_bKarma[client] = false;
-        g_bFound[client] = true;
+        g_bFound[client] = false;
         g_bAlive[client] = false;
         g_bRespawn[client] = false;
 
@@ -3025,9 +3027,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
         badAction = true;
         
-        if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
-        } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaII.IntValue, true);
@@ -3047,9 +3049,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
         badAction = true;
         
-        if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
-        } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaID.IntValue, true);
@@ -3069,9 +3071,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         
         badAction = true;
         
-        if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
-        } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaTT.IntValue, true);
@@ -3091,9 +3093,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
         badAction = true;
         
-        if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
-        } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaDI.IntValue, true);
@@ -3113,9 +3115,9 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
         badAction = true;
         
-        if (g_bHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
-        } else if (g_bHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaDD.IntValue, true);
@@ -3161,16 +3163,16 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
        (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) ||
        (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
     {
-        if (g_bHurtedPlayer1[iAttacker] == -1 && iAttacker != g_bHurtedPlayer1[client]) {
-            g_bHurtedPlayer1[iAttacker] = client;
-        } else if (g_bHurtedPlayer2[iAttacker] == -1 && iAttacker != g_bHurtedPlayer2[client] && iAttacker != g_bHurtedPlayer1[client]) {
-            g_bHurtedPlayer2[iAttacker] = client;
-        } else if (iAttacker != g_bHurtedPlayer1[client] && !g_bResetHurt[iAttacker] && g_bHurtedPlayer1[iAttacker] > 0 && g_bHurtedPlayer2[iAttacker] > 0) {
+        if (g_iHurtedPlayer1[iAttacker] == -1 && iAttacker != g_iHurtedPlayer1[client]) {
+            g_iHurtedPlayer1[iAttacker] = client;
+        } else if (g_iHurtedPlayer2[iAttacker] == -1 && iAttacker != g_iHurtedPlayer2[client] && iAttacker != g_iHurtedPlayer1[client]) {
+            g_iHurtedPlayer2[iAttacker] = client;
+        } else if (iAttacker != g_iHurtedPlayer1[client] && !g_bResetHurt[iAttacker] && g_iHurtedPlayer1[iAttacker] > 0 && g_iHurtedPlayer2[iAttacker] > 0) {
             g_bResetHurt[iAttacker] = true;
-            g_bHurtedPlayer1[iAttacker] = client;
-        } else if (iAttacker != g_bHurtedPlayer2[client]  && iAttacker != g_bHurtedPlayer1[client] && g_bResetHurt[iAttacker] && g_bHurtedPlayer1[iAttacker] > 0 && g_bHurtedPlayer2[iAttacker] > 0) {
+            g_iHurtedPlayer1[iAttacker] = client;
+        } else if (iAttacker != g_iHurtedPlayer2[client]  && iAttacker != g_iHurtedPlayer1[client] && g_bResetHurt[iAttacker] && g_iHurtedPlayer1[iAttacker] > 0 && g_iHurtedPlayer2[iAttacker] > 0) {
             g_bResetHurt[iAttacker] = false;
-            g_bHurtedPlayer2[iAttacker] = client;
+            g_iHurtedPlayer2[iAttacker] = client;
         }
     }
 }
@@ -4690,4 +4692,38 @@ void CheckCPS()
             DeleteFile(sPath);
         }
     }
+}
+
+public void ClearClientData(int client)
+{
+    g_iRole[client] = TTT_TEAM_UNASSIGNED;
+    g_iLastRole[client] = TTT_TEAM_UNASSIGNED;
+    g_iKarma[client] = -1;
+    g_iKarmaStart[client] = -1;
+    g_iArmor[client] = 0;
+    g_iSite[client] = -1;
+    g_iHurtedPlayer1[client] = -1;
+    g_iHurtedPlayer2[client] = -1;
+    g_iInnoKills[client] = -1;
+    g_iDetectiveKills[client] = -1;
+    g_iTraitorKills[client] = -1;
+    g_iRDMAttacker[client] = -1;
+    g_iRoundSlays[client] = 0;
+    g_iLastButtons[client] = -1;
+
+    g_bKarma[client] = false;
+    g_bAlive[client] = false;
+    g_bRespawn[client] = false;
+    g_bFound[client] = false;
+    g_bIsChecking[client] = false;
+    g_bReceivingLogs[client] = false;
+    g_bRules[client] = false;
+    g_bDRules[client] = false;
+    g_bReadRules[client] = false;
+    g_bKnowRules[client] = false;
+    g_bAvoidDetective[client] = false;
+    g_bImmuneRDMManager[client] = false;
+    g_bResetHurt[client] = false;
+
+    g_hRDMTimer[client] = INVALID_HANDLE;
 }
