@@ -53,8 +53,6 @@ bool g_bRoundTaser[MAXPLAYERS + 1] =  { false, ... };
 
 /* Block taser stuff or so... */
 Handle g_hCooldown = null;
-int m_flNextPrimaryAttack = -1;
-int m_flNextSecondaryAttack = -1;
 
 StringMap g_smGlow = null;
 
@@ -107,9 +105,6 @@ public void OnPluginStart()
     g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
     g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
-
-    m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
-    m_flNextSecondaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextSecondaryAttack");
 
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("item_equip", Event_ItemEquip);
@@ -617,14 +612,14 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
 
 void BlockTaser(int weapon)
 {
-    SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
-    SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
+    SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
+    SetEntPropFloat(weapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() + (g_cTaserCooldown.FloatValue) * 128);
 }
 
 void UnblockTaser(int weapon)
 {
-    SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + -0.1);
-    SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + -0.1);
+    SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + -0.1);
+    SetEntPropFloat(weapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() + -0.1);
 }
 
 public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
