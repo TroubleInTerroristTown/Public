@@ -39,6 +39,7 @@ public void OnPluginStart()
     }
 
     HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("player_death", Event_PlayerDeath);
     HookEvent("player_team", Event_PlayerTeam);
 
     TTT_LoadTranslations();
@@ -151,6 +152,17 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     }
 }
 
+public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
+{
+    int victim = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(victim))
+    {
+        g_bTVoice[victim] = false;
+        SetListen(victim);
+    }
+}
+
 public void TTT_OnClientGetRole(int client, int role)
 {
     SetListen(client);
@@ -164,15 +176,6 @@ public void TTT_OnPlayerRespawn(int client)
 public int TTT_OnRoundSlay(int client, int remaining)
 {
     SetListen(client);
-}
-
-public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
-{
-    if (TTT_IsClientValid(victim))
-    {
-        g_bTVoice[victim] = false;
-        SetListen(victim);
-    }
 }
 
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
