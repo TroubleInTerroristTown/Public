@@ -70,10 +70,10 @@ jobs:
           mv $SCRIPTS_PATH/README.md $PLUGINS_PATH/disabled
           mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
 
-      - name: Move folders (addons, materials, models, particles, sound) to build
+      - name: Move folders (addons, materials, models, sound) to build
         run: |
           mkdir build
-          mv ./{addons,materials,models,particles,sound} build/
+          mv ./{addons,materials,models,sound} build/
 
       - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
         run: |
