@@ -12,107 +12,82 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sm_version: ['1.9', '1.10']
+        sm_version: ["1.9", "1.10"]
+
 
     steps:
-    - uses: actions/checkout@v1
-    - name: Download sourcemod
-      run: |
-        wget "http://www.sourcemod.net/latest.php?version=${{ matrix.sm_version }}&os=linux" -O sourcemod.tar.gz
-        tar -xzf sourcemod.tar.gz --exclude='addons/sourcemod/translations'
-    - name: Give spcomp the required permissions
-      run: chmod +x addons/sourcemod/scripting/spcomp
-    - name: Compiling of all TTT related plugins
-      run: |
-        for file in addons/sourcemod/scripting/ttt/*.sp
-        do
-          echo -e "\nCompiling $file..." 
-          addons/sourcemod/scripting/spcomp -w234 -O2 -v2 $file
-        done
-        
-    - name: Compile 3rd-party-plugins
-      run: |
-        echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/block_messages.sp
-        echo -e "\nCompiling addons/sourcemod/scripting/discord_api.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/discord_api.sp
-        echo -e "Compiling addons/sourcemod/scripting/ghostdm.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/ghostdm.sp
-        echo -e "\nCompiling addons/sourcemod/scripting/no_weapon_fix.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/no_weapon_fix.sp
-        echo -e "\nCompiling addons/sourcemod/scripting/tripmines.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/tripmines.sp
-        echo -e "\nCompiling addons/sourcemod/scripting/turret_core.sp..."
-        addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/turret_core.sp
+      - uses: actions/checkout@v1
 
-    - name: Remove plugins folder and create new ones
-      run: |
-        if [ -d "addons/sourcemod/plugins" ]; then
-          rm -r addons/sourcemod/plugins
-        fi
-        mkdir addons/sourcemod/plugins
-        mkdir addons/sourcemod/plugins/disabled
-        mkdir addons/sourcemod/plugins/ttt
-        
-    - name: Move all TTT smx files into the plugins folder
-      run: |
-        for file in ttt*.smx
-        do
-          mv $file addons/sourcemod/plugins/ttt
-        done
-      
-    - name: Move 3rd-party-plugins into the plugins folder
-      run: |
-        for file in *.smx
-        do
-          mv $file addons/sourcemod/plugins
-        done
-        
-    - name: Remove build folder and create new one
-      run: |
-        if [ -d "build" ]; then
-          rm -r build
-        fi
-        mkdir -p build/${{ matrix.sm_version }}/
-      
-    - name: Move addons, materials, models and sound folder
-      run: mv addons materials models sound build/${{ matrix.sm_version }}/
-    
-    - name: Remove sourcemod folders
-      run: |
-        rm -r build/${{ matrix.sm_version }}/addons/metamod
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/bin
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/geoip
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/sql-init-scripts
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.txt
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.ini
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/configs/*.cfg
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/data
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/extensions
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/gamedata
-        rm -r build/${{ matrix.sm_version }}/addons/sourcemod/scripting
-        rm build/${{ matrix.sm_version }}/addons/sourcemod/*.txt
-        
-    - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
-      run: cp LICENSE CREDITS.md CVARS.txt adminmenu_custom.txt build/${{ matrix.sm_version }}/
-    
-    - name: Download steamworks and move into the build package
-      run: |
-        wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
-        tar xfv steamworks_linux.tar.gz
-        wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
-        unzip -o steamworks_windows.zip
-        mkdir -p build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
-        cp addons/sourcemod/extensions/SteamWorks.ext.so build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
-        cp addons/sourcemod/extensions/SteamWorks.ext.dll build/${{ matrix.sm_version }}/addons/sourcemod/extensions/
-      
-    - name: Clean up root directory
-      run: |
-        rm sourcemod.tar.gz
-        rm steamworks_linux.tar.gz
-        rm steamworks_windows.zip
-      
-    - uses: actions/upload-artifact@master
-      with:
-        name: ttt.${{ matrix.sm_version }}.${{ github.sha }}
-        path: build/${{ matrix.sm_version }}/
+      - name: Set environment variables
+        run: |
+          VERSION=$(git rev-list --count HEAD)
+          SHORT=$(git describe --always --long --dirty)
+          BUILDER_PATH=$GITHUB_WORKSPACE/sdk/addons/sourcemod
+          SOURCEMOD_PATH=$GITHUB_WORKSPACE/addons/sourcemod
+          echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION-$SHORT
+          echo ::set-env name=BUILDER_PATH::$BUILDER_PATH
+          echo ::set-env name=SOURCEMOD_PATH::$SOURCEMOD_PATH
+          echo ::set-env name=COMPILER_PATH::$BUILDER_PATH/scripting
+          echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/scripting
+          echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/plugins
+
+      - name: Download SourceMod
+        run: |
+          mkdir sdk
+          curl -Ls "http://www.sourcemod.net/latest.php?version=${{ matrix.SM_VERSION }}&os=linux" | tar zxf - -C ./sdk
+          chmod +x $COMPILER_PATH/spcomp
+
+      - name: Set TTT version
+        run: |
+          sed -i "s/<VERSION>/$PLUGIN_VERSION/g" $SCRIPTS_PATH/include/ttt_stock.inc
+
+      - name: Compile TTT
+        run: |
+          for file in *.sp
+          do
+            echo -e "\nCompiling $file..."
+            $COMPILER_PATH/spcomp -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
+          done
+        working-directory: ${{ env.SCRIPTS_PATH }}/ttt
+
+      - name: Compile 3rd party plugins
+        run: |
+          for plugin in "block_messages" "discord_api" "no_weapon_fix" "tripmines" "turret_core"
+          do
+            echo -e "\nCompiling $plugin.sp..."
+            $COMPILER_PATH/spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
+          done
+        working-directory: ${{ env.SCRIPTS_PATH }}/
+
+      - name: Move compiled plugins
+        run: |
+          rm -rf $PLUGINS_PATH
+          mkdir -p $PLUGINS_PATH/{ttt,disabled}
+          rsync -av --include='*/' --include="*.smx" --exclude="*" --prune-empty-dirs --remove-source-files $SCRIPTS_PATH/ $PLUGINS_PATH/
+
+      - name: Disable optional plugins
+        run: |
+          mv $SCRIPTS_PATH/README.md $PLUGINS_PATH/disabled
+          mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
+
+      - name: Move folders (addons, materials, models, particles, sound) to build
+        run: |
+          mkdir build
+          mv ./{addons,materials,models,particles,sound} build/
+
+      - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
+        run: |
+          mv $GITHUB_WORKSPACE/{LICENSE,CREDITS.md,CVARS.txt,adminmenu_custom.txt} .
+        working-directory: ./build
+
+      - name: Remove unnecessary files and folders from build
+        run: |
+          rm -rf addons/sourcemod/scripting
+          rm -rf addons/sourcemod/configs/{*.cfg,*.ini}
+        working-directory: ./build
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@master
+        with:
+          name: TTT.${{ env.PLUGIN_VERSION }}
+          path: ./build
