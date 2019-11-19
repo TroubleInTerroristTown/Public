@@ -827,8 +827,8 @@ public Action Timer_SelectionCountdown(Handle hTimer)
         {
             LoopValidClients(i)
             {
-                Format(centerText, sizeof(centerText), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
-                PrintCenterText(i, centerText);
+                Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
+                PrintCenterText2(i, "Trouble in Terrorist Town", centerText);
             }
         }
 
@@ -843,8 +843,8 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
     LoopValidClients(i)
     {
-        Format(centerText, sizeof(centerText), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
-        PrintCenterText(i, centerText);
+        Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
+        PrintCenterText2(i, "Trouble in Terrorist Town", centerText);
     }
 
     return Plugin_Continue;
@@ -3705,8 +3705,8 @@ int addKarma(int client, int karma, bool message = false)
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
-            PrintCenterText(client, sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
+            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer);
         }
         else
         {
@@ -3764,8 +3764,8 @@ int subtractKarma(int client, int karma, bool message = false)
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
-            PrintCenterText(client, sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
+            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer);
         }
         else
         {

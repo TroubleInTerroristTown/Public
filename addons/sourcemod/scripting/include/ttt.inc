@@ -1170,3 +1170,19 @@ stock bool IsStringNumeric(const char[] str)
 
 	return true;
 }
+
+void PrintCenterText2(int client, const char[] title, const char[] message)
+{
+    char sBuffer[2048];
+    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, message);
+    Protobuf hMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
+    hMessage.SetInt("msg_dst", 4);
+    hMessage.AddString("params", "#SFUI_ContractKillStart");
+    hMessage.AddString("params", sBuffer);
+    hMessage.AddString("params", NULL_STRING);
+    hMessage.AddString("params", NULL_STRING);
+    hMessage.AddString("params", NULL_STRING);
+    hMessage.AddString("params", NULL_STRING);
+    
+    EndMessage();
+}

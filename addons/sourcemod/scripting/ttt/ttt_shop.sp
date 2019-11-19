@@ -1191,8 +1191,8 @@ void addCredits(int client, int credits, bool message = false)
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iCredits[client]);
             CFormatColor(sBuffer, sizeof(sBuffer), client);
-            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%s</pre>", sBuffer);
-            PrintCenterText(client, sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+            PrintCenterText2(client, "TTT - Shop", sBuffer);
         }
         else
         {
@@ -1238,8 +1238,8 @@ void subtractCredits(int client, int credits, bool message = false)
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iCredits[client]);
             CFormatColor(sBuffer, sizeof(sBuffer), client);
-            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%s</pre>", sBuffer);
-            PrintCenterText(client, sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
+            PrintCenterText2(client, "TTT - Shop", sBuffer);
         }
         else
         {
