@@ -827,7 +827,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
         {
             LoopValidClients(i)
             {
-                Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
+                Format(centerText, sizeof(centerText), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
                 PrintCenterText(i, centerText);
             }
         }
@@ -843,7 +843,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
     LoopValidClients(i)
     {
-        Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
+        Format(centerText, sizeof(centerText), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
         PrintCenterText(i, centerText);
     }
 
@@ -3705,7 +3705,7 @@ int addKarma(int client, int karma, bool message = false)
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
+            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
             PrintCenterText(client, sBuffer);
         }
         else
@@ -3764,7 +3764,7 @@ int subtractKarma(int client, int karma, bool message = false)
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
+            Format(sBuffer, sizeof(sBuffer), "#SFUI_Notice_NewWaveBegun_\n<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
             PrintCenterText(client, sBuffer);
         }
         else
