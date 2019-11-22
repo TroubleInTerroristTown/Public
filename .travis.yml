@@ -16,7 +16,6 @@ addons:
     # - env: VERSION=1.11
 
 env:
-  - VERSION=1.9
   - VERSION=1.10
   # - VERSION=1.11
 
