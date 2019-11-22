@@ -106,7 +106,7 @@ public Action Timer_UpdateText(Handle timer)
 
                 if (PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
                 {
-                    PrintHintText(client, sHintText);
+                    PrintCenterText2(client, "TTT - PlayerHUD", sHintText);
                 }
             }
         }
