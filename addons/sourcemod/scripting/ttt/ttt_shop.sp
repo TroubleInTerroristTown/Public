@@ -94,13 +94,14 @@ char g_sLog[PLATFORM_MAX_PATH+1];
 int g_iCommands = -1;
 char g_sCommandList[6][32];
 
-enum Item
+enum struct Item
 {
-    String:Long[64],
-    String:Short[16],
-    Price,
-    Role,
-    Sort
+    char Long[64];
+    char Short[64];
+
+    int Price;
+    int Role;
+    int Sort;
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -111,8 +112,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_hOnCreditsGiven = CreateGlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_hOnShopReady = CreateGlobalForward("TTT_OnShopReady", ET_Ignore);
     g_OnRegisterCustomItemPost = CreateGlobalForward("TTT_OnRegisterCustomItemPost", ET_Ignore, Param_String, Param_String,Param_Cell,Param_Cell,Param_Cell); //TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
-    CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     
+    CreateNative("TTT_RegisterCustomItem", Native_RegisterCustomItem);
     CreateNative("TTT_GetCustomItemPrice", Native_GetCustomItemPrice);
     CreateNative("TTT_GetCustomItemRole", Native_GetCustomItemRole);
     CreateNative("TTT_UpdateCustomItem", Native_UpdateCustomItem);
@@ -521,14 +522,15 @@ public Action Command_ShowItems(int client, int args)
         return Plugin_Handled;
     }
 
-    int temp_item[Item];
+    Item item;
 
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (strlen(temp_item[Short]) > 1)
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (strlen(item.Short) > 1)
         {
-            PrintToConsole(client, "%s - %s, %i", temp_item[Short], temp_item[Long], temp_item[Role]);
+            PrintToConsole(client, "%s - %s, %i", item.Short, item.Long, item.Role);
         }
     }
     return Plugin_Handled;
@@ -559,37 +561,39 @@ public Action Command_Shop(int client, int args)
         menu.SetTitle("%T", "TTT Shop", client, g_iCredits[client]);
 
         char display[128];
-        int temp_item[Item];
+        Item item;
 
         for (int i = 0; i < g_aCustomItems.Length; i++)
         {
-            g_aCustomItems.GetArray(i, temp_item[0]);
-            if (strlen(temp_item[Short]) > 1)
+            g_aCustomItems.GetArray(i, item, sizeof(item));
+
+            if (strlen(item.Short) > 1)
             {
-                if ((temp_item[Role] == 1) || (temp_item[Role] == team))
+                if ((item.Role == 1) || (item.Role == team))
                 {
-                    int price = temp_item[Price];
+                    int price = item.Price;
                     
                     bool bDiscount = false;
-                    int iPercents = TTT_GetItemDiscount(client, temp_item[Short]);
+                    int iPercents = TTT_GetItemDiscount(client, item.Short);
 
                     if (iPercents > 0)
                     {
                         float fPercentage = iPercents / 100.0;
                         int iDiscount = RoundToCeil(price * fPercentage);
-                        price = temp_item[Price] - iDiscount;
+                        price = item.Price - iDiscount;
                         bDiscount = true;
                     }
                     
                     if (bDiscount)
                     {
-                        Format(display, sizeof(display), "%s - %d %T", temp_item[Long], price, "Shop Discount Price", client, iPercents);
+                        Format(display, sizeof(display), "%s - %d %T", item.Long, price, "Shop Discount Price", client, iPercents);
                     }
                     else
                     {
-                        Format(display, sizeof(display), "%s - %d", temp_item[Long], price);
+                        Format(display, sizeof(display), "%s - %d", item.Long, price);
                     }
-                    menu.AddItem(temp_item[Short], display);
+
+                    menu.AddItem(item.Short, display);
                 }
             }
         }
@@ -659,24 +663,26 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
     }
 }
 
-bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
+bool ClientBuyItem(int client, char[] itemName, bool menu, bool free = false)
 {
     if (!TTT_IsRoundActive())
     {
         return false;
     }
 
-    int temp_item[Item];
+    Item item;
+    
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if ((strlen(temp_item[Short]) > 0) && (strcmp(item, temp_item[Short]) == 0) && ((temp_item[Role] == 1) || (TTT_GetClientRole(client) == temp_item[Role])))
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if ((strlen(item.Short) > 0) && (strcmp(itemName, item.Short) == 0) && ((item.Role == 1) || (TTT_GetClientRole(client) == item.Role)))
         {
             int price = 0;
 
             if (!free)
             {
-                price = temp_item[Price];
+                price = item.Price;
             }
 
             bool count = true;
@@ -686,7 +692,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
             Call_PushCell(client);
             Call_PushCellRef(price);
             Call_PushCellRef(count);
-            Call_PushString(temp_item[Short]);
+            Call_PushString(item.Short);
             Call_Finish(result);
 
             if (result == Plugin_Stop || result == Plugin_Handled)
@@ -699,7 +705,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
             {
                 if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
                 {
-                    PrintToChat(client, "Item: %s Shop Price: %d Price: %d", temp_item[Long], temp_item[Price], price);
+                    PrintToChat(client, "Item: %s Shop Price: %d Price: %d", item.Long, item.Price, price);
                 }
             }
 
@@ -708,7 +714,7 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                 Action res = Plugin_Continue;
                 Call_StartForward(g_hOnItemPurchased);
                 Call_PushCell(client);
-                Call_PushString(temp_item[Short]);
+                Call_PushString(item.Short);
                 Call_PushCell(count);
                 Call_PushCell(price);
                 Call_Finish(res);
@@ -719,10 +725,11 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                     
                     if (!free)
                     {
-                        CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], temp_item[Long], price);
+                        CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iCredits[client], item.Long, price);
                     }
 
                     int iTeam = TTT_GetClientRole(client);
+
                     if (g_cLogPurchases != null && (g_cLogPurchases.IntValue == 1 || (g_cLogPurchases.IntValue == 2 && (iTeam == TTT_TEAM_TRAITOR || iTeam == TTT_TEAM_DETECTIVE))))
                     {
                         char sClientID[32], sRole[ROLE_LENGTH];
@@ -749,9 +756,9 @@ bool ClientBuyItem(int client, char[] item, bool menu, bool free = false)
                             }
                         }
                         
-                        if ((StrContains(temp_item[Short], "buyTRole", false) == -1) && (StrContains(temp_item[Short], "buyCTRole", false) == -1))
+                        if ((StrContains(item.Short, "buyTRole", false) == -1) && (StrContains(item.Short, "buyCTRole", false) == -1))
                         {
-                            TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, temp_item[Long]);
+                            TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, item.Long);
                         }
                     }
                     
@@ -820,7 +827,8 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
     int temp_price = GetNativeCell(3);
     int temp_role = GetNativeCell(4);
     int temp_sort = GetNativeCell(5);
-    int temp_item[Item];
+    
+    Item item;
 
     LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d", temp_short, temp_long, temp_price);
 
@@ -831,20 +839,21 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (StrEqual(temp_item[Short], temp_short, false))
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (StrEqual(item.Short, temp_short, false))
         {
             return false;
         }
     }
 
 
-    Format(temp_item[Short], sizeof(temp_short), "%s", temp_short);
-    Format(temp_item[Long], sizeof(temp_long), "%s", temp_long);
-    temp_item[Price] = temp_price;
-    temp_item[Role] = temp_role;
-    temp_item[Sort] = temp_sort;
-    g_aCustomItems.PushArray(temp_item[0]);
+    Format(item.Short, sizeof(temp_short), "%s", temp_short);
+    Format(item.Long, sizeof(temp_long), "%s", temp_long);
+    item.Price = temp_price;
+    item.Role = temp_role;
+    item.Sort = temp_sort;
+    g_aCustomItems.PushArray(item, sizeof(item));
 
     Call_StartForward(g_OnRegisterCustomItemPost);
     Call_PushString(temp_short);
@@ -865,23 +874,25 @@ public int Native_RegisterCustomItem(Handle plugin, int numParams)
 
 public int Native_UpdateCustomItem(Handle plugin, int numParams)
 {
-    int temp_item[Item];
+    Item item;
+
     char temp_short[16];
     GetNativeString(1, temp_short, sizeof(temp_short));
     
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (StrEqual(temp_item[Short], temp_short, false))
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (StrEqual(item.Short, temp_short, false))
         {
             PrintToChatAll("Found: %s", temp_short);
             
-            temp_item[Price] = GetNativeCell(2);
-            temp_item[Sort] = GetNativeCell(3);
+            item.Price = GetNativeCell(2);
+            item.Sort = GetNativeCell(3);
             
-            PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d", temp_item[Price], temp_item[Role], temp_item[Sort]);
+            PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d", item.Price, item.Role, item.Sort);
             
-            g_aCustomItems.SetArray(i, temp_item[0]);
+            g_aCustomItems.SetArray(i, item, sizeof(item));
             
             return true;
         }
@@ -892,14 +903,16 @@ public int Native_UpdateCustomItem(Handle plugin, int numParams)
 
 public int Native_RemoveCustomItem(Handle plugin, int numParams)
 {
-    int temp_item[Item];
+    Item item;
+
     char temp_short[16];
     GetNativeString(1, temp_short, sizeof(temp_short));
     
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (StrEqual(temp_item[Short], temp_short, false))
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (StrEqual(item.Short, temp_short, false))
         {
             g_aCustomItems.Erase(i);
             return true;
@@ -911,17 +924,16 @@ public int Native_RemoveCustomItem(Handle plugin, int numParams)
 
 public int Sorting(int i, int j, Handle array, Handle hndl)
 {
-    int temp_item[Item];
-    int temp_item2[Item];
+    Item item, item2;
 
-    g_aCustomItems.GetArray(i, temp_item[0]);
-    g_aCustomItems.GetArray(j, temp_item2[0]);
+    g_aCustomItems.GetArray(i, item, sizeof(item));
+    g_aCustomItems.GetArray(j, item2, sizeof(item2));
 
-    if (temp_item[Sort] < temp_item2[Sort])
+    if (item.Sort < item2.Sort)
     {
         return -1;
     }
-    else if (temp_item[Sort] > temp_item2[Sort])
+    else if (item.Sort > item2.Sort)
     {
         return 1;
     }
@@ -934,14 +946,15 @@ public int Native_GetCustomItemPrice(Handle plugin, int numParams)
     char temp_short[32];
     GetNativeString(1, temp_short, sizeof(temp_short));
 
-    int temp_item[Item];
+    Item item;
 
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (strcmp(temp_short, temp_item[Short], false) == 0)
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+        
+        if (strcmp(temp_short, item.Short, false) == 0)
         {
-            return temp_item[Price];
+            return item.Price;
         }
     }
 
@@ -953,14 +966,15 @@ public int Native_GetCustomItemRole(Handle plugin, int numParams)
     char temp_short[32];
     GetNativeString(1, temp_short, sizeof(temp_short));
 
-    int temp_item[Item];
+    Item item;
 
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, temp_item[0]);
-        if (strcmp(temp_short, temp_item[Short], false) == 0)
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (strcmp(temp_short, item.Short, false) == 0)
         {
-            return temp_item[Role];
+            return item.Role;
         }
     }
     return 0;
@@ -1407,13 +1421,15 @@ public Action Command_ListItems(int client, int args)
 
     PrintToConsole(client, "If you want something the names, make sure you take the right name with the correct team tag (like \"_t\" for traitor)");
 
-    int iItems[Item];
+    Item item;
+
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, iItems[0]);
-        if (strlen(iItems[Short]) > 1)
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (strlen(item.Short) > 1)
         {
-            PrintToConsole(client, "Name: %s \t Short Name: %s \t Price (without discount): %d", iItems[Long], iItems[Short], iItems[Price]);
+            PrintToConsole(client, "Name: %s \t Short Name: %s \t Price (without discount): %d", item.Long, item.Short, item.Price);
         }
     }
 
@@ -1499,12 +1515,13 @@ public void Frame_ShopReady(ArrayList aItems)
 
 int GiveClientItem(int client, char[] sItem)
 {
-    int iItems[Item];
+    Item item;
 
     for (int i = 0; i < g_aCustomItems.Length; i++)
     {
-        g_aCustomItems.GetArray(i, iItems[0]);
-        if (strlen(iItems[Short]) > 1 && StrEqual(iItems[Short], sItem, false))
+        g_aCustomItems.GetArray(i, item, sizeof(item));
+
+        if (strlen(item.Short) > 1 && StrEqual(item.Short, sItem, false))
         {
             ClientBuyItem(client, sItem, false, true);
             return true;
