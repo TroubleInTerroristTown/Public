@@ -116,12 +116,12 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cCount.IntValue);
                 return Plugin_Stop;
             }
-
-            if (!TTT_AddRagdoll(client))
+            
+            if (!SpawnFakeBody(client))
             {
                 return Plugin_Stop;
             }
-
+            
             if (count)
             {
                 g_iPCount[client]++;
@@ -134,6 +134,56 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 void ResetFB(int client)
 {
     g_iPCount[client] = 0;
+}
+
+bool SpawnFakeBody(int client)
+{
+    char sModel[256];
+    float pos[3];
+    char sName[32];
+
+    GetClientModel(client, sModel, sizeof(sModel));
+    GetClientEyePosition(client, pos);
+    Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
+
+    int iEntity = CreateEntityByName("prop_ragdoll");
+    DispatchKeyValue(iEntity, "model", sModel);
+    DispatchKeyValue(iEntity, "targetname", sName);
+    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+    SetEntityMoveType(iEntity, MOVETYPE_NONE);
+    AcceptEntityInput(iEntity, "DisableMotion");
+
+    if(DispatchSpawn(iEntity)) {
+        pos[2] -= 16.0;
+        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+        AcceptEntityInput(iEntity, "EnableMotion");
+        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+    
+        Ragdolls ragdoll;
+
+        ragdoll.Ent = EntIndexToEntRef(iEntity);
+        ragdoll.Victim = GetClientUserId(client);
+        ragdoll.VictimTeam = TTT_GetClientRole(client);
+        ragdoll.Attacker = 0;
+        ragdoll.AttackerTeam = TTT_TEAM_TRAITOR;
+
+        GetClientName(client, ragdoll.VictimName, MAX_NAME_LENGTH);
+        Format(ragdoll.AttackerName, MAX_NAME_LENGTH, "Fake!");
+        Format(ragdoll.WeaponUsed, MAX_NAME_LENGTH, "Fake!");
+        
+        ragdoll.Scanned = false;
+        ragdoll.Found = false;
+
+        ragdoll.GameTime = 0.0;
+
+        TTT_AddRagdoll(ragdoll);
+        return true;
+    }
+    
+    return false;
 }
 
 public Action TTT_OnBodyCheck(int client, Ragdolls ragdoll)
@@ -188,5 +238,6 @@ public Action TTT_OnBodyCheck(int client, Ragdolls ragdoll)
 
         return Plugin_Changed;
     }
+    
     return Plugin_Continue;
 }
