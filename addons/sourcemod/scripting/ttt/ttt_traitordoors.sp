@@ -5,11 +5,17 @@
 #include <sdktools>
 #include <ttt>
 
+#undef REQUIRE_PLUGIN
+#include <customkeyvalues>
+#define REQUIRE_PLUGIN
+
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Traitor Doors"
 
 ConVar g_cLogDoorUse = null;
 ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
+
+bool g_bCustomKeyValues = false;
 
 public Plugin myinfo =
 {
@@ -28,6 +34,24 @@ public void OnPluginStart()
     CreateConVar("ttt2_traitor_door_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLogDoorUse = AutoExecConfig_CreateConVar("traitordoor_log_use", "1", "Log use of traitor doors?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
+
+    g_bCustomKeyValues = LibraryExists("CustomKeyValues");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = true;
+    }
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = false;
+    }
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -95,6 +119,20 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     if (!IsValidEntity(target) || !IsValidEdict(target))
     {
         return Plugin_Continue;
+    }
+
+    if (g_bCustomKeyValues)
+    {
+        char sCustom[4];
+        bool success = GetCustomKeyValue(target, "ttt_traitor_only", sCustom, sizeof(sCustom));
+
+        if (success)
+        {
+            if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Continue;
+            }
+        }
     }
 
     char sClass[64];

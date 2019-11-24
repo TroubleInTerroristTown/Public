@@ -21,6 +21,8 @@ done
 echo -e "\nCompile 3rd-party-plugins"
 echo -e "\nCompiling addons/sourcemod/scripting/block_messages.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/block_messages.sp
+echo -e "\nCompiling addons/sourcemod/scripting/customkeyvalues.sp..."
+addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/customkeyvalues.sp
 echo -e "\nCompiling addons/sourcemod/scripting/discord_api.sp..."
 addons/sourcemod/scripting/spcomp -E -w234 -O2 -v2 addons/sourcemod/scripting/discord_api.sp
 echo -e "Compiling addons/sourcemod/scripting/ghostdm.sp..."

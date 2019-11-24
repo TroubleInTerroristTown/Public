@@ -9,6 +9,7 @@
 #include <emitsoundany>
 
 #undef REQUIRE_PLUGIN
+#include <customkeyvalues>
 #include <ttt_knockout>
 #define REQUIRE_PLUGIN
 
@@ -47,6 +48,8 @@ ArrayList g_aBlacklistModels = null;
 ArrayList g_aBlocklist = null;
 
 Handle g_hOnGrabbing = null;
+
+bool g_bCustomKeyValues = false;
 
 public Plugin myinfo =
 {
@@ -101,6 +104,24 @@ public void OnPluginStart()
 
     delete g_aBlocklist;
     g_aBlocklist = new ArrayList();
+
+    g_bCustomKeyValues = LibraryExists("CustomKeyValues");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = true;
+    }
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = false;
+    }
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -197,6 +218,30 @@ void GrabSomething(int client)
     if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > g_cGrabDistance.FloatValue)
     {
         return;
+    }
+
+    if (g_bCustomKeyValues)
+    {
+        char sCustom[4];
+        bool success = GetCustomKeyValue(iEntity, "ttt_allow_grabbing", sCustom, sizeof(sCustom));
+
+        if (success)
+        {
+            if (!view_as<bool>(StringToInt(sCustom)))
+            {
+                return;
+            }
+        }
+
+        success = GetCustomKeyValue(iEntity, "ttt_traitor_only", sCustom, sizeof(sCustom));
+
+        if (success)
+        {
+            if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            {
+                return;
+            }
+        }
     }
 
     char sName[128];

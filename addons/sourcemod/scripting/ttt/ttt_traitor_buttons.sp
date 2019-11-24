@@ -6,7 +6,16 @@
 #include <sdktools>
 #include <ttt>
 
+#undef REQUIRE_PLUGIN
+#include <customkeyvalues>
+#define REQUIRE_PLUGIN
+
 #pragma newdecls required
+
+ArrayList g_aButtonNames = null;
+ArrayList g_aButtons = null;
+
+bool g_bCustomKeyValues = false;
 
 public Plugin myinfo =
 {
@@ -16,9 +25,6 @@ public Plugin myinfo =
     version = TTT_PLUGIN_VERSION,
     url = TTT_PLUGIN_URL
 };
-
-ArrayList g_aButtonNames = null;
-ArrayList g_aButtons = null;
 
 public void OnPluginStart()
 {
@@ -31,6 +37,24 @@ public void OnPluginStart()
     HookEvent("round_start", OnRoundStart, EventHookMode_PostNoCopy);
     
     RegAdminCmd("sm_reloadbuttons", Command_Reload, ADMFLAG_ROOT);
+
+    g_bCustomKeyValues = LibraryExists("CustomKeyValues");
+}
+
+public void OnLibraryAdded(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = true;
+    }
+}
+
+public void OnLibraryRemoved(const char[] name)
+{
+    if (StrEqual(name, "CustomKeyValues"))
+    {
+        g_bCustomKeyValues = false;
+    }
 }
 
 public void TTT_OnLatestVersion(const char[] version)
@@ -186,6 +210,21 @@ public Action OnPlayerRunCmd(int client, int &iButtons, int &iImpulse, float fVe
                 iPlayerPrevButtons[client] = iButtons;
                 return;
             }
+
+            if (g_bCustomKeyValues)
+            {
+                char sCustom[4];
+                bool success = GetCustomKeyValue(ent, "ttt_traitor_only", sCustom, sizeof(sCustom));
+
+                if (success)
+                {
+                    if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+                    {
+                        return;
+                    }
+                }
+            }
+            
             if (HasEntProp(ent, Prop_Data, "m_iName"))
             {
                 char sName[128];
