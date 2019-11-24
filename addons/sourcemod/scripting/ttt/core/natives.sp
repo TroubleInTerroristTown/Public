@@ -31,7 +31,7 @@ void InitNatives()
     CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
     CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
     CreateNative("TTT_GetClientByRagdollID", Native_GetClientByRagdollID);
-    CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
+    CreateNative("TTT_AddRagdoll", Native_AddRagdoll);
     CreateNative("TTT_GetClientRole", Native_GetClientRole);
     CreateNative("TTT_SetClientRole", Native_SetClientRole);
     CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -104,14 +104,15 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 
     if (TTT_IsClientValid(client))
     {
-        int iBody[Ragdolls];
+        Ragdolls ragdoll;
 
         for (int i = 0; i < g_aRagdoll.Length; i++)
         {
-            g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
-            if (iBody[Victim] == GetClientUserId(client))
+            g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
+
+            if (ragdoll.Victim == GetClientUserId(client))
             {
-                SetNativeArray(2, iBody[0], sizeof(iBody));
+                SetNativeArray(2, ragdoll, sizeof(ragdoll));
                 return true;
             }
         }
@@ -122,18 +123,19 @@ public int Native_GetClientRagdoll(Handle plugin, int numParams)
 
 public int Native_GetClientByRagdollID(Handle plugin, int numParams)
 {
-    int ragdoll = GetNativeCell(1);
+    int iRagdollID = GetNativeCell(1);
 
-    if (IsValidEntity(ragdoll))
+    if (IsValidEntity(iRagdollID))
     {
-        int iBody[Ragdolls];
+        Ragdolls ragdoll;
 
         for (int i = 0; i < g_aRagdoll.Length; i++)
         {
-            g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
-            if (iBody[Ent] == EntIndexToEntRef(ragdoll))
+            g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
+
+            if (ragdoll.Ent == EntIndexToEntRef(iRagdollID))
             {
-                return GetClientOfUserId(iBody[Victim]);
+                return GetClientOfUserId(ragdoll.Victim);
             }
         }
     }
@@ -141,15 +143,59 @@ public int Native_GetClientByRagdollID(Handle plugin, int numParams)
     return -1;
 }
 
-public int Native_SetRagdoll(Handle plugin, int numParams)
+public int Native_AddRagdoll(Handle plugin, int numParams)
 {
-    int iBody[Ragdolls];
+    int client = GetNativeCell(1);
 
-    GetNativeArray(1, iBody[0], sizeof(iBody));
+    if(!TTT_IsClientValid(client))
+        return false;
 
-    g_aRagdoll.PushArray(iBody[0]);
+    char sModel[256];
+    float pos[3];
+    char sName[32];
 
-    return 0;
+    GetClientModel(client, sModel, sizeof(sModel));
+    GetClientEyePosition(client, pos);
+    Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
+
+    int iEntity = CreateEntityByName("prop_ragdoll");
+    DispatchKeyValue(iEntity, "model", sModel);
+    DispatchKeyValue(iEntity, "targetname", sName);
+    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
+    SetEntityMoveType(iEntity, MOVETYPE_NONE);
+    AcceptEntityInput(iEntity, "DisableMotion");
+
+    if(DispatchSpawn(iEntity)) {
+        pos[2] -= 16.0;
+        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
+        AcceptEntityInput(iEntity, "EnableMotion");
+        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+    
+        Ragdolls ragdoll;
+
+        ragdoll.Ent = EntIndexToEntRef(iEntity);
+        ragdoll.Victim = GetClientUserId(client);
+        ragdoll.VictimTeam = TTT_GetClientRole(client);
+        ragdoll.Attacker = 0;
+        ragdoll.AttackerTeam = TTT_TEAM_TRAITOR;
+
+        GetClientName(client, ragdoll.VictimName, MAX_NAME_LENGTH);
+        Format(ragdoll.AttackerName, MAX_NAME_LENGTH, "Fake!");
+        Format(ragdoll.WeaponUsed, MAX_NAME_LENGTH, "Fake!");
+        
+        ragdoll.Scanned = false;
+        ragdoll.Found = false;
+
+        ragdoll.GameTime = 0.0;
+    
+        g_aRagdoll.PushArray(ragdoll);
+        return true;
+    }
+    
+    return false;
 }
 
 public int Native_SetClientRole(Handle plugin, int numParams)
@@ -238,15 +284,15 @@ public int Native_WasBodyFound(Handle plugin, int numParams)
             return false;
         }
 
-        int iRagdoll[Ragdolls];
+        Ragdolls ragdoll;
 
         for (int i = 0; i < iSize; i++)
         {
-            g_aRagdoll.GetArray(i, iRagdoll[0]);
+            g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
 
-            if (iRagdoll[Victim] == GetClientUserId(client))
+            if (ragdoll.Victim == GetClientUserId(client))
             {
-                return iRagdoll[Found];
+                return ragdoll.Found;
             }
         }
     }
@@ -267,15 +313,15 @@ public int Native_WasBodyScanned(Handle plugin, int numParams)
             return false;
         }
 
-        int iRagdoll[Ragdolls];
+        Ragdolls ragdoll;
 
         for (int i = 0; i < iSize; i++)
         {
-            g_aRagdoll.GetArray(i, iRagdoll[0]);
+            g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
 
-            if (iRagdoll[Victim] == GetClientUserId(client))
+            if (ragdoll.Victim == GetClientUserId(client))
             {
-                return iRagdoll[Scanned];
+                return ragdoll.Scanned;
             }
         }
     }
@@ -547,15 +593,17 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
     float fOrigin[3];
     bool bFound = false;
 
-    int iBody[Ragdolls];
+    Ragdolls ragdoll;
+
     for (int i = 0; i < g_aRagdoll.Length; i++)
     {
-        g_aRagdoll.GetArray(i, iBody[0], sizeof(iBody));
-        if (iBody[Victim] == GetClientUserId(client))
+        g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
+
+        if (ragdoll.Victim == GetClientUserId(client))
         {
             g_aRagdoll.Erase(i);
 
-            int iRagdoll = EntRefToEntIndex(iBody[Ent]);
+            int iRagdoll = EntRefToEntIndex(ragdoll.Ent);
 
             if (iRagdoll > 0)
             {

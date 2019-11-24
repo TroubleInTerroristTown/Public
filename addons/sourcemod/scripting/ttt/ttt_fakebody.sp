@@ -117,7 +117,7 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
                 return Plugin_Stop;
             }
 
-            if (!SpawnFakeBody(client))
+            if (!TTT_AddRagdoll(client))
             {
                 return Plugin_Stop;
             }
@@ -136,62 +136,14 @@ void ResetFB(int client)
     g_iPCount[client] = 0;
 }
 
-bool SpawnFakeBody(int client)
-{
-    char sModel[256];
-    float pos[3];
-    char sName[32];
-
-    GetClientModel(client, sModel, sizeof(sModel));
-    GetClientEyePosition(client, pos);
-    Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
-
-    int iEntity = CreateEntityByName("prop_ragdoll");
-    DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
-    DispatchKeyValue(iEntity, "targetname", sName);
-    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
-    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
-    SetEntityMoveType(iEntity, MOVETYPE_NONE);
-    AcceptEntityInput(iEntity, "DisableMotion");
-
-    if (DispatchSpawn(iEntity))
-    {
-        pos[2] -= 16.0;
-        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
-
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-        AcceptEntityInput(iEntity, "EnableMotion");
-        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
-    
-        int iRagdollC[Ragdolls];
-        iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-        iRagdollC[Victim] = GetClientUserId(client);
-        iRagdollC[VictimTeam] = TTT_GetClientRole(client);
-        GetClientName(client, iRagdollC[VictimName], MAX_NAME_LENGTH);
-        iRagdollC[Scanned] = false;
-        iRagdollC[Attacker] = 0;
-        iRagdollC[AttackerTeam] = TTT_TEAM_TRAITOR;
-        Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, "Fake!");
-        iRagdollC[GameTime] = 0.0;
-        Format(iRagdollC[Weaponused], MAX_NAME_LENGTH, "Fake!");
-        iRagdollC[Found] = false;
-    
-        TTT_SetRagdoll(iRagdollC[0]);
-    
-        return true;
-    }
-    
-    return false;
-}
-
-public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
+public Action TTT_OnBodyCheck(int client, Ragdolls ragdoll)
 {
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Continue;
     }
 
-    if (StrEqual(iRagdollC[Weaponused], "Fake!", false))
+    if (StrEqual(ragdoll.WeaponUsed, "Fake!", false))
     {
         if (!g_cAllowProofByTraitors.BoolValue)
         {
@@ -203,15 +155,15 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 
         LoopValidClients(j)
         {
-            if (g_cShowFakeMessage.BoolValue&& !iRagdollC[Found])
+            if (g_cShowFakeMessage.BoolValue&& !ragdoll.Found)
             {
                 CPrintToChat(j, "%s %T", g_sPluginTag, "Found Fake", j, client);
             }
-            else if (!g_cShowFakeMessage.BoolValue && !iRagdollC[Found])
+            else if (!g_cShowFakeMessage.BoolValue && !ragdoll.Found)
             {
-                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, client, iRagdollC[VictimName]);
+                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, client, ragdoll.VictimName);
             }
-            else if (iRagdollC[Found])
+            else if (ragdoll.Found)
             {
                 return Plugin_Stop;
             }
@@ -219,19 +171,19 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
 
         if (g_cShowTraitorAsDead.BoolValue)
         {
-            TTT_SetFoundStatus(GetClientOfUserId(iRagdollC[Victim]), true);
+            TTT_SetFoundStatus(GetClientOfUserId(ragdoll.Victim), true);
         }
 
-        iRagdollC[Found] = true;
+        ragdoll.Found = true;
 
         if (g_cDeleteFakeBodyAfterFound.BoolValue)
         {
-            AcceptEntityInput(iRagdollC[Ent], "Kill");
+            AcceptEntityInput(ragdoll.Ent, "Kill");
         }
 
         if (!g_cDeleteFakeBodyAfterFound .BoolValue&& !g_cShowFakeMessage.BoolValue)
         {
-            SetEntityRenderColor(iRagdollC[Ent], 255, 0, 0, 255);
+            SetEntityRenderColor(ragdoll.Ent, 255, 0, 0, 255);
         }
 
         return Plugin_Changed;

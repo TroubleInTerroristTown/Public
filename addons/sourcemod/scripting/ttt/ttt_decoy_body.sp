@@ -149,9 +149,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public Action TTT_OnBodyCheck(int client, int[] ragdoll)
+public Action TTT_OnBodyCheck(int client, Ragdolls ragdoll)
 {
-    if (g_cBlockOwnBodyIdentify.BoolValue && (client && GetClientOfUserId(ragdoll[Victim])))
+    if (g_cBlockOwnBodyIdentify.BoolValue && (client && GetClientOfUserId(ragdoll.Victim)))
     {
         return Plugin_Continue;
     }
@@ -159,21 +159,21 @@ public Action TTT_OnBodyCheck(int client, int[] ragdoll)
     bool bReal = false;
     int attacker = -1;
     
-    if (!StrEqual(ragdoll[AttackerName], "Fake!", false))
+    if (!StrEqual(ragdoll.AttackerName, "Fake!", false))
     {
         bReal = true;
     }
     
     if (!bReal)
     {
-        attacker = GetClientOfUserId(ragdoll[Victim]);
+        attacker = GetClientOfUserId(ragdoll.Victim);
     }
     else
     {
-        attacker = GetClientOfUserId(ragdoll[Attacker]);
+        attacker = GetClientOfUserId(ragdoll.Attacker);
     }
     
-    int body = EntRefToEntIndex(ragdoll[Ent]);
+    int body = EntRefToEntIndex(ragdoll.Ent);
     
     if (TTT_IsClientValid(attacker) && g_bDecoyBody[attacker] && IsValidEntity(body))
     {
