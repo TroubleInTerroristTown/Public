@@ -259,10 +259,6 @@ forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const ch
  */
 forward void TTT_OnLatestVersion(const char[] version);
 
-
-
-
-
 /**
  * Checks if the round is active.
  */
@@ -288,7 +284,7 @@ native int TTT_GetClientKarma(int client, bool publicKarma = true);
  * @param client            The victims index.
  * @param radgoll           The array to save the ragoll infos.
  */
-native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
+native bool TTT_GetClientRagdoll(int victim, any[] ragdoll);
 
 /**
  * Retrieve the client index.
@@ -304,7 +300,7 @@ native int TTT_GetClientByRagdollID(int ragdoll);
  * @param client           The client index
  * @return                 True if spawned, false else.
  */
-native void TTT_AddRagdoll(int client);
+native void TTT_AddRagdoll(any[] ragdoll);
 
 /**
  * Set a client's role.
@@ -504,7 +500,6 @@ native bool TTT_DisableRounds(bool status);
  *
  */
 native RoundStatus TTT_GetRoundStatus();
-
 
 /**
  * Called after a player was round slayed.
