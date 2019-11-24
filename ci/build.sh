@@ -115,7 +115,7 @@ cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensi
 
 echo -e "Download DHooks"
 curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=176954&d=1566228343" -o dhooks.zip
-tar xfv dhooks.zip
+unzip dhooks.zip
 
 echo -e "Move DHooks files into build package"
 mkdir -p build/addons/sourcemod/extensions/

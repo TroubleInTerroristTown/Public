@@ -10,6 +10,7 @@ addons:
     - curl
     - lib32z1
     - lib32stdc++6
+    - unzip
 
 # matrix:
   # allow_failures:
