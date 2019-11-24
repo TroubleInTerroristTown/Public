@@ -173,7 +173,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 
 int RandomTeleport(int client)
 {
-    Ragdolls ragdoll;
     bool bAlive = true;
     float fClientPos[3], fTargetPos[3];
 
@@ -233,6 +232,8 @@ int RandomTeleport(int client)
     }
     else
     {
+        Ragdolls ragdoll;
+        
         if (!TTT_GetClientRagdoll(target, ragdoll))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Cant find ragdoll", client);

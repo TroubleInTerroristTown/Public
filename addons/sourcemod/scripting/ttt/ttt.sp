@@ -2029,14 +2029,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         int iARole = 0;
         char sName[MAX_NAME_LENGTH];
         GetClientName(client, sName, sizeof(sName));
-        
+
         Ragdolls ragdoll;
 
         ragdoll.Ent = EntIndexToEntRef(iEntity);
         ragdoll.Victim = GetClientUserId(client);
         ragdoll.VictimTeam = g_iRole[client];
         Format(ragdoll.VictimName, MAX_NAME_LENGTH, sName);
-        
+
         if (TTT_IsClientValid(iAttacker))
         {
             GetClientName(iAttacker, sName, sizeof(sName));
@@ -2047,7 +2047,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
             Format(sName, sizeof(sName), "Unknown attacker");
             iUAttacker = 0;
         }
-        
+
         ragdoll.Attacker = iUAttacker;
         ragdoll.AttackerTeam = iARole;
         Format(ragdoll.AttackerName, MAX_NAME_LENGTH, sName);
@@ -2055,7 +2055,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 
         ragdoll.Scanned = false;
         ragdoll.GameTime = GetGameTime();
-        
+
         g_aRagdoll.PushArray(ragdoll, sizeof(ragdoll));
 
         SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);

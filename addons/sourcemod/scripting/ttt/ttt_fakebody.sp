@@ -154,7 +154,8 @@ bool SpawnFakeBody(int client)
     SetEntityMoveType(iEntity, MOVETYPE_NONE);
     AcceptEntityInput(iEntity, "DisableMotion");
 
-    if(DispatchSpawn(iEntity)) {
+    if(DispatchSpawn(iEntity)) 
+    {
         pos[2] -= 16.0;
         TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 
