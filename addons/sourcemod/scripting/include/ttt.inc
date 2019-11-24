@@ -19,19 +19,23 @@
 #include <sdktools>
 #include <cstrike>
 
-enum Ragdolls
+enum struct Ragdolls
 {
-    Ent,
-    Victim,
-    Attacker,
-    VictimTeam,
-    AttackerTeam,
-    String:VictimName[MAX_NAME_LENGTH],
-    String:AttackerName[MAX_NAME_LENGTH],
-    bool:Scanned,
-    Float:GameTime,
-    String:Weaponused[32],
-    bool:Found
+    int Ent;
+    int Victim;
+    int Attacker;
+
+    int VictimTeam;
+    int AttackerTeam;
+
+    char VictimName[MAX_NAME_LENGTH];
+    char AttackerName[MAX_NAME_LENGTH];
+    char WeaponUsed[32];
+
+    bool Scanned;
+    bool Found;
+
+    float GameTime;
 }
 
 enum KarmaUpdate
@@ -175,7 +179,7 @@ forward Action TTT_OnClientDeathPre(int victim, int attacker);
  * @param ragdoll           The Array with Ragdoll informations (by reference).
  * @param silentID          True if body was silenced id and false if normal inspect
  */
-forward void TTT_OnBodyFound(int client, int victim, int[] ragdoll, bool silentID);
+forward void TTT_OnBodyFound(int client, int victim, Ragdolls ragdoll, bool silentID);
 
 /**
  * Called before we create rules menu.
@@ -201,7 +205,7 @@ forward Action TTT_OnDetectiveMenu(int client, bool &show);
  * @param client            The client who scanned the body.
  * @param ragdoll           The Array with Ragdoll informations (by reference).
  */
-forward Action TTT_OnBodyCheck(int client, int[] ragdoll);
+forward Action TTT_OnBodyCheck(int client, Ragdolls ragdoll);
 
 /**
  * Called on updated player models
@@ -295,11 +299,12 @@ native bool TTT_GetClientRagdoll(int victim, int[] ragdoll);
 native int TTT_GetClientByRagdollID(int ragdoll);
 
 /**
- * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
+ * Spawn ragdoll at client position and add it to global Ragdoll array (will get cleaned on Round Start).
  *
- * @param radgoll           The array to save as Ragdoll.
+ * @param client           The client index
+ * @return                 True if spawned, false else.
  */
-native int TTT_SetRagdoll(int[] ragdoll);
+native void TTT_AddRagdoll(int client);
 
 /**
  * Set a client's role.
@@ -1175,6 +1180,7 @@ stock void PrintCenterText2(int client, const char[] title, const char[] message
 {
     char sBuffer[2048];
     Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, message);
+    
     Protobuf hMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
     hMessage.SetInt("msg_dst", 4);
     hMessage.AddString("params", "#SFUI_ContractKillStart");
