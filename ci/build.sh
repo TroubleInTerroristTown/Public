@@ -113,6 +113,15 @@ mkdir -p build/addons/sourcemod/extensions/
 cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
 cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
 
+echo -e "Download DHooks"
+curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=176954&d=1566228343" -o dhooks.zip
+tar xfv dhooks.zip
+
+echo -e "Move DHooks files into build package"
+mkdir -p build/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/dhooks.ext.so build/addons/sourcemod/extensions/
+cp addons/sourcemod/extensions/dhooks.ext.dll build/addons/sourcemod/extensions/
+
 echo -e "Clean root folder"
 rm sourcemod.tar.gz
 rm steamworks_linux.tar.gz
