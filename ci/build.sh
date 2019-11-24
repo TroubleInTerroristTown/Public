@@ -97,7 +97,12 @@ rm -r build/addons/sourcemod/configs/*.ini
 rm -r build/addons/sourcemod/configs/*.cfg
 rm -r build/addons/sourcemod/data
 rm -r build/addons/sourcemod/extensions
-rm -r build/addons/sourcemod/gamedata
+rm -r build/addons/sourcemod/gamedata/core.games
+rm -r build/addons/sourcemod/gamedata/sdkhooks.games
+rm -r build/addons/sourcemod/gamedata/sdktools.games
+rm -r build/addons/sourcemod/gamedata/sm-cstrike.games
+rm build/addons/sourcemod/gamedata/funcommands.games.txt
+rm build/addons/sourcemod/gamedata/sm-tf2.games.txt
 rm -r build/addons/sourcemod/scripting
 rm build/addons/sourcemod/*.txt
 
