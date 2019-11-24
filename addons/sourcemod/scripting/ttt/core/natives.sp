@@ -145,57 +145,11 @@ public int Native_GetClientByRagdollID(Handle plugin, int numParams)
 
 public int Native_AddRagdoll(Handle plugin, int numParams)
 {
-    int client = GetNativeCell(1);
+    Ragdolls ragdoll;
 
-    if(!TTT_IsClientValid(client))
-        return false;
+    GetNativeArray(1, ragdoll, sizeof(ragdoll));
 
-    char sModel[256];
-    float pos[3];
-    char sName[32];
-
-    GetClientModel(client, sModel, sizeof(sModel));
-    GetClientEyePosition(client, pos);
-    Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
-
-    int iEntity = CreateEntityByName("prop_ragdoll");
-    DispatchKeyValue(iEntity, "model", sModel);
-    DispatchKeyValue(iEntity, "targetname", sName);
-    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
-    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
-    SetEntityMoveType(iEntity, MOVETYPE_NONE);
-    AcceptEntityInput(iEntity, "DisableMotion");
-
-    if(DispatchSpawn(iEntity)) {
-        pos[2] -= 16.0;
-        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
-
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-        AcceptEntityInput(iEntity, "EnableMotion");
-        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
-    
-        Ragdolls ragdoll;
-
-        ragdoll.Ent = EntIndexToEntRef(iEntity);
-        ragdoll.Victim = GetClientUserId(client);
-        ragdoll.VictimTeam = TTT_GetClientRole(client);
-        ragdoll.Attacker = 0;
-        ragdoll.AttackerTeam = TTT_TEAM_TRAITOR;
-
-        GetClientName(client, ragdoll.VictimName, MAX_NAME_LENGTH);
-        Format(ragdoll.AttackerName, MAX_NAME_LENGTH, "Fake!");
-        Format(ragdoll.WeaponUsed, MAX_NAME_LENGTH, "Fake!");
-        
-        ragdoll.Scanned = false;
-        ragdoll.Found = false;
-
-        ragdoll.GameTime = 0.0;
-    
-        g_aRagdoll.PushArray(ragdoll);
-        return true;
-    }
-    
-    return false;
+    g_aRagdoll.PushArray(ragdoll);
 }
 
 public int Native_SetClientRole(Handle plugin, int numParams)
