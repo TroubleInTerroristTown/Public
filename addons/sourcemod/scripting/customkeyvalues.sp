@@ -29,15 +29,12 @@ methodmap EntityMap < StringMap
 		IntToString( entity, refstring, sizeof(refstring) );
 	
 		StringMap keyvals;
-		PrintToChatAll("GetEntityValue - 1");
 		if( !this.GetValue( refstring, keyvals ) )
 		{
-			PrintToChatAll("GetEntityValue - 1.1");
 			return false;
 		}
 
 		bool bValue = keyvals.GetString( key, value, maxlen );
-		PrintToChatAll("GetEntityValue - 2 (keyvals.GetString->%d)", bValue);
 		
 		return bValue;
 	}
@@ -164,8 +161,6 @@ public MRESReturn Hook_OnKeyValue( int pThis, Handle hReturn, Handle hParams )
     {
         return MRES_Ignored;
     }
-
-    LogMessage( "==== func_physbox KeyValue ====" );
     
     char key[128];
     DHookGetParamString( hParams, 1, key, sizeof(key) );
@@ -174,11 +169,8 @@ public MRESReturn Hook_OnKeyValue( int pThis, Handle hReturn, Handle hParams )
 
     if( DHookGetReturn( hReturn ) )
     {
-        LogMessage( "Ignoring game KV (%s : %s)", key, value );
         return MRES_Ignored;
     }
-    
-    LogMessage( "%s : %s", key, value );
     
     g_EntityKeyValues.SetEntityValue( pThis, key, value );
     
@@ -190,16 +182,15 @@ public int Native_GetCustomKeyValue( Handle plugin, int params )
 	int entity = GetNativeCell( 1 );
 	char key[128];
 	GetNativeString( 2, key, sizeof(key) );
+
 	char value[128];
 	int maxlen = GetNativeCell( 4 );
-	PrintToChatAll("Native_GetCustomKeyValue - 1");
+
 	if( g_EntityKeyValues.GetEntityValue( entity, key, value, maxlen ) )
 	{
-		PrintToChatAll("Native_GetCustomKeyValue - 1.1");
 		SetNativeString( 3, value, maxlen );
 		return true;
 	}
-	PrintToChatAll("Native_GetCustomKeyValue - 2");
 	
 	return false;
 }
