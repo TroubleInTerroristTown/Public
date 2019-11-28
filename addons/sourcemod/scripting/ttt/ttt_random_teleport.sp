@@ -174,7 +174,6 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
 int RandomTeleport(int client)
 {
     bool bAlive = true;
-    int[] iRagdoll = new int[Ragdolls];
     float fClientPos[3], fTargetPos[3];
 
     if (g_cRagdoll.BoolValue)
@@ -233,13 +232,15 @@ int RandomTeleport(int client)
     }
     else
     {
-        if (!TTT_GetClientRagdoll(target, iRagdoll))
+        Ragdolls ragdoll;
+        
+        if (!TTT_GetClientRagdoll(target, ragdoll))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Cant find ragdoll", client);
             return -1;
         }
 
-        int body = EntRefToEntIndex(iRagdoll[Ent]);
+        int body = EntRefToEntIndex(ragdoll.Ent);
 
         if (!IsValidEntity(body))
         {

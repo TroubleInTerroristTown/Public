@@ -18,7 +18,7 @@ addons:
 
 env:
   - VERSION=1.10
-  # - VERSION=1.11
+  - VERSION=1.11
 
 before_script:
   - 'if [[ $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_PULL_REQUEST == "false" && $TRAVIS_BRANCH != "master" ]]; then bash ci/test.sh $VERSION "dev"; fi'
