@@ -980,17 +980,17 @@
 
 	"No karma hurt traitor"
 	{
-		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}hurted you before."
+		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}damaged you first."
 	}
 
 	"No karma hurt innocent"
 	{
-		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}hurted you before."
+		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}damaged you first."
 	}
 
 	"No karma hurt detective"
 	{
-		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}hurted you before."
+		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}damaged you first."
 	}
 
 	"Shop Item not found"
