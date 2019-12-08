@@ -15,7 +15,7 @@
 
 	"TEAMS HAS BEEN SELECTED"
 	{
-		"pl"		"DRUŻYNY ZOSTAŁY PRZYDZIELONE"
+		"pl"		"DRUŻYNY ZOSTAŁY WYBRANE!"
 	}
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
@@ -25,17 +25,17 @@
 
 	"Your Team is DETECTIVES"
 	{
-		"pl"		"Jesteś {darkblue}DETEKTYWEM"
+		"pl"		"Jesteś {darkblue}DETEKTYWEM{lightgreen}!"
 	}
 
 	"Your Team is TRAITORS"
 	{
-		"pl"		"Jesteś {darkred}ZDRAJCĄ"
+		"pl"		"Jesteś {darkred}ZDRAJCĄ{lightgreen}!"
 	}
 
 	"Your Team is INNOCENTS"
 	{
-		"pl"		"Jesteś {green}NIEWINNY"
+		"pl"		"Jesteś {green}NIEWINNY{lightgreen}!"
 	}
 
 	"Your credits is"
@@ -45,17 +45,17 @@
 
 	"Your killer is a Traitor"
 	{
-		"pl"		"Twoim zabójcą był {darkred}ZDRAJCA!"
+		"pl"		"Twoim zabójcą był {darkred}ZDRAJCA{lightgreen}!"
 	}
 
 	"Your killer is a Detective"
 	{
-		"pl"		"Zostales zabity przez {darkblue}DETEKTYWA!"
+		"pl"		"Zostałeś zabity przez {darkblue}DETEKTYWA{lightgreen}!"
 	}
 
 	"Your killer is an Innocent"
 	{
-		"pl"		"Twój zabójca był {green}NIEWINNY!"
+		"pl"		"Twoim zabójcą był {green}NIEWINNY{lightgreen}!"
 	}
 
 	"You killed a Traitor"
@@ -70,42 +70,42 @@
 
 	"You killed an Innocent"
 	{
-		"pl"		"Zabiłeś {green}Niewinnego!"
+		"pl"		"Zabiłeś {green}NIEWINNEGO!"
 	}
 
 	"You hurt a Traitor"
 	{
-		"pl"		"Użyłeś detektora na graczu {darkred}{1} {lightgreen}i jest {darkred}ZDRAJCĄ!"
+		"pl"		"Użyłeś detektora na graczu {darkred}{1} {lightgreen}i jest {darkred}ZDRAJCĄ{lightgreen}!"
 	}
 
 	"You hurt a Detective"
 	{
-		"pl"		"Użyłeś detektora na graczu{darkblue} {1} {lightgreen}i jest {darkblue}DETEKTYWEM!"
+		"pl"		"Użyłeś detektora na graczu{darkblue} {1} {lightgreen}i jest {darkblue}DETEKTYWEM{lightgreen}!"
 	}
 
 	"You hurt an Innocent"
 	{
-		"pl"		"Użyłeś detektora na graczu{green} {1} {lightgreen}i jest {green}NIEWINNY!"
+		"pl"		"Użyłeś detektora na graczu{green} {1} {lightgreen}i jest {green}NIEWINNY{lightgreen}!"
 	}
 
 	"Detective scan found body"
 	{
-		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}Przeszukał ciało, Zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
+		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}przeszukał ciało, zabójcą jest{darkred} {2} {lightgreen}z bronią{orchid} {3}"
 	}
 
 	"Detective scan found body suicide"
 	{
-		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}Przeszukał ciało, gracz popełnił samobójstwo"
+		"pl"		"DETEKTYW{darkblue} {1} {lightgreen}przeszukał ciało, gracz popełnił samobójstwo"
 	}
 
 	"Health Station"
 	{
-		"pl"		"Stacja Medyczna - {1}"
+		"pl"		"Stacja lecząca - {1}"
 	}
 
 	"Please wait till your team is assigned"
 	{
-		"pl"		"Proszę poczekaj do czasu aż twoja drużyna zostanie wybrana"
+		"pl"		"Proszę poczekaj do czasu aż Twoja drużyna zostanie wybrana"
 	}
 
 	"You don't have enough money"
@@ -150,12 +150,12 @@
 
 	"The weapon used has been"
 	{
-		"pl"		"Użyta broń została: {1}"
+		"pl"		"Użyta broń: {1}"
 	}
 
 	"The weapon used has been: himself (suicide)"
 	{
-		"pl"		"Użyta broń została: własnoręcznie {zabita}"
+		"pl"		"Użyta broń: on sam (samobójstwo)"
 	}
 
 	"T channel"
@@ -190,12 +190,12 @@
 
 	"karma earned"
 	{
-		"pl"		"Zdobyles {1} karme\nTwoja karma wynosi teraz: {2}"
+		"pl"		"Zdobyłeś {1} karmy\nTwoja karma wynosi teraz: {2}"
 	}
 
 	"lost karma"
 	{
-		"pl"		"Straciles czesc {1} karmy\nTwoja karma wynosi teraz: {2}"
+		"pl"		"Straciłeś {1} karmy\nTwoja karma wynosi teraz: {2}"
 	}
 
 	"no logs yet"
@@ -205,7 +205,7 @@
 
 	"See your console"
 	{
-		"pl"		"Logi Pobrane! Sprawdz konsolę aby je zobaczyć"
+		"pl"		"Logi Pobrane! Sprawdz konsolę, aby je zobaczyć"
 	}
 
 	"you cant see logs"
@@ -220,17 +220,17 @@
 
 	"Found Innocent"
 	{
-		"pl"		"{orchid}{1} {lightgreen}znalazł ciało {green}{2}. {lightgreen}To był {green}NIEWINNY!"
+		"pl"		"{orchid}{1} {lightgreen}znalazł ciało {green}{2}. {lightgreen}To był {green}NIEWINNY{lightgreen}!"
 	}
 
 	"Found Detective"
 	{
-		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkblue}{2}. {lightgreen}To byl {darkblue}DETEKTYW!"
+		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkblue}{2}. {lightgreen}To był {darkblue}DETEKTYW{lightgreen}!"
 	}
 
 	"Found Traitor"
 	{
-		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkred}{2}. {lightgreen}To byl {darkred}Zdrajca!"
+		"pl"		"{orchid}{1} {lightgreen}znalazl cialo {darkred}{2}. {lightgreen}To był {darkred}ZDRAJCA{lightgreen}!"
 	}
 
 	"Your bomb is not armed."
@@ -240,7 +240,7 @@
 
 	"Your bomb is now armed."
 	{
-		"pl"		"Twoja bomba jest teraz uzbrojona"
+		"pl"		"Twoja bomba została właśnie uzbrojona."
 	}
 
 	"bomb will arm in 60 seconds, double tab F to explode"
@@ -250,7 +250,7 @@
 
 	"Your Karma is too low"
 	{
-		"pl"		"Zostałeś zbanowany, ponieważ twoja karma była zbyt niska!"
+		"pl"		"Zostałeś zbanowany, ponieważ Twoja karma była zbyt niska!"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"
@@ -260,22 +260,22 @@
 
 	"Suicide Blocked"
 	{
-		"pl"		"Samobójstwo zablokowane"
+		"pl"		"Samobójstwo jest zablokowane"
 	}
 
 	"Right click to plant the C4"
 	{
-		"pl"		"Kliknij prawy przycisk myszy aby podłożyć C4!"
+		"pl"		"Kliknij prawy przycisk myszy, aby podłożyć C4!"
 	}
 
 	"You already have an active Health Station"
 	{
-		"pl"		"Już posiadasz aktywną Stację Medyczną!"
+		"pl"		"Już posiadasz aktywną stację leczącą!"
 	}
 
 	"The player who RDM'd you is no longer available"
 	{
-		"pl"		"Gracz który ciebie zRDM'ował nie jest już dostępny!"
+		"pl"		"Gracz który Ciebie zRDM'ował nie jest już dostępny!"
 	}
 
 	"You were RDM'd"
@@ -295,27 +295,27 @@
 
 	"Choose Punish"
 	{
-		"pl"		"{1} Wybrał by ukarać {2} za RDM!"
+		"pl"		"{1} wybrał by ukarać {2} za RDM!"
 	}
 
 	"Choose Forgive Victim"
 	{
-		"pl"		"Wybrałeś by wybaczyć {1} za RDM na tobie!"
+		"pl"		"Wybrałeś przebaczenie dla {1} za RDM na Tobie!"
 	}
 
 	"Choose Forgive Attacker"
 	{
-		"pl"		"{1} Wybrał by ci darować za RDM"
+		"pl"		"{1} wybrał przebaczenie za RDM"
 	}
 
 	"Player is Now Traitor"
 	{
-		"pl"		"{orchid}{1} {lightgreen}jest teraz {darkred}zdrajca!"
+		"pl"		"{orchid}{1} {lightgreen}jest teraz {darkred}Zdrajcą{lightgreen}!"
 	}
 
 	"Player is Now Detective"
 	{
-		"pl"		"{orchid}{1} {lightgreen}zostal {darkblue}Detektywem!"
+		"pl"		"{orchid}{1} {lightgreen}został {darkblue}Detektywem{lightgreen}!"
 	}
 
 	"You Are Unassigned"
@@ -325,17 +325,17 @@
 
 	"You Are Now Innocent"
 	{
-		"pl"		"Jesteś {green}Niewinny!"
+		"pl"		"Jesteś {green}Niewinny{lightgreen}!"
 	}
 
 	"You Are Now Traitor"
 	{
-		"pl"		"Jesteś {darkred}Zdrajcą!"
+		"pl"		"Jesteś {darkred}Zdrajcą{lightgreen}!"
 	}
 
 	"You Are Now Detective"
 	{
-		"pl"		"Jesteś {darkblue}Detektywem!"
+		"pl"		"Jesteś {darkblue}Detektywem{lightgreen}!"
 	}
 
 	"Triggered Falling Building"
@@ -345,7 +345,7 @@
 
 	"Bomb Detonated"
 	{
-		"pl"		"Twoja bomba wybuchla!"
+		"pl"		"Twoja bomba wybuchła!"
 	}
 
 	"Set C4 Timer"
@@ -370,12 +370,12 @@
 
 	"You Defused Bomb"
 	{
-		"pl"		"Rozbroiłeś {orchid}{1}{lightgreen} bombe!"
+		"pl"		"Rozbroiłeś {orchid}{1}{lightgreen} bombę!"
 	}
 
 	"Has Defused Bomb"
 	{
-		"pl"		"{orchid}{1} {lightgreen}rozbroil bombe!"
+		"pl"		"{orchid}{1} {lightgreen}rozbroił bombę!"
 	}
 
 	"Failed Defuse"
@@ -385,12 +385,12 @@
 
 	"Alive to Plant"
 	{
-		"pl"		"Musisz byc zywy, aby podlozyc bombe!"
+		"pl"		"Musisz byc żywy, aby podłożyć bombę!"
 	}
 
 	"Will Explode In"
 	{
-		"pl"		"Uzbrajanie c4 która wybuchnie za {orchid}{1} {lightgreen}sekund."
+		"pl"		"Uzbrajanie C4 która wybuchnie za {orchid}{1} {lightgreen}sekund."
 	}
 
 	"Bomb Was Not Found"
@@ -405,32 +405,32 @@
 
 	"Your Traitor Partners"
 	{
-		"pl"		"Twoi koledzy Zdrajcy to:"
+		"pl"		"Twoi wspólnicy to:"
 	}
 
 	"No Traitor Partners"
 	{
-		"pl"		"Nie masz partnerów."
+		"pl"		"Nie masz wspólników."
 	}
 
 	"Kick Bad Name"
 	{
-		"pl"		"Usunięto {1} z twojego nicku!"
+		"pl"		"Usunięto {1} z Twojego nicku!"
 	}
 
 	"Health Station Deployed"
 	{
-		"pl"		"Stacja Medyczna postawiona. Stań blisko niej aby się uleczyć!"
+		"pl"		"Lecząca stacja postawiona. Stań blisko niej, aby się uleczyć!"
 	}
 
 	"Healing From"
 	{
-		"pl"		"Leczenie z {orchid}{1} {lightgreen} Stacji Medycznej!"
+		"pl"		"Leczenie z leczącej stacji {orchid}{1} {lightgreen}!"
 	}
 
 	"Health Station Out Of Charges"
 	{
-		"pl"		"Stacja Uzdrowiskowa jest wyczerpana! Poczekaj zanim się ponownie naładuje!"
+		"pl"		"Stacja lecząca jest wyczerpana! Poczekaj zanim się ponownie naładuje!"
 	}
 
 	"Traitor List"
@@ -440,7 +440,7 @@
 
 	"Welcome Menu"
 	{
-		"pl"		"Witaj {1},\nTo jest serwer TTT Tłumaczenie by Wolf i Janek_Waleczny\nnapisany przez {2}\n\nCzy jesteś zaznajomiony z regulaminem?"
+		"pl"		"Witaj {1},\nTo jest serwer Trouble in Terrorist Town\nnapisany przez {2}\n\nCzy jesteś zaznajomiony z regulaminem?"
 	}
 
 	"WM Yes"
@@ -455,7 +455,7 @@
 
 	"AM Question"
 	{
-		"pl"		"Chcesz zagrać jako detektyw?\nWięc potrzebujesz następujących rzeczy:\n\n-działający mikrofon\n-rozmawiać z innymi graczami\n-aktywnie grać\n\nMożesz to potwierdzić?"
+		"pl"		"Chcesz zagrać jako detektyw?\nWięc potrzebujesz następujących rzeczy:\n\n- działający mikrofon\n- rozmawiać z innymi graczami\n- aktywnie grać\n\nMożesz to potwierdzić?"
 	}
 
 	"AM Yes"
@@ -480,7 +480,7 @@
 
 	"Hurt Station Deployed"
 	{
-		"pl"		"Stacja Bólu została położona! Będzie ona zadawać obrażenia pobliskim graczom!"
+		"pl"		"Raniąca stacja została położona! Będzie ona zadawać obrażenia pobliskim graczom!"
 	}
 
 	"You reached limit"
@@ -495,7 +495,7 @@
 
 	"ID: Need to be Alive"
 	{
-		"pl"		"Musisz być żywy aby użyć tej komendy."
+		"pl"		"Musisz być żywy, aby użyć tej komendy."
 	}
 
 	"ID: Need to buy ID"
@@ -510,7 +510,7 @@
 
 	"Found Fake"
 	{
-		"pl"		"{orchid}{1} {lightgreen}znalazł fałszywe ciało!"
+		"pl"		"{orchid}{1} {lightgreen}znalazł sztuczne ciało!"
 	}
 
 	"TaserMax"
@@ -525,7 +525,7 @@
 
 	"ID: Buy Message"
 	{
-		"pl"		"Wpisz !id aby zobaczyć swoją niewinność."
+		"pl"		"Wpisz !id aby udowodnić swoją niewinność."
 	}
 
 	"RoundStartCenter"
@@ -605,27 +605,27 @@
 
 	"You tased a Traitor"
 	{
-		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkred}{2} {lightgreen}i okazał się {darkred}ZDRAJCĄ!"
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkred}{2} {lightgreen}i okazał się {darkred}ZDRAJCĄ{lightgreen}!"
 	}
 
 	"You tased a Detective"
 	{
-		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkblue} {2} {lightgreen} i okazał się {darkblue}DETEKTYWEM!"
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu {darkblue} {2} {lightgreen} i okazał się {darkblue}DETEKTYWEM{lightgreen}!"
 	}
 
 	"You tased an Innocent"
 	{
-		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu{green} {2} {lightgreen}i okazał się być {green}NIEWINNY!"
+		"pl"		"Gracz {lightgreen}{1} użył detektora na graczu{green} {2} {lightgreen}i okazał się być {green}NIEWINNYM{lightgreen}!"
 	}
 
 	"is now talking in Traitor Voice Chat"
 	{
-		"pl"		"{1} jest teraz w czacie głosowym Zdrajców"
+		"pl"		"{1} jest teraz na czacie głosowym Zdrajców"
 	}
 
 	"stopped talking in Traitor Voice Chat"
 	{
-		"pl"		"{1} przestał mówić w czacie głosowym Zdrajców"
+		"pl"		"{1} przestał mówić na czacie głosowym Zdrajców"
 	}
 
 	"Traitor Voice Chat: Disabled!"
@@ -640,7 +640,7 @@
 
 	"ID: Cooldown"
 	{
-		"pl"		"Musisz poczekac przed użyciem tej komendy ponownie."
+		"pl"		"Musisz poczekać przed użyciem tej komendy ponownie."
 	}
 
 	"SpecMenu: Unmute Dead"
@@ -690,17 +690,17 @@
 
 	"Player is Now Innocent"
 	{
-		"pl"		"{orchid}{1} {lightgreen}jest teraz {green}Niewinny!"
+		"pl"		"{orchid}{1} {lightgreen}jest teraz {green}Niewinny{lightgreen}!"
 	}
 
 	"AdminSetRoundSlays"
 	{
-		"pl"		"{orchid}{1} {lightgreen}dostał Auto-Slaye{orchid}{2} {lightgreen}na {orchid}{3} {lightgreen}rund!"
+		"pl"		"{orchid}{1} {lightgreen}dostał Auto-Slay'a{orchid}{2} {lightgreen}na {orchid}{3} {lightgreen}rund!"
 	}
 
 	"RS - Slayed"
 	{
-		"pl"		"Dostałeś auto-slaya! Jeszcze {orchid}{1}{default} rundy"
+		"pl"		"Dostałeś auto-slaya! Jeszcze {orchid}{1}{default} rund/y"
 	}
 
 	"Shop Discount Price"
@@ -725,27 +725,27 @@
 
 	"TAGrenade We Found"
 	{
-		"pl"		"My znaleźliśmy:"
+		"pl"		"Znaleźliśmy:"
 	}
 
 	"TAGrenade Innocents"
 	{
-		"pl"		"{green}{1} Niewinni"
+		"pl"		"{green}{1} niewinnych"
 	}
 
 	"TAGrenade Traitors"
 	{
-		"pl"		"{darkred}{1} Zdrajcy"
+		"pl"		"{darkred}{1} zdrajców"
 	}
 
 	"TAGrenade Detectives"
 	{
-		"pl"		"{darkblue}{1} DETEKTYWI"
+		"pl"		"{darkblue}{1} detektywów"
 	}
 
 	"Location Saved"
 	{
-		"pl"		"Lokacja zapisana! Wpisz '{orchid}!tele{lightgreen}' na chacie do przeteleportowania się."
+		"pl"		"Lokacja zapisana! Wpisz '{orchid}!tele{lightgreen}' na chacie, aby przeteleportować się."
 	}
 
 	"Teleport Max"
@@ -925,17 +925,17 @@
 
 	"Found Innocent Silent"
 	{
-		"pl"		"{lightgreen}Po cichu znalazłeś ciało {green}{1}. {lightgreen}Był on {green}NIEWINNYM!"
+		"pl"		"{lightgreen}Po cichu znalazłeś ciało {green}{1}{lightgreen}. Był on {green}NIEWINNYM{lightgreen}!"
 	}
 
 	"Found Detective Silent"
 	{
-		"pl"		"{lightgreen}Po cichu znalazłeś ciało {darkblue}{1}. {lightgreen}Był on {darkblue}DETEKTYWEM!"
+		"pl"		"{lightgreen}Po cichu znalazłeś ciało {darkblue}{1}{lightgreen}. Był on {darkblue}DETEKTYWEM{lightgreen}!"
 	}
 
 	"Found Traitor Silent"
 	{
-		"pl"		"{lightgreen}Po cichu znalazłeś ciało {darkred}{1}. {lightgreen}Był on {darkred}Zdrajcą!"
+		"pl"		"{lightgreen}Po cichu znalazłeś ciało {darkred}{1}{lightgreen}. Był on {darkred}Zdrajcą{lightgreen}!"
 	}
 
 	"C4: Choose Punishment"
@@ -965,7 +965,7 @@
 
 	"Name Change Message"
 	{
-		"pl"		"{orchid}{1} {lightgreen}zmienił nazwę na {orchid}{2}!"
+		"pl"		"{orchid}{1} {lightgreen}zmienił nazwę na {orchid}{2}{lightgreen}!"
 	}
 
 	"No tripmines"
@@ -1005,12 +1005,12 @@
 
 	"WE ARE"
 	{
-		"pl"		"My jesteśmy {1} graczami!"
+		"pl"		"Aktualnie mamy {1} graczy!"
 	}
 
 	"REMAINING PLAYERS"
 	{
-		"pl"		"Pozostali gracze, do rozpoczęcia rundy"
+		"pl"		"Brakuje {1} graczy do rozpoczęcia rundy"
 	}
 
 	"HUD Health - Invalid"
@@ -1035,7 +1035,7 @@
 
 	"HUD Health - Hurt"
 	{
-		"pl"		"Ból"
+		"pl"		"Obolały"
 	}
 
 	"HUD Health - Healthy"
@@ -1050,7 +1050,7 @@
 
 	"HUD Karma - Liability"
 	{
-		"pl"		"Odpowiedzialność"
+		"pl"		"Odpowiedzialny"
 	}
 
 	"HUD Karma - Dangerous"
@@ -1181,11 +1181,6 @@
 	"Invisible Name: Start"
 	{
 		"pl"		"Twój nick jest przez {orchid}{1} sekund niewidoczny{green}."
-	}
-
-	"Invisible Name: Start"
-	{
-		"pl"		"Your name is now for {orchid}{1} seconds invisible{green}."
 	}
 
 	"Invisible Name: Stop"

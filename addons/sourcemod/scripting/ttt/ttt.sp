@@ -2029,13 +2029,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         int iARole = 0;
         char sName[MAX_NAME_LENGTH];
         GetClientName(client, sName, sizeof(sName));
-        int iRagdollC[Ragdolls];
-        iRagdollC[Ent] = EntIndexToEntRef(iEntity);
-        iRagdollC[Victim] = GetClientUserId(client);
-        iRagdollC[VictimTeam] = g_iRole[client];
-        Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sName);
-        iRagdollC[Scanned] = false;
-        
+
+        Ragdolls ragdoll;
+
+        ragdoll.Ent = EntIndexToEntRef(iEntity);
+        ragdoll.Victim = GetClientUserId(client);
+        ragdoll.VictimTeam = g_iRole[client];
+        Format(ragdoll.VictimName, MAX_NAME_LENGTH, sName);
+
         if (TTT_IsClientValid(iAttacker))
         {
             GetClientName(iAttacker, sName, sizeof(sName));
@@ -2046,14 +2047,16 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
             Format(sName, sizeof(sName), "Unknown attacker");
             iUAttacker = 0;
         }
-        
-        iRagdollC[Attacker] = iUAttacker;
-        iRagdollC[AttackerTeam] = iARole;
-        Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sName);
-        iRagdollC[GameTime] = GetGameTime();
-        event.GetString("weapon", iRagdollC[Weaponused], sizeof(iRagdollC[Weaponused]));
-        
-        g_aRagdoll.PushArray(iRagdollC[0]);
+
+        ragdoll.Attacker = iUAttacker;
+        ragdoll.AttackerTeam = iARole;
+        Format(ragdoll.AttackerName, MAX_NAME_LENGTH, sName);
+        event.GetString("weapon", ragdoll.WeaponUsed, sizeof(ragdoll.WeaponUsed));
+
+        ragdoll.Scanned = false;
+        ragdoll.GameTime = GetGameTime();
+
+        g_aRagdoll.PushArray(ragdoll, sizeof(ragdoll));
 
         SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
 
@@ -2804,21 +2807,21 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
         return Plugin_Handled;
     }
 
-    int iRagdollC[Ragdolls];
+    Ragdolls ragdoll;
 
     for (int i = 0; i < g_aRagdoll.Length; i++)
     {
-        g_aRagdoll.GetArray(i, iRagdollC[0]);
+        g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
 
-        if (client == GetClientOfUserId(iRagdollC[Attacker]))
+        if (client == GetClientOfUserId(ragdoll.Attacker))
         {
-            Format(iRagdollC[AttackerName], MAX_NAME_LENGTH, sNew);
-            g_aRagdoll.SetArray(i, iRagdollC[0]);
+            Format(ragdoll.AttackerName, MAX_NAME_LENGTH, sNew);
+            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
         }
-        else if (client == GetClientOfUserId(iRagdollC[Victim]))
+        else if (client == GetClientOfUserId(ragdoll.Victim))
         {
-            Format(iRagdollC[VictimName], MAX_NAME_LENGTH, sNew);
-            g_aRagdoll.SetArray(i, iRagdollC[0]);
+            Format(ragdoll.VictimName, MAX_NAME_LENGTH, sNew);
+            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
         }
     }
 
@@ -3394,14 +3397,16 @@ public int TTT_OnButtonPress(int client, int button)
             {
                 return;
             }
+            
+            Ragdolls ragdoll;
 
-            int iRagdollC[Ragdolls];
             int entity;
 
             for (int i = 0; i < iSize; i++)
             {
-                g_aRagdoll.GetArray(i, iRagdollC[0]);
-                entity = EntRefToEntIndex(iRagdollC[Ent]);
+                g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
+                entity = EntRefToEntIndex(ragdoll.Ent);
+
                 if (entity == iEntity)
                 {
                     if (IsPlayerAlive(client) && !g_bIsChecking[client])
@@ -3411,7 +3416,7 @@ public int TTT_OnButtonPress(int client, int button)
                         Action res = Plugin_Continue;
                         Call_StartForward(g_hOnBodyCheck);
                         Call_PushCell(client);
-                        Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
+                        Call_PushArrayEx(ragdoll, sizeof(ragdoll), SM_PARAM_COPYBACK);
                         Call_Finish(res);
                         
                         if (res == Plugin_Stop || res == Plugin_Handled)
@@ -3420,28 +3425,26 @@ public int TTT_OnButtonPress(int client, int button)
                         }
                         else if (res == Plugin_Changed)
                         {
-                            // g_aRagdoll.SetArray(i, iRagdollC[0]);
-                            g_aRagdoll.Erase(i);
-                            g_aRagdoll.PushArray(iRagdollC[0]);
+                            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
                             return;
                         }
                         
-                        int victim = GetClientOfUserId(iRagdollC[Victim]);
-                        int attacker = GetClientOfUserId(iRagdollC[Attacker]);
+                        int victim = GetClientOfUserId(ragdoll.Victim);
+                        int attacker = GetClientOfUserId(ragdoll.Attacker);
                         
                         if (g_cDebugMessages.BoolValue)
                         {
-                            LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, iRagdollC[Victim], attacker, iRagdollC[Attacker]);
+                            LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, ragdoll.Victim, attacker, ragdoll.Attacker);
                         }
                         
-                        InspectBody(client, victim, iRagdollC[VictimTeam], attacker, RoundToNearest(GetGameTime() - iRagdollC[GameTime]), iRagdollC[Weaponused], iRagdollC[VictimName]);
+                        InspectBody(client, victim, ragdoll.VictimTeam, attacker, RoundToNearest(GetGameTime() - ragdoll.GameTime), ragdoll.WeaponUsed, ragdoll.VictimName);
 
-                        if (!iRagdollC[Found])
+                        if (!ragdoll.Found)
                         {
                             bool bInWalk = ((button & IN_SPEED) > 0);
                             bool silentID = false;
                             
-                            iRagdollC[Found] = true;
+                            ragdoll.Found = true;
 
                             bool bValid = false;
 
@@ -3461,7 +3464,7 @@ public int TTT_OnButtonPress(int client, int button)
                             TTT_GetRoleNameByID(g_iRole[client], sRole, sizeof(sRole));
 
                             char sVictimRole[ROLE_LENGTH];
-                            TTT_GetRoleNameByID(iRagdollC[VictimTeam], sVictimRole, sizeof(sVictimRole));
+                            TTT_GetRoleNameByID(ragdoll.VictimTeam, sVictimRole, sizeof(sVictimRole));
 
                             bool bSetColor = false;
                             
@@ -3472,10 +3475,10 @@ public int TTT_OnButtonPress(int client, int button)
                                 
                                 LoopValidClients(j)
                                 {
-                                    CPrintToChat(j, "%s %T", g_sTag, sBuffer, j, client, iRagdollC[VictimName]);
+                                    CPrintToChat(j, "%s %T", g_sTag, sBuffer, j, client, ragdoll.VictimName);
                                 }
                                 
-                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s)", client, sRole, iRagdollC[VictimName], sVictimRole);
+                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s)", client, sRole, ragdoll.VictimName, sVictimRole);
                                 
                                 bSetColor = true;
                             }
@@ -3484,9 +3487,9 @@ public int TTT_OnButtonPress(int client, int button)
                                 char sBuffer[32];
                                 Format(sBuffer, sizeof(sBuffer), "Found %s Silent", sVictimRole);
                                 
-                                CPrintToChat(client, "%s %T", g_sTag, sBuffer, client, iRagdollC[VictimName]);
+                                CPrintToChat(client, "%s %T", g_sTag, sBuffer, client, ragdoll.VictimName);
                                 
-                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s) - SILENT", client, sRole, iRagdollC[VictimName], sVictimRole);
+                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s) - SILENT", client, sRole, ragdoll.VictimName, sVictimRole);
                                 
                                 if (g_cSilentIdColor.BoolValue)
                                 {
@@ -3498,15 +3501,15 @@ public int TTT_OnButtonPress(int client, int button)
                             
                             if (bSetColor)
                             {
-                                if (iRagdollC[VictimTeam] == TTT_TEAM_INNOCENT)
+                                if (ragdoll.VictimTeam == TTT_TEAM_INNOCENT)
                                 {
                                     SetEntityRenderColor(iEntity, 0, 255, 0, 255);
                                 }
-                                else if (iRagdollC[VictimTeam] == TTT_TEAM_DETECTIVE)
+                                else if (ragdoll.VictimTeam == TTT_TEAM_DETECTIVE)
                                 {
                                     SetEntityRenderColor(iEntity, 0, 0, 255, 255);
                                 }
-                                else if (iRagdollC[VictimTeam] == TTT_TEAM_TRAITOR)
+                                else if (ragdoll.VictimTeam == TTT_TEAM_TRAITOR)
                                 {
                                     SetEntityRenderColor(iEntity, 255, 0, 0, 255);
                                 }
@@ -3516,7 +3519,6 @@ public int TTT_OnButtonPress(int client, int button)
                             {
                                 addArrayTime(iItem);
                             }
-
 
                             if (bValid)
                             {
@@ -3535,13 +3537,12 @@ public int TTT_OnButtonPress(int client, int button)
                                 Call_PushCell(-1);
                             }
                             
-                            Call_PushArrayEx(iRagdollC[0], sizeof(iRagdollC), SM_PARAM_COPYBACK);
+                            Call_PushArrayEx(ragdoll, sizeof(ragdoll), SM_PARAM_COPYBACK);
                             Call_PushCell(silentID);
                             Call_Finish();
                         }
-                        // g_aRagdoll.SetArray(i, iRagdollC[0]);
-                        g_aRagdoll.Erase(i);
-                        g_aRagdoll.PushArray(iRagdollC[0]);
+
+                        g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
                         break;
                     }
                 }

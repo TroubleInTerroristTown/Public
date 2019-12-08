@@ -154,9 +154,9 @@ public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count
     return Plugin_Continue;
 }
 
-public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
+public Action TTT_OnBodyCheck(int client, Ragdolls ragdoll)
 {
-    if (iRagdollC[Scanned])
+    if (ragdoll.Scanned)
     {
         return Plugin_Continue;
     }
@@ -171,8 +171,8 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
         return Plugin_Continue;
     }
     
-    int attacker = GetClientOfUserId(iRagdollC[Attacker]);
-    int victim = GetClientOfUserId(iRagdollC[Victim]);
+    int attacker = GetClientOfUserId(ragdoll.Attacker);
+    int victim = GetClientOfUserId(ragdoll.Victim);
 
     if (attacker > 0 && attacker != victim)
     {
@@ -204,7 +204,7 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
             }
         }
 
-        TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %N%s (%s) with Weapon: %s]", client, sClientID, attacker, sAttackerID, sRole, iRagdollC[Weaponused]);
+        TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %N%s (%s) with Weapon: %s]", client, sClientID, attacker, sAttackerID, sRole, ragdoll.WeaponUsed);
 
         if (g_cPrintTo.IntValue == 2)
         {
@@ -212,13 +212,13 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
             {
                 if (!g_cRoleColor.BoolValue)
                 {
-                    CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                    CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
                 }
                 else
                 {
                     char sTranslation[64];
                     Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-                    CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                    CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
                 }
             }
         }
@@ -230,13 +230,13 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
                 {
                     if (!g_cRoleColor.BoolValue)
                     {
-                        CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                        CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
                     }
                     else
                     {
                         char sTranslation[64];
                         Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-                        CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                        CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
                     }
                 }
             }
@@ -245,13 +245,13 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
         {
             if (!g_cRoleColor.BoolValue)
             {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
             }
             else
             {
                 char sTranslation[64];
                 Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-                CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, client, iRagdollC[AttackerName], iRagdollC[Weaponused]);
+                CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, client, ragdoll.AttackerName, ragdoll.WeaponUsed);
             }
         }
     }
@@ -305,7 +305,7 @@ public Action TTT_OnBodyCheck(int client, int[] iRagdollC)
         }
     }
 
-    iRagdollC[Scanned] = true;
+    ragdoll.Scanned = true;
 
     if (g_bFreeScanner[client])
     {
