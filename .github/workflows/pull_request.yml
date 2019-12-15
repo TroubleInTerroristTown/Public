@@ -1,7 +1,7 @@
 name: Compile with SourceMod
 
 on:
-  push:
+  pull_request:
     branches: master
 
 jobs:
@@ -52,36 +52,3 @@ jobs:
             spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
           done
         working-directory: ${{ env.SCRIPTS_PATH }}/
-
-      - name: Move compiled plugins
-        run: |
-          rm -rf $PLUGINS_PATH
-          mkdir -p $PLUGINS_PATH/{ttt,disabled}
-          rsync -av --include='*/' --include="*.smx" --exclude="*" --prune-empty-dirs --remove-source-files $SCRIPTS_PATH/ $PLUGINS_PATH/
-
-      - name: Disable optional plugins
-        run: |
-          mv $SCRIPTS_PATH/README.md $PLUGINS_PATH/disabled
-          mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
-
-      - name: Move folders (addons, materials, models, sound) to build
-        run: |
-          mkdir build
-          mv ./{addons,materials,models,sound} build/
-
-      - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
-        run: |
-          mv $GITHUB_WORKSPACE/{LICENSE,CREDITS.md,CVARS.txt,adminmenu_custom.txt} .
-        working-directory: ./build
-
-      - name: Remove unnecessary files and folders from build
-        run: |
-          rm -rf addons/sourcemod/scripting
-          rm -rf addons/sourcemod/configs/{*.cfg,*.ini}
-        working-directory: ./build
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: TTT.${{ env.PLUGIN_VERSION }}
-          path: ./build
