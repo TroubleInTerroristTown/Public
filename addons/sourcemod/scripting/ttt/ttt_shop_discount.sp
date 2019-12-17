@@ -97,20 +97,20 @@ public void OnConfigsExecuted()
         SetFailState("[TTT] Can't open File: %s", g_sFile);
     }
 
-    KeyValues kvRules = new KeyValues("Rules");
+    KeyValues kvDiscount = new KeyValues("Shop-Discount");
 
-    if (!kvRules.ImportFromFile(g_sFile))
+    if (!kvDiscount.ImportFromFile(g_sFile))
     {
         SetFailState("Can't read %s correctly! (ImportFromFile)", g_sFile);
-        delete kvRules;
+        delete kvDiscount;
         delete hFile;
         return;
     }
 
-    if (!kvRules.GotoFirstSubKey())
+    if (!kvDiscount.GotoFirstSubKey())
     {
         SetFailState("Can't read %s correctly! (GotoFirstSubKey)", g_sFile);
-        delete kvRules;
+        delete kvDiscount;
         delete hFile;
         return;
     }
@@ -126,9 +126,9 @@ public void OnConfigsExecuted()
         int iPercent;
         char sFlag[16];
 
-        kvRules.GetSectionName(sShort, sizeof(sShort));
-        iPercent = kvRules.GetNum("percentage", iDPercent);
-        kvRules.GetString("flag", sFlag, sizeof(sFlag), sDFlag);
+        kvDiscount.GetSectionName(sShort, sizeof(sShort));
+        iPercent = kvDiscount.GetNum("percentage", iDPercent);
+        kvDiscount.GetString("flag", sFlag, sizeof(sFlag), sDFlag);
 
         if (strlen(sShort) > 1 && iPercent >= 1 && iPercent <= 100)
         {
@@ -136,9 +136,9 @@ public void OnConfigsExecuted()
             g_smFlag.SetString(sShort, sFlag, true);
         }
     }
-    while (kvRules.GotoNextKey());
+    while (kvDiscount.GotoNextKey());
 
-    delete kvRules;
+    delete kvDiscount;
     delete hFile;
 }
 
