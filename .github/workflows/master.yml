@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -80,8 +80,7 @@ jobs:
           rm -rf addons/sourcemod/configs/{*.cfg,*.ini}
         working-directory: ./build
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@master
-        with:
-          name: TTT.${{ env.PLUGIN_VERSION }}
-          path: ./build
+      - name: Compress files
+        run: zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+        working-directory: ./build
+
