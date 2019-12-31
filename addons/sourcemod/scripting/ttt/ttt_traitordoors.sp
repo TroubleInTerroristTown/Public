@@ -16,7 +16,7 @@ ConVar g_cLogDoorsSpam = null;
 ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
 
-bool g_bPressed[MAXPLAYERS + 1] = { false, ... };
+bool g_bPressed[2048] = { false, ... };
 
 bool g_bCustomKeyValues = false;
 
