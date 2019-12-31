@@ -12,8 +12,11 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Traitor Doors"
 
 ConVar g_cLogDoorUse = null;
+ConVar g_cLogDoorsSpam = null;
 ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
+
+bool g_bPressed[2048] = { false, ... };
 
 bool g_bCustomKeyValues = false;
 
@@ -33,6 +36,7 @@ public void OnPluginStart()
     TTT_StartConfig("traitordoors");
     CreateConVar("ttt2_traitor_door_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLogDoorUse = AutoExecConfig_CreateConVar("traitordoor_log_use", "1", "Log use of traitor doors?", _, true, 0.0, true, 1.0);
+    g_cLogDoorsSpam = AutoExecConfig_CreateConVar("traitordoor_log_doors_time", "1", "Prevent log spamming for the same doors - Time in seconds");
     TTT_EndConfig();
 
     g_bCustomKeyValues = LibraryExists("CustomKeyValues");
@@ -146,7 +150,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         AcceptEntityInput(target, "Open");
         AcceptEntityInput(target, "Lock");
 
-        if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue)
+        if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue && !g_bPressed[target])
         {
             char sClientID[32];
 
@@ -172,6 +176,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
             }
             
             TTT_LogString("-> [%N%s (Traitor) opened a traitor door: %s]", client, sClientID, sName);
+
+            g_bPressed[target] = true;
+            CreateTimer(g_cLogDoorsSpam.FloatValue, Timer_EnableLog, EntIndexToEntRef(target));
         }
     }
 
@@ -189,7 +196,7 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
     AcceptEntityInput(caller, "Open");
     AcceptEntityInput(caller, "Lock");
 
-    if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue)
+    if (g_cLogDoorUse != null && g_cLogDoorUse.BoolValue && !g_bPressed[caller])
     {
         char sClientID[32];
 
@@ -218,5 +225,18 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
         GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
 
         TTT_LogString("-> [%N%s (Traitor) opened a traitor door: %s]", attacker, sClientID, sName);
+
+        g_bPressed[caller] = true;
+        CreateTimer(g_cLogDoorsSpam.FloatValue, Timer_EnableLog, EntIndexToEntRef(caller));
+    }
+}
+
+public Action Timer_EnableLog(Handle timer, any reference)
+{
+    int doors = EntRefToEntIndex(reference);
+    
+    if (IsValidEntity(doors))
+    {
+        g_bPressed[doors] = false;
     }
 }
