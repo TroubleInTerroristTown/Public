@@ -72,6 +72,7 @@ int g_iHaloSprite = -1;
 
 bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
 bool g_bIsChecking[MAXPLAYERS + 1] =  { false, ... };
+bool g_bPress[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAlive = -1;
 int g_iHealth = -1;

@@ -3376,8 +3376,10 @@ public int TTT_OnButtonPress(int client, int button)
         return;
     }
 
-    if (button & IN_USE)
+    if (!g_bPress[client] && button & IN_USE)
     {
+        g_bPress[client] = true;
+        
         int iEntity = GetClientAimTarget(client, false);
         
         if (iEntity > 0)
@@ -3556,6 +3558,7 @@ public int TTT_OnButtonRelease(int client, int button)
     if (button & IN_USE)
     {
         g_bIsChecking[client] = false;
+        g_bPress[client] = false;
     }
 }
 
