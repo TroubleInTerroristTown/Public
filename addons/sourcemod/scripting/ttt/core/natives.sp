@@ -577,7 +577,12 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
             while (TTT_IsClientStuck(client))
             {
                 fOrigin[2] += 0.5;
-                PrintToChat(client, "Origin[2] = %.1f", fOrigin[2]);
+                
+                if(g_cDebug.BoolValue)
+                {
+                    PrintToChat(client, "Origin[2] = %.1f", fOrigin[2]);
+                }
+                
                 TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
             }
         }
