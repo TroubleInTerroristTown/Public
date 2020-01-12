@@ -167,9 +167,38 @@ public void LoadCFG()
     delete kv;
 }
 
-public void ButtonPressed(const char[] output, int caller, int activator, float delay)
+public Action ButtonPressed(const char[] output, int caller, int activator, float delay)
 {
+    if (!TTT_IsClientValid(activator))
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_bCustomKeyValues)
+    {
+        char sCustom[4];
+        bool success = GetCustomKeyValue(caller, "ttt_traitor_only", sCustom, sizeof(sCustom));
+
+        if (success)
+        {
+            if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(activator) != TTT_TEAM_TRAITOR)
+            {
+                return Plugin_Handled;
+            }
+        }
+    }
+
+    char sName[64];
+    GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
+
+    if (StrContains(sName, "traitor", false) != -1 && TTT_GetClientRole(activator) != TTT_TEAM_TRAITOR)
+    {
+        return Plugin_Handled;
+    }
+
     OnButtonPressed(activator, caller);
+
+    return Plugin_Continue;
 }
 
 public void OnButtonPressed(int activator, int caller) 
@@ -190,7 +219,9 @@ public Action Timer_Button(Handle timer, int entity)
 }
 
 public void OnRoundStart(Event event, const char[] name, bool dontBroadcast) 
-{ 
+{
+    HookEntityOutput("func_button", "OnPressed", ButtonPressed);
+
     for (int i = 0; i < g_aButtons.Length; i++)
     {
         SetEntProp(g_aButtons.Get(i), Prop_Data, "m_bLocked", 1, 1);
