@@ -43,7 +43,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (IsClientInGame(client))
     {
         g_bInTester[client] = false;
-        if (g_cDebug.BoolValue)
+        if (g_cDebug != null && g_cDebug.BoolValue)
         {
             PrintToChat(client, "g_bInTester -> %d", g_bInTester[client]);
         }
