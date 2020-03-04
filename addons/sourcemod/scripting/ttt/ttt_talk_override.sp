@@ -3,17 +3,24 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <multicolors>
+#include <colorlib>
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Talk Override"
 
 ConVar g_cEnableTVoice = null;
-
-bool g_bTVoice[MAXPLAYERS + 1] =  { false, ... };
+ConVar g_cDeadTalk = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[128];
+
+enum struct PlayerData {
+    bool TraitorVoice;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
+
+GlobalForward g_fwOnTraitorVoice = null;
 
 public Plugin myinfo =
 {
@@ -24,6 +31,18 @@ public Plugin myinfo =
     url = TTT_PLUGIN_URL
 };
 
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+    g_fwOnTraitorVoice = new GlobalForward("TTT_OnTraitorVoice", ET_Event, Param_Cell, Param_CellByRef, Param_CellByRef);
+
+    CreateNative("TTT_GetTraitorVoice", Native_GetTraitorVoice);
+    CreateNative("TTT_SetTraitorVoice", Native_SetTraitorVoice);
+    
+    RegPluginLibrary("ttt_talk_override");
+
+    return APLRes_Success;
+}
+
 public void OnPluginStart()
 {
     TTT_IsGameCSGO();
@@ -31,6 +50,7 @@ public void OnPluginStart()
     TTT_StartConfig("talk_override");
     CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
+    g_cDeadTalk = AutoExecConfig_CreateConVar("ttt_enable_dead_talk", "1", "Allows dead players to talk with other dead players.", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     if (g_cEnableTVoice.BoolValue)
@@ -45,14 +65,14 @@ public void OnPluginStart()
     TTT_LoadTranslations();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnClientPutInServer(int client)
 {
-    g_bTVoice[client] = false;
+    g_iPlayer[client].TraitorVoice = false;
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -62,7 +82,7 @@ public void OnClientPostAdminCheck(int client)
 
 public void OnClientDisconnect(int client)
 {
-    g_bTVoice[client] = false;
+    g_iPlayer[client].TraitorVoice = false;
 }
 
 public void OnConfigsExecuted()
@@ -82,11 +102,11 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action Command_TVoice(int client, int args)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Handled;
     }
-
+    
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
@@ -97,45 +117,8 @@ public Action Command_TVoice(int client, int args)
         return Plugin_Handled;
     }
 
-    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-    {
-        return Plugin_Handled;
-    }
+    SetTVoice(client, !g_iPlayer[client].TraitorVoice);
 
-    if (g_bTVoice[client])
-    {
-        CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
-
-        g_bTVoice[client] = false;
-
-        LoopValidClients(i)
-        {
-            SetListenOverride(i, client, Listen_Yes);
-
-            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
-            {
-                CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
-            }
-        }
-    }
-    else
-    {
-        g_bTVoice[client] = true;
-
-        CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
-
-        LoopValidClients(i)
-        {
-            if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
-            {
-                SetListenOverride(i, client, Listen_No);
-            }
-            else
-            {
-                CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
-            }
-        }
-    }
     return Plugin_Continue;
 }
 
@@ -145,6 +128,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (TTT_IsClientValid(client))
     {
+        SetTVoice(client, false, false);
+
         LoopValidClients(i)
         {
             SetListenOverride(i, client, Listen_Yes);
@@ -158,23 +143,26 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (TTT_IsClientValid(victim))
     {
-        g_bTVoice[victim] = false;
+        SetTVoice(victim, false, false);
         SetListen(victim);
     }
 }
 
 public void TTT_OnClientGetRole(int client, int role)
 {
+    SetTVoice(client, false, false);
     SetListen(client);
 }
 
 public void TTT_OnPlayerRespawn(int client)
 {
+    SetTVoice(client, false, false);
     SetListen(client);
 }
 
 public int TTT_OnRoundSlay(int client, int remaining)
 {
+    SetTVoice(client, false, false);
     SetListen(client);
 }
 
@@ -184,6 +172,7 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
 
     if (TTT_IsClientValid(client))
     {
+        SetTVoice(client, false, false);
         SetListen(client);
     }
 }
@@ -192,6 +181,8 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 {
     LoopValidClients(i)
     {
+        SetTVoice(i, false, false);
+
         LoopValidClients(j)
         {
             SetListenOverride(i, j, Listen_Default);
@@ -212,8 +203,16 @@ void SetListen(int client)
             }
             else
             {
-                SetListenOverride(i, client, Listen_Yes);
-                SetListenOverride(client, i, Listen_Yes);
+                if (g_cDeadTalk.BoolValue)
+                {
+                    SetListenOverride(i, client, Listen_Yes);
+                    SetListenOverride(client, i, Listen_Yes);
+                }
+                else
+                {
+                    SetListenOverride(i, client, Listen_No);
+                    SetListenOverride(client, i, Listen_No);
+                }
             }
         }
         else
@@ -222,4 +221,89 @@ void SetListen(int client)
             SetListenOverride(i, client, Listen_Yes);
         }
     }
+}
+
+bool SetTVoice(int client, bool status, bool message = true)
+{
+    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+    {
+        return false;
+    }
+
+    Action res = Plugin_Continue;
+    Call_StartForward(g_fwOnTraitorVoice);
+    Call_PushCell(client);
+    Call_PushCellRef(status);
+    Call_PushCellRef(message);
+    Call_Finish();
+
+    if (res >= Plugin_Handled)
+    {
+        return false;
+    }
+
+    if (!status)
+    {
+        if (message)
+        {
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Disabled!", client);
+        }
+
+        g_iPlayer[client].TraitorVoice = false;
+
+        LoopValidClients(i)
+        {
+            SetListenOverride(i, client, Listen_Yes);
+
+            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+            {
+                if (message)
+                {
+                    CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
+                }
+            }
+        }
+    }
+    else
+    {
+        g_iPlayer[client].TraitorVoice = true;
+
+        if (message)
+        {
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Traitor Voice Chat: Enabled!", client);
+        }
+
+        LoopValidClients(i)
+        {
+            if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
+            {
+                SetListenOverride(i, client, Listen_No);
+            }
+            else
+            {
+                if (message)
+                {
+                    CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
+                }
+            }
+        }
+    }
+
+    return g_iPlayer[client].TraitorVoice;
+}
+
+public int Native_GetTraitorVoice(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+
+    return g_iPlayer[client].TraitorVoice;
+}
+
+public int Native_SetTraitorVoice(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+    bool status = view_as<bool>(GetNativeCell(2));
+    bool message = view_as<bool>(GetNativeCell(3));
+
+    return SetTVoice(client, status, message);
 }

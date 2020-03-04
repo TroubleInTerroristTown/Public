@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Exojump"
 #define SHORT_NAME "exojump"
@@ -11,6 +12,8 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
 
 public Plugin myinfo =
 {
@@ -32,14 +35,29 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("exojump_name", "Exojump", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("exojump_price", "3000", "The amount of credits exojump costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("exojump_sort_prio", "0", "The sorting priority of the exojump in the shop menu.");
+    g_cCount = AutoExecConfig_CreateConVar("exojump_count", "1", "The amount of usages for exojump per round. 0 to disable.", _, true, 0.0);
+    g_cLimit = AutoExecConfig_CreateConVar("exojump_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void TTT_OnShopReady()
@@ -51,7 +69,7 @@ void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
 public void OnClientPutInServer(int client)
@@ -59,20 +77,16 @@ public void OnClientPutInServer(int client)
     ResetExojump(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (GetClientExojump(client))
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            if (GetClientExojump(client))
-            {
-                return Plugin_Stop;
-            }
-
-            SetClientExojump(client, true);
-        }
+        return Plugin_Stop;
     }
+
+    SetClientExojump(client, true);
+
+    TTT_AddInventoryItem(client, SHORT_NAME);
     return Plugin_Continue;
 }
 

@@ -1,0 +1,9 @@
+"SpriteCard"
+{
+	"$baseTexture" "Effects\AnimatedEyes/animated_eyes"
+	$translucent 1
+	$overbrightfactor 1.2
+	$vertexalpha 1
+	$vertexcolor 1
+}
+

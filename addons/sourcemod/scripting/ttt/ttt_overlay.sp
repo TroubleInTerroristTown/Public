@@ -53,6 +53,11 @@ Handle g_hSyncD = null;
 Handle g_hSyncI = null;
 Handle g_hSyncT = null;
 
+GlobalForward g_fwOnPrecacheWinOverlay = null;
+GlobalForward g_fwOnPrecacheRoleOverlay = null;
+GlobalForward g_fwOnWinOverlay = null;
+GlobalForward g_fwOnRoleOverlay = null;
+
 StringMap g_smTimeOverlays = null;
 
 bool g_bTimeOverlay = false;
@@ -61,6 +66,11 @@ bool g_bDisableRoleOverlays = false;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     CreateNative("TTT_DisableRoleOverlays", Native_DisableRoleOverlays);
+
+    g_fwOnPrecacheWinOverlay = new GlobalForward("Overlay_OnPrecacheWinOverlay", ET_Event, Param_String, Param_Cell);
+    g_fwOnPrecacheRoleOverlay = new GlobalForward("Overlay_OnPrecacheRoleOverlay", ET_Event, Param_String, Param_Cell);
+    g_fwOnWinOverlay = new GlobalForward("Overlay_OnWinOverlay", ET_Event, Param_Cell, Param_String, Param_Cell);
+    g_fwOnRoleOverlay = new GlobalForward("Overlay_OnRoleOverlay", ET_Event, Param_Cell, Param_String, Param_Cell);
     
     RegPluginLibrary("ttt_overlay");
 
@@ -105,9 +115,9 @@ public void OnPluginStart()
     HookEvent("round_prestart", Event_RoundStartPre, EventHookMode_Pre);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnMapStart()
@@ -115,7 +125,6 @@ public void OnMapStart()
     char sBuffer[PLATFORM_MAX_PATH];
     
     g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -123,7 +132,6 @@ public void OnMapStart()
     }
     
     g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -132,7 +140,6 @@ public void OnMapStart()
     }
 
     g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -140,7 +147,6 @@ public void OnMapStart()
     }
     
     g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -149,7 +155,6 @@ public void OnMapStart()
     }
 
     g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -157,15 +162,32 @@ public void OnMapStart()
     }
     
     g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
         AddFileToDownloadsTable(sBuffer);
         PrecacheDecal(sBuffer, true);
     }
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
 
+    char sWinFile[PLATFORM_MAX_PATH];
+    Action res = Plugin_Handled;
+
+    Call_StartForward(g_fwOnPrecacheWinOverlay);
+    Call_PushStringEx(sWinFile, sizeof(sWinFile), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sWinFile));
+    Call_Finish(res);
+
+    if (strlen(sWinFile) > 3 && (res == Plugin_Continue || res == Plugin_Changed))
+    {
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sWinFile);
+        AddFileToDownloadsTable(sBuffer);
+
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sWinFile);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
+
+    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -173,17 +195,14 @@ public void OnMapStart()
     }
 
     g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
         AddFileToDownloadsTable(sBuffer);
         PrecacheDecal(sBuffer, true);
     }
-
 
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -191,7 +210,6 @@ public void OnMapStart()
     }
 
     g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -199,9 +217,7 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-
     g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
@@ -209,10 +225,29 @@ public void OnMapStart()
     }
 
     g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
+
+    char sRoleOverlay[PLATFORM_MAX_PATH];
+    res = Plugin_Handled;
+
+    Call_StartForward(g_fwOnPrecacheRoleOverlay);
+    Call_PushStringEx(sRoleOverlay, sizeof(sRoleOverlay), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sRoleOverlay));
+    Call_Finish(res);
+
+    if (strlen(sRoleOverlay) > 3 && (res == Plugin_Continue || res == Plugin_Changed))
+    {
+        LogMessage("Precaching Overlay... %s", sRoleOverlay);
+        
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sRoleOverlay);
+        AddFileToDownloadsTable(sBuffer);
+
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sRoleOverlay);
         AddFileToDownloadsTable(sBuffer);
         PrecacheDecal(sBuffer, true);
     }
@@ -312,22 +347,35 @@ public void TTT_OnRoundEnd(int winner, Handle array)
         g_iTWin++;
         
         g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToAll(sBuffer);
     }
     else if (winner == TTT_TEAM_INNOCENT)
     {
         g_iCTWin++;
         
         g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToAll(sBuffer);
     }
     else if (winner == TTT_TEAM_DETECTIVE)
     {
         g_iCTWin++;
         
         g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToAll(sBuffer);
     }
+
+    char sFile[PLATFORM_MAX_PATH];
+    Action res = Plugin_Handled;
+
+    Call_StartForward(g_fwOnWinOverlay);
+    Call_PushCell(winner);
+    Call_PushStringEx(sFile, sizeof(sFile), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sFile));
+    Call_Finish(res);
+
+    if (strlen(sFile) > 3 && res == Plugin_Changed)
+    {
+        strcopy(sBuffer, sizeof(sBuffer), sFile);
+    }
+
+    TTT_ShowOverlayToAll(sBuffer);
     
     if (g_cUpdateTeamScore.BoolValue)
     {
@@ -348,7 +396,7 @@ public void TTT_OnClientGetRole(int client, int role)
 
 public Action Timer_HUD(Handle timer)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return;
     }
@@ -491,18 +539,31 @@ public void SetOverlay(int client, int role)
     if (role == TTT_TEAM_DETECTIVE)
     {
         g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToClient(client, sBuffer);
     }
     else if (role == TTT_TEAM_TRAITOR)
     {
         g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToClient(client, sBuffer);
     }
     else if (role == TTT_TEAM_INNOCENT)
     {
         g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
-        TTT_ShowOverlayToClient(client, sBuffer);
     }
+
+    char sFile[PLATFORM_MAX_PATH];
+    Action res = Plugin_Handled;
+
+    Call_StartForward(g_fwOnRoleOverlay);
+    Call_PushCell(client);
+    Call_PushStringEx(sFile, sizeof(sFile), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sFile));
+    Call_Finish(res);
+
+    if (strlen(sFile) > 3 && res == Plugin_Changed)
+    {
+        strcopy(sBuffer, sizeof(sBuffer), sFile);
+    }
+
+    TTT_ShowOverlayToClient(client, sBuffer);
 }
 
 void showHudToAll(char[] message, Handle sync, float x, float y, const char[] red, const char[] green, const char[] blue, const char[] alpha)

@@ -4,9 +4,10 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <multicolors>
+#include <colorlib>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Silent AWP"
 #define SHORT_NAME_T "silentawp_t"
@@ -14,8 +15,11 @@
 #define SHORT_NAME_I "silentawp_i"
 
 ConVar g_cPriceT = null;
+ConVar g_cLimitT = null;
 ConVar g_cPriceD = null;
+ConVar g_cLimitD = null;
 ConVar g_cPriceI = null;
+ConVar g_cLimitI = null;
 ConVar g_cPriorityT = null;
 ConVar g_cPriorityD = null;
 ConVar g_cPriorityI = null;
@@ -30,10 +34,13 @@ ConVar g_cAmountD = null;
 ConVar g_cAmountI = null;
 ConVar g_cLongName = null;
 
-int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iWeapon[MAXPLAYERS + 1] =  { -1, ... };
+enum struct PlayerData {
+    int Weapon;
 
-bool g_bHasSilencer[MAXPLAYERS + 1] =  { false, ... };
+    bool HasSilencer;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -58,12 +65,15 @@ public void OnPluginStart()
     g_cMaxShotsT = AutoExecConfig_CreateConVar("silent_awp_max_t", "2", "Maximum shots for the AWP for Traitors");
     g_cPriorityT = AutoExecConfig_CreateConVar("silent_awp_priority_t", "0", "Priority in shop list for Traitors");
     g_cPriceT = AutoExecConfig_CreateConVar("silent_awp_price_t", "10000", "Price for the silenced AWP for Traitors");
+    g_cLimitT = AutoExecConfig_CreateConVar("silent_awp_limit_t", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cAmountD = AutoExecConfig_CreateConVar("silent_awp_amount_d", "0", "How many AWPs can detectives buy?");
     g_cMinShotsD = AutoExecConfig_CreateConVar("silent_awp_min_d", "1", "Minimum shots for the AWP for Detectives");
     g_cMaxShotsD = AutoExecConfig_CreateConVar("silent_awp_max_d", "2", "Maximum shots for the AWP for Detectives");
     g_cPriorityD = AutoExecConfig_CreateConVar("silent_awp_priority_d", "0", "Priority in shop list for Detectives");
     g_cPriceD = AutoExecConfig_CreateConVar("silent_awp_price_d", "0", "Price for the silenced AWP for Detectives");
+    g_cLimitD = AutoExecConfig_CreateConVar("silent_awp_limit_d", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPriceI = AutoExecConfig_CreateConVar("silent_awp_price_i", "0", "Price for the silenced AWP for Innos");
+    g_cLimitI = AutoExecConfig_CreateConVar("silent_awp_limit_i", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPriorityI = AutoExecConfig_CreateConVar("silent_awp_priority_i", "0", "Priority in shop list for Innos");
     g_cMaxShotsI = AutoExecConfig_CreateConVar("silent_awp_max_i", "2", "Maximum shots for the AWP for Innos");
     g_cMinShotsI = AutoExecConfig_CreateConVar("silent_awp_min_i", "1", "Minimum shots for the AWP for Innos");
@@ -75,9 +85,24 @@ public void OnPluginStart()
     AddTempEntHook("Shotgun Shot", Hook_ShotgunShot);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_D);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_I);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void TTT_OnShopReady()
@@ -90,9 +115,9 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue, g_cAmountT.IntValue,  g_cLimitT.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_I, sBuffer, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue, g_cAmountD.IntValue,  g_cLimitD.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue, g_cAmountI.IntValue,  g_cLimitI.IntValue, OnItemPurchased);
 }
 
 public void OnClientDisconnect(int client)
@@ -110,79 +135,62 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if(TTT_IsClientValid(client) && IsPlayerAlive(client))
+    g_iPlayer[client].Weapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
+
+    if (g_iPlayer[client].Weapon != -1)
     {
-        if ((StrEqual(itemshort, SHORT_NAME_T, false) && g_iPAmount[client] < g_cAmountT.IntValue) ||
-        (StrEqual(itemshort, SHORT_NAME_D, false) && g_iPAmount[client] < g_cAmountD.IntValue) ||
-        (StrEqual(itemshort, SHORT_NAME_I, false) && g_iPAmount[client] < g_cAmountI.IntValue))
+        char sWeapon[32];
+        GetEntityClassname(g_iPlayer[client].Weapon, sWeapon, sizeof(sWeapon));
+        if (!StrEqual(sWeapon, "weapon_awp", false))
         {
-            int iRole = TTT_GetClientRole(client);
-
-            if (iRole == TTT_TEAM_TRAITOR && g_iPAmount[client] >= g_cAmountT.IntValue)
-            {
-                CPrintToChat(client, "%T", "You reached limit", client, g_cAmountT.IntValue);
-                return Plugin_Stop;
-            }
-            else if (iRole == TTT_TEAM_DETECTIVE && g_iPAmount[client] >= g_cAmountD.IntValue)
-            {
-                CPrintToChat(client, "%T", "You reached limit", client, g_cAmountD.IntValue);
-                return Plugin_Stop;
-            }
-            else if (iRole == TTT_TEAM_INNOCENT && g_iPAmount[client] >= g_cAmountI.IntValue)
-            {
-                CPrintToChat(client, "%T", "You reached limit", client, g_cAmountI.IntValue);
-                return Plugin_Stop;
-            }
-
-            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
-            if (iWeapon != -1)
-            {
-                char sWeapon[32];
-                GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
-                
-                if (StrEqual(sWeapon, "weapon_awp", false))
-                {
-                    g_iWeapon[client] = iWeapon;
-                }
-                else
-                {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
-                }
-            }
-            
-            if (!IsValidEntity(g_iWeapon[client]))
-            {
-                g_iWeapon[client] = GivePlayerItem(client, "weapon_awp");
-                EquipPlayerWeapon(client, g_iWeapon[client]);
-            }
-
-            int max = 0;
-            int min = 0;
-
-            if (iRole == TTT_TEAM_TRAITOR)
-            {
-                max = g_cMaxShotsT.IntValue;
-                min = g_cMinShotsT.IntValue;
-            }
-            else if (iRole == TTT_TEAM_DETECTIVE)
-            {
-                max = g_cMaxShotsD.IntValue;
-                min = g_cMinShotsD.IntValue;
-            }
-            else if (iRole == TTT_TEAM_INNOCENT)
-            {
-                max = g_cMaxShotsI.IntValue;
-                min = g_cMinShotsI.IntValue;
-            }
-
-            SetEntProp(g_iWeapon[client], Prop_Send, "m_iClip1", GetRandomInt(min, max));
-            SetEntProp(g_iWeapon[client], Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
-
-            g_bHasSilencer[client] = true;
+            TTT_SafeRemoveWeapon(client, g_iPlayer[client].Weapon, CS_SLOT_PRIMARY);
+            g_iPlayer[client].Weapon = -1;
         }
     }
+
+    bool bEquip = false;
+
+    if (g_iPlayer[client].Weapon == -1 || !IsValidEntity(g_iPlayer[client].Weapon))
+    {
+        bEquip = true;
+        g_iPlayer[client].Weapon  = GivePlayerItem(client, "weapon_awp");
+    }
+
+    int max = 0;
+    int min = 0;
+    int iRole = TTT_GetClientRole(client);
+
+    if (iRole == TTT_TEAM_TRAITOR)
+    {
+        max = g_cMaxShotsT.IntValue;
+        min = g_cMinShotsT.IntValue;
+    }
+    else if (iRole == TTT_TEAM_DETECTIVE)
+    {
+        max = g_cMaxShotsD.IntValue;
+        min = g_cMinShotsD.IntValue;
+    }
+    else if (iRole == TTT_TEAM_INNOCENT)
+    {
+        max = g_cMaxShotsI.IntValue;
+        min = g_cMinShotsI.IntValue;
+    }
+
+    int iRand = GetRandomInt(min, max);
+    
+    SetWeaponClip(g_iPlayer[client].Weapon, iRand);
+    SetWeaponAmmo(g_iPlayer[client].Weapon, 0);
+
+    g_iPlayer[client].HasSilencer = true;
+
+    if (bEquip)
+    {
+        EquipPlayerWeapon(client, g_iPlayer[client].Weapon);
+    }
+
+    TTT_AddItemUsage(client, itemshort);
     return Plugin_Continue;
 }
 
@@ -197,12 +205,12 @@ public Action Hook_ShotgunShot(const char[] sample, const int[] Players, int num
 
     int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 
-    if (g_iWeapon[client] == iWeapon)
+    if (g_iPlayer[client].Weapon == iWeapon)
     {
         char sWeapon[32];
         GetClientWeapon(client, sWeapon, sizeof(sWeapon));
         
-        if(StrEqual(sWeapon, "weapon_awp", false) && g_bHasSilencer[client])
+        if(StrEqual(sWeapon, "weapon_awp", false) && g_iPlayer[client].HasSilencer)
         {
             return Plugin_Stop;
         }
@@ -213,7 +221,16 @@ public Action Hook_ShotgunShot(const char[] sample, const int[] Players, int num
 
 void ResetSilentAWP(int client)
 {
-    g_iPAmount[client] = 0;
-    g_bHasSilencer[client] = false;
-    g_iWeapon[client] = -1;
+    g_iPlayer[client].HasSilencer = false;
+    g_iPlayer[client].Weapon = -1;
+}
+
+void SetWeaponClip(int weapon, int ammo)
+{
+    SetEntProp(weapon, Prop_Send, "m_iClip1", ammo);
+}
+
+void SetWeaponAmmo(int weapon, int ammo)
+{
+    SetEntProp(weapon, Prop_Send, "m_iPrimaryReserveAmmoCount", ammo);
 }

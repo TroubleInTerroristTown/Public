@@ -1,7 +1,7 @@
 void GetLatestVersion()
 {
     char sURL[64];
-    Format(sURL, sizeof(sURL), "https://csgottt.com/version.php");
+    Format(sURL, sizeof(sURL), "https://csgottt.com/version_new.php");
 
     Handle hRequest = SteamWorks_CreateHTTPRequest(k_EHTTPMethodGET, sURL);
     bool bTimeout = SteamWorks_SetHTTPRequestNetworkActivityTimeout(hRequest, 10);
@@ -86,6 +86,29 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
     }
 
     TrimString(sVersion);
+    StripQuotes(sVersion);
+
+    // TODO: We could improve it
+    for (int i = 0; i < strlen(sVersion); i++)
+    {
+        int iByte = GetCharBytes(sVersion[i]);
+
+        if (g_cDebug.BoolValue)
+        {
+            LogMessage("String: %s, CharByte: %d", sVersion[i], iByte);
+        }
+
+        if (iByte == 1)
+        {
+            strcopy(sVersion, sizeof(sVersion), sVersion[i]);
+            break;
+        }
+    }
+
+    if (g_cDebug.BoolValue)
+    {
+        LogMessage("Version from API: %s", sVersion);
+    }
 
     if (StrContains(sVersion, "Banned", false) != -1)
     {
@@ -94,14 +117,19 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
         return;
     }
 
-    if (GetCharBytes(sVersion[2]) == 4)
+    if (IsStringNumeric(sVersion))
     {
-        strcopy(g_sLatestVersion, sizeof(g_sLatestVersion), sVersion[3]);
+        g_iVersion = StringToInt(sVersion);
     }
 
-    Call_StartForward(g_hOnVersionCheck);
-    Call_PushString(g_sLatestVersion);
+    Call_StartForward(g_fOnVersionCheck);
+    Call_PushCell(g_iVersion);
     Call_Finish();
+
+    if (g_cDebug.BoolValue)
+    {
+        LogMessage("Version called: %d", g_iVersion);
+    }
 
     delete hRequest;
 }

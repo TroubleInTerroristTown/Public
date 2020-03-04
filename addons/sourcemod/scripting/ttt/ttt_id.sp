@@ -4,9 +4,10 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <multicolors>
-#include <ttt_shop>
+#include <colorlib>
 #include <ttt>
+#include <ttt_shop>
+#include <ttt_inventory>
 
 #define SHORT_NAME_I "id"
 #define SHORT_NAME_T "id_t"
@@ -14,19 +15,25 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: ID"
 
 ConVar g_cTPrice = null;
+ConVar g_cTLimit = null;
 ConVar g_cIPrice = null;
+ConVar g_cILimit = null;
 ConVar g_cTPrio = null;
 ConVar g_cIPrio = null;
 ConVar g_cLongNameT = null;
 ConVar g_cLongNameI = null;
 ConVar g_cCooldown = null;
-
-bool g_bHasID[MAXPLAYERS + 1] =  { false, ... };
-
-float g_fCooldownPlayer[MAXPLAYERS + 1] = {0.0, ...};
+ConVar g_cCountI = null;
+ConVar g_cCountT = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
+
+enum struct PlayerData {
+    float Cooldown;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -43,13 +50,17 @@ public void OnPluginStart()
 
     TTT_StartConfig("id");
     CreateConVar("ttt2_id_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "1000", "The amount of credits for fake ID costs as traitor. 0 to disable.");
-    g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "1000", "The amount of credits for ID costs as innocent. 0 to disable.");
-    g_cTPrio = AutoExecConfig_CreateConVar("id_traitor_sort_prio", "0", "The sorting priority of the fake ID in the shop menu.");
-    g_cIPrio = AutoExecConfig_CreateConVar("id_innocent_sort_prio", "0", "The sorting priority of the ID in the shop menu.");
-    g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "0.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
     g_cLongNameI = AutoExecConfig_CreateConVar("id_name_innocent", "ID", "The name of this in Innocent Shop");
     g_cLongNameT = AutoExecConfig_CreateConVar("id_name_traitor", "(Fake) ID", "The name of this in Traitor Shop");
+    g_cTPrice = AutoExecConfig_CreateConVar("id_traitor_price", "1000", "The amount of credits for fake ID costs as traitor. 0 to disable.");
+    g_cTLimit = AutoExecConfig_CreateConVar("id_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cIPrice = AutoExecConfig_CreateConVar("id_innocent_price", "1000", "The amount of credits for ID costs as innocent. 0 to disable.");
+    g_cILimit = AutoExecConfig_CreateConVar("id_innocent_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cTPrio = AutoExecConfig_CreateConVar("id_traitor_sort_prio", "0", "The sorting priority of the fake ID in the shop menu.");
+    g_cIPrio = AutoExecConfig_CreateConVar("id_innocent_sort_prio", "0", "The sorting priority of the ID in the shop menu.");
+    g_cCooldown = AutoExecConfig_CreateConVar("id_cooldown_time", "30.0", "The cooldown for the !id command. Set it to 0.0 to disable the cooldown");
+    g_cCountI = AutoExecConfig_CreateConVar("id_count_innocent", "1", "How often the item (Id Tag) can be bought per round as an innocent (0 - Disabled).");
+    g_cCountT = AutoExecConfig_CreateConVar("id_count_traitor", "1", "How often the item (Id Tag) can be bought per round as a traitor (0 - Disabled).");
     TTT_EndConfig();
 
     RegConsoleCmd("sm_id", Command_ID, "Prove yourself as Innocent");
@@ -59,9 +70,18 @@ public void OnPluginStart()
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_I);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -69,6 +89,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    RegisterItem();
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -88,12 +110,12 @@ public Action Command_ID(int client, int args)
 
     if (g_cCooldown.FloatValue > 0.0)
     {
-        if (g_fCooldownPlayer[client] != 0.0 && ((GetEngineTime() - g_fCooldownPlayer[client]) < g_cCooldown.FloatValue))
+        if (g_iPlayer[client].Cooldown != 0.0 && ((GetEngineTime() - g_iPlayer[client].Cooldown) < g_cCooldown.FloatValue))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Cooldown", client);
             return Plugin_Handled;
         }
-        g_fCooldownPlayer[client] = GetEngineTime();
+        g_iPlayer[client].Cooldown = GetEngineTime();
     }
 
 
@@ -103,7 +125,7 @@ public Action Command_ID(int client, int args)
         return Plugin_Handled;
     }
 
-    if (!g_bHasID[client])
+    if (!TTT_IsItemInInventory(client, SHORT_NAME_I) && !TTT_IsItemInInventory(client, SHORT_NAME_T))
     {
         CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Need to buy ID", client);
         return Plugin_Handled;
@@ -148,35 +170,20 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongNameT.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cCountT.IntValue, g_cTLimit.IntValue, OnItemPurchased);
     
     g_cLongNameI.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cCountI.IntValue, g_cILimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-    {
-        if (StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false))
-        {
-            int role = TTT_GetClientRole(client);
-
-            if (role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_UNASSIGNED || g_bHasID[client])
-            {
-                return Plugin_Stop;
-            }
-
-            CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Buy Message", client);
-
-            g_bHasID[client] = true;
-        }
-    }
+    CPrintToChat(client, "%s %T", g_sPluginTag, "ID: Buy Message", client);
+    TTT_AddInventoryItem(client, itemshort);
     return Plugin_Continue;
 }
 
 void ResetID(int client)
 {
-    g_bHasID[client] = false;
-    g_fCooldownPlayer[client] = 0.0;
+    g_iPlayer[client].Cooldown = 0.0;
 }

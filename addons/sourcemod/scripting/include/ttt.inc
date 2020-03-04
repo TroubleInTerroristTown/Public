@@ -10,7 +10,7 @@
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
 
-#define ROLE_LENGTH 16
+#define ROLE_LENGTH 24
 #define MAX_ITEM_LENGTH 64
 #define TTT_LOG_SIZE 512
 #define CS_SLOT_MELEE CS_SLOT_KNIFE
@@ -19,23 +19,26 @@
 #include <sdktools>
 #include <cstrike>
 
-enum struct Ragdolls
+enum struct Ragdoll
 {
-    int Ent;
+    int EntityRef;
     int Victim;
     int Attacker;
-
-    int VictimTeam;
-    int AttackerTeam;
-
-    char VictimName[MAX_NAME_LENGTH];
-    char AttackerName[MAX_NAME_LENGTH];
-    char WeaponUsed[32];
-
+    int VictimRole;
+    int AttackerRole;
     bool Scanned;
     bool Found;
-
+    bool Explode;
     float GameTime;
+    char VictimName[MAX_NAME_LENGTH];
+    char VictimSteam2[24];
+    char VictimSteam3[24];
+    char VictimSteamID64[24];
+    char AttackerName[MAX_NAME_LENGTH];
+    char AttackerSteam2[24];
+    char AttackerSteam3[24];
+    char AttackerSteamID64[24];
+    char Weaponused[32];
 }
 
 enum KarmaUpdate
@@ -49,8 +52,10 @@ enum RoundStatus
 {
     Round_Inactive = -1,
     Round_Warmup,
+    Round_Selection,
     Round_Active,
-    Round_Ending
+    Round_Ending,
+    Round_Ended
 }
 
 enum Collision_Group_t
@@ -110,11 +115,12 @@ forward Action TTT_OnRoundStart_Pre();
 /**
  * Called when the actual TTT round starts (after selection time).
  *
+ * @param roundid           ID of the current round
  * @param innocents         Count of innocent players.
  * @param traitors          Count of traitor players.
  * @param detective         Count of detective players.
  */
-forward void TTT_OnRoundStart(int innocents, int traitors, int detective);
+forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective);
 
 /**
  * Called when round start is failed or prevented.
@@ -173,13 +179,14 @@ forward Action TTT_OnClientDeathPre(int victim, int attacker);
 
 /**
  * Called when a body is found.
+ * Use must use TTT_GetEntityRefRagdoll(client, entityref) to get the enum struct.
  *
  * @param client            The client who identified the body.
  * @param victim            The client whom the body belongs to. (-1 for invalid index)
- * @param ragdoll           The Array with Ragdoll informations (by reference).
+ * @param entityref            The entity reference to find the correct ragdoll
  * @param silentID          True if body was silenced id and false if normal inspect
  */
-forward void TTT_OnBodyFound(int client, int victim, Ragdolls ragdoll, bool silentID);
+forward void TTT_OnBodyFound(int client, int victim, int entityref, bool silentID);
 
 /**
  * Called before we create rules menu.
@@ -201,11 +208,12 @@ forward Action TTT_OnDetectiveMenu(int client, bool &show);
 
 /**
  * Called before a body will be scanned.
+ * Use must use TTT_GetEntityRefRagdoll(client, entityref) to get the enum struct.
  *
  * @param client            The client who scanned the body.
- * @param ragdoll           The Array with Ragdoll informations (by reference).
+ * @param entityref            The entity reference to find the correct ragdoll
  */
-forward Action TTT_OnBodyCheck(int client, Ragdolls ragdoll);
+forward Action TTT_OnBodyCheck(int client, int entityref);
 
 /**
  * Called on updated player models
@@ -235,6 +243,15 @@ forward int TTT_OnButtonRelease(int client, int button);
 forward Action TTT_OnPlayerDeath(int victim, int attacker);
 
 /**
+ * Called before Karma has been updated on a client.
+ *
+ * @param client           Client index.
+ * @param type             Type of update. (Enum above)
+ * @param karma            Amount of Karma
+ */
+ forward Action TTT_OnPreKarmaUpdate(int client, KarmaUpdate type, int karma);
+
+/**
  * Called once Karma has been updated on a client.
  *
  * @param client            Client index.
@@ -251,17 +268,30 @@ forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
 forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
 
 /**
- * With this forward you get the latest version from csgottt.com(/version.php) as string
+ * With this forward you get the latest version from csgottt.com(/version.php) as int
  * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
  *       must be installed!
  *
- * @param version            Latest TTT Version as String
+ * @param version            Latest TTT Version as int
  */
-forward void TTT_OnLatestVersion(const char[] version);
+forward void TTT_OnVersionReceive(int version);
+
+/**
+ * This forward is called PRIOR to the role selection done from the core TTT.
+ * The purpose of this forward is to be able to override the original Role selector
+ * and write your own for potential custom modes.
+ *
+ * @param traitors              Amount of traitors
+ * @param detectives            Amount of detectives
+ * @param innocents             Amount of innocents
+ */
+ forward Action TTT_OnRoleSelection(int& traitors, int& detectives, int& innocents);
+
 
 /**
  * Checks if the round is active.
  */
+#pragma deprecated TTT_IsRoundActive will be removed. Please use TTT_GetRoundStatus
 native bool TTT_IsRoundActive();
 
 /**
@@ -287,6 +317,14 @@ native int TTT_GetClientKarma(int client, bool publicKarma = true);
 native bool TTT_GetClientRagdoll(int victim, any[] ragdoll);
 
 /**
+ * Retrieve the Radgoll Info.
+ *
+ * @param entityref         The entity reference.
+ * @param radgoll           The array to save the ragoll infos.
+ */
+native bool TTT_GetEntityRefRagdoll(int entityref, any[] ragdoll);
+
+/**
  * Retrieve the client index.
  *
  * @param ragdoll           The ragdoll index.
@@ -295,12 +333,20 @@ native bool TTT_GetClientRagdoll(int victim, any[] ragdoll);
 native int TTT_GetClientByRagdollID(int ragdoll);
 
 /**
- * Spawn ragdoll at client position and add it to global Ragdoll array (will get cleaned on Round Start).
+ * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
  *
- * @param client           The client index
- * @return                 True if spawned, false else.
+ * @param radgoll           The enum struct to save as Ragdoll.
+ * @param size              The enum struct size.
  */
-native void TTT_AddRagdoll(any[] ragdoll);
+native int TTT_PushRagdoll(any[] ragdoll, int size);
+
+/**
+ * Sets a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
+ *
+ * @param radgoll           The enum struct to save as Ragdoll.
+ * @param size              The enum struct size.
+ */
+native bool TTT_SetRagdoll(any[] ragdoll, int size);
 
 /**
  * Set a client's role.
@@ -374,6 +420,7 @@ native void TTT_LogString(const char[] format, any ...);
  * Force a player to be traitor next round. (If there are enough Traitors)
  *
  * @param client             The client index to change.
+ *
  * @return False if the client's role already forced for the next round.
  */
 native bool TTT_ForceTraitor(int client);
@@ -382,6 +429,7 @@ native bool TTT_ForceTraitor(int client);
  * Force a player to be detective next round. (If there are enough Detectives)
  *
  * @param client             The client index to change.
+ *
  * @return False if the client's role is already forced for the next round.
  */
 native bool TTT_ForceDetective(int client);
@@ -391,10 +439,22 @@ native bool TTT_ForceDetective(int client);
  *
  * @param client             The client index.
  * @param rounds             The amount of rounds to add.
- * @param force             Begin directly if client is alive.
- * @return Returns the amount of rounds, otherwise the client index is invalid
+ * @param force              Begin directly if client is alive.
+ *
+ * @return                   Returns the amount of rounds, otherwise the client index is invalid
  */
 native int TTT_AddRoundSlays(int client, int rounds, bool force);
+
+/**
+ * NO DESCRIPTION
+ *
+ * @param id                 The player id.
+ * @param rounds             The amount of rounds to add.
+ * @param force              Begin directly if client is alive.
+ *
+ * @return                   Returns the amount of rounds, otherwise the client index is invalid
+ */
+native void TTT_AddRoundSlaysByID(int id, int rounds, bool force);
 
 /**
  * NO DESCRIPTION
@@ -427,6 +487,8 @@ native void TTT_GetRoundTime(int type);
  * commands.  This feature essentially allows you to create custom 
  * flags using the override system.
  *
+ * Note: If cvar is not set/empty, it will always return false
+ *
  * @param client        Client index.
  * @param command        Command name.  If the command is not found, the default 
  *                        flags are used.
@@ -436,6 +498,7 @@ native void TTT_GetRoundTime(int type);
  *                        command, and it will only use the default flags specified.
  *                        Otherwise, SourceMod will ignore the default flags if 
  *                        there is a matching admin command.
+ *
  * @return                True if the client has access, false otherwise.
  *
  * THIS TEXT WAS COPIED FROM HERE: https://github.com/alliedmodders/sourcemod/blob/6c7e29cbdbe1fe17982a4531d839be65116abca2/plugins/include/console.inc#L479
@@ -443,13 +506,22 @@ native void TTT_GetRoundTime(int type);
 native bool TTT_CheckCommandAccess(int client, const char[] command, ConVar cvar, bool override_only = false);
 
 /**
- * Respawns a player.
+ * Respawns a player on their body location.
  *
  * @param client        Client Index
  * @noreturn
  *
  */
 native void TTT_RespawnPlayer(int client);
+
+/**
+ * Respawns a player randomly as per CS_RespawnPlayer()
+ *
+ * @param client        Client index
+ * @noreturn
+ *
+ */ 
+native void TTT_RespawnPlayerRandom(int client);
 
 /**
  * Returns the timestamp where "round_prestart" was executed.
@@ -469,22 +541,6 @@ native int TTT_GetRoundTimestamp();
 native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
 
 /**
- * With this naitve you get the latest version from csgottt.com(/version.php) as string
- * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
- *       must be installed!
- *
- * @param version            Latest TTT Version as String
- * @param length             Length of the string
- */
-native bool TTT_GetLatestVersion(const char[] version, int length);
-
-/**
- * Returns current ttt version. -1 = custom version
- *
- */
-native int TTT_GetCommitsCount();
-
-/**
  * Disable the next TTT round. It has no effect if it's already set.
  * If you want to close the disabled round:
  *  - set status to false
@@ -502,12 +558,54 @@ native bool TTT_DisableRounds(bool status);
 native RoundStatus TTT_GetRoundStatus();
 
 /**
+ * Check if the client is ready to play
+ *
+ */
+native bool TTT_IsClientReady(int client);
+
+/**
  * Called after a player was round slayed.
  *
  * @param client            The client index.
  * @param remaining         Amount of rounds left
  */
 forward int TTT_OnRoundSlay(int client, int remaining);
+
+native int TTT_GetRoundID();
+
+/**
+ * With this native you get the latest version from csgottt.com(/version_new.php) as int
+ * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
+ *       must be installed!
+ *
+ * @return            Latest TTT Version as Int
+ */
+native int TTT_GetVersion();
+
+/**
+ * With this native you get the plugin version as int
+ *
+ * @return            Latest TTT Version as Int
+ */
+native int TTT_GetPluginVersion();
+
+/**
+ * Returns the player id for the specific player
+ *
+ * @param client            The client index
+ * 
+ * @return                  The player id
+ */
+native int TTT_GetPlayerID(int client);
+
+/**
+ * Returns the client index for the specific player id
+ *
+ * @param id                The player id
+ * 
+ * @return                  The client index
+ */
+native int TTT_GetClientOfPlayerID(int id);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
@@ -632,7 +730,8 @@ stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int l
 /**
  * Returns if the client is alive or dead.
  *
- * @param client        Player's index.
+ * @param client          Player's index.
+ *
  * @return                True if the client is alive, false otherwise.
  */
 native bool TTT_IsPlayerAlive(int client);
@@ -727,25 +826,6 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
     }
     
     return false;
-}
-
-stock void TTT_RemoveMeleeWeapons(int client)
-{
-    for(int offset = 0; offset < 128; offset += 4)
-    {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-
-        if (IsValidEntity(weapon))
-        {
-            char sClass[32];
-            GetEntityClassname(weapon, sClass, sizeof(sClass));
-
-            if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
-            {
-                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
-            }
-        }
-    }
 }
 
 stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
@@ -932,7 +1012,6 @@ stock bool TTT_IsPrimaryWeapon(int weapon)
     return false;
 }
 
-
 stock void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSync, int startTime, int endTime, const char[] sMessage)
 {
     int iEnd = endTime - startTime;
@@ -987,10 +1066,12 @@ stock void TTT_ShowProgressbar(int client, Handle percentageSync, Handle textSyn
         iColor[2] = 0;      //b
         iColor[3] = 0;      //a
     }
-    SetHudTextParams(0.17, 0.13, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
-    ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
-    SetHudTextParams(0.17, 0.1, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
+
+    SetHudTextParams(0.17, 0.09, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
     ShowSyncHudText(client, textSync, sMessage, fPercentage, sProgress);
+
+    SetHudTextParams(0.17, 0.14, 1.1, iColor[0], iColor[1], iColor[2], iColor[3], 0, 0.0, 0.0, 0.0);
+    ShowSyncHudText(client, percentageSync, "%.1f%%\n%s", fPercentage, sProgress);
 }
 
 stock int TTT_GetRoundTimeLeft()
@@ -1069,6 +1150,48 @@ stock int TTT_HasClientKnife(int client)
     return -1;
 }
 
+stock int TTT_HasClientTaser(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if (StrContains(sClass, "taser", false) != -1)
+            {
+                return weapon;
+            }
+        }
+    }
+
+    return -1;
+}
+
+stock int TTT_HasClientMelee(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if (StrContains(sClass, "melee", false) != -1)
+            {
+                return weapon;
+            }
+        }
+    }
+
+    return -1;
+}
+
 stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
 {
     for(int offset = 0; offset < 128; offset += 4)
@@ -1090,6 +1213,25 @@ stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
     return -1;
 }
 
+stock void TTT_RemoveMeleeWeapons(int client)
+{
+    for(int offset = 0; offset < 128; offset += 4)
+    {
+        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+
+        if (IsValidEntity(weapon))
+        {
+            char sClass[32];
+            GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+            if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
+            {
+                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
+            }
+        }
+    }
+}
+
 stock bool TTT_LoadTranslations()
 {
     char sFile[PLATFORM_MAX_PATH + 1];
@@ -1104,23 +1246,139 @@ stock bool TTT_LoadTranslations()
     LoadTranslations("ttt.phrases");
 }
 
-stock bool TTT_CheckVersion(const char[] version, int git)
+/*
+    Based on this snippet:
+        https://forums.alliedmods.net/showpost.php?p=973411&postcount=4
+*/
+stock bool TTT_IsTargetInSight(int client, int target, float fMaxDistance = 0.0, float fThreshold = 0.73, int flags = PARTITION_NON_STATIC_EDICTS, RayType type = RayType_Infinite)
 {
-    int iGit = -1;
-    char sSplit[2][12];
-    ExplodeString(version, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+    // Retrieve view and target eyes position
+    float fPosition[3];
+    GetClientEyePosition(client, fPosition);
 
-    if (IsStringNumeric(sSplit[1]))
+    float fAngle[3];
+    GetClientEyeAngles(client, fAngle);
+
+    float fTargetPosition[3];
+
+    if (target > 0 && target <= MaxClients)
     {
-        iGit = StringToInt(sSplit[1]);
+        GetClientEyePosition(target, fTargetPosition);
+    }
+    else
+    {
+        GetEntPropVector(target, Prop_Send, "m_vecOrigin", fTargetPosition);
     }
 
-    if (StrEqual(version, "<VERSION>", false))
+    // Calculate view direction
+    float fDirection[3];
+    fAngle[0] = fAngle[2] = 0.0;
+    GetAngleVectors(fAngle, fDirection, NULL_VECTOR, NULL_VECTOR);
+
+    // Calculate distance to client to see if it can be seen.
+    float fDistance[3];
+    fDistance[0] = fTargetPosition[0]-fPosition[0];
+    fDistance[1] = fTargetPosition[1]-fPosition[1];
+    fDistance[2] = 0.0;
+
+    if (fMaxDistance != 0.0)
+    {
+        if ( ((fDistance[0] * fDistance[0]) + (fDistance[1] * fDistance[1])) >= (fMaxDistance * fMaxDistance) )
+        {
+            return false;
+        }
+    }
+
+    // Check dot product. If it's negative, that means the client is facing
+    // backwards to the target.
+    float fTargetDirection[3];
+    NormalizeVector(fDistance, fTargetDirection);
+    if (GetVectorDotProduct(fDirection, fTargetDirection) < fThreshold)
+    {
+        return false;
+    }
+
+    // Now check if there are no obstacles in between through raycasting
+    Handle hTrace = TR_TraceRayFilterEx(fPosition, fTargetPosition, flags, type, TraceASDF, client);
+    if (TR_DidHit(hTrace))
+    {
+        delete hTrace;
+        return false;
+    }
+
+    delete hTrace;
+    return true;
+}
+
+public bool TraceASDF(int entity, int mask, any data)
+{
+    return data != entity;
+}
+
+stock void PrintCenterText2(int client, const char[] title, const char[] message)
+{
+    char sBuffer[2048];
+    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, message);
+    Protobuf pbMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
+    pbMessage.SetInt("msg_dst", 4);
+    pbMessage.AddString("params", "#SFUI_ContractKillStart");
+    pbMessage.AddString("params", sBuffer);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    
+    EndMessage();
+}
+
+stock void PrintCenterText2All(const char[] title, const char[] message, any ...)
+{
+    char sBuffer[2048];
+    
+    VFormat(sBuffer, sizeof(sBuffer), message, 3);
+    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, sBuffer);
+
+    Protobuf pbMessage = view_as<Protobuf>(StartMessageAll("TextMsg"));
+    pbMessage.SetInt("msg_dst", 4);
+    pbMessage.AddString("params", "#SFUI_ContractKillStart");
+    pbMessage.AddString("params", sBuffer);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    pbMessage.AddString("params", NULL_STRING);
+    
+    EndMessage();
+}
+
+stock bool TTT_ClientValidRole(int client)
+{
+    int role = TTT_GetClientRole(client);
+
+    if (role == TTT_TEAM_TRAITOR || role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_INNOCENT)
     {
         return true;
     }
 
-    if (git != -1 && git != iGit)
+    return false;
+}
+
+stock bool TTT_CheckVersion(const char[] git, int version)
+{
+    if (StrEqual(git, "<VERSION>", false) || version == -1)
+    {
+        return true;
+    }
+
+    int iGitVersion = -1;
+    char sSplit[3][12];
+    ExplodeString(git, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[2]))
+    {
+        iGitVersion = StringToInt(sSplit[2]);
+    }
+
+    if (version != iGitVersion)
     {
         SetFailState("This plugin use a different version as ttt.smx");
         return false;
@@ -1169,21 +1427,4 @@ stock bool IsStringNumeric(const char[] str)
 	}
 
 	return true;
-}
-
-stock void PrintCenterText2(int client, const char[] title, const char[] message)
-{
-    char sBuffer[2048];
-    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, message);
-    
-    Protobuf hMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
-    hMessage.SetInt("msg_dst", 4);
-    hMessage.AddString("params", "#SFUI_ContractKillStart");
-    hMessage.AddString("params", sBuffer);
-    hMessage.AddString("params", NULL_STRING);
-    hMessage.AddString("params", NULL_STRING);
-    hMessage.AddString("params", NULL_STRING);
-    hMessage.AddString("params", NULL_STRING);
-    
-    EndMessage();
 }

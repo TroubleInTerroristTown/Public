@@ -4,20 +4,57 @@
 #define _ttt_shop_included
 
 #define SHOP_ITEM_4ALL 1
+#define SHOP_ITEM_NAME_LONG 64
+#define SHOP_ITEM_NAME_SHORT 16
+#define SHOP_CURRENCY_LENGTH 24
+
+typedef TTT_ItemPurchaseCallback = function Action (int client, const char[] itemshort, int count, int price);
 
 /*
- * Called when an item is purchased in the menu. Return Plugin_Stop
- * to prevent us subtracting credits and informing the player that
- * the item was purchased.
+ * Called after an item is purchased in the menu.
  *
  * @param client            The client who purchased the item.
- * @param itemshort         The short-tag for the item's name.
- * @param count             TODO(?)
  * @param price             The price that the item has cost. (0 = Free)
+ * @param count             Usages of this item. (0 - No usage left, 1+ - Usages per Round)
+                                Check for yourself if you've round based items without usage limit
+ * @param itemshort         The short-tag for the item's name.
  */
-forward Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price);
+#pragma deprecated Use TTT_OnItemPurchasePost() instead
+forward void TTT_OnItemPurchased(int client, int price, int count, const char[] itemshort);
 
-forward Action TTT_OnItemPurchase(int client, int &price, bool &count, const char[] item);
+/*
+ * Called after an item is purchased in the menu.
+ *
+ * @param client            The client who purchased the item.
+ * @param price             The price that the item has cost. (0 = Free)
+ * @param count             Usages of this item. (0 - No usage left, 1+ - Usages per Round)
+                                Check for yourself if you've round based items without usage limit
+ * @param itemshort         The short-tag for the item's name.
+ */
+forward void TTT_OnItemPurchasePost(int client, int price, int count, const char[] itemshort);
+
+/*
+ * Called before the purchase process has begun.
+ *
+ * @param client            The client who will purchase this item
+ * @param price             Price of the item
+ * @param count             Usages of this item. (0 - No usage left, 1+ - Usages per Round)
+                                Check for yourself if you've round based items without usage limit
+ * @param itemshort              Short name of the item
+ */
+#pragma deprecated Use TTT_OnItemPurchasePre() instead
+forward Action TTT_OnItemPurchase(int client, int &price, int &count, const char[] itemshort);
+
+/*
+ * Called before the purchase process has begun.
+ *
+ * @param client            The client who will purchase this item
+ * @param price             Price of the item
+ * @param count             Usages of this item. (0 - No usage left, 1+ - Usages per Round)
+                                Check for yourself if you've round based items without usage limit
+ * @param itemshort              Short name of the item
+ */
+forward Action TTT_OnItemPurchasePre(int client, int &price, int &count, const char[] itemshort);
 
 /*
  * Called when items array was initialized. This was added to avoid "empty items list".
@@ -43,24 +80,54 @@ forward void TTT_OnCreditsChanged(int client, int &credits);
 forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcredits);
 
 /*
- * Registers a custom item in the menu/shop.
+ * Called after registers a custom item in the menu/shop.
  *
  * @param itemshort         The short-tag identifier of the item (must be unique).
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
  * @param role              The optional role to restrict the item to. (Default: 0 - for all)
- * @param sort                The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
  */
-native bool TTT_RegisterCustomItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0);
+forward void TTT_OnRegisterShopItemPost(const char[] itemshort, const char[] itemlong, int price, int role, int sort, int maxUsages, int limit);
+
+/*
+ * Called before start credits (on player_spawn) will be given.
+ * By changing credits and return Plugin_Changed, you can modify credits amount.
+ *
+ * @param client            Client index.
+ * @param credits           The amount of credits.
+ */
+forward void TTT_OnStartCredits(int client, int &credits);
+
+ /*
+  * Called after TTT_RemoveShopItem was used.
+  *
+  * @param itemshort        The short-tag identifier of the item
+  */
+forward void TTT_OnItemRemove(const char[] itemshort);
+
+/*
+ * Registers a item in the menu/shop.
+ *
+ * @param itemshort         The short-tag identifier of the item (must be unique).
+ * @param itemlong          The long fancy name for the item.
+ * @param price             The price of the item.
+ * @param role              The optional role to restrict the item to. (Default: 0 - for all)
+ * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ * @param maxUsages         Max usages for this items per round. ( 0 - Disabled )
+ * @param callback          A local function pointer to be called when the registered item is purchased.
+ */
+native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback);
 
 /*
  * Update shop item.
  *
  * @param itemshort         The short-tag identifier to find the item.
  * @param price             The price of the item.
- * @param sort                The priority in Sorting. Buy menu is sorted from high to low.
+ * @param sort              The priority in Sorting. Buy menu is sorted from high to low.
+ * @param maxUsages         Max usages for this items per round. ( 0 - Disabled )
  */
-native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0);
+native bool TTT_UpdateShopItem(const char[] itemshort, int price, int sort = 0, int maxUsages, int limit);
 
 /*
  * Remove shop item.
@@ -68,20 +135,48 @@ native bool TTT_UpdateCustomItem(const char[] itemshort, int price, int sort = 0
  * @param itemshort         The short-tag identifier to find the item.
  * @return                    True it was removed, otherwise shop item not found
  */
-native bool TTT_RemoveCustomItem(const char[] itemshort);
+native bool TTT_RemoveShopItem(const char[] itemshort);
 
 /*
- * Retrieve a custom item's price.
+ * Retrieve a item's price.
  *
  * @param item              The short-tag identifier of the item.
  */
-native int TTT_GetCustomItemPrice(const char[] item);
+native int TTT_GetItemPrice(const char[] item);
+
 /*
- * Retrieve a custom item's role restriction.
+ * Retrieve a item's role restriction.
  *
  * @param item              The short-tag identifier of the item.
  */
-native int TTT_GetCustomItemRole(const char[] item);
+native int TTT_GetItemRole(const char[] item);
+
+/*
+ * Gets the display name of the item.
+ *
+ * @param itemshort         Unique name of item.
+ * @param buffer            Buffer to store display name.
+ * @param size              Size of buffer.
+ *
+ * @return                  Returns true on success. Will return false if the item is no longer registered in shop or native failed to write to buffer.
+ */
+native bool TTT_GetItemName(const char[] itemshort, char[] buffer, int size);
+
+/*
+ * Checks whether or not item exists.
+ *
+ * @param itemshort         Unique name of item.
+ *
+ * @return                  Returns true if item exists, otherwise false.
+ */
+native bool TTT_ShopItemExist(const char[] itemshort);
+
+/*
+ * Retrieve the max usages of a item.
+ *
+ * @param item              The short-tag identifier of the item.
+ */
+native int TTT_GetItemMaxUsages(const char[] item);
 
 /*
  * Retrieve a client's credits.
@@ -114,13 +209,92 @@ native int TTT_AddClientCredits(int client, int credits);
 native bool TTT_GiveClientItem(int client, const char[] item);
 
 /*
- * Called after registers a custom item in the menu/shop.
+ * Get's the amount of usages for this item
+ * Attention: This will be reset on player spawn and client disconnect
  *
- * @param itemshort         The short-tag identifier of the item (must be unique).
- * @param itemlong          The long fancy name for the item.
- * @param price             The price of the item.
- * @param role              The optional role to restrict the item to. (Default: 0 - for all)
- * @param sort                The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ * @param client            Client index.
+ * @param short             Short item name
+ * 
+ * @return                  Usages for this item, -1 = Item not found
  */
-forward void TTT_OnRegisterCustomItemPost(const char[] itemshort, const char[] itemlong, const int price, const int role, const int sort);
+native int TTT_GetItemUsages(int client, const char[] short);
 
+/*
+ * Add the client usages for the specific item
+ * Can't be higher as the max usages
+ * Attention: This will be reset on player spawn and client disconnect
+ *
+ * @param client            Client index.
+ * @param short             Short item name
+ * @param usage             Usages to add
+ * 
+ * @return                  Usages for this item
+ */
+native int TTT_AddItemUsage(int client, const char[] short, int usages = 1);
+
+/*
+ * Remove the client usages for the specific item
+ * Can't be lower as 0
+ * Attention: This will be reset on player spawn and client disconnect
+ *
+ * @param client            Client index.
+ * @param short             Short item name
+ * @param usage             Usages to remove
+ * 
+ * @return                  Usages for this item
+ */
+native int TTT_RemoveItemUsage(int client, const char[] short, int usages = 1);
+
+/*
+ * Set the client usages for the specific item
+ * Can't be higher as the max usages
+ * Can't be lower as 0
+ * Attention: This will be reset on player spawn and client disconnect
+ *
+ * @param client            Client index.
+ * @param short             Short item name
+ * @param usage             Usages to set
+ * 
+ * @return                  Usages for this item
+ */
+native int TTT_SetItemUsage(int client, const char[] short, int usages);
+
+/*
+ * Get discount in percent for the specific item (from 0 - 100)
+ *
+ * @param client              Client Index
+ * @param item                Short Item name
+ * @return                    Percent of discount
+ */
+native int TTT_GetItemDiscount(int client, const char[] shortName);
+
+/*
+ * Check if client has access to the specific item
+ *
+ * @param client              Client Index
+ * @param item                Short Item name
+ * @return                    True if has access, false otherwise
+ */
+native bool TTT_CheckItemAccess(int client, const char[] shortName);
+
+/*
+ * Gets the currency for the specific player
+ *
+ * @param client            Client index
+ * @param buffer            Buffer to store currency.
+ * @param size              Size of buffer.
+ *
+ * @return                  Returns true on success. Will return false if the item is no longer registered in shop or native failed to write to buffer.
+ */
+native bool TTT_GetClientCurrency(int client, char[] buffer, int size);
+
+stock bool TTT_IsShopRunning()
+{
+    Handle hPlugin = FindPluginByFile("ttt/ttt_shop.smx");
+
+    if (hPlugin != null && GetPluginStatus(hPlugin) == Plugin_Running)
+    {
+        return true;
+    }
+    return false;
+}

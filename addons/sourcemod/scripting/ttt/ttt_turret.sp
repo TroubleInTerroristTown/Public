@@ -4,21 +4,21 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 #undef REQUIRE_PLUGIN
 #include <turret_core>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Turret"
 #define SHORT_NAME "turret"
 
-bool g_bHasTurret[MAXPLAYERS+1];
-
 ConVar g_cPrice = null;
+ConVar g_cLimit = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 ConVar g_cKillTurretCount = null;
-
+ConVar g_cCount = null;
 ConVar g_cCheckTeam = null;
-
+ConVar g_cActivation = null;
 
 public Plugin myinfo =
 {
@@ -37,17 +37,30 @@ public void OnPluginStart()
     CreateConVar("ttt2_turret_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("turret_name", "Turret", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("turret_price", "9000", "The amount of credits turret costs as traitor. 0 to disable.");
+    g_cLimit = AutoExecConfig_CreateConVar("turret_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPrio = AutoExecConfig_CreateConVar("turret_sort_prio", "0", "The sorting priority of the turret in the shop menu.");
     g_cKillTurretCount = AutoExecConfig_CreateConVar("turret_kill_cash_amount", "800", "Kill turret credits ?");
-    HookEvent("player_spawn", Event_PlayerSpawn);
-    
-
+    g_cCount = AutoExecConfig_CreateConVar("turret_count", "1", "Amount of turret purchases per round");
+    g_cActivation = AutoExecConfig_CreateConVar("turret_activation_mode", "1", "Which activation mode? 0 - New, over !inventory menu; 1 - Old, on purchase", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnAllPluginsLoaded()
@@ -70,7 +83,7 @@ void RegisterItem()
 {
     if(!LibraryExists("turret_core"))
     {
-        TTT_RemoveCustomItem(SHORT_NAME);
+        TTT_RemoveShopItem(SHORT_NAME);
         SetFailState("Can't find turret_core.smx! This file will be provided with TTT.");
         return;
     }
@@ -78,41 +91,57 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+    
+    if (role != TTT_TEAM_TRAITOR)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
+        return Plugin_Stop;
+    }
+    
+    LoopValidClients(i)
+    {
+        int iRole = TTT_GetClientRole(i);
+
+        if(iRole == TTT_TEAM_DETECTIVE || iRole == TTT_TEAM_INNOCENT)
         {
-            int role = TTT_GetClientRole(client);
-            
-            if (role != TTT_TEAM_TRAITOR || g_bHasTurret[client])
-            {
-                return Plugin_Stop;
-            }
-            
-            
-            LoopValidClients(client_index)
-            {
-                int irole = TTT_GetClientRole(client_index);
-                if(irole == TTT_TEAM_DETECTIVE || irole == TTT_TEAM_INNOCENT)
-                {
-                    SetTurretCanAttackClient(client_index,true);
-                }
-                else
-                {
-                    SetTurretCanAttackClient(client_index,false);
-                }
-            }
-            
-            CreateTurret(client);
-            g_bHasTurret[client] = true;
+            SetTurretCanAttackClient(i, true);
+        }
+        else
+        {
+            SetTurretCanAttackClient(i, false);
         }
     }
+    
+    if (g_cActivation.IntValue == 0)
+    {
+        TTT_AddInventoryItem(client, SHORT_NAME);
+    }
+    else if (g_cActivation.IntValue == 1)
+    {
+        TTT_AddItemUsage(client, SHORT_NAME);
+        CreateTurret(client);
+    }
+
     return Plugin_Continue;
+}
+
+public void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort)
+{
+    if (TTT_IsClientValid(client) && StrEqual(itemshort, SHORT_NAME))
+    {
+        if (TTT_IsItemInInventory(client, SHORT_NAME))
+        {
+            TTT_RemoveInventoryItem(client, SHORT_NAME);
+            TTT_AddItemUsage(client, SHORT_NAME);
+
+            CreateTurret(client);
+        }
+    }
 }
 
 public void OnConVarChange(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -123,20 +152,9 @@ public void OnConVarChange(ConVar convar, const char[] oldValue, const char[] ne
     }
 }
 
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if (TTT_IsClientValid(client))
-    {
-        g_bHasTurret[client] = false;
-    }
-}
-
 public void Turret_OnTurretDead(int iOwner,int iAttacker)
 {
     TTT_AddClientCredits(iAttacker, g_cKillTurretCount.IntValue);
-    g_bHasTurret[iOwner] = false;
 }
     
 public void TTT_OnClientGetRole(int client, int role)

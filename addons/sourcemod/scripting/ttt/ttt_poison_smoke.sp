@@ -5,6 +5,7 @@
 #include <sdkhooks>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 
 #pragma newdecls required
 
@@ -19,9 +20,14 @@ ConVar g_cTraitorDamage = null;
 ConVar g_cDistance = null;
 ConVar g_cDamageInterval = null;
 ConVar g_cDamage = null;
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
 
-bool g_bPoison[MAXPLAYERS + 1] =  { false, ... };
-bool g_bActivePoison[MAXPLAYERS + 1] =  { false, ... };
+enum struct PlayerData {
+    bool ActivePoison;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -48,6 +54,8 @@ public void OnPluginStart()
     g_cDistance = AutoExecConfig_CreateConVar("poison_smoke_distance", "145", "Distance from the middle which should do damage");
     g_cDamageInterval = AutoExecConfig_CreateConVar("poison_smoke_damage_interval", "1.0", "Damage interval in seconds", _, true, 1.0);
     g_cDamage = AutoExecConfig_CreateConVar("poison_smoke_damage_per_interval", "10", "Damage per interval by poison smoke");
+    g_cCount = AutoExecConfig_CreateConVar("poison_smoke_count", "1", "Amount of poison smoke purchases per round");
+    g_cLimit = AutoExecConfig_CreateConVar("poison_smoke_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
@@ -55,9 +63,22 @@ public void OnPluginStart()
     HookEvent("smokegrenade_expired", Event_SmokeExpired);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void TTT_OnShopReady()
@@ -70,7 +91,7 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
 public void OnClientDisconnect(int client)
@@ -78,28 +99,23 @@ public void OnClientDisconnect(int client)
     ResetStuff(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-    {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            int role = TTT_GetClientRole(client);
+    int role = TTT_GetClientRole(client);
 
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            
-            if (g_bPoison[client] || g_bActivePoison[client])
-            {
-                return Plugin_Stop;
-            }
-            
-            GivePlayerItem(client, "weapon_smokegrenade");
-            g_bPoison[client] = true;
-        }
+    if (role != TTT_TEAM_TRAITOR)
+    {
+        return Plugin_Stop;
     }
+    
+    if (TTT_IsItemInInventory(client, SHORT_NAME) || g_iPlayer[client].ActivePoison)
+    {
+        return Plugin_Stop;
+    }
+    
+    GivePlayerItem(client, "weapon_smokegrenade");
+    
+    TTT_AddInventoryItem(client, SHORT_NAME);
     return Plugin_Continue;
 }
 
@@ -123,7 +139,7 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
         return Plugin_Continue;
     }
     
-    if (!g_bPoison[client] || g_bActivePoison[client])
+    if (!TTT_IsItemInInventory(client, SHORT_NAME) || g_iPlayer[client].ActivePoison)
     {
         return Plugin_Continue;
     }
@@ -133,8 +149,9 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
     fOrigin[1] = event.GetFloat("y");
     fOrigin[2] = event.GetFloat("z");
     
-    g_bPoison[client] = false;
-    g_bActivePoison[client] = true;
+    TTT_RemoveInventoryItem(client, SHORT_NAME);
+    TTT_AddItemUsage(client, SHORT_NAME);
+    g_iPlayer[client].ActivePoison = true;
     
     DataPack pack = new DataPack();
     CreateDataTimer(g_cDamageInterval.FloatValue, Timer_CheckPlayers, pack, TIMER_FLAG_NO_MAPCHANGE);
@@ -153,7 +170,7 @@ public Action Timer_CheckPlayers(Handle timer, DataPack pack)
     
     if (TTT_IsClientValid(attacker) && IsValidEntity(entity))
     {
-        if (!g_bActivePoison[attacker])
+        if (!g_iPlayer[attacker].ActivePoison)
         {
             return Plugin_Stop;
         }
@@ -208,6 +225,5 @@ public Action Event_SmokeExpired(Event event, const char[] name, bool dontBroadc
 
 void ResetStuff(int client)
 {
-    g_bPoison[client] = false;
-    g_bActivePoison[client] = false;
+    g_iPlayer[client].ActivePoison = false;
 }

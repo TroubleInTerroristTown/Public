@@ -1,1317 +1,1935 @@
-// Exported from SourceMod Translator
-// Date: 2019-07-21 18:56:53 UTC
-// Language: English (en)
-// 
-// To view other translations for this plugin, please visit:
-// http://translator.mitchdempsey.com/sourcemod_plugins/158
-//
 "Phrases"
 {
-
 	"Your karma is"
 	{
 		"#format"	"{1:i}"
-		"en"		"Your KARMA is: {orchid}{1}"
+		"en"		"You have {highlight}{1} {default}karma."
+		"de"		"Du hast {highlight}{1} {default}Karma."
+		"pl"		"Aktualnie masz {highlight}{1} {default}karmy."
 	}
 
 	"TEAMS HAS BEEN SELECTED"
 	{
-		"en"		"TEAMS HAVE BEEN SELECTED!"
+		"en"		"Teams have been selected."
+		"de"		"Teams wurden ausgewählt."
+		"pl"		"Drużyny zostały wybrane."
 	}
 
 	"MIN PLAYERS REQUIRED FOR PLAY"
 	{
 		"#format"	"{1:d}"
-		"en"		"MIN. PLAYERS REQUIRED TO PLAY: {orchid}{1}"
+		"en"		"We need {highlight}{1} {default}players to start the game."
+		"de"		"Wir brauchen {highlight}{1} {default}Spieler, um das Spiel zu starten."
+		"pl"		"Potrzebujemy {highlight}{1} {default}graczy, aby rozpocząć grę."
 	}
 
 	"Your Team is DETECTIVES"
 	{
-		"en"		"You are a {darkblue}DETECTIVE"
+		"en"		"You are now a {role d}Detective{default}."
+		"de"		"Du bist nun ein {role d}Detektiv{default}."
+		"pl"		"Twoja rola to {role d}Detektyw{default}."
 	}
 
 	"Your Team is TRAITORS"
 	{
-		"en"		"You are a {darkred}TRAITOR"
+		"en"		"You are now a {role t}Traitor{default}."
+		"de"		"Du bist nun ein {role t}Traitor{default}."
+		"pl"		"Twoja rola to {role t}Zdrajca{default}."
 	}
 
 	"Your Team is INNOCENTS"
 	{
-		"en"		"You are an {green}INNOCENT"
+		"en"		"You are now an {role i}Innocent{default}."
+		"de"		"Du bist nun ein {role i}Innocent{default}."
+		"pl"		"Twoja rola to {role i}Niewinny{default}."
 	}
 
 	"Your credits is"
 	{
-		"#format"	"{1:i}"
-		"en"		"Your CREDITS are: {orchid}{1}"
+		"#format"	"{1:i},{2:s}"
+		"en"		"You have {highlight}{1} {default}{2}."
+		"de"		"Du hast {highlight}{1} {default}{2}."
+		"pl"		"Aktualnie masz {highlight}{1} {default}{2}."
 	}
 
 	"Your killer is a Traitor"
 	{
-		"en"		"Your killer was a {darkred}TRAITOR!"
+		"en"		"You were killed by a {role t}Traitor{default}!"
+		"de"		"Du wurdest von ein {role t}Traitor{default} getötet!"
+		"pl"		"Zostałeś zabity przez {role t}Zdrajcę{default}!"
 	}
 
 	"Your killer is a Detective"
 	{
-		"en"		"Your killer was a {darkblue}DETECTIVE!"
+		"en"		"You were killed by a {role d}Detective{default}!"
+		"de"		"Du wurdest von ein {role d}Detektiv{default} getötet!"
+		"pl"		"Zostałeś zabity przez {role d}Detektywa{default}!"
 	}
 
 	"Your killer is an Innocent"
 	{
-		"en"		"Your killer was an {green}INNOCENT!"
+		"en"		"You were killed by an {role i}Innocent{default}!"
+		"de"		"Du wurdest von einen {role i}Innocent{default} getötet!"
+		"pl"		"Zostałeś zabity przez {role i}Niewinnego{default}!"
 	}
 
 	"You killed a Traitor"
 	{
-		"en"		"You killed a {darkred}TRAITOR!"
+		"en"		"You killed a {role t}Traitor{default}!"
+		"de"		"Du hast ein {role t}Traitor{default} getötet!"
+		"pl"		"Zabiłeś {role t}Zdrajcę{default}!"
 	}
 
 	"You killed a Detective"
 	{
-		"en"		"You killed a {darkblue}DETECTIVE!"
+		"en"		"You killed a {role d}Detective{default}!"
+		"de"		"Du hast ein {role d}Detektiv{default} getötet!"
+		"pl"		"Zabiłeś {role d}Detektywa{default}!"
 	}
 
 	"You killed an Innocent"
 	{
-		"en"		"You killed an {green}INNOCENT!"
+		"en"		"You killed an {role i}Innocent{default}!"
+		"de"		"Du hast ein {role i}Innocent{default} getötet!"
+		"pl"		"Zabiłeś {role i}Niewinnego{default}!"
 	}
 
 	"You hurt a Traitor"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have used a detector on Player {darkred}{1} {lightgreen}and he is a {darkred}TRAITOR!"
+		"en"		"Scan Complete: {player}{1} {default}is a {role t}Traitor{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role t}Traitor{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}jest {role t}Zdrajcą{default}!"
 	}
 
 	"You hurt a Detective"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have used a detector on Player{darkblue} {1} {lightgreen}and he is a {darkblue}DETECTIVE!"
+		"en"		"Scan Complete: {player}{1} {default}is a {role d}Detective{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role d}Detektiv{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}jest {role d}Detektywem{default}!"
 	}
 
 	"You hurt an Innocent"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have used a detector on Player{green} {1} {lightgreen}and he is {green}INNOCENT!"
+		"en"		"Scan Complete: {player}{1} {default}is {role i}Innocent{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role i}Innocent{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}jest {role i}Niewinnym{default}!"
 	}
 
 	"Detective scan found body"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+		"en"		"Scan Complete: {player}{1} {default}scanned a body. Killer: {role t}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}untersuchte ein Körper. Mörder: {role t}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {player}{1} {default}przeskanował ciało. Zabójca: {role t}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"Detective scan found body suicide"
 	{
 		"#format"	"{1:N}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, player committed suicide"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. It was a suicide."
+		"de"		"Untersuchung abgeschlossen: {role d}{1} {default}untersuchte ein Körper. Es war ein Selbstmord."
+		"pl"		"Skan ukończony: {role d}{1} {default}przeskanował ciało. To było samobójstwo."
 	}
 
 	"Health Station"
 	{
 		"#format"	"{1:d}"
 		"en"		"Health Station - {1}"
+		"de"		"Health Station - {1}"
+		"pl"		"Stacja lecząca - {1}"
 	}
 
 	"Please wait till your team is assigned"
 	{
-		"en"		"Please wait until your team is assigned"
+		"en"		"Please wait, your role has not been assigned."
+		"de"		"Bitte warte, deine Rolle wurde noch nicht zugewiesen."
+		"pl"		"Zaczekaj, nie otrzymałeś jeszcze żadnej roli."
 	}
 
 	"You don't have enough money"
 	{
-		"en"		"You don't have enough credits!"
+		"#format"	"{1:s}"
+		"en"		"You don't have enough {1}!"
+		"de"		"Du hast nicht genug {1}!"
+		"pl"		"Nie masz wystarczająco {1}!"
 	}
 
 	"Traitors"
 	{
-		"en"		"TRAITORS"
+		"en"		"Traitors"
+		"de"		"Traitor"
+		"pl"		"Zdrajcy"
 	}
 
 	"Detectives"
 	{
-		"en"		"DETECTIVES"
+		"en"		"Detectives"
+		"de"		"Detektive"
+		"pl"		"Detektywi"
 	}
 
 	"Innocents"
 	{
-		"en"		"INNOCENTS"
+		"en"		"Innocents"
+		"de"		"Innocents"
+		"pl"		"Niewinni"
 	}
 
 	"Inspected body. The extracted data are the following"
 	{
-		"en"		"Inspected body. The extracted data was the following:"
+		"en"		"Body Inspected\nThe following data was extracted:"
+		"de"		"Körper inspiziert\nDie folgenden Daten wurden entnommen:"
+		"pl"		"Ciało zostało sprawdzone\nOto dane które udało się wydobyć:"
 	}
 
 	"Victim name"
 	{
 		"#format"	"{1:s}"
-		"en"		"Victim name: {1}"
+		"en"		"Victim Name: {1}"
+		"de"		"Name des Opfers: {1}"
+		"pl"		"Nazwa ofiary: {1}"
 	}
 
 	"Team victim"
 	{
 		"#format"	"{1:s}"
-		"en"		"Team: {1}"
+		"en"		"Role: {1}"
+		"de"		"Rolle: {1}"
+		"pl"		"rola: {1}"
 	}
 
 	"Elapsed since his death"
 	{
 		"#format"	"{1:i}"
-		"en"		"Time elapsed since his death: {1} seconds"
+		"en"		"Time since Death: {1} second(s)"
+		"de"		"Todeszeitpunkt: vor {1} Sekunde(n)"
+		"pl"		"Czas od śmierci: {1} sekund"
 	}
 
 	"The weapon used has been"
 	{
 		"#format"	"{1:s}"
-		"en"		"The weapon used has been: {1}"
+		"en"		"Murder Weapon: {1}"
+		"de"		"Mordwaffe: {1}"
+		"pl"		"Broń mordercy: {1}"
 	}
 
 	"The weapon used has been: himself (suicide)"
 	{
-		"en"		"The weapon used has been: himself (suicide)"
+		"en"		"Himself (suicide)"
+		"de"		"Selbst (Suizid)"
+		"pl"		"On sam (samobójstwo)"
 	}
 
 	"T channel"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{darkred}*TRAITORS* {1}:{green} {2}"
+		"en"		"{default}[{role t}Traitors{default}] {role t}{1}: {role i}{2}"
+		"de"		"{default}[{role t}Traitor{default}] {role t}{1}: {role i}{2}"
+		"pl"		"{default}[{role t}Zdrajcy{default}] {role t}{1}: {role i}{2}"
 	}
 
 	"D channel"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{darkblue}*DETECTIVES* {1}:{green} {2}"
+		"en"		"{default}[{role d}Detectives{default}] {role d}{1}: {role i}{2}"
+		"de"		"{default}[{role d}Detektive{default}] {role d}{1}: {role i}{2}"
+		"pl"		"{default}[{role d}Detektywi{default}] {role d}{1}: {role i}{2}"
 	}
 
 	"You dont have it!"
 	{
 		"en"		"You don't have it!"
+		"de"		"Du hast das nicht!"
+		"pl"		"Nie posiadasz tego!"
 	}
 
 	"TTT Shop"
 	{
-		"#format"	"{1:d}"
-		"en"		"TTT Shop\nYour Credits: {1}"
+		"#format"	"{1:d},{2:s}"
+		"en"		"TTT Shop\nYour {2}: {1}"
+		"en"		"TTT Shop\nDeine {2}: {1}"
+		"pl"		"Sklep TTT\nTwoje {2}: {1}"
 	}
 
 	"credits earned"
 	{
-		"#format"	"{1:i},{2:i}"
-		"en"		"You won {1} credits\nYour current credits are: {2}"
+		"#format"	"{1:i},{2:i},{3:s}"
+		"en"		"You earned {1} {3}\nYour current {3} are: {2}"
+		"de"		"Du erhälst {1} {3}\nDu hast nun {2} {3}"
+		"pl"		"Otrzymałeś {1} {3}\nAktualnie posiadasz {2} {3}"
 	}
 
 	"lost credits"
 	{
-		"#format"	"{1:i},{2:i}"
-		"en"		"You lose {1} credits\nYour current credits are: {2}"
+		"#format"	"{1:i},{2:i},{3:s}"
+		"en"		"You lost {1} {3}\nYour current {3} are: {2}"
+		"de"		"Du verlierst {1} {3}\nDu hast nun {2} {3}"
+		"pl"		"Straciłeś {1} {3}\nAktualnie posiadasz {2} {3}"
 	}
 
 	"karma earned"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"		"You earn {1} karma\nYour karma is now: {2}"
+		"en"		"You earned {1} karma\nYour karma is now: {2}"
+		"de"		"Du erhälst {1} Karma\nDein Karma ist nun {2}"
+		"pl"		"Otrzymałeś {1} karmy\nAktualnie posiadasz {2} karmy"
 	}
 
 	"lost karma"
 	{
 		"#format"	"{1:i},{2:i}"
-		"en"		"You lose {1} karma\nYour karma is now: {2}"
+		"en"		"You lost {1} karma\nYour karma is now: {2}"
+		"de"		"Du verlierst {1} Karma\nDein Karma ist nun {2}"
+		"pl"		"Straciłeś {1} karmy\nAktualnie posiadasz {2} karmy"
 	}
 
 	"no logs yet"
 	{
 		"en"		"No logs yet"
+		"de"		"Noch keine Protokolle"
+		"pl"		"Brak logów na ten moment"
 	}
 
 	"See your console"
 	{
-		"en"		"Logs Received! Check your console to see the logs"
+		"en"		"Logs Received! Check your console to see the logs."
+		"de"		"Protokolle erhalten! Schau in deiner Konsole um die Protokolle zu sehen."
+		"pl"		"Logi otrzymane! Sprawdź swoją konsolę by zobaczyć logi."
 	}
 
 	"you cant see logs"
 	{
 		"en"		"You can´t see the logs now, you need be dead or the round has to be inactive"
+		"de"		"Du kannst aktuell die Protokolle nicht sehen, dafür musst du tot sein oder die Runde vorbei."
+		"pl"		"Nie możesz zobaczyć teraz logów, musisz nieżyć lub runda musi być nieaktywna."
 	}
 
 	"Receiving logs"
 	{
-		"en"		"Receiving logs... wait a moment"
+		"en"		"Receiving logs... Please wait a moment."
+		"de"		"Erhalte Protokolle... Bitte warte ein Moment."
+		"pl"		"Otrzymywanie logów... Poczekaj chwilkę."
 	}
 
 	"Found Innocent"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {green}{2}. {lightgreen}It was a {green}INNOCENT!"
+		"en"		"Body Found: {player}{1} {default}found {role i}{2}{default}."
+		"de"		"Körper gefunden: {player}{1} {default}hat {role i}{2}{default} gefunden."
+		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role i}{2}{default}."
 	}
 
 	"Found Detective"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {darkblue}{2}. {lightgreen}It was a {darkblue}DETECTIVE!"
+		"en"		"Body Found: {player}{1} {default}found {role d}{2}{default}."
+		"de"		"Körper gefunden: {player}{1} {default}hat {role d}{2}{default} gefunden."
+		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role d}{2}{default}."
 	}
 
 	"Found Traitor"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}has found the body of {darkred}{2}. {lightgreen}It was a {darkred}Traitor!"
+		"en"		"Body Found: {player}{1} {default}found {role t}{2}{default}."
+		"de"		"Körper gefunden: {player}{1} {default}hat {role t}{2}{default} gefunden."
+		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role t}{2}{default}."
 	}
 
 	"Your bomb is not armed."
 	{
 		"en"		"Your bomb is not armed."
+		"de"		"Deine Bombe ist noch nicht scharf."
+		"pl"		"Twoja bomba nie jest uzbrojona."
 	}
 
 	"Your bomb is now armed."
 	{
 		"en"		"Your bomb is now armed."
+		"de"		"Deine Bombe ist nun scharf."
+		"pl"		"Twoja bomba jest już uzbrojona."
 	}
 
-	"bomb will arm in 60 seconds, double tab F to explode"
+	"bomb will arm in few seconds, double tab F to explode"
 	{
-		"en"		"Bomb will arm in 60 seconds, press F twice to explode"
+		"#format"	"{1:d}"
+		"en"		"Bomb will arm in {highlight}{1}{default} second(s), press {highlight}F{default} twice to explode."
+		"de"		"Bombe scharf in {highlight}{1}{default} Sekunde(n), drücke zweimal {highlight}F{default} um die explodieren zu lassen."
+		"pl"		"Bomba uzbroi się za {highlight}{1}{default} sekund, naciśnij {highlight}F{default} dwa razy, aby eksplodować."
 	}
 
 	"Your Karma is too low"
 	{
 		"en"		"You were banned because your karma is too low!"
+		"de"		"Du wurdest gebannt, weil dein Karma zu niedrig ist!"
+		"pl"		"Zostałeś zbanowany, ponieważ Twoja karma była zbyt mała!"
 	}
 
 	"TRAITORS HAS BEEN SELECTED"
 	{
 		"#format"	"{1:d}"
-		"en"		"{darkred}{1} TRAITORS {lightgreen}HAVE BEEN SELECTED"
+		"en"		"There are {role t}{1} Traitor(s){default}."
+		"de"		"Es gibt {role t}{1} Traitor{default}."
+		"pl"		"Jest {role t}{1} Zdrajców{default}."
 	}
 
 	"Suicide Blocked"
 	{
 		"en"		"Suicide blocked"
+		"de"		"Suizid blockiert"
+		"pl"		"Samobójstwa są zablokowane"
 	}
 
 	"Right click to plant the C4"
 	{
 		"en"		"Right-click to plant the C4!"
+		"de"		"Rechtsklick um das C4 zu platzieren!"
+		"pl"		"Kliknij prawy przycisk, aby podłożyć bombę!"
 	}
 
 	"You already have an active Health Station"
 	{
 		"en"		"You already have an active Health Station!"
+		"de"		"Du hast bereits eine aktive Health Station!"
+		"pl"		"Już masz aktywną stację leczącą!"
 	}
 
 	"The player who RDM'd you is no longer available"
 	{
 		"en"		"The player who RDM'd you is no longer available!"
+		"de"		"Der Spieler der dich RDM'd hast, ist nicht mehr da!"
+		"pl"		"Gracz który Cię zRDM'ował nie jest już dostępny!"
 	}
 
 	"You were RDM'd"
 	{
 		"#format"	"{1:s}"
 		"en"		"You were RDM'd by {1}!"
+		"de"		"Du wurdest von {1} RDM'd!"
+		"pl"		"Zostałeś zRDM'owany przez {1}!"
 	}
 
 	"Forgive"
 	{
 		"en"		"Forgive"
+		"de"		"Vergeben"
+		"pl"		"Przebacz"
 	}
 
 	"Punish"
 	{
 		"en"		"Punish"
+		"de"		"Bestrafen"
+		"pl"		"Ukaraj"
 	}
 
 	"Choose Punish"
 	{
 		"#format"	"{1:N},{2:N}"
 		"en"		"{1} has chosen to punish {2} for RDMing them!"
+		"de"		"{1} bestraft {2} für den RDM!"
+		"pl"		"{1} ukarał {2} za RDM'a!"
 	}
 
 	"Choose Forgive Victim"
 	{
 		"#format"	"{1:N}"
 		"en"		"You have chosen to forgive {1} for RDMing you!"
+		"de"		"Du vergibst {1} für den RDM!"
+		"pl"		"Wybrałeś przebaczenie dla {1} za zRDM'owanie Ciebie!"
 	}
 
 	"Choose Forgive Attacker"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} has chosen to forgive you for RDMing them!"
+		"de"		"{1} vergibt dir für deinen RDM!"
+		"pl"		"{1} wybrał dla Ciebie przebaczenie za zRDM'owanie go!"
 	}
 
 	"Player is Now Traitor"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}is now {darkred}Traitor!"
+		"en"		"{player}{1} {default}is now a {role t}Traitor{default}!"
+		"de"		"{player}{1} {default}ist nun ein {role t}Traitor{default}!"
+		"pl"		"{player}{1} {default}jest teraz {role t}Zdrajcą{default}!"
 	}
 
 	"Player is Now Detective"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}is now {darkblue}Detective!"
+		"en"		"{player}{1} {default}is now a {role d}Detective{default}!"
+		"de"		"{player}{1} {default}ist nun ein {role d}Detektiv{default}!"
+		"pl"		"{player}{1} {default}jest teraz {role d}Detektywem{default}!"
 	}
 
 	"You Are Unassigned"
 	{
 		"en"		"Your role has not been assigned yet!"
+		"de"		"Dir wurde noch keine Rolle zugewiesen!"
+		"pl"		"Twoja rola nie została jeszcze Ci przyznana!!"
 	}
 
 	"You Are Now Innocent"
 	{
-		"en"		"You are an {green}Innocent!"
+		"en"		"You are an {role i}Innocent{default}!"
+		"de"		"Du bist nun ein {role i}Innocent{default}!"
+		"pl"		"Jesteś {role i}Niewinnym{default}!"
 	}
 
 	"You Are Now Traitor"
 	{
-		"en"		"You are a {darkred}Traitor!"
+		"en"		"You are a {role t}Traitor{default}!"
+		"de"		"Du bist nun ein {role t}Traitor{default}!"
+		"pl"		"Jesteś {role t}Zdrajcą{default}!"
 	}
 
 	"You Are Now Detective"
 	{
-		"en"		"You are a {darkblue}Detective!"
+		"en"		"You are a {role d}Detective{default}!"
+		"de"		"Du bist nun ein {role d}Detektiv{default}!"
+		"pl"		"Jesteś {role d}Detektywem{default}!"
 	}
 
 	"Triggered Falling Building"
 	{
 		"#format"	"{1:N}"
-		"en"		"{1} triggered the falling building as a Non-Traitor."
+		"en"		"{1} triggered the falling building as an Innocent."
+		"de"		"{1} triggered the falling building as an Innocent."
+		"pl"		"{1} odpalił spadający budynek jako Niewinny."
 	}
 
 	"Bomb Detonated"
 	{
 		"en"		"Your bomb has detonated!"
+		"de"		"Deine Bombe ist explodiert!"
+		"pl"		"Twoja bomba została zdetonowana!"
 	}
 
 	"Set C4 Timer"
 	{
 		"en"		"Set the C4 Timer..."
+		"de"		"Das C4 explodiert in..."
+		"pl"		"Ustaw czas dla C4..."
 	}
 
 	"Seconds"
 	{
 		"#format"	"{1:d}"
-		"en"		"{1} seconds"
+		"en"		"{1} second(s)"
+		"de"		"{1} Sekunde(n)"
+		"pl"		"{1} sekund"
 	}
 
 	"Defuse C4"
 	{
 		"en"		"Defuse the C4!"
+		"de"		"Entschärfe das C4!"
+		"pl"		"Rozbrój C4!"
 	}
 
 	"C4 Wire"
 	{
 		"#format"	"{1:d}"
 		"en"		"Wire {1}"
+		"de"		"Kabel {1}"
+		"pl"		"Kabel {1}"
 	}
 
 	"You Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"You have defused {orchid}{1}{lightgreen}'s bomb!"
+		"en"		"You have defused {player}{1}{default}'s bomb!"
+		"de"		"Du hast die Bombe von {player}{1}{default} entschärft!"
+		"pl"		"Właśnie rozbroiłeś bomę {player}{1}{default}'a!"
 	}
 
 	"Has Defused Bomb"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}has defused your bomb!"
+		"en"		"{player}{1} {default}has defused your bomb!"
+		"de"		"{player}{1} {default}hat deine Bombe entschärft!"
+		"pl"		"{player}{1} {default}rozbroił Twoją bombę!"
 	}
 
 	"Failed Defuse"
 	{
 		"en"		"Failed to defuse!"
+		"de"		"Entschärfung fehlgeschlagen!"
+		"pl"		"Nieudało się rozbroić bomby!"
 	}
 
 	"Alive to Plant"
 	{
 		"en"		"You must be alive to plant a bomb!"
+		"de"		"Du musst leben um eine Bombe zu platzieren!"
+		"pl"		"Musisz być żywy, aby podłożyć bombę!"
 	}
 
 	"Will Explode In"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Deploying a c4 that will explode in {orchid}{1} {lightgreen}seconds."
+		"en"		"Deploying a C4 that will explode in {highlight}{1} {default}second(s)."
+		"de"		"Platzierung des C4 das in {highlight}{1} {default}Sekunde(n) explodieren wird."
+		"pl"		"Ustawiłeś C4 które wybuchnie za {highlight}{1} {default}sekund."
 	}
 
 	"Bomb Was Not Found"
 	{
 		"en"		"Your bomb was not found!"
+		"de"		"Deine Bombe wurde nicht gefunden!"
+		"pl"		"Twoja bomba nie została znaleziona!"
 	}
 
 	"Wire Is"
 	{
 		"#format"	"{1:d}"
-		"en"		"The defuse wire is {orchid}{1} {lightgreen}!"
+		"en"		"The defuse wire is {highlight}{1}{default}!"
+		"de"		"Das Kabel zur Entschärfung ist {highlight}{1}{default}!"
+		"pl"		"Kabel do rozbrojenia to {highlight}{1}{default}!"
 	}
 
 	"Your Traitor Partners"
 	{
 		"en"		"Your Traitor partners are:"
+		"de"		"Deine Traitor Partner sind:"
+		"pl"		"Twoimi wspólnikami są:"
 	}
 
 	"No Traitor Partners"
 	{
 		"en"		"You have no partners."
+		"de"		"Du hast keine Partner."
+		"pl"		"Nie masz żadnych wspólników."
 	}
 
 	"Kick Bad Name"
 	{
 		"#format"	"{1:s}"
 		"en"		"Remove the word {1} from your name!"
+		"de"		"Entferne das Wort {1} aus deinem Namen!"
+		"pl"		"Usuń słowo {1} z swojej nazwy!"
 	}
 
 	"Health Station Deployed"
 	{
 		"en"		"Health Station deployed. Stand near it to gain HP!"
+		"de"		"Health Station platziert! Bleib in der Reichweite der Health Station um geheilt zu werden"
+		"pl"		"Stacja lecząca postawiona! Stój blisko niej, aby otrzymać HP!"
 	}
 
 	"Healing From"
 	{
 		"#format"	"{1:N}"
-		"en"		"Healing from {orchid}{1} {lightgreen}'s Health Station!"
+		"en"		"Healing from {player}{1}{default}'s Health Station!"
+		"en"		"Du wirst von {player}{1}{default}'s Health Station geheilt!"
+		"pl"		"Leczenie z stacji {player}{1}{default}'a!"
 	}
 
 	"Health Station Out Of Charges"
 	{
 		"en"		"This Health Station is out of charges! Wait for it to recharge!"
+		"de"		"Diese Health Station ist leer! Warte auf Regenerierung!"
+		"pl"		"Ta stacja nie ma już ładunków! Zaczekaj aż się naładuje!"
 	}
 
 	"Traitor List"
 	{
 		"#format"	"{1:N}"
-		"en"		"{darkred} {1}"
+		"en"		"{role t} {1}"
+		// We don't need other translations here
 	}
 
 	"Welcome Menu"
 	{
 		"#format"	"{1:N},{2:s}"
-		"en"		"Hello {1},\nthis is a Trouble in Terrorist Town Server\nwritten by {2}\n\nAre you familiar with the rules?"
+		"en"		"Hello {1},\nWelcome to Trouble in Terrorist Town.\n\nAre you familiar with the rules?"
+		"de"		"Hallo {1},\nWillkommen in Trouble in Terrorist Town.\n\nKennst du bereits die Regeln?"
+		"pl"		"Witaj {1},\nWitamy na serwerze Trouble in Terrorist Town.\n\nJesteś zaznajomiony z zasadami?"
 	}
 
 	"WM Yes"
 	{
 		"en"		"Yes, I'm familiar with the rules!"
+		"de"		"Ja, Ich kenne die Regeln!"
+		"pl"		"Tak, jestem zaznajomiony z nimi!"
 	}
 
 	"WM Kick Message"
 	{
 		"en"		"You are inactive or you closed the rules menu!"
+		"de"		"Du bist Inaktiv oder hast du Regel Menü geschlossen!"
+		"pl"		"Byłeś nieaktywny lub zamknąłeś menu z zasadami!"
 	}
 
 	"AM Question"
 	{
-		"en"		"You want to play as a detective?\nThen you need the following stuff:\n\n-working microphone\n-talking to other players\n-active playing\n\nCan you confirm this?"
+		"en"		"You want to play as a detective?\nThen you need to agree with:\n\n- Working Microphone\n- Communicate with Players\n- Be Active\n\nDo you agree?"
+		"de"		"Du möchtest als Detektiv spielen?\nDann musst du folgendes akzeptieren:\n\n- funktionierendes Mikrofon\n- Kommuniziere mit Spieler\n- sei Aktiv\n\nBist du einverstanden?"
+		"pl"		"Chcesz grać jako detektyw?\nW takim wypadku będziesz potrzebował:\n\n- Działającego mikrofonu\n- Komunikacji z gracami\n- Być aktywny\n\nZgadzasz się na te warunki?"
 	}
 
 	"AM Yes"
 	{
-		"en"		"Yes, I confirm this."
+		"en"		"Yes, I agree."
+		"de"		"Ja, Ich bin einverstanden."
+		"pl"		"Tak, zgadzam się."
 	}
 
 	"AM No"
 	{
-		"en"		"No, I can't confirm this."
+		"en"		"No, I disagree."
+		"de"		"Nein, Danke."
+		"pl"		"Nie, dziękuje."
 	}
 
 	"WM No"
 	{
 		"en"		"No, show me the rules!"
+		"de"		"Nein, zeig mir die Regeln!"
+		"pl"		"Nie, pokaż mi zasady!"
 	}
 
 	"next round in"
 	{
 		"#format"	"{1:.0f}"
-		"en"		"Next round will start in {1} seconds!"
+		"en"		"Next round will start in {1} second(s)!"
+		"de"		"Nächste Runde startet in {1} Sekunde(n)!"
+		"pl"		"Następna runda rozpocznie się za {1} sekund!"
 	}
 
 	"Hurt Station Deployed"
 	{
 		"en"		"Hurt station has been deployed! It will damage any nearby players!"
+		"de"		"Hurt Station wurde platziert! Spieler in Reichweite werden Schaden durch die Hurt Station erleiden!"
+		"pl"		"Stacja raniąca została postawiona! Będzie raniła wszystkich pobliskich graczy!"
 	}
 
 	"You reached limit"
 	{
 		"#format"	"{1:i}"
 		"en"		"You can only buy {1} of these per round!"
+		"de"		"Du kannst nur {1} pro Runde kaufen!"
+		"pl"		"Możesz to kupić tylko {1} razy na rundę!"
 	}
 
 	"All karma has been updated"
 	{
-		"en"		"KARMA HAS BEEN UPDATED!"
+		"en"		"All players have now had their karma updated."
+		"de"		"Das Karma aller Spieler hat sich aktualisiert."
+		"pl"		"Wszyscy gracze mają już zaktualizowaną karmę."
 	}
 
 	"ID: Need to be Alive"
 	{
 		"en"		"You need to be alive to use this command."
+		"de"		"Du musst leben um diesen Befehl zu nutzen."
+		"pl"		"Musisz być żywy, aby używać tej komendy."
 	}
 
 	"ID: Need to buy ID"
 	{
 		"en"		"You don't have an ID. Buy one in the Shop."
+		"de"		"Du besitzt keine ID Karte. Kaufe eine im Shop."
+		"pl"		"Nie posiadasz ID. Kup je w sklepie."
 	}
 
 	"ID: Shows ID"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} is Innocent"
+		"en"		"{1} is Innocent."
+		"de"		"{1} ist Innocent."
+		"pl"		"{1} jest Niewinnym."
 	}
 
 	"Found Fake"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}has found a fake body!"
+		"en"		"{player}{1} {default}has found a fake body!"
+		"de"		"{player}{1} {default}hat ein falschen Körper gefunden!"
+		"pl"		"{player}{1} {default}znalazł sztuczne ciało!"
 	}
 
 	"TaserMax"
 	{
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit for tasers! (Usage(s) per round: {1})"
+		"de"		"Du hast das Limit für Taser erreicht! (Benutzungen pro Runde: {1})"
+		"pl"		"Osiągnąłeś limit taser'ów! (Limit na rundę: {1})"
 	}
 
 	"AdminSet"
 	{
 		"#format"	"{1:N},{2:d},{3:s}"
-		"en"		"You give {orchid}{1} {green}{2} {lightgreen} {3}!"
+		"en"		"You have given {player}{1} {default}{2} {highlight}{3}!"
+		"de"		"Du hast {player}{1} {default}{2} {highlight}{3} gegeben!"
+		"pl"		"Dałeś {player}{1} {default}{2} {highlight}{3}!"
 	}
 
 	"ID: Buy Message"
 	{
 		"en"		"Type !id to show your innocence."
+		"de"		"Gib !id ein um deine Unschuld zu beweisen."
+		"pl"		"Wpisz !id, aby udowodnić swoją niewinność."
 	}
 
 	"RoundStartCenter"
 	{
 		"#format"	"{1:d},{2:s},{3:d}"
-		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} seconds</font>"
+		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} second(s)</font>"
+		"de"		"<font size='{1}' color='#{2}'>Runde startet in {3} Sekunde(n)</font>"
+		"pl"		"<font size='{1}' color='#{2}'>Runda rozpocznie się za {3} sekund</font>"
 	}
 
 	"RoundStartedCenter"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"<font size='{1}' color='#{2}'><bold>GO GO GO !!!</bold></font>"
+		"en"		"<font size='{1}' color='#{2}'><bold>Good luck, have fun.</bold></font>"
+		"de"		"<font size='{1}' color='#{2}'><bold>Viel Glück und Viel Spaß.</bold></font>"
+		"pl"		"<font size='{1}' color='#{2}'><bold>Powodzenia i miłej zabawy.</bold></font>"
 	}
 
 	"YouAreDead"
 	{
-		"en"		"You can't use this as a dead player"
+		"en"		"You can't use this while your dead."
+		"de"		"Du kannst das nicht als toter benutzen."
+		"pl"		"Nie możesz tego użyć dopóki nieżyjesz."
 	}
 
 	"Bought All"
 	{
 		"#format"	"{1:s},{2:d}"
-		"en"		"You've reached the limit of {1}'s {orchid}({2})"
+		"en"		"You've reached the limit of {1}'s ({highlight}{2}{default})"
+		"de"		"Du hast von Limit von {1} erreicht ({highlight}{2}{default})"
+		"pl"		"Osiągnąłeś limit {1} ({highlight}{2}{default})"
 	}
 
 	"DT: Invalid Position"
 	{
 		"en"		"Decoy Position was incorrect. (Stuck problem)"
+		"de"		"Deine Teleport Decoy ist an einem ungünstigen Ort gelandet. (Stuck Problem)"
+		"pl"		"Pozycja Decoy'a była nieprawidłowa. (Problem z utknięciem)"
 	}
 
 	"SpecMenu: Title"
 	{
 		"en"		"Spec Menu"
+		"de"		"Zuschauer Menü"
+		"pl"		"Menu Widza"
 	}
 
 	"SpecMenu: Player"
 	{
 		"#format"	"{1:N}"
 		"en"		"Player: {1}"
+		"de"		"Spieler: {1}"
+		"pl"		"Gracz: {1}"
 	}
 
 	"SpecMenu: Next"
 	{
-		"en"		"Next player"
+		"en"		"Next Player"
+		"de"		"Nächster Spieler"
+		"pl"		"Następny gracz"
 	}
 
 	"SpecMenu: Prev"
 	{
-		"en"		"Prev player"
+		"en"		"Prev Player"
+		"de"		"Vorheriger Spieler"
+		"pl"		"Poprzedni gracz"
 	}
 
 	"SpecMenu: Mute"
 	{
-		"en"		"Mute this player"
+		"en"		"Mute this Player"
+		"de"		"Diesen Spieler stummschalten"
+		"pl"		"Wycisz tego gracza"
 	}
 
 	"Hud Name"
 	{
 		"en"		"Name"
+		"de"		"Name"
+		"pl"		"Nazwa"
 	}
 
 	"Hud Health"
 	{
 		"en"		"Health"
+		"de"		"Gesundheit"
+		"pl"		"Życie"
 	}
 
 	"Hud PlayerHealth"
 	{
 		"#format"	"{1:s}"
 		"en"		"{1}"
+		// We don't need more translations here
 	}
 
 	"Hud Karma"
 	{
 		"en"		"Karma"
+		"de"		"Karma"
+		"pl"		"Karma"
 	}
 
 	"Hud PlayerKarma"
 	{
 		"#format"	"{1:s}"
 		"en"		"{1}"
+		"de"		"{1}"
+		"pl"		"{1}"
 	}
 
 	"You tased a Traitor"
 	{
 		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player {darkred}{2} {lightgreen}and he is a {darkred}TRAITOR!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role t}{2} {default}and he is a {role t}Traitor{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role t}{2} {default}und ist ein{role t}Traitor{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role t}{2} {default}i jest {role t}Zdrajcą{default}!"
 	}
 
 	"You tased a Detective"
 	{
 		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player{darkblue} {2} {lightgreen}and he is a {darkblue}DETECTIVE!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role d}{2} {default}and he is a {role d}Detective{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role d}{2} {default}und ist ein {role d}Detektiv{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role d}{2} {default}i jest {role d}Detektywem{default}!"
 	}
 
 	"You tased an Innocent"
 	{
 		"#format"	"{1:N},{2:N}"
-		"en"		"Player {lightgreen}{1} used a detector on Player{green} {2} {lightgreen}and he is {green}INNOCENT!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role i}{2} {default}and he is {role i}Innocent{default}!"
+		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role i}{2} {default}und ist ein {role i}Innocent{default}!"
+		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role i}{2} {default}i jest {role i}Niewinnym{default}!"
 	}
 
 	"is now talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} is now talking in Traitor Voice Chat"
+		"de"		"{1} spricht nun im Traitor Sprachchat"
+		"pl"		"{1} mówi teraz na czacie głosowym dla Zdrajców"
 	}
 
 	"stopped talking in Traitor Voice Chat"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} stopped talking in Traitor Voice Chat"
+		"de"		"{1} spricht nicht mehr im Traitor Sprachchat"
+		"pl"		"{1} przestał mówić na czacie głosowym Zdrajców"
 	}
 
 	"Traitor Voice Chat: Disabled!"
 	{
 		"en"		"Traitor Voice Chat: Disabled!"
+		"de"		"Traitor Sprachchat: Deaktiviert!"
+		"pl"		"Głosowy czat zdrajców: Wyłączony!"
 	}
 
 	"Traitor Voice Chat: Enabled!"
 	{
 		"en"		"Traitor Voice Chat: Enabled!"
+		"de"		"Traitor Sprachchat: Aktiviert!"
+		"pl"		"Głosowy czat zdrajców: Włączony!"
 	}
 
 	"ID: Cooldown"
 	{
 		"en"		"You need to wait before using that command again."
+		"de"		"Du musst noch warten bevor du den Befehl wieder benutzen kannst."
+		"pl"		"Musisz chwile poczekać zanim ponownie użyjesz tej komendy."
 	}
 
 	"SpecMenu: Unmute Dead"
 	{
-		"en"		"Unmute dead players"
+		"en"		"Unmute Dead Players"
+		"de"		"Tote Spieler entmuten"
+		"pl"		"Odmutuj nieżywych graczy"
 	}
 
 	"SpecMenu: Mute Dead"
 	{
-		"en"		"Mute dead players"
+		"en"		"Mute Dead Players"
+		"de"		"Tote Spieler stummschalten"
+		"pl"		"Zmutuj nieżywych graczy"
 	}
 
 	"SpecMenu: Unmute Alive"
 	{
-		"en"		"Unmute alive players"
+		"en"		"Unmute Alive Players"
+		"de"		"Lebende Spieler entmuten"
+		"pl"		"Odmutuj żyjących graczy"
 	}
 
 	"SpecMenu: Mute Alive"
 	{
-		"en"		"Mute alive players"
+		"en"		"Mute Alive Players"
+		"de"		"Lebende Spieler stummschalten"
+		"pl"		"Zmutuj żyjących graczy"
 	}
 
 	"Reopen Shop deactivated"
 	{
-		"en"		"Shop will no longer open after buying an item."
+		"en"		"Shop will close after buying an item."
+		"de"		"Shop schließt sich nach dem Kauf."
+		"pl"		"Sklep zostanie zamknięty po zakupieniu itemu."
 	}
 
 	"Reopen Shop activated"
 	{
 		"en"		"Shop will open again after buying an item."
+		"de"		"Shop öffnet sich nach dem Kauf."
+		"pl"		"Sklep zostanie otworzony po zakupieniu itemu."
 	}
 
 	"You already have an active Station"
 	{
 		"en"		"You already have an active Station!"
+		"de"		"Du hast bereits eine aktive Station!"
+		"pl"		"Już masz aktywną stację!"
 	}
 
 	"Item bought! (NEW)"
 	{
-		"#format"	"{1:i},{2:s},{3:d}"
-		"en"		"Item {2} bought for {3} credits! Remaining Credits: {1}"
+		"#format"	"{1:i},{2:s},{3:d},{4:s}"
+		"en"		"Item {2} bought for {3} {4}! Remaining {4}: {1}"
+		"de"		"Item {2} für {3} {4} gekauft! Verbleibend {4}: {1}"
+		"pl"		"Item {2} kupiony za {3} {4}! Pozostało {4}: {1}"
 	}
 
 	"watching logs alive"
 	{
 		"#format"	"{1:N}"
-		"en"		"{green}{1} {default}is {darkred}alive {default}and watching logs of current round."
+		"en"		"{player}{1} {default}is {role i}alive {default}and watching logs of current round."
+		"de"		"{player}{1} {default}ist am {role i}leben {default}und schaut sich die aktuellen Protokolle an."
+		"pl"		"{player}{1} {default}jest {role i}żyjącym {default}i przegląda logi aktualnej rundy."
 	}
 
 	"Player is Now Innocent"
 	{
 		"#format"	"{1:N}"
-		"en"		"{orchid}{1} {lightgreen}is now {green}Innocent!"
+		"en"		"{player}{1} {default}is now {role i}Innocent{default}!"
+		"de"		"{player}{1} {default}ist nun ein {role i}Innocent{default}!"
+		"pl"		"{player}{1} {default}jest teraz {role i}Niewinnym{default}!"
 	}
 
 	"AdminSetRoundSlays"
 	{
 		"#format"	"{1:N},{2:N},{3:d}"
-		"en"		"{orchid}{1} {lightgreen}was slayed by {orchid}{2} {lightgreen}for {orchid}{3} {lightgreen}rounds!"
+		"en"		"{player}{1} {default}was slayed by {player}{2} {default}for {highlight}{3} {default}rounds!"
+		"de"		"{player}{1} {default}wird erschlagen von {player}{2} {default}für weitere{highlight}{3} {default}Runden!"
+		"pl"		"{player}{1} {default}został zabity przez {player}{2} {default}na {highlight}{3} {default}rund!"
 	}
 
 	"RS - Slayed"
 	{
 		"#format"	"{1:d}"
-		"en"		"You were slayed! Remaining rounds: {orchid}{1}"
+		"en"		"You were slayed! You will be slain for {highlight}{1} {default}more rounds."
+		"de"		"Du wurdest erschlagen! Du wirst weitere {highlight}{1} {default}Runden erschlagen."
+		"pl"		"Zostałeś zabity! Będziesz zabijany przez następne {highlight}{1} {default}rund."
 	}
 
 	"Shop Discount Price"
 	{
 		"#format"	"{1:d}"
 		"en"		"({1}%% OFF)"
+		"de"		"({1}%% RABATT)"
+		"pl"		"({1}%% RABAT)"
 	}
 
 	"Sprint active"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Sprint is active for {1} seconds!"
+		"en"		"Sprint is active for {1} second(s)!"
+		"de"		"Sprint ist für {1} Sekunde(n) aktiv!"
+		"pl"		"Sprint jest aktywny przez {1} sekund!"
 	}
 
 	"Sprint cooldown"
 	{
 		"#format"	"{1:.2f}"
-		"en"		"Sprint is available in {1} seconds."
+		"en"		"Sprint is available in {1} second(s)."
+		"de"		"Sprint ist in {1} Sekunde(n) verfügbar."
+		"pl"		"Sprint będzie dostępny za {1} sekund."
 	}
 
 	"Sprint available"
 	{
 		"en"		"Sprint is now available!"
+		"de"		"Sprint ist jetzt verfügbar!"
+		"pl"		"Sprint jest już dostępny!"
 	}
 
 	"TAGrenade We Found"
 	{
-		"en"		"We found:"
+		"en"		"The following people were found:"
+		"de"		"Es wurden folgende Personen gefunden:"
+		"pl"		"Następujące osoby zostały znalezione:"
 	}
 
 	"TAGrenade Innocents"
 	{
 		"#format"	"{1:d}"
-		"en"		"{green}{1} Innocents"
+		"en"		"{role i}{1} Innocents"
+		"de"		"{role i}{1} Innocents"
+		"pl"		"{role i}{1} Niewinnych"
 	}
 
 	"TAGrenade Traitors"
 	{
 		"#format"	"{1:d}"
-		"en"		"{darkred}{1} Traitors"
+		"en"		"{role t}{1} Traitors"
+		"de"		"{role t}{1} Traitor"
+		"pl"		"{role t}{1} Zdrajców"
 	}
 
 	"TAGrenade Detectives"
 	{
 		"#format"	"{1:d}"
-		"en"		"{darkblue}{1} Detectives"
+		"en"		"{role d}{1} Detectives"
+		"de"		"{role d}{1} Detektive"
+		"pl"		"{role d}{1} Detektywów"
 	}
 
 	"Location Saved"
 	{
-		"en"		"Location saved! Type '{orchid}!tele{lightgreen}' in chat to teleport you."
+		"en"		"Location saved! Type '{highlight}!tele{default}' in chat to teleport you."
+		"de"		"Position gespeichert! Gib '{highlight}!tele{default}' ein um dich zu teleportieren."
+		"pl"		"Lokalizacja zapisana! Wpisz '{highlight}!tele{default}' na czacie, aby się teleportować."
 	}
 
 	"Teleport Max"
 	{
 		"#format"	"{1:d}"
-		"en"		"You've reached the limit! {orchid}({1})"
+		"en"		"You've reached the limit! ({highlight}{1}{default})"
+		"de"		"Du hast das Limit erreicht! ({highlight}{1}{default})"
+		"pl"		"Właśnie osiągnąłeś limit! ({highlight}{1}{default})"
 	}
 
 	"Radar Updated"
 	{
 		"en"		"Radar updated!"
+		"de"		"Radar aktualisiert!"
+		"pl"		"Radar został zaktualizowany!"
 	}
 
 	"Decoy Body Active"
 	{
 		"en"		"You found a decoy body! RUN!"
+		"de"		"Du hast ein explodierenden Körper gefunden! LAUF!"
+		"pl"		"Znalazłeś ciało przynętę! UCIEKAJ!"
 	}
 
 	"Player Spawn TTT Version"
 	{
 		"#format"	"{1:s}"
 		"en"		"Trouble in Terrorist Town - Version: {1}"
+		// We don't need more translations here
 	}
 
 	"TTT Radio Menu: Commands"
 	{
 		"en"		"TTT Radio Commands"
+		"de"		"TTT Radio Befehle"
+		"pl"		"TTT Radio Komendy"
 	}
 
 	"TTT Radio Menu: Yes"
 	{
 		"en"		"Yes"
+		"de"		"Ja"
+		"pl"		"Tak"
 	}
 
 	"TTT Radio Menu: No"
 	{
 		"en"		"No"
+		"de"		"Nein"
+		"pl"		"Nie"
 	}
 
 	"TTT Radio Menu: Maybe"
 	{
 		"en"		"Maybe"
+		"de"		"Vielleicht"
+		"pl"		"Możliwe"
 	}
 
 	"TTT Radio Menu: Help"
 	{
 		"en"		"Help"
+		"de"		"Hilfe"
+		"pl"		"Pomocy"
 	}
 
 	"TTT Radio Menu: Check"
 	{
 		"en"		"Check"
+		"de"		"Check"
+		"pl"		"Sprawdź"
 	}
 
 	"TTT Radio Menu: Im With"
 	{
 		"en"		"Im with..."
+		"de"		"Ich bin bei..."
+		"pl"		"Jestem z..."
 	}
 
 	"TTT Radio Menu: Suspect"
 	{
 		"en"		"Suspect..."
+		"de"		"Verdächtig..."
+		"pl"		"Podejrzane..."
 	}
 
 	"TTT Radio Menu: Traitor"
 	{
 		"en"		"Traitor..."
+		"de"		"Traitor..."
+		"pl"		"Zdrajca..."
 	}
 
 	"TTT Radio Menu: Innocent"
 	{
 		"en"		"Innocent..."
+		"de"		"Innocent..."
+		"pl"		"Niewinny..."
 	}
 
 	"TTT Radio Menu: See"
 	{
 		"en"		"See..."
+		"de"		"Ich sehe..."
+		"pl"		"Widzę..."
 	}
 
 	"TTT Radio: Yes"
 	{
 		"en"		"Yes"
+		"de"		"Ja"
+		"pl"		"Tak"
 	}
 
 	"TTT Radio: No"
 	{
 		"en"		"No"
+		"de"		"Nein"
+		"pl"		"Nie"
 	}
 
 	"TTT Radio: Maybe"
 	{
 		"en"		"Maybe"
+		"de"		"Vielleicht"
+		"pl"		"Możliwe"
 	}
 
 	"TTT Radio: Help"
 	{
 		"en"		"Help"
+		"de"		"Hilfe"
+		"pl"		"Pomocy"
 	}
 
 	"TTT Radio: Check"
 	{
 		"en"		"Check"
+		"de"		"Check"
+		"pl"		"Sprawdź"
 	}
 
 	"TTT Radio: Im With"
 	{
 		"#format"	"{1:N}"
 		"en"		"Im with {1}"
+		"de"		"Ich bin bei {1}"
+		"pl"		"Jestem z {1}"
 	}
 
 	"TTT Radio: Suspect"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} acts suspicious."
+		"de"		"{1} wirkt verdächtig."
+		"pl"		"{1} zachowuje się podejrzanie."
 	}
 
 	"TTT Radio: Traitor"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} is the traitor!"
+		"de"		"{1} ist ein Traitor!"
+		"pl"		"{1} jest zdrajcą!"
 	}
 
 	"TTT Radio: Innocent"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} is innocent."
+		"de"		"{1} ist Innocent."
+		"pl"		"{1} jest niewinnym."
 	}
 
 	"TTT Radio: See"
 	{
 		"#format"	"{1:N}"
 		"en"		"I see {1}"
+		"de"		"Ich sehe {1}"
+		"pl"		"Widzę {1}"
 	}
 
 	"Random Teleporter: Cant find ragdoll"
 	{
-		"en"		"Can't find an ragdoll"
+		"en"		"Could not find the ragdoll to teleport to."
+		"de"		"Körper zum teleportieren konnte nicht gefunden werden."
+		"pl"		"Nie można znaleźć ciała do teleportacji."
 	}
 
 	"Random Teleporter: Teleport"
 	{
 		"#format"	"{1:N}"
-		"en"		"You switched the position with {green}{1}"
+		"en"		"You switched positions with {player}{1}{default}."
+		"de"		"Du hast die Positionen mit {player}{1}{default} getauscht."
+		"pl"		"Zamieniłeś się miejscami z {player}{1}{default}."
 	}
 
 	"Detective scan found body Innocent"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{green} {2} {lightgreen}with weapon{orchid} {3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role i}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role i}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Ofiara: {role i}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"Detective scan found body Detective"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkblue} {2} {lightgreen}with weapon{orchid} {3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role d}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role d}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Opfer: {role d}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"Detective scan found body Traitor"
 	{
 		"#format"	"{1:N},{2:s},{3:s}"
-		"en"		"DETECTIVE{darkblue} {1} {lightgreen}Scanned a body, Killer is Player{darkred} {2} {lightgreen}with weapon{orchid} {3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role t}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role t}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Opfer: {role t}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"No karma hurt traitor"
 	{
-		"en"		"You didn't lose Karma because the {darkred}TRAITOR {lightgreen}damaged you first."
+		"en"		"You didn't lose karma because a {role t}Traitor {default}damaged you first."
+		"de"		"Du hast kein Karma verloren, weil ein {role t}Traitor {default}dich zuerst angegriffen hat."
+		"pl"		"Nie straciłeś karmy, ponieważ {role t}Zdrajca {default}zranił Ciebie pierwszego."
 	}
 
 	"No karma hurt innocent"
 	{
-		"en"		"You didn't lose Karma because the {green}INNOCENT {lightgreen}damaged you first."
+		"en"		"You didn't lose karma because an {role i}Innocent {default}damaged you first."
+		"de"		"Du hast kein Karma verloren, weil ein {role i}Innocent {default}dich zuerst angegriffen hat."
+		"pl"		"Nie straciłeś karmy, ponieważ {role i}Niewinny {default}zranił Ciebie pierwszego."
 	}
 
 	"No karma hurt detective"
 	{
-		"en"		"You didn't lose Karma because the {darkblue}DETECTIVE {lightgreen}damaged you first."
+		"en"		"You didn't lose Karma because a {role d}Detective {default}damaged you first."
+		"de"		"Du hast kein Karma verloren, weil ein {role d}Detektiv {default}dich zuerst angegriffen hat."
+		"pl"		"Nie straciłeś karmy, ponieważ {role d}Detektyw {default}zranił Ciebie pierwszego."
 	}
 
 	"Shop Item not found"
 	{
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
+		"de"		"'{1}' als Item nicht verfügbar"
+		"pl"		"'{1}' nie jest prawidłowym itemem w sklepie"
 	}
 
 	"TTT Radio: KOS"
 	{
 		"#format"	"{1:N}"
 		"en"		"KOS {1}!"
+		"de"		"KOS {1}!"
+		"pl"		"KOS {1}!"
 	}
 
 	"Found Innocent Silent"
 	{
 		"#format"	"{1:s}"
-		"en"		"{lightgreen}You silently found the body of {green}{1}. {lightgreen}It was a {green}INNOCENT!"
+		"en"		"Body Found (Silent): You found {role i}{1}{default}."
+		"de"		"Körper gefunden (Leise): Du hast {role i}{1}{default} gefunden."
+		"pl"		"Ciało znalezione (Ciche): Znalazłeś {role i}{1}{default}."
 	}
 
 	"Found Detective Silent"
 	{
 		"#format"	"{1:s}"
-		"en"		"{lightgreen}You silently found the body of {darkblue}{1}. {lightgreen}It was a {darkblue}DETECTIVE!"
+		"en"		"Body Found (Silent): You found {role d}{1}{default}."
+		"de"		"Körper gefunden (Leise): Du hast {role d}{1}{default} gefunden."
+		"de"		"Ciało znalezione (Ciche): Znalazłeś {role d}{1}{default}."
 	}
 
 	"Found Traitor Silent"
 	{
 		"#format"	"{1:s}"
-		"en"		"{lightgreen}You silently found the body of {darkred}{1}. {lightgreen}It was a {darkred}Traitor!"
+		"en"		"Body Found (Silent): You found {role t}{1}{default}."
+		"de"		"Körper gefunden (Leise): Du hast {role t}{1}{default} gefunden."
+		"de"		"Ciało znalezione (Ciche): Znalazłeś {role t}{1}{default}."
 	}
 
 	"C4: Choose Punishment"
 	{
 		"en"		"Choose Punishment:"
+		"de"		"Bestrafung wählen:"
+		"pl"		"Wybierz karę:"
 	}
 
 	"C4: Slay"
 	{
-		"en"		"Slay player"
+		"en"		"Slay Player"
+		"de"		"Spieler erschlagen"
+		"pl"		"Zabij gracza"
 	}
 
 	"C4: Explode"
 	{
 		"en"		"Explode bomb"
+		"de"		"Bombe explodieren"
+		"pl"		"Wysadź bombę"
 	}
 
 	"Name Change Kick Reason"
 	{
-		"en"		"Name change are not allowed during an active round!"
+		"en"		"Name changes are not allowed during an active round!"
+		"de"		"Änderung des Namens ist während einer aktiven Runde nicht erlaubt!"
+		"pl"		"Zmiana nazwy nie jest dozwolona podczas aktywnej rundy!"
 	}
 
 	"Name Change Reason"
 	{
-		"en"		"Name change during active round"
+		"en"		"Name change during an active round."
+		"de"		"Änderung des Namnes innerhalb einer aktiven Runde."
+		"pl"		"Zmiana nazwy podczas aktywnej rundy."
 	}
 
 	"Name Change Message"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{orchid}{1} {lightgreen}changed name to {orchid}{2}!"
+		"en"		"{player}{1} {default}changed name to {player}{2}{default}!"
+		"de"		"{player}{1} {default}ändert sein Name zu {player}{2}{default}!"
+		"pl"		"{player}{1} {default}zmienił nazwę na {player}{2}{default}!"
 	}
 
 	"No tripmines"
 	{
 		"en"		"You do not have any tripmines."
+		"de"		"Du hast keine Tretminen."
+		"pl"		"Nie masz żadnych min."
 	}
 
 	"Invalid location"
 	{
 		"en"		"Invalid location for Tripmine"
+		"de"		"Ungültige Position für eine Tretmine"
+		"pl"		"Nieprawidłowa lokalizacja dla min"
 	}
 
 	"AlreadyTaser"
 	{
 		"en"		"You already have a taser in your inventory!"
+		"de"		"Du hast bereits ein Taser in deinem Inventar!"
+		"pl"		"Już masz taser w swoim ekwipunku!"
 	}
 
 	"Remaining Tripmines"
 	{
 		"#format"	"{1:d}"
-		"en"		"Tripmines remaining: {1}"
+		"en"		"Tripmines Remaining: {highlight}{1}{default}."
+		"de"		"Tretminen Verbleibend: {highlight}{1}{default}."
+		"pl"		"Pozostało min: {highlight}{1}{default}."
 	}
 
 	"TTT Radio Menu: KOS"
 	{
 		"en"		"KOS..."
+		"de"		"KOS..."
+		"pl"		"KOS..."
 	}
 
 	"Place Tripmine"
 	{
-		"en"		"For placing a tripmine, type '/tripmine' into the chat"
+		"en"		"To place a tripmine, type '{highlight}!tripmine{default}' in chat."
+		"de"		"Um eine Tretmine zu platzieren, gib '{highlight}!tripmine{default}' im Textchat ein."
+		"pl"		"Aby postawić minę, wpisz '{highlight}!tripmine{default}' na czacie."
 	}
 
 	"Free DNA Scanner left"
 	{
 		"#format"	"{1:d}"
-		"en"		"You used an free dna scanner! {1} uses left."
+		"en"		"You used a free DNA scanner! You have {highlight}{1} {default}uses left."
+		"de"		"Du hast einen kostenlosen DNA Scanner verwendet! Du hast noch {highlight}{1} {default}Stück."
+		"pl"		"Użyłeś darmowego skanera DNA! Pozostało Ci {highlight}{1} {default}użyć."
 	}
 
 	"WE ARE"
 	{
 		"#format"	"{1:d}"
 		"en"		"We are {1} player(s)!"
+		"de"		"Wir sind {1} Spieler!"
+		"pl"		"Aktualnie mamy {1} graczy!"
 	}
 
 	"REMAINING PLAYERS"
 	{
 		"#format"	"{1:d}"
 		"en"		"Remaining player(s) to start a round: {1}"
+		"de"		"Weitere {1} Spieler werden benötigt"
+		"pl"		"Pozostała liczba graczy, aby zacząć rundę: {1}"
 	}
 
 	"HUD Health - Invalid"
 	{
-		"en"		"Invalid value"
+		"en"		"Invalid Value"
+		"de"		"Ungültiger Wert"
+		"pl"		"Nieprawidłowa wartość"
 	}
 
 	"HUD Health - NearDeath"
 	{
 		"en"		"Near Death"
+		"de"		"Nahezu Tot"
+		"pl"		"Bliski śmierci"
 	}
 
 	"HUD Health - BadlyWounded"
 	{
 		"en"		"Badly Wounded"
+		"de"		"Schwer Verwundet"
+		"pl"		"Poważnie zraniony"
 	}
 
 	"HUD Health - Wounded"
 	{
 		"en"		"Wounded"
+		"de"		"Verwundet"
+		"pl"		"Zraniony"
 	}
 
 	"HUD Health - Hurt"
 	{
 		"en"		"Hurt"
+		"de"		"Angeschlagen"
+		"pl"		"Skrzywdzony"
 	}
 
 	"HUD Health - Healthy"
 	{
 		"en"		"Healthy"
+		"de"		"Gesund"
+		"pl"		"Zdrowy"
 	}
 
 	"HUD Karma - Invalid"
 	{
-		"en"		"Invalid value"
+		"en"		"Invalid Value"
+		"de"		"Ungültiger Wert"
+		"pl"		"Nieprawidłowa wartość"
 	}
 
 	"HUD Karma - Liability"
 	{
 		"en"		"Liability"
+		"de"		"Sehr Schlecht"
+		"pl"		"Odpowiedzialny"
 	}
 
 	"HUD Karma - Dangerous"
 	{
 		"en"		"Dangerous"
+		"de"		"Gefährlich"
+		"pl"		"Niebezpieczny"
 	}
 
 	"HUD Karma - TriggerHappy"
 	{
 		"en"		"Trigger-Happy"
+		"de"		"Normal"
+		"pl"		"Normalny"
 	}
 
 	"HUD Karma - Crude"
 	{
 		"en"		"Crude"
+		"de"		"Gut"
+		"pl"		"Surowy"
 	}
 
 	"HUD Karma - Reputable"
 	{
 		"en"		"Reputable"
+		"de"		"Sehr gut"
+		"pl"		"Renomowany"
 	}
 
 	"Revive: Before to Target"
 	{
 		"#format"	"{1:N},{2:d}"
-		"en"		"{1} wants to revive you, wait {2} seconds until you can accept it."
+		"en"		"{player}{1} {default}wants to revive you, wait {highlight}{2} {default}second(s) until you can accept it."
+		"de"		"{player}{1} {default}möchte dich wiederbeleben, warte noch {highlight}{2} {default}Sekunde(n) bis du es akzeptieren kannst."
+		"pl"		"{player}{1} {default}chciałby Cię wskrzesić, zaczekaj {highlight}{2} {default}sekund zanim będziesz mógł zaakceptować."
 	}
 
 	"Revive: Before to Player"
 	{
 		"#format"	"{1:N}"
-		"en"		"You'll revive {1}."
+		"en"		"You will revive {player}{1}{default}."
+		"de"		"Du belebst {player}{1}{default} wieder."
+		"pl"		"Wskrzesisz {player}{1}{default}."
 	}
 
 	"Revive: Waiting of accepting"
 	{
 		"#format"	"{1:N}"
-		"en"		"{1} must accept your revive request."
+		"en"		"{player}{1} {default}must accept your revive request."
+		"de"		"{player}{1} {default}muss deine Anfrage akzeptieren."
+		"pl"		"{player}{1} {default}musi zaakceptować prośbę o wskrzeszenie."
 	}
 
 	"Revive: Menu - Title"
 	{
 		"#format"	"{1:N},{2:d}"
-		"en"		"{1} wants to revive you.\nDo you accept this request?\nYou've {2} seconds..."
+		"en"		"{1} wants to revive you.\nDo you accept this request?\nYou've {2} second(s)..."
+		"de"		"{1} möchte dich wiederbeleben.\nAkzeptierst du diese Anfrage?\nDu hast {2} Sekunde(n)..."
+		"pl"		"{1} chciałby Cię wskrzesić.\nAkceptujesz tą prośbę?\nMasz na to {2} sekund..."
 	}
 
 	"Revive: Menu - Yes"
 	{
-		"en"		"Yes, I want!"
+		"en"		"Yes, revive me!"
+		"de"		"Ja, beleb mich wieder!"
+		"pl"		"Tak, wskrześ mnie!"
 	}
 
 	"Revive: Menu - No"
 	{
 		"en"		"No, thank you!"
+		"de"		"Nein, danke!"
+		"pl"		"Nie, dziękuje!"
 	}
 
 	"Revive: Menu - No response"
 	{
 		"#format"	"{1:N}"
 		"en"		"Menu timed out... No response from {1}"
+		"de"		"Menü abgelaufen... Keine Reaktion von {1}"
+		"pl"		"Czas minął... Brak odpowiedzi od {1}"
 	}
 
 	"Revive: Menu - Accepted"
 	{
 		"#format"	"{1:N}"
-		"en"		"{1} accepted your request and is now back ingame!"
+		"en"		"{1} accepted your request and is now back in-game!"
+		"de"		"{1} hat deine Anfrage akzeptiert und ist nun wieder im Spiel!"
+		"pl"		"{1} zaakceptował Twoją prośbę i jest znów w grze!"
 	}
 
 	"Revive: Menu - Declined"
 	{
 		"#format"	"{1:N}"
 		"en"		"{1} declined your request!"
+		"de"		"{1} hat deine Anfrage abgelehnt!"
+		"pl"		"{1} odrzucił Twoją prośbę!"
 	}
 
 	"Respawn: Must Dead"
 	{
 		"#format"	"{1:N}"
-		"en"		"{1} is not dead!"
+		"en"		"{player}{1} {default}is not dead!"
+		"de"		"{player}{1} {default}ist nicht Tot!"
+		"pl"		"{player}{1} {default}wciąż żyje!"
 	}
 
 	"Respawn: Player"
 	{
 		"#format"	"{1:N},{2:N}"
-		"en"		"{1} respawned {2}!"
+		"en"		"{player}{1} {default}respawned {player}{2}{default}!"
+		"de"		"{player}{1} {default}belebt {player}{2}{default} wieder!"
+		"pl"		"{player}{1} {default}wskrzesił {player}{2}{default}!"
 	}
 
 	"Tasers: Enabled"
 	{
 		"en"		"Tasers loaded and enabled!"
+		"de"		"Taser geladen und aktiviert!"
+		"pl"		"Tasery zostały naładowane i aktywowane!"
 	}
 
 	"Version Check: Current"
 	{
-		"#format"	"{1:s}"
-		"en"		"This server is running the latest version ({1}) of Trouble in Terrorist Town."
+		"#format"	"{1:d}"
+		"en"		"This server is running the latest version ({highlight}{1}{default}) of Trouble in Terrorist Town."
+		"de"		"Dieser Server verwendet die aktuellste ({highlight}{1}{default}) von Trouble in Terrorist Town."
+		"pl"		"Ten serwer działa na najnowszej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town."
 	}
 
 	"Version Check: Unknown"
 	{
-		"#format"	"{1:s},{2:s}"
-		"en"		"This server is running an unknown version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+		"#format"	"{1:d},{2:d}"
+		"en"		"This server is running an unknown version ({highlight}{1}{default}) of Trouble in Terrorist Town. Latest Version is {highlight}{2}."
+		"de"		"Dieser Server verwendet eine unbekannte Version ({highlight}{1}{default}) von Trouble in Terrorist Town. Aktuellste Version ist {highlight}{2}."
+		"pl"		"Ten serwer działa na nieznanej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town. Najnowsza wersja to {highlight}{2}."
 	}
 
 	"Version Check: Older"
 	{
-		"#format"	"{1:s},{2:s}"
-		"en"		"This server is running an older version ({1}) of Trouble in Terrorist Town. Latest Version is {2}"
+		"#format"	"{1:d},{2:d}"
+		"en"		"This server is running an older version ({highlight}{1}{default}) of Trouble in Terrorist Town. Latest Version is {highlight}{2}."
+		"de"		"Dieser Server verwendet eine alte Version ({highlight}{1}{default}) von Trouble in Terrorist Town. Aktuellste Version ist {highlight}{2}."
+		"de"		"Ten serwer działa na starszej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town. Najnowsza wersja to {highlight}{2}."
 	}
 
 	"Revolver: Suicide"
 	{
-		"en"		"An Detective has tried to kill an Innocent with the Revolver"
+		"en"		"A {role d}Detective {default}tried to kill an {role i}Innocent {default}with the Revolver!"
+		"de"		"Ein {role d}Detektiv {default}versuchte ein {role i}Innocent {default}mit ein Revolver zu töten!"
+		"pl"		"{role d}Detektyw {default}próbował zabić {role i}Niewinnego {default}z Revolvera!"
 	}
 
 	"Bullets: Have already"
 	{
-		"en"		"You have already one type of bullets."
+		"en"		"You already have one type of bullets."
+		"de"		"Du hast bereits Kugeln eines anderen Typs."
+		"pl"		"Już masz jeden typ naboi."
 	}
 
 	"Bullets: Buy bullets"
 	{
 		"#format"	"{1:d},{2:s}"
-		"en"		"You have now {green}{1} {orchid}{2}."
+		"en"		"You now have {highlight}{1} {default}{2}."
+		"de"		"Du hast nun {highlight}{1} {default}{2}."
+		"pl"		"Od teraz masz {highlight}{1} {default}{2}."
 	}
 
 	"Bullets: Number bullets"
 	{
 		"#format"	"{1:s},{2:d},{3:d}"
-		"en"		"{orchid}{1} : {lightgreen}{2}/{green}{3}."
+		"en"		"{highlight}{1}: {highlight}{2}{default}/{highlight}{3}{default}."
+		// We don't need more translations here
 	}
 
 	"Fake Name: New Name"
 	{
 		"#format"	"{1:.1f},{2:s}"
-		"en"		"Your new name for {orchid}{1} seconds {green}is: {orchid}{2}"
+		"en"		"Your new name for {highlight}{1} {default}second(s) is: {player}{2}{default}."
+		"de"		"Dein neuer Name für {highlight}{1} {default}Sekunde(n) ist: {player}{2}{default}."
+		"pl"		"Twoja nowa nazwa przez {highlight}{1} {default}sekund to: {player}{2}{default}."
 	}
 
 	"Fake Name: Name expired"
 	{
-		"en"		"Your new name is expired. You've your old name back!"
+		"en"		"Your name has expired. Reverting back to your old name now!"
+		"de"		"Dein neuer Name auf Zeit ist abgelaufen. Dein alter Name wird wiederhergestellt!"
+		"pl"		"Twoja nazwa wygasła. Twoja stara nazwa powróciła!"
 	}
 
 	"Invisible Name: Start"
 	{
 		"#format"	"{1:.1f}"
-		"en"		"Your name is now for {orchid}{1} seconds invisible{green}."
+		"en"		"Your name is now invisible for {highlight}{1} {default}second(s)."
+		"de"		"Dein Name ist nun für {highlight}{1} {default}Sekunde(n) unsichtbar."
+		"pl"		"Twoja nazwa jest teraz niewidzialna przez {highlight}{1} {default}sekund."
 	}
 
 	"Invisible Name: Stop"
 	{
-		"en"		"Your name is {orchid}no longer invisible{green}!"
+		"en"		"Your name is no longer invisible!"
+		"de"		"Dein Name ist nicht mehr unsichtbar!"
+		"pl"		"Twoja nazwa jest już widoczna!"
 	}
 
 	"ClanTag: Traitor"
 	{
-		"en"		"TRAITOR"
+		"en"		"Traitor"
+		"de"		"Traitor"
+		"pl"		"Zdrajca"
 	}
 
 	"ClanTag: Detective"
 	{
-		"en"		"DETECTIVE"
+		"en"		"Detective"
+		"de"		"Detektiv"
+		"pl"		"Detektyw"
 	}
 
 	"ClanTag: Unassigned"
 	{
-		"en"		"UNASSIGNED"
+		"en"		"No Role"
+		"de"		"Keine Rolle"
+		"pl"		"Brak Roli"
 	}
 
 	"ClanTag: Innocent"
 	{
-		"en"		"INNOCENT"
+		"en"		"Innocent"
+		"de"		"Innocent"
+		"pl"		"Niewinny"
 	}
 
+	"Round ID Started"
+	{
+		"#format"	"{1:d}"
+		"en"		"There has been {highlight}#{1} {default}rounds in total."
+		"de"		"Es wurden insgesamt {highlight}#{1} {default}Runden gespielt."
+		"pl"		"Było łącznie {highlight}#{1} {default}rozegranych rund."
+	}
+	
+	"RoundInactive"
+	{
+		"en"		"No active round."
+		"de"		"Keine aktive Runde."
+		"pl"		"Nie ma aktywnej rundy."
+	}
+
+	"InventoryNoItems"
+	{
+		"en"		"You have no items registered in your inventory."
+		"de"		"Du hast kein registriertes Item in deinem Inventar."
+		"pl"		"Nie masz żadnych zarejestrowanych itemów w ekwipunku."
+	}
+	
+	"InventoryTitle"
+	{
+		"en"		"TTT Inventory"
+		"de"		"TTT Inventar"
+		"pl"		"Ekwipunek TTT"
+	}
+
+	"SuccessfulLoot"
+	{
+		"#format"	"{1:i},{2:i},{3:s},{4:s}"
+		"en"		"You have looted {highlight}{1} {default}{4} and {highlight}{2} {default}items from {player}{3}{default}'s corpse."
+		"de"		"Du hast {highlight}{1} {default}{4} und {highlight}{2} {default}Items von der Leiche von {player}{3}{default} geplündert."
+		"pl"		"Znalazłeś {highlight}{1} {default}{4} i {highlight}{2} {default}itemów z ciała {player}{3}{default}'a."
+	}
+
+	"NoItems"
+	{
+		"en"		"No items in your inventory"
+		"de"		"Keine Items in deinem Inventar"
+		"pl"		"Brak itemów w Twoim ekwipunku"
+	}
+
+	"Shop: Usage Limit Reached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"You already used {highlight}{1} {2} {default}times! Purchase Aborted."
+		"de"		"Du hast bereits {highlight}{1} {2} {default}mal benutzt! Kauf abgebrochen."
+		"pl"		"Już użyłeś {highlight}{1} {2} {default}razy! Zakup anulowany."
+	}
+
+	"Shop: Global Limit Reached"
+	{
+		"#format"	"{1:s},{2:d}"
+		"en"		"For {1} is the global limit of {2} times reached."
+		"de"		"Für {1} wurde das Limit von {2} mal erreicht."
+		"pl"		"Dla {1} jest globalny limit wynoszący {2} użyć."
+	}
+
+	"Shop: Purchase Limit"
+	{
+		"#format"	"{1:d}"
+		"en"		"You have already reached the Purchase Limit! (Limit: {highlight}{1}{default})"
+		"de"		"Du hast bereits das Kauflimit erreicht! (Limit: {highlight}{1}{default})"
+		"pl"		"Już osiągnąłeś limit kupowania! (Limit: {highlight}{1}{default})"
+	}
+
+	"Shop: Item Disabled - MaxUsages"
+	{
+		"#format"	"{1:s}"
+		"en"		"{highlight}{1} {default}is Disabled. (Limit: {highlight}0{default})."
+		"de"		"{highlight}{1} {default}ist Deaktiviert. (Limit: {highlight}0{default})."
+		"pl"		"{highlight}{1} {default}jest wyłączony. (Limit: {highlight}0{default})."
+	}
+
+	"Blackout: Already Active"
+	{
+		"en"		"Blackout is already active!"
+		"de"		"Blackout ist bereits aktiv!"
+		"pl"		"Wyciemnie jest już aktywne!"
+	}
+
+	"Blackout: Starting in"
+	{
+		"#format"	"{1:d}"
+		"en"		"Blackout starting in {highlight}{1} {default}second(s)!"
+		"de"		"Blackout startet in {highlight}{1} {default}Sekunde(n)!"
+		"pl"		"Wyciemnienie zacznie się za {highlight}{1} {default}sekund!"
+	}
+
+	"Respawn: You are back!"
+	{
+		"#format"	"{1:.1f}"
+		"en"		"You are respawning in {highlight}{1} {default}second(s)!"
+		"de"		"Du wirst in {highlight}{1} {default}Sekunde(n) wiederbelebt!"
+		"pl"		"Zostałesz wskrzeszony za {highlight}{1} {default}sekund!"
+	}
+
+	"Radio: Invalid target"
+	{
+		"en"		"Target is invalid or you are not aiming at someone."
+		"de"		"Das Ziel ist ungültig oder du visierst niemanden an."
+		"pl"		"Cel jest nieprawidłowy lub na nikogo nie patrzysz."
+	}
+
+	"NightVision: Command Usage"
+	{
+		"en"		"Night Vision can be accessed via {highlight}!nvg{default}."
+		"de"		"Nachtsichtgerät kann mit {highlight}!nvg{default} benutzt werden."
+		"pl"		"Dostęp do noktowizji możesz zmieniać komendą {highlight}!nvg{default}."
+	}
+
+	"Spec Menu: Searching"
+	{
+		"en"		"Search process is already running. Please wait a moment!"
+		"de"		"Der Suchprozess läuft bereits. Bitte warte einen Moment!"
+		"pl"		"Aktualnie trwa proces szukania. Zaczekaj chwile!"
+	}
+
+	"Spec Menu: Freelook"
+	{
+		"en"		"To use this function, you should be in 1st or 3rd person!"
+		"de"		"Um diese Funktion zu benutzen, solltest du im 1st oder 3rd Person sein!"
+		"pl"		"Aby użyć tej funkcji musisz być w trybie 1-szo lub 3-cio osobowym!"
+	}
+	
+	"Traitor Tester: Cooldown expired"
+	{
+		"en"		"Traitor Tester: The usage cooldown has expired."
+		"de"		"Traitor Tester: Die Abklingzeit ist abgelaufen."
+		"pl"		"Tester zdrajców: Ponownie można użyć testera."
+	}
+
+	"Traitor Tester: Too many people"
+	{
+		"#format"	"{1:d}"
+		"en"		"Traitor Tester: Maximum Capacity Reached! (Max {highlight}{1}{default})"
+		"de"		"Traitor Tester: Maximale Kapazität erreicht! (Max {highlight}{1}{default})"
+		"pl"		"Tester zdrajców: Maksymalna ilość osób osiągnięta! (Max {highlight}{1}{default})"
+	}
+
+	"Shop: Currency"
+	{
+		"en"		"Credits"
+		"de"		"Credits"
+		"pl"		"Kredytów"
+	}
 }

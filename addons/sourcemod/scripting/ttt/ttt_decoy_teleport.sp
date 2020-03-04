@@ -4,11 +4,13 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt_shop>
+#include <colorlib>
 #include <ttt>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
 
 #define SHORT_NAME "decoyteleport"
+#define SHORT_NAME_D "decoyteleport_d"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Decoy Teleporter"
 
@@ -16,15 +18,12 @@ ConVar g_cTPrice = null;
 ConVar g_cDPrice = null;
 ConVar g_cTPrio = null;
 ConVar g_cDPrio = null;
+ConVar g_cTLimit = null;
+ConVar g_cDLimit = null;
 ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 ConVar g_cRefund = null;
 ConVar g_cLongName = null;
-
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-bool g_bHasTeleporter[MAXPLAYERS + 1] =  { false, ... };
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -52,23 +51,28 @@ public void OnPluginStart()
     g_cDPrice = AutoExecConfig_CreateConVar("dt_detective_price", "9000", "The amount of credits for decoy teleporter costs as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("dt_traitor_sort_prio", "0", "The sorting priority of the decoy teleporter (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("dt_detective_sort_prio", "0", "The sorting priority of the decoy teleporter (Detective) in the shop menu.");
+    g_cTLimit = AutoExecConfig_CreateConVar("dt_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cDLimit = AutoExecConfig_CreateConVar("dt_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTCount = AutoExecConfig_CreateConVar("dt_traitor_count", "1", "The amount of usages for decoy teleporters per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("dt_detective_count", "1", "The amount of usages for decoy teleporters per round as detective. 0 to disable.");
     g_cRefund = AutoExecConfig_CreateConVar("dt_refund", "0", "Refund after a fail teleporter? 0 = Disabled/Nothing, 1 = Credits back, 2 = New decoy");
     TTT_EndConfig();
 
-    HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("decoy_started", Event_DecoyStarted, EventHookMode_Pre);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
 }
 
-public void OnClientDisconnect(int client)
+public void TTT_OnVersionReceive(int version)
 {
-    ResetDecoyCount(client);
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -76,6 +80,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
@@ -87,8 +93,8 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -99,46 +105,27 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     }
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+
+    if (role == TTT_TEAM_TRAITOR)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            int role = TTT_GetClientRole(client);
-            
-            char sBuffer[MAX_ITEM_LENGTH];
-            g_cLongName.GetString(sBuffer, sizeof(sBuffer));
+        GivePlayerItem(client, "weapon_decoy");
 
-            if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cTCount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cDCount.IntValue);
-                return Plugin_Stop;
-            }
-
-            GivePlayerItem(client, "weapon_decoy");
-
-            g_bHasTeleporter[client] = true;
-
-            if (count)
-            {
-                if (role == TTT_TEAM_TRAITOR)
-                {
-                    g_iTPCount[client]++;
-                }
-                else if (role == TTT_TEAM_DETECTIVE)
-                {
-                    g_iDPCount[client]++;
-                }
-            }
-        }
+        TTT_AddInventoryItem(client, SHORT_NAME);
+        return Plugin_Continue;
     }
-    return Plugin_Continue;
+    else if (role == TTT_TEAM_DETECTIVE)
+    {
+        GivePlayerItem(client, "weapon_decoy");
+
+        TTT_AddInventoryItem(client, SHORT_NAME_D);
+        return Plugin_Continue;
+    }
+    
+    
+    return Plugin_Stop;
 }
 
 public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadcast)
@@ -149,7 +136,7 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
     {
         int entity = event.GetInt("entityid");
 
-        if (!g_bHasTeleporter[client])
+        if (!TTT_IsItemInInventory(client, SHORT_NAME) || !TTT_IsItemInInventory(client, SHORT_NAME_D))
         {
             return Plugin_Continue;
         }
@@ -180,13 +167,15 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
             if (role == TTT_TEAM_TRAITOR)
             {
                 TTT_AddClientCredits(client, g_cTPrice.IntValue);
+                TTT_RemoveInventoryItem(client, SHORT_NAME);
+                TTT_AddItemUsage(client, SHORT_NAME);
             }
             else if (role == TTT_TEAM_DETECTIVE)
             {
                 TTT_AddClientCredits(client, g_cDPrice.IntValue);
+                TTT_RemoveInventoryItem(client, SHORT_NAME_D);
+                TTT_AddItemUsage(client, SHORT_NAME_D);
             }
-
-            g_bHasTeleporter[client] = false;
         }
         else if (stuck && g_cRefund.IntValue == 2)
         {
@@ -194,30 +183,22 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
         }
         else
         {
-            g_bHasTeleporter[client] = false;
+            int role = TTT_GetClientRole(client);
+            if (role == TTT_TEAM_TRAITOR)
+            {
+                TTT_RemoveInventoryItem(client, SHORT_NAME);
+                TTT_AddItemUsage(client, SHORT_NAME);
+            }
+            else if (role == TTT_TEAM_DETECTIVE)
+            {
+                TTT_RemoveInventoryItem(client, SHORT_NAME_D);
+                TTT_AddItemUsage(client, SHORT_NAME_D);
+            }
         }
 
         return Plugin_Handled;
     }
     return Plugin_Continue;
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        ResetDecoyCount(client);
-    }
-}
-
-void ResetDecoyCount(int client)
-{
-    g_iTPCount[client] = 0;
-    g_iDPCount[client] = 0;
-
-    g_bHasTeleporter[client] = false;
 }
 
 bool StuckClient(int client)

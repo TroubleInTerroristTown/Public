@@ -6,20 +6,25 @@
 
 #pragma newdecls required
 
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Template"
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Shop Template"
 #define SHORT_NAME "template"
 
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-
-bool g_bHasItem[MAXPLAYERS + 1] =  { false, ... };
-
+ConVar g_cUses = null;
+ConVar g_cLimit = null;
 
 /*
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
 */
+
+enum struct PlayerData {
+    bool HasItem;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -40,28 +45,46 @@ public void OnPluginStart()
     CreateConVar("ttt2_template_item_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("template_name", "Template", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("template_price", "9000", "The amount of credits TEMPLATE costs as detective. 0 to disable.");
-    g_cPrio = AutoExecConfig_CreateConVar("template_sort_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
+    g_cPrio = AutoExecConfig_CreateConVar("template_prio", "0", "The sorting priority of the TEMPLATE in the shop menu.");
+    g_cUses = AutoExecConfig_CreateConVar("template_uses", "2", "The number of uses of the TEMPLATE in the shop menu.");
+    g_cLimit = AutoExecConfig_CreateConVar("template_limit", "0", "The amount of purchases for all players during a round (0 - no limit).", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
+public void OnPluginEnd()
+{
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
 public void OnConfigsExecuted()
 {
-    /*
-                
-    If you want the plugin tag from ttt
-    
-    g_cPluginTag = FindConVar("ttt_plugin_tag");
-    g_cPluginTag.AddChangeHook(OnConVarChanged);
-    g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-    CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
-    
+    /*        
+        If you want the plugin tag from ttt
+        
+        g_cPluginTag = FindConVar("ttt_plugin_tag");
+        g_cPluginTag.AddChangeHook(OnConVarChanged);
+        g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Translation Name");
     */
+    RegisterItem();
+}
+
+public void TTT_OnShopReady()
+{
+    RegisterItem();
+}
+
+void RegisterItem()
+{
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cUses.IntValue, g_cLimit.IntValue, OnPurchase);
 }
 
 /* public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -77,27 +100,22 @@ public void OnClientDisconnect(int client)
     ResetTemplate(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnPurchase(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-    {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            int role = TTT_GetClientRole(client);
+    int role = TTT_GetClientRole(client);
 
-            if (role != TTT_TEAM_DETECTIVE)
-            {
-                return Plugin_Stop;
-            }
-            
-            if (g_bHasItem[client])
-            {
-                return Plugin_Stop;
-            }
-            
-            g_bHasItem[client] = true;
-        }
+    if (role != TTT_TEAM_DETECTIVE)
+    {
+        return Plugin_Stop;
     }
+
+    if (g_iPlayer[client].HasItem)
+    {
+        return Plugin_Stop;
+    }
+
+    g_iPlayer[client].HasItem = true;
+
     return Plugin_Continue;
 }
 
@@ -113,5 +131,5 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 void ResetTemplate(int client)
 {
-    g_bHasItem[client] = false;
+    g_iPlayer[client].HasItem = false;
 }

@@ -10,43 +10,38 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sm_version: ["1.10", "1.11"]
-
+        SM_VERSION: ["1.10", "1.11"]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set environment variables
         run: |
-          VERSION=$(git rev-list --count HEAD)
-          SHORT=$(git describe --always --long --dirty)
           SOURCEMOD_PATH=$GITHUB_WORKSPACE/addons/sourcemod
-          echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION-$SHORT
           echo ::set-env name=SOURCEMOD_PATH::$SOURCEMOD_PATH
           echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/scripting
-          echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/plugins
 
       - name: Setup SourcePawn Compiler ${{ matrix.SM_VERSION }}
         uses: rumblefrog/setup-sp@master
         with:
           version: ${{ matrix.SM_VERSION }}
-
-      - name: Set TTT version
-        run: |
-          sed -i "s/<VERSION>/$PLUGIN_VERSION/g" $SCRIPTS_PATH/include/ttt_stock.inc
+      
+      - name: Generate colorlib.inc
+        run: python3 ./color_gen.py -r --config "./ttt_colors.yaml" "../addons/sourcemod/scripting/include/colorlib_map.inc"
+        working-directory: ./tools
 
       - name: Compile TTT
         run: |
           for file in *.sp
           do
             echo -e "\nCompiling $file..."
-            spcomp -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
+            spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
           done
         working-directory: ${{ env.SCRIPTS_PATH }}/ttt
 
       - name: Compile 3rd party plugins
         run: |
-          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "tripmines" "turret_core"
+          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core"
           do
             echo -e "\nCompiling $plugin.sp..."
             spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp

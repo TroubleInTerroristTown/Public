@@ -6,6 +6,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <cstrike>
+#include <ttt>
 
 public Plugin myinfo =
 {
@@ -33,13 +34,17 @@ int g_iFakeItemClass;
 
 int m_hMyWeapons;
 
-int g_iFakeWeaponRef[MAXPLAYERS + 1];
-int g_iCooldown[MAXPLAYERS + 1];
-
-int g_bGrenade[MAXPLAYERS + 1];
-
 #define LoopIngameClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
 if(IsClientInGame(%1))
+
+enum struct PlayerData {
+    int FakeRef;
+    int Cooldown;
+
+    bool Grenade;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public void OnPluginStart()
 {
@@ -103,21 +108,21 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    g_bGrenade[client] = event.GetInt("weptype") == 8;
+    g_iPlayer[client].Grenade = event.GetInt("weptype") == 8;
 }
 
 public Action OnWeaponCanUse(int client, int weapon)
 {
-    int decoy = EntRefToEntIndex(g_iFakeWeaponRef[client]);
+    int decoy = EntRefToEntIndex(g_iPlayer[client].FakeRef);
 
     // No fake decoy equipped, let him pickup whatever he wants
     if(decoy <= 0)
     {
         // Fake decoy got removed somehow, give cooldown
-        if(g_iFakeWeaponRef[client] > 0)
+        if(g_iPlayer[client].FakeRef > 0)
         {
-            g_iCooldown[client] += g_iCooldownHeat;
-            g_iFakeWeaponRef[client] = 0;
+            g_iPlayer[client].Cooldown += g_iCooldownHeat;
+            g_iPlayer[client].FakeRef = 0;
         }
         return Plugin_Continue;
     }
@@ -136,7 +141,7 @@ public Action OnWeaponCanUse(int client, int weapon)
 
         AcceptEntityInput(weapon, "Kill");
 
-        g_iFakeWeaponRef[client] = 0;
+        g_iPlayer[client].FakeRef = 0;
 
         return Plugin_Continue;
     }
@@ -146,14 +151,14 @@ public Action OnWeaponCanUse(int client, int weapon)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-    if(!g_bEnable || !IsPlayerAlive(client))
+    if(!g_bEnable || !IsPlayerAlive(client) || TTT_GetRoundStatus() == Round_Active)
         return Plugin_Continue;
 
-    if(g_iCooldown[client] > g_iCooldownLimit)
-        g_iCooldown[client]--;
+    if(g_iPlayer[client].Cooldown > g_iCooldownLimit)
+        g_iPlayer[client].Cooldown--;
 
     // Get the fake decoy
-    int decoy = EntRefToEntIndex(g_iFakeWeaponRef[client]);
+    int decoy = EntRefToEntIndex(g_iPlayer[client].FakeRef);
 
     // Check if player has another weapon, thanks to ShaRen
     int iWeapon = decoy;
@@ -177,19 +182,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
         AcceptEntityInput(decoy, "Kill");
 
-        g_iFakeWeaponRef[client] = 0;
+        g_iPlayer[client].FakeRef = 0;
     }
     // Create a new fake decoy
     else if(iWeapon <= 0)
     {
         // Fake decoy got removed somehow, give cooldown
-        if(g_iFakeWeaponRef[client] > 0)
+        if(g_iPlayer[client].FakeRef > 0)
         {
-            g_iCooldown[client] += g_iCooldownHeat;
-            g_iFakeWeaponRef[client] = 0;
+            g_iPlayer[client].Cooldown += g_iCooldownHeat;
+            g_iPlayer[client].FakeRef = 0;
         }
 
-        if(g_iCooldown[client] > 0)
+        if(g_iPlayer[client].Cooldown > 0)
             return Plugin_Continue;
 
         SetEntProp(client, Prop_Data, "m_bDrawViewmodel", 0);
@@ -200,12 +205,12 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
         PreventThrowable(client, iWeapon);
 
-        g_iFakeWeaponRef[client] = EntIndexToEntRef(iWeapon);
-        decoy = EntRefToEntIndex(g_iFakeWeaponRef[client]);
+        g_iPlayer[client].FakeRef = EntIndexToEntRef(iWeapon);
+        decoy = EntRefToEntIndex(g_iPlayer[client].FakeRef);
     }
 
     // Prevent decoy from being throwable
-    if(iWeapon > 0 && (iWeapon == decoy || (g_bGrenade[client] && g_bBlockGrenades)))
+    if(iWeapon > 0 && (iWeapon == decoy || (g_iPlayer[client].Grenade && g_bBlockGrenades)))
         PreventThrowable(client, iWeapon);
 
     return Plugin_Continue;

@@ -4,10 +4,11 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt_shop>
 #include <ttt>
 #include <ttt_glow>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
+#include <colorlib>
 
 #define SHORT_NAME_T "wallhack_t"
 #define SHORT_NAME_D "wallhack_d"
@@ -16,7 +17,9 @@
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: " ... LONG_NAME
 
 ConVar g_cTraitorPrice = null;
+ConVar g_cTraitorLimit = null;
 ConVar g_cDetectivePrice = null;
+ConVar g_cDetectiveLimit = null;
 ConVar g_cTraitor_Prio = null;
 ConVar g_cDetective_Prio = null;
 ConVar g_cTraitorCooldown = null;
@@ -30,13 +33,18 @@ ConVar g_cDefaultRed = null;
 ConVar g_cDefaultGreen = null;
 ConVar g_cDefaultBlue = null;
 ConVar g_cDefaultAlpha = null;
-
-bool g_bOwnWH[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasWH[MAXPLAYERS + 1] =  { false, ... };
-
-Handle g_hTimer[MAXPLAYERS + 1] =  { null, ... };
+ConVar g_cTCount = null;
+ConVar g_cDCount = null;
 
 bool g_bGlow = false;
+
+enum struct PlayerData {
+    bool HasWH;
+    
+    Handle Timer;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -55,7 +63,9 @@ public void OnPluginStart()
     CreateConVar("ttt2_wallhack_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("wh_name", "Wallhack", "The name of the Wallhack in the Shop");
     g_cTraitorPrice = AutoExecConfig_CreateConVar("wh_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
+    g_cTraitorLimit = AutoExecConfig_CreateConVar("wh_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cDetectivePrice = AutoExecConfig_CreateConVar("wh_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.");
+    g_cDetectiveLimit = AutoExecConfig_CreateConVar("wh_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTraitorCooldown = AutoExecConfig_CreateConVar("wh_traitor_cooldown", "15.0", "Time of the cooldown for Traitor-Wallhack (time in seconds)");
     g_cDetectiveCooldown = AutoExecConfig_CreateConVar("wh_detective_cooldown", "15.0", "Time of the cooldown for Dective-Wallhack (time in seconds)");
     g_cTraitorActive = AutoExecConfig_CreateConVar("wh_traitor_active", "3.0", "Active time for Traitor-Wallhack (time in seconds)");
@@ -68,6 +78,8 @@ public void OnPluginStart()
     g_cDefaultGreen = AutoExecConfig_CreateConVar("wh_default_color_green", "255", "Green color of default glow");
     g_cDefaultBlue = AutoExecConfig_CreateConVar("wh_default_color_blue", "255", "Blue color of default glow");
     g_cDefaultAlpha = AutoExecConfig_CreateConVar("wh_default_color_alpha", "255", "Alpha of default glow");
+    g_cTCount = AutoExecConfig_CreateConVar("wh_count_traitor", "1", "Amount of wh purchases per round for traitor");
+    g_cDCount = AutoExecConfig_CreateConVar("wh_count_detective", "1", "Amount of wh purchases per round for detectives");
     TTT_EndConfig();
     
     HookEvent("player_spawn", Event_PlayerReset);
@@ -77,9 +89,23 @@ public void OnPluginStart()
     g_bGlow = LibraryExists("ttt_glow");
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -109,8 +135,8 @@ void RegisterItem()
     {
         char sBuffer[MAX_ITEM_LENGTH];
         g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTraitorPrice.IntValue, TTT_TEAM_TRAITOR, g_cTraitor_Prio.IntValue);
-        TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDetectivePrice.IntValue, TTT_TEAM_DETECTIVE, g_cDetective_Prio.IntValue);
+        TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTraitorPrice.IntValue, TTT_TEAM_TRAITOR, g_cTraitor_Prio.IntValue, g_cTCount.IntValue, g_cTraitorLimit.IntValue, OnItemPurchased);
+        TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDetectivePrice.IntValue, TTT_TEAM_DETECTIVE, g_cDetective_Prio.IntValue, g_cDCount.IntValue, g_cDetectiveLimit.IntValue, OnItemPurchased);
     }
     else
     {
@@ -131,8 +157,7 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
     
     if (TTT_IsClientValid(client))
     {
-        g_bHasWH[client] = false;
-        g_bOwnWH[client] = false;
+        g_iPlayer[client].HasWH = false;
     }
 }
 
@@ -140,35 +165,31 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 {
     LoopValidClients(client)
     {
-        g_bHasWH[client] = false;
-        g_bOwnWH[client] = false;
+        g_iPlayer[client].HasWH = false;
     }
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+
+    if (role != TTT_TEAM_TRAITOR && role != TTT_TEAM_DETECTIVE)
     {
-        if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
-        {
-            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
-            {
-                return Plugin_Stop;
-            }
-
-            g_bHasWH[client] = true;
-            g_bOwnWH[client] = true;
-
-            if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-            {
-                g_hTimer[client] = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-            }
-            else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-            {
-                g_hTimer[client] = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-            }
-        }
+        return Plugin_Stop;
     }
+
+    g_iPlayer[client].HasWH = true;
+    TTT_AddInventoryItem(client, itemshort);
+
+    if (role == TTT_TEAM_TRAITOR)
+    {
+        g_iPlayer[client].Timer = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
+    }
+    else if (role == TTT_TEAM_DETECTIVE)
+    {
+        g_iPlayer[client].Timer = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
+    }
+    
     return Plugin_Continue;
 }
 
@@ -176,18 +197,18 @@ public Action Timer_WHActive(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
-    if (TTT_IsClientValid(client) && g_bOwnWH[client] && g_bHasWH[client])
+    if (TTT_IsClientValid(client) && (TTT_IsItemInInventory(client, SHORT_NAME_D) || TTT_IsItemInInventory(client, SHORT_NAME_T)) && g_iPlayer[client].HasWH)
     {
-        g_bHasWH[client] = false;
-        g_hTimer[client] = null;
+        g_iPlayer[client].HasWH = false;
+        g_iPlayer[client].Timer = null;
 
         if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
-            g_hTimer[client] = CreateTimer(g_cTraitorCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
+            g_iPlayer[client].Timer = CreateTimer(g_cTraitorCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
         }
         else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
         {
-            g_hTimer[client] = CreateTimer(g_cDetectiveCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
+            g_iPlayer[client].Timer = CreateTimer(g_cDetectiveCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
         }
     }
 
@@ -198,18 +219,18 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
-    if (TTT_IsClientValid(client) && g_bOwnWH[client] && !g_bHasWH[client])
+    if (TTT_IsClientValid(client) && (TTT_IsItemInInventory(client, SHORT_NAME_D) || TTT_IsItemInInventory(client, SHORT_NAME_T)) && !g_iPlayer[client].HasWH)
     {
-        g_bHasWH[client] = true;
-        g_hTimer[client] = null;
+        g_iPlayer[client].HasWH = true;
+        g_iPlayer[client].Timer = null;
 
         if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
-            g_hTimer[client] = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
+            g_iPlayer[client].Timer = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
         }
         else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
         {
-            g_hTimer[client] = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
+            g_iPlayer[client].Timer = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
         }
     }
 
@@ -218,12 +239,12 @@ public Action Timer_WHCooldown(Handle timer, any userid)
 
 public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &overrideColor, int &red, int &green, int &blue, int &alpha)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Handled;
     }
 
-    if (g_bHasWH[client] && g_bOwnWH[client])
+    if (g_iPlayer[client].HasWH && (TTT_IsItemInInventory(client, SHORT_NAME_D) || TTT_IsItemInInventory(client, SHORT_NAME_T)))
     {
         int role = TTT_GetClientRole(client);
         

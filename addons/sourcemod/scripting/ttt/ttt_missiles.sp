@@ -23,6 +23,7 @@
 #include <sdkhooks>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 #include <emitsoundany>
 
 #pragma newdecls required
@@ -40,59 +41,69 @@ ConVar g_cRadius = null;
 ConVar g_cSpeed = null;
 ConVar g_cArc = null;
 ConVar g_cVolume = null;
-
 ConVar g_cPriceT_F = null;
+ConVar g_cLimitT_F = null;
 ConVar g_cPriceD_F = null;
+ConVar g_cLimitD_F = null;
 ConVar g_cPriceI_F = null;
+ConVar g_cLimitI_F = null;
 ConVar g_cPriorityT_F = null;
 ConVar g_cPriorityD_F = null;
 ConVar g_cPriorityI_F = null;
-ConVar g_cAmountT_F = null;
-ConVar g_cAmountD_F = null;
-ConVar g_cAmountI_F = null;
+ConVar g_cCountFI = null;
+ConVar g_cCountFT = null;
+ConVar g_cCountFD = null;
 ConVar g_cName_F = null;
 ConVar g_cStandOffset_F = null;
 ConVar g_cDuckOffset_F = null;
-int g_iPAmount_F[MAXPLAYERS + 1] =  { 0, ... };
-int g_iMissile_F[MAXPLAYERS + 1] =  { 0, ... };
-
 ConVar g_cPriceT_C = null;
+ConVar g_cLimitT_C = null;
 ConVar g_cPriceD_C = null;
+ConVar g_cLimitD_C = null;
 ConVar g_cPriceI_C = null;
+ConVar g_cLimitI_C = null;
 ConVar g_cPriorityT_C = null;
 ConVar g_cPriorityD_C = null;
 ConVar g_cPriorityI_C = null;
-ConVar g_cAmountT_C = null;
-ConVar g_cAmountD_C = null;
-ConVar g_cAmountI_C = null;
+ConVar g_cCountCI = null;
+ConVar g_cCountCT = null;
+ConVar g_cCountCD = null;
 ConVar g_cName_C = null;
-int g_iPAmount_C[MAXPLAYERS + 1] =  { 0, ... };
-int g_iMissile_C[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iMissileEnt[MAXPLAYERS +1] = { -1, ... };
-
 ConVar g_cPriceT = null;
+ConVar g_cLimitT = null;
 ConVar g_cPriceD = null;
+ConVar g_cLimitD = null;
 ConVar g_cPriceI = null;
+ConVar g_cLimitI = null;
 ConVar g_cPriorityT = null;
 ConVar g_cPriorityD = null;
 ConVar g_cPriorityI = null;
-ConVar g_cAmountT = null;
-ConVar g_cAmountD = null;
-ConVar g_cAmountI = null;
+ConVar g_cCountT = null;
+ConVar g_cCountD = null;
+ConVar g_cCountI = null;
 ConVar g_cName = null;
-int g_iPAmount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iMissile[MAXPLAYERS + 1] =  { 0, ... };
+ConVar g_cNoblock = null;
 
 float g_fMinNadeHull[3] = {-2.5, -2.5, -2.5};
 float g_fMaxNadeHull[3] = {2.5, 2.5, 2.5};
 float g_fMaxWorldLength = 0.0;
 float g_fSpinVel[3] = {0.0, 0.0, 200.0};
-float g_fClientAngles[MAXPLAYERS + 1][3];
 
-MissileType g_iType[MAXPLAYERS + 1] =  { tNone, ... };
+enum struct PlayerData {
+    int FollowingAmount;
+    int FollowingMissile;
+    int ControlAmount;
+    int ControlMissile;
+    int MissileAmount;
+    int MissileEntity;
+    int Missile;
 
-ConVar g_cNoblock = null;
+    MissileType Type;
+
+    float Location[3];
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo = 
 {
@@ -117,49 +128,74 @@ public void OnPluginStart()
     g_cArc = AutoExecConfig_CreateConVar("missiles_arc", "1", "1 enables the turning arc of missiles, 0 makes turning instant for missiles", _, true, 0.0, true, 1.0);
     g_cVolume = AutoExecConfig_CreateConVar("missile_volume", "1.0", "Sound volume of the missile", _, true, 0.1, true, 1.0);
 
+    g_cName = AutoExecConfig_CreateConVar("missiles_name", "Missile", "The name of the missile in the shop");
     g_cPriceT = AutoExecConfig_CreateConVar("missiles_price_t", "7500", "Price for the missile for Traitors", _, true, 0.0);
+    g_cLimitT = AutoExecConfig_CreateConVar("missiles_limit_t", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPriceD = AutoExecConfig_CreateConVar("missiles_price_d", "0", "Price for the missile for Detectives", _, true, 0.0);
+    g_cLimitD = AutoExecConfig_CreateConVar("missiles_limit_d", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPriceI = AutoExecConfig_CreateConVar("missiles_price_i", "0", "Price for the missile for Innos", _, true, 0.0);
+    g_cLimitI = AutoExecConfig_CreateConVar("missiles_limit_i", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPriorityT = AutoExecConfig_CreateConVar("missiles_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD = AutoExecConfig_CreateConVar("missiles_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
     g_cPriorityI = AutoExecConfig_CreateConVar("missiles_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT = AutoExecConfig_CreateConVar("missiles_amount_t", "2", "How much missiles can a traitor buy?");
-    g_cAmountD = AutoExecConfig_CreateConVar("missiles_amount_d", "0", "How much missiles can a detective buy?");
-    g_cAmountI = AutoExecConfig_CreateConVar("missiles_amount_i", "0", "How much missiles can a innocent buy?");
-    g_cName = AutoExecConfig_CreateConVar("missiles_name", "Missile", "The name of the missile in the shop");
+    g_cCountI = AutoExecConfig_CreateConVar("missiles_amount_i", "0", "How often the item (Missile) can be bought per round as an innocent (0 - Disabled).");
+    g_cCountT = AutoExecConfig_CreateConVar("missiles_amount_t", "2", "How often the item (Missile) can be bought per round as a traitor (0 - Disabled).");
+    g_cCountD = AutoExecConfig_CreateConVar("missiles_amount_d", "0", "How often the item (Missile) can be bought per round as a detective (0 - Disabled).");
     
-    g_cPriceT_F = AutoExecConfig_CreateConVar("missiles_following_price_t", "10000", "Price for the following missile for Traitors", _, true, 0.0);
-    g_cPriceD_F = AutoExecConfig_CreateConVar("missiles_following_price_d", "0", "Price for the following missile for Detectives", _, true, 0.0);
+    g_cName_F = AutoExecConfig_CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
     g_cPriceI_F = AutoExecConfig_CreateConVar("missiles_following_price_i", "0", "Price for the following missile for Innos", _, true, 0.0);
+    g_cLimitI_F = AutoExecConfig_CreateConVar("missiles_following_limit_i", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriceT_F = AutoExecConfig_CreateConVar("missiles_following_price_t", "10000", "Price for the following missile for Traitors", _, true, 0.0);
+    g_cLimitT_F = AutoExecConfig_CreateConVar("missiles_following_limit_t", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriceD_F = AutoExecConfig_CreateConVar("missiles_following_price_d", "0", "Price for the following missile for Detectives", _, true, 0.0);
+    g_cLimitD_F = AutoExecConfig_CreateConVar("missiles_following_limit_d", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriorityI_F = AutoExecConfig_CreateConVar("missiles_following_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
     g_cPriorityT_F = AutoExecConfig_CreateConVar("missiles_following_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD_F = AutoExecConfig_CreateConVar("missiles_following_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
-    g_cPriorityI_F = AutoExecConfig_CreateConVar("missiles_following_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_F = AutoExecConfig_CreateConVar("missiles_following_amount_t", "2", "How much following missiles can a traitor buy?");
-    g_cAmountD_F = AutoExecConfig_CreateConVar("missiles_following_amount_d", "0", "How much following missiles can a detective buy?");
-    g_cAmountI_F = AutoExecConfig_CreateConVar("missiles_following_amount_i", "0", "How much following missiles can a innocent buy?");
-    g_cName_F = AutoExecConfig_CreateConVar("missiles_following_name", "Following Missile", "The name of the following missile in the shop");
+    g_cCountFI = AutoExecConfig_CreateConVar("missiles_following_amount_i", "0", "How often the item (Following Missile) can be bought per round as an innocent (0 - Disabled).");
+    g_cCountFT = AutoExecConfig_CreateConVar("missiles_following_amount_t", "2", "How often the item (Following Missile) can be bought per round as a traitor (0 - Disabled).");
+    g_cCountFD = AutoExecConfig_CreateConVar("missiles_following_amount_d", "0", "How often the item (Following Missile) can be bought per round as a detective (0 - Disabled).");
     g_cStandOffset_F = AutoExecConfig_CreateConVar("missiles_following_stand_position_offset", "50", "Units from the ground where the missile hits the player while he's standing. (Default: 50)");
     g_cDuckOffset_F = AutoExecConfig_CreateConVar("missiles_following_duck_position_offset", "35", "Units from the ground where the missile hits the player while he's ducked. (Default: 35)");
 
-    g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
-    g_cPriceD_C = AutoExecConfig_CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
+    g_cName_C = AutoExecConfig_CreateConVar("missiles_control_name", "Controlling Missile", "The name of the control missile in the shop");
     g_cPriceI_C = AutoExecConfig_CreateConVar("missiles_control_price_i", "0", "Price for the control missile for Innos", _, true, 0.0);
+    g_cLimitI_C = AutoExecConfig_CreateConVar("missiles_control_limit_i", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriceT_C = AutoExecConfig_CreateConVar("missiles_control_price_t", "10000", "Price for the control missile for Traitors", _, true, 0.0);
+    g_cLimitT_C = AutoExecConfig_CreateConVar("missiles_control_limit_t", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriceD_C = AutoExecConfig_CreateConVar("missiles_control_price_d", "0", "Price for the control missile for Detectives", _, true, 0.0);
+    g_cLimitD_C = AutoExecConfig_CreateConVar("missiles_control_limit_d", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cPriorityI_C = AutoExecConfig_CreateConVar("missiles_control_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
     g_cPriorityT_C = AutoExecConfig_CreateConVar("missiles_control_priority_t", "0", "Priority in shop list for Traitors", _, true, 0.0);
     g_cPriorityD_C = AutoExecConfig_CreateConVar("missiles_control_priority_d", "0", "Priority in shop list for Detectives", _, true, 0.0);
-    g_cPriorityI_C = AutoExecConfig_CreateConVar("missiles_control_priority_i", "0", "Priority in shop list for Innos", _, true, 0.0);
-    g_cAmountT_C = AutoExecConfig_CreateConVar("missiles_control_amount_t", "2", "How much control missiles can a traitor buy?");
-    g_cAmountD_C = AutoExecConfig_CreateConVar("missiles_control_amount_d", "0", "How much control missiles can a detective buy?");
-    g_cAmountI_C = AutoExecConfig_CreateConVar("missiles_control_amount_i", "0", "How much control missiles can a innocent buy?");
-    g_cName_C = AutoExecConfig_CreateConVar("missiles_control_name", "Controlling Missile", "The name of the control missile in the shop");
+    g_cCountCI = AutoExecConfig_CreateConVar("missiles_control_amount_i", "0", "How often the item (Controlling Missile) can be bought per round as an innocent (0 - Disabled).");
+    g_cCountCT = AutoExecConfig_CreateConVar("missiles_control_amount_t", "2", "How often the item (Controlling Missile) can be bought per round as a traitor (0 - Disabled).");
+    g_cCountCD = AutoExecConfig_CreateConVar("missiles_control_amount_d", "0", "How often the item (Controlling Missile) can be bought per round as a detective (0 - Disabled).");
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_Reset);
     HookEvent("player_death", Event_Reset);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_I);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+        TTT_RemoveShopItem(SHORT_NAMEF_I);
+        TTT_RemoveShopItem(SHORT_NAMEF_T);
+        TTT_RemoveShopItem(SHORT_NAMEF_D);
+        TTT_RemoveShopItem(SHORT_NAMEC_I);
+        TTT_RemoveShopItem(SHORT_NAMEC_T);
+        TTT_RemoveShopItem(SHORT_NAMEC_D);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnMapStart()
@@ -186,6 +222,8 @@ public void OnMapStart()
 public void OnConfigsExecuted()
 {
     g_cNoblock = FindConVar("ttt_enable_noblock");
+    
+    TTT_OnShopReady();
 }
 
 public void TTT_OnShopReady()
@@ -193,112 +231,46 @@ public void TTT_OnShopReady()
     char sName[32];
 
     g_cName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME_T, sName, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_I, sName, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sName, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_I, sName, g_cPriceD.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD.IntValue, g_cCountI.IntValue, g_cLimitD.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_T, sName, g_cPriceT.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT.IntValue, g_cCountT.IntValue, g_cLimitT.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sName, g_cPriceI.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI.IntValue, g_cCountD.IntValue, g_cLimitI.IntValue, OnItemPurchased);
     
     g_cName_F.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAMEF_T, sName, g_cPriceT_F.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT_F.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAMEF_I, sName, g_cPriceD_F.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD_F.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAMEF_D, sName, g_cPriceI_F.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI_F.IntValue);
+    TTT_RegisterShopItem(SHORT_NAMEF_I, sName, g_cPriceD_F.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD_F.IntValue, g_cCountFI.IntValue, g_cLimitD_F.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAMEF_T, sName, g_cPriceT_F.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT_F.IntValue, g_cCountFT.IntValue, g_cLimitT_F.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAMEF_D, sName, g_cPriceI_F.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI_F.IntValue, g_cCountFD.IntValue, g_cLimitI_F.IntValue, OnItemPurchased);
 
     g_cName_C.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAMEC_T, sName, g_cPriceT_C.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT_C.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAMEC_I, sName, g_cPriceD_C.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD_C.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAMEC_D, sName, g_cPriceI_C.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI_C.IntValue);
+    TTT_RegisterShopItem(SHORT_NAMEC_I, sName, g_cPriceD_C.IntValue, TTT_TEAM_DETECTIVE, g_cPriorityD_C.IntValue, g_cCountCI.IntValue, g_cLimitD_C.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAMEC_T, sName, g_cPriceT_C.IntValue, TTT_TEAM_TRAITOR, g_cPriorityT_C.IntValue, g_cCountCT.IntValue, g_cLimitT_C.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAMEC_D, sName, g_cPriceI_C.IntValue, TTT_TEAM_INNOCENT, g_cPriorityI_C.IntValue, g_cCountCD.IntValue, g_cLimitI_C.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if(TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
+    if (StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
     {
-        if (StrEqual(itemshort, SHORT_NAME_T, false))
-        {
-            if(!(g_iPAmount[client] < g_cAmountT.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAME_D, false))
-        {
-            if(!(g_iPAmount[client] < g_cAmountD.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAME_I, false))
-        {
-            if(!(g_iPAmount[client] < g_cAmountI.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEF_T, false))
-        {
-            if(!(g_iPAmount_F[client] < g_cAmountT_F.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveFollowingMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEF_D, false))
-        {
-            if(!(g_iPAmount_F[client] < g_cAmountD_F.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveFollowingMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEF_I, false))
-        {
-            if(!(g_iPAmount_F[client] < g_cAmountI_F.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveFollowingMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEC_T, false))
-        {
-            if(!(g_iPAmount_C[client] < g_cAmountT_C.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveControlMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEC_D, false))
-        {
-            if(!(g_iPAmount_C[client] < g_cAmountD_C.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveControlMissile(client);
-        }
-        else if(StrEqual(itemshort, SHORT_NAMEC_I, false))
-        {
-            if(!(g_iPAmount_C[client] < g_cAmountI_C.IntValue))
-            {
-                return Plugin_Stop;
-            }
-            
-            GiveControlMissile(client);
-        }
+        GiveMissile(client);
+        GiveGrenade(client);
 
-        if(strncmp(itemshort,"missile_",8,false) == 0)
-        {
-            GiveGrenade(client);
-        }
+        TTT_AddItemUsage(client, itemshort);
+        
     }
+    else if (StrEqual(itemshort, SHORT_NAMEF_I, false) || StrEqual(itemshort, SHORT_NAMEF_T, false) || StrEqual(itemshort, SHORT_NAMEF_D, false))
+    {
+        GiveFollowingMissile(client);
+        GiveGrenade(client);
+
+        TTT_AddItemUsage(client, itemshort);
+    }
+    else if (StrEqual(itemshort, SHORT_NAMEC_I, false) || StrEqual(itemshort, SHORT_NAMEC_T, false) || StrEqual(itemshort, SHORT_NAMEC_D, false))
+    {
+        GiveControlMissile(client);
+        GiveGrenade(client);
+
+        TTT_AddItemUsage(client, itemshort);
+    }
+
     return Plugin_Continue;
 }
 
@@ -326,27 +298,28 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         return;
     }
     
-    if ((!g_iMissile[iOwner] && !g_iMissile_F[iOwner] && !g_iMissile_C[iOwner]) || g_iType[iOwner] != tNone)
+    if ((!g_iPlayer[iOwner].Missile && !g_iPlayer[iOwner].FollowingMissile && !g_iPlayer[iOwner].ControlMissile) || g_iPlayer[iOwner].Type != tNone)
     {
         return;
     }
         
-    if(g_iMissile_C[iOwner])
+    if(g_iPlayer[iOwner].ControlMissile)
     {
-        g_iMissile_C[iOwner]--;
-        g_iType[iOwner] = tControl;
+        g_iPlayer[iOwner].ControlMissile--;
+        g_iPlayer[iOwner].Type = tControl;
     }
-    else if(g_iMissile_F[iOwner])
+    else if(g_iPlayer[iOwner].FollowingMissile)
     {
-        g_iMissile_F[iOwner]--;
-        g_iType[iOwner] = tFollow;
+        g_iPlayer[iOwner].FollowingMissile--;
+        g_iPlayer[iOwner].Type = tFollow;
     }
     else
     {
-        g_iMissile[iOwner]--;
-        g_iType[iOwner] = tNormal;
-        GetClientEyeAngles(iOwner, g_fClientAngles[iOwner]);
-        g_fClientAngles[iOwner][1] -= 90.0;
+        g_iPlayer[iOwner].Missile--;
+        g_iPlayer[iOwner].Type = tNormal;
+
+        GetClientEyeAngles(iOwner, g_iPlayer[iOwner].Location);
+        g_iPlayer[iOwner].Location[1] - 90.0;
     }
 
     // stop the projectile thinking so it doesn't detonate.
@@ -383,13 +356,13 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     float fInitAng[3];
     GetVectorAngles(fInitVec, fInitAng);
     fInitAng[1] -= 90.0;
-    if (g_iType[iOwner] != tNormal)
+    if (g_iPlayer[iOwner].Type != tNormal)
     {
         TeleportEntity(caller, NULL_VECTOR, fInitAng, fInitVec);
     }
     else
     {
-        TeleportEntity(caller, NULL_VECTOR, g_fClientAngles[iOwner], fInitVec);
+        TeleportEntity(caller, NULL_VECTOR, g_iPlayer[iOwner].Location, fInitVec);
     }
     // DispatchKeyValueVector(caller, "Angles", fInitAng);
     
@@ -406,9 +379,9 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     
     SDKHook(caller, SDKHook_StartTouch, OnStartTouch);
     
-    if(g_iType[iOwner] == tControl)
+    if(g_iPlayer[iOwner].Type == tControl)
     {
-        g_iMissileEnt[iOwner] = caller;
+        g_iPlayer[iOwner].MissileEntity = caller;
         SetClientViewEntity(iOwner, caller);
     }
 }
@@ -435,11 +408,11 @@ public void MissileThink(const char[] output, int caller, int activator, float d
     float fNadePos[3];
     GetEntPropVector(caller, Prop_Send, "m_vecOrigin", fNadePos);
 
-    if (g_iType[iOwner] == tNormal)
+    if (g_iPlayer[iOwner].Type == tNormal)
     {
-        TeleportEntity(caller, NULL_VECTOR, g_fClientAngles[iOwner], NULL_VECTOR);
+        TeleportEntity(caller, NULL_VECTOR, g_iPlayer[iOwner].Location, NULL_VECTOR);
     }
-    else if (g_iType[iOwner] == tFollow)
+    else if (g_iPlayer[iOwner].Type == tFollow)
     {
         float fClosestDistance = g_fMaxWorldLength;
         float fTargetVec[3];
@@ -492,7 +465,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
             {
                 fEnemyPos[2] += g_cStandOffset_F.FloatValue;
             }
-
+            
             MakeVectorFromPoints(fNadePos, fEnemyPos, fTargetVec);
             NormalizeVector(fTargetVec, fTargetVec);
         }
@@ -553,7 +526,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
             delete hTrace; */
         }
     }
-    else if (g_iType[iOwner] == tControl)
+    else if (g_iPlayer[iOwner].Type == tControl)
     {
 
         float fclientAngles[3];
@@ -612,11 +585,11 @@ public void OnGameFrame()
 {
     LoopValidClients(i)
     {
-        if (TTT_IsPlayerAlive(i) && g_iMissileEnt[i] != -1 && IsValidEntity(g_iMissileEnt[i]))
+        if (TTT_IsPlayerAlive(i) && g_iPlayer[i].MissileEntity != -1 && IsValidEntity(g_iPlayer[i].MissileEntity))
         {
             float fclientAngles[3];
             GetClientEyeAngles(i, fclientAngles);
-            TeleportEntity(g_iMissileEnt[i], NULL_VECTOR, fclientAngles, NULL_VECTOR);
+            TeleportEntity(g_iPlayer[i].MissileEntity, NULL_VECTOR, fclientAngles, NULL_VECTOR);
         }
     }
 }
@@ -652,13 +625,13 @@ void CreateExplosion(int entity)
     int iMissileOwner = GetEntPropEnt(entity, Prop_Send, "m_hThrower");
     int iMissileTeam = GetEntProp(entity, Prop_Send, "m_iTeamNum");
     
-    if(g_iType[iMissileOwner] == tControl)
+    if(g_iPlayer[iMissileOwner].Type == tControl)
     {
         SetClientViewEntity(iMissileOwner, iMissileOwner);
-        g_iMissileEnt[iMissileOwner] = -1;
+        g_iPlayer[iMissileOwner].MissileEntity = -1;
     }
 
-    g_iType[iMissileOwner] = tNone;
+    g_iPlayer[iMissileOwner].Type = tNone;
     
     int iExplosion = CreateEntityByName("env_explosion");
     if (iExplosion != -1)
@@ -702,20 +675,20 @@ public void Event_Reset(Event event, const char[] name, bool dontBroadcast)
 
 void GiveMissile(int client)
 {
-    g_iMissile[client]++;
-    g_iPAmount[client]++;
+    g_iPlayer[client].Missile++;
+    g_iPlayer[client].MissileAmount++;
 }
 
 void GiveControlMissile(int client)
 {
-    g_iMissile_C[client]++;
-    g_iPAmount_C[client]++;
+    g_iPlayer[client].ControlMissile++;
+    g_iPlayer[client].ControlAmount++;
 }
 
 void GiveFollowingMissile(int client)
 {
-    g_iMissile_F[client]++;
-    g_iPAmount_F[client]++;
+    g_iPlayer[client].FollowingMissile++;
+    g_iPlayer[client].FollowingAmount++;
 }
 
 void GiveGrenade(int client)
@@ -727,26 +700,26 @@ void GiveGrenade(int client)
         GivePlayerItem(client, "weapon_hegrenade");
     }
     
-    /* if (iAmmo)
+    if (iAmmo)
     {
-        SetEntProp(client, Prop_Send, "m_iAmmo", g_iMissile[client] + g_iMissile_F[client], 4, 11);
-    } */
+        SetEntProp(client, Prop_Send, "m_iAmmo", g_iPlayer[client].Missile + g_iPlayer[client].FollowingMissile, 4, 11);
+    }
 }
 
 void ResetClient(int client)
 {
-    if(g_iType[client] == tControl || g_iMissileEnt[client] != -1)
+    if(g_iPlayer[client].Type == tControl || g_iPlayer[client].MissileEntity != -1)
     {
         SetClientViewEntity(client, client);
     }
     
-    g_iPAmount[client] = 0;
-    g_iMissile[client] = 0;
-    g_iPAmount_F[client] = 0;
-    g_iMissile_F[client] = 0;
-    g_iPAmount_C[client] = 0;
-    g_iMissile_C[client] = 0;
-    g_iMissileEnt[client] = -1;
-    g_iType[client] = tNone;
+    g_iPlayer[client].MissileAmount = 0;
+    g_iPlayer[client].Missile = 0;
+    g_iPlayer[client].FollowingAmount = 0;
+    g_iPlayer[client].FollowingMissile = 0;
+    g_iPlayer[client].ControlAmount = 0;
+    g_iPlayer[client].ControlMissile = 0;
+    g_iPlayer[client].MissileEntity = -1;
+    g_iPlayer[client].Type = tNone;
 }
 

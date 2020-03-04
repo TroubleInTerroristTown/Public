@@ -12,6 +12,11 @@
  */
 native void TTT_DisableRoleOverlays(float fTime);
 
+forward Action Overlay_OnPrecacheWinOverlay(char[] path, int maxlen);
+forward Action Overlay_OnPrecacheRoleOverlay(char[] path, int maxlen);
+forward Action Overlay_OnWinOverlay(int winner, char[] path, int maxlen);
+forward Action Overlay_OnRoleOverlay(int client, char[] path, int maxlen);
+
 public SharedPlugin __pl_ttt_overlay = 
 {
     name = "ttt_overlay",

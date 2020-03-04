@@ -13,7 +13,7 @@ bool g_bEnableArms = false;
 int g_iDCount = 0;
 int g_iITCount = 0;
 
-bool g_bDebug = false;
+bool g_bDebug = true;
 
 StringMap g_smModels = null;
 
@@ -22,7 +22,7 @@ char g_sLog[PLATFORM_MAX_PATH+1];
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
-    author = TTT_PLUGIN_AUTHOR,
+    author = "Bara",
     description = TTT_PLUGIN_DESCRIPTION,
     version = TTT_PLUGIN_VERSION,
     url = TTT_PLUGIN_URL
@@ -37,13 +37,14 @@ public void OnPluginStart()
     BuildPath(Path_SM, g_sLog, sizeof(g_sLog), "logs/ttt/ttt_models_%s.log", sDate);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnMapStart()
 {
+    
     char sFile[PLATFORM_MAX_PATH + 1];
     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/models.ini");
 
@@ -208,6 +209,50 @@ public void OnMapStart()
                 {
                     LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
                 }
+
+                Format(sName, sizeof(sName), "DShared%d", i);
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
+
+                if (g_bDebug)
+                {
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
+                }
+                
+                if (DirExists(sBuffer))
+                {
+                    DirectoryListing dShared = OpenDirectory(sBuffer);
+                    
+                    if (dShared != null)
+                    {
+                        char sFileName[PLATFORM_MAX_PATH + 1];
+                        FileType ftType;
+                        
+                        while (dShared.GetNext(sFileName, sizeof(sFileName), ftType))
+                        {
+                            if (ftType == FileType_File)
+                            {
+                                Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
+
+                                if (!g_bEnableArms && IsArms(sFileName))
+                                {
+                                    continue;
+                                }
+                                
+                                AddFileToDownloadsTable(sFileName);
+                                if (g_bDebug)
+                                {
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
+                                }
+                            }
+                        }
+                    }
+                    
+                    delete dShared;
+                }
+                else
+                {
+                    LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
+                }
             }
         }
         
@@ -341,6 +386,50 @@ public void OnMapStart()
                 {
                     LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
                 }
+
+                Format(sName, sizeof(sName), "ITShared%d", i);
+                kvConfig.GetString(sName, sBuffer, sizeof(sBuffer));
+
+                if (g_bDebug)
+                {
+                    LogToFile(g_sLog, "%s: %s", sName, sBuffer);
+                }
+                
+                if (DirExists(sBuffer))
+                {
+                    DirectoryListing dShared = OpenDirectory(sBuffer);
+                    
+                    if (dShared != null)
+                    {
+                        char sFileName[PLATFORM_MAX_PATH + 1];
+                        FileType ftType;
+                        
+                        while (dShared.GetNext(sFileName, sizeof(sFileName), ftType))
+                        {
+                            if (ftType == FileType_File)
+                            {
+                                Format(sFileName, sizeof(sFileName), "%s/%s", sBuffer, sFileName);
+
+                                if (!g_bEnableArms && IsArms(sFileName))
+                                {
+                                    continue;
+                                }
+                                
+                                AddFileToDownloadsTable(sFileName);
+                                if (g_bDebug)
+                                {
+                                    LogToFile(g_sLog, "(OnMapStart) %s AddDownload: %s", sName, sFileName);
+                                }
+                            }
+                        }
+                    }
+                    
+                    delete dShared;
+                }
+                else
+                {
+                    LogError("(OnMapStart) Can't find %s dir: %s", sName, sBuffer);
+                }
             }
         }
     }
@@ -364,7 +453,7 @@ public void TTT_OnClientGetRole(int client, int role)
 
 public void TTT_OnPlayerRespawn(int client)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return;
     }

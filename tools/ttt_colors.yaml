@@ -1,0 +1,30 @@
+colors:
+  default:      engine 1
+  prefix:       green
+  highlight:    orange
+  player:       yellow
+  teamcolor:    0x03
+  role i:       green
+  role t:       darkred
+  role d:       darkblue
+  warning:      lightred
+  error:        red
+  setting:      darkred
+  command:      darkred
+ref_colors:
+  red:          0x07
+  lightred:     0x0F
+  darkred:      0x02
+  bluegrey:     0x0A
+  blue:         0x0B
+  darkblue:     0x0C
+  purple:       0x03
+  orchid:       0x0E
+  orange:       0x10
+  yellow:       0x09
+  gold:         0x10
+  lightgreen:   0x05
+  green:        0x04
+  lime:         0x06
+  grey:         0x08
+  grey2:        0x0D

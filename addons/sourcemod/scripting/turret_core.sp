@@ -7,18 +7,25 @@
 #include <autoexecconfig>
 #include <ttt>
 
-int g_iTurrets[MAXPLAYERS+1]= {-1,...};
-float g_fDamageTaken[MAXPLAYERS+1]= {0.0,...};
-bool g_bCanShoot[MAXPLAYERS+1]= {true,...};
-float g_fAim[MAXPLAYERS+1]={0.0,...};
-bool g_bTurretAim[MAXPLAYERS+1]= {true,...};
-int g_iTurrets_Team[MAXPLAYERS+1]= {-1,...};
-bool g_bCanAttack[MAXPLAYERS+1] = {false,...};
-
 int g_iBeam = -1;
 int g_iHalo = -1;
 
 Handle g_hOnDead = null;
+
+enum struct PlayerData {
+    int Turret;
+    int TurretTeam;
+
+    bool CanShoot;
+    bool TurretAim;
+    bool CanAttack;
+
+    float DamageTaken;
+    float Aim;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
+
 public Plugin myinfo = 
 {
     name = "CS:GO Turret Core",
@@ -40,10 +47,10 @@ public void OnPluginStart()
     //ConVar
     AutoExecConfig_SetFile("csgo_turret");
     g_cEnable = AutoExecConfig_CreateConVar("sd_turret_enable"      , "1", "", FCVAR_NONE, true, 0.0, true, 1.0);
-    g_cHealth = AutoExecConfig_CreateConVar("sd_turret_health"    ,     "300.0"        , "Turrent HP",FCVAR_NONE, true, 1.0, true, 30000.0);
-    g_cDamage = AutoExecConfig_CreateConVar("sd_turret_damage"    ,     "10"        , "Turrent Damage",FCVAR_NONE);
-    g_cRate =   AutoExecConfig_CreateConVar("sd_turret_rate"      , "0.3", "Time Between Turrent Fires", FCVAR_NONE, true, 0.0001, true, 200.0);
-    g_cCheckTeam =   AutoExecConfig_CreateConVar("sd_turret_checkteam"      ,  "2", "1 = Check Team T / CT   2 = Any Client not contain yourself  3 = API Mode g_bCanAttack Target", FCVAR_NONE, true, 1.0, true, 3.0);
+    g_cHealth = AutoExecConfig_CreateConVar("sd_turret_health"    ,     "300.0"        , "Turret HP",FCVAR_NONE, true, 1.0, true, 30000.0);
+    g_cDamage = AutoExecConfig_CreateConVar("sd_turret_damage"    ,     "10"        , "Turret Damage",FCVAR_NONE);
+    g_cRate =   AutoExecConfig_CreateConVar("sd_turret_rate"      , "0.3", "Time Between Turret Fires", FCVAR_NONE, true, 0.0001, true, 200.0);
+    g_cCheckTeam =   AutoExecConfig_CreateConVar("sd_turret_checkteam"      ,  "2", "1 = Check Team T / CT   2 = Any Client not contain yourself  3 = API Mode g_iPlayer Target", FCVAR_NONE, true, 1.0, true, 3.0);
     g_cDistance = AutoExecConfig_CreateConVar("sd_turret_distance", "300", "Distance between client and turret");
     
     AutoExecConfig_ExecuteFile();
@@ -74,25 +81,25 @@ public void InitVars()
 {
     LoopValidClients(i)
     {
-        g_iTurrets[i] = -1;
-        g_fDamageTaken[i] = 0.0;
-        g_bCanShoot[i] = true;
-        g_fAim[i] = 0.0;
-        g_bTurretAim[i] = true;
-        g_bCanAttack[i] = false;
-        g_iTurrets_Team[i] = -1;
+        g_iPlayer[i].Turret = -1;
+        g_iPlayer[i].DamageTaken = 0.0;
+        g_iPlayer[i].CanShoot = true;
+        g_iPlayer[i].Aim = 0.0;
+        g_iPlayer[i].TurretAim = true;
+        g_iPlayer[i].CanAttack = false;
+        g_iPlayer[i].TurretTeam = -1;
     }
 }
 
 public void ResetPlayerVars(int i)
 {
-    g_iTurrets[i] = -1;
-    g_fDamageTaken[i] = 0.0;
-    g_bCanShoot[i] = true;
-    g_fAim[i] = 0.0;
-    g_bTurretAim[i] = true;
-    g_bCanAttack[i] = false;
-    g_iTurrets_Team[i] = -1;
+    g_iPlayer[i].Turret = -1;
+    g_iPlayer[i].DamageTaken = 0.0;
+    g_iPlayer[i].CanShoot = true;
+    g_iPlayer[i].Aim = 0.0;
+    g_iPlayer[i].TurretAim = true;
+    g_iPlayer[i].CanAttack = false;
+    g_iPlayer[i].TurretTeam = -1;
 }
 
 
@@ -156,7 +163,7 @@ void CreateTurret(int client)
         return;
     }
     
-    if(g_iTurrets[client] != -1)
+    if(g_iPlayer[client].Turret != -1)
     {
         return;
     }
@@ -195,9 +202,9 @@ void CreateTurret(int client)
     fAngle[0] = 0.0;
     TeleportEntity(ent, fPos, fAngle, NULL_VECTOR);
     
-    g_iTurrets[client] = ent;
-    g_fDamageTaken[client] = 0.0;
-    g_iTurrets_Team[client] = GetClientTeam(client);
+    g_iPlayer[client].Turret = ent;
+    g_iPlayer[client].DamageTaken = 0.0;
+    g_iPlayer[client].TurretTeam = GetClientTeam(client);
     
     if (GetRandomInt(1, 0))
     {
@@ -225,7 +232,7 @@ public Action TurretTakeDamage(int victim, int &attacker, int &inflictor, float 
     
     LoopValidClients(i)
     {
-        if (g_iTurrets[i] == victim)
+        if (g_iPlayer[i].Turret == victim)
         {
             client = i;
             break;
@@ -248,15 +255,15 @@ public Action TurretTakeDamage(int victim, int &attacker, int &inflictor, float 
         if(client == attacker) return Plugin_Continue;
     }
 
-    if(g_cCheckTeam.IntValue == 3 && !g_bCanAttack[attacker])
+    if(g_cCheckTeam.IntValue == 3 && !g_iPlayer[attacker].CanAttack)
     {
         return Plugin_Continue;
     }
     
     
-    g_fDamageTaken[client] += damage;
+    g_iPlayer[client].DamageTaken += damage;
     
-    if (g_fDamageTaken[client] > g_cHealth.FloatValue)
+    if (g_iPlayer[client].DamageTaken > g_cHealth.FloatValue)
     {
         DestroyTurrets(client);
         Call_StartForward(g_hOnDead);
@@ -273,9 +280,9 @@ int GetTurretTeam(int ent)
     int iTeam = -1;
     LoopValidClients(i)
     {
-        if (g_iTurrets[i] == ent)
+        if (g_iPlayer[i].Turret == ent)
         {
-            iTeam = g_iTurrets_Team[i];
+            iTeam = g_iPlayer[i].TurretTeam;
             break;
         }
     }
@@ -290,7 +297,7 @@ int GetTurretOwner(int ent)
     int iOwner = -1;
     LoopValidClients(i)
     {
-        if (g_iTurrets[i] == ent)
+        if (g_iPlayer[i].Turret == ent)
         {
             iOwner = i;
             break;
@@ -307,11 +314,16 @@ int GetTurretOwner(int ent)
 
 public void DestroyTurrets(int client)
 {
-    if (g_iTurrets[client] != -1 && g_iTurrets[client] > MaxClients && IsValidEdict(g_iTurrets[client]))
+    if (g_iPlayer[client].Turret == 0)
     {
-        AcceptEntityInput(g_iTurrets[client], "Kill");
+        g_iPlayer[client].Turret = -1;
     }
-    g_iTurrets[client] = -1;
+    
+    if (g_iPlayer[client].Turret != -1 && g_iPlayer[client].Turret > MaxClients && IsValidEdict(g_iPlayer[client].Turret))
+    {
+        AcceptEntityInput(g_iPlayer[client].Turret, "Kill");
+    }
+    g_iPlayer[client].Turret = -1;
 }
 
 public void OnAnimationDone(const char[] output, int caller, int activator, float delay)
@@ -325,14 +337,14 @@ public void OnAnimationDone(const char[] output, int caller, int activator, floa
 
 void TickTurret(int client)
 {
-    if(!IsValidEntity(g_iTurrets[client]))
+    if(!IsValidEntity(g_iPlayer[client].Turret))
     {
         return;
     }
 
     float TurretPos[3];
-    GetEntPropVector(g_iTurrets[client], Prop_Send, "m_vecOrigin", TurretPos);
-    int iTeam = GetTurretTeam(g_iTurrets[client]); 
+    GetEntPropVector(g_iPlayer[client].Turret, Prop_Send, "m_vecOrigin", TurretPos);
+    int iTeam = GetTurretTeam(g_iPlayer[client].Turret); 
     
     //if(iTeam != GetClientTeam(client)) ..
     LoopValidClients(i)
@@ -345,11 +357,11 @@ void TickTurret(int client)
             }
             if(g_cCheckTeam.IntValue == 2)
             {
-                int owner = GetTurretOwner(g_iTurrets[client]);
+                int owner = GetTurretOwner(g_iPlayer[client].Turret);
                 if(owner != -1 && owner == i) continue;
             }
             
-            if(g_cCheckTeam.IntValue == 3 && !g_bCanAttack[i])
+            if(g_cCheckTeam.IntValue == 3 && !g_iPlayer[i].CanAttack)
             {
                 continue;
             }
@@ -366,8 +378,8 @@ void TickTurret(int client)
 
             float m_vecMins[3];
             float m_vecMaxs[3];
-            GetEntPropVector(g_iTurrets[client], Prop_Send, "m_vecMins", m_vecMins);
-            GetEntPropVector(g_iTurrets[client], Prop_Send, "m_vecMaxs", m_vecMaxs);
+            GetEntPropVector(g_iPlayer[client].Turret, Prop_Send, "m_vecMins", m_vecMins);
+            GetEntPropVector(g_iPlayer[client].Turret, Prop_Send, "m_vecMaxs", m_vecMaxs);
             
             // MASK_SOLID
             TR_TraceHullFilter(TurretPos, EnemyPos, m_vecMins, m_vecMaxs, MASK_SOLID, DontHitOwnerOrNade, client);
@@ -386,8 +398,8 @@ void TurretTickFollow(int owner, int player)
 {
     float TurretPos[3], EnemyPos[3],EnemyAngle[3], TuretAngle[3], fDir[3];
     
-    GetEntPropVector(g_iTurrets[owner], Prop_Send, "m_angRotation", TuretAngle);
-    GetEntPropVector(g_iTurrets[owner], Prop_Send, "m_vecOrigin", TurretPos);
+    GetEntPropVector(g_iPlayer[owner].Turret, Prop_Send, "m_angRotation", TuretAngle);
+    GetEntPropVector(g_iPlayer[owner].Turret, Prop_Send, "m_vecOrigin", TurretPos);
     GetClientAbsOrigin(player, EnemyPos);
     
     MakeVectorFromPoints(EnemyPos, TurretPos, fDir);
@@ -406,25 +418,25 @@ void TurretTickFollow(int owner, int player)
         return;
     }
     
-    g_fAim[owner] = m_iDegreesX;
-    SetEntPropFloat(g_iTurrets[owner], Prop_Send, "m_flPoseParameter", m_iDegreesX, 0);
-    SetEntPropFloat(g_iTurrets[owner], Prop_Send, "m_flPoseParameter", m_iDegreesY, 1);
+    g_iPlayer[owner].Aim = m_iDegreesX;
+    SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesX, 0);
+    SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesY, 1);
     
-    if(g_bCanShoot[owner])
+    if(g_iPlayer[owner].CanShoot)
     {
         SetVariantString("retract");
-        AcceptEntityInput(g_iTurrets[owner], "SetAnimationNoReset", -1, -1, 0);
+        AcceptEntityInput(g_iPlayer[owner].Turret, "SetAnimationNoReset", -1, -1, 0);
         
         TurretPos[2]+=50.0;
         EnemyPos[2] = (EnemyPos[2] + GetRandomFloat(10.0, 70.0));
         EnemyPos[0] = (EnemyPos[0] + GetRandomFloat(-5.0, 5.0));
         EnemyPos[1] = (EnemyPos[1] + GetRandomFloat(-5.0, 5.0));
         
-        if(GetTurretTeam(g_iTurrets[owner]) == CS_TEAM_CT)
+        if(GetTurretTeam(g_iPlayer[owner].Turret) == CS_TEAM_CT)
         {
             TE_SetupBeamPoints(TurretPos, EnemyPos, g_iBeam, g_iHalo, 0, 30, GetRandomFloat(0.1, 0.3), 1.0, 1.0, 0, 1.0, {128,128,64, 100}, 0);
         }
-        else if(GetTurretTeam(g_iTurrets[owner]) == CS_TEAM_T)
+        else if(GetTurretTeam(g_iPlayer[owner].Turret) == CS_TEAM_T)
         {
             TE_SetupBeamPoints(TurretPos, EnemyPos, g_iBeam, g_iHalo, 0, 30, GetRandomFloat(0.1, 0.3), 1.0, 1.0, 0, 1.0, {102,153,255, 100}, 0);
         }
@@ -444,7 +456,7 @@ void TurretTickFollow(int owner, int player)
         EmitSoundToClient(player, szFile);
         EmitAmbientSound("weapons/sg556/sg556-1.wav", TurretPos);
         
-        g_bCanShoot[owner] = false;
+        g_iPlayer[owner].CanShoot = false;
         
         int ref = EntIndexToEntRef(owner);
         
@@ -459,7 +471,7 @@ public Action TurretSetState(Handle Timer, any ref)
     
     if (entity != INVALID_ENT_REFERENCE)
     {
-        g_bCanShoot[entity] = true;
+        g_iPlayer[entity].CanShoot = true;
     }
 }
 
@@ -467,7 +479,7 @@ public void OnGameFrame()
 {
     LoopValidClients(i)
     {
-        if(g_iTurrets[i] != -1 && IsValidEdict(g_iTurrets[i]))
+        if(g_iPlayer[i].Turret != -1 && IsValidEdict(g_iPlayer[i].Turret))
         {
             TickTurret(i);
         }
@@ -485,20 +497,23 @@ public bool DontHitOwnerOrNade(int entity, int contentsMask, any data)
 
 void TurretTickIdle(int client)
 {
-    if(g_fAim[client] <= 0.1) g_bTurretAim[client] = true;
-    if(g_fAim[client] >= 0.9) g_bTurretAim[client] = false;    
+    if(g_iPlayer[client].Aim <= 0.1) g_iPlayer[client].TurretAim = true;
+    if(g_iPlayer[client].Aim >= 0.9) g_iPlayer[client].TurretAim = false;    
     
-    if(g_bTurretAim[client])
+    if(g_iPlayer[client].TurretAim)
     {
-        g_fAim[client] = (g_fAim[client] + 0.01);
+        g_iPlayer[client].Aim = (g_iPlayer[client].Aim + 0.01);
     }
     else
     {
-        g_fAim[client] = (g_fAim[client] - 0.01);
+        g_iPlayer[client].Aim = (g_iPlayer[client].Aim - 0.01);
     }
     
-    SetEntPropFloat(g_iTurrets[client], Prop_Send, "m_flPoseParameter", g_fAim[client], 0);
-    SetEntPropFloat(g_iTurrets[client], Prop_Send, "m_flPoseParameter", 0.5, 1);
+    if (g_iPlayer[client].Turret)
+    {
+	    SetEntPropFloat(g_iPlayer[client].Turret, Prop_Send, "m_flPoseParameter", g_iPlayer[client].Aim, 0);
+	    SetEntPropFloat(g_iPlayer[client].Turret, Prop_Send, "m_flPoseParameter", 0.5, 1);
+	  }
 }
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
@@ -546,6 +561,6 @@ public int Native_SetTurretCanAttackClient(Handle plugin, int numParams)
         PrintToServer("Invalid client (%d)", client);
         return;
     }
-    g_bCanAttack[client] = bCanAttack;
+    g_iPlayer[client].CanAttack = bCanAttack;
     
 }

@@ -23,6 +23,8 @@ void SetupConfig()
     g_cBanKarmaDead = AutoExecConfig_CreateConVar("ttt_with_karma_dead", "0", "Ban dead players for bad karma?", _, true, 0.0, true, 1.0);
     g_ckarmaBanLength = AutoExecConfig_CreateConVar("ttt_with_karma_ban_length", "10080", "The length (time in minutes) of a Bad Karma ban. (Default = 1 Week)");
     g_cmaxKarma = AutoExecConfig_CreateConVar("ttt_max_karma", "150", "The maximum amount of karma a player can have.");
+    g_cmaxKarmaVip = AutoExecConfig_CreateConVar("ttt_max_karma_vip", "300", "The maximum amount of karma a VIP player can have.");
+    g_ckarmaFlag = AutoExecConfig_CreateConVar("ttt_vip_karma_flag", "t", "VIP flag for increased karma value.");
     g_crequiredPlayersD = AutoExecConfig_CreateConVar("ttt_required_players_detective", "6", "The amount of players required to activate the detective role.");
     g_crequiredPlayers = AutoExecConfig_CreateConVar("ttt_required_player", "3", "The amount of players required to start the game.");
     g_cmaxTraitors = AutoExecConfig_CreateConVar("ttt_traitor_max", "32", "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
@@ -38,7 +40,7 @@ void SetupConfig()
     g_ckadRemover = AutoExecConfig_CreateConVar("ttt_kad_remover", "1", "Block kills, deaths and assists from appearing on the scoreboard. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cfakeHealth = AutoExecConfig_CreateConVar("ttt_fake_health", "100", "TODO: Add description");
     g_cfakeLife = AutoExecConfig_CreateConVar("ttt_fake_life", "0", "TODO: Add description (0 - default, 1 - everyone is dead, 2 - everyone is alive)", _, true, 0.0, true, 2.0);
-    g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{orchid}[{green}T{darkred}T{blue}T{orchid}]{lightgreen}", "The prefix used in all plugin messages");
+    g_cpluginTag = AutoExecConfig_CreateConVar("ttt_plugin_tag", "{prefix}[TTT]{default}", "The prefix used in all plugin messages");
     g_cspawnHPT = AutoExecConfig_CreateConVar("ttt_spawn_t", "100", "The amount of health traitors spawn with. ( 0 = disabled )", _, true, 0.0);
     g_cspawnHPD = AutoExecConfig_CreateConVar("ttt_spawn_d", "100", "The amount of health detectives spawn with. ( 0 = disabled )", _, true, 0.0);
     g_cspawnHPI = AutoExecConfig_CreateConVar("ttt_spawn_i", "100", "The amount of health innocents spawn with. ( 0 = disabled )", _, true, 0.0);
@@ -111,7 +113,6 @@ void SetupConfig()
     g_cCheckDuringWarmup = AutoExecConfig_CreateConVar("ttt_check_players_during_warmup", "0", "Check players during warmup?", _, true, 0.0, true, 1.0);
     g_cPrimaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_primary_weapon_update", "0", "What should happen on round start with the primary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
     g_cSecondaryWeaponUpdate = AutoExecConfig_CreateConVar("ttt_secondary_weapon_update", "0", "What should happen on round start with the secondary weapon? 0 - nothing, 1 - drop old weapon, 2 - remove old weapon", _, true, 0.0, true, 2.0);
-    g_cAdvert = AutoExecConfig_CreateConVar("ttt_show_advert_message", "1", "Print a message on player spawn with some ttt details (like \"Trouble in Terrorist Town Version X.X.XXXX\")", _, true, 0.0, true, 1.0);
     g_cEnableDamageKarma = AutoExecConfig_CreateConVar("ttt_damage_karma_enable", "0", "Add/Del karma on damage?", _, true, 0.0, true, 1.0);
     g_cDamageKarmaII = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_innocent_subtract", "1", "The amount of karma an innocent will lose for damage an innocent.");
     g_cDamageKarmaIT = AutoExecConfig_CreateConVar("ttt_damage_karma_attacker_innocent_victim_traitor_add", "1", "The amount of karma an innocent will recieve for damage a traitor.");
@@ -140,15 +141,24 @@ void SetupConfig()
     g_cRespawnAccess = AutoExecConfig_CreateConVar("ttt_respawn_admin_access", "b", "Admin flags to access respawn command.");
     g_cPlayerHUDMessage = AutoExecConfig_CreateConVar("ttt_players_remaining_hud_message", "1", "Show hud \"We Are / Players Remaining\" message during non active rounds?", _, true, 0.0, true, 1.0);
     g_cShowURL = AutoExecConfig_CreateConVar("ttt_show_url", "1", "Show the URL when a player wants to read the rules? Valve removed the MOTD and Popup-function, so that could be useful", _, true, 0.0, true, 1.0);
-    g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message", "1", "This prints a version message to all players on every spawn", _, true, 0.0, true, 1.0);
-    g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_data", "1", "Send the Server Port to csgottt.com, server will be listed on csgottt.com", _, true, 0.0, true, 1.0);
     g_cDisableRounds = AutoExecConfig_CreateConVar("ttt_disable_rounds", "0", "Disable TTT Rounds? This will require an map change, server restart or plugin that can execute TTT_TerminateRound.", _, true, 0.0, true, 1.0);
     g_cStartMelee = AutoExecConfig_CreateConVar("ttt_start_melee_weapon", "fists", "Spawn with which melee weapon?");
     g_cAdditionalMeleeRole = AutoExecConfig_CreateConVar("ttt_additional_melee_role", "14", "Who gets the additional melee weapon? (Useful: https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 0.0, true, 14.0);
-    g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_additional_melee_weapon", "knife", "Which additional weapon?");
+    g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_Additional_melee_weapon", "knife", "Which additional weapon?");
     g_cUnloadPlugins = AutoExecConfig_CreateConVar("ttt_unload_plugins", "1", "Unload old/obsolete plugins?", _, true, 0.0, true, 1.0);
     g_cRemovePlugins = AutoExecConfig_CreateConVar("ttt_remove_plugins", "1", "Remove old/obsolete plugins (ttt_remove_plugins must be 1)?", _, true, 0.0, true, 1.0);
+    g_cSpawnType = AutoExecConfig_CreateConVar("ttt_spawn_type", "2", "Which spawn you want. 0 - Default (Ragdoll), 1 - Physics Multiplayer, 2 - Particle (Ghosts)", _, true, 0.0, true, 2.0);
+    g_cIdentifyDistance = AutoExecConfig_CreateConVar("ttt_identify_max_distance", "90.0",  "Maximum distance from player to ragdoll to identify the ragdoll. (Default: 90.0)");
     g_cFixThirdperson = AutoExecConfig_CreateConVar("ttt_fix_thirdperson_view", "1", "Reset thirdperson view back to firstperson, if players comes from other servers with thirdperson view (Zombie, Prop Hunt, ...)", _, true, 0.0, true, 1.0);
+    g_cShowRoundIDMessage = AutoExecConfig_CreateConVar("ttt_enable_round_id_message", "1", "Prints a message on every success round start in chat like: \"Round #X has been started\"", _, true, 0.0, true, 1.0);
+    g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message_on_spawn", "1", "Print a message on player spawn, if this server use the latest version.", _, true, 0.0, true, 1.0);
+    g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_ip_port", "1", "Sends your server ip+port and the ttt version to csgottt.com.\nYour server (Status On/Off, Map, Country and players (just the amount - no names) will be publicity listed on csgottt.com", _, true, 0.0, true, 1.0);
+    g_cClanTagUpperLower = AutoExecConfig_CreateConVar("ttt_clan_tag_upper_lower", "1", "Format clantags to a upper string (0), lower string (1) or keep it as it now is?", _, true, -1.0, true, 1.0);
+    g_cSaveLogsInSQL = AutoExecConfig_CreateConVar("ttt_save_logs_in_mysql", "0", "Save round logs in a mysql table? For auto clean up take a look at \"ttt_clean_up_sql_logs\".", _, true, 0.0, true, 1.0);
+    g_cDeleteLogsAfterDays = AutoExecConfig_CreateConVar("ttt_clean_up_sql_logs", "7", "Remove logs after X days, default is \"7\" days and \"0\" for no auto clean up.\nttt_save_logs_in_mysql must be \"1\"", _, true, 0.0);
+    g_cIdentifyCommand = AutoExecConfig_CreateConVar("ttt_allow_identify_command", "0", "Allowing players to identify ragdolls with the command \"sm_identify\"?", _, true, 0.0, true, 1.0);
+    g_cAutoAssignTeam = AutoExecConfig_CreateConVar("ttt_enable_auto_assign_team", "0", "Enable auto team assign?", _, true, 0.0, true, 1.0);
+    g_cBlockSwitchSelection = AutoExecConfig_CreateConVar("ttt_block_switch_selection", "1", "Block team swich during selection phase?", _, true, 0.0, true, 1.0);
     
     g_cpluginTag.AddChangeHook(OnConVarChanged);
     g_ckickImmunity.AddChangeHook(OnConVarChanged);

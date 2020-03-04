@@ -1,9 +1,10 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt_shop>
 #include <ttt>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
+#include <colorlib>
 
 #pragma newdecls required
 
@@ -18,15 +19,24 @@ ConVar g_cGrenadeDelay = null;
 ConVar g_cDamage = null;
 ConVar g_cExplosionSize = null;
 ConVar g_cIPrice = null;
+ConVar g_cILimit = null;
 ConVar g_cIPrio = null;
 ConVar g_cDPrice = null;
+ConVar g_cDLimit = null;
 ConVar g_cDPrio = null;
 ConVar g_cTPrice = null;
+ConVar g_cTLimit = null;
 ConVar g_cTPrio = null;
+ConVar g_cCountI = null;
+ConVar g_cCountT = null;
+ConVar g_cCountD = null;
 
-float g_fDeathPos[MAXPLAYERS+1][3];
+enum struct PlayerData {
+    float Location[3];
+}
 
-bool g_bHasMartydom[MAXPLAYERS+1];
+PlayerData g_iPlayer[MAXPLAYERS + 1];
+
 
 /* Drops a live high explosive grenade on a players body */
 
@@ -48,29 +58,44 @@ public void OnPluginStart() {
     TTT_StartConfig("martydom");
     CreateConVar("ttt2_martydom_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("martydom_name", "Martydom", "The name of this item in the shop.");
-    g_cIPrice = AutoExecConfig_CreateConVar("md_i_price", "2000", "The amount of credits martydom costs as innocent. 0 to disable.");    
-    g_cTPrice = AutoExecConfig_CreateConVar("md_t_price", "2000", "The amount of credits martydom costs as traitor. 0 to disable.");
-    g_cDPrice = AutoExecConfig_CreateConVar("md_d_price", "2000", "The amount of credits martydom costs as detective. 0 to disable.");
-    g_cIPrio = AutoExecConfig_CreateConVar("md_i_sort_prio", "0", "The sorting priority of the martydom in the shop menu for innocents.");
-    g_cTPrio = AutoExecConfig_CreateConVar("md_t_sort_prio", "0", "The sorting priority of the martydom in the shop menu for traitors.");
-    g_cDPrio = AutoExecConfig_CreateConVar("md_d_sort_prio", "0", "The sorting priority of the martydom in the shop menu for detectives.");
-    g_cGrenadeDelay = AutoExecConfig_CreateConVar("md_grenade_delay", "0.25", "The time delay it takes for the grenade to spawn after a player dies. Decimals allowed. (Def. 0.25)");
-    g_cDamage = AutoExecConfig_CreateConVar("md_grenade_damage", "99.0", "The damage the grenade does at the explosions center point. Decimals allowed. (Def. 99.0)");
-    g_cExplosionSize = AutoExecConfig_CreateConVar("md_explosion_size", "350.0", "The size of the explosion. Decimals allowed. (Def. 350.0)");
+    g_cIPrice = AutoExecConfig_CreateConVar("martydom_price_innocent", "2000", "The amount of credits martydom costs as innocent. 0 to disable.");    
+    g_cILimit = AutoExecConfig_CreateConVar("martydom_limit_innocent", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cTPrice = AutoExecConfig_CreateConVar("martydom_price_traitor", "2000", "The amount of credits martydom costs as traitor. 0 to disable.");
+    g_cTLimit = AutoExecConfig_CreateConVar("martydom_limit_traitor", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cDPrice = AutoExecConfig_CreateConVar("martydom_price_detective", "2000", "The amount of credits martydom costs as detective. 0 to disable.");
+    g_cDLimit = AutoExecConfig_CreateConVar("martydom_limit_detective", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cIPrio = AutoExecConfig_CreateConVar("martydom_sort_prio_innocent", "0", "The sorting priority of the martydom in the shop menu for innocents.");
+    g_cTPrio = AutoExecConfig_CreateConVar("martydom_sort_prio_traitor", "0", "The sorting priority of the martydom in the shop menu for traitors.");
+    g_cDPrio = AutoExecConfig_CreateConVar("martydom_sort_prio_detective", "0", "The sorting priority of the martydom in the shop menu for detectives.");
+    g_cCountI = AutoExecConfig_CreateConVar("martydom_count_innocent", "1", "How often the item (Martydom) can be bought per round as an innocent (0 - Disabled)."); // These seem pointless less someone get respawned
+    g_cCountT = AutoExecConfig_CreateConVar("martydom_count_traitor", "1", "How often the item (Martydom) can be bought per round as a traitor (0 - Disabled).");
+    g_cCountD = AutoExecConfig_CreateConVar("martydom_count_detective", "1", "How often the item (Martydom) can be bought per round as a detective (0 - Disabled).");
+    g_cGrenadeDelay = AutoExecConfig_CreateConVar("martydom_grenade_delay", "0.25", "The time delay it takes for the grenade to spawn after a player dies. Decimals allowed. (Def. 0.25)");
+    g_cDamage = AutoExecConfig_CreateConVar("martydom_grenade_damage", "99.0", "The damage the grenade does at the explosions center point. Decimals allowed. (Def. 99.0)");
+    g_cExplosionSize = AutoExecConfig_CreateConVar("martydom_explosion_size", "350.0", "The size of the explosion. Decimals allowed. (Def. 350.0)");
     TTT_EndConfig();
 
     HookEvent("player_death", Event_PlayerDeath);
-    HookEvent("round_start", Event_RoundStart);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_I);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
 }
 
-public void OnClientDisconnect(int client)
+public void OnConfigsExecuted()
 {
-    g_bHasMartydom[client] = false;
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void TTT_OnShopReady()
@@ -82,25 +107,19 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cCountI.IntValue, g_cILimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cCountT.IntValue, g_cTLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cCountD.IntValue, g_cDLimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (TTT_IsItemInInventory(client, itemshort))
     {
-        if (StrEqual(itemshort, SHORT_NAME_I, false) || StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
-        {
-            if(g_bHasMartydom[client])
-            {
-                return Plugin_Stop;
-            }
-            g_bHasMartydom[client] = true;
-        }
+        return Plugin_Stop;
     }
-    
+
+    TTT_AddInventoryItem(client, itemshort);
     return Plugin_Continue;
 }
 
@@ -109,14 +128,6 @@ public Action Timer_CreateGrenade(Handle timer, any client)
     if(TTT_IsClientValid(client))
     {
         CreateGrenade(client);
-    }
-}
-
-public Action Event_RoundStart(Event event, const char[] name, bool inrestart)
-{
-    LoopValidClients(i)
-    {
-        g_bHasMartydom[i] = false;
     }
 }
 
@@ -129,15 +140,29 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool inrestart)
         return Plugin_Continue;
     }
         
-    if(!g_bHasMartydom[client])
+    if(!TTT_IsItemInInventory(client, SHORT_NAME_I) && !TTT_IsItemInInventory(client, SHORT_NAME_T) && !TTT_IsItemInInventory(client, SHORT_NAME_D))
     {
         return Plugin_Continue;
     }
-        
-    GetClientAbsOrigin(client, g_fDeathPos[client]);
+    
+    GetClientAbsOrigin(client, g_iPlayer[client].Location);
     CreateTimer(g_cGrenadeDelay.FloatValue, Timer_CreateGrenade, client);
     
-    g_bHasMartydom[client] = false;
+    if (TTT_RemoveInventoryItem(client, SHORT_NAME_I))
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_I);
+    }
+
+    if (TTT_RemoveInventoryItem(client, SHORT_NAME_T))
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_T);
+    }
+
+    if (TTT_RemoveInventoryItem(client, SHORT_NAME_D))
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_D);
+    }
+
     
     return Plugin_Continue;
     
@@ -149,9 +174,8 @@ public void CreateGrenade(int client)
     DispatchSpawn(entity);
     
     // Make sure the grenade doesn't spawn in the ground
-    g_fDeathPos[client][2] += 30;
-    
-    TeleportEntity(entity, g_fDeathPos[client], NULL_VECTOR, NULL_VECTOR);
+    g_iPlayer[client].Location[2] += 30;
+    TeleportEntity(entity, g_iPlayer[client].Location, NULL_VECTOR, NULL_VECTOR);
     AcceptEntityInput(entity, "InitializeSpawnFromWorld");
     
     SetEntPropEnt(entity, Prop_Data, "m_hThrower", client);

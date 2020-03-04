@@ -4,18 +4,19 @@
 #include <sourcemod>
 #include <clientprefs>
 #include <sdkhooks>
-#include <multicolors>
-#include <emitsoundany>
 #include <SteamWorks>
+#include <colorlib>
+#include <emitsoundany>
 #include <ttt>
 #include <ttt_sql>
 
-#undef REQUIRE_EXTENSIONS
+// #undef REQUIRE_EXTENSIONS
+// #define REQUIRE_EXTENSIONS
+
 #undef REQUIRE_PLUGIN
 #include <ghostdm>
 #tryinclude <sourcebans>
 #define REQUIRE_PLUGIN
-#define REQUIRE_EXTENSIONS
 
 #pragma newdecls required
 
@@ -24,6 +25,8 @@
 #include "core/natives.sp"
 #include "core/sql.sp"
 #include "core/version.sp"
+
+#define MODEL_MICROWAVE "props/cs_office/microwave.mdl"
 
 public Plugin myinfo =
 {
@@ -55,17 +58,15 @@ public void OnPluginStart()
 
     LoadBadNames();
 
-    g_aRagdoll = new ArrayList(104);
-    g_aLogs = new ArrayList(512);
+    Ragdoll body;
+    g_aRagdoll = new ArrayList(sizeof(body));
+    g_aLogs = new ArrayList(MAX_LOG_LENGTH);
     g_aForceTraitor = new ArrayList();
     g_aForceDetective = new ArrayList();
 
-    m_flNextPrimaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextPrimaryAttack");
-    m_flNextSecondaryAttack = FindSendPropInfo("CBaseCombatWeapon", "m_flNextSecondaryAttack");
-
     CreateTimer(1.0, Timer_1, _, TIMER_REPEAT);
     CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
-    
+
     // Admin commands
     RegConsoleCmd("sm_setrole", Command_SetRole);
     RegConsoleCmd("sm_karmareset", Command_KarmaReset);
@@ -78,22 +79,23 @@ public void OnPluginStart()
     RegConsoleCmd("sm_drules", Command_DetectiveRules);
     RegConsoleCmd("sm_detective", Command_DetectiveRules);
     RegConsoleCmd("sm_rslays", Command_RSlays);
-    RegConsoleCmd("sm_tttversion", Command_Version);
-    RegConsoleCmd("sm_version", Command_Version);
     RegConsoleCmd("sm_fl", Command_FL);
     RegConsoleCmd("sm_flashlight", Command_FL);
     RegConsoleCmd("sm_respawn", Command_Respawn);
-    
+    RegConsoleCmd("sm_tttversion", Command_Version);
+    RegConsoleCmd("sm_version", Command_Version);
+    RegConsoleCmd("sm_checkversion", Command_CheckVersion);
+    RegConsoleCmd("sm_identify", Command_Identify);
+
     AddCommandListener(Command_LAW, "+lookatweapon");
     AddCommandListener(Command_Say, "say");
-    AddCommandListener(Command_SayTeam, "say_team");
     AddCommandListener(Command_Kill, "kill");
     AddCommandListener(Command_Kill, "explode");
     AddCommandListener(Command_Kill, "spectate");
     AddCommandListener(Command_Kill, "jointeam");
     AddCommandListener(Command_Kill, "explodevector");
     AddCommandListener(Command_Kill, "killvector");
-    
+
     for (int i = 0; i < sizeof(g_sRadioCMDs); i++)
     {
         AddCommandListener(Command_RadioCMDs, g_sRadioCMDs[i]);
@@ -106,6 +108,9 @@ public void OnPluginStart()
     HookEvent("player_team", Event_PlayerTeam_Pre, EventHookMode_Pre);
     HookEvent("player_changename", Event_ChangeName_Pre, EventHookMode_Pre);
 
+    HookEvent("round_start", Event_RoundStart);
+    HookEvent("round_end", Event_RoundEnd);
+    HookEvent("player_connect_full", Event_PlayerConnectFull);
     HookEvent("player_spawn", Event_PlayerSpawn);
     HookEvent("player_death", Event_PlayerDeath);
     HookEvent("player_hurt", Event_PlayerHurt);
@@ -117,15 +122,14 @@ public void OnPluginStart()
     g_cFreezeTime = FindConVar("mp_freezetime");
     g_cRoundTime = FindConVar("mp_roundtime");
 
-    g_hRSCookie = RegClientCookie("ttt2_round_slays", "Round Slays Cookie", CookieAccess_Private);
-    g_hRules = RegClientCookie("ttt2_rules_menu", "Show rules", CookieAccess_Private);
-    g_hDRules = RegClientCookie("ttt2_detective_menu", "Show detectives menu", CookieAccess_Private);
+    g_coRules = new Cookie("ttt2_rules_menu", "Show rules", CookieAccess_Private);
+    g_coDRules = new Cookie("ttt2_detective_menu", "Show detectives menu", CookieAccess_Private);
 
     SetRandomSeed(GetTime());
 
     g_hWeAreSync = CreateHudSynchronizer();
     g_hRemainingSync = CreateHudSynchronizer();
-    
+
     TTT_StartConfig("ttt");
     SetupConfig();
     TTT_EndConfig();
@@ -136,10 +140,10 @@ public void OnPluginStart()
         {
             LogMessage("(OnPluginStart) Handle is not null");
         }
-        
+
         LateLoadClients(true);
     }
-    
+
     SetRandomSeed(GetTime());
 }
 
@@ -191,15 +195,15 @@ public void OnConfigsExecuted()
     g_cFSSecondary.GetString(g_sFSSecondary, sizeof(g_sFSSecondary));
 
     TTT_DisableRounds(g_cDisableRounds.BoolValue);
-    
+
     // Prepare & Format log files
     char sDate[12];
     FormatTime(sDate, sizeof(sDate), "%y-%m-%d");
-    
+
     g_clogFile.GetString(g_sLogFile, sizeof(g_sLogFile));
     g_cerrFile.GetString(g_sErrorFile, sizeof(g_sErrorFile));
     g_cKarmaFile.GetString(g_sKarmaFile, sizeof(g_sKarmaFile));
-    
+
     ReplaceString(g_sLogFile, sizeof(g_sLogFile), "<DATE>", sDate, true);
     ReplaceString(g_sErrorFile, sizeof(g_sErrorFile), "<DATE>", sDate, true);
     ReplaceString(g_sKarmaFile, sizeof(g_sKarmaFile), "<DATE>", sDate, true);
@@ -207,7 +211,7 @@ public void OnConfigsExecuted()
     BuildPath(Path_SM, g_sLogFile, sizeof(g_sLogFile), g_sLogFile);
     BuildPath(Path_SM, g_sErrorFile, sizeof(g_sErrorFile), g_sErrorFile);
     BuildPath(Path_SM, g_sKarmaFile, sizeof(g_sKarmaFile), g_sKarmaFile);
-    
+
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Log File: \"%s\"", g_sLogFile);
@@ -232,6 +236,28 @@ public void TTT_OnSQLConnect(Database db)
 {
     g_dDB = db;
     AlterKarmaColumn();
+    AlterRSlaysColumn();
+    CreateRoundTable();
+    
+    if (g_cSaveLogsInSQL.BoolValue)
+    {
+        CreateLogTable();
+    }
+}
+
+void AlterRSlaysColumn()
+{
+    if (g_dDB != null)
+    {
+        char sQuery[72];
+        g_dDB.Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `rslays` INT(11) NOT NULL DEFAULT 0;");
+        g_dDB.Query(SQL_AlterRSlaysColumn, sQuery);
+    }
+    else
+    {
+        SetFailState("(AlterRSlaysColumn) Database handle is invalid!");
+        return;
+    }
 }
 
 void AlterKarmaColumn()
@@ -239,8 +265,60 @@ void AlterKarmaColumn()
     if (g_dDB != null)
     {
         char sQuery[72];
-        Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `karma` INT(11) NOT NULL DEFAULT 0;");
+        g_dDB.Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` ADD COLUMN `karma` INT(11) NOT NULL DEFAULT 0;");
         g_dDB.Query(SQL_AlterKarmaColumn, sQuery);
+    }
+    else
+    {
+        SetFailState("(AlterKarmaColumn) Database handle is invalid!");
+        return;
+    }
+}
+
+void CreateRoundTable()
+{
+    if (g_dDB != null)
+    {
+        DBDriver iDriver = g_dDB.Driver;
+        iDriver.GetIdentifier(g_sDriver, sizeof(g_sDriver));
+
+        if (StrEqual(g_sDriver, "mysql", false))
+        {
+            char sQuery[256];
+            g_dDB.Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_rounds` (`id` INT NOT NULL AUTO_INCREMENT, `start` INT NOT NULL, `end` INT DEFAULT 0, PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
+            g_dDB.Query(SQL_CreateRoundTable, sQuery);
+        }
+        else
+        {
+            SetFailState("Unsupported sql driver! Required driver: mysql");
+            return;
+        }
+    }
+    else
+    {
+        SetFailState("Database handle is invalid!");
+        return;
+    }
+}
+
+void CreateLogTable()
+{
+    if (g_dDB != null)
+    {
+        DBDriver iDriver = g_dDB.Driver;
+        iDriver.GetIdentifier(g_sDriver, sizeof(g_sDriver));
+
+        if (StrEqual(g_sDriver, "mysql", false))
+        {
+            char sQuery[256];
+            g_dDB.Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_logs` (`id` INT NOT NULL AUTO_INCREMENT, `roundid` INT NOT NULL, `time` INT NOT NULL, `map` VARCHAR(64) NOT NULL, `message` VARCHAR(%d) NOT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;", TTT_LOG_SIZE);
+            g_dDB.Query(SQL_CreateLogTable, sQuery);
+        }
+        else
+        {
+            SetFailState("Unsupported sql driver! Required driver: mysql");
+            return;
+        }
     }
     else
     {
@@ -251,7 +329,7 @@ void AlterKarmaColumn()
 
 public Action Command_Logs(int client, int args)
 {
-    if (g_bRoundEnding || g_bRoundStarted)
+    if (g_iStatus >= Round_Active)
     {
         if (client == 0)
         {
@@ -269,8 +347,8 @@ public Action Command_Logs(int client, int args)
             else
             {
                 ShowLogs(client);
-                
-                if (g_cLogsNotifyAlive.IntValue > 0 && !g_bRoundEnding && IsPlayerAlive(client))
+
+                if (g_cLogsNotifyAlive.IntValue > 0 && g_iStatus != Round_Ending && IsPlayerAlive(client))
                 {
                     if (g_cLogsNotifyAlive.IntValue == 1)
                     {
@@ -316,12 +394,12 @@ void ShowLogs(int client)
         return;
     }
 
-    if (g_bReceivingLogs[client])
+    if (g_iPlayer[client].ReceivingLogs)
     {
         return;
     }
 
-    g_bReceivingLogs[client] = true;
+    g_iPlayer[client].ReceivingLogs = true;
 
     if (client == 0)
     {
@@ -372,26 +450,47 @@ void ShowLogs(int client)
             PrintToConsole(client, "--------------------------------------");
         }
 
-        g_bReceivingLogs[client] = false;
+        g_iPlayer[client].ReceivingLogs = false;
         return;
     }
 
-    DataPack slPack = new DataPack();
+    DataPack pack = new DataPack();
 
     if (TTT_IsClientValid(client))
     {
-        slPack.WriteCell(GetClientUserId(client));
+        pack.WriteCell(GetClientUserId(client));
     }
     else
     {
-        slPack.WriteCell(0);
+        pack.WriteCell(0);
     }
 
-    slPack.WriteCell(index);
-    RequestFrame(OnCreate, slPack);
+    pack.WriteCell(index);
+    RequestFrame(Frame_Create, pack);
 }
 
-public void OnCreate(DataPack pack)
+void SaveLogsSQL()
+{
+    Transaction tTransaction = new Transaction();
+
+    char sMap[64];
+    GetCurrentMap(sMap, sizeof(sMap));
+
+    char sQuery[1024];
+    char sEntry[TTT_LOG_SIZE];
+
+    for (int i = 0; i < g_aLogs.Length; i++)
+    {
+        g_aLogs.GetString(i, sEntry, sizeof(sEntry));
+
+        g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_logs (roundid, time, map, message) VALUES ('%d', UNIX_TIMESTAMP(), `%s`, `%s`);", g_iRoundID, sMap, sEntry);
+        tTransaction.AddQuery(sQuery);
+    }
+
+    g_dDB.Execute(tTransaction, _, SQL_TransactionLogsError);
+}
+
+public void Frame_Create(DataPack pack)
 {
     pack.Reset();
 
@@ -452,33 +551,39 @@ public void OnCreate(DataPack pack)
                 PrintToConsole(client, "--------------------------------------");
             }
 
-            g_bReceivingLogs[client] = false;
+            g_iPlayer[client].ReceivingLogs = false;
             return;
         }
 
-        DataPack slPack = new DataPack();
+        pack = new DataPack();
 
         if (TTT_IsClientValid(client))
         {
-            slPack.WriteCell(GetClientUserId(client));
+            pack.WriteCell(GetClientUserId(client));
         }
         else
         {
-            slPack.WriteCell(0);
+            pack.WriteCell(0);
         }
 
-        slPack.WriteCell(index);
-        RequestFrame(OnCreate, slPack);
+        pack.WriteCell(index);
+        RequestFrame(Frame_Create, pack);
     }
 }
 
 public Action Command_Kill(int client, const char[] command, int args)
 {
+    if (g_cBlockSwitchSelection.BoolValue && g_iStatus == Round_Selection && StrEqual(command, "jointeam", false))
+    {
+        return Plugin_Stop;
+    }
+
     if (!g_bBlockKill && g_cblockSuicide.BoolValue && IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s %T", g_sTag, "Suicide Blocked", client);
-        return Plugin_Handled;
+        return Plugin_Stop;
     }
+
     return Plugin_Continue;
 }
 
@@ -494,6 +599,8 @@ public Action Command_RadioCMDs(int client, const char[] command, int args)
 
 public void OnMapStart()
 {
+    g_bSpawnAllowed = true;
+
     for (int i; i < g_iBadNameCount; i++)
     {
         g_sBadNames[i] = "";
@@ -505,17 +612,17 @@ public void OnMapStart()
     g_iBeamSprite = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");
     g_iHaloSprite = PrecacheModel("materials/sprites/halo.vtf");
 
-    PrecacheModel("props/cs_office/microwave.mdl", true);
+    PrecacheModel(MODEL_MICROWAVE, true);
 
     PrecacheSoundAny(SND_TCHAT, true);
     PrecacheSoundAny(SND_FLASHLIGHT, true);
-    
+
     g_iAlive = FindSendPropInfo("CCSPlayerResource", "m_bAlive");
     if (g_iAlive == -1)
     {
         SetFailState("CCSPlayerResource \"m_bAlive\" offset is invalid");
     }
-    
+
     g_iHealth = FindSendPropInfo("CCSPlayerResource", "m_iHealth");
     if (g_iHealth == -1)
     {
@@ -547,6 +654,10 @@ public void OnMapStart()
     }
 
     SDKHook(FindEntityByClassname(0, "cs_player_manager"), SDKHook_ThinkPost, ThinkPost);
+
+    PrecacheGhosts();
+
+    g_bCheckPlayers = true;
 }
 
 public void ThinkPost(int entity)
@@ -554,23 +665,23 @@ public void ThinkPost(int entity)
     if (g_ckadRemover.BoolValue)
     {
         int iZero[MAXPLAYERS + 1] =  { 0, ... };
-        
+
         SetEntDataArray(entity, g_iKills, iZero, MaxClients + 1);
         SetEntDataArray(entity, g_iDeaths, iZero, MaxClients + 1);
         SetEntDataArray(entity, g_iAssists, iZero, MaxClients + 1);
         SetEntDataArray(entity, g_iMVPs, iZero, MaxClients + 1);
     }
-    
+
     int isAlive[MAXPLAYERS + 1];
     int iHealth[MAXPLAYERS + 1];
 
     GetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
-    
+
     LoopValidClients(i)
     {
         if (g_cfakeLife.IntValue == 0)
         {
-            isAlive[i] = (!g_bFound[i]);
+            isAlive[i] = (!g_iPlayer[i].Found);
         }
         else if (g_cfakeLife.IntValue == 1)
         {
@@ -580,22 +691,27 @@ public void ThinkPost(int entity)
         {
             isAlive[i] = true;
         }
-        
+
         iHealth[i] = g_cfakeHealth.IntValue;
     }
-    
+
     SetEntDataArray(entity, g_iHealth, iHealth, MAXPLAYERS + 1);
     SetEntDataArray(entity, g_iAlive, isAlive, MAXPLAYERS + 1);
 }
 
 public Action Command_Karma(int client, int args)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
     }
 
-    CPrintToChat(client, "%s %T", g_sTag, "Your karma is", client, g_iKarma[client]);
+    CPrintToChat(client, "%s %T", g_sTag, "Your karma is", client, g_iPlayer[client].Karma);
 
     return Plugin_Handled;
 }
@@ -606,7 +722,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
     {
         return;
     }
-    
+
     if (IsValidEntity(entity) && g_bPressed[entity])
     {
         return;
@@ -627,7 +743,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
         {
             GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
         }
-        
+
         if (strlen(sClientID) > 2)
         {
             Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
@@ -635,10 +751,10 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
     }
 
     TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
-    GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));    
+    GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
     Format(iItem, sizeof(iItem), "-> [%N%s (%s) pressed the button %s (%d)]", client, sClientID, sRole, sName, entity);
-    addArrayTime(iItem);
-    
+    PushStringToLogs(iItem);
+
     g_bPressed[entity] = true;
     CreateTimer(g_cLogButtonsSpam.FloatValue, Timer_EnableButton, EntIndexToEntRef(entity));
 }
@@ -646,7 +762,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
 public Action Timer_EnableButton(Handle timer, any reference)
 {
     int entity = EntRefToEntIndex(reference);
-    
+
     if (IsValidEntity(entity))
     {
         g_bPressed[entity] = false;
@@ -655,19 +771,30 @@ public Action Timer_EnableButton(Handle timer, any reference)
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
+    g_iRoundID = -1;
+
     if (g_bDisabled)
     {
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+            }
+        }
         g_iStatus = Round_Inactive;
         return;
     }
 
     g_iRoundTime = GetTime();
-    
+
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 1 (Warmup: %d)", TTT_IsWarmUp());
     }
-    
+
     if (g_aRagdoll != null)
     {
         g_aRagdoll.Clear();
@@ -678,31 +805,33 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         LogMessage("Event_RoundStartPre - 2 (g_aRagdoll: %d)", g_aRagdoll.Length);
     }
 
-    g_bInactive = false;
-    g_bRoundEnded = false;
-
-    if (g_cDebugMessages.BoolValue)
+    if (g_cDebug.BoolValue)
     {
-        LogMessage("Event_RoundStartPre - 3 (g_bInactive: %d - g_bRoundEnded: %d)", g_bInactive, g_bRoundEnded);
+        PrintToServer("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Warmup, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Warmup, g_iStatus);
+        }
     }
 
     LoopValidClients(i)
     {
-        g_iRole[i] = TTT_TEAM_UNASSIGNED;
-        g_bFound[i] = true;
-        g_iInnoKills[i] = 0;
-        g_iTraitorKills[i] = 0;
-        g_iDetectiveKills[i] = 0;
-        g_bImmuneRDMManager[i] = false;
-        
-        g_iHurtedPlayer1[i] = -1;
-        g_iHurtedPlayer2[i] = -1;
-        g_bResetHurt[i] = false;
-        g_bRespawn[i] = false;
-        
+        g_iPlayer[i].Role = TTT_TEAM_UNASSIGNED;
+        g_iPlayer[i].Found = true;
+        g_iPlayer[i].InnocentKills = 0;
+        g_iPlayer[i].TraitorKills = 0;
+        g_iPlayer[i].DetectiveKills = 0;
+        g_iPlayer[i].ImmuneRDMManager = false;
+
+        g_iPlayer[i].HurtedPlayer1 = -1;
+        g_iPlayer[i].HurtedPlayer2 = -1;
+        g_iPlayer[i].ResetHurt = false;
+        g_iPlayer[i].Respawn = false;
+
         DispatchKeyValue(i, "targetname", "UNASSIGNED");
         CS_SetClientClanTag(i, " ");
-        
+
 
         if (g_cDebugMessages.BoolValue)
         {
@@ -730,29 +859,36 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
         LogMessage("Event_RoundStartPre - 6 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
 
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Warmup, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(Event_RoundStartPre) g_iStatus set to %d from %d", Round_Warmup, g_iStatus);
+        }
+    }
     g_iStatus = Round_Warmup;
 
-    float warmupTime = g_cGraceTime.FloatValue + 5.0;
-    g_hStartTimer = CreateTimer(warmupTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
+    float fTime = g_cGraceTime.FloatValue + 3.0;
+    g_hStartTimer = CreateTimer(fTime, Timer_Selection, _, TIMER_FLAG_NO_MAPCHANGE);
 
     if (g_cDebugMessages.BoolValue)
     {
-        LogMessage("Event_RoundStartPre - 7 (g_hStartTimer: %d - Time: %f)", g_hStartTimer, warmupTime);
+        LogMessage("Event_RoundStartPre - 7 (g_hStartTimer: %d - Time: %f)", g_hStartTimer, fTime);
     }
 
-    g_fRealRoundStart = GetGameTime() + warmupTime;
-    g_hCountdownTimer = CreateTimer(0.5, Timer_SelectionCountdown, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+    g_fRealRoundStart = GetGameTime() + fTime;
+    g_hCountdownTimer = CreateTimer(1.0, Timer_SelectionCountdown, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("Event_RoundStartPre - 8 (g_hCountdownTimer: %d)", g_hCountdownTimer);
     }
 
-    g_bRoundStarted = false;
-
     if (g_cDebugMessages.BoolValue)
     {
-        LogMessage("Event_RoundStartPre - 9 (g_bRoundStarted: %d)", g_bRoundStarted);
+        LogMessage("Event_RoundStartPre - 9 (g_iStatus: %d)", g_iStatus);
     }
 
     if (g_hRoundTimer != null)
@@ -764,15 +900,15 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     {
         LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d)", g_hRoundTimer);
     }
-    
-    float fTime = g_cFreezeTime.FloatValue + (g_cRoundTime.FloatValue * 60.0);
-    g_hRoundTimer = CreateTimer(fTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
+
+    float fEndTime = g_cFreezeTime.FloatValue + (g_cRoundTime.FloatValue * 60.0);
+    g_hRoundTimer = CreateTimer(fEndTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
 
     if (g_cDebugMessages.BoolValue)
     {
-        LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d - Time: %f)", g_hRoundTimer, fTime);
+        LogMessage("Event_RoundStartPre - 9 (g_hRoundTimer: %d - Time: %f)", g_hRoundTimer, fEndTime);
     }
-    
+
     g_bBlockKill = false;
 }
 
@@ -780,11 +916,11 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 {
     LoopValidClients(i)
     {
-        g_bFound[i] = true;
-        g_iInnoKills[i] = 0;
-        g_iTraitorKills[i] = 0;
-        g_iDetectiveKills[i] = 0;
-        g_bImmuneRDMManager[i] = false;
+        g_iPlayer[i].Found = true;
+        g_iPlayer[i].InnocentKills = 0;
+        g_iPlayer[i].TraitorKills = 0;
+        g_iPlayer[i].DetectiveKills = 0;
+        g_iPlayer[i].ImmuneRDMManager = false;
 
         ShowLogs(i);
         TeamTag(i);
@@ -793,7 +929,7 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
         {
             if (IsPlayerAlive(i))
             {
-                g_iArmor[i] = GetEntProp(i, Prop_Send, "m_ArmorValue");
+                g_iPlayer[i].Armor = GetEntProp(i, Prop_Send, "m_ArmorValue");
             }
         }
     }
@@ -801,7 +937,6 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
     ShowLogs(0);
 
     g_iTeamSelectTime = 0;
-    g_bSelection = false;
 
     if (g_hRoundTimer != null)
     {
@@ -812,8 +947,19 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
 
 public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
 {
-    g_bRoundEnding = true;
-    g_iStatus = Round_Ending;
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(Event_WinPanel) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(Event_WinPanel) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+        }
+    }
+    if (!g_cDebug.BoolValue)
+    {
+        g_iStatus = Round_Ending;
+    }
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)
@@ -828,7 +974,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
             LoopValidClients(i)
             {
                 Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartedCenter", i, g_cRoundStartedFontSize.IntValue, g_sRoundStartedFontColor);
-                PrintCenterText2(i, "Trouble in Terrorist Town", centerText);
+                PrintCenterText2(i, "Trouble in Terrorist Town", centerText); // TODO: Add 2nd option as synchud
             }
         }
 
@@ -844,7 +990,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
     LoopValidClients(i)
     {
         Format(centerText, sizeof(centerText), "<pre>%T</pre>", "RoundStartCenter", i, g_cRoundStartFontSize.IntValue, g_sRoundStartFontColor, timeLeft);
-        PrintCenterText2(i, "Trouble in Terrorist Town", centerText);
+        PrintCenterText2(i, "Trouble in Terrorist Town", centerText); // TODO: Add 2nd option as synchud
     }
 
     return Plugin_Continue;
@@ -852,7 +998,7 @@ public Action Timer_SelectionCountdown(Handle hTimer)
 
 public Action Timer_Selection(Handle hTimer)
 {
-    g_bRoundEnding = false;
+    g_iStatus = Round_Selection;
     g_hStartTimer = null;
 
     ArrayList aPlayers = new ArrayList(1);
@@ -860,7 +1006,9 @@ public Action Timer_Selection(Handle hTimer)
 
     LoopValidClients(i)
     {
-        if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T || (!g_cDebug.BoolValue && IsFakeClient(i)))
+        int iTeam = GetClientTeam(i);
+
+        if ((iTeam != CS_TEAM_T && iTeam != CS_TEAM_CT) || (!g_cDebug.BoolValue && IsFakeClient(i)))
         {
             continue;
         }
@@ -880,25 +1028,34 @@ public Action Timer_Selection(Handle hTimer)
         aPlayers.Push(i);
         iPlayers++;
 
-        if ((g_cDoublePushInno.BoolValue && g_iLastRole[i] == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iLastRole[i] == TTT_TEAM_DETECTIVE))
+        if ((g_cDoublePushInno.BoolValue && g_iPlayer[i].LastRole == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iPlayer[i].LastRole == TTT_TEAM_DETECTIVE))
         {
             aPlayers.Push(i);
         }
     }
 
     Action res = Plugin_Continue;
-    Call_StartForward(g_hOnRoundStart_Pre);
+    Call_StartForward(g_fwOnRoundStart_Pre);
     Call_Finish(res);
 
     if (res >= Plugin_Handled)
     {
-        Call_StartForward(g_hOnRoundStartFailed);
+        Call_StartForward(g_fwOnRoundStartFailed);
         Call_PushCell(-1);
         Call_PushCell(g_crequiredPlayers.IntValue);
         Call_Finish();
 
         GiveWeaponsOnFailStart();
 
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+            }
+        }
         g_iStatus = Round_Inactive;
 
         return;
@@ -906,38 +1063,38 @@ public Action Timer_Selection(Handle hTimer)
 
     LoopValidClients(i)
     {
-        if (IsPlayerAlive(i) && g_iRoundSlays[i] > 0)
+        if (IsPlayerAlive(i) && g_iPlayer[i].RoundSlays > 0)
         {
-            if (g_iRoundSlays[i] < 0)
+            if (g_iPlayer[i].RoundSlays < 0)
             {
-                g_iRoundSlays[i] = 0;
-                UpdateRoundSlaysCookie(i);
+                g_iPlayer[i].RoundSlays = 0;
+                UpdatePlayerRSlays(i);
                 continue;
             }
-            else if (g_iRoundSlays[i] == 0)
+            else if (g_iPlayer[i].RoundSlays == 0)
             {
-                UpdateRoundSlaysCookie(i);
+                UpdatePlayerRSlays(i);
                 continue;
             }
 
             ForcePlayerSuicide(i);
-            g_iRoundSlays[i]--;
+            g_iPlayer[i].RoundSlays--;
 
-            Call_StartForward(g_hOnRoundSlay);
+            Call_StartForward(g_fwOnRoundSlay);
             Call_PushCell(i);
-            Call_PushCell(g_iRoundSlays[i]);
+            Call_PushCell(g_iPlayer[i].RoundSlays);
             Call_Finish();
 
             // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
             iPlayers--;
 
-            if (g_iRoundSlays[i] > 0)
+            if (g_iPlayer[i].RoundSlays > 0)
             {
-                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iRoundSlays[i]);
-                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iRoundSlays[i]);
+                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iPlayer[i].RoundSlays);
+                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iPlayer[i].RoundSlays);
             }
 
-            UpdateRoundSlaysCookie(i);
+            UpdatePlayerRSlays(i);
 
             if (g_cOpenRulesOnPunish.BoolValue)
             {
@@ -957,12 +1114,22 @@ public Action Timer_Selection(Handle hTimer)
 
     if (iPlayers < g_crequiredPlayers.IntValue)
     {
-        g_bInactive = true;
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+            }
+        }
+
+        g_iStatus = Round_Inactive;
 
         LoopValidClients(i)
         {
             CPrintToChat(i, "%s %T", g_sTag, "MIN PLAYERS REQUIRED FOR PLAY", i, g_crequiredPlayers.IntValue);
-            
+
             if (g_cPlayerHUDMessage.BoolValue)
             {
                 SetHudTextParams(0.4, 0.53, 5.1, 205, 173, 0, 255, 0, 0.0, 0.0, 0.0);
@@ -974,24 +1141,48 @@ public Action Timer_Selection(Handle hTimer)
 
         g_bCheckPlayers = true;
 
-        Call_StartForward(g_hOnRoundStartFailed);
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(Timer_Selection) g_bCheckPlayers 1: %d", g_bCheckPlayers);
+        }
+
+        Call_StartForward(g_fwOnRoundStartFailed);
         Call_PushCell(iPlayers);
         Call_PushCell(g_crequiredPlayers.IntValue);
         Call_Finish();
 
         GiveWeaponsOnFailStart();
 
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(Timer_Selection) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+            }
+        }
         g_iStatus = Round_Inactive;
 
         return;
     }
 
-    g_bRoundStarted = true;
-    g_bSelection = true;
-    g_bCheckPlayers = false;
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(Timer_Selection) g_iStatus set to %d from %d", Round_Selection, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(Timer_Selection) g_iStatus set to %d from %d", Round_Selection, g_iStatus);
+        }
+    }
     
-    int iTCount = GetTCount(aPlayers);
-    int iDCount = GetDCount(aPlayers);
+    g_bCheckPlayers = false;
+
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(Timer_Selection), g_bCheckPlayers 2: %d", g_bCheckPlayers);
+    }
 
     int iTraitors;
     int iDetectives;
@@ -999,30 +1190,69 @@ public Action Timer_Selection(Handle hTimer)
     int iRand;
     int client;
     int iIndex;
+    char sQuery[64];
+
+
+    Action result = Plugin_Continue;
+    Call_StartForward(g_fwOnRoleSelection);
+    Call_PushCellRef(iTraitors);
+    Call_PushCellRef(iDetectives);
+    Call_PushCellRef(iInnocents);
+    Call_Finish(result);
+
+    ArrayList aTraitors = null;
+
+    if (result >= Plugin_Handled)
+    {
+        delete aPlayers;
+
+        delete g_aLogs;
+
+        g_aLogs = new ArrayList(MAX_LOG_LENGTH);
+
+        g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_rounds (start) VALUES (UNIX_TIMESTAMP());");
+
+        DataPack pack = new DataPack();
+        pack.WriteCell(iInnocents);
+        pack.WriteCell(iTraitors);
+        pack.WriteCell(iDetectives);
+        pack.WriteCell(aTraitors);
+        g_dDB.Query(SQL_InsertRound, sQuery, pack, DBPrio_Normal);
+        
+        return;
+    }
+
+    aTraitors = new ArrayList();
+
+    int iTCount = GetTCount(aPlayers);
+    int iDCount = GetDCount(aPlayers);
 
     while (iTraitors < iTCount)
     {
         if (g_aForceTraitor.Length > 0)
         {
             client = GetClientOfUserId(g_aForceTraitor.Get(0));
-            
+
             if (client > 0)
             {
                 iIndex = aPlayers.FindValue(client);
 
                 if (iIndex != -1)
                 {
-                    if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+                    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
                     {
-                        g_iRole[client] = TTT_TEAM_TRAITOR;
-                        g_iLastRole[client] = TTT_TEAM_TRAITOR;
+                        g_iPlayer[client].Role = TTT_TEAM_TRAITOR;
+                        g_iPlayer[client].LastRole = TTT_TEAM_TRAITOR;
+
+                        aTraitors.Push(client);
+
                         iTraitors++;
                     }
-                    
+
                     aPlayers.Erase(iIndex);
                 }
             }
-            
+
             g_aForceTraitor.Erase(0);
             continue;
         }
@@ -1030,12 +1260,15 @@ public Action Timer_Selection(Handle hTimer)
         iRand = GetRandomInt(0, aPlayers.Length - 1);
         client = aPlayers.Get(iRand);
 
-        if (TTT_IsClientValid(client) && (g_iLastRole[client] != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
+        if (TTT_IsClientValid(client) && (g_iPlayer[client].LastRole != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
         {
-            if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+            if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
             {
-                g_iRole[client] = TTT_TEAM_TRAITOR;
-                g_iLastRole[client] = TTT_TEAM_TRAITOR;
+                g_iPlayer[client].Role = TTT_TEAM_TRAITOR;
+                g_iPlayer[client].LastRole = TTT_TEAM_TRAITOR;
+
+                aTraitors.Push(client);
+
                 iTraitors++;
             }
 
@@ -1061,24 +1294,24 @@ public Action Timer_Selection(Handle hTimer)
         if (g_aForceDetective.Length > 0)
         {
             client = GetClientOfUserId(g_aForceDetective.Get(0));
-            
+
             if (client > 0)
             {
                 iIndex = aPlayers.FindValue(client);
-                
+
                 if (iIndex != -1)
                 {
-                    if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+                    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
                     {
-                        g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-                        g_iRole[client] = TTT_TEAM_DETECTIVE;
+                        g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
+                        g_iPlayer[client].Role = TTT_TEAM_DETECTIVE;
                         iDetectives++;
                     }
 
                     aPlayers.Erase(iIndex);
                 }
             }
-            
+
             g_aForceDetective.Erase(0);
             continue;
         }
@@ -1087,13 +1320,13 @@ public Action Timer_Selection(Handle hTimer)
         {
             for (int i = 0; i < aPlayers.Length; i++)
             {
-                if(g_bAvoidDetective[client])
+                if(g_iPlayer[client].AvoidDetective)
                 {
                     continue;
                 }
-                
-                g_iRole[aPlayers.Get(i)] = TTT_TEAM_DETECTIVE;
-                g_iLastRole[client] = TTT_TEAM_DETECTIVE;
+
+                g_iPlayer[aPlayers.Get(i)].Role = TTT_TEAM_DETECTIVE;
+                g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
                 iDetectives++;
             }
             break;
@@ -1102,19 +1335,19 @@ public Action Timer_Selection(Handle hTimer)
         iRand = GetRandomInt(0, aPlayers.Length - 1);
         client = aPlayers.Get(iRand);
 
-        if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iLastRole[client] == TTT_TEAM_INNOCENT) || GetRandomInt(1, 6) == 4))
+        if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iPlayer[client].LastRole == TTT_TEAM_INNOCENT) || GetRandomInt(1, 6) == 4))
         {
-            if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+            if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
             {
-                if (g_bAvoidDetective[client])
+                if (g_iPlayer[client].AvoidDetective)
                 {
-                    g_iLastRole[client] = TTT_TEAM_INNOCENT;
-                    g_iRole[client] = TTT_TEAM_INNOCENT;
+                    g_iPlayer[client].LastRole = TTT_TEAM_INNOCENT;
+                    g_iPlayer[client].Role = TTT_TEAM_INNOCENT;
                 }
                 else
                 {
-                    g_iLastRole[client] = TTT_TEAM_DETECTIVE;
-                    g_iRole[client] = TTT_TEAM_DETECTIVE;
+                    g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
+                    g_iPlayer[client].Role = TTT_TEAM_DETECTIVE;
                     iDetectives++;
                 }
             }
@@ -1128,88 +1361,26 @@ public Action Timer_Selection(Handle hTimer)
     while (aPlayers.Length > 0)
     {
         client = aPlayers.Get(0);
-        if (TTT_IsClientValid(client) && g_iRole[client] == TTT_TEAM_UNASSIGNED)
+        if (TTT_IsClientValid(client) && g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
         {
-            g_iLastRole[client] = TTT_TEAM_INNOCENT;
-            g_iRole[client] = TTT_TEAM_INNOCENT;
+            g_iPlayer[client].LastRole = TTT_TEAM_INNOCENT;
+            g_iPlayer[client].Role = TTT_TEAM_INNOCENT;
         }
         aPlayers.Erase(0);
     }
 
     delete aPlayers;
-    g_iStatus = Round_Active;
 
-    LoopValidClients(i)
-    {
-        if ((!g_cpublicKarma.BoolValue) && g_ckarmaRound.BoolValue)
-        {
-            g_iKarmaStart[i] = g_iKarma[i];
-            CPrintToChat(i, "%s %T", g_sTag, "All karma has been updated", i);
-        }
+    delete g_aLogs;
+    g_aLogs = new ArrayList(MAX_LOG_LENGTH);
 
-        CPrintToChat(i, "%s %T", g_sTag, "TEAMS HAS BEEN SELECTED", i);
-
-        if (g_iRole[i] != TTT_TEAM_TRAITOR)
-        {
-            CPrintToChat(i, "%s %T", g_sTag, "TRAITORS HAS BEEN SELECTED", i, iTraitors);
-        }
-        else
-        {
-            if (g_cShowTraitors.BoolValue)
-            {
-                CPrintToChat(i, "%s %T", g_sTag, "Your Traitor Partners", i);
-                int iCount = 0;
-            
-                LoopValidClients(j)
-                {
-                    if (!IsPlayerAlive(j) || i == j || g_iRole[j] != TTT_TEAM_TRAITOR)
-                    {
-                        continue;
-                    }
-                    CPrintToChat(i, "%s %T", g_sTag, "Traitor List", i, j);
-                    iCount++;
-                }
-            
-                if (iCount == 0)
-                {
-                    CPrintToChat(i, "%s %T", g_sTag, "No Traitor Partners", i);
-                }
-            }
-        }
-
-        if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
-        {
-            continue;
-        }
-
-        if (!IsPlayerAlive(i))
-        {
-            continue;
-        }
-
-        if (!g_cDebug.BoolValue && IsFakeClient(i))
-        {
-            continue;
-        }
-
-        TeamInitialize(i);
-    }
-
-    if (g_aLogs != null)
-    {
-        g_aLogs.Clear();
-    }
-
-    g_iTeamSelectTime = GetTime();
-    
-    g_bSelection = false;
-    g_bBlockKill = false;
-
-    Call_StartForward(g_hOnRoundStart);
-    Call_PushCell(iInnocents);
-    Call_PushCell(iTraitors);
-    Call_PushCell(iDetectives);
-    Call_Finish();
+    g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_rounds (start) VALUES (UNIX_TIMESTAMP());");
+    DataPack pack = new DataPack();
+    pack.WriteCell(iInnocents);
+    pack.WriteCell(iTraitors);
+    pack.WriteCell(iDetectives);
+    pack.WriteCell(aTraitors);
+    g_dDB.Query(SQL_InsertRound, sQuery, pack, DBPrio_Normal);
 }
 
 int GetTCount(ArrayList array)
@@ -1274,26 +1445,26 @@ int GetDCount(ArrayList array)
     return iDCount;
 }
 
-void TeamInitialize(int client, bool skipWeapons = false)
+void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
 {
-    if (!g_bRoundStarted)
+    if (g_iStatus != Round_Active)
     {
         return;
     }
-    
+
     if (!TTT_IsClientValid(client))
     {
         return;
     }
 
     CS_SetClientClanTag(client, " ");
-    
-    g_bFound[client] = false;
-    g_bAlive[client] = true;
-    
+
+    g_iPlayer[client].Found = false;
+    g_iPlayer[client].Alive = true;
+
     int iTeam = GetClientTeam(client);
-    
-    if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+
+    if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         if (g_cforceTeams.BoolValue)
         {
@@ -1302,7 +1473,7 @@ void TeamInitialize(int client, bool skipWeapons = false)
                 CS_SwitchTeam(client, CS_TEAM_CT);
             }
         }
-        
+
         if (!skipWeapons)
         {
             int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY);
@@ -1326,8 +1497,11 @@ void TeamInitialize(int client, bool skipWeapons = false)
             }
         }
 
-        CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
-        
+        if (announce)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
+        }
+
         DispatchKeyValue(client, "targetname", "DETECTIVE");
 
         if (g_cspawnHPD.IntValue > 0)
@@ -1360,10 +1534,13 @@ void TeamInitialize(int client, bool skipWeapons = false)
             }
         }
     }
-    else if (g_iRole[client] == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
-        CPrintToChat(client, "%s %T", g_sTag, "Your Team is TRAITORS", client);
-        
+        if (announce)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Your Team is TRAITORS", client);
+        }
+
         DispatchKeyValue(client, "targetname", "TRAITOR");
 
         if (g_cspawnHPT.IntValue > 0)
@@ -1404,10 +1581,13 @@ void TeamInitialize(int client, bool skipWeapons = false)
             }
         }
     }
-    else if (g_iRole[client] == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
     {
-        CPrintToChat(client, "%s %T", g_sTag, "Your Team is INNOCENTS", client);
-        
+        if (announce)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Your Team is INNOCENTS", client);
+        }
+
         DispatchKeyValue(client, "targetname", "INNOCENT");
 
         if (g_cspawnHPI.IntValue > 0)
@@ -1422,7 +1602,7 @@ void TeamInitialize(int client, bool skipWeapons = false)
                 CS_SwitchTeam(client, CS_TEAM_T);
             }
         }
-        
+
         GiveMelee(client);
 
         if (!skipWeapons)
@@ -1460,8 +1640,8 @@ void TeamInitialize(int client, bool skipWeapons = false)
 
             if (StrContains(sClass, "weapon_", false) != -1)
             {
-                SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() - 0.1);
-                SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() - 0.1);
+                SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() - 0.1);
+                SetEntPropFloat(weapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() - 0.1);
             }
         }
     }
@@ -1473,25 +1653,25 @@ void TeamInitialize(int client, bool skipWeapons = false)
     if (g_cupdateClientModel.BoolValue)
     {
         CS_UpdateClientModel(client);
-        
+
         bUpdate = true;
     }
-    
+
     if (bUpdate)
     {
         char sModel[PLATFORM_MAX_PATH + 1];
         GetClientModel(client, sModel, sizeof(sModel));
 
-        Call_StartForward(g_hOnModelUpdate);
+        Call_StartForward(g_fwOnModelUpdate);
         Call_PushCell(client);
         Call_PushString(sModel);
         Call_Finish();
 
     }
 
-    Call_StartForward(g_hOnClientGetRole);
+    Call_StartForward(g_fwOnClientGetRole);
     Call_PushCell(client);
-    Call_PushCell(g_iRole[client]);
+    Call_PushCell(g_iPlayer[client].Role);
     Call_Finish();
 }
 
@@ -1502,9 +1682,9 @@ void TeamTag(int client)
         return;
     }
 
-    if (g_iRole[client] == TTT_TEAM_DETECTIVE || g_iRole[client] == TTT_TEAM_TRAITOR || g_iRole[client] == TTT_TEAM_INNOCENT || g_iRole[client] == TTT_TEAM_UNASSIGNED)
+    if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE || g_iPlayer[client].Role == TTT_TEAM_TRAITOR || g_iPlayer[client].Role == TTT_TEAM_INNOCENT || g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
     {
-        SetClanTag(client, g_iRole[client]);
+        SetClanTag(client, g_iPlayer[client].Role);
     }
     else
     {
@@ -1516,29 +1696,109 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    if (g_cVersionMessage.BoolValue && strlen(g_sLatestVersion) > 1)
-    {
-        if (StrEqual(TTT_PLUGIN_VERSION, g_sLatestVersion, false))
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, g_sLatestVersion);
-        }
-        else if (StrContains(TTT_PLUGIN_VERSION, "VERSION", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "ID", false) != -1 || StrContains(TTT_PLUGIN_VERSION, "COMMIT", false) != -1)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Unknown", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
-        }
-        else
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Older", client, TTT_PLUGIN_VERSION, g_sLatestVersion);
-        }
-    }
-
-    if (g_bRoundStarted && TTT_IsClientValid(client) && !g_bRespawn[client])
+    if (g_iStatus == Round_Active && TTT_IsClientValid(client) && !g_iPlayer[client].Respawn)
     {
         SetClanTag(client, TTT_TEAM_UNASSIGNED);
         return Plugin_Stop;
     }
 
+    g_iPlayer[client].Alive = true;
+
+    if (g_cVersionMessage.BoolValue)
+    {
+        // TTT_PLUGIN_VERSION = X.Y.Z
+        char sSplit[3][12];
+        ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+        int iVersion = -1;
+
+        if (IsStringNumeric(sSplit[2]))
+        {
+            iVersion = StringToInt(sSplit[2]);
+        }
+
+        if (iVersion == -1)
+        {
+            return Plugin_Continue;
+        }
+
+        if (iVersion == g_iVersion)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, g_iVersion);
+        }
+        else if (iVersion < g_iVersion)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Older", client, iVersion, g_iVersion);
+        }
+        else
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Unknown", client, iVersion, g_iVersion);
+        }
+    }
+
     return Plugin_Continue;
+}
+
+public Action Event_PlayerConnectFull(Event event, const char[] name, bool dontBroadcast)
+{
+    if (g_cAutoAssignTeam != null && g_cAutoAssignTeam.BoolValue)
+    {
+        CreateTimer(2.0, Timer_AutoAssignTeam, event.GetInt("userid"), TIMER_FLAG_NO_MAPCHANGE);
+    }
+}
+
+public Action Timer_AutoAssignTeam(Handle timer, int userId)
+{
+    int client = GetClientOfUserId(userId);
+    
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Stop;
+    }
+    
+    int iTeam = DetermineTeam();
+    int iLifeState = GetEntProp(client, Prop_Send, "m_lifeState");
+    SetEntProp(client, Prop_Send, "m_lifeState", 2);
+    ChangeClientTeam(client, DetermineTeam());
+    ClientCommand(client, "jointeam %i", iTeam);
+    CS_UpdateClientModel(client);
+    SetEntProp(client, Prop_Send, "m_lifeState", iLifeState);
+    
+    int iCurrent = GetClientTeam(client);
+    
+    if (!IsPlayerAlive(client) && (iCurrent == CS_TEAM_T || iCurrent == CS_TEAM_CT) && (g_bSpawnAllowed || AreTeamsEmpty()))
+    {
+        CS_RespawnPlayer(client);
+    }
+    
+    return Plugin_Stop;
+}
+
+public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
+{
+    bool bWarmup = TTT_IsWarmUp();
+    
+    if (bWarmup || g_cGraceTime.BoolValue)
+    {
+        g_bSpawnAllowed = true;
+    }
+    
+    if (bWarmup)
+    {
+        return;
+    }
+    
+    CreateTimer(g_cGraceTime.FloatValue, Timer_GraceTimeOver, _, TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public Action Timer_GraceTimeOver(Handle timer)
+{
+    g_bSpawnAllowed = false;
+}
+
+public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
+{
+    g_bSpawnAllowed = false;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -1547,19 +1807,14 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (TTT_IsClientValid(client))
     {
-        if (g_cAdvert.BoolValue)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Player Spawn TTT Version", client, TTT_PLUGIN_VERSION);
-        }
-        
-        if (g_bRoundStarted && !g_bRespawn[client])
+        if (g_iStatus == Round_Active && !g_iPlayer[client].Respawn)
         {
             if (g_cslayAfterStart.BoolValue)
             {
-                g_iRole[client] = TTT_TEAM_UNASSIGNED;
-                
+                g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
+
                 RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
-                
+
                 SetClanTag(client, TTT_TEAM_UNASSIGNED);
                 DispatchKeyValue(client, "targetname", "UNASSIGNED");
             }
@@ -1573,22 +1828,22 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
                 GivePlayerItem(client, "weapon_knife");
 
                 char sWeapon[32];
-                
+
                 Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSSecondary);
                 GivePlayerItem(client, sWeapon);
-                
+
                 Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSPrimary);
                 GivePlayerItem(client, sWeapon);
             }
         }
 
-        g_iInnoKills[client] = 0;
-        g_iTraitorKills[client] = 0;
-        g_iDetectiveKills[client] = 0;
+        g_iPlayer[client].InnocentKills = 0;
+        g_iPlayer[client].TraitorKills = 0;
+        g_iPlayer[client].DetectiveKills = 0;
 
         StripAllWeapons(client);
 
-        if (g_bInactive)
+        if (g_iStatus == Round_Inactive)
         {
             int iCount = 0;
 
@@ -1600,15 +1855,15 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
                 }
             }
 
-            if (iCount >= 3)
+            if (iCount >= g_crequiredPlayers.IntValue)
             {
                 ServerCommand("mp_restartgame 2");
             }
         }
 
-        if (!g_bInactive && g_cshowKarmaOnSpawn.BoolValue)
+        if (g_iStatus != Round_Inactive && g_cshowKarmaOnSpawn.BoolValue)
         {
-            CPrintToChat(client, "%s %T", g_sTag, "Your karma is", client, g_iKarma[client]);
+            CPrintToChat(client, "%s %T", g_sTag, "Your karma is", client, g_iPlayer[client].Karma);
         }
 
         if (g_cenableNoBlock.BoolValue)
@@ -1616,10 +1871,10 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             SetNoBlock(client);
         }
 
-        if (g_cTranfserArmor.BoolValue && g_iArmor[client] > 0)
+        if (g_cTranfserArmor.BoolValue && g_iPlayer[client].Armor > 0)
         {
-            SetEntProp(client, Prop_Send, "m_ArmorValue", g_iArmor[client]);
-            g_iArmor[client] = 0;
+            SetEntProp(client, Prop_Send, "m_ArmorValue", g_iPlayer[client].Armor);
+            g_iPlayer[client].Armor = 0;
         }
 
         if (g_cFixThirdperson.BoolValue)
@@ -1627,7 +1882,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             ClientCommand(client, "firstperson");
         }
 
-        g_bRespawn[client] = false;
+        g_iPlayer[client].Respawn = false;
     }
 }
 
@@ -1649,7 +1904,7 @@ public void OnClientPutInServer(int client)
     }
 
     ClearClientData(client);
-    
+
     HookClient(client);
     if (g_cDebugMessages.BoolValue)
     {
@@ -1681,7 +1936,7 @@ void LateLoadClients(bool bHook = false)
             {
                 LogToFileEx(g_sKarmaFile, "LateLoadClients - 2 (%N), Valid Database", i);
             }
-            LoadClientKarma(GetClientUserId(i));
+            LoadClientInfo(GetClientUserId(i));
         }
 
         OnClientCookiesCached(i);
@@ -1707,24 +1962,24 @@ public Action OnPostThink(int client)
         int iKarma;
         if (g_cpublicKarma.BoolValue)
         {
-            if (g_bFound[client])
+            if (g_iPlayer[client].Found)
             {
-                iKarma = g_iKarma[client] * -1;
+                iKarma = g_iPlayer[client].Karma * -1;
             }
             else
             {
-                iKarma = g_iKarma[client];
+                iKarma = g_iPlayer[client].Karma;
             }
         }
         else if (g_ckarmaRound.BoolValue)
         {
-            if (g_bFound[client])
+            if (g_iPlayer[client].Found)
             {
-                iKarma = g_iKarmaStart[client] * -1;
+                iKarma = g_iPlayer[client].KarmaStart * -1;
             }
             else
             {
-                iKarma = g_iKarmaStart[client];
+                iKarma = g_iPlayer[client].KarmaStart;
             }
         }
         CS_SetClientContributionScore(client, iKarma);
@@ -1750,11 +2005,11 @@ void BanBadPlayerKarma(int client)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-    if (g_cDisableDamageSelection.BoolValue && g_bSelection)
+    if (g_cDisableDamageSelection.BoolValue && g_iStatus == Round_Selection)
     {
         return Plugin_Handled;
     }
-    
+
     if (IsDamageForbidden())
     {
         return Plugin_Handled;
@@ -1769,196 +2024,212 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
     {
         return Plugin_Handled;
     }
-    
-    float fDamage = damage;
-    
-    if (g_bRoundStarted && !g_bRoundEnded)
-    {
-        if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_ckarmaDMG.BoolValue)
-        {
-            if (g_ckarmaDMG_up.BoolValue || (g_iKarma[iAttacker] < g_cstartKarma.IntValue))
-            {
-                fDamage = (damage * (float(g_iKarma[iAttacker]) / float(g_cstartKarma.IntValue)));
-            }
-        }
-    }
-    
-    if (!TTT_IsClientValid(iAttacker) || !TTT_IsClientValid(iVictim))
-    {
-        return Plugin_Continue;
-    }
-    
-    char iItem[TTT_LOG_SIZE];
-    int iWeapon = GetEntPropEnt(iAttacker, Prop_Send, "m_hActiveWeapon");
-    
-    if (!IsValidEntity(iWeapon))
-    {
-        return Plugin_Continue;
-    }
-    
-    char sWeapon[32];
-    GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
-    
-    char sAttackerID[32], sClientID[32];
-    
-    if (g_cAddSteamIDtoLogs.BoolValue)
-    {
-        if (g_cSteamIDLogFormat.IntValue == 1)
-        {
-            GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
-            GetClientAuthId(iVictim, AuthId_Steam2, sClientID, sizeof(sClientID));
-        }
-        else if (g_cSteamIDLogFormat.IntValue == 2)
-        {
-            GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
-            GetClientAuthId(iVictim, AuthId_Steam3, sClientID, sizeof(sClientID));
-        }
-        else if (g_cSteamIDLogFormat.IntValue == 3)
-        {
-            GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
-            GetClientAuthId(iVictim, AuthId_SteamID64, sClientID, sizeof(sClientID));
-        }
-        
-        if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
-        {
-            Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
-            Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
-        }
-    }
 
-    bool badAction = false;
-
-    if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        badAction = true;
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            subtractKarma(iAttacker, g_cDamageKarmaII.IntValue, false);
-        }
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Traitor) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            addKarma(iAttacker, g_cDamageKarmaIT.IntValue, false);
-        }
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        badAction = true;
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            subtractKarma(iAttacker, g_cDamageKarmaID.IntValue, false);
-        }
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Innocent) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            addKarma(iAttacker, g_cDamageKarmaTI.IntValue, false);
-        }
-
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Traitor) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        badAction = true;
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            subtractKarma(iAttacker, g_cDamageKarmaTT.IntValue, false);
-        }
-
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Detective) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            addKarma(iAttacker, g_cDamageKarmaTD.IntValue, false);
-        }
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_INNOCENT)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Innocent) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        badAction = true;
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            subtractKarma(iAttacker, g_cDamageKarmaDI.IntValue, false);
-        }
-
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_TRAITOR)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Traitor) for %.0f damage with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            addKarma(iAttacker, g_cDamageKarmaDT.IntValue, false);
-        }
-    }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[iVictim] == TTT_TEAM_DETECTIVE)
-    {
-        Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Detective) for %.0f damage with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sWeapon);
-        addArrayTime(iItem);
-
-        badAction = true;
-
-        if (g_cEnableDamageKarma.BoolValue)
-        {
-            subtractKarma(iAttacker, g_cDamageKarmaDD.IntValue, false);
-        }
-    }
-    
     Action action = Plugin_Continue;
 
-    if (fDamage != damage)
+    if (g_iStatus == Round_Active)
     {
-        damage = fDamage;
-        action = Plugin_Changed;
-    }
+        float fDamage = damage;
 
-    Call_StartForward(g_hOnTakeDamage);
-    Call_PushCell(iVictim);
-    Call_PushCell(iAttacker);
-    Call_PushFloat(fDamage);
-    Call_PushCell(iWeapon);
-    Call_PushCell(view_as<int>(badAction));
-    Call_Finish();
+        if (TTT_IsClientValid(iAttacker) && iAttacker != iVictim && g_ckarmaDMG.BoolValue)
+        {
+            if (g_ckarmaDMG_up.BoolValue || (g_iPlayer[iAttacker].Karma < g_cstartKarma.IntValue))
+            {
+                fDamage = (damage * (float(g_iPlayer[iAttacker].Karma) / float(g_cstartKarma.IntValue)));
+            }
+        }
+
+        if (!TTT_IsClientValid(iAttacker) || !TTT_IsClientValid(iVictim))
+        {
+            return Plugin_Continue;
+        }
+
+        char iItem[TTT_LOG_SIZE];
+        int iWeapon = GetEntPropEnt(iAttacker, Prop_Send, "m_hActiveWeapon");
+
+        if (!IsValidEntity(iWeapon))
+        {
+            return Plugin_Continue;
+        }
+
+        char sWeapon[32];
+        GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+
+        if (!TTT_IsClientValid(inflictor) && IsValidEntity(inflictor))
+        {
+            GetEntityClassname(inflictor, sWeapon, sizeof(sWeapon));
+        }
+
+        char sAttackerID[32], sClientID[32];
+
+        if (g_cAddSteamIDtoLogs.BoolValue)
+        {
+            if (g_cSteamIDLogFormat.IntValue == 1)
+            {
+                GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
+                GetClientAuthId(iVictim, AuthId_Steam2, sClientID, sizeof(sClientID));
+            }
+            else if (g_cSteamIDLogFormat.IntValue == 2)
+            {
+                GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
+                GetClientAuthId(iVictim, AuthId_Steam3, sClientID, sizeof(sClientID));
+            }
+            else if (g_cSteamIDLogFormat.IntValue == 3)
+            {
+                GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
+                GetClientAuthId(iVictim, AuthId_SteamID64, sClientID, sizeof(sClientID));
+            }
+
+            if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
+            {
+                Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+            }
+        }
+
+        bool badAction = false;
+
+        char sDamageType[18];
+        if (damagetype & CS_DMG_HEADSHOT)
+        {
+            Format(sDamageType, sizeof(sDamageType), " (HEADSHOT)");
+        }
+        else if (damagetype & DMG_CLUB)
+        {
+            Format(sDamageType, sizeof(sDamageType), " (THROW DAMAGE)");
+        }
+
+        if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Innocent) for %.0f damage%s with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            badAction = true;
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                subtractKarma(iAttacker, g_cDamageKarmaII.IntValue, false);
+            }
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Traitor) for %.0f damage%s with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                addKarma(iAttacker, g_cDamageKarmaIT.IntValue, false);
+            }
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) damaged %N%s (Detective) for %.0f damage%s with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            badAction = true;
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                subtractKarma(iAttacker, g_cDamageKarmaID.IntValue, false);
+            }
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Innocent) for %.0f damage%s with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                addKarma(iAttacker, g_cDamageKarmaTI.IntValue, false);
+            }
+
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Traitor) for %.0f damage%s with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            badAction = true;
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                subtractKarma(iAttacker, g_cDamageKarmaTT.IntValue, false);
+            }
+
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) damaged %N%s (Detective) for %.0f damage%s with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                addKarma(iAttacker, g_cDamageKarmaTD.IntValue, false);
+            }
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Innocent) for %.0f damage%s with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            badAction = true;
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                subtractKarma(iAttacker, g_cDamageKarmaDI.IntValue, false);
+            }
+
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Traitor) for %.0f damage%s with %s]", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                addKarma(iAttacker, g_cDamageKarmaDT.IntValue, false);
+            }
+        }
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
+        {
+            Format(iItem, sizeof(iItem), "-> [%N%s (Detective) damaged %N%s (Detective) for %.0f damage%s with %s] - BAD ACTION", iAttacker, sAttackerID, iVictim, sClientID, fDamage, sDamageType, sWeapon);
+            PushStringToLogs(iItem);
+
+            badAction = true;
+
+            if (g_cEnableDamageKarma.BoolValue)
+            {
+                subtractKarma(iAttacker, g_cDamageKarmaDD.IntValue, false);
+            }
+        }
+
+
+        if (fDamage != damage)
+        {
+            damage = fDamage;
+            action = Plugin_Changed;
+        }
+
+        Call_StartForward(g_fwOnTakeDamage);
+        Call_PushCell(iVictim);
+        Call_PushCell(iAttacker);
+        Call_PushFloat(fDamage);
+        Call_PushCell(iWeapon);
+        Call_PushCell(view_as<int>(badAction));
+        Call_Finish();
+    }
 
     return action;
 }
 
 bool IsDamageForbidden()
 {
-    if (g_bRoundEnded && !g_croundendDamage.BoolValue)
+    if (g_iStatus == Round_Ending && !g_croundendDamage.BoolValue)
     {
         return true;
     }
-    
-    if (!g_bRoundStarted && !g_cEnableDamage.BoolValue)
+
+    if (g_iStatus < Round_Selection && !g_cEnableDamage.BoolValue)
     {
         return true;
     }
@@ -1969,78 +2240,51 @@ bool IsDamageForbidden()
 public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if (!TTT_IsClientValid)
+
+    if (!TTT_IsClientValid(client))
     {
         event.BroadcastDisabled = true;
         return Plugin_Changed;
     }
 
     int iRagdoll = GetEntPropEnt(client, Prop_Send, "m_hRagdoll");
-    
+
     if (iRagdoll > 0)
     {
         AcceptEntityInput(iRagdoll, "Kill");
     }
-    
-    if (g_iRole[client] > TTT_TEAM_UNASSIGNED)
+
+    if (g_iPlayer[client].Role > TTT_TEAM_UNASSIGNED)
     {
-        g_bAlive[client] = false;
-        char sModel[128];
-        GetClientModel(client, sModel, sizeof(sModel));
+        g_iPlayer[client].Alive = false;
 
-        float origin[3], angles[3], velocity[3];
-
-        GetClientAbsOrigin(client, origin);
-        GetClientAbsAngles(client, angles);
-        GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", velocity);
-
-        int iEntity = CreateEntityByName("prop_ragdoll");
-        DispatchKeyValue(iEntity, "model", sModel);
-        SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
-        SetEntityMoveType(iEntity, MOVETYPE_NONE);
-        AcceptEntityInput(iEntity, "DisableMotion");
-
-        ActivateEntity(iEntity);
-        if (DispatchSpawn(iEntity))
-        {
-            float speed = GetVectorLength(velocity);
-            if (speed >= 500)
-            {
-                TeleportEntity(iEntity, origin, angles, NULL_VECTOR);
-            }
-            else
-            {
-                TeleportEntity(iEntity, origin, angles, velocity);
-            }
-        }
-        else
-        {
-            LogToFileEx(g_sErrorFile, "Unable to spawn ragdoll for %N (Auth: %i)", client, GetSteamAccountID(client));
-        }
-
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-        AcceptEntityInput(iEntity, "EnableMotion");
-        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+        int iEntity = CreateRagdoll(client);
 
         int iUAttacker = event.GetInt("attacker");
         int iAttacker = GetClientOfUserId(iUAttacker);
         int iARole = 0;
         char sName[MAX_NAME_LENGTH];
         GetClientName(client, sName, sizeof(sName));
+        Ragdoll body;
 
-        Ragdolls ragdoll;
+        if (iEntity != -1)
+        {
+            body.EntityRef = EntIndexToEntRef(iEntity);
+        }
+        else
+        {
+            body.EntityRef = -1;
+        }
 
-        ragdoll.Ent = EntIndexToEntRef(iEntity);
-        ragdoll.Victim = GetClientUserId(client);
-        ragdoll.VictimTeam = g_iRole[client];
-        Format(ragdoll.VictimName, MAX_NAME_LENGTH, sName);
+        body.Victim = GetClientUserId(client);
+        body.VictimRole = g_iPlayer[client].Role;
+        Format(body.VictimName, sizeof(body.VictimName), sName);
+        body.Scanned = false;
 
         if (TTT_IsClientValid(iAttacker))
         {
             GetClientName(iAttacker, sName, sizeof(sName));
-            iARole = g_iRole[iAttacker];
+            iARole = g_iPlayer[iAttacker].Role;
         }
         else
         {
@@ -2048,21 +2292,52 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
             iUAttacker = 0;
         }
 
-        ragdoll.Attacker = iUAttacker;
-        ragdoll.AttackerTeam = iARole;
-        Format(ragdoll.AttackerName, MAX_NAME_LENGTH, sName);
-        event.GetString("weapon", ragdoll.WeaponUsed, sizeof(ragdoll.WeaponUsed));
+        body.Attacker = iUAttacker;
+        body.AttackerRole = iARole;
+        Format(body.AttackerName, sizeof(body.AttackerName), sName);
+        body.GameTime = GetGameTime();
+        body.Explode = false;
 
-        ragdoll.Scanned = false;
-        ragdoll.GameTime = GetGameTime();
+        if (iUAttacker > 0)
+        {
+            GetClientAuthId(iAttacker, AuthId_Steam2, body.AttackerSteam2, sizeof(body.AttackerSteam2));
+        }
 
-        g_aRagdoll.PushArray(ragdoll, sizeof(ragdoll));
+        GetClientAuthId(client, AuthId_Steam2, body.VictimSteam2, sizeof(body.VictimSteam2));
+        
+        if (iUAttacker > 0)
+        {
+            GetClientAuthId(iAttacker, AuthId_Steam3, body.AttackerSteam3, sizeof(body.AttackerSteam3));
+        }
 
-        SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
+        GetClientAuthId(client, AuthId_Steam3, body.VictimSteam3, sizeof(body.VictimSteam3));
+        
+        if (iUAttacker > 0)
+        {
+            GetClientAuthId(iAttacker, AuthId_SteamID64, body.AttackerSteamID64, sizeof(body.AttackerSteamID64));
+        }
+
+        GetClientAuthId(client, AuthId_SteamID64, body.VictimSteamID64, sizeof(body.VictimSteamID64));
+        
+
+        event.GetString("weapon", body.Weaponused, sizeof(body.Weaponused));
+        g_aRagdoll.PushArray(body, sizeof(body));
+
+        if (iEntity != -1)
+        {
+            if (g_cSpawnType.IntValue == 0)
+            {
+                SetEntPropEnt(client, Prop_Send, "m_hRagdoll", iEntity);
+            }
+            else if (g_cSpawnType.IntValue == 1 || g_cSpawnType.IntValue == 2)
+            {
+                SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
+            }
+        }
 
         Action res = Plugin_Continue;
 
-        Call_StartForward(g_hOnPlayerDeathPre);
+        Call_StartForward(g_fwOnPlayerDeathPre);
         Call_PushCell(client);
         Call_PushCell(iAttacker);
         Call_Finish(res);
@@ -2073,47 +2348,47 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
             return Plugin_Changed;
         }
 
-        if (client != iAttacker && iAttacker != 0 && !g_bImmuneRDMManager[iAttacker])
+        if (g_iStatus == Round_Active &&  (client != iAttacker && iAttacker != 0 && !g_iPlayer[iAttacker].ImmuneRDMManager))
         {
             if (
-                (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR) ||
-                (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE) ||
-                (g_cShowInnoRDMMenu.BoolValue && g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
+                (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR) ||
+                (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE) ||
+                (g_cShowInnoRDMMenu.BoolValue && g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
             )
             {
-                if (g_hRDMTimer[client] != null)
+                if (g_iPlayer[client].RDMTimer != null)
                 {
-                    TTT_ClearTimer(g_hRDMTimer[client]);
+                    TTT_ClearTimer(g_iPlayer[client].RDMTimer);
                 }
 
-                g_hRDMTimer[client] = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
-                g_iRDMAttacker[client] = iAttacker;
+                g_iPlayer[client].RDMTimer = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
+                g_iPlayer[client].RDMAttacker = iAttacker;
             }
 
-            if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE))
+            if ((g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
             {
-                g_iInnoKills[iAttacker]++;
+                g_iPlayer[iAttacker].InnocentKills++;
             }
-            else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
+            else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
             {
-                g_iTraitorKills[iAttacker]++;
+                g_iPlayer[iAttacker].TraitorKills++;
             }
-            else if ((g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) || (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
+            else if ((g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
             {
-                g_iDetectiveKills[iAttacker]++;
+                g_iPlayer[iAttacker].DetectiveKills++;
             }
 
-            if (g_iInnoKills[iAttacker] >= g_cpunishInnoKills.IntValue)
+            if (g_iPlayer[iAttacker].InnocentKills >= g_cpunishInnoKills.IntValue)
             {
                 TTT_AddRoundSlays(iAttacker, g_cRoundSlayInno.IntValue, true);
             }
 
-            if (g_iTraitorKills[iAttacker] >= g_cpunishTraitorKills.IntValue)
+            if (g_iPlayer[iAttacker].TraitorKills >= g_cpunishTraitorKills.IntValue)
             {
                 TTT_AddRoundSlays(iAttacker, g_cRoundSlayTraitor.IntValue, true);
             }
 
-            if (g_iDetectiveKills[iAttacker] >= g_cpunishDetectiveKills.IntValue)
+            if (g_iPlayer[iAttacker].DetectiveKills >= g_cpunishDetectiveKills.IntValue)
             {
                 TTT_AddRoundSlays(iAttacker, g_cRoundSlayDetective.IntValue, true);
             }
@@ -2130,11 +2405,11 @@ public void OnClientPostAdminCheck(int client)
     GetClientName(client, name, sizeof(name));
     nameCheck(client, name);
 
-    g_bImmuneRDMManager[client] = false;
-    g_bFound[client] = true;
+    g_iPlayer[client].ImmuneRDMManager = false;
+    g_iPlayer[client].Found = true;
+    g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
+    g_iPlayer[client].Ready = true;
 
-    g_iRole[client] = TTT_TEAM_UNASSIGNED;
-    
     DispatchKeyValue(client, "targetname", "UNASSIGNED");
     SetClanTag(client, TTT_TEAM_UNASSIGNED);
 
@@ -2158,7 +2433,7 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
         {
             LogToFileEx(g_sKarmaFile, "Timer_OnClientPutInServer - 1 (%N)", client);
         }
-        LoadClientKarma(userid);
+        LoadClientInfo(userid);
     }
 }
 
@@ -2168,14 +2443,14 @@ public Action Command_TRules(int client, int args)
     {
         return Plugin_Handled;
     }
-    
-    g_bRules[client] = false;
-    
-    char sBuffer[12];
-    IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
-    SetClientCookie(client, g_hRules, sBuffer);
 
-    ShowRules(client, g_iSite[client]);
+    g_iPlayer[client].Rules = false;
+
+    char sBuffer[12];
+    IntToString(g_iPlayer[client].Rules, sBuffer, sizeof(sBuffer));
+    g_coRules.Set(client, sBuffer);
+
+    ShowRules(client, g_iPlayer[client].Site);
     return Plugin_Handled;
 }
 
@@ -2185,13 +2460,13 @@ public Action Command_DetectiveRules(int client, int args)
     {
         return Plugin_Handled;
     }
-    
-    g_bDRules[client] = false;
-    
+
+    g_iPlayer[client].DetectiveRules = false;
+
     char sBuffer[12];
-    IntToString(g_bDRules[client], sBuffer, sizeof(sBuffer));
-    SetClientCookie(client, g_hDRules, sBuffer);
-    
+    IntToString(g_iPlayer[client].DetectiveRules, sBuffer, sizeof(sBuffer));
+    g_coDRules.Set(client, sBuffer);
+
     AskClientForMicrophone(client);
     return Plugin_Handled;
 }
@@ -2202,7 +2477,7 @@ public Action Command_RSlays(int client, int args)
     {
         return Plugin_Handled;
     }
-    
+
     if (!TTT_CheckCommandAccess(client, "sm_rslays", g_cRoundSlayAccess, true))
     {
         return Plugin_Handled;
@@ -2264,7 +2539,7 @@ public Action Command_RSlays(int client, int args)
         {
             CPrintToChat(j, "%s %T", g_sTag, "AdminSetRoundSlays", j, target, client, rounds);
         }
-        
+
         LogAction(client, target, "\"%L\" slayed \"%L\" for \"%i\" rounds", client, target, rounds);
     }
 
@@ -2277,7 +2552,7 @@ public Action Command_Respawn(int client, int args)
     {
         return Plugin_Handled;
     }
-    
+
     if (!TTT_CheckCommandAccess(client, "sm_respawn", g_cRespawnAccess, true))
     {
         return Plugin_Handled;
@@ -2328,7 +2603,7 @@ public Action Command_Respawn(int client, int args)
         {
             CPrintToChat(j, "%s %T", g_sTag, "Respawn: Player", j, client, target);
         }
-        
+
         LogAction(client, target, "\"%L\" respawned \"%L\"", client, target);
     }
 
@@ -2337,7 +2612,65 @@ public Action Command_Respawn(int client, int args)
 
 public Action Command_Version(int client, int args)
 {
-    ReplyToCommand(client, "TTT Version: %s", TTT_PLUGIN_VERSION);
+    int iVersion = -1;
+
+    char sSplit[3][12];
+    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[2]))
+    {
+        iVersion = StringToInt(sSplit[2]);
+    }
+
+    ReplyToCommand(client, "TTT Version: %d (as string: %s)", iVersion, TTT_PLUGIN_VERSION);
+}
+
+public Action Command_CheckVersion(int client, int args)
+{
+    int iVersion = -1;
+
+    char sSplit[3][12];
+    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
+
+    if (IsStringNumeric(sSplit[2]))
+    {
+        iVersion = StringToInt(sSplit[2]);
+    }
+
+    ReplyToCommand(client, "TTT Version: %d (as string: %s)", iVersion, TTT_PLUGIN_VERSION);
+    ReplyToCommand(client, "Git Version: %d", g_iVersion);
+
+    if (!StrEqual(TTT_PLUGIN_VERSION, "<VERSION>", false))
+    {
+        if (iVersion == g_iVersion)
+        {
+            ReplyToCommand(client, "TTT is up2date.");
+        }
+        else if (iVersion < g_iVersion)
+        {
+            ReplyToCommand(client, "TTT is outdated.");
+        }
+        else if (iVersion > g_iVersion)
+        {
+            ReplyToCommand(client, "TTT is newer???");
+        }
+        else
+        {
+            ReplyToCommand(client, "TTT with a unknown version???");
+        }
+    }
+}
+
+public Action Command_Identify(int client, int args)
+{
+    if (!g_cIdentifyCommand.BoolValue)
+    {
+        return Plugin_Handled;
+    }
+
+    IdentifyEntity(client);
+
+    return Plugin_Handled;
 }
 
 public void Frame_ShowWelcomeMenu(any userid)
@@ -2346,7 +2679,7 @@ public void Frame_ShowWelcomeMenu(any userid)
 
     if (TTT_IsClientValid(client))
     {
-        ShowRules(client, g_iSite[client]);
+        ShowRules(client, g_iPlayer[client].Site);
     }
 }
 
@@ -2356,20 +2689,20 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        ShowRules(client, g_iSite[client]);
+        ShowRules(client, g_iPlayer[client].Site);
     }
 }
 
 void ShowRules(int client, int iItem)
 {
-    if (g_cRulesMenu.BoolValue && g_bRules[client])
+    if (g_cRulesMenu.BoolValue && g_iPlayer[client].Rules)
     {
         return;
     }
 
     bool bShow = true;
     Action res = Plugin_Continue;
-    Call_StartForward(g_hOnRulesMenu);
+    Call_StartForward(g_fwOnRulesMenu);
     Call_PushCell(client);
     Call_PushCellRef(bShow);
     Call_Finish(res);
@@ -2378,7 +2711,7 @@ void ShowRules(int client, int iItem)
     {
         return;
     }
-    
+
     char sText[512], sYes[64];
     Format(sText, sizeof(sText), "%T", "Welcome Menu", client, client, TTT_PLUGIN_AUTHOR);
     Format(sYes, sizeof(sYes), "%T", "WM Yes", client);
@@ -2386,7 +2719,7 @@ void ShowRules(int client, int iItem)
     Menu menu = new Menu(Menu_ShowWelcomeMenu);
     menu.SetTitle(sText);
 
-    Handle hFile = OpenFile(g_sRulesFile, "rt");
+    File hFile = OpenFile(g_sRulesFile, "rt");
 
     if (hFile == null)
     {
@@ -2440,7 +2773,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
         if (!StrEqual(sParam, "yes", false))
         {
-            Handle hFile = OpenFile(g_sRulesFile, "rt");
+            File hFile = OpenFile(g_sRulesFile, "rt");
 
             if (hFile == null)
             {
@@ -2453,6 +2786,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
             if (!kvRules.ImportFromFile(g_sRulesFile))
             {
                 SetFailState("Can't read %s correctly! (ImportFromFile)", g_sRulesFile);
+                delete hFile;
                 delete kvRules;
                 return 0;
             }
@@ -2468,9 +2802,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                     CPrintToChat(client, sValue);
                     RequestFrame(Frame_ShowWelcomeMenu, GetClientUserId(client));
 
-                    g_bKnowRules[client] = false;
-                    g_bReadRules[client] = true;
+                    g_iPlayer[client].KnowRules = false;
+                    g_iPlayer[client].ReadRules = true;
 
+                    delete hFile;
                     delete kvRules;
                     return 0;
                 }
@@ -2480,9 +2815,11 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                 {
                     FakeClientCommand(client, sValue);
 
-                    g_bKnowRules[client] = false;
-                    g_bReadRules[client] = true;
+                    g_iPlayer[client].KnowRules = false;
+                    g_iPlayer[client].ReadRules = true;
 
+
+                    delete hFile;
                     delete kvRules;
                     return 0;
                 }
@@ -2492,9 +2829,10 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                 {
                     ClientCommand(client, sValue);
 
-                    g_bKnowRules[client] = false;
-                    g_bReadRules[client] = true;
+                    g_iPlayer[client].KnowRules = false;
+                    g_iPlayer[client].ReadRules = true;
 
+                    delete hFile;
                     delete kvRules;
                     return 0;
                 }
@@ -2512,14 +2850,15 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
 
                     if (g_cRulesURLReopenMenu.BoolValue)
                     {
-                        g_bKnowRules[client] = false;
-                        g_bReadRules[client] = true;
+                        g_iPlayer[client].KnowRules = false;
+                        g_iPlayer[client].ReadRules = true;
                     }
                     else
                     {
                         TTT_ClientOpenRules(client);
                     }
 
+                    delete hFile;
                     delete kvRules;
                     return 0;
                 }
@@ -2527,7 +2866,7 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                 kvRules.GetString("file", sValue, sizeof(sValue));
                 if (strlen(sValue) > 0)
                 {
-                    g_iSite[client] = menu.Selection;
+                    g_iPlayer[client].Site = menu.Selection;
 
                     char sFile[PLATFORM_MAX_PATH + 1];
                     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/rules/%s", sValue);
@@ -2535,7 +2874,14 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                     File hRFile = OpenFile(sFile, "rt");
 
                     if (hRFile == null)
-                    SetFailState("[TTT] Can't open File: %s", sFile);
+                    {
+                        SetFailState("[TTT] Can't open File: %s", sFile);
+
+                        delete hFile;
+                        delete kvRules;
+
+                        return 0;
+                    }
 
                     char sLine[64], sTitle[64];
 
@@ -2557,33 +2903,35 @@ public int Menu_ShowWelcomeMenu(Menu menu, MenuAction action, int client, int pa
                     rMenu.Display(client, g_ctimeToReadRules.IntValue);
 
                     delete hRFile;
+                    delete hFile;
                     delete kvRules;
 
                     return 0;
                 }
 
+                delete hFile;
                 delete kvRules;
 
                 return 0;
             }
-            
+
             delete hFile;
         }
         else
         {
             if (g_cRulesMenu.BoolValue)
             {
-                g_bRules[client] = true;
-                
+                g_iPlayer[client].Rules = true;
+
                 char sBuffer[12];
-                IntToString(g_bRules[client], sBuffer, sizeof(sBuffer));
-                SetClientCookie(client, g_hRules, sBuffer);
-                
+                IntToString(g_iPlayer[client].Rules, sBuffer, sizeof(sBuffer));
+                g_coRules.Set(client, sBuffer);
+
                 return 0;
             }
-            
-            g_bKnowRules[client] = true;
-            g_bReadRules[client] = false;
+
+            g_iPlayer[client].KnowRules = true;
+            g_iPlayer[client].ReadRules = false;
         }
 
         if (g_cshowDetectiveMenu.BoolValue)
@@ -2636,14 +2984,14 @@ public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
 
 void AskClientForMicrophone(int client)
 {
-    if (g_cDRulesMenu.BoolValue && g_bDRules[client])
+    if (g_cDRulesMenu.BoolValue && g_iPlayer[client].DetectiveRules)
     {
         return;
     }
 
     bool bShow = true;
     Action res = Plugin_Continue;
-    Call_StartForward(g_hOnDetectiveMenu);
+    Call_StartForward(g_fwOnDetectiveMenu);
     Call_PushCell(client);
     Call_PushCellRef(bShow);
     Call_Finish(res);
@@ -2652,7 +3000,7 @@ void AskClientForMicrophone(int client)
     {
         return;
     }
-    
+
     char sText[512], sYes[64], sNo[64];
     Format(sText, sizeof(sText), "%T", "AM Question", client);
     Format(sYes, sizeof(sYes), "%T", "AM Yes", client);
@@ -2677,27 +3025,27 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 
         if (!StrEqual(sParam, "yes", false))
         {
-            g_bAvoidDetective[client] = true;
+            g_iPlayer[client].AvoidDetective = true;
         }
         else
         {
-            g_bAvoidDetective[client] = false;
-            
+            g_iPlayer[client].AvoidDetective = false;
+
             if (g_cDRulesMenu.BoolValue)
             {
-                g_bDRules[client] = true;
-                
+                g_iPlayer[client].DetectiveRules = true;
+
                 char sBuffer[12];
-                IntToString(g_bDRules[client], sBuffer, sizeof(sBuffer));
-                SetClientCookie(client, g_hDRules, sBuffer);
-                
+                IntToString(g_iPlayer[client].DetectiveRules, sBuffer, sizeof(sBuffer));
+                g_coDRules.Set(client, sBuffer);
+
                 return 0;
             }
         }
     }
     else if (action == MenuAction_Cancel)
     {
-        g_bAvoidDetective[client] = true;
+        g_iPlayer[client].AvoidDetective = true;
     }
     else if (action == MenuAction_End)
     {
@@ -2710,37 +3058,42 @@ public int Menu_AskClientForMicrophone(Menu menu, MenuAction action, int client,
 public void OnClientCookiesCached(int client)
 {
     char sBuffer[12];
-    GetClientCookie(client, g_hRSCookie, sBuffer, sizeof(sBuffer));
-    g_iRoundSlays[client] = StringToInt(sBuffer);
-    
-    GetClientCookie(client, g_hRules, sBuffer, sizeof(sBuffer));
-    g_bRules[client] = view_as<bool>(StringToInt(sBuffer));
-    
-    GetClientCookie(client, g_hDRules, sBuffer, sizeof(sBuffer));
-    g_bDRules[client] = view_as<bool>(StringToInt(sBuffer));
+    g_coRules.Get(client, sBuffer, sizeof(sBuffer));
+    g_iPlayer[client].Rules = view_as<bool>(StringToInt(sBuffer));
+
+    g_coDRules.Get(client, sBuffer, sizeof(sBuffer));
+    g_iPlayer[client].DetectiveRules = view_as<bool>(StringToInt(sBuffer));
 }
 
 public void OnClientDisconnect(int client)
 {
-    UpdateRoundSlaysCookie(client);
-    
+    UpdatePlayerRSlays(client);
+    UpdatePlayer(client);
+
     if (IsClientInGame(client))
     {
-        g_bKarma[client] = false;
-        g_bFound[client] = false;
-        g_bAlive[client] = false;
-        g_bRespawn[client] = false;
+        g_iPlayer[client].KarmaReady = false;
+        g_iPlayer[client].Found = false;
+        g_iPlayer[client].Alive = false;
+        g_iPlayer[client].Respawn = false;
+        g_iPlayer[client].Ready = false;
 
         if (g_cTranfserArmor.BoolValue)
         {
-            g_iArmor[client] = 0;
+            g_iPlayer[client].Armor = 0;
         }
 
-        TTT_ClearTimer(g_hRDMTimer[client]);
+        TTT_ClearTimer(g_iPlayer[client].RDMTimer);
 
-        g_bReceivingLogs[client] = false;
-        g_bImmuneRDMManager[client] = false;
+        g_iPlayer[client].ReceivingLogs = false;
+        g_iPlayer[client].ImmuneRDMManager = false;
     }
+
+    if (!AreTeamsEmpty()) {
+        return;
+    }
+    
+    g_bSpawnAllowed = true;
 }
 
 public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroadcast)
@@ -2752,7 +3105,7 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
         return Plugin_Handled;
     }
 
-    if (g_cNameChangePunish.IntValue > 0 && g_bRoundStarted)
+    if (g_cNameChangePunish.IntValue > 0 && g_iStatus == Round_Active)
     {
         char sOld[MAX_NAME_LENGTH], sNew[MAX_NAME_LENGTH];
         event.GetString("oldname", sOld, sizeof(sOld));
@@ -2762,7 +3115,7 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
         {
             LoopValidClients(i)
             {
-                CPrintToChat(i, "%T", "Name Change Message", i, sOld, sNew);
+                CPrintToChat(i, "%s %T", g_sTag, "Name Change Message", i, sOld, sNew);
             }
         }
         else if (g_cNameChangePunish.IntValue == 2)
@@ -2807,21 +3160,21 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
         return Plugin_Handled;
     }
 
-    Ragdolls ragdoll;
+    Ragdoll body;
 
     for (int i = 0; i < g_aRagdoll.Length; i++)
     {
-        g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
+        g_aRagdoll.GetArray(i, body, sizeof(body));
 
-        if (client == GetClientOfUserId(ragdoll.Attacker))
+        if (client == GetClientOfUserId(body.Attacker))
         {
-            Format(ragdoll.AttackerName, MAX_NAME_LENGTH, sNew);
-            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
+            Format(body.AttackerName, sizeof(Ragdoll::AttackerName), sNew);
+            g_aRagdoll.SetArray(i, body, sizeof(body));
         }
-        else if (client == GetClientOfUserId(ragdoll.Victim))
+        else if (client == GetClientOfUserId(body.Victim))
         {
-            Format(ragdoll.VictimName, MAX_NAME_LENGTH, sNew);
-            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
+            Format(body.VictimName, sizeof(Ragdoll::VictimName), sNew);
+            g_aRagdoll.SetArray(i, body, sizeof(body));
         }
     }
 
@@ -2831,12 +3184,12 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
 public void Frame_RechangeName(DataPack pack)
 {
     pack.Reset();
-    
+
     int userid = pack.ReadCell();
 
     char sName[MAX_NAME_LENGTH];
     pack.ReadString(sName, sizeof(sName));
-    
+
     delete pack;
 
     int client = GetClientOfUserId(userid);
@@ -2858,26 +3211,26 @@ public Action Timer_1(Handle timer)
     {
         if (IsPlayerAlive(i))
         {
-            if (g_iRole[i] == TTT_TEAM_UNASSIGNED && !g_bRoundStarted && g_cdenyFire.BoolValue)
+            if (g_iPlayer[i].Role == TTT_TEAM_UNASSIGNED && g_iStatus != Round_Active && g_cdenyFire.BoolValue)
             {
                 for(int offset = 0; offset < 128; offset += 4)
                 {
                     int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-            
+
                     if (IsValidEntity(weapon))
                     {
                         char sClass[32];
                         GetEntityClassname(weapon, sClass, sizeof(sClass));
-            
+
                         if (StrContains(sClass, "weapon_", false) != -1)
                         {
-                            SetEntDataFloat(weapon, m_flNextPrimaryAttack, GetGameTime() + 2.0);
-                            SetEntDataFloat(weapon, m_flNextSecondaryAttack, GetGameTime() + 2.0);
+                            SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + 2.0);
+                            SetEntPropFloat(weapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() + 2.0);
                         }
                     }
                 }
             }
-            if (g_iRole[i] == TTT_TEAM_TRAITOR)
+            if (g_iPlayer[i].Role == TTT_TEAM_TRAITOR)
             {
                 g_iTraitorAlive++;
                 int[] clients = new int[MaxClients];
@@ -2885,7 +3238,7 @@ public Action Timer_1(Handle timer)
 
                 LoopValidClients(j)
                 {
-                    if (IsPlayerAlive(j) && j != i && (g_iRole[j] == TTT_TEAM_TRAITOR))
+                    if (IsPlayerAlive(j) && j != i && (g_iPlayer[j].Role == TTT_TEAM_TRAITOR))
                     {
                         clients[index] = j;
                         index++;
@@ -2898,34 +3251,52 @@ public Action Timer_1(Handle timer)
                 TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
                 TE_Send(clients, index);
             }
-            else if (g_iRole[i] == TTT_TEAM_INNOCENT)
+            else if (g_iPlayer[i].Role == TTT_TEAM_INNOCENT)
             {
                 g_iInnoAlive++;
             }
-            else if (g_iRole[i] == TTT_TEAM_DETECTIVE)
+            else if (g_iPlayer[i].Role == TTT_TEAM_DETECTIVE)
             {
                 g_iDetectiveAlive++;
             }
         }
     }
 
-    if (g_bRoundStarted)
+    if (g_iStatus == Round_Active)
     {
         if (g_iInnoAlive == 0 && ((g_cendwithD.BoolValue) || (g_iDetectiveAlive == 0)))
         {
-            g_bRoundStarted = false;
+            if (g_cDebug.BoolValue)
+            {
+                PrintToServer("(Timer_1) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+                if (g_cDebugMessages.BoolValue)
+                {
+                    LogMessage("(Timer_1) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+                }
+            }
 
             if (!g_cDebug.BoolValue)
             {
+                g_iStatus = Round_Ending;
                 CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
             }
         }
         else if (g_iTraitorAlive == 0)
         {
-            g_bRoundStarted = false;
+            if (g_cDebug.BoolValue)
+            {
+                PrintToServer("(Timer_1) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+                if (g_cDebugMessages.BoolValue)
+                {
+                    LogMessage("(Timer_1) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+                }
+            }
 
             if (!g_cDebug.BoolValue)
             {
+                g_iStatus = Round_Ending;
                 CS_TerminateRound(7.0, CSRoundEnd_CTWin);
             }
         }
@@ -2943,14 +3314,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     }
 
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
-    if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
+    if (!TTT_IsClientValid(iAttacker) || iAttacker == client && !g_cDebug.BoolValue)
     {
         return;
     }
 
     Action res = Plugin_Continue;
 
-    Call_StartForward(g_hOnClientDeathPre);
+    Call_StartForward(g_fwOnClientDeathPre);
     Call_PushCell(client);
     Call_PushCell(iAttacker);
     Call_Finish(res);
@@ -2962,15 +3333,15 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (g_cshowDeathMessage.BoolValue)
     {
-        if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR)
+        if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is a Traitor", client);
         }
-        else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE)
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is a Detective", client);
         }
-        else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT)
+        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is an Innocent", client);
         }
@@ -2978,15 +3349,15 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (g_cshowKillMessage.BoolValue)
     {
-        if (g_iRole[client] == TTT_TEAM_TRAITOR)
+        if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed a Traitor", iAttacker);
         }
-        else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+        else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed a Detective", iAttacker);
         }
-        else if (g_iRole[client] == TTT_TEAM_INNOCENT)
+        else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed an Innocent", iAttacker);
         }
@@ -2995,11 +3366,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     char iItem[TTT_LOG_SIZE];
     char sWeapon[32];
     event.GetString("weapon", sWeapon, sizeof(sWeapon));
-    
+
     char sAttackerID[32], sClientID[32];
 
     bool badAction = false;
-    
+
     if (g_cAddSteamIDtoLogs.BoolValue)
     {
         if (g_cSteamIDLogFormat.IntValue == 1)
@@ -3017,7 +3388,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
             GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
         }
-        
+
         if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
         {
             Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
@@ -3025,119 +3396,119 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         }
     }
 
-    if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT)
+    if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         badAction = true;
-        
-        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+
+        if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
-        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaII.IntValue, true);
         }
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Traitor) with %s]", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         addKarma(iAttacker, g_ckarmaIT.IntValue, true);
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Innocent) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         badAction = true;
-        
-        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+
+        if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
-        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaID.IntValue, true);
         }
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Innocent) with %s]", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         addKarma(iAttacker, g_ckarmaTI.IntValue, true);
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Traitor) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
-        
+        PushStringToLogs(iItem);
+
         badAction = true;
-        
-        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+
+        if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
-        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaTT.IntValue, true);
         }
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Traitor) killed %N%s (Detective) with %s]", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         addKarma(iAttacker, g_ckarmaTD.IntValue, true);
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Innocent) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         badAction = true;
-        
-        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+
+        if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
-        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaDI.IntValue, true);
         }
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Traitor) with %s]", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         addKarma(iAttacker, g_ckarmaDT.IntValue, true);
     }
-    else if (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         Format(iItem, sizeof(iItem), "-> [%N%s (Detective) killed %N%s (Detective) with %s] - BAD ACTION", iAttacker, sAttackerID, client, sClientID, sWeapon);
-        addArrayTime(iItem);
+        PushStringToLogs(iItem);
 
         badAction = true;
-        
-        if (g_iHurtedPlayer1[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+
+        if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
-        } else if (g_iHurtedPlayer2[client] == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
+        } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else {
             subtractKarma(iAttacker, g_ckarmaDD.IntValue, true);
         }
     }
 
-    if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
     {
         SetClanTag(client, TTT_TEAM_UNASSIGNED);
-        g_bFound[client] = true;
+        g_iPlayer[client].Found = true;
     }
 
     CheckTeams();
 
-    Call_StartForward(g_hOnClientDeath);
+    Call_StartForward(g_fwOnClientDeath);
     Call_PushCell(client);
     Call_PushCell(iAttacker);
     Call_PushCell(view_as<int>(badAction));
@@ -3151,41 +3522,50 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
     {
         return;
     }
-    
+
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
         return;
     }
-    
+
     if (g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
         return;
     }
-    
-    if ((g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_INNOCENT) ||
-       (g_iRole[iAttacker] == TTT_TEAM_INNOCENT && g_iRole[client] == TTT_TEAM_DETECTIVE) ||
-       (g_iRole[iAttacker] == TTT_TEAM_TRAITOR && g_iRole[client] == TTT_TEAM_TRAITOR)    ||
-       (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_INNOCENT) ||
-       (g_iRole[iAttacker] == TTT_TEAM_DETECTIVE && g_iRole[client] == TTT_TEAM_DETECTIVE))
+
+    if ((g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) ||
+       (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE) ||
+       (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)    ||
+       (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) ||
+       (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
     {
-        if (g_iHurtedPlayer1[iAttacker] == -1 && iAttacker != g_iHurtedPlayer1[client]) {
-            g_iHurtedPlayer1[iAttacker] = client;
-        } else if (g_iHurtedPlayer2[iAttacker] == -1 && iAttacker != g_iHurtedPlayer2[client] && iAttacker != g_iHurtedPlayer1[client]) {
-            g_iHurtedPlayer2[iAttacker] = client;
-        } else if (iAttacker != g_iHurtedPlayer1[client] && !g_bResetHurt[iAttacker] && g_iHurtedPlayer1[iAttacker] > 0 && g_iHurtedPlayer2[iAttacker] > 0) {
-            g_bResetHurt[iAttacker] = true;
-            g_iHurtedPlayer1[iAttacker] = client;
-        } else if (iAttacker != g_iHurtedPlayer2[client]  && iAttacker != g_iHurtedPlayer1[client] && g_bResetHurt[iAttacker] && g_iHurtedPlayer1[iAttacker] > 0 && g_iHurtedPlayer2[iAttacker] > 0) {
-            g_bResetHurt[iAttacker] = false;
-            g_iHurtedPlayer2[iAttacker] = client;
+        if (g_iPlayer[iAttacker].HurtedPlayer1 == -1 && iAttacker != g_iPlayer[client].HurtedPlayer1) {
+            g_iPlayer[iAttacker].HurtedPlayer1 = client;
+        } else if (g_iPlayer[iAttacker].HurtedPlayer2 == -1 && iAttacker != g_iPlayer[client].HurtedPlayer2 && iAttacker != g_iPlayer[client].HurtedPlayer1) {
+            g_iPlayer[iAttacker].HurtedPlayer2 = client;
+        } else if (iAttacker != g_iPlayer[client].HurtedPlayer1 && !g_iPlayer[iAttacker].ResetHurt && g_iPlayer[iAttacker].HurtedPlayer1 > 0 && g_iPlayer[iAttacker].HurtedPlayer2 > 0) {
+            g_iPlayer[iAttacker].ResetHurt = true;
+            g_iPlayer[iAttacker].HurtedPlayer1 = client;
+        } else if (iAttacker != g_iPlayer[client].HurtedPlayer2  && iAttacker != g_iPlayer[client].HurtedPlayer1 && g_iPlayer[iAttacker].ResetHurt && g_iPlayer[iAttacker].HurtedPlayer1 > 0 && g_iPlayer[iAttacker].HurtedPlayer2 > 0) {
+            g_iPlayer[iAttacker].ResetHurt = false;
+            g_iPlayer[iAttacker].HurtedPlayer2 = client;
         }
     }
 }
 
 public void OnMapEnd()
 {
-    g_bRoundEnding = false;
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(OnMapEnd) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(OnMapEnd) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+        }
+    }
     g_iStatus = Round_Inactive;
+
     if (g_hRoundTimer != null)
     {
         delete g_hRoundTimer;
@@ -3198,25 +3578,34 @@ public void OnMapEnd()
     LoopValidClients(i)
     {
         if (g_cTranfserArmor.BoolValue)
-            g_iArmor[i] = 0;
-        g_bKarma[i] = false;
+            g_iPlayer[i].Armor = 0;
+        g_iPlayer[i].KarmaReady = false;
     }
 }
 
 public Action Timer_OnRoundEnd(Handle timer)
 {
     g_hRoundTimer = null;
-    g_bRoundStarted = false;
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(Timer_OnRoundEnd) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(Timer_OnRoundEnd) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+        }
+    }
 
     if (!g_cDebug.BoolValue)
     {
+        g_iStatus = Round_Ending;
         CS_TerminateRound(7.0, CSRoundEnd_CTWin);
     }
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 {
-    if (!g_cDebug.BoolValue && g_bRoundStarted)
+    if (g_cDebug.BoolValue || g_iStatus != Round_Ending)
     {
         return Plugin_Handled;
     }
@@ -3224,23 +3613,23 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
     bool bInnoAlive = false;
     bool bDeteAlive = false;
 
-    int WinningTeam = TTT_TEAM_UNASSIGNED;
+    int iTeam = TTT_TEAM_UNASSIGNED;
 
     LoopValidClients(client)
     {
         if ((!g_cpublicKarma.BoolValue) && g_ckarmaRound.BoolValue)
         {
-            g_iKarmaStart[client] = g_iKarma[client];
+            g_iPlayer[client].KarmaStart = g_iPlayer[client].Karma;
             CPrintToChat(client, "%s %T", g_sTag, "All karma has been updated", client);
         }
 
         if (IsPlayerAlive(client))
         {
-            if (g_iRole[client] == TTT_TEAM_INNOCENT)
+            if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
             {
                 bInnoAlive = true;
             }
-            else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+            else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
             {
                 bDeteAlive = true;
             }
@@ -3249,26 +3638,26 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
     if (bInnoAlive)
     {
-        WinningTeam = TTT_TEAM_INNOCENT;
+        iTeam = TTT_TEAM_INNOCENT;
     }
     else if (!bInnoAlive && bDeteAlive)
     {
         if (g_cendwithD.BoolValue)
         {
-            WinningTeam = TTT_TEAM_DETECTIVE;
+            iTeam = TTT_TEAM_DETECTIVE;
         }
         else
         {
-            WinningTeam = TTT_TEAM_INNOCENT;
+            iTeam = TTT_TEAM_INNOCENT;
         }
     }
     else
     {
-        WinningTeam = TTT_TEAM_TRAITOR;
+        iTeam = TTT_TEAM_TRAITOR;
     }
 
-    Call_StartForward(g_hOnRoundEnd);
-    Call_PushCell(WinningTeam);
+    Call_StartForward(g_fwOnRoundEnd);
+    Call_PushCell(iTeam);
     Call_PushCell(view_as<Handle>(g_aLogs));
     Call_Finish();
 
@@ -3290,20 +3679,48 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
         }
     }
 
-    g_bRoundEnding = true;
-    g_iStatus = Round_Ending;
+    if (TTT_GetSQLConnection() != null)
+    {
+        char sQuery[256];
+        g_dDB.Format(sQuery, sizeof(sQuery), "UPDATE ttt_rounds SET end = UNIX_TIMESTAMP() WHERE id = %d;", g_iRoundID);
+        g_dDB.Query(SQL_UpdateRoundEndTime, sQuery);
+
+        if (g_cSaveLogsInSQL.BoolValue)
+        {
+            SaveLogsSQL();
+        }
+    }
+
+    g_iRoundID = -1;
+    if (g_cDebug.BoolValue)
+    {
+        PrintToServer("(CS_OnTerminateRound) g_iStatus set to %d from %d", Round_Ended, g_iStatus);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogMessage("(CS_OnTerminateRound) g_iStatus set to %d from %d", Round_Ended, g_iStatus);
+        }
+    }
+    g_iStatus = Round_Ended;
 
     return Plugin_Changed;
+}
+
+public void Frame_KillEntity(int ref)
+{
+    int iEntity = EntRefToEntIndex(ref);
+
+    if (IsValidEntity(iEntity))
+    {
+        AcceptEntityInput(iEntity, "kill");
+    }
 }
 
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if (!g_bSelection)
-    {
-        CheckClantag(client);
-    }
+
+    CheckClantag(client);
 
     if (g_chideTeams.BoolValue && (!event.GetBool("silent")))
     {
@@ -3316,7 +3733,7 @@ public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroa
 
 public Action OnPlayerRunCmd(int client, int &buttons)
 {
-    if (!TTT_IsClientValid(client))
+    if (client < 1 || !TTT_IsClientValid(client))
     {
         return Plugin_Continue;
     }
@@ -3325,8 +3742,8 @@ public Action OnPlayerRunCmd(int client, int &buttons)
     {
         return Plugin_Continue;
     }
-    
-    if (g_cdenyFire.BoolValue && g_iRole[client] == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
+
+    if (g_cdenyFire.BoolValue && g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
     {
         buttons &= ~IN_ATTACK;
         buttons &= ~IN_ATTACK2;
@@ -3340,9 +3757,9 @@ public Action OnPlayerRunCmd(int client, int &buttons)
 
         if ((buttons & button) || (buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED)
         {
-            if (!(g_iLastButtons[client] & button))
+            if (!(g_iPlayer[client].LastButtons & button))
             {
-                Call_StartForward(g_hOnButtonPress);
+                Call_StartForward(g_fwOnButtonPress);
                 Call_PushCell(client);
                 if ((buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED)
                 {
@@ -3355,16 +3772,16 @@ public Action OnPlayerRunCmd(int client, int &buttons)
                 Call_Finish();
             }
         }
-        else if ((g_iLastButtons[client] & button))
+        else if ((g_iPlayer[client].LastButtons & button))
         {
-            Call_StartForward(g_hOnButtonRelease);
+            Call_StartForward(g_fwOnButtonRelease);
             Call_PushCell(client);
             Call_PushCell(button);
             Call_Finish();
         }
     }
 
-    g_iLastButtons[client] = buttons;
+    g_iPlayer[client].LastButtons = buttons;
 
     return Plugin_Continue;
 }
@@ -3376,178 +3793,256 @@ public int TTT_OnButtonPress(int client, int button)
         return;
     }
 
-    if (!g_bPress[client] && button & IN_USE)
+    if (!g_iPlayer[client].Press && button & IN_USE)
     {
-        g_bPress[client] = true;
-        
-        int iEntity = GetClientAimTarget(client, false);
-        
-        if (iEntity > 0)
+        g_iPlayer[client].Press = true;
+
+        IdentifyEntity(client, button);
+    }
+}
+
+stock void IdentifyEntity(int client, int button = 0, bool skip = false, int target = -1)
+{
+    int iEntity = -1;
+
+    if (!skip && g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
+    {
+        iEntity = GetClientAimTarget(client, false);
+    }
+    else if (!skip && g_cSpawnType.IntValue == 2)
+    {
+        GetClientTraceTarget(client);
+    }
+    else if (skip && g_cSpawnType.IntValue == 2)
+    {
+        iEntity = target;
+    }
+
+    if (skip)
+    {
+        if (g_cDebugMessages.BoolValue && IsValidEntity(EntRefToEntIndex(g_iParticleRef[iEntity])))
         {
-            float OriginG[3], TargetOriginG[3];
-            
-            GetClientEyePosition(client, TargetOriginG);
-            GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", OriginG);
-            
-            if (GetVectorDistance(TargetOriginG, OriginG, false) > 90.0)
+            PrintToChatAll("Entity: %d Parent: %d (Ref: %d)", iEntity, EntRefToEntIndex(g_iParticleRef[iEntity]), g_iParticleRef[iEntity]);
+        }
+    }
+
+    if (iEntity > 0)
+    {
+        float fEntityPosition[3], fTargetPosition[3];
+
+        GetClientEyePosition(client, fTargetPosition);
+        GetEntPropVector(iEntity, Prop_Data, "m_vecOrigin", fEntityPosition);
+
+        if (GetVectorDistance(fTargetPosition, fEntityPosition, false) > g_cIdentifyDistance.FloatValue)
+        {
+            return;
+        }
+
+        int iSize = g_aRagdoll.Length;
+        if (iSize == 0)
+        {
+            return;
+        }
+
+        Ragdoll body;
+
+        for (int i = 0; i < iSize; i++)
+        {
+            g_aRagdoll.GetArray(i, body, sizeof(body));
+            int entity = EntRefToEntIndex(body.EntityRef);
+            if (entity == iEntity)
             {
-                return;
-            }
-
-            int iSize = g_aRagdoll.Length;
-            if (iSize == 0)
-            {
-                return;
-            }
-            
-            Ragdolls ragdoll;
-
-            int entity;
-
-            for (int i = 0; i < iSize; i++)
-            {
-                g_aRagdoll.GetArray(i, ragdoll, sizeof(ragdoll));
-                entity = EntRefToEntIndex(ragdoll.Ent);
-
-                if (entity == iEntity)
+                if (IsPlayerAlive(client) && !g_iPlayer[client].IsChecking)
                 {
-                    if (IsPlayerAlive(client) && !g_bIsChecking[client])
+                    g_iPlayer[client].IsChecking = true;
+
+                    Action res = Plugin_Continue;
+
+                    Call_StartForward(g_fwOnBodyCheck);
+                    Call_PushCell(client);
+                    Call_PushCell(body.EntityRef);
+                    Call_Finish(res);
+
+                    if (res == Plugin_Stop || res == Plugin_Handled)
                     {
-                        g_bIsChecking[client] = true;
-                        
-                        Action res = Plugin_Continue;
-                        Call_StartForward(g_hOnBodyCheck);
-                        Call_PushCell(client);
-                        Call_PushArrayEx(ragdoll, sizeof(ragdoll), SM_PARAM_COPYBACK);
-                        Call_Finish(res);
-                        
-                        if (res == Plugin_Stop || res == Plugin_Handled)
+                        return;
+                    }
+                    else if (res == Plugin_Changed)
+                    {
+                        // We  must update the body here, otherwise we run in some conflicts.
+                        g_aRagdoll.GetArray(i, body, sizeof(body));
+                    }
+
+                    int victim = GetClientOfUserId(body.Victim);
+                    int attacker = GetClientOfUserId(body.Attacker);
+
+                    if (g_cDebugMessages.BoolValue)
+                    {
+                        LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, body.Victim, attacker, body.Attacker);
+                    }
+
+                    InspectBody(client, victim, body.VictimRole, attacker, RoundToNearest(GetGameTime() - body.GameTime), body.Weaponused, body.VictimName);
+
+                    if (!body.Found)
+                    {
+                        bool bInWalk = ((button & IN_SPEED) > 0);
+                        bool silentID = false;
+
+                        body.Found = true;
+
+                        bool bValid = TTT_IsClientValid(victim);
+
+                        if (bValid)
                         {
-                            return;
+                            g_iPlayer[victim].Found = true;
                         }
-                        else if (res == Plugin_Changed)
+
+                        char sAttackerID[32], sClientID[32];
+
+                        if (g_cAddSteamIDtoLogs.BoolValue)
                         {
-                            g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
-                            return;
-                        }
-                        
-                        int victim = GetClientOfUserId(ragdoll.Victim);
-                        int attacker = GetClientOfUserId(ragdoll.Attacker);
-                        
-                        if (g_cDebugMessages.BoolValue)
-                        {
-                            LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, ragdoll.Victim, attacker, ragdoll.Attacker);
-                        }
-                        
-                        InspectBody(client, victim, ragdoll.VictimTeam, attacker, RoundToNearest(GetGameTime() - ragdoll.GameTime), ragdoll.WeaponUsed, ragdoll.VictimName);
-
-                        if (!ragdoll.Found)
-                        {
-                            bool bInWalk = ((button & IN_SPEED) > 0);
-                            bool silentID = false;
-                            
-                            ragdoll.Found = true;
-
-                            bool bValid = false;
-
-                            if (TTT_IsClientValid(victim))
+                            if (g_cSteamIDLogFormat.IntValue == 1)
                             {
-                                bValid = true;
-                            }
-                            
-                            if (bValid)
-                            {
-                                g_bFound[victim] = true;
-                            }
-
-                            char iItem[TTT_LOG_SIZE];
-
-                            char sRole[ROLE_LENGTH];
-                            TTT_GetRoleNameByID(g_iRole[client], sRole, sizeof(sRole));
-
-                            char sVictimRole[ROLE_LENGTH];
-                            TTT_GetRoleNameByID(ragdoll.VictimTeam, sVictimRole, sizeof(sVictimRole));
-
-                            bool bSetColor = false;
-                            
-                            if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
-                            {
-                                char sBuffer[32];
-                                Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimRole);
-                                
-                                LoopValidClients(j)
+                                GetClientAuthId(client, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
+                                if (victim > 0 && !GetClientAuthId(victim, AuthId_Steam2, sClientID, sizeof(sClientID)))
                                 {
-                                    CPrintToChat(j, "%s %T", g_sTag, sBuffer, j, client, ragdoll.VictimName);
+                                    Format(sClientID, sizeof(sClientID), "DISCONNECTED");
                                 }
-                                
-                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s)", client, sRole, ragdoll.VictimName, sVictimRole);
-                                
+                            }
+                            else if (g_cSteamIDLogFormat.IntValue == 2)
+                            {
+                                GetClientAuthId(client, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
+                                if (victim > 0 && !GetClientAuthId(victim, AuthId_Steam3, sClientID, sizeof(sClientID)))
+                                {
+                                    Format(sClientID, sizeof(sClientID), "DISCONNECTED");
+                                }
+                            }
+                            else if (g_cSteamIDLogFormat.IntValue == 3)
+                            {
+                                GetClientAuthId(client, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
+                                if (victim > 0 && !GetClientAuthId(victim, AuthId_SteamID64, sClientID, sizeof(sClientID)))
+                                {
+                                    Format(sClientID, sizeof(sClientID), "DISCONNECTED");
+                                }
+                            }
+
+                            if (strlen(sAttackerID) > 2)
+                            {
+                                Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+                            }
+
+                            if (strlen(sClientID) > 2)
+                            {
+                                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                            }
+                        }
+
+                        char iItem[TTT_LOG_SIZE];
+
+                        char sRole[ROLE_LENGTH];
+                        TTT_GetRoleNameByID(g_iPlayer[client].Role, sRole, sizeof(sRole));
+
+                        char sVictimRole[ROLE_LENGTH];
+                        TTT_GetRoleNameByID(body.VictimRole, sVictimRole, sizeof(sVictimRole));
+
+                        bool bSetColor = false;
+
+                        if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
+                        {
+                            char sBuffer[32];
+                            Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimRole);
+
+                            LoopValidClients(j)
+                            {
+                                CPrintToChat(j, "%s %T", g_sTag, sBuffer, j, client, body.VictimName);
+                            }
+
+                            Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s%s (%s)", client, sRole, body.VictimName, sClientID, sVictimRole);
+
+                            bSetColor = true;
+                        }
+                        else
+                        {
+                            char sBuffer[32];
+                            Format(sBuffer, sizeof(sBuffer), "Found %s Silent", sVictimRole);
+
+                            CPrintToChat(client, "%s %T", g_sTag, sBuffer, client, body.VictimName);
+
+                            Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s%s (%s) - SILENT", client, sRole, body.VictimName, sClientID, sVictimRole);
+
+                            if (g_cSilentIdColor.BoolValue)
+                            {
                                 bSetColor = true;
                             }
-                            else
+
+                            silentID = true;
+                        }
+
+                        if (bSetColor)
+                        {
+                            if (body.VictimRole == TTT_TEAM_INNOCENT)
                             {
-                                char sBuffer[32];
-                                Format(sBuffer, sizeof(sBuffer), "Found %s Silent", sVictimRole);
-                                
-                                CPrintToChat(client, "%s %T", g_sTag, sBuffer, client, ragdoll.VictimName);
-                                
-                                Format(iItem, sizeof(iItem), "-> %N (%s) identified body of %s (%s) - SILENT", client, sRole, ragdoll.VictimName, sVictimRole);
-                                
-                                if (g_cSilentIdColor.BoolValue)
-                                {
-                                    bSetColor = true;
-                                }
-                                
-                                silentID = true;
-                            }
-                            
-                            if (bSetColor)
-                            {
-                                if (ragdoll.VictimTeam == TTT_TEAM_INNOCENT)
+                                if (!skip)
                                 {
                                     SetEntityRenderColor(iEntity, 0, 255, 0, 255);
                                 }
-                                else if (ragdoll.VictimTeam == TTT_TEAM_DETECTIVE)
+                                else
+                                {
+                                    RespawnParticle(iEntity, "Ghost_Green");
+                                }
+                            }
+                            else if (body.VictimRole== TTT_TEAM_DETECTIVE)
+                            {
+                                if (!skip)
                                 {
                                     SetEntityRenderColor(iEntity, 0, 0, 255, 255);
                                 }
-                                else if (ragdoll.VictimTeam == TTT_TEAM_TRAITOR)
+                                else
+                                {
+                                    RespawnParticle(iEntity, "Ghost_Cyan");
+                                }
+                            }
+                            else if (body.VictimRole == TTT_TEAM_TRAITOR)
+                            {
+                                if (!skip)
                                 {
                                     SetEntityRenderColor(iEntity, 255, 0, 0, 255);
                                 }
+                                else
+                                {
+                                    RespawnParticle(iEntity, "Ghost_Red");
+                                }
                             }
-                            
-                            if (g_cIdentifyLog.BoolValue)
-                            {
-                                addArrayTime(iItem);
-                            }
-
-                            if (bValid)
-                            {
-                                TeamTag(victim);
-                            }
-
-                            Call_StartForward(g_hOnBodyFound);
-                            Call_PushCell(client);
-                            
-                            if (bValid)
-                            {
-                                Call_PushCell(victim);
-                            }
-                            else
-                            {
-                                Call_PushCell(-1);
-                            }
-                            
-                            Call_PushArrayEx(ragdoll, sizeof(ragdoll), SM_PARAM_COPYBACK);
-                            Call_PushCell(silentID);
-                            Call_Finish();
                         }
 
-                        g_aRagdoll.SetArray(i, ragdoll, sizeof(ragdoll));
-                        break;
+                        if (g_cIdentifyLog.BoolValue)
+                        {
+                            PushStringToLogs(iItem);
+                        }
+
+                        Call_StartForward(g_fwOnBodyFound);
+                        Call_PushCell(client);
+
+                        if (bValid)
+                        {
+                            Call_PushCell(victim);
+                            TeamTag(victim);
+                        }
+                        else
+                        {
+                            Call_PushCell(-1);
+                        }
+
+                        Call_PushCell(body.EntityRef);
+                        Call_PushCell(silentID);
+                        Call_Finish();
                     }
+
+                    g_aRagdoll.SetArray(i, body, sizeof(body));
+                    break;
                 }
+
+                break;
             }
         }
     }
@@ -3557,8 +4052,8 @@ public int TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {
-        g_bIsChecking[client] = false;
-        g_bPress[client] = false;
+        g_iPlayer[client].IsChecking = false;
+        g_iPlayer[client].Press = false;
     }
 }
 
@@ -3582,21 +4077,31 @@ public Action Command_Say(int client, const char[] command, int argc)
     return Plugin_Continue;
 }
 
-public Action Command_SayTeam(int client, const char[] command, int argc)
+public Action OnClientSayCommand(int client, const char[] command, const char[] sArgs)
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
         return Plugin_Continue;
     }
 
+    if (g_cDebug.BoolValue)
+    {
+        PrintToChatAll("%N - %s - %s", client, command, sArgs);
+    }
+
+    if (!StrEqual(command, "say_team", false))
+    {
+        return Plugin_Continue;
+    }
+
     char sText[MAX_MESSAGE_LENGTH];
-    GetCmdArgString(sText, sizeof(sText));
+    strcopy(sText, sizeof(sText), sArgs);
 
     StripQuotes(sText);
 
     if (strlen(sText) < 2)
     {
-        return Plugin_Handled;
+        return Plugin_Stop;
     }
 
     if (sText[0] == '@')
@@ -3604,33 +4109,33 @@ public Action Command_SayTeam(int client, const char[] command, int argc)
         return Plugin_Continue;
     }
 
-    if (g_iRole[client] == TTT_TEAM_TRAITOR)
+    if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
         LoopValidClients(i)
         {
-            if (g_iRole[i] == TTT_TEAM_TRAITOR || g_ctChatToDead.BoolValue && !IsPlayerAlive(i))
+            if ((IsPlayerAlive(i) && g_iPlayer[i].Role == TTT_TEAM_TRAITOR) || (g_ctChatToDead.BoolValue && !IsPlayerAlive(i)))
             {
                 EmitSoundToClient(i, SND_TCHAT);
                 CPrintToChat(i, "%T", "T channel", i, client, sText);
             }
         }
 
-        return Plugin_Handled;
+        return Plugin_Stop;
     }
-    else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         LoopValidClients(i)
         {
-            if (g_iRole[i] == TTT_TEAM_DETECTIVE || g_cdChatToDead.BoolValue && !IsPlayerAlive(i))
+            if ((IsPlayerAlive(i) && g_iPlayer[i].Role == TTT_TEAM_DETECTIVE) || (g_cdChatToDead.BoolValue && !IsPlayerAlive(i)))
             {
                 EmitSoundToClient(i, SND_TCHAT);
                 CPrintToChat(i, "%T", "D channel", i, client, sText);
             }
         }
 
-        return Plugin_Handled;
+        return Plugin_Stop;
     }
-    return Plugin_Handled;
+    return Plugin_Stop;
 }
 
 void InspectBody(int client, int victim, int victimRole, int attacker, int time, const char[] weapon, const char[] victimName)
@@ -3660,12 +4165,12 @@ void InspectBody(int client, int victim, int victimRole, int attacker, int time,
     Format(sBuffer, sizeof(sBuffer), "%T", "Team victim", client, team);
     menu.AddItem("", sBuffer);
 
-    if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+    if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         Format(sBuffer, sizeof(sBuffer), "%T", "Elapsed since his death", client, time);
         menu.AddItem("", sBuffer);
 
-        if (TTT_IsClientValid(attacker) && attacker != victim)
+        if (attacker > 0 && attacker != victim)
         {
             Format(sBuffer, sizeof(sBuffer), "%T", "The weapon used has been", client, weapon);
             menu.AddItem("", sBuffer);
@@ -3692,16 +4197,38 @@ public int Menu_BodyInspect(Menu menu, MenuAction action, int client, int itemNu
 
 int addKarma(int client, int karma, bool message = false)
 {
-    if (!g_bRoundStarted)
+    Action result = Plugin_Continue;
+    Call_StartForward(g_fwOnPreKarmaUpdate);
+    Call_PushCell(client);
+    Call_PushCell(Karma_Add);
+    Call_PushCell(karma);
+    Call_Finish(result);
+
+    if (result == Plugin_Stop || result == Plugin_Handled)
     {
         return -1;
     }
 
-    g_iKarma[client] += karma;
-
-    if (g_iKarma[client] > g_cmaxKarma.IntValue)
+    if (g_iStatus != Round_Active)
     {
-        g_iKarma[client] = g_cmaxKarma.IntValue;
+        return -1;
+    }
+
+    g_iPlayer[client].Karma += karma;
+
+    if (TTT_CheckCommandAccess(client, "ttt_karma_vip", g_ckarmaFlag))
+    {
+        if (g_iPlayer[client].Karma > g_cmaxKarmaVip.IntValue)
+        {
+            g_iPlayer[client].Karma = g_cmaxKarmaVip.IntValue;
+        }
+    }
+    else
+    {
+        if (g_iPlayer[client].Karma > g_cmaxKarma.IntValue)
+        {
+            g_iPlayer[client].Karma = g_cmaxKarma.IntValue;
+        }  
     }
 
     if (g_cshowEarnKarmaMessage.BoolValue && message)
@@ -3709,86 +4236,120 @@ int addKarma(int client, int karma, bool message = false)
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iKarma[client]);
-            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "karma earned", client, karma, g_iPlayer[client].Karma);
+            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer); // TODO: Add 2nd option as synchud
         }
         else
         {
-            CPrintToChat(client, "%s %T", g_sTag, "karma earned", client, karma, g_iKarma[client]);
+            CPrintToChat(client, "%s %T", g_sTag, "karma earned", client, karma, g_iPlayer[client].Karma);
         }
     }
 
     UpdatePlayer(client);
-    
-    Call_StartForward(g_hOnKarmaUpdate);
+
+    Call_StartForward(g_fwOnKarmaUpdate);
     Call_PushCell(client);
     Call_PushCell(Karma_Add);
     Call_PushCell(karma);
     Call_Finish();
-    
-    return g_iKarma[client];
+
+    return g_iPlayer[client].Karma;
 }
 
 int setKarma(int client, int karma, bool force = false)
 {
-    if (!force && !g_bRoundStarted)
+    Action result = Plugin_Continue;
+    Call_StartForward(g_fwOnPreKarmaUpdate);
+    Call_PushCell(client);
+    Call_PushCell(Karma_Set);
+    Call_PushCell(karma);
+    Call_Finish(result);
+
+    if (result == Plugin_Stop || result == Plugin_Handled)
     {
         return -1;
     }
 
-    g_iKarma[client] = karma;
-
-    if (g_iKarma[client] > g_cmaxKarma.IntValue)
+    if (!force && g_iStatus != Round_Active)
     {
-        g_iKarma[client] = g_cmaxKarma.IntValue;
+        return -1;
+    }
+
+    g_iPlayer[client].Karma = karma;
+
+    if (TTT_CheckCommandAccess(client, "ttt_karma_vip", g_ckarmaFlag))
+    {
+        if (g_iPlayer[client].Karma > g_cmaxKarmaVip.IntValue)
+        {
+            g_iPlayer[client].Karma = g_cmaxKarmaVip.IntValue;
+        }
+    }
+    else
+    {
+        if (g_iPlayer[client].Karma > g_cmaxKarma.IntValue)
+        {
+            g_iPlayer[client].Karma = g_cmaxKarma.IntValue;
+        }  
     }
 
     UpdatePlayer(client);
-    
-    Call_StartForward(g_hOnKarmaUpdate);
+
+    Call_StartForward(g_fwOnKarmaUpdate);
     Call_PushCell(client);
     Call_PushCell(Karma_Set);
     Call_PushCell(karma);
     Call_Finish();
-    
-    return g_iKarma[client];
+
+    return g_iPlayer[client].Karma;
 }
 
 int subtractKarma(int client, int karma, bool message = false)
 {
-    if (!g_bRoundStarted)
+    Action result = Plugin_Continue;
+    Call_StartForward(g_fwOnPreKarmaUpdate);
+    Call_PushCell(client);
+    Call_PushCell(Karma_Subtract);
+    Call_PushCell(karma);
+    Call_Finish(result);
+
+    if (result == Plugin_Stop || result == Plugin_Handled)
+    {
+        return -1;
+    }
+    
+    if (g_iStatus != Round_Active)
     {
         return -1;
     }
 
-    g_iKarma[client] -= karma;
+    g_iPlayer[client].Karma -= karma;
 
     if (g_cshowLoseKarmaMessage.BoolValue && message)
     {
         if (g_cmessageTypKarma.IntValue == 1)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
-            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iKarma[client]);
-            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer);
+            Format(sBuffer, sizeof(sBuffer), "<pre>%T</pre>", "lost karma", client, karma, g_iPlayer[client].Karma);
+            PrintCenterText2(client, "Trouble in Terrorist Town", sBuffer); // TODO: Add 2nd option as synchud
         }
         else
         {
-            CPrintToChat(client, "%s %T", g_sTag, "lost karma", client, karma, g_iKarma[client]);
+            CPrintToChat(client, "%s %T", g_sTag, "lost karma", client, karma, g_iPlayer[client].Karma);
         }
     }
 
     UpdatePlayer(client);
-    
-    Call_StartForward(g_hOnKarmaUpdate);
+
+    Call_StartForward(g_fwOnKarmaUpdate);
     Call_PushCell(client);
     Call_PushCell(Karma_Subtract);
     Call_PushCell(karma);
     Call_Finish();
-    
-    return g_iKarma[client];
+
+    return g_iPlayer[client].Karma;
 }
 
-void addArrayTime(char[] message)
+void PushStringToLogs(char[] message)
 {
     if (g_iTeamSelectTime > 0)
     {
@@ -3861,7 +4422,7 @@ void manageRDM(int client)
         return;
     }
 
-    int iAttacker = g_iRDMAttacker[client];
+    int iAttacker = g_iPlayer[client].RDMAttacker;
     if (!TTT_IsClientValid(iAttacker))
     {
         CPrintToChat(client, "%s %T", g_sTag, "The player who RDM'd you is no longer available", client);
@@ -3889,7 +4450,7 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
         return;
     }
 
-    int iAttacker = g_iRDMAttacker[client];
+    int iAttacker = g_iPlayer[client].RDMAttacker;
     if (!TTT_IsClientValid(iAttacker))
     {
         return;
@@ -3906,7 +4467,7 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 
             TTT_SetRoundSlays(iAttacker, 0, true);
 
-            g_iRDMAttacker[client] = -1;
+            g_iPlayer[client].RDMAttacker = -1;
         }
         if (StrEqual(info, "Punish", false))
         {
@@ -3917,7 +4478,7 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 
             TTT_AddRoundSlays(iAttacker, g_cRoundSlayPlayerRDM.IntValue, true);
 
-            g_iRDMAttacker[client] = -1;
+            g_iPlayer[client].RDMAttacker = -1;
         }
     }
     else if (action == MenuAction_Cancel)
@@ -3925,9 +4486,9 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
         CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
         CPrintToChat(iAttacker, "%s %T", g_sTag, "Choose Forgive Attacker", iAttacker, client);
 
-        g_iRDMAttacker[client] = -1;
-
         TTT_SetRoundSlays(iAttacker, 0, true);
+
+        g_iPlayer[client].RDMAttacker = -1;
     }
     else if (action == MenuAction_End)
     {
@@ -3935,10 +4496,10 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
         CPrintToChat(client, "%s %T", g_sTag, "Choose Forgive Victim", client, iAttacker);
         CPrintToChat(iAttacker, "%s %T", g_sTag, "Choose Forgive Attacker", iAttacker, client);
 
-        g_iRDMAttacker[client] = -1;
-        
         TTT_SetRoundSlays(iAttacker, 0, true);
-        
+
+        g_iPlayer[client].RDMAttacker = -1;
+
         delete menu;
     }
 }
@@ -3946,18 +4507,23 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 public Action Timer_RDMTimer(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
-    g_hRDMTimer[client] = null;
+    g_iPlayer[client].RDMTimer = null;
     manageRDM(client);
     return Plugin_Stop;
 }
 
 public Action Command_SetRole(int client, int args)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
     }
-    
+
     if (!TTT_CheckCommandAccess(client, "ttt_set_role", g_cSetRole, true))
     {
         return Plugin_Handled;
@@ -3971,10 +4537,10 @@ public Action Command_SetRole(int client, int args)
     }
     char arg1[32];
     char arg2[32];
-    
+
     GetCmdArg(1, arg1, sizeof(arg1));
     GetCmdArg(2, arg2, sizeof(arg2));
-    
+
     int target = FindTarget(client, arg1);
 
     if (target == -1)
@@ -3990,7 +4556,7 @@ public Action Command_SetRole(int client, int args)
 
     int iRole = StringToInt(arg2);
     int iOld = TTT_GetClientRole(target);
-    
+
     if (iRole < 1 || iRole > 3)
     {
         ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
@@ -4002,14 +4568,14 @@ public Action Command_SetRole(int client, int args)
         {
             return Plugin_Handled;
         }
-        
-        g_iRole[target] = TTT_TEAM_INNOCENT;
-        
+
+        g_iPlayer[target].Role = TTT_TEAM_INNOCENT;
+
         TeamInitialize(target);
         CS_SetClientClanTag(target, " ");
         CPrintToChat(client, "%s %T", g_sTag, "Player is Now Innocent", client, target);
         LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Innocent");
-        
+
         return Plugin_Handled;
     }
     else if (iRole == 2)
@@ -4018,14 +4584,14 @@ public Action Command_SetRole(int client, int args)
         {
             return Plugin_Handled;
         }
-        
-        g_iRole[target] = TTT_TEAM_TRAITOR;
-        
+
+        g_iPlayer[target].Role = TTT_TEAM_TRAITOR;
+
         TeamInitialize(target);
         CS_SetClientClanTag(target, " ");
         CPrintToChat(client, "%s %T", g_sTag, "Player is Now Traitor", client, target);
         LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Traitor");
-        
+
         return Plugin_Handled;
     }
     else if (iRole == 3)
@@ -4034,13 +4600,13 @@ public Action Command_SetRole(int client, int args)
         {
             return Plugin_Handled;
         }
-        
-        g_iRole[target] = TTT_TEAM_DETECTIVE;
-        
+
+        g_iPlayer[target].Role = TTT_TEAM_DETECTIVE;
+
         TeamInitialize(target);
         CPrintToChat(client, "%s %T", g_sTag, "Player is Now Detective", client, target);
         LogAction(client, target, "\"%L\" set the role of \"%L\" to \"%s\"", client, target, "Detective");
-        
+
         return Plugin_Handled;
     }
     return Plugin_Handled;
@@ -4052,7 +4618,7 @@ public Action Command_SetKarma(int client, int args)
     {
         return Plugin_Handled;
     }
-    
+
     if (!TTT_CheckCommandAccess(client, "ttt_set_karma", g_cSetKarma, true))
     {
         return Plugin_Handled;
@@ -4091,7 +4657,7 @@ public Action Command_SetKarma(int client, int args)
             return Plugin_Handled;
         }
 
-        if (!g_bKarma[target])
+        if (!g_iPlayer[target].KarmaReady)
         {
             ReplyToCommand(client, "[SM] Player data not loaded yet.");
             return Plugin_Handled;
@@ -4115,19 +4681,19 @@ public Action Command_Status(int client, int args)
         return Plugin_Handled;
     }
 
-    if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
     {
         CPrintToChat(client, "%s %T", g_sTag, "You Are Unassigned", client);
     }
-    else if (g_iRole[client] == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
     {
         CPrintToChat(client, "%s %T", g_sTag, "You Are Now Innocent", client);
     }
-    else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
     {
         CPrintToChat(client, "%s %T", g_sTag, "You Are Now Detective", client);
     }
-    else if (g_iRole[client] == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
     {
         CPrintToChat(client, "%s %T", g_sTag, "You Are Now Traitor", client);
     }
@@ -4153,9 +4719,9 @@ public Action Timer_5(Handle timer)
         {
             continue;
         }
-        
-        int iKarma = g_iKarma[i];
-        
+
+        int iKarma = g_iPlayer[i].Karma;
+
         if (iKarma < 0)
         {
             iKarma *= -1;
@@ -4163,27 +4729,27 @@ public Action Timer_5(Handle timer)
 
         if (g_cDebugMessages.BoolValue)
         {
-            LogToFileEx(g_sKarmaFile, "(Timer_5) - 1 Client: \"%L\", g_bKarma: %d, g_cKarmaBan: %d, iKarma: %d (g_iKarma: %d)", i, g_bKarma[i], g_ckarmaBan.IntValue, iKarma, g_iKarma[i]);
+            LogToFileEx(g_sKarmaFile, "(Timer_5) - 1 Client: \"%L\", g_iPlayer: KarmaReady: %d, g_cKarmaBan: %d, iKarma: %d (g_iPlayer: .Karma%d)", i, g_iPlayer[i].KarmaReady, g_ckarmaBan.IntValue, iKarma, g_iPlayer[i].Karma);
         }
 
-        if (g_bKarma[i] && g_ckarmaBan.IntValue != 0 && iKarma <= g_ckarmaBan.IntValue)
+        if (g_iPlayer[i].KarmaReady && g_ckarmaBan.IntValue != 0 && iKarma <= g_ckarmaBan.IntValue)
         {
             BanBadPlayerKarma(i);
         }
     }
-    
+
     if (g_cDebugMessages.BoolValue)
     {
-        LogMessage("g_bRoundStarted: %d - g_bRoundEnding: %d - g_bInactive: %d - g_hStartTimer: %d - g_hCountdownTimer: %d - g_hRoundTimer: %d", g_bRoundStarted, g_bRoundEnding, g_bInactive, g_hStartTimer, g_hCountdownTimer, g_hRoundTimer);
+        LogMessage("(Timer_5) g_iStatus: %d - g_hStartTimer: %d - g_hCountdownTimer: %d - g_hRoundTimer: %d", g_iStatus, g_hStartTimer, g_hCountdownTimer, g_hRoundTimer);
     }
-    
-    if (g_bRoundStarted)
+
+    if (g_iStatus == Round_Active)
     {
         CheckTeams();
     }
     else if (g_bCheckPlayers ||
-            (g_cCheckDuringWarmup.BoolValue && TTT_IsWarmUp()) ||
-            (g_cCheckPlayers.BoolValue && (!TTT_IsWarmUp() && !g_bRoundStarted && !g_bRoundEnding && !g_bInactive && g_hStartTimer == null && g_hCountdownTimer == null && g_hRoundTimer == null)))
+            (g_cCheckDuringWarmup.BoolValue && (TTT_IsWarmUp() || g_iStatus <= Round_Warmup)) ||
+            (g_cCheckPlayers.BoolValue && (!TTT_IsWarmUp() && g_iStatus <= Round_Warmup && g_hStartTimer == null && g_hCountdownTimer == null && g_hRoundTimer == null)))
     {
         CheckPlayers();
     }
@@ -4198,10 +4764,19 @@ void CheckPlayers()
 
     if (g_bDisabled)
     {
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(CheckPlayers) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(CheckPlayers) g_iStatus set to %d from %d", Round_Inactive, g_iStatus);
+            }
+        }
         g_iStatus = Round_Inactive;
         return;
     }
-    
+
     int iCount = 0;
     LoopValidClients(i)
     {
@@ -4209,7 +4784,7 @@ void CheckPlayers()
         {
             continue;
         }
-        
+
         if (GetClientTeam(i) != CS_TEAM_CT && GetClientTeam(i) != CS_TEAM_T)
         {
             continue;
@@ -4217,21 +4792,22 @@ void CheckPlayers()
 
         iCount++;
     }
-    
+
     if (g_cDebugMessages.BoolValue)
     {
         LogMessage("CheckPlayers - 2 (iCount: %d - Required: %d)", iCount, g_crequiredPlayers.IntValue);
     }
-    
+
     if (iCount >= g_crequiredPlayers.IntValue)
     {
         g_bCheckPlayers = false;
-        
-        if (g_cDebugMessages.BoolValue)
+
+        if (g_cDebug.BoolValue)
         {
-            LogMessage("CheckPlayers - 3 (CS_TerminateRound)");
+            PrintToServer("CheckPlayers - 3 (CS_TerminateRound), g_bCheckPlayers: %d", g_bCheckPlayers);
         }
 
+        g_iStatus = Round_Ending;
         CS_TerminateRound(3.0, CSRoundEnd_Draw);
     }
     else
@@ -4255,7 +4831,7 @@ public void OnEntityCreated(int entity, const char[] name)
     {
         char targetName[128];
         GetEntPropString(entity, Prop_Data, "m_iName", targetName, sizeof(targetName));
-        
+
         if (StrEqual(targetName, "Destroy_Trigger", false))
         {
             SDKHook(entity, SDKHook_Use, OnUse);
@@ -4293,22 +4869,21 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
         return Plugin_Continue;
     }
 
-    if (g_bInactive)
+    if (g_iStatus != Round_Active)
     {
         return Plugin_Handled;
     }
-    else
+    
+    if (g_iPlayer[activator].Role != TTT_TEAM_TRAITOR)
     {
-        if (g_iRole[activator] != TTT_TEAM_TRAITOR)
-        {
-            TTT_AddRoundSlays(activator, g_cRoundSlayDestroyTrigger.IntValue, true);
+        TTT_AddRoundSlays(activator, g_cRoundSlayDestroyTrigger.IntValue, true);
 
-            LoopValidClients(i)
-            {
-                CPrintToChat(i, "%s %T", g_sTag, "Triggered Falling Building", i, activator);
-            }
+        LoopValidClients(i)
+        {
+            CPrintToChat(i, "%s %T", g_sTag, "Triggered Falling Building", i, activator);
         }
     }
+    
     return Plugin_Continue;
 }
 
@@ -4329,7 +4904,7 @@ public Action Command_KarmaReset(int client, int args)
     {
         return Plugin_Handled;
     }
-    
+
     if (!TTT_CheckCommandAccess(client, "ttt_karma_reset", g_cKarmaReset, true))
     {
         return Plugin_Handled;
@@ -4344,7 +4919,7 @@ public Action Command_KarmaReset(int client, int args)
             LogAction(client, i, "\"%L\" reset the karma of \"%L\" to \"%i\"", client, i, g_cstartKarma.IntValue);
         }
     }
-    
+
     return Plugin_Handled;
 }
 
@@ -4358,25 +4933,25 @@ void CheckTeams()
     {
         if (IsPlayerAlive(i))
         {
-            if (g_iRole[i] == TTT_TEAM_DETECTIVE)
+            if (g_iPlayer[i].Role == TTT_TEAM_DETECTIVE)
             {
                 SetClanTag(i, TTT_TEAM_DETECTIVE);
                 iD++;
             }
-            else if (g_iRole[i] == TTT_TEAM_TRAITOR)
+            else if (g_iPlayer[i].Role == TTT_TEAM_TRAITOR)
             {
                 iT++;
             }
-            else if (g_iRole[i] == TTT_TEAM_INNOCENT)
+            else if (g_iPlayer[i].Role == TTT_TEAM_INNOCENT)
             {
                 iI++;
             }
         }
         else
         {
-            if (g_iRole[i] == TTT_TEAM_UNASSIGNED)
+            if (g_iPlayer[i].Role == TTT_TEAM_UNASSIGNED)
             {
-                g_bFound[i] = true;
+                g_iPlayer[i].Found = true;
                 SetClanTag(i, TTT_TEAM_UNASSIGNED);
             }
         }
@@ -4389,21 +4964,37 @@ void CheckTeams()
 
     if (iD == 0 && iI == 0)
     {
-        g_bRoundStarted = false;
-        g_bRoundEnded = true;
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(CheckTeams) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(CheckTeams) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+            }
+        }
 
         if (!g_cDebug.BoolValue)
         {
+            g_iStatus = Round_Ending;
             CS_TerminateRound(7.0, CSRoundEnd_TerroristWin);
         }
     }
     else if (iT == 0)
     {
-        g_bRoundStarted = false;
-        g_bRoundEnded = true;
+        if (g_cDebug.BoolValue)
+        {
+            PrintToServer("(CheckTeams) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                LogMessage("(CheckTeams) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
+            }
+        }
 
         if (!g_cDebug.BoolValue)
         {
+            g_iStatus = Round_Ending;
             CS_TerminateRound(7.0, CSRoundEnd_CTWin);
         }
     }
@@ -4440,7 +5031,7 @@ void LoadBadNames()
     delete hFile;
 }
 
-void LoadClientKarma(int userid)
+void LoadClientInfo(int userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -4448,26 +5039,26 @@ void LoadClientKarma(int userid)
     {
         if (g_cDebugMessages.BoolValue)
         {
-            LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1 Client: \"%L\"", client);
+            LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 1 Client: \"%L\"", client);
         }
-        
+
         char sCommunityID[64];
 
         if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
         {
             if (g_cDebugMessages.BoolValue)
             {
-                LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 1.1 Client: \"%L\"", client);
+                LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 1.1 Client: \"%L\"", client);
             }
-            LogToFileEx(g_sErrorFile, "(LoadClientKarma) Auth failed: #%d", client);
+            LogToFileEx(g_sErrorFile, "(LoadClientInfo) Auth failed: #%d", client);
             return;
         }
 
         char sQuery[2048];
-        Format(sQuery, sizeof(sQuery), "SELECT `karma` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
+        g_dDB.Format(sQuery, sizeof(sQuery), "SELECT `id`, `karma`, `rslays` FROM `ttt` WHERE `communityid`= \"%s\";", sCommunityID);
         if (g_cDebugMessages.BoolValue)
         {
-            LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 2 Client: \"%L\", Query: \"%s\"", client, sQuery);
+            LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 2 Client: \"%L\", Query: \"%s\"", client, sQuery);
         }
 
         if (g_cDebugMessages.BoolValue)
@@ -4479,7 +5070,7 @@ void LoadClientKarma(int userid)
         {
             if (g_cDebugMessages.BoolValue)
             {
-                LogToFileEx(g_sKarmaFile, "(LoadClientKarma) - 3 Client: \"%L\", Valid Database", client);
+                LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 3 Client: \"%L\", Valid Database", client);
             }
             g_dDB.Query(SQL_OnClientPutInServer, sQuery, userid);
         }
@@ -4488,33 +5079,60 @@ void LoadClientKarma(int userid)
 
 void UpdatePlayer(int client)
 {
-    char sCommunityID[64];
-
-    if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+    if (g_iPlayer[client].KarmaReady)
     {
-        LogToFileEx(g_sErrorFile, "(UpdatePlayer) Auth failed: #%d", client);
-        return;
-    }
+        char sCommunityID[64];
 
+        if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+        {
+            LogToFileEx(g_sErrorFile, "(UpdatePlayer) Auth failed: #%d", client);
+            return;
+        }
+
+        char sQuery[2048];
+        g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma, rslays) VALUES (\"%s\", %d, %d) ON DUPLICATE KEY UPDATE karma = %d, rslays = %d;", sCommunityID, g_iPlayer[client].Karma, g_iPlayer[client].RoundSlays, g_iPlayer[client].Karma, g_iPlayer[client].RoundSlays);
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            LogToFileEx(g_sLogFile, sQuery);
+        }
+
+        if (g_dDB != null)
+        {
+            g_dDB.Query(Callback_UpdatePlayer, sQuery, GetClientUserId(client));
+        }
+    }
+}
+
+void UpdatePlayerRSlays(int client)
+{
+    if (g_iPlayer[client].RoundSlays >= 0)
+    {
+        char sCommunityID[64];
+
+        if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
+        {
+            LogToFileEx(g_sErrorFile, "(UpdatePlayerRSlays) Auth failed: #%d", client);
+        }
+
+        char sQuery[2048];
+        g_dDB.Format(sQuery, sizeof(sQuery), "UPDATE ttt SET rslays=%d WHERE communityid = \"%s\"", g_iPlayer[client].RoundSlays, sCommunityID);
+
+        if (g_dDB != null)
+        {
+            g_dDB.Query(Callback_UpdateRoundSlays, sQuery, GetClientUserId(client));
+        }
+    }
+}
+
+void UpdatePlayerRSlaysByID(int id, int rounds)
+{
     char sQuery[2048];
-    
-    if (TTT_GetConnectionType() == dMySQL)
-    {
-        Format(sQuery, sizeof(sQuery), "INSERT INTO ttt (communityid, karma) VALUES (\"%s\", %d) ON DUPLICATE KEY UPDATE karma = %d;", sCommunityID, g_iKarma[client], g_iKarma[client]);
-    }
-    else
-    {
-        Format(sQuery, sizeof(sQuery), "INSERT OR REPLACE INTO ttt (communityid, karma) VALUES (\"%s\", %d);", sCommunityID, g_iKarma[client], g_iKarma[client]);
-    }
-
-    if (g_cDebugMessages.BoolValue)
-    {
-        LogToFileEx(g_sLogFile, sQuery);
-    }
+    g_dDB.Format(sQuery, sizeof(sQuery), "UPDATE `ttt` SET `rslays`=`rslays`+'%d' WHERE `id` = '%d';", rounds, id);
 
     if (g_dDB != null)
     {
-        g_dDB.Query(Callback_UpdatePlayer, sQuery, GetClientUserId(client));
+        g_dDB.Query(Callback_UpdateRoundSlays, sQuery);
     }
 }
 
@@ -4542,20 +5160,20 @@ void CheckClantag(int client)
 
     if (!ValidClantag(sTag))
     {
-        if (!g_bRoundStarted)
+        if (g_iStatus != Round_Active)
         {
             CS_SetClientClanTag(client, " ");
         }
         else
         {
 
-            if (!g_bFound[client])
+            if (!g_iPlayer[client].Found)
             {
-                if (g_iRole[client] == TTT_TEAM_UNASSIGNED)
+                if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
                 {
                     SetClanTag(client, TTT_TEAM_UNASSIGNED);
                 }
-                else if (g_iRole[client] == TTT_TEAM_DETECTIVE)
+                else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
                 {
                     SetClanTag(client, TTT_TEAM_DETECTIVE);
                 }
@@ -4564,7 +5182,7 @@ void CheckClantag(int client)
                     CS_SetClientClanTag(client, " ");
                 }
             }
-            else if (g_bFound[client])
+            else if (g_iPlayer[client].Found)
             {
                 TeamTag(client);
             }
@@ -4603,10 +5221,10 @@ void GiveWeaponsOnFailStart()
                 GivePlayerItem(i, "weapon_knife");
 
                 char sWeapon[32];
-                
+
                 Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSSecondary);
                 GivePlayerItem(i, sWeapon);
-                
+
                 Format(sWeapon, sizeof(sWeapon), "weapon_%s", g_sFSPrimary);
                 GivePlayerItem(i, sWeapon);
             }
@@ -4614,21 +5232,23 @@ void GiveWeaponsOnFailStart()
     }
 }
 
-void UpdateRoundSlaysCookie(int client)
-{
-    char sBuffer[12];
-    IntToString(g_iRoundSlays[client], sBuffer, sizeof(sBuffer));
-    SetClientCookie(client, g_hRSCookie, sBuffer);
-}
-
 void SetClanTag(int client, int role)
 {
-    char sRole[32], sBuffer[32];
-    
-    TTT_GetRoleNameByID(role, sRole, sizeof(sRole));
+    char sBuffer[ROLE_LENGTH], sRolePre[ROLE_LENGTH], sRole[ROLE_LENGTH], sTranslation[64];
 
-    Format(sBuffer, sizeof(sBuffer), "ClanTag: %s", sRole);
-    Format(sRole, sizeof(sRole), "%t", sBuffer);
+    TTT_GetRoleNameByID(role, sBuffer, sizeof(sBuffer));
+
+    Format(sTranslation, sizeof(sTranslation), "ClanTag: %s", sBuffer);
+    Format(sRolePre, sizeof(sRolePre), "%T", sTranslation, LANG_SERVER);
+
+    if (g_cClanTagUpperLower.IntValue == 0)
+    {
+        StringToUpper(sRolePre, sRole, sizeof(sRole));
+    }
+    else if (g_cClanTagUpperLower.IntValue == 1)
+    {
+        StringToLower(sRolePre, sRole, sizeof(sRole));
+    }
 
     CS_SetClientClanTag(client, sRole);
 }
@@ -4644,7 +5264,7 @@ void GiveMelee(int client)
     int iWeapon = GivePlayerItem(client, sWeapon);
     EquipPlayerWeapon(client, iWeapon);
 
-    if (g_cAdditionalMeleeRole.IntValue & g_iRole[client])
+    if (g_cAdditionalMeleeRole.IntValue & g_iPlayer[client].Role)
     {
         g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
         Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
@@ -4682,7 +5302,7 @@ void CheckCPS()
     {
         return;
     }
-    
+
     Handle hPlugin = FindPluginByFile("CustomPlayerSkins.smx");
 
     if (hPlugin == null)
@@ -4702,38 +5322,425 @@ void CheckCPS()
             DeleteFile(sPath);
         }
     }
+
+    delete hPlugin;
+}
+
+int CreateRagdoll(int client)
+{
+    int iEntity = -1;
+    int iType = g_cSpawnType.IntValue;
+
+    char sModel[128];
+    GetClientModel(client, sModel, sizeof(sModel));
+
+    bool bGhosts = false;
+
+    if (iType == 0)
+    {
+        iEntity = CreateEntityByName("prop_ragdoll");
+
+        if (!IsValidEntity(iEntity))
+        {
+            LogToFileEx(g_sErrorFile, "Can't create \"prop_ragdoll\"! Invalid entity index.");
+            return -1;
+        }
+    }
+    else if (iType == 1)
+    {
+        iEntity = CreateEntityByName("prop_physics_multiplayer");
+
+        if (!IsValidEntity(iEntity))
+        {
+            LogToFileEx(g_sErrorFile, "Can't create \"prop_physics_multiplayer\"! Invalid entity index.");
+            return -1;
+        }
+    }
+    else if (iType == 2)
+    {
+        bGhosts = true;
+    }
+
+    if (!bGhosts)
+    {
+        if (!DispatchKeyValue(iEntity, "model", sModel))
+        {
+            LogToFileEx(g_sErrorFile, "Error with DispatchKeyValue and \"model\"");
+            return -1;
+        }
+
+        char sBuffer[12];
+        IntToString(view_as<int>(MOVETYPE_NONE), sBuffer, sizeof(sBuffer));
+        if (!DispatchKeyValue(iEntity, "movetype", sBuffer))
+        {
+            LogToFileEx(g_sErrorFile, "Error with DispatchKeyValue and \"movetype\"");
+            return -1;
+        }
+
+        char sName[32];
+        Format(sName, sizeof(sName), "ragdoll_%d", GetClientUserId(client));
+        DispatchKeyValue(iEntity, "targetname", sName);
+
+        if (DispatchSpawn(iEntity))
+        {
+            float fOrigin[3];
+            GetClientAbsOrigin(client, fOrigin);
+
+            float fAngles[3];
+            GetClientAbsAngles(client, fAngles);
+
+            float fVelocity[3];
+            GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", fVelocity);
+
+            float speed = GetVectorLength(fVelocity);
+
+            if (speed >= 500)
+            {
+                TeleportEntity(iEntity, fOrigin, fAngles, NULL_VECTOR);
+            }
+            else
+            {
+                TeleportEntity(iEntity, fOrigin, fAngles, fVelocity);
+            }
+
+            ActivateEntity(iEntity);
+            SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
+            SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+            AcceptEntityInput(iEntity, "EnableMotion");
+            SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+        }
+    }
+    else
+    {
+        iEntity = CreateEntityByName("prop_physics_multiplayer");
+
+        if (!IsValidEntity(iEntity))
+        {
+            LogToFileEx(g_sErrorFile, "Can't create \"prop_physics_multiplayer\"! Invalid entity index.");
+            return -1;
+        }
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            PrintToChatAll("Entity: %d", iEntity);
+        }
+
+        char sName[32];
+        Format(sName, sizeof(sName), "ragdoll_%d", GetClientUserId(client));
+        DispatchKeyValue(iEntity, "targetname", sName);
+        DispatchKeyValue(iEntity, "model", "models/" ... MODEL_MICROWAVE);
+        DispatchKeyValue(iEntity, "rendermode", "2");
+        DispatchKeyValue(iEntity, "renderamt", "0");
+        SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
+        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
+
+        if (DispatchSpawn(iEntity))
+        {
+            float fPosition[3];
+            GetClientAbsOrigin(client, fPosition);
+            fPosition[2] -= 40.0;
+            TeleportEntity(iEntity, fPosition, NULL_VECTOR, NULL_VECTOR);
+
+            int iParticle = CreateEntityByName("info_particle_system");
+
+            if (!IsValidEntity(iParticle))
+            {
+                LogToFileEx(g_sErrorFile, "Can't create \"info_particle_system\"! Invalid entity index.");
+                return -1;
+            }
+
+            if (g_cDebugMessages.BoolValue)
+            {
+                PrintToChatAll("Particle: %d (Ref: %d)", iParticle, EntIndexToEntRef(iParticle));
+            }
+
+            DispatchKeyValue(iParticle, "start_active", "0");
+            DispatchKeyValue(iParticle, "effect_name", "Ghost_Orange");
+
+            if (DispatchSpawn(iParticle))
+            {
+                fPosition[2] += 7.0;
+                TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
+                ActivateEntity(iParticle);
+
+                g_iParticleRef[iEntity] = EntIndexToEntRef(iParticle);
+
+                AcceptEntityInput(iEntity, "EnableMotion");
+
+                DataPack pack = new DataPack();
+                pack.WriteCell(EntIndexToEntRef(iEntity));
+                pack.WriteCell(EntIndexToEntRef(iParticle));
+                RequestFrame(Frame_SetParent, pack);
+            }
+        }
+    }
+
+    return iEntity;
+}
+
+public void Frame_SetParent(DataPack pack)
+{
+    pack.Reset();
+    int iEntity = EntRefToEntIndex(pack.ReadCell());
+    int iParticleRef = pack.ReadCell();
+    int iParticle = EntRefToEntIndex(iParticleRef);
+    delete pack;
+
+    if (!IsValidEntity(iEntity) || !IsValidEntity(iParticle))
+    {
+        return;
+    }
+
+    AcceptEntityInput(iParticle, "Start");
+    SetVariantEntity(iEntity);
+    AcceptEntityInput(iParticle, "SetParent");
+}
+
+stock int GetClientTraceTarget(int client)
+{
+    float fPosition[3];
+    GetClientEyePosition(client, fPosition);
+
+    float fAngles[3];
+    GetClientEyeAngles(client, fAngles);
+
+    TR_EnumerateEntities(fPosition, fAngles, PARTITION_NON_STATIC_EDICTS, RayType_Infinite, TR_Callback, client);
+
+    return -1;
+}
+
+public bool TR_Callback(int entity, int client)
+{
+    TR_ClipCurrentRayToEntity(MASK_PLAYERSOLID_BRUSHONLY, entity);
+
+    char sClass[64];
+    GetEntityClassname(entity, sClass, sizeof(sClass));
+
+    char sName[32];
+    GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
+
+    if (StrContains(sClass, "prop_physics_multiplayer", false) != -1 && StrContains(sName, "ragdoll_", false) != -1)
+    {
+        float fEntityPosition[3], fTargetPosition[3];
+
+        GetClientEyePosition(client, fTargetPosition);
+        GetEntPropVector(entity, Prop_Data, "m_vecOrigin", fEntityPosition);
+
+        if (GetVectorDistance(fTargetPosition, fEntityPosition, false) > g_cIdentifyDistance.FloatValue)
+        {
+            return false;
+        }
+
+        IdentifyEntity(client, _, true, entity);
+    }
+
+    return true;
+}
+
+void PrecacheGhosts()
+{
+    AddFileToDownloadsTable("particles/ghosts.pcf");
+    AddFileToDownloadsTable("materials/effects/largesmoke.vmt");
+    AddFileToDownloadsTable("materials/effects/largesmoke.vtf");
+    AddFileToDownloadsTable("materials/effects/animatedeyes/animated_eyes.vmt");
+    AddFileToDownloadsTable("materials/effects/animatedeyes/animated_eyes.vtf");
+
+    PrecacheGeneric("particles/ghosts.pcf", true);
+
+    PrecacheEffect("ParticleEffect");
+
+    PrecacheParticleEffect("Ghost_Cyan");
+    PrecacheParticleEffect("Ghost_Green");
+    PrecacheParticleEffect("Ghost_Red");
+    PrecacheParticleEffect("Ghost_Orange");
+}
+
+stock void PrecacheEffect(const char[] sEffectName)
+{
+    static int table = INVALID_STRING_TABLE;
+
+    if (table == INVALID_STRING_TABLE)
+    {
+        table = FindStringTable("EffectDispatch");
+    }
+    bool save = LockStringTables(false);
+    AddToStringTable(table, sEffectName);
+    LockStringTables(save);
+}
+
+stock void PrecacheParticleEffect(const char[] sEffectName)
+{
+    static int table = INVALID_STRING_TABLE;
+
+    if (table == INVALID_STRING_TABLE)
+    {
+        table = FindStringTable("ParticleEffectNames");
+    }
+    bool save = LockStringTables(false);
+    AddToStringTable(table, sEffectName);
+    LockStringTables(save);
+}
+
+void RespawnParticle(int iEntity, const char[] sEffect)
+{
+    int iParticle = EntRefToEntIndex(g_iParticleRef[iEntity]);
+
+    if (!IsValidEntity(iEntity) || !IsValidEntity(iParticle))
+    {
+        return;
+    }
+
+    AcceptEntityInput(iParticle, "DestroyImmediately");
+
+    DataPack pack = new DataPack();
+    pack.WriteCell(EntIndexToEntRef(iEntity));
+    pack.WriteString(sEffect);
+    RequestFrame(Frame_RespawnParticle, pack);
+}
+
+public void Frame_RespawnParticle(DataPack pack)
+{
+    pack.Reset();
+    int iEntity = EntRefToEntIndex(pack.ReadCell());
+    int iParticle = g_iParticleRef[iEntity];
+
+    char sEffect[16];
+    pack.ReadString(sEffect, sizeof(sEffect));
+    delete pack;
+
+    if (!IsValidEntity(iEntity) || !IsValidEntity(iParticle))
+    {
+        return;
+    }
+
+    AcceptEntityInput(iParticle, "Kill");
+
+    iParticle = CreateEntityByName("info_particle_system");
+
+    if (!IsValidEntity(iParticle))
+    {
+        LogToFileEx(g_sErrorFile, "Can't create \"info_particle_system\"! Invalid entity index.");
+        return;
+    }
+
+    if (g_cDebugMessages.BoolValue)
+    {
+        PrintToChatAll("Particle: %d", iParticle);
+    }
+
+    DispatchKeyValue(iParticle, "start_active", "1");
+    DispatchKeyValue(iParticle, "effect_name", sEffect);
+
+    if (DispatchSpawn(iParticle))
+    {
+        float fPosition[3];
+        GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fPosition);
+        fPosition[2] += 7.0;
+
+        g_iParticleRef[iEntity] = EntIndexToEntRef(iParticle);
+
+        TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
+        ActivateEntity(iParticle);
+
+        AcceptEntityInput(iEntity, "EnableMotion");
+
+        pack = new DataPack();
+        pack.WriteCell(EntIndexToEntRef(iEntity));
+        pack.WriteCell(EntIndexToEntRef(iParticle));
+        RequestFrame(Frame_SetParent, pack);
+    }
 }
 
 public void ClearClientData(int client)
 {
-    g_iRole[client] = TTT_TEAM_UNASSIGNED;
-    g_iLastRole[client] = TTT_TEAM_UNASSIGNED;
-    g_iKarma[client] = -1;
-    g_iKarmaStart[client] = -1;
-    g_iArmor[client] = 0;
-    g_iSite[client] = -1;
-    g_iHurtedPlayer1[client] = -1;
-    g_iHurtedPlayer2[client] = -1;
-    g_iInnoKills[client] = -1;
-    g_iDetectiveKills[client] = -1;
-    g_iTraitorKills[client] = -1;
-    g_iRDMAttacker[client] = -1;
-    g_iRoundSlays[client] = 0;
-    g_iLastButtons[client] = -1;
+    g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
+    g_iPlayer[client].LastRole = TTT_TEAM_UNASSIGNED;
+    g_iPlayer[client].Karma = -1;
+    g_iPlayer[client].KarmaStart = -1;
+    g_iPlayer[client].Armor = 0;
+    g_iPlayer[client].Site = -1;
+    g_iPlayer[client].HurtedPlayer1 = -1;
+    g_iPlayer[client].HurtedPlayer2 = -1;
+    g_iPlayer[client].InnocentKills = -1;
+    g_iPlayer[client].DetectiveKills = -1;
+    g_iPlayer[client].TraitorKills = -1;
+    g_iPlayer[client].RDMAttacker = -1;
+    g_iPlayer[client].RoundSlays = 0;
+    g_iPlayer[client].LastButtons = -1;
+    g_iPlayer[client].ID = -1;
 
-    g_bKarma[client] = false;
-    g_bAlive[client] = false;
-    g_bRespawn[client] = false;
-    g_bFound[client] = false;
-    g_bIsChecking[client] = false;
-    g_bReceivingLogs[client] = false;
-    g_bRules[client] = false;
-    g_bDRules[client] = false;
-    g_bReadRules[client] = false;
-    g_bKnowRules[client] = false;
-    g_bAvoidDetective[client] = false;
-    g_bImmuneRDMManager[client] = false;
-    g_bResetHurt[client] = false;
+    g_iPlayer[client].KarmaReady = false;
+    g_iPlayer[client].Alive = false;
+    g_iPlayer[client].Respawn = false;
+    g_iPlayer[client].Found = false;
+    g_iPlayer[client].IsChecking = false;
+    g_iPlayer[client].ReceivingLogs = false;
+    g_iPlayer[client].Rules = false;
+    g_iPlayer[client].DetectiveRules = false;
+    g_iPlayer[client].ReadRules = false;
+    g_iPlayer[client].KnowRules = false;
+    g_iPlayer[client].AvoidDetective = false;
+    g_iPlayer[client].ImmuneRDMManager = false;
+    g_iPlayer[client].ResetHurt = false;
+    g_iPlayer[client].Press = false;
 
-    g_hRDMTimer[client] = INVALID_HANDLE;
+    TTT_ClearTimer(g_iPlayer[client].RDMTimer);
 }
+
+// Stock taken from smlib
+// https://github.com/bcserv/smlib/blob/transitional_syntax/scripting/include/smlib/strings.inc#L103
+stock void StringToLower(const char[] input, char[] output, int size)
+{
+    size--;
+
+    int x = 0;
+    while (input[x] != '\0' && x < size) {
+
+        output[x] = CharToLower(input[x]);
+
+        x++;
+    }
+
+    output[x] = '\0';
+}
+
+// Stock taken from smlib
+// https://github.com/bcserv/smlib/blob/transitional_syntax/scripting/include/smlib/strings.inc#L127
+stock void StringToUpper(const char[] input, char[] output, int size)
+{
+    size--;
+
+    int x = 0;
+    while (input[x] != '\0' && x < size) {
+
+        output[x] = CharToUpper(input[x]);
+
+        x++;
+    }
+
+    output[x] = '\0';
+}
+
+public int GetClientOfPlayerID(int id)
+{
+    for (int i = 1; i < MaxClients; ++i)
+    {
+        if (g_iPlayer[i].ID == id)
+            return i;
+    }
+
+    return -1;
+}
+
+bool AreTeamsEmpty()
+{
+    return GetTeamClientCount(CS_TEAM_T) + GetTeamClientCount(CS_TEAM_CT) < 1;
+}
+
+int DetermineTeam()
+{
+    int tCount = GetTeamClientCount(CS_TEAM_T);
+    int ctCount = GetTeamClientCount(CS_TEAM_CT);
+    
+    return tCount == ctCount ? GetRandomInt(CS_TEAM_T, CS_TEAM_CT) : tCount < ctCount ? CS_TEAM_T : CS_TEAM_CT;
+} 
