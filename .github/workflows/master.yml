@@ -10,18 +10,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sm_version: ["1.10", "1.11"]
-
+        SM_VERSION: ["1.10", "1.11"]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: sudo apt install curl p7zip-full p7zip-rar
 
       - name: Set environment variables
         run: |
+          git fetch --unshallow
           VERSION=$(git rev-list --count HEAD)
           SHORT=$(git describe --always --long --dirty)
           SOURCEMOD_PATH=$GITHUB_WORKSPACE/addons/sourcemod
-          echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION-$SHORT
+          echo ::set-env name=GIT_COMMIT::$VERSION
+          echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION.$SHORT
           echo ::set-env name=SOURCEMOD_PATH::$SOURCEMOD_PATH
           echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/scripting
           echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/plugins
@@ -34,19 +38,23 @@ jobs:
       - name: Set TTT version
         run: |
           sed -i "s/<VERSION>/$PLUGIN_VERSION/g" $SCRIPTS_PATH/include/ttt_stock.inc
+      
+      - name: Generate colorlib.inc
+        run: python3 ./color_gen.py -r --config "./ttt_colors.yaml" "../addons/sourcemod/scripting/include/colorlib_map.inc"
+        working-directory: ./tools
 
       - name: Compile TTT
         run: |
           for file in *.sp
           do
             echo -e "\nCompiling $file..."
-            spcomp -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
+            spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
           done
         working-directory: ${{ env.SCRIPTS_PATH }}/ttt
 
       - name: Compile 3rd party plugins
         run: |
-          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "tripmines" "turret_core"
+          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core"
           do
             echo -e "\nCompiling $plugin.sp..."
             spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
@@ -64,10 +72,10 @@ jobs:
           mv $SCRIPTS_PATH/README.md $PLUGINS_PATH/disabled
           mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
 
-      - name: Move folders (addons, materials, models, sound) to build
+      - name: Move folders (addons, materials, models, particles, sound) to build
         run: |
           mkdir build
-          mv ./{addons,materials,models,sound} build/
+          mv ./{addons,materials,models,particles,sound} build/
 
       - name: Add LICENSE, CREDITS.md, CVARS.txt and adminmenu_custom.txt to build package
         run: |
@@ -80,7 +88,41 @@ jobs:
           rm -rf addons/sourcemod/configs/{*.cfg,*.ini}
         working-directory: ./build
 
-      - name: Compress files
-        run: zip -9rq $FILE addons materials models sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
+      - name: Download SteamWorks and DHooks
+        run: |
+          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
+          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
+          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=176954&d=1566228343" -o dhooks.zip
+
+      - name: Unpacking SteamWorks and DHooks
+        run: |
+          tar xfv steamworks_linux.tar.gz
+          unzip -o steamworks_windows.zip
+          unzip dhooks.zip
+      
+      - name: Move SteamWorks and DHooks files
+        run: |
+          mkdir -p build/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/dhooks.ext.so build/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/dhooks.ext.dll build/addons/sourcemod/extensions/
+
+      - name: Compress package
+        run: 7z a -r -p$GITHUB_SHA -mx=9 -mhe -t7z PrivateTTT.${{ env.PLUGIN_VERSION }}.zip *
         working-directory: ./build
 
+      - name: Upload package
+        run: curl -T PrivateTTT.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}/downloads/
+        working-directory: ./build
+      
+      - name: Upload latest package
+        run: |
+          mv PrivateTTT.${{ env.PLUGIN_VERSION }}.zip PrivateTTT.latest.${{ matrix.SM_VERSION }}.zip
+          curl -T PrivateTTT.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}/downloads/
+        working-directory: ./build
+
+      - name: Update version
+        run: |
+          wget -q '${{ secrets.UPDATE_URL }}?version=${{ env.GIT_COMMIT }}&key=${{ secrets.UPDATE_KEY }}' -O version.log
+          rm version.log
