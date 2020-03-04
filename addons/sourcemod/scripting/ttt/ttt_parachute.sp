@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 #undef REQUIRE_PLUGIN
 #include <AdvancedParachute>
 
@@ -13,8 +14,8 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
-
-bool g_bParachute[MAXPLAYERS + 1] =  { false, ... };
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
 
 public Plugin myinfo =
 {
@@ -36,14 +37,27 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("parachute_name", "Parachute", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("parachute_price", "3000", "The amount of credits parachutes costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("parachute_sort_prio", "0", "The sorting priority of the parachutes in the shop menu.");
+    g_cCount = AutoExecConfig_CreateConVar("parachute_count", "1", "Amount of purchases per round");
+    g_cLimit = AutoExecConfig_CreateConVar("parachute_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
-
-    HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnAllPluginsLoaded()
@@ -53,7 +67,7 @@ public void OnAllPluginsLoaded()
     
     if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
     {
-        TTT_RemoveCustomItem(SHORT_NAME);
+        TTT_RemoveShopItem(SHORT_NAME);
         SetFailState("You must have this plugin as base plugin for this item: https://forums.alliedmods.net/showthread.php?p=2534158");
         return;
     }
@@ -68,52 +82,26 @@ void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
-public void OnClientDisconnect(int client)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    ResetTemplate(client);
-}
-
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
-{
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (TTT_IsItemInInventory(client, SHORT_NAME))
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            if (g_bParachute[client])
-            {
-                return Plugin_Stop;
-            }
-            
-            g_bParachute[client] = true;
-        }
+        return Plugin_Stop;
     }
+
+    TTT_AddInventoryItem(client, SHORT_NAME);
     return Plugin_Continue;
 }
 
 public Action OnParachuteOpen(int client)
 {
-    if (g_bParachute[client])
+    if (TTT_IsItemInInventory(client, SHORT_NAME))
     {
         return Plugin_Continue;
     }
     
     return Plugin_Handled;
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        ResetTemplate(client);
-    }
-}
-
-void ResetTemplate(int client)
-{
-    g_bParachute[client] = false;
 }

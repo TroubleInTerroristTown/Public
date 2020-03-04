@@ -4,9 +4,10 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt_shop>
 #include <ttt>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
+#include <colorlib>
 
 #undef REQUIRE_PLUGIN
 #include <ttt_glow>
@@ -17,11 +18,15 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Taser"
 
-Handle g_hOnTased;
+GlobalForward g_fwOnTased_Pre = null;
+GlobalForward g_fwOnTased_Post = null;
 
 ConVar g_cDPrice = null;
+ConVar g_cDLimit = null;
 ConVar g_cIPrice = null;
+ConVar g_cILimit = null;
 ConVar g_cTPrice = null;
+ConVar g_cTLimit = null;
 ConVar g_cDPrio = null;
 ConVar g_cIPrio = null;
 ConVar g_cTPrio = null;
@@ -39,22 +44,26 @@ ConVar g_cTKDamage = null;
 ConVar g_cTaserCooldown = null;
 ConVar g_cGlowPlayer = null;
 ConVar g_cGlowLength = null;
+ConVar g_cFadeLength = null;
 ConVar g_cGlowToAll = null;
 ConVar g_cTaserCooldownMessage = null;
+ConVar g_cDisableTaserDamage = null;
+ConVar g_cBlockPick = null;
+ConVar g_cBlockDrop = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
-
-int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-bool g_bTaser[MAXPLAYERS + 1] =  { false, ... };
-bool g_bRoundTaser[MAXPLAYERS + 1] =  { false, ... };
 
 /* Block taser stuff or so... */
 Handle g_hCooldown = null;
 
 StringMap g_smGlow = null;
+
+enum struct PlayerData {
+    bool HasRoundTaser;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -67,8 +76,9 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnTased = CreateGlobalForward("TTT_OnTased", ET_Ignore, Param_Cell, Param_Cell);
-
+    g_fwOnTased_Pre = new GlobalForward("TTT_OnTased_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
+    g_fwOnTased_Post = new GlobalForward("TTT_OnTased_Post", ET_Ignore, Param_Cell, Param_Cell);
+    
     RegPluginLibrary("ttt_taser");
 
     return APLRes_Success;
@@ -82,31 +92,39 @@ public void OnPluginStart()
 
     TTT_StartConfig("taser");
     CreateConVar("ttt2_taser_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDPrice = AutoExecConfig_CreateConVar("ta_detective_price", "9000", "The amount of credits a taser costs as detective. 0 to disable.");
-    g_cIPrice = AutoExecConfig_CreateConVar("ta_innocent_price", "9000", "The amount of credits a taser costs as innocent. 0 to disable.");
-    g_cTPrice = AutoExecConfig_CreateConVar("ta_traitor_price", "0", "The amount of credits a taser costs as traitor. 0 to disable.");
-    g_cDPrio = AutoExecConfig_CreateConVar("ta_detective_sort_prio", "0", "The sorting priority of the taser (Detective) in the shop menu.");
-    g_cIPrio = AutoExecConfig_CreateConVar("ta_innocent_sort_prio", "0", "The sorting priority of the taser (Innocent) in the shop menu.");
-    g_cTPrio = AutoExecConfig_CreateConVar("ta_traitor_sort_prio", "0", "The sorting priority of the taser (Traitor) in the shop menu.");
-    g_cDCount = AutoExecConfig_CreateConVar("ta_detective_count", "1", "The amount of usages for tasers per round as detective. 0 to disable.");
-    g_cICount = AutoExecConfig_CreateConVar("ta_innocent_count", "1", "The amount of usages for tasers per round as innocent. 0 to disable.");
-    g_cTCount = AutoExecConfig_CreateConVar("ta_traitor_count", "1", "The amount of usages for tasers per round as traitor. 0 to disable.");
-    g_cDamage = AutoExecConfig_CreateConVar("ta_damage", "0", "The amount of damage a taser deals for detectives and innocents");
-    g_cTDamage = AutoExecConfig_CreateConVar("ta_traitor_damage", "0", "The amount of damage a taser deals for traitors");
-    g_cOnSpawn = AutoExecConfig_CreateConVar("ta_give_taser_spawn", "1", "Give the Detective a taser when he spawns?", _, true, 0.0, true, 1.0);
-    g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("ta_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
-    g_cInflictor = AutoExecConfig_CreateConVar("ta_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
-    g_cLongName = AutoExecConfig_CreateConVar("ta_name", "Taser", "The name of this in Shop");
+    g_cDPrice = AutoExecConfig_CreateConVar("taser_detective_price", "9000", "The amount of credits a taser costs as detective. 0 to disable.");
+    g_cDLimit = AutoExecConfig_CreateConVar("taser_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cIPrice = AutoExecConfig_CreateConVar("taser_innocent_price", "9000", "The amount of credits a taser costs as innocent. 0 to disable.");
+    g_cILimit = AutoExecConfig_CreateConVar("taser_innocent_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cTPrice = AutoExecConfig_CreateConVar("taser_traitor_price", "0", "The amount of credits a taser costs as traitor. 0 to disable.");
+    g_cTLimit = AutoExecConfig_CreateConVar("taser_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cDPrio = AutoExecConfig_CreateConVar("taser_detective_sort_prio", "0", "The sorting priority of the taser (Detective) in the shop menu.");
+    g_cIPrio = AutoExecConfig_CreateConVar("taser_innocent_sort_prio", "0", "The sorting priority of the taser (Innocent) in the shop menu.");
+    g_cTPrio = AutoExecConfig_CreateConVar("taser_traitor_sort_prio", "0", "The sorting priority of the taser (Traitor) in the shop menu.");
+    g_cDCount = AutoExecConfig_CreateConVar("taser_detective_count", "1", "The amount of usages for tasers per round as detective. 0 to disable.");
+    g_cICount = AutoExecConfig_CreateConVar("taser_innocent_count", "1", "The amount of usages for tasers per round as innocent. 0 to disable.");
+    g_cTCount = AutoExecConfig_CreateConVar("taser_traitor_count", "1", "The amount of usages for tasers per round as traitor. 0 to disable.");
+    g_cDamage = AutoExecConfig_CreateConVar("taser_damage", "0", "The amount of damage a taser deals for detectives and innocents");
+    g_cTDamage = AutoExecConfig_CreateConVar("taser_traitor_damage", "0", "The amount of damage a taser deals for traitors");
+    g_cOnSpawn = AutoExecConfig_CreateConVar("taser_give_taser_spawn", "1", "Give the Detective a taser when he spawns?", _, true, 0.0, true, 1.0);
+    g_cBroadcastTaserResult = AutoExecConfig_CreateConVar("taser_broadcast_taser_result", "0", "When set to true the results of the taser message will be printed to everyone instead of the client that tased", _, true, 0.0, true, 1.0);
+    g_cInflictor = AutoExecConfig_CreateConVar("taser_barrel_fix", "1", "Prevent bug with taser and a explosive barrel", _, true, 0.0, true, 1.0);
+    g_cLongName = AutoExecConfig_CreateConVar("taser_name", "Taser", "The name of this in Shop");
     g_cRoundKeep = AutoExecConfig_CreateConVar("ta_keep_to_next_round", "0", "Give the Innocents a tasers if they had one before round end?", _, true, 0.0, true, 1.0);
-    g_cTKDamage = AutoExecConfig_CreateConVar("ta_kill_traitor_credts", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
-    g_cTaserCooldown = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
-    g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("ta_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
-    g_cGlowPlayer = AutoExecConfig_CreateConVar("ta_glow_player_after_taser", "1", "Glow player on taser? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
-    g_cGlowLength = AutoExecConfig_CreateConVar("ta_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
-    g_cGlowToAll = AutoExecConfig_CreateConVar("ta_glow_player_for_all", "1", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
+    g_cTKDamage = AutoExecConfig_CreateConVar("taser_kill_traitor_credits", "2000", "The amount of credits an innocent or detective will recieve for discovering a traitor with their zues/taser.");
+    g_cTaserCooldown = AutoExecConfig_CreateConVar("taser_cooldown_after_round_start", "30.0", "Disable taser for X seconds after round starts (0.0 to disable it)");
+    g_cTaserCooldownMessage = AutoExecConfig_CreateConVar("taser_cooldown_after_round_start_message", "1", "Show message when tasers are enabled?", _, true, 0.0, true, 1.0);
+    g_cGlowPlayer = AutoExecConfig_CreateConVar("taser_glow_player_after_taser", "1", "Glow player on taser? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
+    g_cGlowLength = AutoExecConfig_CreateConVar("taser_glow_player_length", "5", "How long should the player glow?, Time in Seconds, 0 - Disabled", _, true, 0.0);
+    g_cFadeLength = AutoExecConfig_CreateConVar("taser_fade_player_length", "0.25", "The amount of seconds for runtime (0 - Disable)");
+    g_cGlowToAll = AutoExecConfig_CreateConVar("taser_glow_player_for_all", "1", "Glow player for all? ( 0 - Disable, 1 - Enable)", _, true, 0.0, true, 1.0);
+    g_cDisableTaserDamage = AutoExecConfig_CreateConVar("taser_disable_damage", "1", "Disable taser damage if the player don't have this item?", _, true, 0.0, true, 1.0);
+    g_cBlockPick = AutoExecConfig_CreateConVar("taser_block_pick", "1", "Block taser pick up?", _, true, 0.0, true, 1.0);
+    g_cBlockDrop = AutoExecConfig_CreateConVar("taser_block_drop", "1", "Block drop for players with taser and taser item?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
+    HookEvent("weapon_fire", Event_WeaponFire);
     HookEvent("item_equip", Event_ItemEquip);
 
     LateLoadAll();
@@ -115,9 +133,19 @@ public void OnPluginStart()
     g_smGlow = new StringMap();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -125,6 +153,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
@@ -135,11 +165,12 @@ public void TTT_OnShopReady()
 void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
-
+    
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+
+    TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cICount.IntValue, g_cILimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -175,9 +206,9 @@ public void LateLoadClient(int client)
 public void HookClient(int client)
 {
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
-    SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
+    SDKHook(client, SDKHook_WeaponEquip, OnWeaponEquip);
     SDKHook(client, SDKHook_WeaponCanUse, OnWeaponCanUse);
-    SDKHook(client, SDKHook_WeaponEquip, OnWeaponCanUse);
+    SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
@@ -199,12 +230,12 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
             for(int offset = 0; offset < 128; offset += 4)
             {
                 int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-
+        
                 if (IsValidEntity(weapon))
                 {
                     char sClass[32];
                     GetEntityClassname(weapon, sClass, sizeof(sClass));
-
+        
                     if (StrContains(sClass, "taser", false) != -1)
                     {
                         BlockTaser(weapon);
@@ -222,12 +253,12 @@ public Action Timer_ActivateTasers(Handle timer)
         for(int offset = 0; offset < 128; offset += 4)
         {
             int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
-
+    
             if (IsValidEntity(weapon))
             {
                 char sClass[32];
                 GetEntityClassname(weapon, sClass, sizeof(sClass));
-
+    
                 if (StrContains(sClass, "taser", false) != -1)
                 {
                     UnblockTaser(weapon);
@@ -255,37 +286,45 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
     LoopValidClients(i)
     {
-        if (IsPlayerAlive(i) && g_bTaser[i])
+        if (IsPlayerAlive(i) && HasTaser(i))
         {
-            g_bRoundTaser[i] = true;
+            g_iPlayer[i].HasRoundTaser = true;
         }
     }
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnInventoryReady()
 {
-    if (role == TTT_TEAM_DETECTIVE && g_cOnSpawn.BoolValue)
+    LoopValidClients(client)
     {
-        if (g_bTaser[client])
+        int role = TTT_GetClientRole(client);
+        
+        if (role == TTT_TEAM_DETECTIVE)
         {
-            return;
+            if (g_cOnSpawn.BoolValue)
+            {
+                if (TTT_IsItemInInventory(client, SHORT_NAME_D))
+                {
+                    return;
+                }
+
+                GivePlayerItem(client, "weapon_taser");
+                TTT_AddInventoryItem(client, SHORT_NAME_D);
+            }
+            else if (g_cRoundKeep.BoolValue)
+            {
+                if (!g_iPlayer[client].HasRoundTaser)
+                {
+                    return;
+                }
+
+                GivePlayerItem(client, "weapon_taser");
+                TTT_AddInventoryItem(client, SHORT_NAME_D);
+            }
         }
 
-        GivePlayerItem(client, "weapon_taser");
-        g_iDPCount[client]++;
+        g_iPlayer[client].HasRoundTaser = false;
     }
-    else if (g_cRoundKeep.BoolValue)
-    {
-        if (!g_bRoundTaser[client])
-        {
-            return;
-        }
-
-        GivePlayerItem(client, "weapon_taser");
-        g_iDPCount[client]++;
-    }
-
-    g_bRoundTaser[client] = false;
 }
 
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
@@ -294,44 +333,87 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (TTT_IsClientValid(client))
     {
-        ResetTaser(client, false);
+        ResetTaser(client, true);
+    }
+}
+
+public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
+{
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return;
+    }
+
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(client))
+    {
+        int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+
+        if (IsValidEntity(iWeapon))
+        {
+            char sClass[32];
+            GetEntityClassname(iWeapon, sClass, sizeof(sClass));
+            
+            if (StrEqual(sClass, "weapon_taser", false))
+            {
+                if (TTT_RemoveInventoryItem(client, SHORT_NAME))
+                {
+                    TTT_AddItemUsage(client, SHORT_NAME);
+                }
+                else if (TTT_RemoveInventoryItem(client, SHORT_NAME_D))
+                {
+                    TTT_AddItemUsage(client, SHORT_NAME_D);
+                }
+                else if (TTT_RemoveInventoryItem(client, SHORT_NAME_T))
+                {
+                    TTT_AddItemUsage(client, SHORT_NAME_T);
+                }
+            }
+        }
     }
 }
 
 public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return Plugin_Continue;
+    }
+
+    if (g_hCooldown == null)
+    {
+        return Plugin_Continue;
+    }
+
     int client = GetClientOfUserId(event.GetInt("userid"));
-    char sWeapon[32];
-    event.GetString("item", sWeapon, sizeof(sWeapon));
 
-    if (StrContains(sWeapon, "taser", false) != -1)
+    if (TTT_IsClientValid(client))
     {
-        g_bTaser[client] = true;
+        int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
+
+        if (IsValidEntity(iWeapon))
+        {
+            char sClass[32];
+            GetEntityClassname(iWeapon, sClass, sizeof(sClass));
+            
+            if (StrEqual(sClass, "weapon_taser", false))
+            {
+                BlockTaser(iWeapon);
+            }
+        }
     }
+
+    return Plugin_Continue;
 }
 
-public Action OnWeaponDrop(int client, int weapon)
-{
-    if (weapon == -1)
-    {
-        return;
-    }
-
-    char sWeapon[32];
-    GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
-
-    if (StrContains(sWeapon, "taser", false) != -1)
-    {
-        g_bTaser[client] = false;
-    }
-}
-
-public Action OnWeaponCanUse(int client, int weapon)
+public Action OnWeaponEquip(int client, int weapon)
 {
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Continue;
     }
+
     if (weapon == -1)
     {
         return Plugin_Continue;
@@ -342,87 +424,100 @@ public Action OnWeaponCanUse(int client, int weapon)
         return Plugin_Continue;
     }
 
-    char sWeapon[32];
-    GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
-
-    if (StrContains(sWeapon, "taser", false) != -1)
+    if (IsValidEntity(weapon))
     {
-        BlockTaser(weapon);
+        char sWeapon[32];
+        GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
+
+        if (StrContains(sWeapon, "taser", false) != -1)
+        {
+            BlockTaser(weapon);
+        }
     }
 
     return Plugin_Continue;
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnWeaponCanUse(int client, int weapon)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (!g_cBlockPick.BoolValue)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_D, false) || StrEqual(itemshort, SHORT_NAME_T, false))
+        return Plugin_Continue;
+    }
+
+    if (TTT_IsClientValid(client) && IsValidEntity(weapon))
+    {
+        char sClass[32];
+        GetEntityClassname(weapon, sClass, sizeof(sClass));
+
+        if (StrEqual(sClass, "weapon_taser", false) && !HasTaser(client))
         {
-            int role = TTT_GetClientRole(client);
-
-            if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cDCount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_cICount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cICount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "TaserMax", client, g_cTCount.IntValue);
-                return Plugin_Stop;
-            }
-
-            if (g_bTaser[client])
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "AlreadyTaser", client);
-                return Plugin_Stop;
-            }
-
-            GivePlayerItem(client, "weapon_taser");
-            g_bTaser[client] = true;
-
-            if (count)
-            {
-                if (role == TTT_TEAM_DETECTIVE)
-                {
-                    g_iDPCount[client]++;
-                }
-                else if (role == TTT_TEAM_INNOCENT)
-                {
-                    g_iIPCount[client]++;
-                }
-                else if (role == TTT_TEAM_TRAITOR)
-                {
-                    g_iTPCount[client]++;
-                }
-            }
+            return Plugin_Handled;
         }
     }
+
+    return Plugin_Continue;
+}
+
+public Action OnWeaponDrop(int client, int weapon)
+{
+    if (!g_cBlockDrop.BoolValue || (IsValidEntity(weapon) && GetEntProp(weapon, Prop_Send, "m_iClip1") <= 0))
+    {
+        return Plugin_Continue;
+    }
+
+    if (TTT_IsClientValid(client) && IsValidEntity(weapon))
+    {
+        char sClass[32];
+        GetEntityClassname(weapon, sClass, sizeof(sClass));
+        
+        if (StrEqual(sClass, "weapon_taser", false))
+        {
+            return Plugin_Handled;
+        }
+    }
+
+    return Plugin_Continue;
+}
+
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
+{
+    if (!HasTaser(client))
+    {
+        GivePlayerItem(client, "weapon_taser");
+        TTT_AddInventoryItem(client, itemshort);
+    }
+    else
+    {
+        TTT_AddInventoryItem(client, itemshort);
+
+        int iTaser = TTT_HasClientTaser(client);
+
+        if (iTaser != -1)
+        {
+            SetEntProp(iTaser, Prop_Send, "m_iClip1", TTT_GetClientItemQuantity(client, itemshort));
+        }
+        else
+        {
+            iTaser = GivePlayerItem(client, "weapon_taser");
+            SetEntProp(iTaser, Prop_Send, "m_iClip1", TTT_GetClientItemQuantity(client, itemshort));
+        }
+    }
+
     return Plugin_Continue;
 }
 
 void ResetTaser(int client, bool fullReset)
 {
-    g_iDPCount[client] = 0;
-    g_iIPCount[client] = 0;
-    g_iTPCount[client] = 0;
-
-    g_bTaser[client] = false;
-
     if (fullReset)
     {
-        g_bRoundTaser[client] = false;
+        g_iPlayer[client].HasRoundTaser = false;
     }
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Continue;
     }
@@ -437,7 +532,10 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    if (!g_bTaser[iAttacker])
+    char sWeapon[64];
+    GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
+
+    if (StrContains(sWeapon, "taser", false) == -1)
     {
         return Plugin_Continue;
     }
@@ -452,134 +550,148 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    char sWeapon[64];
     int iRole = TTT_GetClientRole(iVictim);
     int iARole = TTT_GetClientRole(iAttacker);
-    GetClientWeapon(iAttacker, sWeapon, sizeof(sWeapon));
-    if (StrContains(sWeapon, "taser", false) != -1)
+
+    Action result = Plugin_Continue;
+
+    Call_StartForward(g_fwOnTased_Pre);
+    Call_PushCell(iAttacker);
+    Call_PushCell(iVictim);
+    Call_PushCellRef(iRole);
+    Call_Finish(result);
+
+    if (result == Plugin_Stop || result == Plugin_Handled)
     {
-        char sAttackerID[32], sVictimID[32];
+        return result;
+    }
 
-        ConVar hTag = FindConVar("ttt_steamid_add_to_logs");
-        if (hTag.BoolValue)
+    char sAttackerID[32], sVictimID[32];
+
+    ConVar hTag = FindConVar("ttt_steamid_add_to_logs");
+    if (hTag.BoolValue)
+    {
+        hTag = FindConVar("ttt_steamid_log_format");
+        if (hTag.IntValue == 1)
         {
-            hTag = FindConVar("ttt_steamid_log_format");
-            if (hTag.IntValue == 1)
-            {
-                GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
-                GetClientAuthId(iVictim, AuthId_Steam2, sVictimID, sizeof(sVictimID));
-            }
-            else if (hTag.IntValue == 2)
-            {
-                GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
-                GetClientAuthId(iVictim, AuthId_Steam3, sVictimID, sizeof(sVictimID));
-            }
-            else if (hTag.IntValue == 3)
-            {
-                GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
-                GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
-            }
-
-            if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
-            {
-                Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
-                Format(sVictimID, sizeof(sVictimID), " (%s)", sVictimID);
-            }
+            GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
+            GetClientAuthId(iVictim, AuthId_Steam2, sVictimID, sizeof(sVictimID));
         }
-
-        // TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
-        if (iRole == TTT_TEAM_TRAITOR)
+        else if (hTag.IntValue == 2)
         {
-            TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
-
-            if (g_cBroadcastTaserResult.BoolValue)
-            {
-                CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
-            }
-            else
-            {
-                CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
-            }
-
-            TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
+            GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
+            GetClientAuthId(iVictim, AuthId_Steam3, sVictimID, sizeof(sVictimID));
         }
-        else if (iRole == TTT_TEAM_DETECTIVE)
+        else if (hTag.IntValue == 3)
         {
-            TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
-
-            if (g_cBroadcastTaserResult.BoolValue)
-            {
-                CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
-            }
-            else
-            {
-                CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
-            }
+            GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
+            GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
         }
-        else if (iRole == TTT_TEAM_INNOCENT)
+        
+        if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
         {
-            TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
-
-            if (g_cBroadcastTaserResult.BoolValue)
-            {
-                CPrintToChatAll("%s %T", g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
-            }
-            else
-            {
-                CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
-            }
+            Format(sAttackerID, sizeof(sAttackerID), " (%s)", sAttackerID);
+            Format(sVictimID, sizeof(sVictimID), " (%s)", sVictimID);
         }
+    }
+    
+    // TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
+    if (iRole == TTT_TEAM_TRAITOR)
+    {
+        TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
-        Call_StartForward(g_hOnTased);
-        Call_PushCell(iAttacker);
-        Call_PushCell(iVictim);
-        Call_Finish();
-
-        g_bTaser[iAttacker] = false;
-
-        if (g_smGlow == null)
+        if (g_cBroadcastTaserResult.BoolValue)
         {
-            g_smGlow = new StringMap();
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
         }
-
-        if (g_cGlowPlayer.BoolValue)
+        else
         {
-            if (g_cGlowToAll.BoolValue)
-            {
-                LoopValidClients(i)
-                {
-                    SetGlow(i, iVictim);
-                }
-            }
-            else
-            {
-                SetGlow(iAttacker, iVictim);
-            }
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
         }
+        
+        TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
+    }
+    else if (iRole == TTT_TEAM_DETECTIVE)
+    {
+        TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
 
-        if (iARole != TTT_TEAM_TRAITOR)
+        if (g_cBroadcastTaserResult.BoolValue)
         {
-            if (g_cDamage.IntValue == 0)
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
+        }
+        else
+        {
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+        }
+    }
+    else if (iRole == TTT_TEAM_INNOCENT)
+    {
+        TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
+
+        if (g_cBroadcastTaserResult.BoolValue)
+        {
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
+        }
+        else
+        {
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+        }
+    }
+    
+    Call_StartForward(g_fwOnTased_Post);
+    Call_PushCell(iAttacker);
+    Call_PushCell(iVictim);
+    Call_Finish();
+
+    if (g_smGlow == null)
+    {
+        g_smGlow = new StringMap();
+    }
+
+    if (g_cGlowPlayer.BoolValue)
+    {
+        if (g_cGlowToAll.BoolValue)
+        {
+            LoopValidClients(i)
             {
-                return Plugin_Handled;
-            }
-            else if (g_cDamage.IntValue > 0)
-            {
-                damage = g_cDamage.FloatValue;
-                return Plugin_Changed;
+                SetGlow(i, iVictim);
             }
         }
         else
         {
-            if (g_cTDamage.IntValue == 0)
-            {
-                return Plugin_Handled;
-            }
+            SetGlow(iAttacker, iVictim);
+        }
+    }
 
-            damage = g_cTDamage.FloatValue;
+    if (iARole != TTT_TEAM_TRAITOR)
+    {
+        if (g_cDamage.IntValue == 0)
+        {
+            return Plugin_Handled;
+        }
+        else if (g_cDamage.IntValue > 0)
+        {
+            damage = g_cDamage.FloatValue;
             return Plugin_Changed;
         }
     }
+    else
+    {
+        if (g_cTDamage.IntValue == 0)
+        {
+            return Plugin_Handled;
+        }
+
+        damage = g_cTDamage.FloatValue;
+        return Plugin_Changed;
+    }
+    
+
+    if (g_cDisableTaserDamage.BoolValue && StrContains(sWeapon, "taser", false) != -1)
+    {
+        return Plugin_Handled;
+    }
+
     return Plugin_Continue;
 }
 
@@ -666,5 +778,31 @@ void SetGlow(int client, int target)
         Format(sKey, sizeof(sKey), "%d-%d", iUserID, iTUserID);
 
         g_smGlow.SetValue(sKey, iEnd, true);
+        FadePlayer(target, {255, 255, 255, 100});
     }
+}
+
+void FadePlayer(int client, int iColor[4])
+{
+    if (g_cFadeLength.FloatValue > 0.0)
+    {
+        int iFadeLength = RoundToNearest(g_cFadeLength.FloatValue * 1000.0);
+
+        Protobuf pbMessage = view_as<Protobuf>(StartMessageOne("Fade", client, USERMSG_RELIABLE));
+        pbMessage.SetInt("duration", iFadeLength);
+        pbMessage.SetInt("hold_time", iFadeLength);
+        pbMessage.SetInt("flags", 0x0001);
+        pbMessage.SetColor("clr", iColor);
+        EndMessage();
+    }
+}
+
+bool HasTaser(int client)
+{
+    if (TTT_IsItemInInventory(client, SHORT_NAME) || TTT_IsItemInInventory(client, SHORT_NAME_D) || TTT_IsItemInInventory(client, SHORT_NAME_T))
+    {
+        return true;
+    }
+
+    return false;
 }

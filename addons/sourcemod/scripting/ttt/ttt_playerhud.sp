@@ -14,9 +14,21 @@ ConVar g_cTextU = null;
 ConVar g_cTimer = null;
 ConVar g_cKarmaType = null;
 ConVar g_cHealthType = null;
+ConVar g_cEnableITextColor = null;
+ConVar g_cEnableDTextColor = null;
+ConVar g_cHUDRefreshTime = null;
 
-int g_iTarget[MAXPLAYERS + 1] = {0, ...};
-Handle g_hOnHudSend_Pre = null;
+GlobalForward g_fwOnHudSend_Pre = null;
+
+enum struct PlayerData {
+    int Target;
+
+    bool Reset;
+
+    Handle Timer;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -29,7 +41,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnHudSend_Pre = CreateGlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_CellByRef, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
+    g_fwOnHudSend_Pre = new GlobalForward("TTT_OnHudSend_Pre", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell, Param_String, Param_CellByRef, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell, Param_String, Param_Cell);
 
     RegPluginLibrary("ttt_playerhud");
 
@@ -49,14 +61,18 @@ public void OnPluginStart()
     g_cKarmaType = AutoExecConfig_CreateConVar("hud_display_karma_type", "1", "Which karma display you want. 0 - Number (Old), 1 - Name (New)", _, true, 0.0, true, 1.0);
     g_cHealthType = AutoExecConfig_CreateConVar("hud_display_health_type", "1", "Which health display you want. 0 - Number (Old), 1 - Name (New)", _, true, 0.0, true, 1.0);
     g_cTimer = AutoExecConfig_CreateConVar("hud_timer_check", "0.2", "Check each x seconds.");
+    g_cEnableDTextColor = AutoExecConfig_CreateConVar("hud_display_enable_detective_textcolor", "0", "Enable text color for all detectives on text hud.", _, true, 0.0, true, 1.0);
+    g_cEnableITextColor = AutoExecConfig_CreateConVar("hud_display_enable_innocent_textcolor", "0", "Enable text color for all innocents on text hud.", _, true, 0.0, true, 1.0);
+    g_cHUDRefreshTime = AutoExecConfig_CreateConVar("hud_refresh_hud", "2.0", "Time in seconds to refresh/close the playerhud (0.0 - disable this feature)");
+
     TTT_EndConfig();
 
     TTT_LoadTranslations();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnAllPluginsLoaded()
@@ -75,9 +91,14 @@ public void OnConfigsExecuted()
     CreateTimer(g_cTimer.FloatValue, Timer_UpdateText, _, TIMER_REPEAT |  TIMER_FLAG_NO_MAPCHANGE);
 }
 
+public void OnClientDisconnect(int client)
+{
+    delete g_iPlayer[client].Timer;
+}
+
 public Action Timer_UpdateText(Handle timer)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Continue;
     }
@@ -87,14 +108,24 @@ public Action Timer_UpdateText(Handle timer)
         if (IsPlayerAlive(client))
         {
             int iTarget = TraceClientViewEntity(client);
-            if (iTarget != g_iTarget[client])
+            if (iTarget != g_iPlayer[client].Target)
             {
-                g_iTarget[client] = iTarget;
-
                 if (!TTT_IsClientValid(iTarget))
                 {
+                    if (g_cHUDRefreshTime.FloatValue > 0.0)
+                    {
+                        delete g_iPlayer[client].Timer;
+                        g_iPlayer[client].Timer = CreateTimer(g_cHUDRefreshTime.FloatValue, Timer_RefreshHUD, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+                    }
+                    else
+                    {
+                        ResetCenterText(client);
+                    }
+
                     continue;
                 }
+
+                g_iPlayer[client].Target = iTarget;
 
                 char sName[MAX_NAME_LENGTH];
                 char sPlayerName[64];
@@ -106,6 +137,8 @@ public Action Timer_UpdateText(Handle timer)
 
                 if (PrepareText(client, iTarget, sName, sizeof(sName), sPlayerName, sizeof(sPlayerName), sHealth, sizeof(sHealth), sPlayerHealth, sizeof(sPlayerHealth), sKarma, sizeof(sKarma), sPlayerKarma, sizeof(sPlayerKarma), sHintText, sizeof(sHintText)))
                 {
+                    g_iPlayer[client].Reset = true;
+
                     PrintCenterText2(client, "TTT - PlayerHUD", sHintText);
                 }
             }
@@ -202,7 +235,14 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         
         if (iTRole == TTT_TEAM_TRAITOR)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            if (g_cEnableDTextColor.BoolValue)
+            {
+                Format(sPlayerName, iPlayerNameLength, "<font color='#008000'>%N</font>", target);
+            }
+            else
+            {
+                GetClientName(target, sPlayerName, iPlayerNameLength);
+            }
         }
         else if (iTRole == TTT_TEAM_DETECTIVE)
         {
@@ -210,7 +250,14 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         }
         else if (iTRole == TTT_TEAM_INNOCENT)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            if (g_cEnableDTextColor.BoolValue)
+            {
+                Format(sPlayerName, iPlayerNameLength, "<font color='#008000'>%N</font>", target);
+            }
+            else
+            {
+                GetClientName(target, sPlayerName, iPlayerNameLength);
+            }
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
@@ -225,7 +272,14 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         
         if (iTRole == TTT_TEAM_TRAITOR)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            if (g_cEnableITextColor.BoolValue)
+            {
+                Format(sPlayerName, iPlayerNameLength, "<font color='#008000'>%N</font>", target);
+            }
+            else
+            {
+                GetClientName(target, sPlayerName, iPlayerNameLength);
+            }
         }
         else if (iTRole == TTT_TEAM_DETECTIVE)
         {
@@ -233,7 +287,14 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         }
         else if (iTRole == TTT_TEAM_INNOCENT)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            if (g_cEnableITextColor.BoolValue)
+            {
+                Format(sPlayerName, iPlayerNameLength, "<font color='#008000'>%N</font>", target);
+            }
+            else
+            {
+                GetClientName(target, sPlayerName, iPlayerNameLength);
+            }
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
@@ -265,7 +326,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
     }
 
     Action res = Plugin_Continue;
-    Call_StartForward(g_hOnHudSend_Pre);
+    Call_StartForward(g_fwOnHudSend_Pre);
     Call_PushCell(client);
     Call_PushCell(target);
     Call_PushStringEx(sName, iNameLength, SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
@@ -298,13 +359,13 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
 
 int TraceClientViewEntity(int client)
 {
-    float m_vecOrigin[3];
-    float m_angRotation[3];
+    float fOrigin[3];
+    float fAngles[3];
 
-    GetClientEyePosition(client, m_vecOrigin);
-    GetClientEyeAngles(client, m_angRotation);
+    GetClientEyePosition(client, fOrigin);
+    GetClientEyeAngles(client, fAngles);
 
-    Handle tr = TR_TraceRayFilterEx(m_vecOrigin, m_angRotation, MASK_SOLID, RayType_Infinite, TRDontHitSelf, client);
+    Handle tr = TR_TraceRayFilterEx(fOrigin, fAngles, MASK_SOLID, RayType_Infinite, TRDontHitSelf, client);
     int pEntity = -1;
 
     if (TR_DidHit(tr))
@@ -424,4 +485,40 @@ bool GetTranslationColor(const char[] type, const char[] translation, char[] sCo
 
     delete kvConfig;
     return false;
+}
+
+public Action Timer_RefreshHUD(Handle timer, int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client))
+    {
+        ResetCenterText(client);
+    }
+
+    g_iPlayer[client].Timer = null;
+
+    return Plugin_Stop;
+}
+
+void ResetCenterText(int client)
+{
+    if (g_iPlayer[client].Reset)
+    {
+        char sBuffer[64];
+        Format(sBuffer, sizeof(sBuffer), "\n\n\n\n\n\n\n");
+        Protobuf pbMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
+        pbMessage.SetInt("msg_dst", 4);
+        pbMessage.AddString("params", NULL_STRING);
+        pbMessage.AddString("params", sBuffer);
+        pbMessage.AddString("params", NULL_STRING);
+        pbMessage.AddString("params", NULL_STRING);
+        pbMessage.AddString("params", NULL_STRING);
+        pbMessage.AddString("params", NULL_STRING);
+        EndMessage();
+    }
+
+    g_iPlayer[client].Reset = false;
+    g_iPlayer[client].Target = 0;
+    g_iPlayer[client].Timer = null;
 }

@@ -42,9 +42,9 @@ public void OnPluginStart()
     TTT_EndConfig();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -79,6 +79,13 @@ public void ChannelList(DiscordBot bot, char[] guild, DiscordChannel Channel, an
     if(Channel.IsText && (StrContains(sChannelName, sCVarChannelName, false) != -1 && StrEqual(sChannelID, sCVarChannelID, false)))
     {
         strcopy(g_sChannelID, sizeof(g_sChannelID), sChannelID);
+
+        ConVar cvar = FindConVar("ttt_debug_mode");
+
+        if (cvar != null && cvar.BoolValue)
+        {
+            g_dBot.SendMessageToChannelID(g_sChannelID, "Test", INVALID_FUNCTION);
+        }
     }
 }
 
@@ -111,13 +118,15 @@ public void TTT_OnRoundEnd(int winner, Handle array)
             char sBuffer[256];
             aLogs.GetString(i, sBuffer, sizeof(sBuffer));
 
-            if (strlen(sMessage) + strlen(sBuffer) >= 1999)
+            if (strlen(sMessage) + strlen(sBuffer) >= 1997)
             {
                 aMessages.PushString(sMessage);
                 strcopy(sMessage, sizeof(sMessage), "");
             }
 
-            Format(sMessage, sizeof(sMessage), "%s%s\n", sMessage, sBuffer);
+            ReplaceString(sBuffer, sizeof(sBuffer), "`", "", false);
+            ReplaceString(sBuffer, sizeof(sBuffer), "´", "", false);
+            Format(sMessage, sizeof(sMessage), "%s`%s`\n", sMessage, sBuffer);
 
             /* Last Message - i: 159 (+ 1), Length: 160
             Push last message into the ArrayList */

@@ -4,17 +4,23 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
-#include <ttt_shop>
 #include <ttt>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
+#include <colorlib>
 
-#define SHORT_NAME "rdmTele"
+#define SHORT_NAME_I "rdmTele_i"
+#define SHORT_NAME_D "rdmTele_d"
+#define SHORT_NAME_T "rdmTele_t"
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Items: Random Teleporter"
 
 ConVar g_cTPrice = null;
+ConVar g_cTLimit = null;
 ConVar g_cDPrice = null;
+ConVar g_cDLimit = null;
 ConVar g_cIPrice = null;
+ConVar g_cILimit = null;
 ConVar g_cTPrio = null;
 ConVar g_cDPrio = null;
 ConVar g_cIPrio = null;
@@ -26,10 +32,7 @@ ConVar g_cRagdoll = null;
 ConVar g_cIgnoreRoleTraitor = null;
 ConVar g_cIgnoreRoleInnocent = null;
 ConVar g_cIgnoreRoleDetective = null;
-
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iIPCount[MAXPLAYERS + 1] =  { 0, ... };
+ConVar g_cActivation = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -60,8 +63,11 @@ public void OnPluginStart()
     CreateConVar("ttt2_random_teleporter_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("rt_name", "Random Teleporter", "The name of the Random Teleport in the Shop");
     g_cTPrice = AutoExecConfig_CreateConVar("rt_traitor_price", "9000", "The amount of credits for Random Teleport costs as traitor. 0 to disable.");
+    g_cTLimit = AutoExecConfig_CreateConVar("rt_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cDPrice = AutoExecConfig_CreateConVar("rt_detective_price", "0", "The amount of credits for Random Teleport costs as detective. 0 to disable.");
+    g_cDLimit = AutoExecConfig_CreateConVar("rt_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cIPrice = AutoExecConfig_CreateConVar("rt_innocent_price", "0", "The amount of credits for Random Teleport costs as innocent. 0 to disable.");
+    g_cILimit = AutoExecConfig_CreateConVar("rt_innocent_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTPrio = AutoExecConfig_CreateConVar("rt_traitor_sort_prio", "0", "The sorting priority of the Random Teleport (Traitor) in the shop menu.");
     g_cDPrio = AutoExecConfig_CreateConVar("rt_detective_sort_prio", "0", "The sorting priority of the Random Teleport (Detective) in the shop menu.");
     g_cIPrio = AutoExecConfig_CreateConVar("rt_innocent_sort_prio", "0", "The sorting priority of the Random Teleport (innocent) in the shop menu.");
@@ -72,19 +78,23 @@ public void OnPluginStart()
     g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
     g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
     g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cActivation = AutoExecConfig_CreateConVar("rt_activation_mode", "1", "Which activation mode? 0 - New, over !inventory menu; 1 - Old, on purchase", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
-
-    HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_I);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
 }
 
-public void OnClientDisconnect(int client)
+public void TTT_OnVersionReceive(int version)
 {
-    ResetItem(client);
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -92,11 +102,12 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
 {
-    // LogToFile(g_sLog, "(TTT_OnShopReady) called!");
     RegisterItem();
 }
 
@@ -104,9 +115,9 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_I, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cICount.IntValue, g_cILimit.IntValue, OnItemPurchased);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -117,58 +128,30 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     }
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (g_cActivation.IntValue == 0)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
+        TTT_AddInventoryItem(client, itemshort);
+    }
+    else if (g_cActivation.IntValue == 1)
+    {
+        TTT_AddItemUsage(client, itemshort);
+        RandomTeleport(client);
+    }
+
+    return Plugin_Continue;
+}
+
+public void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort)
+{
+    if (TTT_IsClientValid(client) && (StrEqual(itemshort, SHORT_NAME_I) || StrEqual(itemshort, SHORT_NAME_D) || StrEqual(itemshort, SHORT_NAME_T)))
+    {
+        if (TTT_IsItemInInventory(client, itemshort))
         {
-            int role = TTT_GetClientRole(client);
-            
-            char sBuffer[MAX_ITEM_LENGTH];
-            g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-
-            if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cTCount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cDCount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_INNOCENT && g_iIPCount[client] >= g_cICount.IntValue)
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sBuffer, g_cICount.IntValue);
-                return Plugin_Stop;
-            }
-
-            int target = RandomTeleport(client);
-
-            if (target == -1)
-            {
-                return Plugin_Stop;
-            }
-
-            if (count && target != -1)
-            {
-                if (role == TTT_TEAM_TRAITOR)
-                {
-                    g_iTPCount[client]++;
-                }
-                else if (role == TTT_TEAM_DETECTIVE)
-                {
-                    g_iDPCount[client]++;
-                }
-                else if (role == TTT_TEAM_INNOCENT)
-                {
-                    g_iIPCount[client]++;
-                }
-            }
+            RandomTeleport(client);
         }
     }
-    return Plugin_Continue;
 }
 
 int RandomTeleport(int client)
@@ -232,17 +215,17 @@ int RandomTeleport(int client)
     }
     else
     {
-        Ragdolls ragdoll;
-        
-        if (!TTT_GetClientRagdoll(target, ragdoll))
+        Ragdoll body;
+
+        if (!TTT_GetClientRagdoll(target, body))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Cant find ragdoll", client);
             return -1;
         }
 
-        int body = EntRefToEntIndex(ragdoll.Ent);
+        int entity = EntRefToEntIndex(body.EntityRef);
 
-        if (!IsValidEntity(body))
+        if (!IsValidEntity(entity))
         {
             return -1;
         }
@@ -254,22 +237,39 @@ int RandomTeleport(int client)
         GetClientAbsAngles(client, fAngles);
         GetEntPropVector(client, Prop_Data, "m_vecAbsVelocity", fVelo);
 
-        GetEntPropVector(body, Prop_Send, "m_vecOrigin", fTargetPos);
+        GetEntPropVector(entity, Prop_Send, "m_vecOrigin", fTargetPos);
 
         TeleportEntity(client, fTargetPos, NULL_VECTOR, NULL_VECTOR);
 
         float speed = GetVectorLength(fVelo);
         if (speed >= 500)
         {
-            TeleportEntity(body, fClientPos, fAngles, NULL_VECTOR);
+            TeleportEntity(entity, fClientPos, fAngles, NULL_VECTOR);
         }
         else
         {
-            TeleportEntity(body, fClientPos, fAngles, fVelo);
+            TeleportEntity(entity, fClientPos, fAngles, fVelo);
         }
     }
 
     CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
+
+    if (iRole == TTT_TEAM_TRAITOR)
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_T);
+        TTT_RemoveInventoryItem(client, SHORT_NAME_T);
+    }
+    else if (iRole == TTT_TEAM_INNOCENT)
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_I);
+        TTT_RemoveInventoryItem(client, SHORT_NAME_I);
+    }
+    else if (iRole == TTT_TEAM_DETECTIVE)
+    {
+        TTT_AddItemUsage(client, SHORT_NAME_D);
+        TTT_RemoveInventoryItem(client, SHORT_NAME_D);
+    }
+
     return target;
 }
 
@@ -293,21 +293,4 @@ public void Frame_Teleport(DataPack pack)
     }
 
     delete pack;
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        ResetItem(client);
-    }
-}
-
-void ResetItem(int client)
-{
-    g_iTPCount[client] = 0;
-    g_iDPCount[client] = 0;
-    g_iIPCount[client] = 0;
 }

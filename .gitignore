@@ -1,8 +1,9 @@
-*.smx
 addons/sourcemod/scripting/.atom-build.json
 .vscode/
 addons/sourcemod/scripting/tests/logTest.sp
 addons/sourcemod/scripting/include/accelerator.inc
 addons/sourcemod/scripting/tests/vphysics.sp
 addons/sourcemod/scripting/tests/accelerator.sp
-addons/sourcemod/scripting/ttt/ttt_ranking.sp
+*smx
+addons/sourcemod/plugins/ttt/invalidcodeend.asm
+addons/sourcemod/scripting/tests/invalidcodeend.sp

@@ -2,7 +2,7 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <multicolors>
+#include <colorlib>
 #include <ttt>
 #include <ttt_shop>
 
@@ -38,8 +38,6 @@ public void OnPluginStart()
     g_cReopen = AutoExecConfig_CreateConVar("ttt_radio_reopen", "0", "Reopen radio menu after choose?", _, true, 0.0, true, 1.0);
     g_cReloadAccess = AutoExecConfig_CreateConVar("ttt_radio_reload_access", "z", "Admin flags to access reload radio command.");
     TTT_EndConfig();
-    
-    g_smMenu = new StringMap();
 
     LoadMenu();
     
@@ -47,9 +45,9 @@ public void OnPluginStart()
     RegConsoleCmd("sm_reload_radio", Command_ReloadRadio);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnMapStart()
@@ -76,10 +74,8 @@ public Action Command_ReloadRadio(int client, int args)
 
 void LoadMenu()
 {
-    if (g_smMenu != null)
-    {
-        g_smMenu.Clear();
-    }
+    delete g_smMenu;
+    g_smMenu = new StringMap();
 
     char sFile[PLATFORM_MAX_PATH];
     BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/radio.ini");
@@ -144,7 +140,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action Command_Radio(int client, int args)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Handled;
     }
@@ -230,6 +226,7 @@ public Action Command_Radio(int client, int args)
     
     if (!TTT_IsClientValid(iTarget))
     {
+        CReplyToCommand(client, "%s %T", g_sPluginTag, "Radio: Invalid target", client);
         return Plugin_Handled;
     }
     

@@ -2,9 +2,10 @@
 
 #include <sourcemod>
 #include <sdktools>
-#include <multicolors>
+#include <colorlib>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 
 #pragma newdecls required
 
@@ -21,6 +22,8 @@ ConVar g_cRed = null;
 ConVar g_cGreen = null;
 ConVar g_cBlue = null;
 ConVar g_cAlpha = null;
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
 
 ConVar g_cTPrice = null;
 ConVar g_cTPrio = null;
@@ -29,8 +32,8 @@ ConVar g_cTRed = null;
 ConVar g_cTGreen = null;
 ConVar g_cTBlue = null;
 ConVar g_cTAlpha = null;
-
-bool g_bRadar[MAXPLAYERS + 1] =  { false, ... };
+ConVar g_cTCount = null;
+ConVar g_cTLimit = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
@@ -64,6 +67,8 @@ public void OnPluginStart()
     g_cGreen = AutoExecConfig_CreateConVar("radar_player_color_green", "0", "Green colors for detective radar", _, true, 0.0, true, 255.0);
     g_cBlue = AutoExecConfig_CreateConVar("radar_player_color_blue", "255", "Blue colors for detective radar", _, true, 0.0, true, 255.0);
     g_cAlpha = AutoExecConfig_CreateConVar("radar_player_color_alpha", "255", "Visibility for detective radar", _, true, 0.0, true, 255.0);
+    g_cCount = AutoExecConfig_CreateConVar("radar_count", "1", "Amount of purchases for radar");
+    g_cLimit = AutoExecConfig_CreateConVar("radar_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     
     g_cTPrice = AutoExecConfig_CreateConVar("radar_price_traitor", "9000", "The amount of credits Radar costs as traitor. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("radar_sort_prio_traitor", "0", "The sorting priority of the Radar in the traitor shop menu.");
@@ -72,14 +77,23 @@ public void OnPluginStart()
     g_cTGreen = AutoExecConfig_CreateConVar("radar_player_color_traitor_green", "0", "Green colors for traitor radar", _, true, 0.0, true, 255.0);
     g_cTBlue = AutoExecConfig_CreateConVar("radar_player_color_traitor_blue", "255", "Blue colors for traitor radar", _, true, 0.0, true, 255.0);
     g_cTAlpha = AutoExecConfig_CreateConVar("radar_player_color_traitor_alpha", "255", "Visibility for traitor radar", _, true, 0.0, true, 255.0);
+    g_cTCount = AutoExecConfig_CreateConVar("radar_count_traitor", "1", "Amount of purchases for T radar");
+    g_cTLimit = AutoExecConfig_CreateConVar("radar_limit_traitor", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
-
-    HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+        TTT_RemoveShopItem(SHORT_NAME_T);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnMapStart()
@@ -93,6 +107,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
@@ -105,8 +121,8 @@ void RegisterItem()
     char sName[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sName, sizeof(sName));
     
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
-    TTT_RegisterCustomItem(SHORT_NAME_T, sName, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME_T, sName, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -117,50 +133,24 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     }
 }
 
-public void OnClientDisconnect(int client)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    ResetRadar(client);
-}
+    int role = TTT_GetClientRole(client);
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
-{
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (role != TTT_TEAM_DETECTIVE && role != TTT_TEAM_TRAITOR)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false) || StrEqual(itemshort, SHORT_NAME_T, false))
-        {
-            int role = TTT_GetClientRole(client);
-
-            if (role != TTT_TEAM_DETECTIVE && role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            
-            if (!IsPlayerAlive(client))
-            {
-                return Plugin_Stop;
-            }
-            
-            g_bRadar[client] = true;
-            
-            SetBeam(client);
-        }
+        return Plugin_Stop;
     }
+    
+    if (!IsPlayerAlive(client))
+    {
+        return Plugin_Stop;
+    }
+
+    SetBeam(client);
+    
+    TTT_AddInventoryItem(client, itemshort);
     return Plugin_Continue;
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        ResetRadar(client);
-    }
-}
-
-void ResetRadar(int client)
-{
-    g_bRadar[client] = false;
 }
 
 void SetBeam(int client)
@@ -225,7 +215,7 @@ public Action Timer_UpdateRadar(Handle timer, any userid)
     
     if (TTT_IsClientValid(client))
     {
-        if (IsPlayerAlive(client) && g_bRadar[client])
+        if (IsPlayerAlive(client) && (TTT_IsItemInInventory(client, SHORT_NAME) || TTT_IsItemInInventory(client, SHORT_NAME_T)))
         {
             SetBeam(client);
         }

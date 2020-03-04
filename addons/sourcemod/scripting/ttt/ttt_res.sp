@@ -4,7 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <clientprefs>
-#include <multicolors>
+#include <colorlib>
 #include <ttt>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Round End Sounds"
@@ -20,7 +20,7 @@ ConVar g_cPlayType = null;
 ConVar g_cStop = null;
 ConVar g_cSettings = null;
 
-Handle g_hCookie;
+Cookie g_coCookie = null;
 
 bool SoundsDetSucess = false;
 bool SoundsTraSucess = false;
@@ -33,7 +33,7 @@ ArrayList innSound;
 public Plugin myinfo =
 {
     name = PLUGIN_NAME,
-    author = TTT_PLUGIN_AUTHOR,
+    author = "Bara (& AbNeR_CSS)",
     description = TTT_PLUGIN_DESCRIPTION,
     version = TTT_PLUGIN_VERSION,
     url = TTT_PLUGIN_URL
@@ -52,13 +52,11 @@ public void OnPluginStart()
     g_cSettings = AutoExecConfig_CreateConVar("res_client_preferences", "1", "Enable/Disable client preferences", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
     
-    g_hCookie = RegClientCookie("Round End Sounds", "", CookieAccess_Private);
+    g_coCookie = new Cookie("Round End Sounds", "", CookieAccess_Private);
     SetCookieMenuItem(Cookie_RoundEndSound, 0, "Round End Sounds");
     
     LoadTranslations("common.phrases");
 
-    RegAdminCmd("sm_resrefresh", Command_ResRefresh, ADMFLAG_CONFIG);
-    
     RegConsoleCmd("sm_res", Commamnd_RES);
     
     HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
@@ -68,17 +66,14 @@ public void OnPluginStart()
     innSound = new ArrayList(512);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
-public void OnConfigsExecuted()
+public void OnMapStart()
 {
-    if (g_cEnable.BoolValue)
-    {
-        RefreshSounds(0);
-    }
+    RefreshSounds(0);
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
@@ -188,7 +183,10 @@ public Action Commamnd_RES(int client, int args)
         return Plugin_Handled;
     }
     
-    int cookievalue = GetIntCookie(client, g_hCookie);
+    char sValue[12];
+    g_coCookie.Get(client, sValue, sizeof(sValue));
+    int cookievalue = StringToInt(sValue);
+
     Menu menu = new Menu(MenuHandle);
     menu.SetTitle("Round End Sounds...");
     char Item[128];
@@ -212,12 +210,6 @@ public Action Commamnd_RES(int client, int args)
     return Plugin_Continue;
 }
 
-public Action Command_ResRefresh(int client, int args)
-{   
-    RefreshSounds(client);
-    return Plugin_Handled;
-}
-
 public int MenuHandle(Menu menu, MenuAction action, int client, int param)
 {
     if (action == MenuAction_DrawItem)
@@ -234,12 +226,12 @@ public int MenuHandle(Menu menu, MenuAction action, int client, int param)
         {
             case 0:
             {
-                SetClientCookie(client, g_hCookie, "0");
+                g_coCookie.Set(client, "0");
                 Commamnd_RES(client, 0);
             }
             case 1:
             {
-                SetClientCookie(client, g_hCookie, "1");
+                g_coCookie.Set(client, "1");
                 Commamnd_RES(client, 0);
             }
         }
@@ -485,19 +477,15 @@ void PlaySoundInn()
 
 void PlayMusicAll(char[] sSound)
 {
+    char sValue[12];
     LoopValidClients(i)
     {
-        if((!g_cSettings.BoolValue || GetIntCookie(i, g_hCookie) == 0))
+        g_coCookie.Get(i, sValue, sizeof(sValue));
+        int iValue = StringToInt(sValue);
+        if((!g_cSettings.BoolValue || iValue == 0))
         {
             ClientCommand(i, "playgamesound Music.StopAllMusic");
             ClientCommand(i, "play \"*%s\"", sSound);
         }
     }
-}
-
-int GetIntCookie(int client, Handle handle)
-{
-    char sCookieValue[11];
-    GetClientCookie(client, handle, sCookieValue, sizeof(sCookieValue));
-    return StringToInt(sCookieValue);
 }

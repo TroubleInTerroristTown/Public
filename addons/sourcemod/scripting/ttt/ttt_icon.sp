@@ -8,12 +8,19 @@
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Icons"
 
-int g_iIcon[MAXPLAYERS + 1] =  { -1, ... };
-
 ConVar g_cAdminImmunity = null;
 ConVar g_cSeeRoles = null;
 ConVar g_cTraitorIcon = null;
 ConVar g_cDetectiveIcon = null;
+
+GlobalForward g_fwOnPrecache = null;
+GlobalForward g_fwOnIconCreate = null;
+
+enum struct PlayerData {
+    int Icon;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -27,6 +34,9 @@ public Plugin myinfo =
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     CreateNative("TTT_SetIcon", Native_SetIcon);
+
+    g_fwOnPrecache = new GlobalForward("Icon_OnPrecache", ET_Event, Param_String, Param_Cell);
+    g_fwOnIconCreate = new GlobalForward("Icon_OnIconCreate", ET_Event, Param_Cell, Param_String, Param_Cell, Param_CellByRef);
 
     RegPluginLibrary("ttt_icon");
 
@@ -51,9 +61,9 @@ public void OnPluginStart()
     CreateTimer(2.0, Timer_CreateIcon, _, TIMER_REPEAT);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnPluginEnd()
@@ -66,35 +76,44 @@ public void OnPluginEnd()
 
 public void OnMapStart()
 {
-    char sBuffer[PLATFORM_MAX_PATH];
+    char sFile[PLATFORM_MAX_PATH];
     
-    g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    if (strlen(sBuffer) > 0)
-    {
-        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-        AddFileToDownloadsTable(sBuffer);
-    }
+    g_cTraitorIcon.GetString(sFile, sizeof(sFile));
+    Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
+    AddFileToDownloadsTable(sFile);
 
-    g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-    if (strlen(sBuffer) > 0)
-    {
-        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-        AddFileToDownloadsTable(sBuffer);
-        PrecacheModel(sBuffer);
-    }
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    if (strlen(sBuffer) > 0)
-    {
-        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
-        AddFileToDownloadsTable(sBuffer);
-    }
+    g_cTraitorIcon.GetString(sFile, sizeof(sFile));
+    Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
+    AddFileToDownloadsTable(sFile);
+    PrecacheModel(sFile);
 
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-    if (strlen(sBuffer) > 0)
+
+
+    g_cDetectiveIcon.GetString(sFile, sizeof(sFile));
+    Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
+    AddFileToDownloadsTable(sFile);
+
+    g_cDetectiveIcon.GetString(sFile, sizeof(sFile));
+    Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
+    AddFileToDownloadsTable(sFile);
+    PrecacheModel(sFile);
+
+    char sBuffer[PLATFORM_MAX_PATH];
+    Action res = Plugin_Handled;
+
+    Call_StartForward(g_fwOnPrecache);
+    Call_PushStringEx(sBuffer, sizeof(sBuffer), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sBuffer));
+    Call_Finish(res);
+
+    if (strlen(sBuffer) > 3 && (res == Plugin_Continue || res == Plugin_Changed))
     {
-        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
-        AddFileToDownloadsTable(sBuffer);
-        PrecacheModel(sBuffer);
+        Format(sFile, sizeof(sFile), "materials/%s.vtf", sBuffer);
+        AddFileToDownloadsTable(sFile);
+
+        Format(sFile, sizeof(sFile), "materials/%s.vmt", sBuffer);
+        AddFileToDownloadsTable(sFile);
+        PrecacheModel(sFile);
     }
 }
 
@@ -113,7 +132,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
 public Action Timer_CreateIcon(Handle timer)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Continue;
     }
@@ -122,7 +141,7 @@ public Action Timer_CreateIcon(Handle timer)
     {
         if (IsPlayerAlive(client))
         {
-            g_iIcon[client] = CreateIcon(client, TTT_GetClientRole(client));
+            g_iPlayer[client].Icon = CreateIcon(client, TTT_GetClientRole(client));
         }
     }
 
@@ -136,7 +155,7 @@ public void TTT_OnRoundStart()
 
 public void TTT_OnClientGetRole(int client, int role)
 {
-    g_iIcon[client] = CreateIcon(client, role);
+    g_iPlayer[client].Icon = CreateIcon(client, role);
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroadcast)
@@ -164,7 +183,7 @@ void ApplyIcons()
     {
         if (IsPlayerAlive(i))
         {
-            g_iIcon[i] = CreateIcon(i, TTT_GetClientRole(i));
+            g_iPlayer[i].Icon = CreateIcon(i, TTT_GetClientRole(i));
         }
     }
 }
@@ -198,16 +217,33 @@ int CreateIcon(int client, int role)
     if (role == TTT_TEAM_DETECTIVE)
     {
         g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
-        if (strlen(sBuffer) == 0)
-            return -1;
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
     else if (role == TTT_TEAM_TRAITOR)
     {
         g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
-        if (strlen(sBuffer) == 0)
-            return -1;
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
+    }
+
+    char sFile[PLATFORM_MAX_PATH];
+    Action res = Plugin_Continue;
+    bool bAsTraitor = false;
+
+    if (role == TTT_TEAM_TRAITOR)
+    {
+        bAsTraitor = true;
+    }
+
+    Call_StartForward(g_fwOnIconCreate);
+    Call_PushCell(client);
+    Call_PushStringEx(sFile, sizeof(sFile), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
+    Call_PushCell(sizeof(sFile));
+    Call_PushCellRef(view_as<int>(bAsTraitor));
+    Call_Finish(res);
+
+    if (res == Plugin_Changed)
+    {
+        Format(sBuffer, sizeof(sBuffer), "%s.vmt", sFile);
     }
 
     DispatchKeyValue(ent, "model", sBuffer);
@@ -221,11 +257,11 @@ int CreateIcon(int client, int role)
     SetVariantString(iTarget);
     AcceptEntityInput(ent, "SetParent", ent, ent);
 
-    if (role == TTT_TEAM_TRAITOR)
+    if (role == TTT_TEAM_TRAITOR && bAsTraitor)
     {
         SDKHook(ent, SDKHook_SetTransmit, Hook_SetTransmitT);
     }
-    return ent;
+    return EntIndexToEntRef(ent);
 }
 
 public Action Hook_SetTransmitT(int entity, int client)
@@ -257,18 +293,24 @@ public Action Hook_SetTransmitT(int entity, int client)
 
 void ClearIcon(int client)
 {
-    int role = TTT_GetClientRole(client);
+    if (g_iPlayer[client].Icon == 0)
+    {
+        g_iPlayer[client].Icon = -1;
+    }
 
-    if (IsValidEdict(g_iIcon[client]))
+    int role = TTT_GetClientRole(client);
+    int entity = EntRefToEntIndex(g_iPlayer[client].Icon);
+
+    if (IsValidEdict(entity))
     {
         if (role == TTT_TEAM_TRAITOR)
         {
-            SDKUnhook(g_iIcon[client], SDKHook_SetTransmit, Hook_SetTransmitT);
+            SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmitT);
         }
-        AcceptEntityInput(g_iIcon[client], "Kill");
+        AcceptEntityInput(entity, "Kill");
     }
 
-    g_iIcon[client] = -1;
+    g_iPlayer[client].Icon = -1;
 
 }
 
@@ -277,7 +319,7 @@ public int Native_SetIcon(Handle plugin, int numParams)
     int client = GetNativeCell(1);
     int role = GetNativeCell(2);
 
-    g_iIcon[client] = CreateIcon(client, role);
+    g_iPlayer[client].Icon = CreateIcon(client, role);
 
     return 0;
 }

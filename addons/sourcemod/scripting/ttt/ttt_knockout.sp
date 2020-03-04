@@ -6,6 +6,7 @@
 #include <sdkhooks>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 
 #undef REQUIRE_PLUGIN
 #pragma newdecls optional
@@ -22,6 +23,9 @@
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
+ConVar g_cMute = null;
 
 ConVar g_cStartMelee = null;
 ConVar g_cAdditionalMeleeRole = null;
@@ -29,19 +33,22 @@ ConVar g_cAdditionalMeleeWeapon = null;
 
 int g_iFreeze = -1;
 
-int g_iRagdoll[MAXPLAYERS + 1] =  { -1, ... };
-int g_iCamera[MAXPLAYERS + 1] =  { -1, ... };
-
-RenderMode g_rmRenderMode[MAXPLAYERS + 1] =  { RENDER_NORMAL, ... };
-int g_iCollision[MAXPLAYERS + 1] =  { -1, ... };
-
-bool g_bHasKnockout[MAXPLAYERS + 1] =  { false, ... };
-bool g_bKnockout[MAXPLAYERS + 1] =  { false, ... };
-
 bool g_bSourceC = false;
 bool g_bBaseC = false;
 
 UserMsg g_uFade = view_as<UserMsg>(-1);
+
+enum struct PlayerData {
+    int Ragdoll;
+    int Camera;
+    int Collision;
+
+    bool IsKnockout;
+
+    RenderMode Mode;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -65,7 +72,7 @@ public int Native_IsClientKnockout(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
     
-    return g_bKnockout[client];
+    return g_iPlayer[client].IsKnockout;
 }
 
 public void OnPluginStart()
@@ -91,10 +98,11 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("knockout_name", "Knockout", "The name of this in Shop");
     g_cPrice = AutoExecConfig_CreateConVar("knockout_price", "9000", "The amount of credits a knockout costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("knockout_sort_prio", "0", "The sorting priority of the knockout in the shop menu.");
+    g_cCount = AutoExecConfig_CreateConVar("knockout_count", "1", "The amount of usages for knockout per round as traitor. 0 to disable.");
+    g_cMute = AutoExecConfig_CreateConVar("knockout_local_mute", "1", "Choose 1 if you want to use external plugins for mure like sourcecomms or 0 for internal mute", _, true, 0.0, true, 1.0);
+    g_cLimit = AutoExecConfig_CreateConVar("knockout_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
-
-    HookEvent("player_spawn", Event_PlayerSpawn);
-
+    
     LoopValidClients(i)
     {
         OnClientPutInServer(i);
@@ -104,9 +112,17 @@ public void OnPluginStart()
     g_bBaseC = LibraryExists("basecomm");
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -145,6 +161,8 @@ public void OnConfigsExecuted()
     g_cStartMelee = FindConVar("ttt_start_melee_weapon");
     g_cAdditionalMeleeRole = FindConVar("ttt_additional_melee_role");
     g_cAdditionalMeleeWeapon = FindConVar("ttt_additional_melee_weapon");
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
@@ -156,7 +174,7 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
 public void OnClientPutInServer(int client)
@@ -165,41 +183,20 @@ public void OnClientPutInServer(int client)
     SDKHook(client, SDKHook_TraceAttack, OnTraceAttack);
 }
 
-public void OnClientDisconnect(int client)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    ResetKnockout(client);
-}
+    int role = TTT_GetClientRole(client);
 
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
+    if (role != TTT_TEAM_TRAITOR)
     {
-        ResetKnockout(client);
+        return Plugin_Stop;
     }
-}
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
-{
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-    {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            int role = TTT_GetClientRole(client);
+    TTT_RemoveWeaponByClassname(client, "weapon_taser", CS_SLOT_KNIFE);
+    
+    GivePlayerItem(client, "weapon_taser");
 
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-
-            g_bHasKnockout[client] = true;
-
-            TTT_RemoveWeaponByClassname(client, "weapon_taser", CS_SLOT_KNIFE);
-            
-            GivePlayerItem(client, "weapon_taser");
-        }
-    }
+    TTT_AddInventoryItem(client, SHORT_NAME);
     return Plugin_Continue;
 }
 
@@ -210,7 +207,7 @@ public Action OnWeaponCanUse(int client, int weapon)
         return Plugin_Continue;
     }
 
-    if(g_bKnockout[client])
+    if(g_iPlayer[client].IsKnockout)
     {
         return Plugin_Handled;
     }
@@ -220,14 +217,14 @@ public Action OnWeaponCanUse(int client, int weapon)
 
 public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
-    if (!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Continue;
     }
 
     if (TTT_IsClientValid(attacker) && TTT_IsClientValid(victim))
     {
-        if (g_bHasKnockout[attacker] && !g_bKnockout[victim])
+        if (TTT_IsItemInInventory(attacker, SHORT_NAME) && !g_iPlayer[victim].IsKnockout)
         {
             char sWeapon[32];
             GetClientWeapon(attacker, sWeapon, sizeof(sWeapon));
@@ -235,14 +232,16 @@ public Action OnTraceAttack(int victim, int &attacker, int &inflictor, float &da
             if (StrContains(sWeapon, "taser", false) != -1)
             {
                 KnockoutPlayer(victim);
-                g_bHasKnockout[attacker] = false;
+                
+                TTT_RemoveInventoryItem(attacker, SHORT_NAME);
+                TTT_AddItemUsage(attacker, SHORT_NAME);
 
                 return Plugin_Handled;
             }
         }
     }
     
-    if(TTT_IsClientValid(victim) && g_bKnockout[victim])
+    if(TTT_IsClientValid(victim) && g_iPlayer[victim].IsKnockout)
     {
         return Plugin_Handled;
     }
@@ -277,13 +276,13 @@ void KnockoutPlayer(int client)
         AcceptEntityInput(iEntity, "EnableMotion");
         SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
 
-        g_iRagdoll[client] = iEntity;
-        g_bKnockout[client] = true;
+        g_iPlayer[client].Ragdoll = iEntity;
+        g_iPlayer[client].IsKnockout = true;
 
-        g_rmRenderMode[client] = GetEntityRenderMode(client);
+        g_iPlayer[client].Mode = GetEntityRenderMode(client);
         CreateTimer(0.1, Timer_FixMode, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 
-        g_iCollision[client] = GetEntProp(client, Prop_Data, "m_CollisionGroup");
+        g_iPlayer[client].Collision = GetEntProp(client, Prop_Data, "m_CollisionGroup");
         SetEntProp(client, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
         
         DropWeapons(client);
@@ -294,17 +293,24 @@ void KnockoutPlayer(int client)
 
         CreateTimer(5.0, Timer_Delete, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
-        if (g_bSourceC)
+        if (g_cMute.BoolValue)
         {
-            SourceComms_SetClientMute(client, true, 1, false, "Knockout");
-        }
-        else if (g_bBaseC)
-        {
-            BaseComm_SetClientMute(client, true);
+            if (g_bSourceC)
+            {
+                SourceComms_SetClientMute(client, true, 1, false, "Knockout");
+            }
+            else if (g_bBaseC)
+            {
+                BaseComm_SetClientMute(client, true);
+            }
+            else
+            {
+                LogError("[%s] (KnockoutPlayer) Can't mute client.", PLUGIN_NAME);
+            }
         }
         else
         {
-            LogError("[%s] (KnockoutPlayer) Can't mute client.", PLUGIN_NAME);
+            SetClientListeningFlags(client, VOICE_MUTED);
         }
     }
     else
@@ -317,7 +323,7 @@ public Action Timer_FixMode(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
     
-    if (TTT_IsClientValid(client) && g_bKnockout[client])
+    if (TTT_IsClientValid(client) && g_iPlayer[client].IsKnockout)
     {
         SetEntityRenderMode(client, RENDER_NONE);
         return Plugin_Continue;
@@ -358,45 +364,50 @@ public Action Timer_Delete(Handle timer, any userid)
     
     if (TTT_IsClientValid(client))
     {
-        int entity = g_iRagdoll[client];
+        int entity = g_iPlayer[client].Ragdoll;
     
         if (entity != -1 && IsValidEntity(entity))
             AcceptEntityInput(entity, "kill");
         
-        int entity2 = EntRefToEntIndex(g_iCamera[client]);
+        int entity2 = EntRefToEntIndex(g_iPlayer[client].Camera);
         if(entity2 != -1)
             AcceptEntityInput(entity2, "kill");
         
-        g_iCamera[client] = -1;
-        g_iRagdoll[client] = -1;
-        g_bKnockout[client] = false;
+        g_iPlayer[client].Camera = -1;
+        g_iPlayer[client].Ragdoll = -1;
+        g_iPlayer[client].IsKnockout = false;
         
         if(TTT_IsClientValid(client))
         {
-            if (g_bSourceC)
+            if (g_cMute.BoolValue)
             {
-                SourceComms_SetClientMute(client, false);
+                if (g_bSourceC)
+                {
+                    SourceComms_SetClientMute(client, false);
+                }
+                else if (g_bBaseC)
+                {
+                    BaseComm_SetClientMute(client, false);
+                }
             }
-            else if (g_bBaseC)
+            else
             {
-                BaseComm_SetClientMute(client, false);
+                if (IsPlayerAlive(client))
+                {
+                    SetClientListeningFlags(client, VOICE_NORMAL);
+                }
             }
             
             SetEntData(client, g_iFreeze, FL_FAKECLIENT|FL_ONGROUND|FL_PARTIALGROUND, 4, true);
             SetClientViewEntity(client, client);
-            g_iCamera[client] = false;
+            g_iPlayer[client].Camera = false;
             PerformBlind(client, 0);
-            SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iCollision[client]);
-            SetEntityRenderMode(client, g_rmRenderMode[client]);
+            SetEntProp(client, Prop_Data, "m_CollisionGroup", g_iPlayer[client].Collision);
+            SetEntityRenderMode(client, g_iPlayer[client].Mode);
             
             GiveMelee(client);
         }
     }
-}
-
-void ResetKnockout(int client)
-{
-    g_bHasKnockout[client] = false;
 }
 
 bool SpawnCamAndAttach(int client, int ragdoll)
@@ -438,7 +449,7 @@ bool SpawnCamAndAttach(int client, int ragdoll)
     AcceptEntityInput(entity, "TurnOn");
 
     SetClientViewEntity(client, entity);
-    g_iCamera[client] = EntIndexToEntRef(entity);
+    g_iPlayer[client].Camera = EntIndexToEntRef(entity);
     
     return true;
 }

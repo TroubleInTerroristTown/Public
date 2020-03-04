@@ -17,15 +17,14 @@ ConVar g_cRetries = null;
 char g_sType[18];
 int g_iRetries = -1;
 
-Handle g_hOnConnect = null;
+GlobalForward g_fwOnConnect = null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     CreateNative("TTT_Query", Native_Query);
     CreateNative("TTT_GetSQLConnection", Native_GetSQLConnection);
-    CreateNative("TTT_GetConnectionType", Native_GetConnectionType);
 
-    g_hOnConnect = CreateGlobalForward("TTT_OnSQLConnect", ET_Ignore, Param_Cell);
+    g_fwOnConnect = new GlobalForward("TTT_OnSQLConnect", ET_Ignore, Param_Cell);
 
     RegPluginLibrary("ttt_sql");
 
@@ -66,66 +65,26 @@ void SQL_Start()
     
     if (g_dDatabase != null)
     {
-        LogMessage("%s is already connected! (Handle: %d)", sEntry, g_dDatabase);
+        LogMessage("(SQL_Start) %s is already connected! (Handle: %d)", sEntry, g_dDatabase);
         Call_OnSQLConnect();
         return;
     }
 
     if (g_iRetries > g_cRetries.IntValue)
     {
-        LogError("Can't connect to a database after %d retries!", g_iRetries-1);
+        LogError("(SQL_Start) Can't connect to a database after %d retries!", g_iRetries-1);
         return;
     }
 
     if (g_iRetries >= 1 && g_iRetries <= g_cRetries.IntValue)
     {
-        LogMessage("We try again to connect to a database (Retry #%d)!", g_iRetries);
-    }
-
-    if (g_iRetries == g_cRetries.IntValue)
-    {
-        LogMessage("Last chance with sqlite. Let me try it!");
-
-        KeyValues kvDatabase = new KeyValues("Databases");
-
-        kvDatabase.SetString("driver", "sqlite");
-        kvDatabase.SetString("host", "localhost");
-        kvDatabase.SetString("database", "ttt");
-        kvDatabase.SetString("user", "root");
-
-        // Delete g_dDatabase to prevent memory leaks
-        delete g_dDatabase;
-
-        char sError[255];
-        g_dDatabase = SQL_ConnectCustom(kvDatabase, sError, sizeof(sError), true);
-        
-        delete kvDatabase;
-
-        if (strlen(sError) > 1)
-        {
-            delete g_dDatabase; // Delete Database handle when we've a error
-            LogError("(SQL_Start) Error: %s", sError);
-        }
-
-        if (g_dDatabase == null)
-        {
-            LogError("(SQL_Start) We can't connect to a database... :(");
-            return;
-        }
-        else
-        {
-            LogMessage("(SQL_Start) We have a connection!");
-            DBDriver iDriver = g_dDatabase.Driver;
-            iDriver.GetIdentifier(g_sType, sizeof(g_sType));
-            CheckAndCreateTables();
-            return;
-        }
+        LogMessage("(SQL_Start) We try again to connect to a database (Retry #%d)!", g_iRetries);
     }
 
     if (!SQL_CheckConfig(sEntry) && g_iRetries < g_cRetries.IntValue)
     {
         LogError("(SQL_Start) Couldn't find an \"%s\"-entry in your databases.cfg...", sEntry);
-        
+
         // Delete g_dDatabase to prevent memory leaks
         delete g_dDatabase;
 
@@ -171,14 +130,14 @@ public void OnConnect(Database db, const char[] error, any data)
     DBDriver iDriver = db.Driver;
     iDriver.GetIdentifier(g_sType, sizeof(g_sType));
 
-    if (!StrEqual(g_sType, "mysql", false) && !StrEqual(g_sType, "sqlite", false))
+    if (!StrEqual(g_sType, "mysql", false))
     {
-        SetFailState("(OnConnect) TTT has only MySQL and SQLite support!");
+        SetFailState("(OnConnect) We found an unsupported database driver (%s). We only support mysql.", g_sType);
         return;
     }
 
     delete g_dDatabase;
-
+    
     if (db != null)
     {
         g_dDatabase = db;
@@ -195,7 +154,7 @@ public Action Timer_Retry(Handle timer)
 
 void Call_OnSQLConnect()
 {
-    Call_StartForward(g_hOnConnect);
+    Call_StartForward(g_fwOnConnect);
     Call_PushCell(g_dDatabase);
     Call_Finish();
 }
@@ -203,14 +162,7 @@ void Call_OnSQLConnect()
 void CheckAndCreateTables()
 {
     char sQuery[256];
-    if (StrEqual(g_sType, "mysql", false))
-    {
-        Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
-    }
-    else if (StrEqual(g_sType, "sqlite", false))
-    {
-        Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` (`communityid` VARCHAR(64) NOT NULL DEFAULT '', PRIMARY KEY (`communityid`));");
-    }
+    Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 
     TTT_Query("Callback_CheckAndCreateTables", sQuery);
 
@@ -221,12 +173,8 @@ void CheckAndCreateTables()
 
 void SetCharsetAndCollate()
 {
-    if (StrEqual(g_sType, "mysql", false))
-    {
-        g_dDatabase.SetCharset("utf8mb4");
-        TTT_Query("SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
-        TTT_Query("SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-    }
+    g_dDatabase.SetCharset("utf8mb4");
+    TTT_Query("SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 }
 
 public int Native_Query(Handle plugin, int numParams)
@@ -237,8 +185,8 @@ public int Native_Query(Handle plugin, int numParams)
     GetNativeString(2, sQuery, sizeof(sQuery));
 
     DataPack pack = new DataPack();
-    g_dDatabase.Query(SQL_QueryCB, sQuery, pack);
     pack.WriteString(sDebug);
+    g_dDatabase.Query(SQL_QueryCB, sQuery, pack);
 
     return 0;
 }
@@ -251,24 +199,10 @@ public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, Da
         char sBuffer[128];
         pack.ReadString(sBuffer, sizeof(sBuffer));
 
-        LogError("[TTT] (%s) Query failed: %s", sBuffer, error);
+        LogError("[SQL] (%s) Query failed: %s", sBuffer, error);
     }
     
     delete pack;
-}
-
-public int Native_GetConnectionType(Handle plugin, int numParams)
-{
-    if (StrEqual(g_sType, "mysql", false))
-    {
-        return dMySQL;
-    }
-    else if (StrEqual(g_sType, "sqlite", false))
-    {
-        return dSQLite;
-    }
-    
-    return -1;
 }
 
 public int Native_GetSQLConnection(Handle plugin, int numParams)

@@ -6,7 +6,8 @@
 #include <cstrike>
 #include <ttt>
 #include <ttt_shop>
-#include <multicolors>
+#include <ttt_inventory>
+#include <colorlib>
 
 #pragma newdecls required
 
@@ -19,14 +20,17 @@
 ConVar g_cIcePrice = null;
 ConVar g_cIcePrio = null;
 ConVar g_cIceNb = null;
+ConVar g_cIceLimit = null;
 ConVar g_cIceTimer = null;
 ConVar g_cFirePrice = null;
 ConVar g_cFirePrio = null;
 ConVar g_cFireNb = null;
+ConVar g_cFireLimit = null;
 ConVar g_cFireTimer = null;
 ConVar g_cPoisonPrice = null;
 ConVar g_cPoisonPrio = null;
 ConVar g_cPoisonNb = null;
+ConVar g_cPoisonLimit = null;
 ConVar g_cPoisonTimer = null;
 ConVar g_cPoisonDmg = null;
 ConVar g_cIceLongName = null;
@@ -34,20 +38,18 @@ ConVar g_cFireLongName = null;
 ConVar g_cPoisonLongName = null;
 
 ConVar g_cPluginTag = null;
-char g_sPluginTag[PLATFORM_MAX_PATH] = "";
+char g_sPluginTag[PLATFORM_MAX_PATH];
 
-/* Global vars */
-int g_iTimerPoison[MAXPLAYERS + 1] = { 0, ... };
+enum struct PlayerData {
+    int PoisonTimer;
 
-int g_iBulletsIce[MAXPLAYERS + 1] =  { 0, ... };
-int g_iBulletsFire[MAXPLAYERS + 1] =  { 0, ... };
-int g_iBulletsPoison[MAXPLAYERS + 1] =  { 0, ... };
+    int DefaultRed;
+    int DefaultGreen;
+    int DefaultBlue;
+    int DefaultAlpha;
+}
 
-bool g_bHasIce[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasFire[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasPoison[MAXPLAYERS + 1] =  { false, ... };
-
-int g_iDefaultColor[MAXPLAYERS + 1][4];
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -72,14 +74,17 @@ public void OnPluginStart()
     g_cIcePrice = AutoExecConfig_CreateConVar("bullets_ice_price", "5000", "The amount of credits ice bullets costs as traitor. 0 to disable.");
     g_cIcePrio = AutoExecConfig_CreateConVar("bullets_ice_sort_prio", "0", "The sorting priority of the ice bullets in the shop menu.");
     g_cIceNb = AutoExecConfig_CreateConVar("bullets_ice_number", "5", "The number of ice bullets that the player can use");
+    g_cIceLimit = AutoExecConfig_CreateConVar("bullets_ice_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cIceTimer = AutoExecConfig_CreateConVar("bullets_ice_timer", "2.0", "The time the target should be frozen");		
     g_cFirePrice = AutoExecConfig_CreateConVar("bullets_fire_price", "5000", "The amount of credits fire bullets costs as traitor. 0 to disable.");
     g_cFirePrio = AutoExecConfig_CreateConVar("bullets_fire_sort_prio", "0", "The sorting priority of the fire bullets in the shop menu.");
     g_cFireNb = AutoExecConfig_CreateConVar("bullets_fire_number", "5", "The number of fire bullets that the player can use per time");	
-    g_cFireTimer = AutoExecConfig_CreateConVar("bullets_fire_timer", "2.0", "The time the target should be burned");			
+    g_cFireTimer = AutoExecConfig_CreateConVar("bullets_fire_timer", "2.0", "The time the target should be burned");
+    g_cFireLimit = AutoExecConfig_CreateConVar("bullets_fire_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPoisonPrice = AutoExecConfig_CreateConVar("bullets_poison_price", "5000", "The amount of credits poison bullets costs as traitor. 0 to disable.");
     g_cPoisonPrio = AutoExecConfig_CreateConVar("bullets_poison_sort_prio", "0", "The sorting priority of the poison bullets in the shop menu.");
     g_cPoisonNb = AutoExecConfig_CreateConVar("bullets_poison_number", "5", "The number of poison bullets that the player can use per time");
+    g_cPoisonLimit = AutoExecConfig_CreateConVar("bullets_poison_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cPoisonTimer = AutoExecConfig_CreateConVar("bullets_poison_timer", "2", "The number of time the target should be poisened");		
     g_cPoisonDmg = AutoExecConfig_CreateConVar("bullets_poison_dmg", "5", "The damage the target should receive per time");	
     TTT_EndConfig();	
@@ -92,14 +97,24 @@ public void OnPluginStart()
 
         if (IsPlayerAlive(i))
         {
-            GetEntityRenderColor(i, g_iDefaultColor[i][0], g_iDefaultColor[i][1], g_iDefaultColor[i][2], g_iDefaultColor[i][3]);
+            GetEntityRenderColor(i, g_iPlayer[i].DefaultRed, g_iPlayer[i].DefaultGreen, g_iPlayer[i].DefaultBlue, g_iPlayer[i].DefaultAlpha);
         }
     }
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_ICE);
+        TTT_RemoveShopItem(SHORT_NAME_FIRE);
+        TTT_RemoveShopItem(SHORT_NAME_POISON);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -107,6 +122,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    TTT_OnShopReady();
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -127,83 +144,76 @@ public void TTT_OnShopReady()
     char sName[128];
 
     g_cIceLongName.GetString(sName, sizeof(sName));	
-    TTT_RegisterCustomItem(SHORT_NAME_ICE, sName, g_cIcePrice.IntValue, TTT_TEAM_TRAITOR, g_cIcePrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_ICE, sName, g_cIcePrice.IntValue, TTT_TEAM_TRAITOR, g_cIcePrio.IntValue, g_cIceNb.IntValue, g_cIceLimit.IntValue, OnItemPurchased);
 
     g_cFireLongName.GetString(sName, sizeof(sName));		
-    TTT_RegisterCustomItem(SHORT_NAME_FIRE, sName, g_cFirePrice.IntValue, TTT_TEAM_TRAITOR, g_cFirePrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_FIRE, sName, g_cFirePrice.IntValue, TTT_TEAM_TRAITOR, g_cFirePrio.IntValue, g_cFireNb.IntValue, g_cFireLimit.IntValue, OnItemPurchased);
 
     g_cPoisonLongName.GetString(sName, sizeof(sName));		
-    TTT_RegisterCustomItem(SHORT_NAME_POISON, sName, g_cPoisonPrice.IntValue, TTT_TEAM_TRAITOR, g_cPoisonPrio.IntValue);	
+    TTT_RegisterShopItem(SHORT_NAME_POISON, sName, g_cPoisonPrice.IntValue, TTT_TEAM_TRAITOR, g_cPoisonPrio.IntValue, g_cPoisonNb.IntValue, g_cPoisonLimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    if (StrEqual(itemshort, SHORT_NAME_ICE, false))
     {
-        if (StrEqual(itemshort, SHORT_NAME_ICE, false))
-        {
-            int role = TTT_GetClientRole(client);
+        int role = TTT_GetClientRole(client);
 
-            char sName[128];
-            g_cIceLongName.GetString(sName, sizeof(sName));
-            
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            else if (HasBullets(client))
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
-                return Plugin_Stop;
-            }
-
-            g_bHasIce[client] = true;
-            g_iBulletsIce[client] = g_cIceNb.IntValue;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_iBulletsIce[client], sName);		
-        }
+        char sName[128];
+        g_cIceLongName.GetString(sName, sizeof(sName));
         
-        else if (StrEqual(itemshort, SHORT_NAME_FIRE, false))
+        if (role != TTT_TEAM_TRAITOR)
         {
-            int role = TTT_GetClientRole(client);
-            char sName[128];
-            g_cFireLongName.GetString(sName, sizeof(sName));
-            
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            else if (HasBullets(client))
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
-                return Plugin_Stop;
-            }		
-
-            g_bHasFire[client] = true;
-            g_iBulletsFire[client] = g_cFireNb.IntValue;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_iBulletsFire[client], sName);					
-        }	
-
-        else if (StrEqual(itemshort, SHORT_NAME_POISON, false))
+            return Plugin_Stop;
+        }
+        else if (HasBullets(client))
         {
-            int role = TTT_GetClientRole(client);
-            char sName[128];
-            g_cPoisonLongName.GetString(sName, sizeof(sName));			
-            
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            else if (HasBullets(client))
-            {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
-                return Plugin_Stop;
-            }			
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
+            return Plugin_Stop;
+        }
 
-            g_bHasPoison[client] = true;
-            g_iBulletsPoison[client] = g_cPoisonNb.IntValue;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_iBulletsPoison[client], sName);		
-        }	
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_cIceNb.IntValue, sName);
+        TTT_AddInventoryItem(client, SHORT_NAME_ICE, g_cIceNb.IntValue);
+    } 
+    else if (StrEqual(itemshort, SHORT_NAME_FIRE, false))
+    {
+        int role = TTT_GetClientRole(client);
+        char sName[128];
+        g_cFireLongName.GetString(sName, sizeof(sName));
+        
+        if (role != TTT_TEAM_TRAITOR)
+        {
+            return Plugin_Stop;
+        }
+        else if (HasBullets(client))
+        {
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
+            return Plugin_Stop;
+        }		
+
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_cFireNb.IntValue, sName);
+        TTT_AddInventoryItem(client, SHORT_NAME_FIRE, g_cFireNb.IntValue);
+    } 
+    else if (StrEqual(itemshort, SHORT_NAME_POISON, false))
+    {
+        int role = TTT_GetClientRole(client);
+        char sName[128];
+        g_cPoisonLongName.GetString(sName, sizeof(sName));			
+        
+        if (role != TTT_TEAM_TRAITOR)
+        {
+            return Plugin_Stop;
+        }
+        else if (HasBullets(client))
+        {
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Have already", client);
+            return Plugin_Stop;
+        }			
+
+        CPrintToChat(client, "%s %T", g_sPluginTag, "Bullets: Buy bullets", client, g_cPoisonNb.IntValue, sName);
+        TTT_AddInventoryItem(client, SHORT_NAME_POISON, g_cPoisonNb.IntValue);
     }
+
     return Plugin_Continue;
 }
 
@@ -214,13 +224,13 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client))
     {
         ResetBullets(client);
-        GetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
+        GetEntityRenderColor(client, g_iPlayer[client].DefaultRed, g_iPlayer[client].DefaultGreen, g_iPlayer[client].DefaultBlue, g_iPlayer[client].DefaultAlpha);
     }
 }
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType, int &iWeapon, float fDamageForce[3], float fDamagePosition[3])
 {
-    if(!TTT_IsRoundActive())
+    if (TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Continue;
     }
@@ -243,16 +253,15 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, fl
         return Plugin_Continue;
     }
 
-    if (g_bHasIce[iAttacker])
+    if (TTT_IsItemInInventory(iAttacker, SHORT_NAME_ICE))
     {
         char sName[128];	
-        g_cIceLongName.GetString(sName, sizeof(sName));		
-        g_iBulletsIce[iAttacker]--;
-        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsIce[iAttacker], g_cIceNb.IntValue);			
-        if (g_iBulletsIce[iAttacker] <= 0)
-        {
-            g_bHasIce[iAttacker] = false;
-        }
+        g_cIceLongName.GetString(sName, sizeof(sName));
+
+        TTT_RemoveInventoryItem(iAttacker, SHORT_NAME_ICE);
+        TTT_AddItemUsage(iAttacker, SHORT_NAME_ICE);
+
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, TTT_GetClientItemQuantity(iAttacker, SHORT_NAME_ICE), g_cIceNb.IntValue);			
 
         SetEntityMoveType(iVictim, MOVETYPE_NONE);
 
@@ -261,29 +270,28 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, fl
 
         CreateTimer(g_cIceTimer.FloatValue, Timer_Ice, GetClientUserId(iVictim));
     }
-    else if (g_bHasFire[iAttacker])
+    else if (TTT_IsItemInInventory(iAttacker, SHORT_NAME_FIRE))
     {
         char sName[128];	
         g_cFireLongName.GetString(sName, sizeof(sName));					
-        g_iBulletsFire[iAttacker]--;
-        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsFire[iAttacker], g_cFireNb.IntValue);
-        if (g_iBulletsFire[iAttacker] <= 0)
-        {
-            g_bHasFire[iAttacker] = false;
-        }
+        
+        TTT_RemoveInventoryItem(iAttacker, SHORT_NAME_FIRE);
+        TTT_AddItemUsage(iAttacker, SHORT_NAME_FIRE);
+
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, TTT_GetClientItemQuantity(iAttacker, SHORT_NAME_FIRE), g_cFireNb.IntValue);
         
         IgniteEntity(iVictim, g_cFireTimer.FloatValue);
     }
-    else if (g_bHasPoison[iAttacker])
+    else if (TTT_IsItemInInventory(iAttacker, SHORT_NAME_POISON))
     {
         char sName[128];	
         g_cPoisonLongName.GetString(sName, sizeof(sName));			
-        g_iBulletsPoison[iAttacker]--;
-        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, g_iBulletsPoison[iAttacker], g_cPoisonNb.IntValue);
-        if (g_iBulletsPoison[iAttacker] <= 0)
-        {
-            g_bHasPoison[iAttacker] = false;
-        }	
+        
+        TTT_RemoveInventoryItem(iAttacker, SHORT_NAME_POISON);
+        TTT_AddItemUsage(iAttacker, SHORT_NAME_POISON);
+
+        CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "Bullets: Number bullets", iAttacker, sName, TTT_GetClientItemQuantity(iAttacker, SHORT_NAME_POISON), g_cPoisonNb.IntValue);
+
         
         CreateTimer(1.0, Timer_Poison, GetClientUserId(iVictim), TIMER_REPEAT); 
     }			
@@ -300,7 +308,7 @@ public Action Timer_Ice(Handle timer, any userid)
         {
             SetEntityMoveType(client, MOVETYPE_WALK);
             
-            SetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
+            SetEntityRenderColor(client, g_iPlayer[client].DefaultRed, g_iPlayer[client].DefaultGreen, g_iPlayer[client].DefaultBlue, g_iPlayer[client].DefaultAlpha);
             SetEntityRenderMode(client, RENDER_NORMAL);
         }
     }
@@ -316,7 +324,7 @@ public Action Timer_Poison(Handle timer, any userid)
     {
         if (IsPlayerAlive(client))
         {
-            if (g_iTimerPoison[client] <= g_cPoisonTimer.IntValue)
+            if (g_iPlayer[client].PoisonTimer <= g_cPoisonTimer.IntValue)
             {
                 int iHealth = GetClientHealth(client) - g_cPoisonDmg.IntValue;
 
@@ -324,7 +332,7 @@ public Action Timer_Poison(Handle timer, any userid)
                 if (iHealth <= 0)
                 {
                     ForcePlayerSuicide(client);
-                    g_iTimerPoison[client] = 0;	
+                    g_iPlayer[client].PoisonTimer = 0;	
                 }
                 else
                 {
@@ -333,15 +341,15 @@ public Action Timer_Poison(Handle timer, any userid)
                     SetEntityRenderMode(client, RENDER_TRANSCOLOR);
                     SetEntityRenderColor(client, 0, 255, 20, 255);
 
-                    g_iTimerPoison[client]++;	
+                    g_iPlayer[client].PoisonTimer++;
                     result = Plugin_Continue;
                 }
             }
             else
             {
-                g_iTimerPoison[client] = 0;
+                g_iPlayer[client].PoisonTimer = 0;
 
-                SetEntityRenderColor(client, g_iDefaultColor[client][0], g_iDefaultColor[client][1], g_iDefaultColor[client][2], g_iDefaultColor[client][3]);
+                SetEntityRenderColor(client, g_iPlayer[client].DefaultRed, g_iPlayer[client].DefaultGreen, g_iPlayer[client].DefaultBlue, g_iPlayer[client].DefaultAlpha);
                 SetEntityRenderMode(client, RENDER_NORMAL);
             }
         }	
@@ -351,22 +359,14 @@ public Action Timer_Poison(Handle timer, any userid)
 
 void ResetBullets(int client)
 {
-    g_iTimerPoison[client] = 0;
-    
-    g_iBulletsIce[client] = 0;
-    g_iBulletsFire[client] = 0;
-    g_iBulletsPoison[client] = 0;
-
-    g_bHasIce[client] = false;
-    g_bHasFire[client] = false;
-    g_bHasPoison[client] = false;
+    g_iPlayer[client].PoisonTimer = 0;
 }
 
 bool HasBullets(int client)
 {
     bool result = false;
 
-    if (g_bHasIce[client] || g_bHasFire[client] || g_bHasPoison[client])
+    if (TTT_IsItemInInventory(client, SHORT_NAME_ICE) || TTT_IsItemInInventory(client, SHORT_NAME_FIRE) || TTT_IsItemInInventory(client, SHORT_NAME_POISON))
     {
         result = true;
     }

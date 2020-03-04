@@ -6,14 +6,15 @@
 #include <sdkhooks>
 #include <ttt>
 #undef REQUIRE_EXTENSIONS
-#tryinclude <vphysics>
+#include <vphysics>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Crash Catcher"
 
-int FreezeSpeed = 500;
-int RemoveSpeed = 4000;
+int g_iFreezeSpeed = 500;
+int g_iRemoveSpeed = 4000;
+float g_fFreezeTime = 3.0;
 
-int FreezeTime = 3;
+ConVar g_cSpawnType = null;
 
 public Plugin myinfo =
 {
@@ -31,14 +32,24 @@ public void OnPluginStart()
     CreateConVar("ttt2_crashcatcher_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
+}
+
+public void OnConfigsExecuted()
+{
+    g_cSpawnType = FindConVar("ttt_spawn_type");
 }
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-    if (StrEqual(classname, "prop_ragdoll"))
+    if (g_cSpawnType == null)
+    {
+        g_cSpawnType = FindConVar("ttt_spawn_type");
+    }
+
+    if (g_cSpawnType != null && g_cSpawnType.IntValue == 0 && StrEqual(classname, "prop_ragdoll"))
     {
         SDKHook(entity, SDKHook_SpawnPost, OnSpawnPost);
     }
@@ -51,14 +62,24 @@ public void OnSpawnPost(int entity)
 
 public void OnEntityDestroyed(int entity)
 {
-    if (!IsValidEdict(entity) || !IsValidEntity(entity))
+    if (g_cSpawnType == null)
+    {
+        g_cSpawnType = FindConVar("ttt_spawn_type");
+    }
+
+    if (g_cSpawnType != null && g_cSpawnType.IntValue != 0)
     {
         return;
     }
 
-    char classname[128];
-    GetEdictClassname(entity, classname, sizeof(classname));
-    if (StrEqual(classname, "prop_ragdoll"))
+    if (!IsValidEntity(entity) || !IsValidEdict(entity))
+    {
+        return;
+    }
+
+    char sClassname[128];
+    GetEdictClassname(entity, sClassname, sizeof(sClassname));
+    if (StrEqual(sClassname, "prop_ragdoll"))
     {
         SDKUnhook(entity, SDKHook_Think, OnThink);
     }
@@ -68,12 +89,14 @@ public void OnThink(int entity)
 {
     float fVelocity[3];
     GetEntPropVector(entity, Prop_Data, "m_vecVelocity", fVelocity);
-    float speed = GetVectorLength(fVelocity);
-    if (speed >= RemoveSpeed)
+
+    float fSpeed = GetVectorLength(fVelocity);
+
+    if (fSpeed >= g_iRemoveSpeed)
     {
         RemoveEdict(entity);
     }
-    else if (speed >= FreezeSpeed)
+    else if (fSpeed >= g_iFreezeSpeed)
     {
         if (!(GetEntityFlags(entity) & FL_FROZEN))
         {
@@ -84,33 +107,43 @@ public void OnThink(int entity)
 
 void KillVelocity(int entity)
 {
-    int flags = GetEntityFlags(entity);
-    SetEntityFlags(entity, flags|FL_FROZEN);
-    CreateTimer(FreezeTime * 1.0, Timer_Restore, EntIndexToEntRef(entity));
+    int iFlags = GetEntityFlags(entity);
+    SetEntityFlags(entity, iFlags|FL_FROZEN);
+    CreateTimer(g_fFreezeTime, Timer_Restore, EntIndexToEntRef(entity));
 }
 
-public Action Timer_Restore(Handle timer, any ref2)
+public Action Timer_Restore(Handle timer, any ref)
 {
-    int entity = EntRefToEntIndex(ref2);
-    if (entity != INVALID_ENT_REFERENCE)
+    int iEntity = EntRefToEntIndex(ref);
+
+    if (IsValidEntity(iEntity))
     {
-        if (GetEntityFlags(entity) & FL_FROZEN)
+        if (GetEntityFlags(iEntity) & FL_FROZEN)
         {
-            int flags = GetEntityFlags(entity);
-            SetEntityFlags(entity, flags&~FL_FROZEN);
+            int iFlags = GetEntityFlags(iEntity);
+            SetEntityFlags(iEntity, iFlags&~FL_FROZEN);
         }
     }
 }
 
-#if defined _sdktools_phys_included
 public void Phys_OnObjectWake(int entity)
 {
+    if (g_cSpawnType == null)
+    {
+        g_cSpawnType = FindConVar("ttt_spawn_type");
+    }
+
+    if (g_cSpawnType != null && g_cSpawnType.IntValue != 0)
+    {
+        return;
+    }
+
     if (IsValidEntity(entity))
     {
-        char sClass[64];
-        GetEntityClassname(entity, sClass, sizeof(sClass));
+        char sClassname[64];
+        GetEntityClassname(entity, sClassname, sizeof(sClassname));
 
-        if (StrEqual(sClass, "prop_ragdoll", false))
+        if (StrEqual(sClassname, "prop_ragdoll", false))
         {
             if (Phys_IsPhysicsObject(entity))
             {
@@ -119,4 +152,3 @@ public void Phys_OnObjectWake(int entity)
         }
     }
 }
-#endif

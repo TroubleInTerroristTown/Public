@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 #undef REQUIRE_PLUGIN
 #include <tacticalshield>
 
@@ -16,6 +17,8 @@ ConVar g_cLongName = null;
 ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cForce = null;
+ConVar g_cCount = null;
+ConVar g_cLimit = null;
 
 public Plugin myinfo =
 {
@@ -38,14 +41,29 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("tactical_shield_price", "9000", "The amount of credits a tactical shield costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("tactical_shield_sort_prio", "0", "The sorting priority of the tactical shield in the shop menu.");
     g_cForce = AutoExecConfig_CreateConVar("tactical_shield_force", "0", "Force shield?", _, true, 0.0, true, 1.0);
+    g_cCount = AutoExecConfig_CreateConVar("tactical_shield_count", "1", "Amount of purchases for tactical shield");
+    g_cLimit = AutoExecConfig_CreateConVar("tactical_shield_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
+}
+
+public void OnConfigsExecuted()
+{
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnAllPluginsLoaded()
@@ -55,7 +73,7 @@ public void OnAllPluginsLoaded()
     
     if (hPlugin == null || GetPluginStatus(hPlugin) != Plugin_Running)
     {
-        TTT_RemoveCustomItem(SHORT_NAME_D);
+        TTT_RemoveShopItem(SHORT_NAME_D);
         SetFailState("You must have this plugin as base plugin for this items: https://forums.alliedmods.net/showthread.php?t=303333");
         return;
     }
@@ -71,7 +89,7 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cPrice.IntValue, TTT_TEAM_DETECTIVE, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
 public void OnClientPutInServer(int client)
@@ -84,34 +102,28 @@ public void OnClientDisconnect(int client)
     ResetTacticalShield(client);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+
+    if (role != TTT_TEAM_DETECTIVE)
     {
-        if (StrEqual(itemshort, SHORT_NAME_D, false))
-        {
-            ResetTacticalShield(client);
-            
-            int role = TTT_GetClientRole(client);
-
-            if (role == TTT_TEAM_DETECTIVE)
-            {
-                GivePlayerShield(client);
-
-                if (g_cForce.BoolValue)
-                {
-                    RequestFrame(Frame_SetShield, GetClientUserId(client));
-                }
-            }
-            else
-            {
-                return Plugin_Stop;
-            }
-        }
+        return Plugin_Stop;
     }
+
+    ResetTacticalShield(client);
+
+    TTT_AddInventoryItem(client, SHORT_NAME_D);
+
+    GivePlayerShield(client);
+
+    if (g_cForce.BoolValue)
+    {
+        RequestFrame(Frame_SetShield, GetClientUserId(client));
+    }
+
     return Plugin_Continue;
 }
-
 
 public void Frame_SetShield(int userid)
 {

@@ -3,6 +3,8 @@
 #define SND_BLIP "buttons/blip2.wav"
 #define SND_BURST "training/firewerks_burst_02.wav"
 
+#define MAX_LOG_LENGTH 512
+
 char g_sRulesFile[PLATFORM_MAX_PATH + 1];
 char g_sErrorFile[PLATFORM_MAX_PATH + 1];
 char g_sLogFile[PLATFORM_MAX_PATH + 1];
@@ -15,19 +17,8 @@ char g_sRoundStartFontColor[12];
 char g_sFSSecondary[32];
 char g_sFSPrimary[32];
 
-bool g_bRoundEnded = false;
 bool g_bBlockKill = false;
 bool g_bDisabled = false;
-
-int g_iRDMAttacker[MAXPLAYERS + 1] =  { -1, ... };
-Handle g_hRDMTimer[MAXPLAYERS + 1] =  { null, ... };
-bool g_bImmuneRDMManager[MAXPLAYERS + 1] =  { false, ... };
-
-int g_iRole[MAXPLAYERS + 1] =  { 0, ... };
-
-int g_iInnoKills[MAXPLAYERS + 1] =  { 0, ... };
-int g_iTraitorKills[MAXPLAYERS + 1] =  { 0, ... };
-int g_iDetectiveKills[MAXPLAYERS + 1] =  { 0, ... };
 
 int g_iTeamSelectTime = 0;
 int g_iRoundTime = -1;
@@ -44,35 +35,12 @@ Handle g_hCountdownTimer = null;
 ArrayList g_aForceTraitor;
 ArrayList g_aForceDetective;
 
-bool g_bRoundStarted = false;
-bool g_bSelection = false;
 bool g_bCheckPlayers = false;
-
-int g_iLastRole[MAXPLAYERS + 1] =  {TTT_TEAM_UNASSIGNED, ...};
-bool g_bAvoidDetective[MAXPLAYERS + 1] =  { false, ... };
-
-int g_iHurtedPlayer1[MAXPLAYERS + 1] =  { -1, ... };
-int g_iHurtedPlayer2[MAXPLAYERS + 1] =  { -1, ... };
-bool g_bResetHurt[MAXPLAYERS + 1] =  { false, ... };
 
 Handle g_hRoundTimer = null;
 
-bool g_bInactive = false;
-
-int m_flNextPrimaryAttack = -1;
-int m_flNextSecondaryAttack = -1;
-
-bool g_bKarma[MAXPLAYERS + 1] =  { false, ... };
-int g_iKarma[MAXPLAYERS + 1] =  { 0, ... };
-int g_iKarmaStart[MAXPLAYERS + 1] =  { 0, ... };
-int g_iArmor[MAXPLAYERS + 1] =  { 0, ... };
-
 int g_iBeamSprite = -1;
 int g_iHaloSprite = -1;
-
-bool g_bFound[MAXPLAYERS + 1] =  { false, ... };
-bool g_bIsChecking[MAXPLAYERS + 1] =  { false, ... };
-bool g_bPress[MAXPLAYERS + 1] =  { false, ... };
 
 int g_iAlive = -1;
 int g_iHealth = -1;
@@ -86,38 +54,32 @@ int g_iBadNameCount = 0;
 
 Database g_dDB = null;
 
-bool g_bReceivingLogs[MAXPLAYERS + 1] =  { false, ... };
-
 ArrayList g_aLogs = null;
 ArrayList g_aRagdoll = null;
 
-bool g_bReadRules[MAXPLAYERS + 1] =  { false, ... };
-bool g_bKnowRules[MAXPLAYERS + 1] =  { false, ... };
-bool g_bAlive[MAXPLAYERS + 1] = { false, ... };
-
-int g_iSite[MAXPLAYERS + 1] =  { 0, ... };
-
-Handle g_hOnRoundStart_Pre = null;
-Handle g_hOnRoundStart = null;
-Handle g_hOnRoundStartFailed = null;
-Handle g_hOnRoundEnd = null;
-Handle g_hOnClientGetRole = null;
-Handle g_hOnTakeDamage = null;
-Handle g_hOnClientDeath = null;
-Handle g_hOnClientDeathPre = null;
-Handle g_hOnBodyFound = null;
-Handle g_hOnBodyCheck = null;
-Handle g_hOnButtonPress = null;
-Handle g_hOnButtonRelease = null;
-Handle g_hOnModelUpdate = null;
-Handle g_hOnPlayerDeathPre = null;
-Handle g_hOnKarmaUpdate = null;
-Handle g_hOnRulesMenu = null;
-Handle g_hOnDetectiveMenu = null;
-Handle g_hOnCheckCommandAccess = null;
-Handle g_hOnPlayerRespawn = null;
-Handle g_hOnVersionCheck = null;
-Handle g_hOnRoundSlay = null;
+GlobalForward g_fwOnRoundStart_Pre = null;
+GlobalForward g_fwOnRoundStart = null;
+GlobalForward g_fwOnRoundStartFailed = null;
+GlobalForward g_fwOnRoundEnd = null;
+GlobalForward g_fwOnClientGetRole = null;
+GlobalForward g_fwOnTakeDamage = null;
+GlobalForward g_fwOnClientDeath = null;
+GlobalForward g_fwOnClientDeathPre = null;
+GlobalForward g_fwOnBodyFound = null;
+GlobalForward g_fwOnBodyCheck = null;
+GlobalForward g_fwOnButtonPress = null;
+GlobalForward g_fwOnButtonRelease = null;
+GlobalForward g_fwOnModelUpdate = null;
+GlobalForward g_fwOnPlayerDeathPre = null;
+GlobalForward g_fwOnPreKarmaUpdate = null;
+GlobalForward g_fwOnKarmaUpdate = null;
+GlobalForward g_fwOnRulesMenu = null;
+GlobalForward g_fwOnDetectiveMenu = null;
+GlobalForward g_fwOnCheckCommandAccess = null;
+GlobalForward g_fwOnPlayerRespawn = null;
+GlobalForward g_fwOnRoundSlay = null;
+GlobalForward g_fwOnRoleSelection = null;
+GlobalForward g_fOnVersionCheck = null;
 
 bool g_bSourcebans = false;
 bool g_bGhostDM = false;
@@ -157,9 +119,6 @@ char g_sRemoveEntityList[][] =  {
     "info_hostage_spawn"
 };
 
-bool g_bRoundEnding = false;
-int g_iLastButtons[MAXPLAYERS + 1] =  { 0, ... };
-
 // Convars...
 ConVar g_crequiredPlayersD = null;
 ConVar g_crequiredPlayers = null;
@@ -167,6 +126,8 @@ ConVar g_cstartKarma = null;
 ConVar g_ckarmaBan = null;
 ConVar g_ckarmaBanLength = null;
 ConVar g_cmaxKarma = null;
+ConVar g_ckarmaFlag = null;
+ConVar g_cmaxKarmaVip = null;
 ConVar g_cspawnHPT = null;
 ConVar g_cspawnHPD = null;
 ConVar g_cspawnHPI = null;
@@ -271,7 +232,6 @@ ConVar g_cCheckPlayers = null;
 ConVar g_cCheckDuringWarmup = null;
 ConVar g_cPrimaryWeaponUpdate = null;
 ConVar g_cSecondaryWeaponUpdate = null;
-ConVar g_cAdvert = null;
 ConVar g_cEnableDamageKarma = null;
 ConVar g_cDamageKarmaII = null;
 ConVar g_cDamageKarmaIT = null;
@@ -300,32 +260,77 @@ ConVar g_cFlashlightOption = null;
 ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
-ConVar g_cVersionMessage = null;
-ConVar g_cSendServerData = null;
 ConVar g_cDisableRounds = null;
 ConVar g_cStartMelee = null;
 ConVar g_cAdditionalMeleeRole = null;
 ConVar g_cAdditionalMeleeWeapon = null;
 ConVar g_cUnloadPlugins = null;
 ConVar g_cRemovePlugins = null;
+ConVar g_cSpawnType = null;
+ConVar g_cIdentifyDistance = null;
 ConVar g_cFixThirdperson = null;
+ConVar g_cShowRoundIDMessage = null;
+ConVar g_cVersionMessage = null;
+ConVar g_cSendServerData = null;
+ConVar g_cClanTagUpperLower = null;
+ConVar g_cSaveLogsInSQL = null;
+ConVar g_cDeleteLogsAfterDays = null;
+ConVar g_cIdentifyCommand = null;
+ConVar g_cAutoAssignTeam = null;
+ConVar g_cBlockSwitchSelection = null;
 
-Handle g_hRules = null;
-bool g_bRules[MAXPLAYERS + 1] =  { false, ... };
-
-Handle g_hDRules = null;
-bool g_bDRules[MAXPLAYERS + 1] =  { false, ... };
-
-Handle g_hRSCookie = null;
-int g_iRoundSlays[MAXPLAYERS + 1] =  { 0, ... };
+Cookie g_coRules = null;
+Cookie g_coDRules = null;
 
 bool g_bPressed[2048] = { false, ... };
-
-bool g_bRespawn[MAXPLAYERS + 1] = { false, ... };
 
 Handle g_hWeAreSync = null;
 Handle g_hRemainingSync = null;
 
-char g_sLatestVersion[64];
-
 RoundStatus g_iStatus = Round_Inactive;
+
+int g_iRoundID = -1;
+char g_sDriver[18];
+
+enum struct PlayerData {
+    int Role;
+    int LastRole;
+    int Karma;
+    int KarmaStart;
+    int Armor;
+    int Site;
+    int HurtedPlayer1;
+    int HurtedPlayer2;
+    int InnocentKills;
+    int DetectiveKills;
+    int TraitorKills;
+    int RDMAttacker;
+    int RoundSlays;
+    int LastButtons;
+    int ID;
+
+    bool KarmaReady;
+    bool Alive;
+    bool Respawn;
+    bool Found;
+    bool IsChecking;
+    bool ReceivingLogs;
+    bool Rules;
+    bool DetectiveRules;
+    bool ReadRules;
+    bool KnowRules;
+    bool AvoidDetective;
+    bool ImmuneRDMManager;
+    bool ResetHurt;
+    bool Ready;
+    bool Press;
+
+    Handle RDMTimer;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
+int g_iParticleRef[2048] = { -1, ... };
+
+int g_iVersion = -1;
+
+bool g_bSpawnAllowed = true;

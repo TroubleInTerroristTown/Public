@@ -4,17 +4,20 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
-#include <ttt_shop>
 #include <ttt>
 #include <ttt_glow>
-#include <multicolors>
+#include <ttt_shop>
+#include <ttt_inventory>
+#include <colorlib>
 
+#define SHORT_NAME "tagrenade"
 #define SHORT_NAME_T "tagrenade_t"
 #define SHORT_NAME_D "tagrenade_d"
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
 ConVar g_cDebug = null;
 ConVar g_cTPrice = null;
+ConVar g_cTLimit = null;
 ConVar g_cTCount = null;
 ConVar g_cTPrio = null;
 ConVar g_cTagrenadeRange = null;
@@ -22,6 +25,7 @@ ConVar g_cTagrenadeTime = null;
 ConVar g_cLongName = null;
 ConVar g_cShowPlayersBehindWalls = null;
 ConVar g_cDPrice = null;
+ConVar g_cDLimit = null;
 ConVar g_cDCount = null;
 ConVar g_cDPrio = null;
 ConVar g_cDTagrenadeRange = null;
@@ -33,17 +37,20 @@ ConVar g_cRequiredPlayers = null;
 
 bool g_bGlow = false;
 
-int g_iTPCount[MAXPLAYERS + 1] =  { 0, ... };
-int g_iDPCount[MAXPLAYERS + 1] =  { 0, ... };
-
-bool g_bPlayerIsTagged[MAXPLAYERS + 1] = { false, ... };
-bool g_bSeePlayers[MAXPLAYERS + 1] =  { false, ... };
-bool g_bHasGrenade[MAXPLAYERS + 1] =  { false, ... };
-
-float g_fTaggingEndTime[MAXPLAYERS + 1] = { 0.0, ... };
-
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
+
+enum struct PlayerData {
+    int TraitorCount;
+    int DetectiveCount;
+
+    bool IsTagged;
+    bool SeePlayers;
+
+    float EndTime;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -64,7 +71,9 @@ public void OnPluginStart()
     CreateConVar("ttt2_tagrenade_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("tagrenade_name", "TA-Grenade", "The name of the TA-Grenade in the Shop");
     g_cTPrice = AutoExecConfig_CreateConVar("tagrenade_traitor_price", "9000", "The amount of credits for tagrenade costs as traitor. 0 to disable.");
+    g_cTLimit = AutoExecConfig_CreateConVar("tagrenade_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cDPrice = AutoExecConfig_CreateConVar("tagrenade_detective_price", "9000", "The amount of credits for tagrenade costs as detective. 0 to disable.");
+    g_cDLimit = AutoExecConfig_CreateConVar("tagrenade_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTCount = AutoExecConfig_CreateConVar("tagrenade_traitor_count", "1", "The amount of usages for tagrenade per round as traitor. 0 to disable.");
     g_cDCount = AutoExecConfig_CreateConVar("tagrenade_detective_count", "1", "The amount of usages for tagrenade per round as detective. 0 to disable.");
     g_cTPrio = AutoExecConfig_CreateConVar("tagrenade_traitor_sort_prio", "0", "The sorting priority of the tagrenade (Traitor) in the shop menu.");
@@ -88,9 +97,18 @@ public void OnPluginStart()
     g_bGlow = LibraryExists("ttt_glow");
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME_T);
+        TTT_RemoveShopItem(SHORT_NAME_D);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -121,6 +139,8 @@ public void OnConfigsExecuted()
     {
         UseTAGrenade.SetBool(true);
     }
+
+    RegisterItem();
 }
 
 public void TTT_OnShopReady()
@@ -135,7 +155,8 @@ void RegisterItem()
     
     if (g_bGlow)
     {
-        TTT_RegisterCustomItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue);
+        TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
+        TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
     }
     else
     {
@@ -148,8 +169,6 @@ void RegisterItem()
             g_bGlow = true;
         }
     }
-    
-    TTT_RegisterCustomItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue);
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -183,55 +202,10 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
     }
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
-    {
-        if (StrEqual(itemshort, SHORT_NAME_T, false) || StrEqual(itemshort, SHORT_NAME_D, false))
-        {
-            int role = TTT_GetClientRole(client);
-
-            if (role == TTT_TEAM_TRAITOR && g_iTPCount[client] >= g_cTCount.IntValue)
-            {
-                char sPluginTag[128];
-                char sBuffer[MAX_ITEM_LENGTH];
-                ConVar hTag = FindConVar("ttt_plugin_tag");
-                
-                hTag.GetString(sPluginTag, sizeof(sPluginTag));
-                g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-                
-                CPrintToChat(client, "%s %T", sPluginTag, "Bought All", client, sBuffer, g_cTCount.IntValue);
-                return Plugin_Stop;
-            }
-            else if (role == TTT_TEAM_DETECTIVE && g_iDPCount[client] >= g_cDCount.IntValue)
-            {
-                char sPluginTag[128];
-                char sBuffer[MAX_ITEM_LENGTH];
-                ConVar hTag = FindConVar("ttt_plugin_tag");
-                
-                hTag.GetString(sPluginTag, sizeof(sPluginTag));
-                g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-                
-                CPrintToChat(client, "%s %T", sPluginTag, "Bought All", client, sBuffer, g_cDCount.IntValue);
-                return Plugin_Stop;
-            }
-
-            GivePlayerItem(client, "weapon_tagrenade");
-            g_bHasGrenade[client] = true;
-
-            if (count)
-            {
-                if (role == TTT_TEAM_TRAITOR)
-                {
-                    g_iTPCount[client]++;
-                }
-                else if (role == TTT_TEAM_DETECTIVE)
-                {
-                    g_iDPCount[client]++;
-                }
-            }
-        }
-    }
+    GivePlayerItem(client, "weapon_tagrenade");
+    TTT_AddInventoryItem(client, SHORT_NAME);
     return Plugin_Continue;
 }
 
@@ -246,12 +220,15 @@ public void OnTagrenadeDetonate(Event event, const char[] name, bool dontBroadca
     pack.WriteFloat(event.GetFloat("y"));
     pack.WriteFloat(event.GetFloat("z"));
     
-    CreateTimer(0.0, OnGetTagrenadeTimes, pack);
+    RequestFrame(Frame_OnGetTagrenadeTimes, pack);
     
     int client = GetClientOfUserId(userid);
     
-    if (TTT_IsClientValid(client))
+    if (TTT_IsClientValid(client) && TTT_IsItemInInventory(client, SHORT_NAME))
     {
+        TTT_AddItemUsage(client, SHORT_NAME);
+        TTT_RemoveInventoryItem(client, SHORT_NAME);
+
         if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
             CreateTimer(g_cTagrenadeTime.FloatValue, Timer_ResetTags, userid);
@@ -265,12 +242,11 @@ public Action Timer_ResetTags(Handle timer, any userid)
 
     if (TTT_IsClientValid(client))
     {
-        g_bSeePlayers[client] = false;
-        g_bHasGrenade[client] = false;
+        g_iPlayer[client].SeePlayers = false;
     }
 }
 
-public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
+public void Frame_OnGetTagrenadeTimes(DataPack pack)
 {
     pack.Reset();
 
@@ -278,7 +254,7 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
     if (client == 0)
     {
         delete pack;
-        return Plugin_Continue;
+        return;
     }
     
     int role = TTT_GetClientRole(client);
@@ -296,7 +272,7 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
 
     if (role == TTT_TEAM_TRAITOR)
     {
-        g_bSeePlayers[client] = true;
+        g_iPlayer[client].SeePlayers = true;
     }
 
     int iInno = 0;
@@ -332,7 +308,7 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
 
         SetEntPropFloat(target, Prop_Send, "m_flDetectedByEnemySensorTime", 0.0);
         
-        if (!g_bHasGrenade[client])
+        if (!TTT_IsItemInInventory(client, SHORT_NAME))
         {
             continue;
         }
@@ -357,14 +333,14 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
                 
                 if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
                 {
-                    g_fTaggingEndTime[target] = GetGameTime() + g_cTagrenadeTime.FloatValue;
+                    g_iPlayer[target].EndTime = GetGameTime() + g_cTagrenadeTime.FloatValue;
                 }
                 
                 delete trace;
             }
             else
             {
-                g_fTaggingEndTime[target] = GetGameTime() + g_cTagrenadeTime.FloatValue;
+                g_iPlayer[target].EndTime = GetGameTime() + g_cTagrenadeTime.FloatValue;
             }
         }
         else if (role == TTT_TEAM_DETECTIVE)
@@ -382,7 +358,6 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
                     iTraitor++;
                 }
                 else if (tRole == TTT_TEAM_DETECTIVE)
-                
                 {
                     iDete++;
                 }
@@ -409,6 +384,8 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
     
     if (iPlayers >= g_cRequiredPlayers.IntValue && role == TTT_TEAM_DETECTIVE)
     {
+        CreateTimer(g_cTagrenadeTime.FloatValue + 1.0, Timer_DisableGlow);
+
         CPrintToChat(client, "%s %T", g_sPluginTag, "TAGrenade We Found", client);
         
         if (g_cCountInnocents.BoolValue)
@@ -426,8 +403,21 @@ public Action OnGetTagrenadeTimes(Handle timer, DataPack pack)
             CPrintToChat(client, "%s %T", g_sPluginTag, "TAGrenade Detectives", client, iDete);
         }
     }
-    
-    return Plugin_Continue;
+}
+
+public Action Timer_DisableGlow(Handle timer)
+{
+    LoopValidClients(i)
+    {
+        if (g_iPlayer[i].SeePlayers)
+        {
+            // If anyone still has an active tagrenade
+            CreateTimer(g_cTagrenadeTime.FloatValue + 1.0, Timer_DisableGlow);
+            return Plugin_Stop;
+        }
+    }
+
+    return Plugin_Stop;
 }
 
 public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
@@ -441,19 +431,18 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 
 void ResetTAG(int client)
 {
-    g_iTPCount[client] = 0;
-    g_iDPCount[client] = 0;
-    g_fTaggingEndTime[client] = 0.0;
-    g_bPlayerIsTagged[client] = false;
-    g_bSeePlayers[client] = false;
-    g_bHasGrenade[client] = false;
+    g_iPlayer[client].TraitorCount = 0;
+    g_iPlayer[client].DetectiveCount = 0;
+    g_iPlayer[client].EndTime = 0.0;
+    g_iPlayer[client].IsTagged = false;
+    g_iPlayer[client].SeePlayers = false;
 }
 
 public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
 {
-    if (g_bSeePlayers[client] && g_bHasGrenade[client])
+    if (g_iPlayer[client].SeePlayers && TTT_IsItemInInventory(client, SHORT_NAME))
     {
-        if (target > 0 && GetGameTime() < g_fTaggingEndTime[target])
+        if (target > 0 && GetGameTime() < g_iPlayer[target].EndTime)
         {
             seeTarget = true;
             return Plugin_Changed;

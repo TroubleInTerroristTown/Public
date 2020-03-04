@@ -5,8 +5,9 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <ttt_shop>
+#include <ttt_inventory>
 #include <ttt>
-#include <multicolors>
+#include <colorlib>
 
 #define SHORT_NAME "hurtshot_t"
 
@@ -17,13 +18,18 @@ ConVar g_cCount = null;
 ConVar g_cPrio = null;
 ConVar g_cDamage = null;
 ConVar g_cName = null;
+ConVar g_cLimit = null;
 
-int g_iCount[MAXPLAYERS + 1] = { 0, ... };
-bool g_bHasHS[MAXPLAYERS + 1] = { false, ... };
 ArrayList g_aListHS = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
+
+enum struct PlayerData {
+    bool HasHurtshot;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -42,15 +48,16 @@ public void OnPluginStart()
     
     TTT_StartConfig("hurtshot");
     CreateConVar("hurtshot_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cName = AutoExecConfig_CreateConVar("hurtshot_name", "Hurtshot", "The name of the Hurtshot in the Shop");
+    g_cName = AutoExecConfig_CreateConVar("hurtshot_name", "Hurt Shot", "The name of the Hurtshot in the Shop");
     g_cPrice = AutoExecConfig_CreateConVar("hurtshot_traitor_price", "5000", "The amount of credits for hurtshots costs as traitor. 0 to disable.");
     g_cCount = AutoExecConfig_CreateConVar("hurtshot_traitor_count", "1", "The amount of usages for hurtshots per round as traitor. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("hurtshot_traitor_sort_prio", "0", "The sorting priority of the hurtshots (Traitor) in the shop menu.");
     g_cDamage = AutoExecConfig_CreateConVar("hurtshot_traitor_damage", "50", "The damage of the hurtshot");
+    g_cLimit = AutoExecConfig_CreateConVar("hurtshot_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
-    HookEvent("weapon_fire", Event_Fire, EventHookMode_Pre);
+    HookEvent("weapon_fire", Event_WeaponFire, EventHookMode_Pre);
     
     g_aListHS = new ArrayList();
 
@@ -60,9 +67,17 @@ public void OnPluginStart()
     }
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    if (TTT_IsShopRunning())
+    {
+        TTT_RemoveShopItem(SHORT_NAME);
+    }
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnConfigsExecuted()
@@ -70,6 +85,8 @@ public void OnConfigsExecuted()
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    TTT_OnShopReady();
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -101,33 +118,34 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
     g_aListHS.Clear();
 }
 
-public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
+public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
     
-    char weapon[64];
-    event.GetString("weapon", weapon, sizeof(weapon));
+    char sWeapon[64];
+    event.GetString("weapon", sWeapon, sizeof(sWeapon));
     
-    if (TTT_IsClientValid(client) && StrEqual(weapon, "weapon_healthshot"))
+    if (TTT_IsClientValid(client) && StrContains(sWeapon, "weapon_healthshot", false) != -1)
     {
-        if (g_bHasHS[client] && GetClientHealth(client) < 100)
+        if (g_iPlayer[client].HasHurtshot)
         {
+            int iHP = GetClientHealth(client) - g_cDamage.IntValue;
+
             DataPack pack = new DataPack();
-            int iHP = GetClientHealth(client) - (g_cDamage.IntValue);
+            pack.WriteCell(event.GetInt("userid"));
+            pack.WriteCell(iHP);
 
             if (iHP <= 0)
             {
-                CreateTimer(1.0, Timer_ChangeHP, pack);
+                CreateTimer(2.0, Timer_ChangeHP, pack);
             }
             else
             {
+                
                 CreateTimer(2.0, Timer_ChangeHP, pack);
             }
 
-            pack.WriteCell(client);
-            pack.WriteCell(iHP);
-
-            g_bHasHS[client] = false;
+            g_iPlayer[client].HasHurtshot = false;
 
             return Plugin_Stop;
         }
@@ -135,52 +153,10 @@ public Action Event_Fire(Event event, const char[] name, bool dontBroadcast)
     return Plugin_Continue;
 }
 
-public Action OnWeaponEquip(int client, int weapon)
-{
-    if (IsValidEntity(weapon))
-    {
-        int iRef = EntIndexToEntRef(weapon);
-        int iIndex = g_aListHS.FindValue(iRef);
-        
-        if (iIndex != -1)
-        {
-            int iArrayRef = g_aListHS.Get(iIndex);
-            
-            if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
-            {
-                g_bHasHS[client] = true;
-            }
-        }
-    }
-    
-    return Plugin_Handled;
-}
-
-public Action OnWeaponDrop(int client, int weapon)
-{
-    if (IsValidEntity(weapon))
-    {
-        int iRef = EntIndexToEntRef(weapon);
-        int iIndex = g_aListHS.FindValue(iRef);
-        
-        if (iIndex != -1)
-        {
-            int iArrayRef = g_aListHS.Get(iIndex);
-            
-            if (TTT_IsClientValid(client) && IsValidEntity(EntRefToEntIndex(iArrayRef) && iRef == iArrayRef))
-            {
-                g_bHasHS[client] = false;
-            }
-        }
-    }
-    
-    return Plugin_Handled;
-}
-
 public Action Timer_ChangeHP(Handle timer, DataPack pack)
 {
     pack.Reset();
-    int client = pack.ReadCell();
+    int client = GetClientOfUserId(pack.ReadCell());
     int iHP = pack.ReadCell();
     
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
@@ -198,52 +174,87 @@ public Action Timer_ChangeHP(Handle timer, DataPack pack)
     return Plugin_Handled;
 }
 
+public Action OnWeaponEquip(int client, int weapon)
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (!IsValidEntity(weapon))
+    {
+        return Plugin_Continue;
+    }
+
+    int iRef = EntIndexToEntRef(weapon);
+    int iIndex = g_aListHS.FindValue(iRef);
+
+    if (iIndex != -1)
+    {
+        if (IsValidEntity(EntRefToEntIndex(iRef)))
+        {
+            g_iPlayer[client].HasHurtshot = true;
+        }
+    }
+    
+    return Plugin_Handled;
+}
+
+public Action OnWeaponDrop(int client, int weapon)
+{
+    if (!TTT_IsClientValid(client))
+    {
+        return Plugin_Continue;
+    }
+
+    if (!IsValidEntity(weapon))
+    {
+        return Plugin_Continue;
+    }
+
+    int iRef = EntIndexToEntRef(weapon);
+    int iIndex = g_aListHS.FindValue(iRef);
+
+    if (iIndex != -1)
+    {
+        if (IsValidEntity(EntRefToEntIndex(iRef)))
+        {
+            g_iPlayer[client].HasHurtshot = false;
+        }
+    }
+    
+    return Plugin_Handled;
+}
+
 public void TTT_OnShopReady()
 {
     char sName[128];
     g_cName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue, g_cCount.IntValue, g_cLimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+
+    if (role != TTT_TEAM_TRAITOR)
     {
-        if (StrEqual(itemshort, SHORT_NAME, false))
-        {
-            int role = TTT_GetClientRole(client);
-            
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }				
-
-            if (role == TTT_TEAM_TRAITOR && g_iCount[client] >= g_cCount.IntValue)
-            {
-                char sName[128];
-                g_cName.GetString(sName, sizeof(sName));
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Bought All", client, sName, g_cCount.IntValue);
-                return Plugin_Stop;
-            }
-            
-            int iEntity = GivePlayerItem(client, "weapon_healthshot");
-            SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
-
-            int iRef = EntIndexToEntRef(iEntity);
-
-            g_aListHS.Push(iRef);
-
-            DataPack pack = new DataPack();
-            pack.WriteCell(GetClientUserId(client));
-            pack.WriteCell(iRef);
-            RequestFrame(Frame_DropEntity, pack);
-
-            if (count)
-            {
-                g_iCount[client]++;
-            }
-        }
+        return Plugin_Stop;
     }
+
+    int iEntity = GivePlayerItem(client, "weapon_healthshot");
+    SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
+
+    int iRef = EntIndexToEntRef(iEntity);
+
+    g_aListHS.Push(iRef);
+
+    DataPack pack = new DataPack();
+    pack.WriteCell(GetClientUserId(client));
+    pack.WriteCell(iRef);
+    RequestFrame(Frame_DropEntity, pack);
+
+    TTT_AddItemUsage(client, SHORT_NAME);
     return Plugin_Continue;
 }
 
@@ -262,6 +273,5 @@ public void Frame_DropEntity(DataPack pack)
 
 void ResetHurtshot(int client)
 {
-    g_iCount[client] = 0;
-    g_bHasHS[client] = false;
+    g_iPlayer[client].HasHurtshot = false;
 }

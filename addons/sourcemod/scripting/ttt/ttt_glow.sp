@@ -18,10 +18,10 @@ int g_iColorDetective[4] =  {0, 0, 255};
 ConVar g_cDGlow = null;
 ConVar g_cTGlow = null;
 
-int g_iSkinRef[MAXPLAYERS+1] = {-1,...};
+int g_iSkinRef[MAXPLAYERS + 1] = { -1 , ... };
 int g_iSkinClient[2048] = { -1 , ... };
 
-Handle g_hOnGlowCheck = null;
+GlobalForward g_fwOnGlowCheck = null;
 
 public Plugin myinfo =
 {
@@ -34,7 +34,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnGlowCheck = CreateGlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef);
+    g_fwOnGlowCheck = new GlobalForward("TTT_OnGlowCheck", ET_Event, Param_Cell, Param_Cell, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef);
     
     RegPluginLibrary("ttt_glow");
 
@@ -52,9 +52,9 @@ public void OnPluginStart()
     TTT_EndConfig();
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void TTT_OnVersionReceive(int version)
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnPluginEnd()
@@ -119,7 +119,7 @@ void CreateGlowProp(int client)
 
 public Action OnSetTransmit_All(int skin, int client)
 {
-    int iRole = TTT_GetClientRole(client);
+    int iClientRole = TTT_GetClientRole(client);
 
     int target = g_iSkinClient[skin];
     
@@ -128,14 +128,14 @@ public Action OnSetTransmit_All(int skin, int client)
         return Plugin_Handled;
     }
     
-    int iTRole = TTT_GetClientRole(target);
+    int iTargetRole = TTT_GetClientRole(target);
         
-    if (iRole == TTT_TEAM_DETECTIVE && iRole == iTRole)
+    if (iClientRole == TTT_TEAM_DETECTIVE && iClientRole == iTargetRole)
     {
         return Plugin_Continue;
     }
 
-    if (iRole == TTT_TEAM_TRAITOR && iRole == iTRole)
+    if (iClientRole == TTT_TEAM_TRAITOR && iClientRole == iTargetRole)
     {
         return Plugin_Continue;
     }
@@ -148,7 +148,7 @@ public Action OnSetTransmit_All(int skin, int client)
     int alpha = 255;
     int style = 0;
     
-    Call_StartForward(g_hOnGlowCheck);
+    Call_StartForward(g_fwOnGlowCheck);
     Call_PushCell(client);
     Call_PushCell(target);
     Call_PushCellRef(seeTarget);

@@ -5,7 +5,7 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <ttt>
-#include <multicolors>
+#include <colorlib>
 #include <emitsoundany>
 
 #undef REQUIRE_PLUGIN
@@ -34,22 +34,27 @@ ConVar g_cAllowThrow = null;
 ConVar g_cThrowForce = null;
 ConVar g_cReloadFlag = null;
 ConVar g_cAllowFreeze = null;
+ConVar g_cGrabButton = null;
+ConVar g_cDebug = null;
 
 int g_iSprite = -1;
-
-int g_iObject[MAXPLAYERS + 1] =  { 0, ... };
-
-float g_fDistance[MAXPLAYERS + 1] =  { 0.0, ... };
-float g_fTime[MAXPLAYERS + 1] =  { 0.0, ... };
 
 ArrayList g_aWhitelist = null;
 ArrayList g_aBlacklist = null;
 ArrayList g_aBlacklistModels = null;
 ArrayList g_aBlocklist = null;
 
-Handle g_hOnGrabbing = null;
+GlobalForward g_fwOnGrabbing = null;
 
 bool g_bCustomKeyValues = false;
+
+enum struct PlayerData {
+    int Object;
+    float Distance;
+    float Time;
+}
+
+PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -62,7 +67,7 @@ public Plugin myinfo =
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    g_hOnGrabbing = CreateGlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
+    g_fwOnGrabbing = new GlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
 
     CreateNative("TTT_GetGrabEntity", Native_GetGrabEntity);
 
@@ -96,6 +101,7 @@ public void OnPluginStart()
     g_cThrowForce = AutoExecConfig_CreateConVar("gbm_throw_force", "1000.0", "How strong should the throw of a prop?");
     g_cReloadFlag = AutoExecConfig_CreateConVar("gbm_reload_flag", "z", "Admin flags to reload the white/blacklist");
     g_cAllowFreeze = AutoExecConfig_CreateConVar("gbm_allow_freeze", "1", "Allow freeze while grabbing?", _, true, 0.0, true, 1.0);
+    g_cGrabButton = AutoExecConfig_CreateConVar("gbm_grab_button", "5", "To change the grab button, take the number after \"<<\" (as example 5 for IN_USE/E) from this list:\nhttps://github.com/alliedmodders/sourcemod/blob/cfa4998ac1203f14464598c5454710a7faebada4/plugins/include/entity_prop_stocks.inc#L100-L125");
     TTT_EndConfig();
     
     LoadLists();
@@ -106,6 +112,11 @@ public void OnPluginStart()
     g_aBlocklist = new ArrayList();
 
     g_bCustomKeyValues = LibraryExists("CustomKeyValues");
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnLibraryAdded(const char[] name)
@@ -124,11 +135,6 @@ public void OnLibraryRemoved(const char[] name)
     }
 }
 
-public void TTT_OnLatestVersion(const char[] version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
-}
-
 public void OnMapStart()
 {
     g_iSprite = PrecacheModel("materials/sprites/laserbeam.vmt");
@@ -139,6 +145,11 @@ public void OnMapStart()
 
     g_cThrowSound.GetString(sBuffer, sizeof(sBuffer));
     PrecacheSoundAny(sBuffer, true);
+}
+
+public void OnConfigsExecuted()
+{
+    g_cDebug = FindConVar("ttt_debug_mode");
 }
 
 public void TTT_OnRoundStart()
@@ -176,22 +187,22 @@ void Command_UnGrab(int client)
     if (ValidGrab(client))
     {
         char sName[128];
-        GetEdictClassname(EntRefToEntIndex(g_iObject[client]), sName, sizeof(sName));
+        GetEdictClassname(EntRefToEntIndex(g_iPlayer[client].Object), sName, sizeof(sName));
 
         if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox") || StrEqual(sName, "prop_physics"))
         {
-            SetEntPropEnt(EntRefToEntIndex(g_iObject[client]), Prop_Data, "m_hPhysicsAttacker", 0);
+            SetEntPropEnt(EntRefToEntIndex(g_iPlayer[client].Object), Prop_Data, "m_hPhysicsAttacker", 0);
         }
     }
 
-    g_iObject[client] = -1;
+    g_iPlayer[client].Object = -1;
     SDKUnhook(client, SDKHook_PreThink, OnPreThink);
-    g_fTime[client] = 0.0;
+    g_iPlayer[client].Time = 0.0;
 }
 
 void GrabSomething(int client)
 {
-    if (!TTT_IsRoundActive())
+    if (!g_cDebug.BoolValue && TTT_GetRoundStatus() != Round_Active)
     {
         return;
     }
@@ -259,7 +270,7 @@ void GrabSomething(int client)
     }
 
     Action res = Plugin_Continue;
-    Call_StartForward(g_hOnGrabbing);
+    Call_StartForward(g_fwOnGrabbing);
     Call_PushCell(client);
     Call_PushCell(iEntity);
     Call_Finish(res);
@@ -294,7 +305,7 @@ void GrabSomething(int client)
     {
         if (TTT_CheckCommandAccess(client, "gbm_output", g_cFlags, true))
         {
-            CPrintToChat(client, "Name of Entity: %s (GetEdictClassname), %s (m_iGlobalname)", sName, sGlobal);
+            CPrintToChat(client, "Name of Entity: %s (GetEdictClassname), %s (m_iGlobalname), %s (m_iName)", sName, sGlobal, sTargetname);
         }
     }
 
@@ -349,7 +360,7 @@ void GrabSomething(int client)
         }
     }
 
-    g_iObject[client] = EntIndexToEntRef(iEntity);
+    g_iPlayer[client].Object = EntIndexToEntRef(iEntity);
     SDKHook(client, SDKHook_PreThink, OnPreThink);
 
     char sSound[PLATFORM_MAX_PATH + 1];
@@ -360,7 +371,7 @@ void GrabSomething(int client)
         EmitSoundToClientAny(client, sSound, _, _, _, _, g_cGrabSoundVol.FloatValue);
     }
 
-    g_fDistance[client] = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
+    g_iPlayer[client].Distance = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
 
     float position[3];
     TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, position);
@@ -368,7 +379,7 @@ void GrabSomething(int client)
 
 bool ValidGrab(int client)
 {
-    int iObject = EntRefToEntIndex(g_iObject[client]);
+    int iObject = EntRefToEntIndex(g_iPlayer[client].Object);
     if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
     {
         return true;
@@ -384,7 +395,7 @@ int GetObject(int client, bool hitSelf=true)
     {
         if (ValidGrab(client))
         {
-            iEntity = EntRefToEntIndex(g_iObject[client]);
+            iEntity = EntRefToEntIndex(g_iPlayer[client].Object);
             return iEntity;
         }
 
@@ -429,11 +440,6 @@ public int TraceToEntity(int client)
     }
 
     return -1;
-}
-
-public bool TraceASDF(int entity, int mask, any data)
-{
-    return data != entity;
 }
 
 int ReplacePhysicsEntity(int iEntity)
@@ -489,7 +495,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         }
     }
 
-    if (buttons & IN_USE)
+    if (buttons & (1<<g_cGrabButton.IntValue))
     {
         if (IsPlayerAlive(client) && !ValidGrab(client))
         {
@@ -500,17 +506,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
             if (g_cAllowFreeze.BoolValue && buttons & IN_ATTACK)
             {
                 buttons &= ~IN_ATTACK;
-                buttons &= ~IN_USE;
+                buttons &= ~(1<<g_cGrabButton.IntValue);
 
-                int iEntity = EntRefToEntIndex(g_iObject[client]);
+                int iEntity = EntRefToEntIndex(g_iPlayer[client].Object);
                 SetEntityMoveType(iEntity, MOVETYPE_NONE);
                 AcceptEntityInput(iEntity, "DisableMotion");
 
                 TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, view_as<float>({0.0, 0.0, 0.0}));
 
-                g_aBlocklist.Push(g_iObject[client]);
+                g_aBlocklist.Push(g_iPlayer[client].Object);
 
-                CreateTimer(1.0, Timer_Unblock, g_iObject[client]);
+                CreateTimer(1.0, Timer_Unblock, g_iPlayer[client].Object);
 
                 Command_UnGrab(client);
 
@@ -520,7 +526,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
             if (g_cAllowThrow.BoolValue && buttons & IN_ATTACK2)
             {
                 buttons &= ~IN_ATTACK2;
-                buttons &= ~IN_USE;
+                buttons &= ~(1<<g_cGrabButton.IntValue);
 
                 ThrowObject(client);
 
@@ -569,7 +575,7 @@ public void OnPreThink(int i)
 
             if (g_cColored.BoolValue)
             {
-                if (g_fTime[i] == 0.0 || GetGameTime() < g_fTime[i])
+                if (g_iPlayer[i].Time == 0.0 || GetGameTime() < g_iPlayer[i].Time)
                 {
                     color[0] = GetRandomInt(0, 255);
                     color[1] = GetRandomInt(0, 255);
@@ -586,21 +592,24 @@ public void OnPreThink(int i)
             }
 
             vecPos2 = vecPos;
-            vecPos[0] += vecDir[0] * g_fDistance[i];
-            vecPos[1] += vecDir[1] * g_fDistance[i];
-            vecPos[2] += vecDir[2] * g_fDistance[i];
+            vecPos[0] += vecDir[0] * g_iPlayer[i].Distance;
+            vecPos[1] += vecDir[1] * g_iPlayer[i].Distance;
+            vecPos[2] += vecDir[2] * g_iPlayer[i].Distance;
 
-            GetEntPropVector(g_iObject[i], Prop_Send, "m_vecOrigin", vecDir);
+            GetEntPropVector(g_iPlayer[i].Object, Prop_Send, "m_vecOrigin", vecDir);
 
-            TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
-            TE_SendToAll();
+            if (!IsNullVector(vecPos2) && !IsNullVector(vecDir))
+            {
+                TE_SetupBeamPoints(vecPos2, vecDir, g_iSprite, 0, 0, 0, 0.1, 3.0, 3.0, 10, 0.0, color, 0);
+                TE_SendToAll();
+            }
 
-            g_fTime[i] = GetGameTime() + 1.0;
+            g_iPlayer[i].Time = GetGameTime() + 1.0;
 
             SubtractVectors(vecPos, vecDir, vecVel);
             ScaleVector(vecVel, 10.0);
 
-            TeleportEntity(g_iObject[i], NULL_VECTOR, NULL_VECTOR, vecVel);
+            TeleportEntity(g_iPlayer[i].Object, NULL_VECTOR, NULL_VECTOR, vecVel);
         }
     }
     // }
@@ -608,9 +617,9 @@ public void OnPreThink(int i)
 
 public void OnClientDisconnect(int client)
 {
-    g_iObject[client] = -1;
+    g_iPlayer[client].Object = -1;
     SDKUnhook(client, SDKHook_PreThink, OnPreThink);
-    g_fTime[client] = 0.0;
+    g_iPlayer[client].Time = 0.0;
 }
 
 void LoadLists()
@@ -846,7 +855,7 @@ public int Native_GetGrabEntity(Handle plugin, int numParams)
 
     if (ValidGrab(client))
     {
-        return g_iObject[client];
+        return g_iPlayer[client].Object;
     }
 
     return -1;
@@ -854,9 +863,9 @@ public int Native_GetGrabEntity(Handle plugin, int numParams)
 
 void ThrowObject(int client)
 {
-    if (ValidGrab(client) && !TTT_IsClientValid(EntRefToEntIndex(g_iObject[client])))
+    if (ValidGrab(client) && !TTT_IsClientValid(EntRefToEntIndex(g_iPlayer[client].Object)))
     {
-        int iEntity = EntRefToEntIndex(g_iObject[client]);
+        int iEntity = EntRefToEntIndex(g_iPlayer[client].Object);
 
         float fAngles[3], vecFwd[3], fPosition[3], vecVel[3];
 

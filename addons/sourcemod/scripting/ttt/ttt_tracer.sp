@@ -2,6 +2,7 @@
 #include <sourcemod>
 #include <ttt>
 #include <ttt_shop>
+#include <ttt_inventory>
 #pragma newdecls required
 
 /* Spec Modes */
@@ -17,18 +18,19 @@
 #define SHORT_NAME_TRACER "Tracer_t"
 #define SHORT_NAME_JAMMER "Jammer_d"
 
-bool g_bHasTracer[MAXPLAYERS+1] = { false, ... };
-bool g_bHasJammer[MAXPLAYERS+1] = { false, ... };
-
-ConVar g_cPrice = null;
-ConVar g_cPrio = null;
-ConVar g_cLongName = null;
+ConVar g_cTracerPrice = null;
+ConVar g_cTracerLimit = null;
+ConVar g_cTracerPrio = null;
+ConVar g_cTracerLongName = null;
+ConVar g_cTracerCount = null;
 ConVar g_cCompassShowNameDistance = null;
 ConVar g_cCompassDisorientationDistance = null;
 
 ConVar g_cJammerPrice = null;
+ConVar g_cJammerLimit = null;
 ConVar g_cJammerPrio = null;
 ConVar g_cJammerLongName = null;
+ConVar g_cJammerCount = null;
 
 Handle g_hHUD = null;
 
@@ -47,43 +49,42 @@ public void OnPluginStart()
     
     TTT_StartConfig("tracer");
     CreateConVar("ttt2_tracer_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cLongName = AutoExecConfig_CreateConVar("tracer_name", "Tracer", "The name of this in Shop");
-    g_cPrice = AutoExecConfig_CreateConVar("tracer_price", "9000", "The amount of credits tracer costs as traitor. 0 to disable.");
-    g_cPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the tracer in the shop menu.");
     g_cCompassShowNameDistance = AutoExecConfig_CreateConVar("tracer_compass_show_name_distance", "1024.0", "Max distance to show name / Distance in compass HUD.");
     g_cCompassDisorientationDistance = AutoExecConfig_CreateConVar("tracer_compass_disorientation_distance", "1024.0", "If nearest player is closer than this use 4 instead of 8 directions in compass HUD.");
     g_cJammerLongName = AutoExecConfig_CreateConVar("jammer_name", "Jammer", "The name of this in Shop");
-    g_cJammerPrice = AutoExecConfig_CreateConVar("jammer_price", "9000", "The amount of credits jammer costs as traitor. 0 to disable.");
+    g_cJammerPrice = AutoExecConfig_CreateConVar("jammer_price", "9000", "The amount of credits jammer costs as detective. 0 to disable.");
+    g_cJammerLimit = AutoExecConfig_CreateConVar("jammer_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cJammerPrio = AutoExecConfig_CreateConVar("jammer_sort_prio", "0", "The sorting priority of the jammer in the shop menu.");
+    g_cJammerCount = AutoExecConfig_CreateConVar("jammer_count", "1", "Amount of purchases for Jammer as detective");
+    g_cTracerLongName = AutoExecConfig_CreateConVar("tracer_name", "Tracer", "The name of this in Shop");
+    g_cTracerPrice = AutoExecConfig_CreateConVar("tracer_price", "9000", "The amount of credits tracer costs as traitor. 0 to disable.");
+    g_cTracerLimit = AutoExecConfig_CreateConVar("tracer_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cTracerPrio = AutoExecConfig_CreateConVar("tracer_sort_prio", "0", "The sorting priority of the tracer in the shop menu.");
+    g_cTracerCount = AutoExecConfig_CreateConVar("tracer_count", "1", "Amount of purchases for Tracer as traitor");
     TTT_EndConfig();
 
     g_hHUD = CreateHudSynchronizer();
     
-    HookEvent("player_spawn", Event_PlayerSpawn);
-    
     CreateTimer(1.0, Tracer_Display, _, TIMER_REPEAT);
 }
 
-public void TTT_OnLatestVersion(const char[] version)
+public void OnPluginEnd()
 {
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetCommitsCount());
-}
-
-public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-    
-    if (TTT_IsClientValid(client))
+    if (TTT_IsShopRunning())
     {
-        g_bHasTracer[client] = false;
-        g_bHasJammer[client] = false;
+        TTT_RemoveShopItem(SHORT_NAME_TRACER);
+        TTT_RemoveShopItem(SHORT_NAME_JAMMER);
     }
 }
 
-public void OnClientConnected(int client)
+public void OnConfigsExecuted()
 {
-    g_bHasTracer[client] = false;
-    g_bHasJammer[client] = false;
+    RegisterItem();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void TTT_OnShopReady()
@@ -95,40 +96,36 @@ void RegisterItem()
 {
     char sName[MAX_ITEM_LENGTH];
 
-    g_cLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME_TRACER, sName, g_cPrice.IntValue, TTT_TEAM_TRAITOR, g_cPrio.IntValue);
+    g_cTracerLongName.GetString(sName, sizeof(sName));
+    TTT_RegisterShopItem(SHORT_NAME_TRACER, sName, g_cTracerPrice.IntValue, TTT_TEAM_TRAITOR, g_cTracerPrio.IntValue, g_cTracerCount.IntValue, g_cTracerLimit.IntValue, OnItemPurchased);
 
     g_cJammerLongName.GetString(sName, sizeof(sName));
-    TTT_RegisterCustomItem(SHORT_NAME_JAMMER, sName, g_cJammerPrice.IntValue, TTT_TEAM_DETECTIVE, g_cJammerPrio.IntValue);
+    TTT_RegisterShopItem(SHORT_NAME_JAMMER, sName, g_cJammerPrice.IntValue, TTT_TEAM_DETECTIVE, g_cJammerPrio.IntValue, g_cJammerCount.IntValue, g_cJammerLimit.IntValue, OnItemPurchased);
 }
 
-public Action TTT_OnItemPurchased(int client, const char[] itemshort, bool count, int price)
+public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_IsClientValid(client) && IsPlayerAlive(client))
+    int role = TTT_GetClientRole(client);
+
+    if (StrEqual(itemshort, SHORT_NAME_TRACER, false))
     {
-        if (StrEqual(itemshort, SHORT_NAME_TRACER, false))
+        if (role != TTT_TEAM_TRAITOR)
         {
-            int role = TTT_GetClientRole(client);
-            
-            if (role != TTT_TEAM_TRAITOR)
-            {
-                return Plugin_Stop;
-            }
-            
-            g_bHasTracer[client] = true;
+            return Plugin_Stop;
         }
-        else if (StrEqual(itemshort, SHORT_NAME_JAMMER, false))
-        {
-            int role = TTT_GetClientRole(client);
-            
-            if (role != TTT_TEAM_DETECTIVE)
-            {
-                return Plugin_Stop;
-            }
-            
-            g_bHasJammer[client] = true;
-        }
+        
+        TTT_AddInventoryItem(client, SHORT_NAME_TRACER);
     }
+    else if (StrEqual(itemshort, SHORT_NAME_JAMMER, false))
+    {
+        if (role != TTT_TEAM_DETECTIVE)
+        {
+            return Plugin_Stop;
+        }
+        
+        TTT_AddInventoryItem(client, SHORT_NAME_JAMMER);
+    }
+
     return Plugin_Continue;
 }
 
@@ -157,12 +154,12 @@ public Action Tracer_Display(Handle timer)
             }
         }
         
-        if(!g_bHasTracer[iClientToShow] || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
+        if(!TTT_IsItemInInventory(iClientToShow, SHORT_NAME_TRACER) || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
         {
             continue;
         }
 
-        if (g_bHasJammer[client])
+        if (TTT_IsItemInInventory(client, SHORT_NAME_JAMMER))
         {
             continue;
         }
