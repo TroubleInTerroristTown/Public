@@ -109,7 +109,7 @@ jobs:
           cp addons/sourcemod/extensions/dhooks.ext.dll build/addons/sourcemod/extensions/
 
       - name: Compress package
-        run: 7z a -r TTT.${{ env.PLUGIN_VERSION }}.zip *
+        run: zip -9rq $FILE addons materials models particles sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
         working-directory: ./build
 
       - name: Upload package
