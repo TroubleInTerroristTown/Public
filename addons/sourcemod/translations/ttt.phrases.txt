@@ -251,7 +251,7 @@
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"TTT Shop\nYour {2}: {1}"
-		"en"		"TTT Shop\nDeine {2}: {1}"
+		"de"		"TTT Shop\nDeine {2}: {1}"
 		"pl"		"Sklep TTT\nTwoje {2}: {1}"
 	}
 
@@ -625,7 +625,7 @@
 	{
 		"#format"	"{1:N}"
 		"en"		"Healing from {player}{1}{default}'s Health Station!"
-		"en"		"Du wirst von {player}{1}{default}'s Health Station geheilt!"
+		"de"		"Du wirst von {player}{1}{default}'s Health Station geheilt!"
 		"pl"		"Leczenie z stacji {player}{1}{default}'a!"
 	}
 
