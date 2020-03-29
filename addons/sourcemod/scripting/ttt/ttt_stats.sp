@@ -15,7 +15,7 @@ Database g_dDB = null;
 
 ConVar g_cPlayers = null;
 
-char g_sDriver[16];
+bool g_bValidRound = false;
 
 enum struct PlayerData {
     int RoundsPlayed;
@@ -90,6 +90,7 @@ public void TTT_OnVersionReceive(int version)
 public void OnConfigsExecuted()
 {
     g_cDebug = FindConVar("ttt_debug_mode");
+    g_bValidRound = false;
 }
 
 public void OnPluginEnd()
@@ -104,39 +105,16 @@ public void TTT_OnSQLConnect(Database db)
 {
     g_dDB = db;
 
-    DBDriver iDriver = g_dDB.Driver;
-    iDriver.GetIdentifier(g_sDriver, sizeof(g_sDriver));
-
     CreateTable();
 }
 
 void CreateTable()
 {
     char sQuery[2048];
-
-    if (StrEqual(g_sDriver, "mysql", false))
-    {
-        Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_stats` (`id` INT NOT NULL AUTO_INCREMENT, `communityid` VARCHAR(64) NOT NULL, `rounds_played` INT DEFAULT 0, `rounds_won` INT DEFAULT 0, `played_as_innocent` INT DEFAULT 0, `played_as_traitor` INT DEFAULT 0, `played_as_detective` INT DEFAULT 0, `shots_fired` INT DEFAULT 0, `damage_taken` INT DEFAULT 0, `damage_given` INT DEFAULT 0, `bad_damage_taken` INT DEFAULT 0, `bad_damage_given` INT DEFAULT 0, `slayed_rounds` INT DEFAULT 0, `killed_innocents` INT DEFAULT 0, `killed_traitors` INT DEFAULT 0, `killed_detectives` INT DEFAULT 0, `bad_kills` INT DEFAULT 0, `identified_bodies` INT DEFAULT 0, `identified_traitors` INT DEFAULT 0, `scanned_bodies` INT DEFAULT 0, `scanned_traitors` INT DEFAULT 0, `bought_items` INT DEFAULT 0, PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
-    }
-    else
-    {
-        SetFailState("[Stats] (CreateTable) - Unsupported sql driver: %s", g_sDriver);
-        return;
-    }
+    Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_stats` (`id` INT NOT NULL AUTO_INCREMENT, `communityid` VARCHAR(64) NOT NULL, `rounds_played` INT DEFAULT 0, `rounds_won` INT DEFAULT 0, `played_as_innocent` INT DEFAULT 0, `played_as_traitor` INT DEFAULT 0, `played_as_detective` INT DEFAULT 0, `shots_fired` INT DEFAULT 0, `damage_taken` INT DEFAULT 0, `damage_given` INT DEFAULT 0, `bad_damage_taken` INT DEFAULT 0, `bad_damage_given` INT DEFAULT 0, `slayed_rounds` INT DEFAULT 0, `killed_innocents` INT DEFAULT 0, `killed_traitors` INT DEFAULT 0, `killed_detectives` INT DEFAULT 0, `bad_kills` INT DEFAULT 0, `identified_bodies` INT DEFAULT 0, `identified_traitors` INT DEFAULT 0, `scanned_bodies` INT DEFAULT 0, `scanned_traitors` INT DEFAULT 0, `bought_items` INT DEFAULT 0, PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 
     TTT_Query("[Stats] (CreateTable) - Callback_CheckAndCreateTables", sQuery);
-
-    SetCharsetAndCollate();
-}
-
-void SetCharsetAndCollate()
-{
-    if (StrEqual(g_sDriver, "mysql", false))
-    {
-        g_dDB.SetCharset("utf8mb4");
-        TTT_Query("[Stats] (SetCharsetAndCollate) - SQLCallback_OnSetNames", "SET NAMES 'utf8mb4';");
-        TTT_Query("[Stats] (SetCharsetAndCollate) - SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt_stats CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-    }
+    TTT_Query("[Stats] (CreateTable) - SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt_stats CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 }
 
 public Action Command_Stats(int client, int args)
@@ -275,6 +253,17 @@ public void OnClientDisconnect(int client)
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 {
+    g_bValidRound = false;
+
+    int iPlayers = innocents + traitors + detective;
+
+    if (iPlayers < g_cPlayers.IntValue)
+    {
+        return;
+    }
+
+    g_bValidRound = true;
+
     LoopValidClients(i)
     {
     	if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_INNOCENT || TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
@@ -286,7 +275,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
 public int TTT_OnRoundSlay(int client, int remaining)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -299,7 +288,7 @@ public int TTT_OnRoundSlay(int client, int remaining)
 
 public void TTT_OnItemPurchasePost(int client, int price, int count, const char[] itemshort)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -312,7 +301,7 @@ public void TTT_OnItemPurchasePost(int client, int price, int count, const char[
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -333,7 +322,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 
 public void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon, bool badAction)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -355,7 +344,7 @@ public void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon,
 
 public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -386,7 +375,7 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
 
 public void TTT_OnBodyFound(int attacker, int victim, int entityref, bool silentID)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -409,7 +398,7 @@ public void TTT_OnBodyFound(int attacker, int victim, int entityref, bool silent
 
 public Action TTT_OnBodyCheck(int attacker, int entityref)
 {
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -437,7 +426,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
         PrintToChatAll("TTT_OnRoundEnd");
     }
 
-    if (!Stats_IsValidRound())
+    if (!g_bValidRound)
     {
         return;
     }
@@ -483,6 +472,8 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
         UpdatePlayer(i);
     }
+
+    g_bValidRound = false;
 }
 
 public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] error, int userid)
@@ -494,7 +485,6 @@ public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] err
     }
     else
     {
-        LogMessage("SQL_GetPlayerData");
         int client = GetClientOfUserId(userid);
 
         if (Stats_IsClientValid(client))
@@ -604,16 +594,6 @@ public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] erro
     } */
 }
 
-bool Stats_IsValidRound()
-{
-    if (TTT_GetRoundStatus() == Round_Active && GetPlayerCount() >= g_cPlayers.IntValue)
-    {
-        return true;
-    }
-
-    return false;
-}
-
 bool Stats_IsClientValid(int client)
 {
     if (TTT_IsClientValid(client) && !IsFakeClient(client))
@@ -622,19 +602,4 @@ bool Stats_IsClientValid(int client)
     }
     
     return false;
-}
-
-int GetPlayerCount()
-{
-    int iCount = 0;
-
-    for(int i = 1; i <= MaxClients; i++)
-    {
-        if (Stats_IsClientValid(i))
-        {
-            iCount++;
-        }
-    }
-
-    return iCount;
 }
