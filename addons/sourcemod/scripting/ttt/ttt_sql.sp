@@ -166,8 +166,6 @@ void CheckAndCreateTables()
 
     TTT_Query("Callback_CheckAndCreateTables", sQuery);
 
-    Call_OnSQLConnect();
-
     SetCharsetAndCollate();
 }
 
@@ -175,6 +173,7 @@ void SetCharsetAndCollate()
 {
     g_dDatabase.SetCharset("utf8mb4");
     TTT_Query("SQLCallback_ConvertToUTF8MB4", "ALTER TABLE ttt CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+    Call_OnSQLConnect();
 }
 
 public int Native_Query(Handle plugin, int numParams)
