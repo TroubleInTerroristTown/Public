@@ -99,7 +99,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         return Plugin_Stop;
     }
     
-    CPrintToChat(client, "%s %T", g_sPluginTag, "NightVision: Command Usage");
+    CPrintToChat(client, "%s %T", g_sPluginTag, "NightVision: Command Usage", client);
 
     TTT_AddInventoryItem(client, itemshort);
     return Plugin_Continue;
