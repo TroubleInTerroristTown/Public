@@ -207,6 +207,11 @@ public Action OnTraceAttack(int victim, int& attacker, int& inflictor, float& da
 
 public Action Command_TripMine(int client, int args)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return Plugin_Handled;
+    }
+
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
         return Plugin_Handled;
