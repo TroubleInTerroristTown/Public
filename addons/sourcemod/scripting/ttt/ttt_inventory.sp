@@ -5,8 +5,10 @@
 #include <sdktools>
 #include <colorlib>
 #include <ttt>
-#include <ttt_shop>
 #include <ttt_inventory>
+
+#undef REQUIRE_PLUGIN
+#include <ttt_shop>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Inventory"
 

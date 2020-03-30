@@ -298,3 +298,39 @@ stock bool TTT_IsShopRunning()
     }
     return false;
 }
+
+public SharedPlugin __pl_ttt_shop = 
+{
+    name = "ttt_shop",
+    file = "ttt_shop.smx",
+#if defined REQUIRE_PLUGIN
+    required = 1,
+#else
+    required = 0,
+#endif
+};
+
+#if !defined REQUIRE_PLUGIN
+public void __pl_ttt_shop_SetNTVOptional()
+{
+    MarkNativeAsOptional("TTT_RegisterShopItem");
+    MarkNativeAsOptional("TTT_UpdateShopItem");
+    MarkNativeAsOptional("TTT_RemoveShopItem");
+    MarkNativeAsOptional("TTT_GetItemPrice");
+    MarkNativeAsOptional("TTT_GetItemRole");
+    MarkNativeAsOptional("TTT_GetItemName");
+    MarkNativeAsOptional("TTT_ShopItemExist");
+    MarkNativeAsOptional("TTT_GetItemMaxUsages");
+    MarkNativeAsOptional("TTT_GetClientCredits");
+    MarkNativeAsOptional("TTT_SetClientCredits");
+    MarkNativeAsOptional("TTT_AddClientCredits");
+    MarkNativeAsOptional("TTT_GiveClientItem");
+    MarkNativeAsOptional("TTT_GetItemUsages");
+    MarkNativeAsOptional("TTT_AddItemUsage");
+    MarkNativeAsOptional("TTT_RemoveItemUsage");
+    MarkNativeAsOptional("TTT_SetItemUsage");
+    MarkNativeAsOptional("TTT_GetItemDiscount");
+    MarkNativeAsOptional("TTT_CheckItemAccess");
+    MarkNativeAsOptional("TTT_GetClientCurrency");
+}
+#endif
