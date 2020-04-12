@@ -216,6 +216,19 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
+public void TTT_OnRoundStart(int id, int i, int t, int d)
+{
+	RequestFrame(Frame_ResetDrawViewModel);
+}
+
+void Frame_ResetDrawViewModel()
+{
+    LoopValidClients(i)
+    {
+        SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
+    }
+}
+
 void PreventThrowable(int client, int iWeapon)
 {
     float fUnlockTime = GetGameTime() + 0.5;
