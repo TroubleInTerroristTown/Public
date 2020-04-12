@@ -34,9 +34,6 @@ int g_iFakeItemClass;
 
 int m_hMyWeapons;
 
-#define LoopIngameClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
-if(IsClientInGame(%1))
-
 enum struct PlayerData {
     int FakeRef;
     int Cooldown;
@@ -83,7 +80,7 @@ public void OnPluginStart()
 
     HookEvent("item_equip", Event_ItemEquip);
 
-    LoopIngameClients(i)
+    LoopValidClients(i)
         OnClientPutInServer(i);
 }
 
@@ -214,6 +211,22 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         PreventThrowable(client, iWeapon);
 
     return Plugin_Continue;
+}
+
+public void TTT_OnRoundStart(int id, int i, int t, int d)
+{
+    RequestFrame(Frame_ResetDrawViewModel);
+}
+
+void Frame_ResetDrawViewModel()
+{
+    LoopValidClients(i)
+    {
+        if (IsPlayerAlive(i))
+        {
+        SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
+        }
+    }
 }
 
 void PreventThrowable(int client, int iWeapon)
