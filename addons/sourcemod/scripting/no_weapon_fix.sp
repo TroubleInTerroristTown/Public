@@ -215,16 +215,16 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public void TTT_OnRoundStart(int id, int i, int t, int d)
 {
-	RequestFrame(Frame_ResetDrawViewModel);
+    RequestFrame(Frame_ResetDrawViewModel);
 }
 
 void Frame_ResetDrawViewModel()
 {
     LoopValidClients(i)
     {
-    	if (IsPlayerAlive(i))
+        if (IsPlayerAlive(i))
         {
-            SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
+        SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
         }
     }
 }
