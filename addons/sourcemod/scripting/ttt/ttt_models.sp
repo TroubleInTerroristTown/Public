@@ -69,15 +69,16 @@ public void OnMapStart()
     if (kvConfig.JumpToKey("Models"))
     {
         g_bEnable = view_as<bool>(kvConfig.GetNum("Enable", 0));
-        g_bEnableArms = view_as<bool>(kvConfig.GetNum("EnableArms", 0));
-        g_iDCount = kvConfig.GetNum("DModelCount", 1);
-        g_iITCount = kvConfig.GetNum("ITModelCount", 1);
 
         if (!g_bEnable)
         {
             delete kvConfig;
             return;
         }
+        
+        g_bEnableArms = view_as<bool>(kvConfig.GetNum("EnableArms", 0));
+        g_iDCount = kvConfig.GetNum("DModelCount", 0);
+        g_iITCount = kvConfig.GetNum("ITModelCount", 0);
 
         if (g_iDCount > 0)
         {
@@ -111,7 +112,7 @@ public void OnMapStart()
 
                                 if (g_bDebug)
                                 {
-                                    LogToFile(g_sLog, "(OnMapStart) sFileName: %s", sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) %s sFileName: %s", sName, sFileName);
                                 }
 
                                 if (!g_bEnableArms && IsArms(sFileName))

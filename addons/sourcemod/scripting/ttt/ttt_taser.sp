@@ -267,7 +267,7 @@ public Action Timer_ActivateTasers(Handle timer)
         }
     }
 
-    if (g_cTaserCooldownMessage.BoolValue)
+    if (g_cTaserCooldownMessage.BoolValue && (g_cICount.IntValue > 0 || g_cTCount.IntValue > 0 || g_cDCount.IntValue > 0))
     {
         CPrintToChatAll("%s %T", g_sPluginTag, "Tasers: Enabled", LANG_SERVER);
     }
