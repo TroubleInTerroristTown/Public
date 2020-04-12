@@ -34,9 +34,6 @@ int g_iFakeItemClass;
 
 int m_hMyWeapons;
 
-#define LoopIngameClients(%1) for(int %1=1;%1<=MaxClients;++%1)\
-if(IsClientInGame(%1))
-
 enum struct PlayerData {
     int FakeRef;
     int Cooldown;
@@ -83,7 +80,7 @@ public void OnPluginStart()
 
     HookEvent("item_equip", Event_ItemEquip);
 
-    LoopIngameClients(i)
+    LoopValidClients(i)
         OnClientPutInServer(i);
 }
 
