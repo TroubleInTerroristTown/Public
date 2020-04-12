@@ -226,9 +226,9 @@ void Frame_ResetDrawViewModel()
     LoopValidClients(i)
     {
     	if (IsPlayerAlive(i))
-	{
+        {
             SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
-	}
+        }
     }
 }
 
