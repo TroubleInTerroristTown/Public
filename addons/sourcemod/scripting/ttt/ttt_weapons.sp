@@ -106,6 +106,7 @@ ConVar g_cKevHelm_Type = null;
 ConVar g_cHammer_Type = null;
 ConVar g_cAxe_Type = null;
 ConVar g_cSpanner_Type = null;
+ConVar g_cBumpmine_Type = null;
 
 ConVar g_cAWP_Min_Shots = null;
 ConVar g_cAWP_Max_Shots = null;
@@ -170,6 +171,7 @@ public void OnPluginStart()
     g_cHammer_Type = AutoExecConfig_CreateConVar("hammer_type", "1", "Type of hammer configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cAxe_Type = AutoExecConfig_CreateConVar("axe_type", "1", "Type of Axe configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cSpanner_Type = AutoExecConfig_CreateConVar("spanner_type", "1", "Type of Spanner configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+    g_cBumpmine_Type = AutoExecConfig_CreateConVar("bumpmine_type", "2", "Type of Bumpmine configuration to use. 0 = Everyone, 1 = Traitor + Detective, 2 = Traitor Only (Default)");
 
     g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
     g_cHeavy_Long = AutoExecConfig_CreateConVar("heavy_name", "Heavy", "The name of the heavy in the shop menu.");
@@ -308,6 +310,8 @@ public void OnPluginEnd()
         TTT_RemoveShopItem(AWP_ITEM_SHORT);
         TTT_RemoveShopItem(BREACHCHARGE_ITEM_SHORT);
         TTT_RemoveShopItem(BUMPMINE_ITEM_SHORT);
+        TTT_RemoveShopItem(BUMPMINE_D_ITEM_SHORT);
+        TTT_RemoveShopItem(BUMPMINE_T_ITEM_SHORT);
         TTT_RemoveShopItem(USP_ITEM_SHORT);
         TTT_RemoveShopItem(MP5SD_ITEM_SHORT);
         TTT_RemoveShopItem(AK_ITEM_SHORT);
@@ -430,8 +434,20 @@ void RegisterItem()
     TTT_RegisterShopItem(BREACHCHARGE_ITEM_SHORT, sBuffer, g_cBreachCharge_Price.IntValue, TTT_TEAM_TRAITOR, g_cBreachCharge_Prio.IntValue, g_cBreachCharge_Count.IntValue, g_cBreachCharge_Limit.IntValue, OnItemPurchased);
 
     g_cBumpmine_Long.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
-
+    if (g_cBumpmine_Type.IntValue == 0)
+    {
+        TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
+    else if (g_cBumpmine_Type.IntValue == 1)
+    {
+        TTT_RegisterShopItem(BUMPMINE_T_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+        TTT_RegisterShopItem(BUMPMINE_D_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_DETECTIVE, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
+    else if (g_cBumpmine_Type.IntValue == 2)
+    {
+        TTT_RegisterShopItem(BUMPMINE_T_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
+     
     g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterShopItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue, g_cUSP_Count.IntValue, g_cUSP_Limit.IntValue, OnItemPurchased);
 
@@ -801,31 +817,27 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
             TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBreachCharge_Price.IntValue);
         }
     }
-    else if (strcmp(itemshort, BUMPMINE_ITEM_SHORT, false) == 0)
+    else if (strcmp(itemshort, BUMPMINE_ITEM_SHORT, false) == 0 || strcmp(itemshort, BUMPMINE_D_ITEM_SHORT, false) == 0 || strcmp(itemshort, BUMPMINE_T_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-        {
-            return Plugin_Stop;
-        }
-        
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
         {
-            SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+            if (g_cBumpmine_Type.IntValue == 0)
+            {
+                GiveBumpmine(client);
+            }
         }
-
-        int iBC = GivePlayerItem(client, "weapon_bumpmine");
-
-        if (iBC != -1)
+        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
         {
-            EquipPlayerWeapon(client, iBC);
-            SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
-            SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
+            if (g_cBumpmine_Type.IntValue == 0 || g_cBumpmine_Type.IntValue == 2)
+            {
+                GiveBumpmine(client);
+            }
         }
-        else
+        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
-            TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
+            GiveBumpmine(client);
         }
     }
     else if (strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
@@ -928,6 +940,27 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
 
     return Plugin_Continue;
+}
+
+void GiveBumpmine(int client)
+{
+    if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+    {
+        SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+    }
+
+    int iBC = GivePlayerItem(client, "weapon_bumpmine");
+
+    if (iBC != -1)
+    {
+        EquipPlayerWeapon(client, iBC);
+        SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
+        SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
+    }
+    else
+    {
+        TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
+    }
 }
 
 void GiveArmor(int client, int armor = 100)
