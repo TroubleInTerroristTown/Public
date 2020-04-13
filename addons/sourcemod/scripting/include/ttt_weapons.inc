@@ -40,3 +40,5 @@
 #define SPANNER_T_ITEM_SHORT "spanner_t"
 #define BREACHCHARGE_ITEM_SHORT "breach"
 #define BUMPMINE_ITEM_SHORT "bumpmine"
+#define BUMPMINE_D_ITEM_SHORT "bumpmine_d"
+#define BUMPMINE_T_ITEM_SHORT "bumpmine_t"
