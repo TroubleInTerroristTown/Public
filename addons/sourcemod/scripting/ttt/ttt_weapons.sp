@@ -817,83 +817,29 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
             TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBreachCharge_Price.IntValue);
         }
     }
-    else if (strcmp(itemshort, BUMPMINE_ITEM_SHORT, false) == 0)
+    else if (strcmp(itemshort, BUMPMINE_ITEM_SHORT, false) == 0 || strcmp(itemshort, BUMPMINE_D_ITEM_SHORT, false) == 0 || strcmp(itemshort, BUMPMINE_T_ITEM_SHORT, false) == 0)
     {
-        
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
         {
-            SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+            if (g_cBumpmine_Type.IntValue == 0)
+            {
+                GiveBumpmine(client);
+            }
         }
-
-        int iBC = GivePlayerItem(client, "weapon_bumpmine");
-
-        if (iBC != -1)
+        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
         {
-            EquipPlayerWeapon(client, iBC);
-            SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
-            SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
+            if (g_cBumpmine_Type.IntValue == 0 || g_cBumpmine_Type.IntValue == 2)
+            {
+                GiveBumpmine(client);
+            }
         }
-        else
+        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
         {
-            TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
+            GiveBumpmine(client);
         }
     }
-    else if (strcmp(itemshort, BUMPMINE_D_ITEM_SHORT, false) == 0)
-    {
-        if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
-        {
-            return Plugin_Stop;
-        }
-        
-        strcopy(sItem, sizeof(sItem), itemshort);
-
-        if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
-        {
-            SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
-        }
-
-        int iBC = GivePlayerItem(client, "weapon_bumpmine");
-
-        if (iBC != -1)
-        {
-            EquipPlayerWeapon(client, iBC);
-            SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
-            SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
-        }
-        else
-        {
-            TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
-        }
-    }
-    else if (strcmp(itemshort, BUMPMINE_T_ITEM_SHORT, false) == 0)
-    {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
-        {
-            return Plugin_Stop;
-        }
-        
-        strcopy(sItem, sizeof(sItem), itemshort);
-
-        if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
-        {
-            SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
-        }
-
-        int iBC = GivePlayerItem(client, "weapon_bumpmine");
-
-        if (iBC != -1)
-        {
-            EquipPlayerWeapon(client, iBC);
-            SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
-            SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
-        }
-        else
-        {
-            TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
-        }
-    }  
     else if (strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
     {
         if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
@@ -994,6 +940,27 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
 
     return Plugin_Continue;
+}
+
+void GiveBumpmine(int client)
+{
+    if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+    {
+        SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+    }
+
+    int iBC = GivePlayerItem(client, "weapon_bumpmine");
+
+    if (iBC != -1)
+    {
+        EquipPlayerWeapon(client, iBC);
+        SetEntProp(iBC, Prop_Send, "m_iPrimaryReserveAmmoCount", 0);
+        SetEntProp(iBC, Prop_Data, "m_iClip1", GetRandomInt(g_cBumpmine_Min.IntValue, g_cBumpmine_Max.IntValue));
+    }
+    else
+    {
+        TTT_SetClientCredits(client, TTT_GetClientCredits(client) + g_cBumpmine_Price.IntValue);
+    }
 }
 
 void GiveArmor(int client, int armor = 100)
