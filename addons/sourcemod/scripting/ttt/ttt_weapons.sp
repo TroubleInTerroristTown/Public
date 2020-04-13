@@ -106,6 +106,7 @@ ConVar g_cKevHelm_Type = null;
 ConVar g_cHammer_Type = null;
 ConVar g_cAxe_Type = null;
 ConVar g_cSpanner_Type = null;
+ConVar g_cBumpmine_Type = null;
 
 ConVar g_cAWP_Min_Shots = null;
 ConVar g_cAWP_Max_Shots = null;
@@ -170,7 +171,8 @@ public void OnPluginStart()
     g_cHammer_Type = AutoExecConfig_CreateConVar("hammer_type", "1", "Type of hammer configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cAxe_Type = AutoExecConfig_CreateConVar("axe_type", "1", "Type of Axe configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
     g_cSpanner_Type = AutoExecConfig_CreateConVar("spanner_type", "1", "Type of Spanner configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
-
+    g_cBumpmines_Type = AutoExecConfig_CreateConVar("bumpmine_type", "1", "Type of Bumpmine configuration to use. 0 = Everyone, 1 = Traitor + Detective (Default), 2 = Traitor Only");
+    
     g_cKev_Long = AutoExecConfig_CreateConVar("kevlar_name", "Kevlar", "The name of the kevlar in the shop menu.");
     g_cHeavy_Long = AutoExecConfig_CreateConVar("heavy_name", "Heavy", "The name of the heavy in the shop menu.");
     g_cHelm_Long = AutoExecConfig_CreateConVar("helm_name", "Helm", "The name of the helm in the shop menu.");
@@ -430,7 +432,19 @@ void RegisterItem()
     TTT_RegisterShopItem(BREACHCHARGE_ITEM_SHORT, sBuffer, g_cBreachCharge_Price.IntValue, TTT_TEAM_TRAITOR, g_cBreachCharge_Prio.IntValue, g_cBreachCharge_Count.IntValue, g_cBreachCharge_Limit.IntValue, OnItemPurchased);
 
     g_cBumpmine_Long.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    if (g_cBumpmine_Type.IntValue == 0)
+    {
+        TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_UNASSIGNED, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
+    else if (g_cBumpmine_Type.IntValue == 1)
+    {
+        TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+        TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_DETECTIVE, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
+    else if (g_cBumpmine_Type.IntValue == 2)
+    {
+        TTT_RegisterShopItem(BUMPMINE_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
+    }
 
     g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterShopItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue, g_cUSP_Count.IntValue, g_cUSP_Limit.IntValue, OnItemPurchased);
