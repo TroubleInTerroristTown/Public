@@ -24,6 +24,7 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cLongName = null;
 ConVar g_cCount = null;
+ConVar g_cTimer = null;
 ConVar g_cLimit = null;
 ConVar g_cMute = null;
 
@@ -99,6 +100,7 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("knockout_price", "9000", "The amount of credits a knockout costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("knockout_sort_prio", "0", "The sorting priority of the knockout in the shop menu.");
     g_cCount = AutoExecConfig_CreateConVar("knockout_count", "1", "The amount of usages for knockout per round as traitor. 0 to disable.");
+    g_cTimer = AutoExecConfig_CreateConVar("knockout_last", "5.0", "How long the knockout shoud last.");
     g_cMute = AutoExecConfig_CreateConVar("knockout_local_mute", "1", "Choose 1 if you want to use external plugins for mure like sourcecomms or 0 for internal mute", _, true, 0.0, true, 1.0);
     g_cLimit = AutoExecConfig_CreateConVar("knockout_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
@@ -291,7 +293,7 @@ void KnockoutPlayer(int client)
         SpawnCamAndAttach(client, iEntity);
         PerformBlind(client, 255);
 
-        CreateTimer(5.0, Timer_Delete, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+        CreateTimer(g_cTimer.FloatValue, Timer_Delete, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
         if (g_cMute.BoolValue)
         {
