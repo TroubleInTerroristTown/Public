@@ -100,7 +100,7 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("knockout_price", "9000", "The amount of credits a knockout costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("knockout_sort_prio", "0", "The sorting priority of the knockout in the shop menu.");
     g_cCount = AutoExecConfig_CreateConVar("knockout_count", "1", "The amount of usages for knockout per round as traitor. 0 to disable.");
-    g_cTimer = AutoExecConfig_CreateConVar("knockout_last", "5.0", "How long the knockout shoud last.");
+    g_cTimer = AutoExecConfig_CreateConVar("knockout_last", "5.0", "How long the knockout shoud last.", _, true, 3.0);
     g_cMute = AutoExecConfig_CreateConVar("knockout_local_mute", "1", "Choose 1 if you want to use external plugins for mure like sourcecomms or 0 for internal mute", _, true, 0.0, true, 1.0);
     g_cLimit = AutoExecConfig_CreateConVar("knockout_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     TTT_EndConfig();
