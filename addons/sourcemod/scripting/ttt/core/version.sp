@@ -110,13 +110,6 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
         LogMessage("Version from API: %s", sVersion);
     }
 
-    if (StrContains(sVersion, "Banned", false) != -1)
-    {
-        LogError("Your server was banned, Server will shutting down!");
-        CreateTimer(1.0, Timer_Shutdown);
-        return;
-    }
-
     if (IsStringNumeric(sVersion))
     {
         g_iVersion = StringToInt(sVersion);
@@ -132,9 +125,4 @@ public void OnHTTPCallback(Handle hRequest, bool bFailure, bool bRequestSuccessf
     }
 
     delete hRequest;
-}
-
-public Action Timer_Shutdown(Handle timer)
-{
-    ServerCommand("quit");
 }
