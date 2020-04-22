@@ -92,7 +92,7 @@ jobs:
         run: |
           wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
           wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
-          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=176954&d=1566228343" -o dhooks.zip
+          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=180932&d=1587473886" -o dhooks.zip
 
       - name: Unpacking SteamWorks and DHooks
         run: |
