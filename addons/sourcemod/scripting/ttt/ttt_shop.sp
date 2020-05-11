@@ -73,6 +73,7 @@ ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
 ConVar g_cTestingMode = null;
 ConVar g_cLogPurchases = null;
+ConVar g_cMaxSQLCredits = null;
 
 ConVar g_cDebugMessages = null;
 ConVar g_cPluginTag = null;
@@ -241,6 +242,7 @@ public void OnPluginStart()
     g_cShopMenuTime = AutoExecConfig_CreateConVar("ttt_shop_menu_time", "15", "How long shop menu should be displayed.");
     g_cTestingMode = AutoExecConfig_CreateConVar("ttt_enable_testing_mode", "0", "Enable testing mode for shop? All items will be free without any limits!", _, true, 0.0, true, 1.0);
     g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 2.0);
+    g_cMaxSQLCredits = AutoExecConfig_CreateConVar("ttt_shop_max_sql_credits", "0", "Limit the max possible credits if ttt_sql_credits is 1", _, true, 0.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -1687,6 +1689,11 @@ void addCredits(int client, int credits, bool message = false)
 
     g_iPlayer[client].Credits = newcredits;
 
+    if (g_cMaxSQLCredits.IntValue > 0 && g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
+    {
+        g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
+    }
+
     if (g_cShowEarnCreditsMessage.BoolValue && message)
     {
         if (g_cMessageTypCredits.IntValue == 1)
@@ -1765,6 +1772,11 @@ void setCredits(int client, int credits)
     if (g_iPlayer[client].Credits < 0)
     {
         g_iPlayer[client].Credits = 0;
+    }
+
+    if (g_cMaxSQLCredits.IntValue > 0 && g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
+    {
+        g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
     }
 
     UpdatePlayer(client);
