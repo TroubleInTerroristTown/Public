@@ -29,8 +29,8 @@ public void OnPluginStart()
 {
     TTT_IsGameCSGO();
 
-    TTT_StartConfig("buyroles");
-    CreateConVar("ttt2_buy_roles_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
+    TTT_StartConfig("shield");
+    CreateConVar("ttt2_shield_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cLongName = AutoExecConfig_CreateConVar("shield_name", "Shield", "The name of the item in the Shop");
     g_cPrice = AutoExecConfig_CreateConVar("shield_price", "9000", "The amount of credits that cost to buy this item. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("shield_prio", "0", "The sorting priority of the buy it in the shop menu.");
@@ -66,7 +66,7 @@ void RegisterItem()
 {
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, TTT_TEAM_INNOCENT, g_cPrio.IntValue, g_cLimit.IntValue, g_cLimitRound.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cPrice.IntValue, SHOP_ITEM_4ALL, g_cPrio.IntValue, g_cLimit.IntValue, g_cLimitRound.IntValue, OnItemPurchased);
 }
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
