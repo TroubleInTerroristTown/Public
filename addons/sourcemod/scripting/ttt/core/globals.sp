@@ -147,6 +147,7 @@ ConVar g_cshowLoseKarmaMessage = null;
 ConVar g_cmessageTypKarma = null;
 ConVar g_cblockSuicide = null;
 ConVar g_callowFlash = null;
+ConVar g_caflashVolume = null;
 ConVar g_cblockLookAtWeapon = null;
 ConVar g_cblockRadioMessage = null;
 ConVar g_cenableNoBlock = null;
