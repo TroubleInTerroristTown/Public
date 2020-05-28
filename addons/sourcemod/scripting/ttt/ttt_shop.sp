@@ -1214,7 +1214,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
         Call_PushString(item.Short);
         Call_PushString(item.Long);
         Call_PushCell(item.Price);
-        Call_PushCell(item.Price);
+        Call_PushCell(item.Role);
         Call_PushCell(item.Sort);
         Call_PushCell(item.MaxUsages);
         Call_PushCell(item.Limit);
