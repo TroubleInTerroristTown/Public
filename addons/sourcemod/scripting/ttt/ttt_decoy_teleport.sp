@@ -136,9 +136,14 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
     {
         int entity = event.GetInt("entityid");
 
-        if (!TTT_IsItemInInventory(client, SHORT_NAME) || !TTT_IsItemInInventory(client, SHORT_NAME_D))
+        if (!TTT_IsItemInInventory(client, SHORT_NAME) && !TTT_IsItemInInventory(client, SHORT_NAME_D))
         {
             return Plugin_Continue;
+        }
+
+        if (IsValidEntity(entity))
+        {
+            AcceptEntityInput(entity, "kill");
         }
 
         float fOldPos[3];
@@ -147,19 +152,17 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
         float fPos[3];
         fPos[0] = event.GetFloat("x");
         fPos[1] = event.GetFloat("y");
-        fPos[2] = event.GetFloat("z");
+        fPos[2] = (event.GetFloat("z") + 5.0);
 
         TeleportEntity(client, fPos, NULL_VECTOR, NULL_VECTOR);
 
-        bool stuck = StuckClient(client);
+        bool stuck = WillClientStuck(client);
 
         if (stuck)
         {
             TeleportEntity(client, fOldPos, NULL_VECTOR, NULL_VECTOR);
             CPrintToChat(client, "%s %T", g_sPluginTag, "DT: Invalid Position", client);
         }
-
-        AcceptEntityInput(entity, "kill");
 
         if (stuck && g_cRefund.IntValue == 1)
         {
@@ -201,7 +204,7 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
     return Plugin_Continue;
 }
 
-bool StuckClient(int client)
+bool WillClientStuck(int client)
 {
     float vOrigin[3];
     float vMins[3];
