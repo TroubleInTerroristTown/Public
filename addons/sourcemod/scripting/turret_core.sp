@@ -342,6 +342,11 @@ void TickTurret(int client)
         return;
     }
 
+    if (g_iPlayer[client].Turret == 0)
+    {
+        return;
+    }
+
     float TurretPos[3];
     GetEntPropVector(g_iPlayer[client].Turret, Prop_Send, "m_vecOrigin", TurretPos);
     int iTeam = GetTurretTeam(g_iPlayer[client].Turret); 
