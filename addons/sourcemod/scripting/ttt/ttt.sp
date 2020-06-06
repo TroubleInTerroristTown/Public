@@ -284,7 +284,7 @@ void CreateRoundTable()
 
         if (StrEqual(g_sDriver, "mysql", false))
         {
-            char sQuery[256];
+            char sQuery[512];
             g_dDB.Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_rounds` (`id` INT NOT NULL AUTO_INCREMENT, `start` INT NOT NULL, `end` INT DEFAULT 0, PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
             g_dDB.Query(SQL_CreateRoundTable, sQuery);
         }
@@ -310,7 +310,7 @@ void CreateLogTable()
 
         if (StrEqual(g_sDriver, "mysql", false))
         {
-            char sQuery[256];
+            char sQuery[512];
             g_dDB.Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt_logs` (`id` INT NOT NULL AUTO_INCREMENT, `roundid` INT NOT NULL, `time` INT NOT NULL, `map` VARCHAR(64) NOT NULL, `message` VARCHAR(%d) NOT NULL, PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;", TTT_LOG_SIZE);
             g_dDB.Query(SQL_CreateLogTable, sQuery);
         }
