@@ -54,7 +54,7 @@ jobs:
 
       - name: Compile 3rd party plugins
         run: |
-          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core"
+          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core" "vphysics_crash_fix"
           do
             echo -e "\nCompiling $plugin.sp..."
             spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
