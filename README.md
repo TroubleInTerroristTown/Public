@@ -11,5 +11,6 @@
 - [Credits](https://github.com/Bara/TroubleinTerroristTown/blob/master/CREDITS.md)
 
 ## For Mappers
-- [Traitor Tester](https://gamebanana.com/prefabs/7553)
-- [Traitor Doors](https://gamebanana.com/prefabs/7334)
+- [Traitor Tester](https://gamebanana.com/prefabs/7553) by [Damon/skillerzz](https://gamebanana.com/members/759591)
+- [Traitor Doors](https://gamebanana.com/prefabs/7334) by [Damon/skillerzz](https://gamebanana.com/members/759591)
+- [TTT Demo Maps](https://github.com/c0rp3n/ttt-demo-maps) by [c0rp3n](https://github.com/c0rp3n/)
