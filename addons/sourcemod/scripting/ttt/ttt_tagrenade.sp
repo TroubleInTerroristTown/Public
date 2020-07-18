@@ -4,16 +4,20 @@
 #include <sourcemod>
 #include <sdktools>
 #include <sdkhooks>
+#include <colorlib>
 #include <ttt>
-#include <ttt_glow>
 #include <ttt_shop>
 #include <ttt_inventory>
-#include <colorlib>
+
+#undef REQUIRE_PLUGIN
+#include <ttt_glow>
+#include <ttt_glow_light>
+
+#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
 #define SHORT_NAME "tagrenade"
 #define SHORT_NAME_T "tagrenade_t"
 #define SHORT_NAME_D "tagrenade_d"
-#define PLUGIN_NAME TTT_PLUGIN_NAME ... " - TA-Grenade"
 
 ConVar g_cDebug = null;
 ConVar g_cTPrice = null;
@@ -36,21 +40,10 @@ ConVar g_cCountDetectives = null;
 ConVar g_cRequiredPlayers = null;
 
 bool g_bGlow = false;
+bool g_bGlowLight = false;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[64];
-
-enum struct PlayerData {
-    int TraitorCount;
-    int DetectiveCount;
-
-    bool IsTagged;
-    bool SeePlayers;
-
-    float EndTime;
-}
-
-PlayerData g_iPlayer[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -89,12 +82,10 @@ public void OnPluginStart()
     g_cRequiredPlayers = AutoExecConfig_CreateConVar("tagrenade_detective_required_players", "4", "How much (valid incl. count convars) players must be in the proximity?");
     TTT_EndConfig();
 
-    HookEvent("player_spawn", Event_PlayerReset);
-    HookEvent("player_death", Event_PlayerReset);
-    HookEvent("round_end", Event_RoundReset);
     HookEvent("tagrenade_detonate", OnTagrenadeDetonate);
 
     g_bGlow = LibraryExists("ttt_glow");
+    g_bGlowLight = LibraryExists("ttt_glow_light");
 }
 
 public void OnPluginEnd()
@@ -117,6 +108,10 @@ public void OnLibraryAdded(const char[] name)
     {
         g_bGlow = true;
     }
+    else if(StrEqual(name, "ttt_glow_light"))
+    {
+        g_bGlowLight = true;
+    }
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -124,6 +119,10 @@ public void OnLibraryRemoved(const char[] name)
     if (StrEqual(name, "ttt_glow"))
     {
         g_bGlow = false;
+    }
+    else if(StrEqual(name, "ttt_glow_light"))
+    {
+        g_bGlowLight = false;
     }
 }
 
@@ -153,20 +152,24 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     g_cLongName.GetString(sBuffer, sizeof(sBuffer));
     
-    if (g_bGlow)
+    if (g_bGlow || g_bGlowLight)
     {
         TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
         TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
     }
     else
     {
-        if (!LibraryExists("ttt_glow"))
+        if (LibraryExists("ttt_glow"))
         {
-            SetFailState("TTT-Glow not loaded!");
+            g_bGlow = true;
+        }
+        else if(LibraryExists("ttt_glow_light"))
+        {
+            g_bGlowLight = true;
         }
         else
         {
-            g_bGlow = true;
+            SetFailState("Neither the TTT Glow or TTT Glow Light is not enabled.");
         }
     }
 }
@@ -176,29 +179,6 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     if (convar == g_cPluginTag)
     {
         g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
-    }
-}
-
-public void OnClientDisconnect(int client)
-{
-    ResetTAG(client);
-}
-
-public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadcast)
-{
-    int client = GetClientOfUserId(event.GetInt("userid"));
-
-    if (TTT_IsClientValid(client))
-    {
-        ResetTAG(client);
-    }
-}
-
-public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
-{
-    LoopValidClients(client)
-    {
-        ResetTAG(client);
     }
 }
 
@@ -228,21 +208,6 @@ public void OnTagrenadeDetonate(Event event, const char[] name, bool dontBroadca
     {
         TTT_AddItemUsage(client, SHORT_NAME);
         TTT_RemoveInventoryItem(client, SHORT_NAME);
-
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-        {
-            CreateTimer(g_cTagrenadeTime.FloatValue, Timer_ResetTags, userid);
-        }
-    }
-}
-
-public Action Timer_ResetTags(Handle timer, any userid)
-{
-    int client = GetClientOfUserId(userid);
-
-    if (TTT_IsClientValid(client))
-    {
-        g_iPlayer[client].SeePlayers = false;
     }
 }
 
@@ -270,15 +235,13 @@ public void Frame_OnGetTagrenadeTimes(DataPack pack)
     position[2] = pack.ReadFloat();
     delete pack;
 
-    if (role == TTT_TEAM_TRAITOR)
-    {
-        g_iPlayer[client].SeePlayers = true;
-    }
-
     int iInno = 0;
     int iTraitor = 0;
     int iDete = 0;
 
+    int targets[MAXPLAYERS + 1];
+    int target_count = 0;
+    
     LoopValidClients(target)
     {
         if (target < 1)
@@ -333,14 +296,16 @@ public void Frame_OnGetTagrenadeTimes(DataPack pack)
                 
                 if (TR_DidHit(trace) && TR_GetEntityIndex(trace) == target)
                 {
-                    g_iPlayer[target].EndTime = GetGameTime() + g_cTagrenadeTime.FloatValue;
+                    targets[target_count] = target;
+                    ++target_count;
                 }
                 
                 delete trace;
             }
             else
             {
-                g_iPlayer[target].EndTime = GetGameTime() + g_cTagrenadeTime.FloatValue;
+                targets[target_count] = target;
+                ++target_count;
             }
         }
         else if (role == TTT_TEAM_DETECTIVE)
@@ -364,7 +329,19 @@ public void Frame_OnGetTagrenadeTimes(DataPack pack)
             }
         }
     }
-    
+
+    if (role == TTT_TEAM_TRAITOR)
+    {
+        if (g_bGlowLight)
+        {
+            TTT_CanSeeClientsGlowLight(client, targets, target_count, g_cTagrenadeTime.FloatValue);
+        }
+        else
+        {
+            TTT_CanSeeClientsGlow(client, targets, target_count, g_cTagrenadeTime.FloatValue);   
+        }
+    }
+
     int iPlayers = 0;
     
     if (g_cCountInnocents.BoolValue)
@@ -384,8 +361,6 @@ public void Frame_OnGetTagrenadeTimes(DataPack pack)
     
     if (iPlayers >= g_cRequiredPlayers.IntValue && role == TTT_TEAM_DETECTIVE)
     {
-        CreateTimer(g_cTagrenadeTime.FloatValue + 1.0, Timer_DisableGlow);
-
         CPrintToChat(client, "%s %T", g_sPluginTag, "TAGrenade We Found", client);
         
         if (g_cCountInnocents.BoolValue)
@@ -405,21 +380,6 @@ public void Frame_OnGetTagrenadeTimes(DataPack pack)
     }
 }
 
-public Action Timer_DisableGlow(Handle timer)
-{
-    LoopValidClients(i)
-    {
-        if (g_iPlayer[i].SeePlayers)
-        {
-            // If anyone still has an active tagrenade
-            CreateTimer(g_cTagrenadeTime.FloatValue + 1.0, Timer_DisableGlow);
-            return Plugin_Stop;
-        }
-    }
-
-    return Plugin_Stop;
-}
-
 public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
 {
     if (entity == tagrenade)
@@ -427,27 +387,4 @@ public bool OnTraceForTagrenade(int entity, int contentsMask, any tagrenade)
         return false;
     }
     return true;
-}
-
-void ResetTAG(int client)
-{
-    g_iPlayer[client].TraitorCount = 0;
-    g_iPlayer[client].DetectiveCount = 0;
-    g_iPlayer[client].EndTime = 0.0;
-    g_iPlayer[client].IsTagged = false;
-    g_iPlayer[client].SeePlayers = false;
-}
-
-public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
-{
-    if (g_iPlayer[client].SeePlayers && TTT_IsItemInInventory(client, SHORT_NAME))
-    {
-        if (target > 0 && GetGameTime() < g_iPlayer[target].EndTime)
-        {
-            seeTarget = true;
-            return Plugin_Changed;
-        }
-    }
-    
-    return Plugin_Handled;
 }

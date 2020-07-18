@@ -49,7 +49,7 @@ public Plugin myinfo =
     author = "Bara",
     description = "",
     version = "1.0.0",
-    url = "github.com/Bara/TroubleinTerroristTown"
+    url = "github.com/TroubleInTerroristTown/Public"
 };
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)

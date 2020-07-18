@@ -17,13 +17,22 @@ ConVar g_cLogUse = null;
 ConVar g_cAddLogs = null;
 ConVar g_cLogFormat = null;
 ConVar g_cDistance = null;
+ConVar g_cDelay = null;
 
 ArrayList g_aButtonNames = null;
 ArrayList g_aButtons = null;
+ArrayList g_aSpam = null;
 
 bool g_bCustomKeyValues = false;
 
 bool g_bUse[MAXPLAYERS + 1] = { false, ... };
+
+char g_sFindEntities[][] =  {
+    "func_button",
+    "func_door",
+    "func_door_rotating",
+    "prop_door_rotating"
+};
 
 public Plugin myinfo =
 {
@@ -43,6 +52,7 @@ public void OnPluginStart()
     g_cDebug = AutoExecConfig_CreateConVar("traitor_secrets_debug", "0", "Enable debug mode?", _, true, 0.0, true, 1.0);
     g_cLogUse = AutoExecConfig_CreateConVar("traitor_secrets_log_use", "1", "Log use of traitor buttons?", _, true, 0.0, true, 1.0);
     g_cDistance = AutoExecConfig_CreateConVar("traitor_secrets_distance", "90.0", "Maximal distance from player to the button. 0 to disable it");
+    g_cDelay = AutoExecConfig_CreateConVar("traitor_secrets_spam_protection", "3", "After how many seconds should be a button logged again? (0 - Disabled)", _, true, 0.0);
     TTT_EndConfig();
 
     g_aButtons = new ArrayList();
@@ -106,6 +116,8 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
     char sName[64];
 
     HookEntityOutput("func_button", "OnPressed", ButtonPressed);
+    HookEntityOutput("func_breakable", "OnHealthChanged", OnDamage);
+    HookEntityOutput("func_breakable", "OnBreak", OnBreak);
 
     for (int i = MaxClients; i < GetMaxEntities(); i++)
     {
@@ -132,6 +144,9 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
     {
         g_bUse[i] = false;
     }
+
+    delete g_aSpam;
+    g_aSpam = new ArrayList();
 }
 
 public int TTT_OnButtonPress(int client, int button)
@@ -159,6 +174,95 @@ public void ButtonPressed(const char[] output, int caller, int activator, float 
     OnButtonPressed(activator, caller);
 }
 
+public void OnDamage(const char[] output, int entity, int client, float delay)
+{
+    OnLog(entity, client, "Damage");
+}
+
+public void OnBreak(const char[] output, int entity, int client, float delay)
+{
+    OnLog(entity, client, "Break");
+}
+
+void OnLog(int entity, int client, const char[] event)
+{
+    char sName[32];
+    GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
+
+    bool bSkip = false;
+
+    int iHammerID = GetEntProp(entity, Prop_Data, "m_iHammerID");
+
+    // This is just a workaround for maps with breakable stuff which should be logged
+    if (
+        iHammerID == 44443 || // ttt_damons_canyon_b2_2 + ttt_damons_canyon_b2_2_sg
+        iHammerID == 276512 || // ttt_community_pool_2017_v1_7
+        iHammerID == 110483 || // ttt_community_bowling_csgo_v3
+        iHammerID == 174076 // ttt_minecraftcity_sgfix_v9
+        )
+    {
+        bSkip = true;
+    }
+
+    if (!bSkip && StrContains(sName, "traitor", false) == -1)
+    {
+        return;
+    }
+
+    if (g_aSpam.FindValue(EntIndexToEntRef(entity)) == -1 && g_cLogUse != null && g_cLogUse.BoolValue)
+    {
+        char sClientID[32];
+
+        if (g_cAddLogs != null && g_cAddLogs.BoolValue)
+        {
+            if (g_cLogFormat.IntValue == 1)
+            {
+                GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 2)
+            {
+                GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 3)
+            {
+                GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+            }
+            else if (g_cLogFormat.IntValue == 4)
+            {
+                Format(sClientID, sizeof(sClientID), "%d", GetSteamAccountID(client));
+            }
+            
+            if (strlen(sClientID) > 2)
+            {
+                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+            }
+        }
+
+        if (strlen(sName) < 2)
+        {
+            GetEntityClassname(entity, sName, sizeof(sName));
+        }
+
+        char sRole[ROLE_LENGTH];
+        TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+
+        if (StrEqual(event, "Break", false))
+        {
+            TTT_LogString("-> [%N%s (%s) breaks the entity: %s]", client, sClientID, sRole, sName);
+        }
+        else
+        {
+            TTT_LogString("-> [%N%s (%s) damaged the entity: %s]", client, sClientID, sRole, sName);
+        }
+
+        if (g_cDelay.FloatValue > 0.0)
+        {
+            g_aSpam.Push(EntIndexToEntRef(entity));
+            CreateTimer(g_cDelay.FloatValue, Timer_ResetEntity, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
+        }
+    }
+}
+
 public void OnButtonPressed(int activator, int caller) 
 {
     if(TTT_GetClientRole(activator) == TTT_TEAM_TRAITOR)
@@ -166,37 +270,6 @@ public void OnButtonPressed(int activator, int caller)
         if(g_aButtons.FindValue(caller) !=  -1)
         {
             SetEntProp(caller, Prop_Data, "m_bLocked", 0, 1);
-
-            if (g_cLogUse != null && g_cLogUse.BoolValue)
-            {
-                char sClientID[32];
-
-                if (g_cAddLogs != null && g_cAddLogs.BoolValue)
-                {
-                    if (g_cLogFormat.IntValue == 1)
-                    {
-                        GetClientAuthId(activator, AuthId_Steam2, sClientID, sizeof(sClientID));
-                    }
-                    else if (g_cLogFormat.IntValue == 2)
-                    {
-                        GetClientAuthId(activator, AuthId_Steam3, sClientID, sizeof(sClientID));
-                    }
-                    else if (g_cLogFormat.IntValue == 3)
-                    {
-                        GetClientAuthId(activator, AuthId_SteamID64, sClientID, sizeof(sClientID));
-                    }
-                    
-                    if (strlen(sClientID) > 2)
-                    {
-                        Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
-                    }
-                }
-
-                char sName[64];
-                GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
-                
-                TTT_LogString("-> [%N%s (Traitor) used traitor secret: %s]", activator, sClientID, sName);
-            }
 
             CreateTimer(1.0, Timer_Button, caller);
         }
@@ -243,15 +316,14 @@ public bool TR_Callback(int entity, int client)
 
         if (g_cDistance.FloatValue > 0.0)
         {
-            float fEntityPos[3], fClientPos[3];
-            GetEntPropVector(entity, Prop_Data, "m_vecOrigin", fEntityPos);
+            float fClientPos[3];
             GetClientEyePosition(client, fClientPos);
 
-            if (GetVectorDistance(fEntityPos, fClientPos, false) > g_cDistance.FloatValue)
+            if (GetVectorDistance(fPos, fClientPos, false) > g_cDistance.FloatValue)
             {
                 if (g_cDebug.BoolValue)
                 {
-                    PrintToChat(client, "(%s) Distance: %f", sName, GetVectorDistance(fEntityPos, fClientPos, false));
+                    PrintToChat(client, "(%s) Distance: %f", sName, GetVectorDistance(fPos, fClientPos, false));
                     PrintToChat(client, "Name: %s, Position: X_%.3f, Y_%.3f, Z_%.3f", sName, fPos[0], fPos[1], fPos[2]);
                 }
 
@@ -290,6 +362,46 @@ public bool TR_Callback(int entity, int client)
             {
                 AcceptEntityInput(entity, "Open");
             }
+
+            if (g_aSpam.FindValue(EntIndexToEntRef(entity)) == -1 && g_cLogUse != null && g_cLogUse.BoolValue)
+            {
+                char sClientID[32];
+
+                if (g_cAddLogs != null && g_cAddLogs.BoolValue)
+                {
+                    if (g_cLogFormat.IntValue == 1)
+                    {
+                        GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
+                    }
+                    else if (g_cLogFormat.IntValue == 2)
+                    {
+                        GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
+                    }
+                    else if (g_cLogFormat.IntValue == 3)
+                    {
+                        GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                    }
+                    else if (g_cLogFormat.IntValue == 4)
+                    {
+                        Format(sClientID, sizeof(sClientID), "%d", GetSteamAccountID(client));
+                    }
+                    
+                    if (strlen(sClientID) > 2)
+                    {
+                        Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
+                    }
+                }
+
+                char sRole[ROLE_LENGTH];
+                TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+                TTT_LogString("-> [%N%s (%s) used traitor secret: %s]", client, sClientID, sRole, sName);
+
+                if (g_cDelay.FloatValue > 0.0)
+                {
+                    g_aSpam.Push(EntIndexToEntRef(entity));
+                    CreateTimer(g_cDelay.FloatValue, Timer_ResetEntity, EntIndexToEntRef(entity), TIMER_FLAG_NO_MAPCHANGE);
+                }
+            }
             
             AcceptEntityInput(entity, "Lock");
 
@@ -303,6 +415,18 @@ public bool TR_Callback(int entity, int client)
     }
 
     return true;
+}
+
+public Action Timer_ResetEntity(Handle timer, int ref)
+{
+    int iIndex = g_aSpam.FindValue(ref);
+
+    if (iIndex != -1)
+    {
+        g_aSpam.Erase(iIndex);
+    }
+
+    return Plugin_Stop;
 }
 
 public int OnLockedUse(const char[] output, int caller, int attacker, float data)
@@ -334,6 +458,10 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
             {
                 GetClientAuthId(attacker, AuthId_SteamID64, sClientID, sizeof(sClientID));
             }
+            else if (g_cLogFormat.IntValue == 4)
+            {
+                Format(sClientID, sizeof(sClientID), "%d", GetSteamAccountID(attacker));
+            }
             
             if (strlen(sClientID) > 2)
             {
@@ -344,7 +472,9 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
         char sName[64];
         GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
 
-        TTT_LogString("-> [%N%s (Traitor) opened a traitor secret: %s]", attacker, sClientID, sName);
+        char sRole[ROLE_LENGTH];
+        TTT_GetRoleNameByID(TTT_GetClientRole(attacker), sRole, sizeof(sRole));
+        TTT_LogString("-> [%N%s (%s) opened a traitor secret: %s]", attacker, sClientID, sRole, sName);
     }
 }
 
@@ -352,52 +482,22 @@ void LoadButtons()
 {
     g_aButtons.Clear();
 
-    char buffer[64];
+    char sName[64];
     int iEntity = -1;
-    //Search for buttons
-    while ((iEntity = FindEntityByClassname(iEntity, "func_button")) != -1) 
+
+    for (int i = 0; i < sizeof(g_sFindEntities); i++)
     {
-        GetEntPropString(iEntity, Prop_Data, "m_iName", buffer, sizeof(buffer));
-        if(g_aButtonNames.FindString(buffer) != -1)
+        while ((iEntity = FindEntityByClassname(iEntity, g_sFindEntities[i])) != -1) 
         {
-            SetEntProp(iEntity, Prop_Data, "m_bLocked", 1, 1);
-            g_aButtons.Push(iEntity);
-        }
-    }
-    
-    iEntity = -1;
-    
-    //Search for doors
-    while ((iEntity = FindEntityByClassname(iEntity, "func_door")) != -1) 
-    {
-        GetEntPropString(iEntity, Prop_Data, "m_iName", buffer, sizeof(buffer));
-        if(g_aButtonNames.FindString(buffer) != -1)
-        {
-            SetEntProp(iEntity, Prop_Data, "m_bLocked", 1, 1);
-            g_aButtons.Push(iEntity);
-        }
-    }
-    
-    //Search for func_door_rotating
-    while ((iEntity = FindEntityByClassname(iEntity, "func_door_rotating")) != -1) 
-    {
-        GetEntPropString(iEntity, Prop_Data, "m_iName", buffer, sizeof(buffer));
-        if(g_aButtonNames.FindString(buffer) != -1)
-        {
-            SetEntProp(iEntity, Prop_Data, "m_bLocked", 1, 1);
-            g_aButtons.Push(iEntity);
-        }
-    }
-    
-    iEntity = -1;
-    //Search for prop_door_rotating
-    while ((iEntity = FindEntityByClassname(iEntity, "prop_door_rotating")) != -1) 
-    {
-        GetEntPropString(iEntity, Prop_Data, "m_iName", buffer, sizeof(buffer));
-        if(g_aButtonNames.FindString(buffer) != -1)
-        {
-            SetEntProp(iEntity, Prop_Data, "m_bLocked", 1, 1);
-            g_aButtons.Push(iEntity);
+            GetEntPropString(iEntity, Prop_Data, "m_iName", sName, sizeof(sName));
+            if(g_aButtonNames.FindString(sName) != -1)
+            {
+                SetEntProp(iEntity, Prop_Data, "m_bLocked", 1, 1);
+                g_aButtons.Push(iEntity);
+
+                iEntity = -1;
+                sName[0] = '\0';
+            }
         }
     }
 }

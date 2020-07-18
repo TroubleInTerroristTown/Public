@@ -399,7 +399,9 @@ void checkDistanceFromStation(int client, int owner, int entity)
 
         if (g_iPlayer[owner].Type == Health)
         {
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Healing From", client, owner);
+            char sName[MAX_NAME_LENGTH];
+            TTT_GetClientName(owner, sName, sizeof(sName));
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Healing From", client, sName);
         }
 
         EmitSoundToClientAny(client, SND_WARNING);

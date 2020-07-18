@@ -70,7 +70,7 @@ jobs:
       - name: Disable optional plugins
         run: |
           mv $SCRIPTS_PATH/README.md $PLUGINS_PATH/disabled
-          mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
+          mv $PLUGINS_PATH/ttt/ttt_{discord,dronescameras,futuristicgrenades,glow_light,parachute,tactical_shield}.smx $PLUGINS_PATH/disabled
 
       - name: Move folders (addons, materials, models, particles, sound) to build
         run: |
@@ -87,40 +87,52 @@ jobs:
           rm -rf addons/sourcemod/scripting
           rm -rf addons/sourcemod/configs/{*.cfg,*.ini}
         working-directory: ./build
+      
+      - name: Rename build to build-linux and copy for build-windows
+        run: |
+          mv build build-linux
+          cp -r build-linux build-windows
 
-      - name: Download SteamWorks and DHooks
+      - name: Download DHooks, SMJansson and SteamWorks
         run: |
           wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
           wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
           curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=181953&d=1591738802" -o dhooks.zip
+          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=133799&d=1400973546" -o smjansson.zip
 
-      - name: Unpacking SteamWorks and DHooks
+      - name: Unpacking DHooks, SMJansson and SteamWorks
         run: |
           tar xfv steamworks_linux.tar.gz
           unzip -o steamworks_windows.zip
           unzip dhooks.zip
+          unzip smjansson.zip
       
-      - name: Move SteamWorks and DHooks files
+      - name: Move DHooks, SMJansson and SteamWorks files
         run: |
-          mkdir -p build/addons/sourcemod/extensions/
-          cp addons/sourcemod/extensions/SteamWorks.ext.so build/addons/sourcemod/extensions/
-          cp addons/sourcemod/extensions/SteamWorks.ext.dll build/addons/sourcemod/extensions/
-          cp addons/sourcemod/extensions/dhooks.ext.so build/addons/sourcemod/extensions/
-          cp addons/sourcemod/extensions/dhooks.ext.dll build/addons/sourcemod/extensions/
+          mkdir -p build-{windows,linux}/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/SteamWorks.ext.so build-linux/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/SteamWorks.ext.dll build-windows/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/dhooks.ext.so build-linux/addons/sourcemod/extensions/
+          cp addons/sourcemod/extensions/dhooks.ext.dll build-windows/addons/sourcemod/extensions/
+          cp smjansson.ext.so build-linux/addons/sourcemod/extensions/
+          cp smjansson.ext.dll build-windows/addons/sourcemod/extensions/
 
       - name: Compress package
-        run: zip -9rq TTT.${{ env.PLUGIN_VERSION }}.zip addons materials models particles sound CREDITS.md LICENSE CVARS.txt adminmenu_custom.txt
-        working-directory: ./build
+        run: |
+          zip -9rq TTT.Linux.${{ env.PLUGIN_VERSION }}.zip build-linux/*
+          zip -9rq TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
 
       - name: Upload package
-        run: curl -T TTT.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
-        working-directory: ./build
+        run: |
+          curl -T TTT.Linux.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
+          curl -T TTT.Windows.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
       
       - name: Upload latest package
         run: |
-          mv TTT.${{ env.PLUGIN_VERSION }}.zip TTT.latest.${{ matrix.SM_VERSION }}.zip
-          curl -T TTT.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
-        working-directory: ./build
+          mv TTT.Linux.${{ env.PLUGIN_VERSION }}.zip TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
+          mv TTT.Windows.${{ env.PLUGIN_VERSION }}.zip TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
+          curl -T TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
+          curl -T TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
 
       - name: Update version
         run: |

@@ -66,9 +66,9 @@ static void GetMembers(Handle hData) {
 	
 	char url[256];
 	if(StrEqual(afterID, "")) {
-		FormatEx(url, sizeof(url), "https://discordapp.com/api/guilds/%s/members?limit=%i", guild, limit);
+		FormatEx(url, sizeof(url), "https://discord.com/api/guilds/%s/members?limit=%i", guild, limit);
 	}else {
-		FormatEx(url, sizeof(url), "https://discordapp.com/api/guilds/%s/members?limit=%i&afterID=%s", guild, limit, afterID);
+		FormatEx(url, sizeof(url), "https://discord.com/api/guilds/%s/members?limit=%i&afterID=%s", guild, limit, afterID);
 	}
 	
 	char route[128];

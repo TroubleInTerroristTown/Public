@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <ttt_shop>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_inventory>
 #include <ttt_grabbermod>
 #include <colorlib>
@@ -214,7 +215,7 @@ public Action TTT_OnGrabbing(int client, int entity)
             return Plugin_Continue;
         }
 
-        if (g_cLineOfSight.BoolValue && !TTT_IsTargetInSight(client, entity, g_cReviveDistance.FloatValue))
+        if (g_cLineOfSight.BoolValue && !TTT_TargetInSightOfClient(client, entity, g_cReviveDistance.FloatValue))
         {
             return Plugin_Continue;
         }
@@ -244,8 +245,10 @@ public Action TTT_OnGrabbing(int client, int entity)
             pack.WriteCell(EntIndexToEntRef(entity));
 
             g_iPlayer[client].StartTime = GetTime();
-            char sMessage[MAX_NAME_LENGTH + 16];
-            Format(sMessage, sizeof(sMessage), "Reviving %N...", target);
+            
+            char sMessage[MAX_NAME_LENGTH + 32], sPlayerName[MAX_NAME_LENGTH];
+            TTT_GetClientName(target, sPlayerName, sizeof(sPlayerName));
+            Format(sMessage, sizeof(sMessage), "Reviving %s...", sPlayerName);
 
             if (iRole == TTT_TEAM_TRAITOR)
             {
@@ -261,8 +264,13 @@ public Action TTT_OnGrabbing(int client, int entity)
             if (g_iPlayer[client].LastMessage == -1 || ((g_iPlayer[client].LastMessage + g_cTimeToNextMessage.IntValue) < GetTime()))
             {
                 g_iPlayer[client].LastMessage = GetTime();
-                CPrintToChat(target, "%s %T", g_sPluginTag, "Revive: Before to Target", target, client, g_iPlayer[client].Countdown);
-                CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Before to Player", client, target);
+
+                char sClientName[MAX_NAME_LENGTH], sTargetName[MAX_NAME_LENGTH];
+                TTT_GetClientName(client, sClientName, sizeof(sClientName));
+                TTT_GetClientName(target, sTargetName, sizeof(sTargetName));
+
+                CPrintToChat(target, "%s %T", g_sPluginTag, "Revive: Before to Target", target, sClientName, g_iPlayer[client].Countdown);
+                CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Before to Player", client, sTargetName);
             }
             
             TTT_ShowProgressbar(client, g_hSyncB, g_hSyncT, g_iPlayer[client].StartTime, g_iPlayer[client].EndTime, sMessage);
@@ -349,7 +357,7 @@ public Action Timer_Revive(Handle timer, DataPack pack)
         return Plugin_Stop;
     }
 
-    if (g_cLineOfSight.BoolValue && !TTT_IsTargetInSight(client, entity))
+    if (g_cLineOfSight.BoolValue && !TTT_TargetInSightOfClient(client, entity))
     {
         g_iPlayer[client].Timer = null;
         delete pack;
@@ -379,8 +387,9 @@ public Action Timer_Revive(Handle timer, DataPack pack)
         return Plugin_Stop;
     }
 
-    char sMessage[MAX_NAME_LENGTH + 32];
-    Format(sMessage, sizeof(sMessage), "Reviving %N...", target);
+    char sMessage[MAX_NAME_LENGTH + 32], sPlayerName[MAX_NAME_LENGTH];
+    TTT_GetClientName(target, sPlayerName, sizeof(sPlayerName));
+    Format(sMessage, sizeof(sMessage), "Reviving %s...", sPlayerName);
 
     if (g_iPlayer[client].Countdown == 0)
     {
@@ -422,10 +431,13 @@ void ShowReviveMenu(int client, int target)
     g_iPlayer[client].Wait = true;
     g_iPlayer[target].Menu = true;
 
-    CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Waiting of accepting", client, target);
+    char sClientName[MAX_NAME_LENGTH], sTargetName[MAX_NAME_LENGTH];
+    TTT_GetClientName(client, sClientName, sizeof(sClientName));
+    TTT_GetClientName(target, sTargetName, sizeof(sTargetName));
+    CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Waiting of accepting", client, sTargetName);
 
     Menu menu = new Menu(Menu_ReviveRequest);
-    menu.SetTitle("%T", "Revive: Menu - Title", target, client, g_cTimeToAccept.IntValue);
+    menu.SetTitle("%T", "Revive: Menu - Title", target, sClientName, g_cTimeToAccept.IntValue);
     char sBuffer[32];
     Format(sBuffer, sizeof(sBuffer), "%T", "Revive: Menu - Yes", target);
     menu.AddItem("yes", sBuffer);
@@ -486,7 +498,9 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
         }
         else if (StrEqual(sParam, "no", false))
         {
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Declined", client, target);
+            char sName[MAX_NAME_LENGTH];
+            TTT_GetClientName(target, sName, sizeof(sName));
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Declined", client, sName);
         }
 
         g_iPlayer[client].Wait = false;
@@ -511,7 +525,9 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
         if (TTT_IsClientValid(client))
         {
             g_iPlayer[client].Wait = false;
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - No response", client, target);
+            char sName[MAX_NAME_LENGTH];
+            TTT_GetClientName(target, sName, sizeof(sName));
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - No response", client, sName);
         }
         
         g_iPlayer[target].Menu = false;
@@ -599,7 +615,9 @@ bool CheckDistance(int client, int entity)
 
 void RevivePlayer(int client, int target)
 {
-    CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Accepted", client, target);
+    char sName[MAX_NAME_LENGTH];
+    TTT_GetClientName(target, sName, sizeof(sName));
+    CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Accepted", client, sName);
     TTT_RespawnPlayer(target);
 
     int iRole = TTT_GetClientRole(client);

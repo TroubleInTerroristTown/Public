@@ -447,7 +447,7 @@ void RegisterItem()
     {
         TTT_RegisterShopItem(BUMPMINE_T_ITEM_SHORT, sBuffer, g_cBumpmine_Price.IntValue, TTT_TEAM_TRAITOR, g_cBumpmine_Prio.IntValue, g_cBumpmine_Count.IntValue, g_cBumpmine_Limit.IntValue, OnItemPurchased);
     }
-     
+
     g_cUSP_Long.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterShopItem(USP_ITEM_SHORT, sBuffer, g_cUSP_Price.IntValue, TTT_TEAM_TRAITOR, g_cUSP_Prio.IntValue, g_cUSP_Count.IntValue, g_cUSP_Limit.IntValue, OnItemPurchased);
 

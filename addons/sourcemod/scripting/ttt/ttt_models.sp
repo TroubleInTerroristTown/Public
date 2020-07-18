@@ -58,7 +58,7 @@ public void OnMapStart()
     
     if (!kvConfig.ImportFromFile(sFile))
     {
-    	delete kvConfig;
+        delete kvConfig;
         SetFailState("[TTT-Models] Something went wrong with: \"%s\"", sFile);
         return;
     }
@@ -69,16 +69,15 @@ public void OnMapStart()
     if (kvConfig.JumpToKey("Models"))
     {
         g_bEnable = view_as<bool>(kvConfig.GetNum("Enable", 0));
+        g_bEnableArms = view_as<bool>(kvConfig.GetNum("EnableArms", 0));
+        g_iDCount = kvConfig.GetNum("DModelCount", 1);
+        g_iITCount = kvConfig.GetNum("ITModelCount", 1);
 
         if (!g_bEnable)
         {
             delete kvConfig;
             return;
         }
-        
-        g_bEnableArms = view_as<bool>(kvConfig.GetNum("EnableArms", 0));
-        g_iDCount = kvConfig.GetNum("DModelCount", 0);
-        g_iITCount = kvConfig.GetNum("ITModelCount", 0);
 
         if (g_iDCount > 0)
         {
@@ -112,7 +111,7 @@ public void OnMapStart()
 
                                 if (g_bDebug)
                                 {
-                                    LogToFile(g_sLog, "(OnMapStart) %s sFileName: %s", sName, sFileName);
+                                    LogToFile(g_sLog, "(OnMapStart) sFileName: %s", sFileName);
                                 }
 
                                 if (!g_bEnableArms && IsArms(sFileName))
@@ -479,7 +478,9 @@ void SetModel(int client, int role)
 
         if (g_bDebug)
         {
-            LogToFile(g_sLog, "Player Model: %N (Detective), Model: (%d) %s", client, model, sFileName);
+            char sPlayerName[MAX_NAME_LENGTH];
+            TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
+            LogToFile(g_sLog, "Player Model: %s (Detective), Model: (%d) %s", sPlayerName, model, sFileName);
         }
         
         if (g_bEnableArms)
@@ -492,7 +493,9 @@ void SetModel(int client, int role)
 
             if (g_bDebug)
             {
-                LogToFile(g_sLog, "Player Arms: %N (Detective), Arms: (%d) %s", client, model, sFileName);
+                char sPlayerName[MAX_NAME_LENGTH];
+                TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
+                LogToFile(g_sLog, "Player Arms: %s (Detective), Arms: (%d) %s", sPlayerName, model, sFileName);
             }
         }
     }
@@ -510,7 +513,9 @@ void SetModel(int client, int role)
 
         if (g_bDebug)
         {
-            LogToFile(g_sLog, "Player Model: %N (%s), Model: (%d) %s", client, sRole, model, sFileName);
+            char sPlayerName[MAX_NAME_LENGTH];
+            TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
+            LogToFile(g_sLog, "Player Model: %s (%s), Model: (%d) %s", sPlayerName, sRole, model, sFileName);
         }
 
         if (g_bEnableArms)
@@ -523,7 +528,9 @@ void SetModel(int client, int role)
 
             if (g_bDebug)
             {
-                LogToFile(g_sLog, "Player Arms: %N (%s), Arms: (%d) %s", client, sRole, model, sFileName);
+                char sPlayerName[MAX_NAME_LENGTH];
+                TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
+                LogToFile(g_sLog, "Player Arms: %s (%s), Arms: (%d) %s", sPlayerName, sRole, model, sFileName);
             }
         }
     }

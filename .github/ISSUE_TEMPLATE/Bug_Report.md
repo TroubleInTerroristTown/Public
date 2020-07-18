@@ -13,12 +13,12 @@ Please provide us some details and specifications of the server you've encounter
 - **SourceMod Version (sm version):** your version here
 - **TTT Version (sm_tttversion):** your version here
 
-If you're also running any extensions, please list them below:
+If you're also running any extensions, please list (**sm exts list**) them below:
 ```
 Your extensions here.
 ```
 
-If you're also running any other plugins, please list them below:
+If you're also running any other plugins, please list (**sm plugins list**) them below:
 ```
 Your plugins here.
 ```
@@ -27,6 +27,12 @@ Your plugins here.
 Please provide us with the SourceMod logs located under `addons/sourcemod/logs/error_*.log` that show us the issue. If your issue does not produce error logs, let us know.
 ```
 Your logs here.
+```
+
+## On Server Crash
+Please provide us the latest accelerator crash id/url located under `addons/sourcemod/logs/accelerator.log`.
+```
+Your crash id/url
 ```
 
 ## Steps to Reproduce:

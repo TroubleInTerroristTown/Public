@@ -115,6 +115,7 @@ forward void TTT_OnItemRemove(const char[] itemshort);
  * @param role              The optional role to restrict the item to. (Default: 0 - for all)
  * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
  * @param maxUsages         Max usages for this items per round. ( 0 - Disabled )
+ * @param limit             The amount of purchases for all players during a round. ( 0 - Disabled )
  * @param callback          A local function pointer to be called when the registered item is purchased.
  */
 native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback);

@@ -132,7 +132,7 @@ public Action Command_ID(int client, int args)
     }
 
     char sName[MAX_NAME_LENGTH];
-    if (!GetClientName(client, sName, sizeof(sName)))
+    if (!TTT_GetClientName(client, sName, sizeof(sName)))
     {
         return Plugin_Handled;
     }

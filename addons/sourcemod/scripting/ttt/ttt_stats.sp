@@ -2,8 +2,9 @@
 
 #include <sourcemod>
 #include <ttt>
-#include <ttt_shop>
 #include <ttt_sql>
+#include <ttt_bodies>
+#include <ttt_shop>
 
 #pragma newdecls required
 
@@ -156,7 +157,10 @@ public Action Command_Stats(int client, int args)
 void ShowPlayerStats(int client, int target)
 {
     Menu menu = new Menu(Menu_ShowPlayerStats);
-    menu.SetTitle("Player Statistics for %N", target);
+    
+    char sName[MAX_NAME_LENGTH];
+    TTT_GetClientName(target, sName, sizeof(sName));
+    menu.SetTitle("Player Statistics for %s", sName);
 
     char sBuffer[64];
     Format(sBuffer, sizeof(sBuffer), "Rounds Played: %d", g_iPlayer[target].RoundsPlayed);
@@ -266,9 +270,9 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
     LoopValidClients(i)
     {
-    	if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_INNOCENT || TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
-    	{
-        	g_iPlayer[i].InRound = true;
+        if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_INNOCENT || TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+        {
+            g_iPlayer[i].InRound = true;
         }
     }
 }
@@ -373,7 +377,7 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
     }
 }
 
-public void TTT_OnBodyFound(int attacker, int victim, int entityref, bool silentID)
+public void TTT_OnBodyFound(int attacker, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
 {
     if (!g_bValidRound)
     {

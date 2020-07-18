@@ -4,10 +4,10 @@
 #define _ttt_stock_included
 
 #define TTT_PLUGIN_NAME "Trouble in Terrorist Town"
-#define TTT_PLUGIN_AUTHOR "TTT-Contributors"
+#define TTT_PLUGIN_AUTHOR "TTT Contributors"
 #define TTT_PLUGIN_DESCRIPTION "The game is about a group of \"terrorists\" who have traitors among them, out to kill everyone who's not a traitor."
 #define TTT_PLUGIN_VERSION "<VERSION>"
-#define TTT_PLUGIN_URL "https://github.com/Bara/TroubleinTerroristTown"
+#define TTT_PLUGIN_URL "https://github.com/TroubleInTerroristTown/Public"
 
 #include <autoexecconfig>
 

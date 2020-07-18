@@ -224,7 +224,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
     }
     else if (iRole == TTT_TEAM_DETECTIVE)
@@ -241,7 +241,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
             }
             else
             {
-                GetClientName(target, sPlayerName, iPlayerNameLength);
+                TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
             }
         }
         else if (iTRole == TTT_TEAM_DETECTIVE)
@@ -256,12 +256,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
             }
             else
             {
-                GetClientName(target, sPlayerName, iPlayerNameLength);
+                TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
             }
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
     }
     else if (iRole == TTT_TEAM_INNOCENT)
@@ -278,7 +278,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
             }
             else
             {
-                GetClientName(target, sPlayerName, iPlayerNameLength);
+                TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
             }
         }
         else if (iTRole == TTT_TEAM_DETECTIVE)
@@ -293,12 +293,12 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
             }
             else
             {
-                GetClientName(target, sPlayerName, iPlayerNameLength);
+                TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
             }
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
     }
     else if (iRole == TTT_TEAM_UNASSIGNED)
@@ -309,7 +309,7 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         
         if (iTRole == TTT_TEAM_TRAITOR)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
         else if (iTRole == TTT_TEAM_DETECTIVE)
         {
@@ -317,11 +317,11 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
         }
         else if (iTRole == TTT_TEAM_INNOCENT)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
         else if (iTRole == TTT_TEAM_UNASSIGNED)
         {
-            GetClientName(target, sPlayerName, iPlayerNameLength);
+            TTT_GetClientName(target, sPlayerName, iPlayerNameLength);
         }
     }
 

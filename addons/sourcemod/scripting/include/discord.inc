@@ -93,7 +93,7 @@ methodmap RoleList < Handle {
     "discriminator": "1337",
     "avatar": "8342729096ea3675442027381ff50dfe",
     "verified": true,
-    "email": "nelly@discordapp.com"
+    "email": "nelly@discord.com"
 }
  */
 //It's a JSON Handle with the above info TODO stop using natives!

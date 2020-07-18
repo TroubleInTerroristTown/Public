@@ -5,10 +5,13 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <ttt>
-#include <ttt_glow>
 #include <ttt_shop>
 #include <ttt_inventory>
 #include <colorlib>
+
+#undef REQUIRE_PLUGIN
+#include <ttt_glow>
+#include <ttt_glow_light>
 
 #define SHORT_NAME_T "wallhack_t"
 #define SHORT_NAME_D "wallhack_d"
@@ -37,6 +40,7 @@ ConVar g_cTCount = null;
 ConVar g_cDCount = null;
 
 bool g_bGlow = false;
+bool g_bGlowLight = false;
 
 enum struct PlayerData {
     bool HasWH;
@@ -61,25 +65,25 @@ public void OnPluginStart()
 
     TTT_StartConfig("wallhack");
     CreateConVar("ttt2_wallhack_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cLongName = AutoExecConfig_CreateConVar("wh_name", "Wallhack", "The name of the Wallhack in the Shop");
-    g_cTraitorPrice = AutoExecConfig_CreateConVar("wh_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
-    g_cTraitorLimit = AutoExecConfig_CreateConVar("wh_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
-    g_cDetectivePrice = AutoExecConfig_CreateConVar("wh_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.");
-    g_cDetectiveLimit = AutoExecConfig_CreateConVar("wh_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
-    g_cTraitorCooldown = AutoExecConfig_CreateConVar("wh_traitor_cooldown", "15.0", "Time of the cooldown for Traitor-Wallhack (time in seconds)");
-    g_cDetectiveCooldown = AutoExecConfig_CreateConVar("wh_detective_cooldown", "15.0", "Time of the cooldown for Dective-Wallhack (time in seconds)");
-    g_cTraitorActive = AutoExecConfig_CreateConVar("wh_traitor_active", "3.0", "Active time for Traitor-Wallhack (time in seconds)");
-    g_cDetectiveActive = AutoExecConfig_CreateConVar("wh_detective_active", "3.0", "Active time for Dective-Wallhack (time in seconds)");
-    g_cTraitor_Prio = AutoExecConfig_CreateConVar("wh_traitor_sort_prio", "0", "The sorting priority of the Traitor - Wallhack in the shop menu.");
-    g_cDetective_Prio = AutoExecConfig_CreateConVar("wh_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
-    g_cColorsT = AutoExecConfig_CreateConVar("wh_show_roles_traitor", "1", "Show glows as role colors for traitors?", _, true, 0.0, true, 1.0);
-    g_cColorsD = AutoExecConfig_CreateConVar("wh_show_roles_detective", "0", "Show glows as role colors for detectives?", _, true, 0.0, true, 1.0);
-    g_cDefaultRed = AutoExecConfig_CreateConVar("wh_default_color_red", "255", "Red color of default glow");
-    g_cDefaultGreen = AutoExecConfig_CreateConVar("wh_default_color_green", "255", "Green color of default glow");
-    g_cDefaultBlue = AutoExecConfig_CreateConVar("wh_default_color_blue", "255", "Blue color of default glow");
-    g_cDefaultAlpha = AutoExecConfig_CreateConVar("wh_default_color_alpha", "255", "Alpha of default glow");
-    g_cTCount = AutoExecConfig_CreateConVar("wh_count_traitor", "1", "Amount of wh purchases per round for traitor");
-    g_cDCount = AutoExecConfig_CreateConVar("wh_count_detective", "1", "Amount of wh purchases per round for detectives");
+    g_cLongName = AutoExecConfig_CreateConVar("wallhack_name", "Wallhack", "The name of the Wallhack in the Shop");
+    g_cTraitorPrice = AutoExecConfig_CreateConVar("wallhack_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
+    g_cTraitorLimit = AutoExecConfig_CreateConVar("wallhack_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cDetectivePrice = AutoExecConfig_CreateConVar("wallhack_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.\nBy using detective wallhack it will produce some irritation with white glows, when \"wallhack_show_roles_detective\" is 0.");
+    g_cDetectiveLimit = AutoExecConfig_CreateConVar("wallhack_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
+    g_cTraitorCooldown = AutoExecConfig_CreateConVar("wallhack_traitor_cooldown", "15.0", "Time of the cooldown for Traitor-Wallhack (time in seconds)");
+    g_cDetectiveCooldown = AutoExecConfig_CreateConVar("wallhack_detective_cooldown", "15.0", "Time of the cooldown for Dective-Wallhack (time in seconds)");
+    g_cTraitorActive = AutoExecConfig_CreateConVar("wallhack_traitor_active", "3.0", "Active time for Traitor-Wallhack (time in seconds)");
+    g_cDetectiveActive = AutoExecConfig_CreateConVar("wallhack_detective_active", "3.0", "Active time for Dective-Wallhack (time in seconds)");
+    g_cTraitor_Prio = AutoExecConfig_CreateConVar("wallhack_traitor_sort_prio", "0", "The sorting priority of the Traitor - Wallhack in the shop menu.");
+    g_cDetective_Prio = AutoExecConfig_CreateConVar("wallhack_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
+    g_cColorsT = AutoExecConfig_CreateConVar("wallhack_show_roles_traitor", "1", "Show glows as role colors for traitors?\nAttention: If you set this to 0, it cause into some issues with missing role glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
+    g_cColorsD = AutoExecConfig_CreateConVar("wallhack_show_roles_detective", "0", "Show glows as role colors for detectives?\nAttention: If you set this to 0, it cause into some issues with missing role glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
+    g_cDefaultRed = AutoExecConfig_CreateConVar("wallhack_default_color_red", "255", "Red color of default glow");
+    g_cDefaultGreen = AutoExecConfig_CreateConVar("wallhack_default_color_green", "255", "Green color of default glow");
+    g_cDefaultBlue = AutoExecConfig_CreateConVar("wallhack_default_color_blue", "255", "Blue color of default glow");
+    g_cDefaultAlpha = AutoExecConfig_CreateConVar("wallhack_default_color_alpha", "255", "Alpha of default glow");
+    g_cTCount = AutoExecConfig_CreateConVar("wallhack_count_traitor", "1", "Amount of wh purchases per round for traitor");
+    g_cDCount = AutoExecConfig_CreateConVar("wallhack_count_detective", "1", "Amount of wh purchases per round for detectives");
     TTT_EndConfig();
     
     HookEvent("player_spawn", Event_PlayerReset);
@@ -87,6 +91,7 @@ public void OnPluginStart()
     HookEvent("round_end", Event_RoundReset);
 
     g_bGlow = LibraryExists("ttt_glow");
+    g_bGlowLight = LibraryExists("ttt_glow_light");
 }
 
 public void OnPluginEnd()
@@ -114,6 +119,10 @@ public void OnLibraryAdded(const char[] name)
     {
         g_bGlow = true;
     }
+    else if(StrEqual(name, "ttt_glow_light"))
+    {
+        g_bGlowLight = true;
+    }
 }
 
 public void OnLibraryRemoved(const char[] name)
@@ -121,6 +130,10 @@ public void OnLibraryRemoved(const char[] name)
     if (StrEqual(name, "ttt_glow"))
     {
         g_bGlow = false;
+    }
+    else if(StrEqual(name, "ttt_glow_light"))
+    {
+        g_bGlowLight = false;
     }
 }
 
@@ -131,7 +144,7 @@ public void TTT_OnShopReady()
 
 void RegisterItem()
 {
-    if (g_bGlow)
+    if (g_bGlow || g_bGlowLight)
     {
         char sBuffer[MAX_ITEM_LENGTH];
         g_cLongName.GetString(sBuffer, sizeof(sBuffer));
@@ -140,13 +153,17 @@ void RegisterItem()
     }
     else
     {
-        if (!LibraryExists("ttt_glow"))
+        if (LibraryExists("ttt_glow"))
         {
-            SetFailState("TTT-Glow not loaded!");
+            g_bGlow = true;
+        }
+        else if(LibraryExists("ttt_glow_light"))
+        {
+            g_bGlowLight = true;
         }
         else
         {
-            g_bGlow = true;
+            SetFailState("Neither the TTT Glow or TTT Glow Light is not enabled.");
         }
     }
 }
@@ -180,16 +197,8 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 
     g_iPlayer[client].HasWH = true;
     TTT_AddInventoryItem(client, itemshort);
-
-    if (role == TTT_TEAM_TRAITOR)
-    {
-        g_iPlayer[client].Timer = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-    }
-    else if (role == TTT_TEAM_DETECTIVE)
-    {
-        g_iPlayer[client].Timer = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-    }
     
+    GlowPlayers(client, role);
     return Plugin_Continue;
 }
 
@@ -223,57 +232,51 @@ public Action Timer_WHCooldown(Handle timer, any userid)
     {
         g_iPlayer[client].HasWH = true;
         g_iPlayer[client].Timer = null;
-
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
-        {
-            g_iPlayer[client].Timer = CreateTimer(g_cTraitorActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-        }
-        else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
-        {
-            g_iPlayer[client].Timer = CreateTimer(g_cDetectiveActive.FloatValue, Timer_WHActive, GetClientUserId(client));
-        }
+        
+        GlowPlayers(client, TTT_GetClientRole(client));
     }
 
     return Plugin_Stop;
 }
 
-public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget, bool &overrideColor, int &red, int &green, int &blue, int &alpha)
+void GlowPlayers(int client, int role)
 {
-    if (TTT_GetRoundStatus() != Round_Active)
+    if (role != TTT_TEAM_TRAITOR && role != TTT_TEAM_DETECTIVE)
     {
-        return Plugin_Handled;
+        return;
     }
 
-    if (g_iPlayer[client].HasWH && (TTT_IsItemInInventory(client, SHORT_NAME_D) || TTT_IsItemInInventory(client, SHORT_NAME_T)))
+    float fTime = role == TTT_TEAM_TRAITOR ? g_cTraitorActive.FloatValue : g_cDetectiveActive.FloatValue;
+
+    g_iPlayer[client].Timer = CreateTimer(fTime, Timer_WHActive, GetClientUserId(client));
+
+    if ((role == TTT_TEAM_TRAITOR && !g_cColorsT.BoolValue) || (role == TTT_TEAM_DETECTIVE && !g_cColorsD.BoolValue))
     {
-        int role = TTT_GetClientRole(client);
-        
-        if (role == TTT_TEAM_TRAITOR)
+        int iColor[4];
+        iColor[0] = g_cDefaultRed.IntValue;
+        iColor[1] = g_cDefaultGreen.IntValue;
+        iColor[2] = g_cDefaultBlue.IntValue;
+        iColor[3] = g_cDefaultAlpha.IntValue;
+
+        LoopValidClients(i)
         {
-            if (!g_cColorsT.BoolValue)
+            if (g_bGlowLight)
             {
-                overrideColor = true;
-                red = g_cDefaultRed.IntValue;
-                green = g_cDefaultGreen.IntValue;
-                blue = g_cDefaultBlue.IntValue;
-                alpha = g_cDefaultAlpha.IntValue;
+                TTT_SetGlowColorLight(i, iColor, fTime);
+            }
+            else if (g_bGlow)
+            {
+                TTT_SetGlowColor(i, iColor, fTime);
             }
         }
-        else if (role == TTT_TEAM_DETECTIVE)
-        {
-            if (!g_cColorsD.BoolValue)
-            {
-                overrideColor = true;
-                red = g_cDefaultRed.IntValue;
-                green = g_cDefaultGreen.IntValue;
-                blue = g_cDefaultBlue.IntValue;
-                alpha = g_cDefaultAlpha.IntValue;
-            }
-        }
-        
-        seeTarget = true;
-        return Plugin_Changed;
     }
-    
-    return Plugin_Handled;
+
+    if (g_bGlowLight)
+    {
+        TTT_CanSeeAllGlowLight(client, fTime);
+    }
+    else if (g_bGlow)
+    {
+        TTT_CanSeeAllGlow(client, fTime);
+    }
 }

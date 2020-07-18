@@ -40,6 +40,27 @@ public void SQL_AlterRSlaysColumn(Database db, DBResultSet results, const char[]
     }
 }
 
+public void SQL_AlterNameColumn(Database db, DBResultSet results, const char[] error, any data)
+{
+    if (db == null || strlen(error) > 0)
+    {
+        if (StrContains(error, "duplicate column name", false) != -1)
+        {
+            LateLoadClients(false);
+        }
+        else
+        {
+            LogError("(SQL_AlterRSlaysColumn) Query failed: %s", error);
+        }
+        
+        return;
+    }
+    else
+    {
+        LateLoadClients(false);
+    }
+}
+
 public void SQL_CreateRoundTable(Database db, DBResultSet results, const char[] error, any data)
 {
     if (db == null || strlen(error) > 0)
@@ -111,10 +132,16 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
             if ((!g_cpublicKarma.BoolValue) && g_ckarmaRound.BoolValue)
             {
                 g_iPlayer[i].KarmaStart = g_iPlayer[i].Karma;
-                CPrintToChat(i, "%s %T", g_sTag, "All karma has been updated", i);
+                if(g_ckarmaRoundMessage.BoolValue)
+                {
+                    CPrintToChat(i, "%s %T", g_sTag, "All karma has been updated", i);
+                }
             }
 
-            CPrintToChat(i, "%s %T", g_sTag, "TEAMS HAS BEEN SELECTED", i);
+            if(g_cShowTeamsSelectedMessage.BoolValue)
+            {
+                CPrintToChat(i, "%s %T", g_sTag, "TEAMS HAS BEEN SELECTED", i);
+            }
 
             if (g_iPlayer[i].Role != TTT_TEAM_TRAITOR)
             {
@@ -142,7 +169,7 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
                             bSend = true;
                         }
 
-                        CPrintToChat(i, "%s %T", g_sTag, "Traitor List", i, iTraitor);
+                        CPrintToChat(i, "%s %T", g_sTag, "Traitor List", i, g_iPlayer[iTraitor].Name);
                         iCount++;
                     }
                 
@@ -306,6 +333,24 @@ public void SQL_TransactionLogsError(Database db, any data, int numQueries, cons
 	if (db == null || strlen(error) > 0)
     {
         LogError("(SQL_TransactionLogsError) Error executing query %d of %d queries: %s", failIndex, numQueries, error);
+        return;
+    }
+}
+
+public void SQL_ClearRounds(Database db, DBResultSet results, const char[] error, int userid)
+{
+    if (db == null || strlen(error) > 0)
+    {
+        LogToFileEx(g_sErrorFile, "(SQL_ClearRounds) Query failed: %s", error);
+        return;
+    }
+}
+
+public void SQL_ClearLogs(Database db, DBResultSet results, const char[] error, int userid)
+{
+    if (db == null || strlen(error) > 0)
+    {
+        LogToFileEx(g_sErrorFile, "(SQL_ClearLogs) Query failed: %s", error);
         return;
     }
 }

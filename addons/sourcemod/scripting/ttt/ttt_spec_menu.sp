@@ -326,8 +326,10 @@ void ShowSpecMenu(int client)
 
     if (TTT_IsClientValid(iTarget) && !IsFakeClient(client))
     {
-        char sPlayer[MAX_NAME_LENGTH];
-        Format(sPlayer, sizeof(sPlayer), "%T\n--------------------", "SpecMenu: Player", client, iTarget);
+        char sPlayer[MAX_NAME_LENGTH], sName[MAX_NAME_LENGTH];
+        TTT_GetClientName(iTarget, sName, sizeof(sName));
+        
+        Format(sPlayer, sizeof(sPlayer), "%T\n--------------------", "SpecMenu: Player", client, sName);
         menu.AddItem("player", sPlayer, ITEMDRAW_DISABLED);
     }
 

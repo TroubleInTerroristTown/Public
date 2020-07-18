@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_shop>
 #include <ttt_inventory>
 #include <colorlib>
@@ -165,8 +166,9 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     
     LogMessage("[DNA-Scanner] Attacker UserID: %d (Index: %d), Victim UserID: %d (Index: %d), If Check: %d", body.Attacker, attacker, body.Victim, victim, (attacker > 0 && attacker != victim));
 
-    char sAttackerID[24], sClientID[24], sRole[ROLE_LENGTH];
+    char sAttackerID[24], sClientID[24], sRole[ROLE_LENGTH], sName[MAX_NAME_LENGTH];
     TTT_GetRoleNameByID(body.AttackerRole, sRole, sizeof(sRole));
+    TTT_GetClientName(client, sName, sizeof(sName));
     
     if (g_cAddLogs != null && g_cAddLogs.BoolValue)
     {
@@ -185,6 +187,11 @@ public Action TTT_OnBodyCheck(int client, int entityref)
             Format(sAttackerID, sizeof(sAttackerID), body.AttackerSteamID64);
             GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
         }
+        else if (g_cLogFormat.IntValue == 4)
+        {
+            Format(sAttackerID, sizeof(sAttackerID), "%d", body.AttackerAccountID);
+            Format(sClientID, sizeof(sClientID), "%d", GetSteamAccountID(client));
+        }
         
         if (strlen(sAttackerID) > 2 && strlen(sClientID) > 2)
         {
@@ -195,19 +202,22 @@ public Action TTT_OnBodyCheck(int client, int entityref)
 
     TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %s%s (%s) with Weapon: %s]", client, sClientID, body.AttackerName, sAttackerID, sRole, body.Weaponused);
 
+    char sClientName[MAX_NAME_LENGTH];
+    TTT_GetClientName(client, sClientName, sizeof(sClientName));
+
     if (g_cPrintTo.IntValue == 2)
     {
         LoopValidClients(j)
         {
             if (!g_cRoleColor.BoolValue)
             {
-                CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, body.AttackerName, body.Weaponused);
+                CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, sName, body.AttackerName, body.Weaponused);
             }
             else
             {
                 char sTranslation[64];
                 Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-                CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, body.AttackerName, body.Weaponused);
+                CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, sClientName, body.AttackerName, body.Weaponused);
             }
         }
     }
@@ -219,13 +229,13 @@ public Action TTT_OnBodyCheck(int client, int entityref)
             {
                 if (!g_cRoleColor.BoolValue)
                 {
-                    CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, client, body.AttackerName, body.Weaponused);
+                    CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, sName, body.AttackerName, body.Weaponused);
                 }
                 else
                 {
                     char sTranslation[64];
                     Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-                    CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, client, body.AttackerName, body.Weaponused);
+                    CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, sClientName, body.AttackerName, body.Weaponused);
                 }
             }
         }
@@ -234,64 +244,15 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     {
         if (!g_cRoleColor.BoolValue)
         {
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, client, body.AttackerName, body.Weaponused);
+            CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, sName, body.AttackerName, body.Weaponused);
         }
         else
         {
             char sTranslation[64];
             Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
-            CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, client, body.AttackerName, body.Weaponused);
+            CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, sClientName, body.AttackerName, body.Weaponused);
         }
     }
-    /* else
-    {
-        char sClientID[32];
-        
-        if (g_cAddLogs.BoolValue)
-        {
-            if (g_cLogFormat.IntValue == 1)
-            {
-                GetClientAuthId(client, AuthId_Steam2, sClientID, sizeof(sClientID));
-            }
-            else if (g_cLogFormat.IntValue == 2)
-            {
-                GetClientAuthId(client, AuthId_Steam3, sClientID, sizeof(sClientID));
-            }
-            else if (g_cLogFormat.IntValue == 3)
-            {
-                GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
-            }
-            
-            if (strlen(sClientID) > 2)
-            {
-                Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
-            }
-        }
-
-        TTT_LogString("-> [%N%s (Detective) scanned a body, player committed suicide", client, sClientID);
-
-        if (g_cPrintTo.IntValue == 2)
-        {
-            LoopValidClients(j)
-            {
-                CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body suicide", j, client);
-            }
-        }
-        else if (g_cPrintTo.IntValue == 1)
-        {
-            LoopValidClients(j)
-            {
-                if (TTT_GetClientRole(j) == TTT_TEAM_DETECTIVE)
-                {
-                    CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body suicide", client, client);
-                }
-            }
-        }
-        else
-        {
-            CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body suicide", client, client);
-        }
-    } */
 
     body.Scanned = true;
     TTT_SetRagdoll(body, sizeof(body));
