@@ -877,11 +877,19 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
         {
             if (TTT_IsClientValid(planter))
             {
-                CPrintToChat(client, "%s %T", g_sPluginTag, "You Defused Bomb", client, planter);
-                CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, client);
+                char sPlanterName[MAX_NAME_LENGTH], sName[MAX_NAME_LENGTH];
+                TTT_GetClientName(planter, sPlanterName, sizeof(sPlanterName));
+                TTT_GetClientName(client, sName, sizeof(sName));
+
+                CPrintToChat(client, "%s %T", g_sPluginTag, "You Defused Bomb", client, sPlanterName);
+                CPrintToChat(planter, "%s %T", g_sPluginTag, "Has Defused Bomb", planter, sName);
+
                 EmitAmbientSoundAny(SND_DISARM, bombPos);
+
                 g_iPlayer[planter].HasActiveBomb = false;
+                
                 TTT_ClearTimer(g_iPlayer[planter].TimerExplosion);
+
                 SetEntProp(iBomb, Prop_Send, "m_hOwnerEntity", -1);
             }
         }

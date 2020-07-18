@@ -5,6 +5,7 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_shop>
 #include <ttt_inventory>
 #include <colorlib>
@@ -23,6 +24,7 @@ ConVar g_cLimit = null;
 ConVar g_cLongName = null;
 ConVar g_cActivation = null;
 
+ConVar g_cSpawnType = null;
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
@@ -71,6 +73,7 @@ public void TTT_OnVersionReceive(int version)
 
 public void OnConfigsExecuted()
 {
+    g_cSpawnType = FindConVar("ttt_spawn_type");
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
@@ -129,63 +132,53 @@ public void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort)
 
 bool SpawnFakeBody(int client)
 {
-    char sModel[256];
-    float pos[3];
-    char sName[32];
-
-    GetClientModel(client, sModel, sizeof(sModel));
-    GetClientEyePosition(client, pos);
-    Format(sName, sizeof(sName), "fake_body_%d", GetClientUserId(client));
-
-    int iEntity = CreateEntityByName("prop_ragdoll"); // TODO: Use ttt_spawn_type, native to create ragdoll?
-    DispatchKeyValue(iEntity, "model", sModel); //TODO: Add option to change model (random model)
-    DispatchKeyValue(iEntity, "targetname", sName);
-    SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
-    SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_PLAYER);
-    SetEntityMoveType(iEntity, MOVETYPE_NONE);
-    AcceptEntityInput(iEntity, "DisableMotion");
-
-    if (DispatchSpawn(iEntity))
+    if (g_cSpawnType == null)
     {
-        pos[2] -= 16.0;
-        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
+        g_cSpawnType = FindConVar("ttt_spawn_type");
 
-        SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
-        AcceptEntityInput(iEntity, "EnableMotion");
-        SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
-    
-        Ragdoll body;
-        body.EntityRef = EntIndexToEntRef(iEntity);
-        body.Victim = GetClientUserId(client);
-        body.VictimRole = TTT_GetClientRole(client);
-        GetClientName(client, body.VictimName, sizeof(body.VictimName));
-        body.Scanned = false;
-        body.Attacker = 0;
-        body.AttackerRole = TTT_TEAM_TRAITOR;
-        Format(body.AttackerName, sizeof(body.AttackerName), "Fake!");
-        body.GameTime = 0.0;
-
-        if (TTT_IsItemInInventory(client, "decoyBody"))
+        if (g_cSpawnType == null)
         {
-            body.Explode = true;
-
-            TTT_RemoveInventoryItem(client, "decoyBody");
-            TTT_AddItemUsage(client, "decoyBody");
+            SetFailState("[TTT Fakebody] Something went wrong \"ttt_spawn_type\".");
+            return false;
         }
-        else
-        {
-            body.Explode = false;
-        }
-
-        Format(body.Weaponused, sizeof(body.Weaponused), "Fake!");
-        body.Found = false;
-    
-        TTT_PushRagdoll(body, sizeof(body));
-    
-        return true;
     }
-    
-    return false;
+
+    int iRagdoll = TTT_CreateClientRagdoll(client);
+
+    if (iRagdoll == -1)
+    {
+        return false;
+    }
+
+    Ragdoll body;
+    body.EntityRef = EntIndexToEntRef(iRagdoll);
+    body.Victim = GetClientUserId(client);
+    body.VictimRole = TTT_GetClientRole(client);
+    TTT_GetClientName(client, body.VictimName, sizeof(body.VictimName));
+    body.Scanned = false;
+    body.Attacker = 0;
+    body.AttackerRole = TTT_TEAM_TRAITOR;
+    Format(body.AttackerName, sizeof(body.AttackerName), "Fake!");
+    body.GameTime = 0.0;
+
+    if (TTT_IsItemInInventory(client, "decoyBody"))
+    {
+        body.Explode = true;
+
+        TTT_RemoveInventoryItem(client, "decoyBody");
+        TTT_AddItemUsage(client, "decoyBody");
+    }
+    else
+    {
+        body.Explode = false;
+    }
+
+    Format(body.Weaponused, sizeof(body.Weaponused), "Fake!");
+    body.Found = false;
+
+    TTT_PushRagdoll(body, sizeof(body));
+
+    return true;
 }
 
 public Action TTT_OnBodyCheck(int client, int entityref)
@@ -208,15 +201,18 @@ public Action TTT_OnBodyCheck(int client, int entityref)
             }
         }
 
+        char sName[MAX_NAME_LENGTH];
+        TTT_GetClientName(client, sName, sizeof(sName));
+
         LoopValidClients(j)
         {
             if (g_cShowFakeMessage.BoolValue && !body.Found)
             {
-                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Fake", j, client);
+                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Fake", j, sName);
             }
             else if (!g_cShowFakeMessage.BoolValue && !body.Found)
             {
-                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, client, body.VictimName);
+                CPrintToChat(j, "%s %T", g_sPluginTag, "Found Traitor", j, sName, body.VictimName);
             }
             else if (body.Found)
             {
@@ -238,7 +234,10 @@ public Action TTT_OnBodyCheck(int client, int entityref)
 
         if (!g_cDeleteFakeBodyAfterFound.BoolValue && !g_cShowFakeMessage.BoolValue)
         {
-            SetEntityRenderColor(body.EntityRef, 255, 0, 0, 255);
+            if (g_cSpawnType.IntValue != 2)
+            {
+                SetEntityRenderColor(body.EntityRef, 255, 0, 0, 255);
+            }
         }
 
         TTT_SetRagdoll(body, sizeof(body));

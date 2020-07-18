@@ -19,28 +19,6 @@
 #include <sdktools>
 #include <cstrike>
 
-enum struct Ragdoll
-{
-    int EntityRef;
-    int Victim;
-    int Attacker;
-    int VictimRole;
-    int AttackerRole;
-    bool Scanned;
-    bool Found;
-    bool Explode;
-    float GameTime;
-    char VictimName[MAX_NAME_LENGTH];
-    char VictimSteam2[24];
-    char VictimSteam3[24];
-    char VictimSteamID64[24];
-    char AttackerName[MAX_NAME_LENGTH];
-    char AttackerSteam2[24];
-    char AttackerSteam3[24];
-    char AttackerSteamID64[24];
-    char Weaponused[32];
-}
-
 enum KarmaUpdate
 {
     Karma_Add,
@@ -50,12 +28,12 @@ enum KarmaUpdate
 
 enum RoundStatus
 {
-    Round_Inactive = -1,
-    Round_Warmup,
-    Round_Selection,
-    Round_Active,
-    Round_Ending,
-    Round_Ended
+    Round_Inactive = -1,   // -1
+    Round_Warmup,          //  0
+    Round_Selection,       //  1
+    Round_Active,          //  2
+    Round_Ending,          //  3
+    Round_Ended            //  4
 }
 
 enum Collision_Group_t
@@ -178,17 +156,6 @@ forward void TTT_OnClientDeath(int victim, int attacker, bool badAction);
 forward Action TTT_OnClientDeathPre(int victim, int attacker);
 
 /**
- * Called when a body is found.
- * Use must use TTT_GetEntityRefRagdoll(client, entityref) to get the enum struct.
- *
- * @param client            The client who identified the body.
- * @param victim            The client whom the body belongs to. (-1 for invalid index)
- * @param entityref            The entity reference to find the correct ragdoll
- * @param silentID          True if body was silenced id and false if normal inspect
- */
-forward void TTT_OnBodyFound(int client, int victim, int entityref, bool silentID);
-
-/**
  * Called before we create rules menu.
  * If want to change it use "return Plugin_Changed;"
  *
@@ -205,15 +172,6 @@ forward Action TTT_OnRulesMenu(int client, bool &show);
  * @param show              True - Menu will be opened, False - Menu will not open
  */
 forward Action TTT_OnDetectiveMenu(int client, bool &show);
-
-/**
- * Called before a body will be scanned.
- * Use must use TTT_GetEntityRefRagdoll(client, entityref) to get the enum struct.
- *
- * @param client            The client who scanned the body.
- * @param entityref            The entity reference to find the correct ragdoll
- */
-forward Action TTT_OnBodyCheck(int client, int entityref);
 
 /**
  * Called on updated player models
@@ -285,7 +243,16 @@ forward void TTT_OnVersionReceive(int version);
  * @param detectives            Amount of detectives
  * @param innocents             Amount of innocents
  */
- forward Action TTT_OnRoleSelection(int& traitors, int& detectives, int& innocents);
+forward Action TTT_OnRoleSelection(int& traitors, int& detectives, int& innocents);
+
+
+/**
+ * @param startRoundTimer      Start round timer (true - by default), or not
+ * @param time                 Time in seconds in how many seconds the round should end
+                               Note: This will not modify the round time!
+ */
+forward Action TTT_OnRoundTimerStart_Pre(bool& startRoundTimer, float& time);
+
 
 
 /**
@@ -307,46 +274,6 @@ native int TTT_GetClientRole(int client);
  * @param client            Client index.
  */
 native int TTT_GetClientKarma(int client, bool publicKarma = true);
-
-/**
- * Retrieve the Radgoll Info.
- *
- * @param client            The victims index.
- * @param radgoll           The array to save the ragoll infos.
- */
-native bool TTT_GetClientRagdoll(int victim, any[] ragdoll);
-
-/**
- * Retrieve the Radgoll Info.
- *
- * @param entityref         The entity reference.
- * @param radgoll           The array to save the ragoll infos.
- */
-native bool TTT_GetEntityRefRagdoll(int entityref, any[] ragdoll);
-
-/**
- * Retrieve the client index.
- *
- * @param ragdoll           The ragdoll index.
- * @return                  The client index
- */
-native int TTT_GetClientByRagdollID(int ragdoll);
-
-/**
- * Push a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
- *
- * @param radgoll           The enum struct to save as Ragdoll.
- * @param size              The enum struct size.
- */
-native int TTT_PushRagdoll(any[] ragdoll, int size);
-
-/**
- * Sets a ragdoll to the global Ragdoll array (will get cleaned on Round Start).
- *
- * @param radgoll           The enum struct to save as Ragdoll.
- * @param size              The enum struct size.
- */
-native bool TTT_SetRagdoll(any[] ragdoll, int size);
 
 /**
  * Set a client's role.
@@ -379,35 +306,6 @@ native int TTT_AddClientKarma(int client, int karma, bool force);
  * @param karma             Karma to remove.
  */
 native int TTT_RemoveClientKarma(int client, int karma, bool force);
-
-/**
- * Determins whether a player's body was found (if dead).
- *
- * @param client            Client index.
- */
-native bool TTT_WasBodyFound(int client);
-
-/**
- * Determins whether a player's body was scanned (if dead).
- *
- * @param client            Client index.
- */
-native bool TTT_WasBodyScanned(int client);
-
-/**
- * Determines if a player is dead and has had their body found.
- *
- * @param client              The client index to lookup.
- */
-native bool TTT_GetFoundStatus(int client);
-
-/**
- * Set whether a player appears dead and body found.
- *
- * @param client             The client index to change.
- * @param found             True if found & dead, false else.
- */
-native void TTT_SetFoundStatus(int client, bool found);
 
 /**
  * Log a String to the ingame Log.
@@ -531,16 +429,6 @@ native void TTT_RespawnPlayerRandom(int client);
 native int TTT_GetRoundTimestamp();
 
 /**
- * Forces round to end
- * Why was this added? To prevent mistakes with blockhook (it doesn't work blockhook = true)
- *
- * @param delay           Time (in seconds) to delay before new round starts
- * @param reason          Reason for the round ending
- *
- */
-native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
-
-/**
  * Disable the next TTT round. It has no effect if it's already set.
  * If you want to close the disabled round:
  *  - set status to false
@@ -606,6 +494,21 @@ native int TTT_GetPlayerID(int client);
  * @return                  The client index
  */
 native int TTT_GetClientOfPlayerID(int id);
+
+native RoundStatus TTT_SetRoundStatus(RoundStatus status);
+
+native void TTT_StopRoundTimer();
+
+/**
+ * Forces round to end
+ *
+ * @param delay           Time (in seconds) to delay before new round starts
+ * @param reason          Reason for the round ending
+ *
+ */
+native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
+
+native bool TTT_GetClientName(int client, char[] buffer, int size);
 
 stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
 {
@@ -1246,11 +1149,60 @@ stock bool TTT_LoadTranslations()
     LoadTranslations("ttt.phrases");
 }
 
+stock int TTT_ObserversOfTarget(int observers[MAXPLAYERS + 1], int target, float fMaxDistance = 0.0, float fThreshold = 0.73)
+{
+    float fTargetPosition[3];
+    if (TTT_IsClientValid(target))
+    {
+        GetClientEyePosition(target, fTargetPosition);
+    }
+    else if (IsValidEntity(target) && HasEntProp(target, Prop_Send, "m_vecOrigin"))
+    {
+        GetEntPropVector(target, Prop_Send, "m_vecOrigin", fTargetPosition);
+    }
+    else
+    {
+        return -1;
+    }
+
+    int count = 0;
+    LoopValidClients(i)
+    {
+        if (TTT_IsTargetInSightCommon(i, target, fTargetPosition, fMaxDistance, fThreshold))
+        {
+            observers[count] = i;
+            ++count;
+        }
+    }
+
+    return count;
+}
+
+stock bool TTT_TargetInSightOfClient(int client, int target, float fMaxDistance = 0.0, float fThreshold = 0.73)
+{
+    float fTargetPosition[3];
+    if (TTT_IsClientValid(target))
+    {
+        GetClientEyePosition(target, fTargetPosition);
+    }
+    else if (IsValidEntity(target) && HasEntProp(target, Prop_Send, "m_vecOrigin"))
+    {
+        GetEntPropVector(target, Prop_Send, "m_vecOrigin", fTargetPosition);
+    }
+
+    if (IsNullVector(fTargetPosition))
+    {
+        return false;
+    }
+
+    return TTT_IsTargetInSightCommon(client, target, fTargetPosition, fMaxDistance, fThreshold);
+}
+
 /*
     Based on this snippet:
         https://forums.alliedmods.net/showpost.php?p=973411&postcount=4
 */
-stock bool TTT_IsTargetInSight(int client, int target, float fMaxDistance = 0.0, float fThreshold = 0.73, int flags = PARTITION_NON_STATIC_EDICTS, RayType type = RayType_Infinite)
+stock bool TTT_IsTargetInSightCommon(int client, int target, float fTargetPosition[3], float fMaxDistance = 0.0, float fThreshold = 0.73)
 {
     // Retrieve view and target eyes position
     float fPosition[3];
@@ -1258,17 +1210,6 @@ stock bool TTT_IsTargetInSight(int client, int target, float fMaxDistance = 0.0,
 
     float fAngle[3];
     GetClientEyeAngles(client, fAngle);
-
-    float fTargetPosition[3];
-
-    if (target > 0 && target <= MaxClients)
-    {
-        GetClientEyePosition(target, fTargetPosition);
-    }
-    else
-    {
-        GetEntPropVector(target, Prop_Send, "m_vecOrigin", fTargetPosition);
-    }
 
     // Calculate view direction
     float fDirection[3];
@@ -1299,7 +1240,7 @@ stock bool TTT_IsTargetInSight(int client, int target, float fMaxDistance = 0.0,
     }
 
     // Now check if there are no obstacles in between through raycasting
-    Handle hTrace = TR_TraceRayFilterEx(fPosition, fTargetPosition, flags, type, TraceASDF, client);
+    Handle hTrace = TR_TraceRayFilterEx(fPosition, fTargetPosition, PARTITION_NON_STATIC_EDICTS, RayType_EndPoint, TraceASDF);
     if (TR_DidHit(hTrace))
     {
         delete hTrace;
@@ -1310,9 +1251,9 @@ stock bool TTT_IsTargetInSight(int client, int target, float fMaxDistance = 0.0,
     return true;
 }
 
-public bool TraceASDF(int entity, int mask, any data)
+public bool TraceASDF(int entity, int mask)
 {
-    return data != entity;
+    return entity >= MaxClients;
 }
 
 stock void PrintCenterText2(int client, const char[] title, const char[] message)

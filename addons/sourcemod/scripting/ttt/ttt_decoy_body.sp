@@ -5,6 +5,7 @@
 #include <emitsoundany>
 #include <colorlib>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_shop>
 #include <ttt_inventory>
 
@@ -167,7 +168,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public void TTT_OnBodyFound(int client, int victim, int entityref, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
 {
     int entity = EntRefToEntIndex(entityref);
 

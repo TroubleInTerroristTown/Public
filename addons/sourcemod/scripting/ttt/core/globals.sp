@@ -55,7 +55,6 @@ int g_iBadNameCount = 0;
 Database g_dDB = null;
 
 ArrayList g_aLogs = null;
-ArrayList g_aRagdoll = null;
 
 GlobalForward g_fwOnRoundStart_Pre = null;
 GlobalForward g_fwOnRoundStart = null;
@@ -65,8 +64,6 @@ GlobalForward g_fwOnClientGetRole = null;
 GlobalForward g_fwOnTakeDamage = null;
 GlobalForward g_fwOnClientDeath = null;
 GlobalForward g_fwOnClientDeathPre = null;
-GlobalForward g_fwOnBodyFound = null;
-GlobalForward g_fwOnBodyCheck = null;
 GlobalForward g_fwOnButtonPress = null;
 GlobalForward g_fwOnButtonRelease = null;
 GlobalForward g_fwOnModelUpdate = null;
@@ -80,8 +77,12 @@ GlobalForward g_fwOnPlayerRespawn = null;
 GlobalForward g_fwOnRoundSlay = null;
 GlobalForward g_fwOnRoleSelection = null;
 GlobalForward g_fOnVersionCheck = null;
+GlobalForward g_fOnRoundTimerStart_Pre = null;
 
+bool g_bDetectiveBans = false;
 bool g_bSourcebans = false;
+bool g_bBodies = false;
+bool g_bIonCannon = false;
 bool g_bGhostDM = false;
 
 char g_sRadioCMDs[][] =  {
@@ -108,7 +109,11 @@ char g_sRadioCMDs[][] =  {
     "enemydown",
     "compliment",
     "thanks",
-    "cheer"
+    "cheer",
+    "go_a",
+    "go_b",
+    "needrop",
+    "sorry"
 };
 
 char g_sRemoveEntityList[][] =  {
@@ -184,6 +189,7 @@ ConVar g_cendwithD = null;
 ConVar g_chideTeams = null;
 ConVar g_cpublicKarma = null;
 ConVar g_ckarmaRound = null;
+ConVar g_ckarmaRoundMessage = null;
 ConVar g_cstripWeapons = null;
 ConVar g_ckarmaDMG = null;
 ConVar g_ckarmaDMG_up = null;
@@ -246,39 +252,39 @@ ConVar g_cDamageKarmaDD = null;
 ConVar g_cDoublePushInno = null;
 ConVar g_cDoublePushDete = null;
 ConVar g_cKarmaDecreaseWhenKillPlayerWhoHurt = null;
-ConVar g_cSilentIdEnabled = null;
-ConVar g_cSilentIdColor = null;
-ConVar g_cSilentIdRoles = null;
 ConVar g_cLogButtons = null;
 ConVar g_cLogButtonsSpam = null;
 ConVar g_cOpenRulesOnPunish = null;
 ConVar g_cRulesURLReopenMenu = null;
 ConVar g_cNameChangePunish = null;
 ConVar g_cNameChangeLength = null;
-ConVar g_cIdentifyLog = null;
 ConVar g_cShowInnoRDMMenu = null;
 ConVar g_cFlashlightOption = null;
 ConVar g_cRespawnAccess = null;
 ConVar g_cPlayerHUDMessage = null;
 ConVar g_cShowURL = null;
 ConVar g_cDisableRounds = null;
+ConVar g_cClearRounds = null;
+ConVar g_cClearLogs = null;
 ConVar g_cStartMelee = null;
 ConVar g_cAdditionalMeleeRole = null;
 ConVar g_cAdditionalMeleeWeapon = null;
 ConVar g_cUnloadPlugins = null;
 ConVar g_cRemovePlugins = null;
-ConVar g_cSpawnType = null;
-ConVar g_cIdentifyDistance = null;
 ConVar g_cFixThirdperson = null;
 ConVar g_cShowRoundIDMessage = null;
+ConVar g_cVersionCheck = null;
 ConVar g_cVersionMessage = null;
 ConVar g_cSendServerData = null;
 ConVar g_cClanTagUpperLower = null;
 ConVar g_cSaveLogsInSQL = null;
 ConVar g_cDeleteLogsAfterDays = null;
-ConVar g_cIdentifyCommand = null;
 ConVar g_cAutoAssignTeam = null;
 ConVar g_cBlockSwitchSelection = null;
+ConVar g_cShowTeamsSelectedMessage = null;
+ConVar g_cShowReceivingLogsMessage = null;
+ConVar g_cMicCheckFlag = null;
+ConVar g_cNameFix = null;
 
 Cookie g_coRules = null;
 Cookie g_coDRules = null;
@@ -313,8 +319,6 @@ enum struct PlayerData {
     bool KarmaReady;
     bool Alive;
     bool Respawn;
-    bool Found;
-    bool IsChecking;
     bool ReceivingLogs;
     bool Rules;
     bool DetectiveRules;
@@ -324,13 +328,13 @@ enum struct PlayerData {
     bool ImmuneRDMManager;
     bool ResetHurt;
     bool Ready;
-    bool Press;
 
     Handle RDMTimer;
+
+    char Name[MAX_NAME_LENGTH];
 }
 
 PlayerData g_iPlayer[MAXPLAYERS + 1];
-int g_iParticleRef[2048] = { -1, ... };
 
 int g_iVersion = -1;
 

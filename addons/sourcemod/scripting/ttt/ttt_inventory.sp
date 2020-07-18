@@ -5,6 +5,7 @@
 #include <sdktools>
 #include <colorlib>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_inventory>
 
 #undef REQUIRE_PLUGIN

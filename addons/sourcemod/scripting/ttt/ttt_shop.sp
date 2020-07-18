@@ -52,6 +52,7 @@ ConVar g_cTraitorloseDeadNonTraitors = null;
 ConVar g_cTraitorwinAliveTraitors = null;
 ConVar g_cTraitorwinDeadTraitors = null;
 ConVar g_cCreditsFoundBody = null;
+ConVar g_cCreditsFoundBodyRole = null;
 ConVar g_cMessageTypCredits = null;
 ConVar g_cStartCredits = null;
 ConVar g_cCreditsMin = null;
@@ -60,6 +61,7 @@ ConVar g_cCreditsInterval = null;
 ConVar g_cSQLCredits = null;
 ConVar g_cSilentIdRewards = null;
 ConVar g_cMoneyCredits = null;
+ConVar g_cCreditsFlag = null;
 ConVar g_cGiveItemFlag = null;
 ConVar g_cSetCreditsFlag = null;
 ConVar g_cResetItemsFlag = null;
@@ -74,6 +76,7 @@ ConVar g_cLogFormat = null;
 ConVar g_cTestingMode = null;
 ConVar g_cLogPurchases = null;
 ConVar g_cMaxSQLCredits = null;
+ConVar g_cMaxVIPSQLCredits = null;
 
 ConVar g_cDebugMessages = null;
 ConVar g_cPluginTag = null;
@@ -213,7 +216,8 @@ public void OnPluginStart()
     g_cTraitorloseDeadNonTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200", "The amount of credits an innocent or detective will recieve for winning the round if they died.");
     g_cTraitorwinAliveTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800", "The amount of credits a traitor will recieve for winning the round if they survived.");
     g_cTraitorwinDeadTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200", "The amount of credits a traitor will recieve for winning the round if they died.");
-    g_cCreditsFoundBody = AutoExecConfig_CreateConVar("ttt_credits_found_body_add", "1200", "The amount of credits an innocent or detective will recieve for discovering a new dead body.");
+    g_cCreditsFoundBody = AutoExecConfig_CreateConVar("ttt_credits_found_body_add", "1200", "The amount of credits the player will recieve for discovering a new dead body.");
+    g_cCreditsFoundBodyRole = AutoExecConfig_CreateConVar("ttt_credits_found_body_add_role", "6", "How can gain credits for identifing a dead body?\nPlease read this before you this: https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks");
     g_cShowEarnCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_earn_credits", "1", "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cShowLoseCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_lose_credits", "1", "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cMessageTypCredits = AutoExecConfig_CreateConVar("ttt_message_typ_credits", "1", "The credit message type. 1 = Hint Text, 2 = Chat Message", _, true, 1.0, true, 2.0);
@@ -231,6 +235,7 @@ public void OnPluginStart()
     g_cSQLCredits = AutoExecConfig_CreateConVar("ttt_sql_credits", "0", "Set 1 if you want to use credits over sql (mysql + sqlite are supported)", _, true, 0.0, true, 1.0);
     g_cSilentIdRewards = AutoExecConfig_CreateConVar("ttt_shop_silent_id_rewards", "1", "0 = Disabled, will not reward credits with silent id. 1 = Will reward the client with credits for inspecting the body.", _, true, 0.0, true, 1.0);
     g_cMoneyCredits = AutoExecConfig_CreateConVar("ttt_shop_show_credits_as_money", "1", "Show player credits as csgo money?", _, true, 0.0, true, 1.0);
+    g_cCreditsFlag = AutoExecConfig_CreateConVar("ttt_shop_credits_vip", "a", "VIP flag to earn more more credits (look at ttt_shop_max_vip_sql_credits)");
     g_cGiveItemFlag = AutoExecConfig_CreateConVar("ttt_shop_give_item_flag", "z", "Admin flags to give players shop items");
     g_cSetCreditsFlag = AutoExecConfig_CreateConVar("ttt_shop_set_credits_flag", "z", "Admin flags to set players credits");
     g_cResetItemsFlag = AutoExecConfig_CreateConVar("ttt_shop_reset_items_flag", "z", "Admin flags to reset all items from shop (Reload)");
@@ -243,6 +248,7 @@ public void OnPluginStart()
     g_cTestingMode = AutoExecConfig_CreateConVar("ttt_enable_testing_mode", "0", "Enable testing mode for shop? All items will be free without any limits!", _, true, 0.0, true, 1.0);
     g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 2.0);
     g_cMaxSQLCredits = AutoExecConfig_CreateConVar("ttt_shop_max_sql_credits", "0", "Limit the max possible credits if ttt_sql_credits is 1", _, true, 0.0);
+    g_cMaxVIPSQLCredits = AutoExecConfig_CreateConVar("ttt_shop_max_vip_sql_credits", "0", "Limit the max possible vip credits if ttt_sql_credits is 1", _, true, 0.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -687,20 +693,45 @@ public Action Command_ShowItems(int client, int args)
 
 public Action Command_Shop(int client, int args)
 {
-    if (TTT_GetRoundStatus() != Round_Active)
+    if (g_cDebugMessages.BoolValue)
+    {
+        PrintToChat(client, "Command_Shop - 0 - Start");
+    }
+    
+    if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
     }
 
-    if (!TTT_IsClientValid(client))
+    if (g_cDebugMessages.BoolValue)
     {
+        PrintToChat(client, "Command_Shop - 1 - Client valid");
+    }
+
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        if (g_cDebugMessages.BoolValue)
+        {
+            PrintToChat(client, "Can not open shop. Round status: %d", TTT_GetRoundStatus());
+        }
+
         return Plugin_Handled;
+    }
+
+    if (g_cDebugMessages.BoolValue)
+    {
+        PrintToChat(client, "Command_Shop - 2 - Round valid");
     }
 
     if (!IsPlayerAlive(client))
     {
         CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
         return Plugin_Handled;
+    }
+
+    if (g_cDebugMessages.BoolValue)
+    {
+        PrintToChat(client, "Command_Shop - 3 - Yeah, you're alive! (Role: %d", TTT_GetClientRole(client));
     }
 
     int iRole = TTT_GetClientRole(client);
@@ -713,11 +744,21 @@ public Action Command_Shop(int client, int args)
         Item item;
         int iCount = 0;
 
+        if (g_cDebugMessages.BoolValue)
+        {
+            PrintToChat(client, "Command_Shop - 4 - Items: %d", g_aShopItems.Length);
+        }
+
         for (int i = 0; i < g_aShopItems.Length; i++)
         {
             g_aShopItems.GetArray(i, item);
             if (strlen(item.Short) > 1)
             {
+                if (g_cDebugMessages.BoolValue)
+                {
+                    PrintToChat(client, "Command_Shop - 5 - Item: %s", item.Short);
+                }
+                
                 if ((item.Role == 1) || (item.Role == iRole))
                 {
                     int iPrice = item.Price;
@@ -799,6 +840,11 @@ public Action Command_Shop(int client, int args)
         }
 
         menu.ExitButton = true;
+
+        if (g_cDebugMessages.BoolValue)
+        {
+            PrintToChat(client, "Command_Shop - X - Valid items: %d", iCount);
+        }
 
         if (iCount > 0)
         {
@@ -1017,6 +1063,10 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
                             else if (g_cLogFormat.IntValue == 3)
                             {
                                 GetClientAuthId(client, AuthId_SteamID64, sClientID, sizeof(sClientID));
+                            }
+                            else if (g_cLogFormat.IntValue == 4)
+                            {
+                                Format(sClientID, sizeof(sClientID), "%d", GetSteamAccountID(client));
                             }
 
                             if (strlen(sClientID) > 2)
@@ -1663,9 +1713,9 @@ public void TTT_OnRoundEnd(int winner, Handle array)
     }
 }
 
-public void TTT_OnBodyFound(int client, int victim, int entityref, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
 {
-    if (!silentID || (g_cSilentIdRewards.BoolValue && silentID))
+    if ((TTT_GetClientRole(client) & g_cCreditsFoundBodyRole.IntValue) && !silentID || (g_cSilentIdRewards.BoolValue && silentID))
     {
         addCredits(client, g_cCreditsFoundBody.IntValue);
     }
@@ -1691,7 +1741,20 @@ void addCredits(int client, int credits, bool message = false)
 
     if (g_cMaxSQLCredits.IntValue > 0 && g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
     {
-        g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
+        if (g_cMaxVIPSQLCredits.IntValue > 0 && g_cMaxVIPSQLCredits.IntValue > g_cMaxSQLCredits.IntValue && TTT_CheckCommandAccess(client, "ttt_credits_vip", g_cCreditsFlag))
+        {
+            if (g_iPlayer[client].Credits > g_cMaxVIPSQLCredits.IntValue)
+            {
+                g_iPlayer[client].Credits = g_cMaxVIPSQLCredits.IntValue;
+            }
+        }
+        else
+        {
+            if (g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
+            {
+                g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
+            }
+        }
     }
 
     if (g_cShowEarnCreditsMessage.BoolValue && message)
@@ -1700,7 +1763,7 @@ void addCredits(int client, int credits, bool message = false)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "credits earned", client, credits, g_iPlayer[client].Credits, g_iPlayer[client].Currency);
-            CFormat(sBuffer, sizeof(sBuffer), client);
+            CFormat(sBuffer, sizeof(sBuffer));
             Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
             PrintCenterText2(client, "TTT - Shop", sBuffer); // TODO: Add 2nd option as synchud
         }
@@ -1747,7 +1810,7 @@ void subtractCredits(int client, int credits, bool message = false)
         {
             char sBuffer[MAX_MESSAGE_LENGTH];
             Format(sBuffer, sizeof(sBuffer), "%T", "lost credits", client, credits, g_iPlayer[client].Credits, g_iPlayer[client].Currency);
-            CFormat(sBuffer, sizeof(sBuffer), client);
+            CFormat(sBuffer, sizeof(sBuffer));
             Format(sBuffer, sizeof(sBuffer), "<pre>%s</pre>", sBuffer);
             PrintCenterText2(client, "TTT - Shop", sBuffer); // TODO: Add 2nd option as synchud
         }
@@ -1776,7 +1839,20 @@ void setCredits(int client, int credits)
 
     if (g_cMaxSQLCredits.IntValue > 0 && g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
     {
-        g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
+        if (g_cMaxVIPSQLCredits.IntValue > 0 && g_cMaxVIPSQLCredits.IntValue > g_cMaxSQLCredits.IntValue && TTT_CheckCommandAccess(client, "ttt_credits_vip", g_cCreditsFlag))
+        {
+            if (g_iPlayer[client].Credits > g_cMaxVIPSQLCredits.IntValue)
+            {
+                g_iPlayer[client].Credits = g_cMaxVIPSQLCredits.IntValue;
+            }
+        }
+        else
+        {
+            if (g_iPlayer[client].Credits > g_cMaxSQLCredits.IntValue)
+            {
+                g_iPlayer[client].Credits = g_cMaxSQLCredits.IntValue;
+            }
+        }
     }
 
     UpdatePlayer(client);
@@ -1885,7 +1961,9 @@ public Action Command_SetCredits(int client, int args)
 
         setCredits(target_list[i], credits);
 
-        CPrintToChat(client, "%s %T", g_sPluginTag, "AdminSet", client, target_list[i], credits, "Credits");
+        char sName[MAX_NAME_LENGTH];
+        TTT_GetClientName(target_list[i], sName, sizeof(sName));
+        CPrintToChat(client, "%s %T", g_sPluginTag, "AdminSet", client, sName, credits, "Credits");
     }
 
     return Plugin_Continue;

@@ -10,6 +10,7 @@
 
 ConVar g_cEnableTVoice = null;
 ConVar g_cDeadTalk = null;
+ConVar g_cAdminFlags = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[128];
@@ -51,6 +52,7 @@ public void OnPluginStart()
     CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
     g_cDeadTalk = AutoExecConfig_CreateConVar("ttt_enable_dead_talk", "1", "Allows dead players to talk with other dead players.", _, true, 0.0, true, 1.0);
+    g_cAdminFlags = AutoExecConfig_CreateConVar("ttt_dead_admin_flags", "b", "Admin flags to get access to 'immortal voice'.");
     TTT_EndConfig();
 
     if (g_cEnableTVoice.BoolValue)
@@ -77,7 +79,17 @@ public void OnClientPutInServer(int client)
 
 public void OnClientPostAdminCheck(int client)
 {
-    SetListen(client);
+    RequestFrame(Frame_PostAdminCheck, GetClientUserId(client));
+}
+
+public void Frame_PostAdminCheck(int userid)
+{
+    int client = GetClientOfUserId(userid);
+
+    if (TTT_IsClientValid(client))
+    {
+        SetListen(client);
+    }
 }
 
 public void OnClientDisconnect(int client)
@@ -192,33 +204,36 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
 void SetListen(int client)
 {
-    LoopValidClients(i)
+    if (!TTT_CheckCommandAccess(client, "ttt_talk_override", g_cAdminFlags, true))
     {
-        if (!TTT_IsPlayerAlive(client))
+        LoopValidClients(i)
         {
-            if (TTT_IsPlayerAlive(i))
+            if (!TTT_IsPlayerAlive(client))
             {
-                SetListenOverride(i, client, Listen_No);
-                SetListenOverride(client, i, Listen_Yes);
-            }
-            else
-            {
-                if (g_cDeadTalk.BoolValue)
+                if (TTT_IsPlayerAlive(i))
                 {
-                    SetListenOverride(i, client, Listen_Yes);
+                    SetListenOverride(i, client, Listen_No);
                     SetListenOverride(client, i, Listen_Yes);
                 }
                 else
                 {
-                    SetListenOverride(i, client, Listen_No);
-                    SetListenOverride(client, i, Listen_No);
+                    if (g_cDeadTalk.BoolValue)
+                    {
+                        SetListenOverride(i, client, Listen_Yes);
+                        SetListenOverride(client, i, Listen_Yes);
+                    }
+                    else
+                    {
+                        SetListenOverride(i, client, Listen_No);
+                        SetListenOverride(client, i, Listen_No);
+                    }
                 }
             }
-        }
-        else
-        {
-            SetListenOverride(client, i, Listen_Yes);
-            SetListenOverride(i, client, Listen_Yes);
+            else
+            {
+                SetListenOverride(client, i, Listen_Yes);
+                SetListenOverride(i, client, Listen_Yes);
+            }
         }
     }
 }
@@ -242,6 +257,9 @@ bool SetTVoice(int client, bool status, bool message = true)
         return false;
     }
 
+    char sName[MAX_NAME_LENGTH];
+    TTT_GetClientName(client, sName, sizeof(sName));
+
     if (!status)
     {
         if (message)
@@ -259,7 +277,7 @@ bool SetTVoice(int client, bool status, bool message = true)
             {
                 if (message)
                 {
-                    CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, client);
+                    CPrintToChat(i, "%s %T", g_sPluginTag, "stopped talking in Traitor Voice Chat", i, sName);
                 }
             }
         }
@@ -283,7 +301,7 @@ bool SetTVoice(int client, bool status, bool message = true)
             {
                 if (message)
                 {
-                    CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, client);
+                    CPrintToChat(i, "%s %T", g_sPluginTag, "is now talking in Traitor Voice Chat", i, sName);
                 }
             }
         }

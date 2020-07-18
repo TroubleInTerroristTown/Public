@@ -294,7 +294,7 @@ int GetCompassInfo(int client, char sInfo[32], char sName[64])
     }
     
     char sTarget[12];
-    GetClientName(nearest, sTarget, sizeof(sTarget));
+    TTT_GetClientName(nearest, sTarget, sizeof(sTarget));
     int iMeters = RoundToFloor(distance * 0.02);
     
     if(distance < g_cCompassShowNameDistance.FloatValue)

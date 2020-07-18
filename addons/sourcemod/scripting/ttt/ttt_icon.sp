@@ -12,6 +12,7 @@ ConVar g_cAdminImmunity = null;
 ConVar g_cSeeRoles = null;
 ConVar g_cTraitorIcon = null;
 ConVar g_cDetectiveIcon = null;
+ConVar g_cScale = null;
 
 GlobalForward g_fwOnPrecache = null;
 GlobalForward g_fwOnIconCreate = null;
@@ -53,6 +54,7 @@ public void OnPluginStart()
     g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "decals/ttt/traitor_iconNew", "Path to traitor icon file");
     g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "decals/ttt/detective_iconNew", "Path to detective icon file");
     g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
+    g_cScale = AutoExecConfig_CreateConVar("ttt_icon_scale", "0.08", "The scale to scale the sprite to");
     TTT_EndConfig();
     
     HookEvent("player_death", Event_PlayerDeathPre, EventHookMode_Pre);
@@ -213,6 +215,7 @@ int CreateIcon(int client, int role)
     }
 
     char sBuffer[PLATFORM_MAX_PATH];
+    char sScale[PLATFORM_MAX_PATH];
 
     if (role == TTT_TEAM_DETECTIVE)
     {
@@ -245,11 +248,12 @@ int CreateIcon(int client, int role)
     {
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sFile);
     }
+    g_cScale.GetString(sScale, sizeof(sScale));
 
     DispatchKeyValue(ent, "model", sBuffer);
     DispatchKeyValue(ent, "classname", "env_sprite");
     DispatchKeyValue(ent, "spawnflags", "1");
-    DispatchKeyValue(ent, "scale", "0.08");
+    DispatchKeyValue(ent, "scale", sScale);
     DispatchKeyValue(ent, "rendermode", "1");
     DispatchKeyValue(ent, "rendercolor", "255 255 255");
     DispatchSpawn(ent);

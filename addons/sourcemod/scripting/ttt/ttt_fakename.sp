@@ -69,7 +69,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("fakename_count", "5", "The number of fakename that the player can use in a round");
     g_cLimit = AutoExecConfig_CreateConVar("fakename_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTimer = AutoExecConfig_CreateConVar("fakename_timer", "15.0", "The time the target should be renamed");
-    g_cIgnoreRole = AutoExecConfig_CreateConVar("fakename_ignore_role", "4", "Which role should be ignored when traitor use fakename? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRole = AutoExecConfig_CreateConVar("fakename_ignore_role", "4", "Which role should be ignored when traitor use fakename? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
 
     g_cInviLongName = AutoExecConfig_CreateConVar("invisible_name_name", "Invisible Name", "The name of this in Shop");
     g_cInviPrice = AutoExecConfig_CreateConVar("invisible_name_price", "5000", "The amount of credits invisiblename costs as traitor. 0 to disable.");
@@ -228,7 +228,7 @@ void Start_Fakename(int client)
         return;
     }
 
-    if (!GetClientName(iTarget, g_iPlayer[client].FakeName, sizeof(PlayerData::FakeName)))
+    if (!TTT_GetClientName(iTarget, g_iPlayer[client].FakeName, sizeof(PlayerData::FakeName)))
     {
         return;
     }

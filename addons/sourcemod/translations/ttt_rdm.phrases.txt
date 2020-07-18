@@ -1,0 +1,164 @@
+"Phrases"
+{
+    "RDM: Staff Bad Action Report"
+    {
+        "#format"   "{1:s},{2:d},{3:s},{4:d}"
+        "en"        "{default}Bad Action: [{player}{1}{default}] ({highlight}{2}{default}) killed [{player}{3}{default}] ({highlight}{4}{default})"
+    }
+
+    "RDM: Staff Handle - Case awaiting verdict"
+    {
+        "en"        "You cannot handle a new case whilst you still have a case awaiting your verdict."
+    }
+
+    "RDM: Staff Handle - No Cases"
+    {
+        "en"        "There are currently no available cases."
+    }
+
+    "RDM: Staff Handle - Has taken Case"
+    {
+        "#format"   "{1:s}"
+        "en"        "{player}{1} {default}has taken an RDM case."
+    }
+
+    "RDM: Staff Handle - Case Info"
+    {
+        "#format"   "{1:d},{2:s},{3:s}"
+        "en"        "You have taken case {highlight}#{1}: {player}{2}'s {default}accusing {player}{3} of RDM."
+    }
+
+    "RDM: Staff Info - Death & Round"
+    {
+        "#format"   "{1:d},{2:d}"
+        "en"        "Case information for Death: {highlight}{1}{default}({highlight}{2} {default}rounds ago)"
+    }
+
+    "RDM: Staff Info - Last Shot"
+    {
+        "#format"   "{1:d}"
+        "en"        "The victim had shot last {highlight}{1} {default}seconds before there death."
+    }
+
+    "RDM: Staff Info - Accuser"
+    {
+        "#format"   "{1:s},{2:d},{3:s}"
+        "en"        "Accuser: {player}{1}{default}({highlight}{2}{default}) - {3}"
+    }
+
+    "RDM: Staff Info - Accused"
+    {
+        "#format"   "{1:s},{2:d},{3:s}"
+        "en"        "Accused: {player}{1}{default}({highlight}{2}{default}) - {3}"
+    }
+
+    "RDM: Staff Verdict - No Case"
+    {
+        "en"        "You do not currently have a case to cast a verdict upon."
+    }
+
+    "RDM: Staff Verdict - Invalid Input Verdict"
+    {
+        "en"        "Please pass either Innocent or Guilty."
+    }
+
+    "RDM: Verdict - Innocent Accuser"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"        "{player}{1} {default}has handled your case against {player}{2} {default}and has concluded them to be {role i}Innocent{default}, if you have any questions please message staff using an @ before your message or /chat."
+    }
+
+    "RDM: Verdict - Innocent Accused"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"        "{player}{1} {default}has found you {role i}Innocent {default}in your defense against {player}{2}{default}, have a nice day."
+    }
+
+    "RDM: Verdict - Innocent Staff"
+    {
+        "#format"   "{1:d}"
+        "en"        "You have concluded the defendant {role i}Innocent {default}for case {highlight}{1}."
+    }
+
+    "RDM: Verdict - Guilty Accuser"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"        "{player}{1} {default}has handled your case against {player}{2} {defalt}and has concluded them to be {error}guilty{default}. Thanks for your report."
+    }
+
+    "RDM: Verdict - Guilty Accused Slay"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"        "You are being slayed next round by {player}{1} {default}for killing {player}{2}{default}. If you have any questions about this please message staff by using an @ before your message."
+    }
+
+    "RDM: Verdict - Guilty Accused Warn"
+    {
+        "#format"   "{1:s},{2:s}"
+        "en"        "You have been found guilty of RDM by {player}{1} {default}for killing {player}{2} {default}further action may be taken. If you have any questions about this please message staff by using an @ before your message or /chat."
+    }
+
+    "RDM: Verdict - Guilty Staff"
+    {
+        "#format"   "{1:d}"
+        "en"        "You have concluded the defendant {error}guilty {default}for case {highlight}{1}."
+    }
+
+    "RDM: Case Count - None"
+    {
+        "en"        "There are currently no unhandled cases."
+    }
+
+    "RDM: Case Count - One"
+    {
+        "en"        "There is now {highlight}1 {default}unhandled case."
+    }
+
+    "RDM: Case Count - Many"
+    {
+        "#format"   "{1:d}"
+        "en"        "There are now {highlight}{1} {default}unhandled cases."
+    }
+
+    "RDM: Report - Death Message"
+    {
+        "en"        "If you believe this death was a case of RDM, please use {highlight}!rdm {default}to report it."
+    }
+
+    "RDM: Report - Menu Title"
+    {
+        "en"        "Please select the death you would like to report."
+    }
+
+    "RDM: Report - Menu Death"
+    {
+        "#format"   "{1:s},{2:d}"
+        "en"        "{1} ({2} rounds ago)"
+    }
+
+    "RDM: Report - Punishment Menu Title"
+    {
+        "en"        "What type of punishment should they serve?"
+    }
+
+    "RDM: Report - Punishment Warning"
+    {
+        "en"        "A Warning"
+    }
+
+    "RDM: Report - Punishment Slay"
+    {
+        "en"        "Slay them"
+    }
+
+    "RDM: Report - Acknowledge submission"
+    {
+        "en"        "Thanks for submitting a case, a staff member shall be in contact shortly."
+    }
+
+    "RDM: Report - Notify Staff"
+    {
+        "#format"   "{1:s}"
+        "en"        "{player}{1} {default}opened a new RDM case."
+    }
+}

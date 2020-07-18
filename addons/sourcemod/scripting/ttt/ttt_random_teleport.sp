@@ -5,6 +5,7 @@
 #include <sdkhooks>
 #include <sdktools>
 #include <ttt>
+#include <ttt_bodies>
 #include <ttt_shop>
 #include <ttt_inventory>
 #include <colorlib>
@@ -75,9 +76,9 @@ public void OnPluginStart()
     g_cDCount = AutoExecConfig_CreateConVar("rt_detective_count", "1", "The amount of usages for Random Teleports per round as detective. 0 to disable.");
     g_cICount = AutoExecConfig_CreateConVar("rt_innocent_count", "1", "The amount of usages for Random Teleports per round as innocent. 0 to disable.");
     g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
-    g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
-    g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
-    g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/Bara/TroubleinTerroristTown/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
     g_cActivation = AutoExecConfig_CreateConVar("rt_activation_mode", "1", "Which activation mode? 0 - New, over !inventory menu; 1 - Old, on purchase", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 }
@@ -252,7 +253,9 @@ int RandomTeleport(int client)
         }
     }
 
-    CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, target);
+    char sName[MAX_NAME_LENGTH];
+    TTT_GetClientName(target, sName, sizeof(sName));
+    CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, sName);
 
     if (iRole == TTT_TEAM_TRAITOR)
     {

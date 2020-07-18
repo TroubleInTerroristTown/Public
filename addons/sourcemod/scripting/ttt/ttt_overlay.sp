@@ -4,6 +4,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <ttt>
+#include <ttt_bodies>
 
 #define PLUGIN_NAME TTT_PLUGIN_NAME ... " - Overlays"
 
@@ -177,7 +178,7 @@ public void OnMapStart()
     Call_PushCell(sizeof(sWinFile));
     Call_Finish(res);
 
-    if (strlen(sWinFile) > 3 && (res == Plugin_Continue || res == Plugin_Changed))
+    if (strlen(sWinFile) > 3 && res == Plugin_Changed)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sWinFile);
         AddFileToDownloadsTable(sBuffer);
@@ -240,7 +241,7 @@ public void OnMapStart()
     Call_PushCell(sizeof(sRoleOverlay));
     Call_Finish(res);
 
-    if (strlen(sRoleOverlay) > 3 && (res == Plugin_Continue || res == Plugin_Changed))
+    if (strlen(sRoleOverlay) > 3 && res == Plugin_Changed)
     {
         LogMessage("Precaching Overlay... %s", sRoleOverlay);
         

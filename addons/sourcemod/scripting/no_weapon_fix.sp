@@ -224,7 +224,7 @@ void Frame_ResetDrawViewModel()
     {
         if (IsPlayerAlive(i))
         {
-        SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
+            SetEntProp(i, Prop_Data, "m_bDrawViewmodel", 1);
         }
     }
 }

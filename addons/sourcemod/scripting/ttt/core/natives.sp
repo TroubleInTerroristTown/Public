@@ -8,8 +8,6 @@ void InitForwards()
     g_fwOnTakeDamage = new GlobalForward("TTT_OnTakeDamage", ET_Ignore, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Cell);
     g_fwOnClientDeath = new GlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
     g_fwOnClientDeathPre = new GlobalForward("TTT_OnClientDeathPre", ET_Event, Param_Cell, Param_Cell);
-    g_fwOnBodyFound = new GlobalForward("TTT_OnBodyFound", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
-    g_fwOnBodyCheck = new GlobalForward("TTT_OnBodyCheck", ET_Event, Param_Cell, Param_Cell);
     g_fwOnButtonPress = new GlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnButtonRelease = new GlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnModelUpdate = new GlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
@@ -22,20 +20,12 @@ void InitForwards()
     g_fwOnPlayerRespawn = new GlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
     g_fwOnRoundSlay = new GlobalForward("TTT_OnRoundSlay", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnRoleSelection = new GlobalForward("TTT_OnRoleSelection", ET_Event, Param_CellByRef, Param_CellByRef, Param_CellByRef);
-    g_fOnVersionCheck = CreateGlobalForward("TTT_OnVersionReceive", ET_Ignore, Param_Cell);
+    g_fOnVersionCheck = new GlobalForward("TTT_OnVersionReceive", ET_Ignore, Param_Cell);
+    g_fOnRoundTimerStart_Pre = new GlobalForward("TTT_OnRoundTimerStart_Pre", ET_Event, Param_CellByRef, Param_CellByRef);
 }
 
 void InitNatives()
 {
-    CreateNative("TTT_WasBodyFound", Native_WasBodyFound);
-    CreateNative("TTT_WasBodyScanned", Native_WasBodyScanned);
-    CreateNative("TTT_GetFoundStatus", Native_GetFoundStatus);
-    CreateNative("TTT_SetFoundStatus", Native_SetFoundStatus);
-    CreateNative("TTT_GetClientRagdoll", Native_GetClientRagdoll);
-    CreateNative("TTT_GetEntityRefRagdoll", Native_GetEntityRefRagdoll);
-    CreateNative("TTT_GetClientByRagdollID", Native_GetClientByRagdollID);
-    CreateNative("TTT_PushRagdoll", Native_PushRagdoll);
-    CreateNative("TTT_SetRagdoll", Native_SetRagdoll);
     CreateNative("TTT_GetClientRole", Native_GetClientRole);
     CreateNative("TTT_SetClientRole", Native_SetClientRole);
     CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -56,7 +46,6 @@ void InitNatives()
     CreateNative("TTT_CheckCommandAccess", Native_CheckCommandAccess);
     CreateNative("TTT_RespawnPlayer", Native_RespawnPlayer);
     CreateNative("TTT_RespawnPlayerRandom", Native_RespawnPlayerRandom);
-    CreateNative("TTT_TerminateRound", Native_TerminateRound);
     CreateNative("TTT_DisableRounds", Native_DisableRounds);
     CreateNative("TTT_GetRoundStatus", Native_GetRoundStatus);
     CreateNative("TTT_GetRoundID", Native_GetRoundID);
@@ -65,6 +54,10 @@ void InitNatives()
     CreateNative("TTT_GetPluginVersion", Native_GetPluginVersion);
     CreateNative("TTT_GetPlayerID", Native_GetPlayerID);
     CreateNative("TTT_GetClientOfPlayerID", Native_GetClientOfPlayerID);
+    CreateNative("TTT_SetRoundStatus", Native_SetRoundStatus);
+    CreateNative("TTT_StopRoundTimer", Native_StopRoundTimer);
+    CreateNative("TTT_TerminateRound", Native_StopRound);
+    CreateNative("TTT_GetClientName", Native_GetClientName);
 }
 
 public int Native_IsRoundActive(Handle plugin, int numParams)
@@ -111,111 +104,6 @@ public int Native_GetClientKarma(Handle plugin, int numParams)
     }
 
     return -1;
-}
-
-public int Native_GetClientRagdoll(Handle plugin, int numParams)
-{
-    int client = GetNativeCell(1);
-
-    if (TTT_IsClientValid(client))
-    {
-        Ragdoll body;
-
-        for (int i = 0; i < g_aRagdoll.Length; i++)
-        {
-            g_aRagdoll.GetArray(i, body, sizeof(body));
-            if (body.Victim == GetClientUserId(client))
-            {
-                SetNativeArray(2, body, sizeof(body));
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-public int Native_GetEntityRefRagdoll(Handle plugin, int numParams)
-{
-    int entityref = GetNativeCell(1);
-
-    if (IsValidEntity(EntRefToEntIndex(entityref)))
-    {
-        Ragdoll body;
-
-        for (int i = 0; i < g_aRagdoll.Length; i++)
-        {
-            g_aRagdoll.GetArray(i, body, sizeof(body));
-            if (body.EntityRef == entityref)
-            {
-                SetNativeArray(2, body, sizeof(body));
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-public int Native_GetClientByRagdollID(Handle plugin, int numParams)
-{
-    int ragdoll = GetNativeCell(1);
-
-    if (IsValidEntity(ragdoll))
-    {
-        Ragdoll body;
-
-        for (int i = 0; i < g_aRagdoll.Length; i++)
-        {
-            g_aRagdoll.GetArray(i, body, sizeof(body));
-            if (body.EntityRef == EntIndexToEntRef(ragdoll))
-            {
-                return GetClientOfUserId(body.Victim);
-            }
-        }
-    }
-
-    return -1;
-}
-
-public int Native_PushRagdoll(Handle plugin, int numParams)
-{
-    Ragdoll body;
-
-    GetNativeArray(1, body, GetNativeCell(2));
-
-    return g_aRagdoll.PushArray(body, GetNativeCell(2));
-}
-
-public int Native_SetRagdoll(Handle plugin, int numParams)
-{
-    Ragdoll body;
-
-    GetNativeArray(1, body, GetNativeCell(2));
-
-    bool found = false;
-
-    for (int i = 0; i < g_aRagdoll.Length; i++)
-    {
-        Ragdoll tmp;
-
-        g_aRagdoll.GetArray(i, tmp);
-
-        if (body.EntityRef == tmp.EntityRef)
-        {
-            g_aRagdoll.SetArray(i, body, sizeof(body));
-
-            found = true;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        TTT_PushRagdoll(body, GetNativeCell(2));
-    }
-
-    return found;
 }
 
 public int Native_SetClientRole(Handle plugin, int numParams)
@@ -291,64 +179,6 @@ public int Native_RemoveClientKarma(Handle plugin, int numParams)
     return -1;
 }
 
-public int Native_WasBodyFound(Handle plugin, int numParams)
-{
-    int client = GetNativeCell(1);
-
-    if (TTT_IsClientValid(client))
-    {
-        int iSize = g_aRagdoll.Length;
-
-        if (iSize == 0)
-        {
-            return false;
-        }
-
-        Ragdoll body;
-
-        for (int i = 0; i < iSize; i++)
-        {
-            g_aRagdoll.GetArray(i, body, sizeof(body));
-
-            if (body.Victim == GetClientUserId(client))
-            {
-                return body.Found;
-            }
-        }
-    }
-
-    return -1;
-}
-
-public int Native_WasBodyScanned(Handle plugin, int numParams)
-{
-    int client = GetNativeCell(1);
-
-    if (TTT_IsClientValid(client))
-    {
-        int iSize = g_aRagdoll.Length;
-
-        if (iSize == 0)
-        {
-            return false;
-        }
-
-        Ragdoll body;
-
-        for (int i = 0; i < iSize; i++)
-        {
-            g_aRagdoll.GetArray(i, body, sizeof(body));
-
-            if (body.Victim == GetClientUserId(client))
-            {
-                return body.Scanned;
-            }
-        }
-    }
-
-    return -1;
-}
-
 public int Native_LogString(Handle plugin, int numParams)
 {
     char message[512];
@@ -358,18 +188,6 @@ public int Native_LogString(Handle plugin, int numParams)
     PushStringToLogs(message);
 
     return 0;
-}
-
-public int Native_GetFoundStatus(Handle plugin, int numParams)
-{
-    return g_iPlayer[GetNativeCell(1)].Found;
-}
-
-public int Native_SetFoundStatus(Handle plugin, int numParams)
-{
-    g_iPlayer[GetNativeCell(1)].Found = view_as<bool>(GetNativeCell(2));
-
-    return;
 }
 
 public int Native_ForceTraitor(Handle plugin, int numParams)
@@ -646,23 +464,11 @@ public int Native_RespawnPlayerRandom(Handle plugin, int numParams)
     CS_RespawnPlayer(client);
     TeamInitialize(client, true, false);
     g_iPlayer[client].Alive = true;
-    g_iPlayer[client].Found = false;
+    TTT_SetFoundStatus(client, false);
 
-    Ragdoll body;
-    for (int i = 0; i < g_aRagdoll.Length; i++)
+    if (g_bBodies)
     {
-        g_aRagdoll.GetArray(i, body, sizeof(body));
-        if (body.Victim == GetClientUserId(client))
-        {
-            g_aRagdoll.Erase(i);
-
-            int iRagdoll = EntRefToEntIndex(body.EntityRef);
-
-            if (iRagdoll > 0)
-            {
-                AcceptEntityInput(iRagdoll, "Kill");
-            }
-        }
+        TTT_RemoveClientRagdoll(client);
     }
 
     Call_StartForward(g_fwOnPlayerRespawn);
@@ -678,27 +484,19 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
     CS_RespawnPlayer(client);
     TeamInitialize(client, true, false);
     g_iPlayer[client].Alive = true;
-    g_iPlayer[client].Found = false;
+    TTT_SetFoundStatus(client, false);
 
     float fOrigin[3];
     bool bFound = false;
 
-    Ragdoll body;
-    for (int i = 0; i < g_aRagdoll.Length; i++)
+    if (g_bBodies)
     {
-        g_aRagdoll.GetArray(i, body, sizeof(body));
-        if (body.Victim == GetClientUserId(client))
+        int ragdoll = TTT_GetClientRagdollEntIndex(client);
+        if (ragdoll > 0)
         {
-            g_aRagdoll.Erase(i);
-
-            int iRagdoll = EntRefToEntIndex(body.EntityRef);
-
-            if (iRagdoll > 0)
-            {
-                GetEntPropVector(iRagdoll, Prop_Send, "m_vecOrigin", fOrigin);
-                AcceptEntityInput(iRagdoll, "Kill");
-                bFound = true;
-            }
+            GetEntPropVector(ragdoll, Prop_Send, "m_vecOrigin", fOrigin);
+            TTT_RemoveClientRagdoll(client);
+            bFound = true;
         }
     }
 
@@ -803,4 +601,37 @@ public int Native_GetClientOfPlayerID(Handle plugin, int numParams)
     int id = GetNativeCell(1);
 
     return GetClientOfPlayerID(id);
+}
+
+public int Native_SetRoundStatus(Handle plugin, int numParams)
+{
+    g_iStatus = view_as<RoundStatus>(GetNativeCell(1));
+
+    return view_as<int>(g_iStatus);
+}
+
+public int Native_StopRoundTimer(Handle plugin, int numParams)
+{
+    TTT_ClearTimer(g_hRoundTimer);
+}
+
+public int Native_StopRound(Handle plugin, int numParams)
+{
+    float fTimer = view_as<float>(GetNativeCell(1));
+    CSRoundEndReason reason = view_as<CSRoundEndReason>(GetNativeCell(2));
+
+    g_iStatus = Round_Ending;
+    CS_TerminateRound(fTimer, reason);
+}
+
+public int Native_GetClientName(Handle plugin, int numParams)
+{
+    int iReturn = SetNativeString(2, g_iPlayer[GetNativeCell(1)].Name, GetNativeCell(3));
+
+    if (iReturn == SP_ERROR_NONE)
+    {
+        return true;
+    }
+
+    return false;
 }

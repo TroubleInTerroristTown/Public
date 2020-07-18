@@ -229,12 +229,15 @@ public Action Command_Radio(int client, int args)
         CReplyToCommand(client, "%s %T", g_sPluginTag, "Radio: Invalid target", client);
         return Plugin_Handled;
     }
+
+    char sName[MAX_NAME_LENGTH];
+    TTT_GetClientName(iTarget, sName, sizeof(sName));
     
     if (StrEqual(sMessage, "imwith", false))
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Im With", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Im With", i, sName);
         }
     }
     
@@ -242,7 +245,7 @@ public Action Command_Radio(int client, int args)
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Suspect", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Suspect", i, sName);
         }
     }
     
@@ -250,7 +253,7 @@ public Action Command_Radio(int client, int args)
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Traitor", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Traitor", i, sName);
         }
     }
 
@@ -258,7 +261,7 @@ public Action Command_Radio(int client, int args)
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: KOS", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: KOS", i, sName);
         }
     }
     
@@ -266,7 +269,7 @@ public Action Command_Radio(int client, int args)
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Innocent", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: Innocent", i, sName);
         }
     }
     
@@ -274,7 +277,7 @@ public Action Command_Radio(int client, int args)
     {
         LoopValidClients(i)
         {
-            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: See", i, iTarget);
+            CPrintToChat(i, "%s {%s}%N{default}: %T", g_sPluginTag, sColor, client, "TTT Radio: See", i, sName);
         }
     }
     

@@ -128,6 +128,11 @@ public Action Timer_Restore(Handle timer, any ref)
 
 public void Phys_OnObjectWake(int entity)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return;
+    }
+    
     if (g_cSpawnType == null)
     {
         g_cSpawnType = FindConVar("ttt_spawn_type");

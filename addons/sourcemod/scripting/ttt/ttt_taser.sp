@@ -11,6 +11,7 @@
 
 #undef REQUIRE_PLUGIN
 #include <ttt_glow>
+#include <ttt_glow_light>
 
 #define SHORT_NAME "taser"
 #define SHORT_NAME_T "taser_t"
@@ -20,6 +21,8 @@
 
 GlobalForward g_fwOnTased_Pre = null;
 GlobalForward g_fwOnTased_Post = null;
+
+bool g_bGlowLight = false;
 
 ConVar g_cDPrice = null;
 ConVar g_cDLimit = null;
@@ -50,14 +53,14 @@ ConVar g_cTaserCooldownMessage = null;
 ConVar g_cDisableTaserDamage = null;
 ConVar g_cBlockPick = null;
 ConVar g_cBlockDrop = null;
+ConVar g_cAddLogs = null;
+ConVar g_cLogFormat = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
 
 /* Block taser stuff or so... */
 Handle g_hCooldown = null;
-
-StringMap g_smGlow = null;
 
 enum struct PlayerData {
     bool HasRoundTaser;
@@ -129,8 +132,7 @@ public void OnPluginStart()
 
     LateLoadAll();
 
-    delete g_smGlow;
-    g_smGlow = new StringMap();
+    g_bGlowLight = LibraryExists("ttt_glow_light");
 }
 
 public void OnPluginEnd()
@@ -148,11 +150,30 @@ public void TTT_OnVersionReceive(int version)
     TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
+public void OnLibraryAdded(const char[] library)
+{
+    if (StrEqual(library, "ttt_glow_light", false))
+    {
+        g_bGlowLight = true;
+    }
+}
+
+public void OnLibraryRemoved(const char[] library)
+{
+    if (StrEqual(library, "ttt_glow_light", false))
+    {
+        g_bGlowLight = false;
+    }
+}
+
 public void OnConfigsExecuted()
 {
     g_cPluginTag = FindConVar("ttt_plugin_tag");
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
+
+    g_cAddLogs = FindConVar("ttt_steamid_add_to_logs");
+    g_cLogFormat = FindConVar("ttt_steamid_log_format");
 
     RegisterItem();
 }
@@ -218,8 +239,6 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
         KillTimer(g_hCooldown);
     }
     g_hCooldown = null;
-
-    g_smGlow.Clear();
 
     if (g_cTaserCooldown.FloatValue > 0.0)
     {
@@ -568,24 +587,27 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
 
     char sAttackerID[32], sVictimID[32];
 
-    ConVar hTag = FindConVar("ttt_steamid_add_to_logs");
-    if (hTag.BoolValue)
+    if (g_cAddLogs != null && g_cAddLogs.BoolValue)
     {
-        hTag = FindConVar("ttt_steamid_log_format");
-        if (hTag.IntValue == 1)
+        if (g_cLogFormat.IntValue == 1)
         {
             GetClientAuthId(iAttacker, AuthId_Steam2, sAttackerID, sizeof(sAttackerID));
             GetClientAuthId(iVictim, AuthId_Steam2, sVictimID, sizeof(sVictimID));
         }
-        else if (hTag.IntValue == 2)
+        else if (g_cLogFormat.IntValue == 2)
         {
             GetClientAuthId(iAttacker, AuthId_Steam3, sAttackerID, sizeof(sAttackerID));
             GetClientAuthId(iVictim, AuthId_Steam3, sVictimID, sizeof(sVictimID));
         }
-        else if (hTag.IntValue == 3)
+        else if (g_cLogFormat.IntValue == 3)
         {
             GetClientAuthId(iAttacker, AuthId_SteamID64, sAttackerID, sizeof(sAttackerID));
             GetClientAuthId(iVictim, AuthId_SteamID64, sVictimID, sizeof(sVictimID));
+        }
+        else if (g_cLogFormat.IntValue == 4)
+        {
+            Format(sAttackerID, sizeof(sAttackerID), "%d", GetSteamAccountID(iAttacker));
+            Format(sVictimID, sizeof(sVictimID), "%d", GetSteamAccountID(iVictim));
         }
         
         if (strlen(sAttackerID) > 2 && strlen(sVictimID) > 2)
@@ -594,47 +616,63 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
             Format(sVictimID, sizeof(sVictimID), " (%s)", sVictimID);
         }
     }
+
+    char sVictimName[MAX_NAME_LENGTH], sAttackerName[MAX_NAME_LENGTH];
+    TTT_GetClientName(iAttacker, sAttackerName, sizeof(sAttackerName));
+    TTT_GetClientName(iVictim, sVictimName, sizeof(sVictimName));
     
-    // TODO: Make it shorter(?) with this natives - https://github.com/Bara/TroubleinTerroristTown/issues/309
+    // TODO: Make it shorter(?) with this natives - https://github.com/TroubleInTerroristTown/Public/issues/309
     if (iRole == TTT_TEAM_TRAITOR)
     {
-        TTT_LogString("-> [%N%s (Traitor) was tased by %N%s] - TRAITOR DETECTED", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
+        char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
+        TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
+        TTT_GetClientName(iAttacker, sAttacker, sizeof(sAttacker));
+        
+        TTT_LogString("-> [%s%s (Traitor) was tased by %s%s] - TRAITOR DETECTED", sVictim, sVictimID, sAttacker, sAttackerID);
 
         if (g_cBroadcastTaserResult.BoolValue)
         {
-            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Traitor", LANG_SERVER, iAttacker, iVictim);
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Traitor", LANG_SERVER, sAttackerName, sVictimName);
         }
         else
         {
-            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, iVictim);
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Traitor", iVictim, sVictim);
         }
         
         TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
     }
     else if (iRole == TTT_TEAM_DETECTIVE)
     {
-        TTT_LogString("-> [%N%s (Detective) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
+        char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
+        TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
+        TTT_GetClientName(iAttacker, sAttacker, sizeof(sAttacker));
+        
+        TTT_LogString("-> [%s%s (Detective) was tased by %s%s]", sVictim, sVictimID, sAttacker, sAttackerID);
 
         if (g_cBroadcastTaserResult.BoolValue)
         {
-            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Detective", LANG_SERVER, iAttacker , iVictim);
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased a Detective", LANG_SERVER, sAttackerName, sVictimName);
         }
         else
         {
-            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, iVictim);
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, sVictim);
         }
     }
     else if (iRole == TTT_TEAM_INNOCENT)
     {
-        TTT_LogString("-> [%N%s (Innocent) was tased by %N%s]", iVictim, sVictimID, iAttacker, iVictim, sAttackerID);
+        char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
+        TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
+        TTT_GetClientName(iAttacker, sAttacker, sizeof(sAttacker));
+        
+        TTT_LogString("-> [%s%s (Innocent) was tased by %s%s]", sVictim, sVictimID, sAttacker, sAttackerID);
 
         if (g_cBroadcastTaserResult.BoolValue)
         {
-            CPrintToChatAll("%s %T", g_sPluginTag, "You tased an Innocent", LANG_SERVER, iAttacker, iVictim);
+            CPrintToChatAll("%s %T", g_sPluginTag, "You tased an Innocent", LANG_SERVER, sAttackerName, sVictimName);
         }
         else
         {
-            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, iVictim);
+            CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt an Innocent", iVictim, sVictim);
         }
     }
     
@@ -643,24 +681,32 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     Call_PushCell(iVictim);
     Call_Finish();
 
-    if (g_smGlow == null)
-    {
-        g_smGlow = new StringMap();
-    }
-
-    if (g_cGlowPlayer.BoolValue)
+    if (g_cGlowPlayer.BoolValue && g_cGlowLength.IntValue > 0)
     {
         if (g_cGlowToAll.BoolValue)
         {
-            LoopValidClients(i)
+            if (g_bGlowLight)
             {
-                SetGlow(i, iVictim);
+                TTT_AllCanSeeGlowLight(iVictim, g_cGlowLength.FloatValue);
             }
-        }
+            else
+            {
+                TTT_AllCanSeeGlow(iVictim, g_cGlowLength.FloatValue);
+            }
+        } 
         else
         {
-            SetGlow(iAttacker, iVictim);
+            if (g_bGlowLight)
+            {
+                TTT_CanSeeGlowLight(iAttacker, iVictim, g_cGlowLength.FloatValue);
+            }
+            else
+            {
+                TTT_CanSeeGlow(iAttacker, iVictim, g_cGlowLength.FloatValue);
+            }
         }
+
+        FadePlayer(iVictim, { 255, 255, 255, 100 });
     }
 
     if (iARole != TTT_TEAM_TRAITOR)
@@ -732,54 +778,6 @@ void UnblockTaser(int weapon)
 {
     SetEntPropFloat(weapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + -0.1);
     SetEntPropFloat(weapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() + -0.1);
-}
-
-public Action TTT_OnGlowCheck(int client, int target, bool &seeTarget)
-{
-    if (TTT_IsPlayerAlive(client) && TTT_IsPlayerAlive(target))
-    {
-        int iUserID = GetClientUserId(client);
-        int iTUserID = GetClientUserId(target);
-        int iEnd = -1;
-
-        char sKey[24];
-        Format(sKey, sizeof(sKey), "%d-%d", iUserID, iTUserID);
-
-        if (g_smGlow.GetValue(sKey, iEnd))
-        {
-            if (iEnd == -1)
-            {
-                return Plugin_Handled;
-            }
-
-            if (iEnd < GetTime())
-            {
-                g_smGlow.Remove(sKey);
-                return Plugin_Handled;
-            }
-
-            seeTarget = true;
-            return Plugin_Changed;
-        }
-    }
-
-    return Plugin_Handled;
-}
-
-void SetGlow(int client, int target)
-{
-    if (g_cGlowLength.IntValue > 0)
-    {
-        int iUserID = GetClientUserId(client);
-        int iTUserID = GetClientUserId(target);
-        int iEnd = GetTime() + g_cGlowLength.IntValue;
-
-        char sKey[24];
-        Format(sKey, sizeof(sKey), "%d-%d", iUserID, iTUserID);
-
-        g_smGlow.SetValue(sKey, iEnd, true);
-        FadePlayer(target, {255, 255, 255, 100});
-    }
 }
 
 void FadePlayer(int client, int iColor[4])
