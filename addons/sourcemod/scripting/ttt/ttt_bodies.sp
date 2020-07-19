@@ -552,7 +552,6 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
                 if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
                 {
                     AcceptEntityInput(iRagdoll, "Kill");
-                    g_aRagdoll.Erase(i);
                 }
                 else
                 {
