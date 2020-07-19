@@ -92,7 +92,6 @@ public void OnPluginStart()
     g_cTimeToAccept = AutoExecConfig_CreateConVar("revive_time_to_accept", "10", "Time in seconds to accept the revive request.", _, true, 5.0);
     g_cTimeToNextMessage = AutoExecConfig_CreateConVar("revive_time_to_next_message", "1", "Show just 1 message every x second when you try to revive someone. Why? -> Move during revive and you can spam the chat. 0 - Disabled");
     g_cStopMovement = AutoExecConfig_CreateConVar("revive_stop_on_movement", "0", "Stop revive countdown on movement?", _, true, 0.0, true, 1.0);
-    g_cReviveDistance = AutoExecConfig_CreateConVar("revive_distance", "95.0", "Max. distance in units to revive the target (0.0 = Disabled)");
     g_cLineOfSight = AutoExecConfig_CreateConVar("revive_check_line_of_sight", "1", "Target must be in line of sight during revive process", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
@@ -128,6 +127,8 @@ public void OnConfigsExecuted()
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 
     g_cDebug = FindConVar("ttt_debug_mode");
+
+    g_cReviveDistance = FindConVar("ttt_identify_max_distance");
 
     RegisterItem();
 }
