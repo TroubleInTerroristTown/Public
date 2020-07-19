@@ -2723,7 +2723,7 @@ public Action Command_MicCheck(int client, int args)
     char sName[MAX_NAME_LENGTH + 4], sUserID[12];
     LoopValidClients(i)
     {
-        if (g_iPlayer[client].AvoidDetective)
+        if (g_iPlayer[i].AvoidDetective)
         {
             Format(sName, sizeof(sName), "[ ] %s", g_iPlayer[i].Name);
         }
