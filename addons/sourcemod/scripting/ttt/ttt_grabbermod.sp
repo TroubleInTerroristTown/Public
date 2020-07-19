@@ -316,7 +316,7 @@ void GrabSomething(int client)
     
     if (StrEqual(sName, "prop_physics") || StrEqual(sName, "prop_physics_multiplayer") || StrEqual(sName, "func_physbox"))
     {
-        if (IsValidEdict(iEntity) && IsValidEntity(iEntity))
+        if (IsValidEntity(iEntity))
         {
             iEntity = ReplacePhysicsEntity(iEntity);
 
@@ -380,7 +380,7 @@ void GrabSomething(int client)
 bool ValidGrab(int client)
 {
     int iObject = EntRefToEntIndex(g_iPlayer[client].Object);
-    if (iObject != -1 && IsValidEntity(iObject) && IsValidEdict(iObject))
+    if (iObject != -1 && IsValidEntity(iObject))
     {
         return true;
     }
@@ -401,7 +401,7 @@ int GetObject(int client, bool hitSelf=true)
 
         iEntity = TraceToEntity(client);
 
-        if (IsValidEntity(iEntity) && IsValidEdict(iEntity))
+        if (IsValidEntity(iEntity))
         {
             char sName[64];
             GetEdictClassname(iEntity, sName, sizeof(sName));
@@ -596,7 +596,9 @@ public void OnPreThink(int i)
             vecPos[1] += vecDir[1] * g_iPlayer[i].Distance;
             vecPos[2] += vecDir[2] * g_iPlayer[i].Distance;
 
-            GetEntPropVector(g_iPlayer[i].Object, Prop_Send, "m_vecOrigin", vecDir);
+            int iEntity = EntRefToEntIndex(g_iPlayer[i].Object);
+
+            GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", vecDir);
 
             if (!IsNullVector(vecPos2) && !IsNullVector(vecDir))
             {
@@ -609,7 +611,7 @@ public void OnPreThink(int i)
             SubtractVectors(vecPos, vecDir, vecVel);
             ScaleVector(vecVel, 10.0);
 
-            TeleportEntity(g_iPlayer[i].Object, NULL_VECTOR, NULL_VECTOR, vecVel);
+            TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, vecVel);
         }
     }
     // }
