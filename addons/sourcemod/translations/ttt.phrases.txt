@@ -2013,10 +2013,16 @@
 		"pl"		"Ktoś zamówił {highlight}automatyczne Działo Orbitalne{default}."
 	}
 
+	"Ion cannon: Satellite approaching"
+	{
+		"en"		"{role t}Warning - {highlight}Ion cannon {default}satellite approaching."
+		"de"		"{role t}Warnung - {highlight}Ion Cannon {default}nähert sich!"
+	}
+
 	"Shield: Cannot have two"
 	{
 		"en"		"You already have {highlight}shield{default}!"
-		"de"		"You already have {highlight}shield{default}!"
+		"de"		"Du hast bereits ein {highlight}Schild{default}!"
 		"pl"		"Już masz {highlight}tarczę{default}!"
 	}
 
