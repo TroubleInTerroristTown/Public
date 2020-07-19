@@ -124,7 +124,7 @@ public int Native_HasIonCannon(Handle plugin, int numParams)
 
 public int Native_HasAutoIonCannon(Handle plugin, int numParams)
 {
-	int target = g_iPlayer[GetNativeCell(1)].iIonTarget;
+	int target = GetClientOfUserId(g_iPlayer[GetNativeCell(1)].iIonTarget);
 
 	return target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR;
 }
@@ -136,7 +136,7 @@ public int Native_GetIonCannon(Handle plugin, int numParams)
 
 public int Native_GetAutoIonCannon(Handle plugin, int numParams)
 {
-	int target = g_iPlayer[GetNativeCell(1)].iIonTarget;
+	int target = GetClientOfUserId(g_iPlayer[GetNativeCell(1)].iIonTarget);
 	
 	return (target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR) ? target : -1;
 }
@@ -225,10 +225,10 @@ public void OnPluginEnd()
 	}
 }
 
-// public void TTT_OnVersionReceive(int version)
-// {
-//     TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-// }
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
+}
 
 public void OnConfigsExecuted()
 {
@@ -311,7 +311,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 	{
 		if (g_iPlayer[client].iIonTarget != -1)
 		{
-			CPrintToChat(client, "%s You can't use more then one automatic ion!", g_sPluginTag);
+			CPrintToChat(client, "%s You can't use more then one automatic ion!", g_sPluginTag); // TODO: Translation
 			return Plugin_Stop;
 		}
 
@@ -387,7 +387,7 @@ void AimAtTarget(int client, int target)
 {
 	TTT_RemoveInventoryItem(client, SHORT_NAME_ION_AUTO);
 
-	g_iPlayer[client].iIonTarget = target;
+	g_iPlayer[client].iIonTarget = GetClientUserId(target);
 	g_iPlayer[client].iInfoTargetEntity = -1;
 	g_iPlayer[client].iBeaconBeepPitch = 97;
 	g_iPlayer[client].fBeaconBeepTime = 1.12;
@@ -395,14 +395,21 @@ void AimAtTarget(int client, int target)
 	g_iPlayer[client].fBeamRotationSpeed = 0.0;
 	g_iPlayer[client].bShowBeams = false;
 
-	CreateTimer(0.0, Timer_OnIonPlanted, client);
+	CreateTimer(0.0, Timer_OnIonPlanted, GetClientUserId(client));
 
-	g_iPlayer[client].hIonTarget = CreateTimer(0.1, Timer_UpdateTargetPosition, client, TIMER_REPEAT);
+	g_iPlayer[client].hIonTarget = CreateTimer(0.1, Timer_UpdateTargetPosition, GetClientUserId(client), TIMER_REPEAT);
 }
 
-Action Timer_UpdateTargetPosition(Handle timer, any client)
+Action Timer_UpdateTargetPosition(Handle timer, int userid)
 {
-	int target = g_iPlayer[client].iIonTarget;
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	int target = GetClientOfUserId(g_iPlayer[client].iIonTarget);
 
 	if (TTT_IsClientValid(target) && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR)
 	{
@@ -426,7 +433,7 @@ public void OnClientDisconnect(int client)
 {
 	LoopValidClients(i)
 	{
-		if (g_iPlayer[i].iIonTarget == client)
+		if (GetClientOfUserId(g_iPlayer[i].iIonTarget) == client)
 		{
 			g_iPlayer[i].iIonTarget = -1;
 			
@@ -463,22 +470,26 @@ void ClearIon(int client, bool ammo = false)
 		g_iPlayer[client].iIonCannonAmmo = 0;
 	}
 
-	if (g_iPlayer[client].iInfoTargetEntity > 0 && IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int iEntity = EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity);
+
+	if (iEntity > 0 && IsValidEntity(iEntity))
 	{
-		AcceptEntityInput(g_iPlayer[client].iInfoTargetEntity, "Kill");
+		AcceptEntityInput(iEntity, "Kill");
 	}
 
-	if (g_iPlayer[client].iIonTarget != -1)
-	{
-		g_iPlayer[client].iIonTarget = -1;
+	g_iPlayer[client].iInfoTargetEntity = -1;
 
+	if (GetClientOfUserId(g_iPlayer[client].iIonTarget) != -1)
+	{
 		if (g_cIonKarmaOnClear.IntValue > 0)
 		{
 			TTT_AddClientKarma(client, g_cIonKarmaOnClear.IntValue, true);
 		}
 	}
 
-	g_iPlayer[client].iInfoTargetEntity = -1;
+	g_iPlayer[client].iIonTarget = -1;
+
+	iEntity = -1;
 	g_iPlayer[client].iFireWeaponStartTime = 0;
 
 	SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime", 0.0);
@@ -514,7 +525,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[
 			{
 				char sBuffer[1024];
 
-				if (g_iPlayer[client].iInfoTargetEntity > 0 || IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+				if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) > 0 || IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 				{
 					Format(sBuffer, sizeof(sBuffer), "%T", "Ion cannon: One ion per time", client);
 					PrintCenterText2(client, "TTT - Ion Cannon", sBuffer);
@@ -539,8 +550,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[
 					SetEntProp(client, Prop_Send, "m_iProgressBarDuration", RoundToNearest(fPlaceTime));
 					
 					g_iPlayer[client].iFireWeaponStartTime = GetTime();
-					g_iPlayer[client].hFiringWeaponCountdown = CreateTimer(0.5, Timer_OnUpdatePlaceCountdown, client, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
-					g_iPlayer[client].hFiringWeapon = CreateTimer(fPlaceTime, Timer_OnIonPlanted, client, TIMER_FLAG_NO_MAPCHANGE);
+					g_iPlayer[client].hFiringWeaponCountdown = CreateTimer(0.5, Timer_OnUpdatePlaceCountdown, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+					g_iPlayer[client].hFiringWeapon = CreateTimer(fPlaceTime, Timer_OnIonPlanted, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 					
 					BlockKnife(client);
 
@@ -587,8 +598,15 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[
 	return Plugin_Continue;
 }
 
-Action Timer_OnUpdatePlaceCountdown(Handle timer, any client)
+Action Timer_OnUpdatePlaceCountdown(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
 	if (!IsClientInGame(client) || g_iPlayer[client].iFireWeaponStartTime == 0)
 	{
 		TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
@@ -621,11 +639,17 @@ void BlockKnife(int client)
 	}
 }
 
-Action Timer_OnIonPlanted(Handle timer, any client)
+Action Timer_OnIonPlanted(Handle timer, int userid)
 {
-	int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? g_iPlayer[client].iIonTarget : client;
+	int client = GetClientOfUserId(userid);
 
-	// TODO: Translation
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? GetClientOfUserId(g_iPlayer[client].iIonTarget) : client;
+
 	if (target != client)
 	{
 		LoopValidClients(i)
@@ -650,39 +674,53 @@ Action Timer_OnIonPlanted(Handle timer, any client)
 	SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime", 0.0);
 	SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 0);
 	
-	g_iPlayer[client].iInfoTargetEntity = CreateEntityByName("info_target");
+	int iEntity = CreateEntityByName("info_target");
 	
-	if (g_iPlayer[client].iInfoTargetEntity == -1)
+	if (iEntity == -1)
 	{
 		return;
 	}
 	
-	DispatchKeyValue(g_iPlayer[client].iInfoTargetEntity, "targetname", "info_target_ion");
-	SetEntityModel(g_iPlayer[client].iInfoTargetEntity, ION_MODEL);
+	DispatchKeyValue(iEntity, "targetname", "info_target_ion");
+	SetEntityModel(iEntity, ION_MODEL);
 	
-	SetEntityMoveType(g_iPlayer[client].iInfoTargetEntity, MOVETYPE_NONE);
-	SetEntPropEnt(g_iPlayer[client].iInfoTargetEntity, Prop_Data, "m_hOwnerEntity", client);
-	SetEntProp(g_iPlayer[client].iInfoTargetEntity, Prop_Send, "m_nSolidType", 6);
+	SetEntityMoveType(iEntity, MOVETYPE_NONE);
+	SetEntPropEnt(iEntity, Prop_Data, "m_hOwnerEntity", client);
+	SetEntProp(iEntity, Prop_Send, "m_nSolidType", 6);
 	
-	int iEffects = GetEntProp(g_iPlayer[client].iInfoTargetEntity, Prop_Send, "m_fEffects");
+	int iEffects = GetEntProp(iEntity, Prop_Send, "m_fEffects");
 	iEffects |= 32;
-	SetEntProp(g_iPlayer[client].iInfoTargetEntity, Prop_Send, "m_fEffects", iEffects);
+	SetEntProp(iEntity, Prop_Send, "m_fEffects", iEffects);
 
-	GetClientAbsOrigin(target, g_iPlayer[client].fInfoTargetOrigin);
-	TeleportEntity(g_iPlayer[client].iInfoTargetEntity, g_iPlayer[client].fInfoTargetOrigin, NULL_VECTOR, NULL_VECTOR);
-	
-	TE_SetupGlowSprite(g_iPlayer[client].fInfoTargetOrigin, g_iGlowSprite, 3.0, 1.0, 100);
-	TE_SendToAll();
-	
-	EmitSoundToAllAny(SOUND_BEEP, g_iPlayer[client].iInfoTargetEntity, SNDCHAN_ITEM, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, g_iPlayer[client].iBeaconBeepPitch);
+	if (DispatchSpawn(iEntity))
+	{
+		GetClientAbsOrigin(target, g_iPlayer[client].fInfoTargetOrigin);
+		TeleportEntity(iEntity, g_iPlayer[client].fInfoTargetOrigin, NULL_VECTOR, NULL_VECTOR);
+		
+		TE_SetupGlowSprite(g_iPlayer[client].fInfoTargetOrigin, g_iGlowSprite, 3.0, 1.0, 100);
+		TE_SendToAll();
+		
+		EmitSoundToAllAny(SOUND_BEEP, iEntity, SNDCHAN_ITEM, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, g_iPlayer[client].iBeaconBeepPitch);
 
-	CreateTimer(5.0, Timer_OnIonStartup, client, TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(g_iPlayer[client].fBeaconBeepTime, Timer_OnPlayBeaconBeep, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(5.0, Timer_OnIonStartup, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(g_iPlayer[client].fBeaconBeepTime, Timer_OnPlayBeaconBeep, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+
+		g_iPlayer[client].iInfoTargetEntity = EntIndexToEntRef(iEntity);
+	}
 }
 
-Action Timer_OnPlayBeaconBeep(Handle timer, any client)
+Action Timer_OnPlayBeaconBeep(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	int iEntity = EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity);
+	
+	if (iEntity < 0 || !IsValidEntity(iEntity))
 	{
 		return;
 	}
@@ -700,32 +738,45 @@ Action Timer_OnPlayBeaconBeep(Handle timer, any client)
 		g_iPlayer[client].fBeaconBeepTime = 0.3;
 	}
 
-	EmitSoundToAllAny(SOUND_BEEP, g_iPlayer[client].iInfoTargetEntity, SNDCHAN_ITEM, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, g_iPlayer[client].iBeaconBeepPitch);
+	EmitSoundToAllAny(SOUND_BEEP, iEntity, SNDCHAN_ITEM, SNDLEVEL_GUNFIRE, SND_NOFLAGS, SNDVOL_NORMAL, g_iPlayer[client].iBeaconBeepPitch);
 
-	CreateTimer(g_iPlayer[client].fBeaconBeepTime, Timer_OnPlayBeaconBeep, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_iPlayer[client].fBeaconBeepTime, Timer_OnPlayBeaconBeep, userid, TIMER_FLAG_NO_MAPCHANGE);
 
 	TE_SetupGlowSprite(g_iPlayer[client].fInfoTargetOrigin, g_iGlowSprite, g_iPlayer[client].fBeaconBeepTime, 1.0, 100);
 	TE_SendToAll();
 }
 
-Action Timer_OnIonStartup(Handle timer, any client)
+Action Timer_OnIonStartup(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 	{
 		return;
 	}
 	
 	EmitSoundToAllAny(SOUND_APPROACH);
 
-	// TODO: Translation
-	CPrintToChatAll("%s Warning - {darkred}ion cannon{green} satellite approaching.", g_sPluginTag);
+	CPrintToChatAll("%s Warning - {darkred}ion cannon{green} satellite approaching.", g_sPluginTag); // TODO: Translation
 
-	CreateTimer(g_cIonDeployTime.FloatValue, Timer_OnTraceReady, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(g_cIonDeployTime.FloatValue, Timer_OnTraceReady, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnTraceReady(Handle timer, any client)
+Action Timer_OnTraceReady(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 	{
 		return;
 	}
@@ -789,27 +840,34 @@ Action Timer_OnTraceReady(Handle timer, any client)
 
 		pack = new DataPack();
 		pack.WriteCell(i);
-		pack.WriteCell(client);
+		pack.WriteCell(GetClientUserId(client));
 		
-		CreateTimer(fTime, Timer_OnTraceStart, pack, TIMER_FLAG_NO_MAPCHANGE | TIMER_DATA_HNDL_CLOSE);
+		CreateTimer(fTime, Timer_OnTraceStart, pack, TIMER_FLAG_NO_MAPCHANGE);
 	}
 	
 	EmitSoundToAllAny(SOUND_READY, _, _, _, _, g_cIonSoundsVolume.FloatValue);
 	
 	for (float i = 0.0; i < 7.5; i += 0.01)
 	{
-		CreateTimer(i + 3.0, Timer_OnLaserRotate, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(i + 3.0, Timer_OnLaserRotate, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 	
-	CreateTimer(2.9, Timer_OnAddSpeed, client, TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(11.5, Timer_OnCreateFire, client, TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(12.5, Timer_OnClearLasers, client, TIMER_FLAG_NO_MAPCHANGE);
-	CreateTimer(15.2, Timer_OnFireIonCannon, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(2.9, Timer_OnAddSpeed, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(11.5, Timer_OnCreateFire, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(12.5, Timer_OnClearLasers, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(15.2, Timer_OnFireIonCannon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnCreateFire(Handle timer, any client)
+Action Timer_OnCreateFire(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 	{
 		return;
 	}
@@ -835,12 +893,19 @@ Action Timer_OnCreateFire(Handle timer, any client)
 		AcceptEntityInput(iFire, "StartFire", client);
 	}
 
-	CreateTimer(1.5, Timer_OnCreateFire, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(1.5, Timer_OnCreateFire, userid, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnClearLasers(Handle timer, any client)
+Action Timer_OnClearLasers(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity > 0 && IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) > 0 && IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 	{
 		g_iPlayer[client].bShowBeams = false;
 	}
@@ -851,11 +916,18 @@ Action Timer_OnTraceStart(Handle timer, DataPack pack)
 	pack.Reset();
 
 	int index = pack.ReadCell();
-	int client = pack.ReadCell();
+	int userid = pack.ReadCell();
+
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
 
 	delete pack;
 	
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
 	{
 		return;
 	}
@@ -872,16 +944,23 @@ Action Timer_OnTraceStart(Handle timer, DataPack pack)
 	TE_SetupGlowSprite(fBeamOrigin, g_iGlowSprite, 2.0, 10.0, 100);
 	TE_SendToAll();
 
-	DataPack dPack = new DataPack();
-	dPack.WriteCell(index);
-	dPack.WriteCell(client);
+	pack = new DataPack();
+	pack.WriteCell(index);
+	pack.WriteCell(client);
 
-	RequestFrame(Frame_ShowBeam, dPack);
+	RequestFrame(Frame_ShowBeam, pack);
 }
 
-Action Timer_OnLaserRotate(Handle timer, any client)
+Action Timer_OnLaserRotate(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity) || !g_iPlayer[client].bShowBeams)
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
 	{
 		return;
 	}
@@ -903,9 +982,16 @@ Action Timer_OnLaserRotate(Handle timer, any client)
 	}
 }
 
-Action Timer_OnAddSpeed(Handle timer, any client)
+Action Timer_OnAddSpeed(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity) || !g_iPlayer[client].bShowBeams)
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
 	{
 		return;
 	}
@@ -917,17 +1003,26 @@ Action Timer_OnAddSpeed(Handle timer, any client)
 		
 	g_iPlayer[client].fBeamRotationSpeed += 0.1;
 	
-	CreateTimer(0.6, Timer_OnAddSpeed, client, TIMER_FLAG_NO_MAPCHANGE);
+	CreateTimer(0.6, Timer_OnAddSpeed, userid, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnFireIonCannon(Handle timer, any client)
+Action Timer_OnFireIonCannon(Handle timer, int userid)
 {
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity))
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
 	{
 		return;
 	}
 
-	int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? g_iPlayer[client].iIonTarget : -1;
+	int iEntity = EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity);
+
+	if (iEntity < 0 || !IsValidEntity(iEntity))
+	{
+		return;
+	}
+
+	int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? GetClientOfUserId(g_iPlayer[client].iIonTarget) : -1;
 
 	if (target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR)
 	{
@@ -1067,7 +1162,7 @@ Action Timer_OnFireIonCannon(Handle timer, any client)
 	
 	for (float i = 0.6; i <= 12.0; i += 0.6)
 	{
-		CreateTimer(i, Timer_ShowExplosions, client, TIMER_FLAG_NO_MAPCHANGE);
+		CreateTimer(i, Timer_ShowExplosions, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 	}
 	
 	float fDirection[3] = {-90.0, 0.0, 0.0};
@@ -1096,15 +1191,22 @@ Action Timer_OnFireIonCannon(Handle timer, any client)
 		AcceptEntityInput(iFire, "StartFire", client);
 	}
 	
-	EmitSoundToAllAny(SOUND_ATTACK, g_iPlayer[client].iInfoTargetEntity, SNDCHAN_AUTO, SNDLEVEL_RAIDSIREN);
+	EmitSoundToAllAny(SOUND_ATTACK, iEntity, SNDCHAN_AUTO, SNDLEVEL_RAIDSIREN);
 	
-	AcceptEntityInput(g_iPlayer[client].iInfoTargetEntity, "Kill");
+	AcceptEntityInput(iEntity, "Kill");
 
 	g_iPlayer[client].iInfoTargetEntity = -1;
 }
 
-Action Timer_ShowExplosions(Handle timer, any client)
+Action Timer_ShowExplosions(Handle timer, int userid)
 {
+	int client = GetClientOfUserId(userid);
+
+	if (!TTT_IsClientValid(client))
+	{
+		return;
+	}
+
 	float fMagnitude = Math_GetRandomFloat(g_cIonExplosionMinDamage.FloatValue, g_cIonExplosionMaxDamage.FloatValue);
 
 	for(int x = 0; x <= 30; x += g_CIonExplosionRate.IntValue)
@@ -1199,12 +1301,13 @@ stock void SpawnShooter(int client, float fAngles[3], float fGibs, float fDelay,
 
 		TeleportEntity(iEnt, fLocation, NULL_VECTOR, NULL_VECTOR);
 
-		CreateTimer(3.0, Timer_KillEntity, iEnt);
+		CreateTimer(3.0, Timer_KillEntity, EntIndexToEntRef(iEnt));
 	}
 }
 
-Action Timer_KillEntity(Handle timer, any iEnt)
+Action Timer_KillEntity(Handle timer, int ref)
 {
+	int iEnt = EntRefToEntIndex(ref);
 	if (iEnt > 0 && IsValidEntity(iEnt))
 	{
 		char sName[64];
@@ -1320,7 +1423,7 @@ void Frame_ShowBeam(DataPack pack)
 
 	delete pack;
 
-	if (g_iPlayer[client].iInfoTargetEntity <= 0 || !IsValidEntity(g_iPlayer[client].iInfoTargetEntity) || !g_iPlayer[client].bShowBeams)
+	if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
 	{
 		return;
 	}
@@ -1336,9 +1439,9 @@ void Frame_ShowBeam(DataPack pack)
 	TE_SetupGlowSprite(g_fBeamOrigin[client][index], g_iGlowSprite, 0.03, 5.0, 100);
 	TE_SendToAll();
 
-	DataPack dPack = new DataPack();
-	dPack.WriteCell(index);
-	dPack.WriteCell(client);
+	pack = new DataPack();
+	pack.WriteCell(index);
+	pack.WriteCell(client);
 
-	RequestFrame(Frame_ShowBeam, dPack);
+	RequestFrame(Frame_ShowBeam, pack);
 }

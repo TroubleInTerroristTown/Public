@@ -156,7 +156,7 @@ public int Native_RemoveHasteTime(Handle plugin, int numParams)
 
 void StartHasteRound(int players, int traitors)
 {
-    TTT_ClearTimer(g_hRoundTimer);
+    delete g_hRoundTimer;
 
     int iRandom = GetRandomInt(1, 100);
 
