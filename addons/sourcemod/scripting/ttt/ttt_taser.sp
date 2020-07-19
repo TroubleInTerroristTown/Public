@@ -246,9 +246,9 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
         LoopValidClients(i)
         {
-            for(int offset = 0; offset < 128; offset += 4)
+            for(int j = 0; j < GetEntPropArraySize(i, Prop_Send, "m_hMyWeapons"); j++)
             {
-                int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+                int weapon = GetEntPropEnt(i, Prop_Send, "m_hMyWeapons", j);
         
                 if (IsValidEntity(weapon))
                 {
@@ -269,9 +269,9 @@ public Action Timer_ActivateTasers(Handle timer)
 {
     LoopValidClients(i)
     {
-        for(int offset = 0; offset < 128; offset += 4)
+        for(int j = 0; j < GetEntPropArraySize(i, Prop_Send, "m_hMyWeapons"); j++)
         {
-            int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+            int weapon = GetEntPropEnt(i, Prop_Send, "m_hMyWeapons", j);
     
             if (IsValidEntity(weapon))
             {

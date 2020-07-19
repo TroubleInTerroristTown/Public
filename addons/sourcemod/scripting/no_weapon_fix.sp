@@ -32,8 +32,6 @@ int g_iCooldownHeat;
 ConVar cvFakeItemClass;
 int g_iFakeItemClass;
 
-int m_hMyWeapons;
-
 enum struct PlayerData {
     int FakeRef;
     int Cooldown;
@@ -68,15 +66,6 @@ public void OnPluginStart()
     cvFakeItemClass.AddChangeHook(OnSettingChanged);
 
     AutoExecConfig(true, "no_weapon_fix_v32");
-
-    m_hMyWeapons = FindSendPropInfo("CBasePlayer", "m_hMyWeapons");
-
-    if(m_hMyWeapons == -1)
-    {
-        char Error[128];
-        FormatEx(Error, sizeof(Error), "FATAL ERROR m_hMyWeapons [%d]. Please contact the author.", m_hMyWeapons);
-        SetFailState(Error);
-    }
 
     HookEvent("item_equip", Event_ItemEquip);
 
@@ -159,9 +148,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
     // Check if player has another weapon, thanks to ShaRen
     int iWeapon = decoy;
-    for (int j = 0, ent = 0; j < 128; j += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        ent = GetEntDataEnt2(client, m_hMyWeapons + j);
+        int ent = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
         if (ent > 0 && ent != decoy) // skip fake decoy
         {
             iWeapon = ent;

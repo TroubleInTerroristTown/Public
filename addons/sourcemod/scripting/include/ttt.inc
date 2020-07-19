@@ -712,9 +712,9 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
 
 stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -1034,9 +1034,9 @@ public bool FilterOnlyPlayers(int entity, int contentsMask, any data)
 
 stock int TTT_HasClientKnife(int client)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -1055,9 +1055,9 @@ stock int TTT_HasClientKnife(int client)
 
 stock int TTT_HasClientTaser(int client)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -1076,9 +1076,9 @@ stock int TTT_HasClientTaser(int client)
 
 stock int TTT_HasClientMelee(int client)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -1097,9 +1097,9 @@ stock int TTT_HasClientMelee(int client)
 
 stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -1118,9 +1118,9 @@ stock int TTT_HasClientWeapon(int client, const char[] sWeapon)
 
 stock void TTT_RemoveMeleeWeapons(int client)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {

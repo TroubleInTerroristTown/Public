@@ -1097,9 +1097,61 @@ public Action Timer_Selection(Handle hTimer)
 
     ArrayList aPlayers = new ArrayList(1);
     int iPlayers = 0;
+    bool bSkip = false;
 
     LoopValidClients(i)
     {
+        bSkip = false;
+
+        if (g_iPlayer[i].RoundSlays > 0)
+        {
+            if (g_iPlayer[i].RoundSlays < 0)
+            {
+                g_iPlayer[i].RoundSlays = 0;
+                UpdatePlayerRSlays(i);
+                continue;
+            }
+            else if (g_iPlayer[i].RoundSlays == 0)
+            {
+                UpdatePlayerRSlays(i);
+                continue;
+            }
+
+            if (IsPlayerAlive(i))
+            {
+                ForcePlayerSuicide(i);
+            }
+
+            g_iPlayer[i].RoundSlays--;
+            bSkip = true;
+
+            Call_StartForward(g_fwOnRoundSlay);
+            Call_PushCell(i);
+            Call_PushCell(g_iPlayer[i].RoundSlays);
+            Call_Finish();
+
+            // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
+            iPlayers--;
+
+            if (g_iPlayer[i].RoundSlays > 0)
+            {
+                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iPlayer[i].RoundSlays);
+                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iPlayer[i].RoundSlays);
+            }
+
+            UpdatePlayerRSlays(i);
+
+            if (g_cOpenRulesOnPunish.BoolValue)
+            {
+                TTT_ClientOpenRules(i);
+            }
+        }
+
+        if (bSkip)
+        {
+            continue;
+        }
+
         int iTeam = GetClientTeam(i);
 
         if ((iTeam != CS_TEAM_T && iTeam != CS_TEAM_CT) || (!g_cDebug.BoolValue && IsFakeClient(i)))
@@ -1153,48 +1205,6 @@ public Action Timer_Selection(Handle hTimer)
         g_iStatus = Round_Inactive;
 
         return;
-    }
-
-    LoopValidClients(i)
-    {
-        if (IsPlayerAlive(i) && g_iPlayer[i].RoundSlays > 0)
-        {
-            if (g_iPlayer[i].RoundSlays < 0)
-            {
-                g_iPlayer[i].RoundSlays = 0;
-                UpdatePlayerRSlays(i);
-                continue;
-            }
-            else if (g_iPlayer[i].RoundSlays == 0)
-            {
-                UpdatePlayerRSlays(i);
-                continue;
-            }
-
-            ForcePlayerSuicide(i);
-            g_iPlayer[i].RoundSlays--;
-
-            Call_StartForward(g_fwOnRoundSlay);
-            Call_PushCell(i);
-            Call_PushCell(g_iPlayer[i].RoundSlays);
-            Call_Finish();
-
-            // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
-            iPlayers--;
-
-            if (g_iPlayer[i].RoundSlays > 0)
-            {
-                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iPlayer[i].RoundSlays);
-                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iPlayer[i].RoundSlays);
-            }
-
-            UpdatePlayerRSlays(i);
-
-            if (g_cOpenRulesOnPunish.BoolValue)
-            {
-                TTT_ClientOpenRules(i);
-            }
-        }
     }
 
     //Check if there are any slain players
@@ -1727,9 +1737,9 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
         }
     }
 
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {
@@ -3279,9 +3289,9 @@ public Action Timer_1(Handle timer)
         {
             if (g_iPlayer[i].Role == TTT_TEAM_UNASSIGNED && g_iStatus != Round_Active && g_cdenyFire.BoolValue)
             {
-                for(int offset = 0; offset < 128; offset += 4)
+                for(int j = 0; j < GetEntPropArraySize(i, Prop_Send, "m_hMyWeapons"); j++)
                 {
-                    int weapon = GetEntDataEnt2(i, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+                    int weapon = GetEntPropEnt(i, Prop_Send, "m_hMyWeapons", j);
 
                     if (IsValidEntity(weapon))
                     {
@@ -3777,16 +3787,6 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
     g_iStatus = Round_Ended;
 
     return Plugin_Changed;
-}
-
-public void Frame_KillEntity(int ref)
-{
-    int iEntity = EntRefToEntIndex(ref);
-
-    if (IsValidEntity(iEntity))
-    {
-        AcceptEntityInput(iEntity, "kill");
-    }
 }
 
 public Action Event_PlayerTeam_Pre(Event event, const char[] name, bool dontBroadcast)

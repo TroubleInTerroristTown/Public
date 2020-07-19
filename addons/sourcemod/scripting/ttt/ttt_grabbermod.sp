@@ -36,6 +36,7 @@ ConVar g_cReloadFlag = null;
 ConVar g_cAllowFreeze = null;
 ConVar g_cGrabButton = null;
 ConVar g_cDebug = null;
+ConVar g_cIdentifyDistance = null;
 
 int g_iSprite = -1;
 
@@ -150,6 +151,7 @@ public void OnMapStart()
 public void OnConfigsExecuted()
 {
     g_cDebug = FindConVar("ttt_debug_mode");
+    g_cIdentifyDistance = FindConVar("ttt_identify_max_distance");
 }
 
 public void TTT_OnRoundStart()
@@ -208,7 +210,7 @@ void GrabSomething(int client)
     }
 
     int iEntity = -1;
-    float VecPos_Ent[3], VecPos_Client[3];
+    float fEntityPos[3], fClientPos[3];
 
     iEntity = GetObject(client, false);
 
@@ -224,9 +226,9 @@ void GrabSomething(int client)
         return;
     }
 
-    GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", VecPos_Ent);
-    GetClientEyePosition(client, VecPos_Client);
-    if (GetVectorDistance(VecPos_Ent, VecPos_Client, false) > g_cGrabDistance.FloatValue)
+    GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fEntityPos);
+    GetClientEyePosition(client, fClientPos);
+    if (GetVectorDistance(fEntityPos, fClientPos, false) > g_cGrabDistance.FloatValue)
     {
         return;
     }
@@ -332,6 +334,12 @@ void GrabSomething(int client)
         {
             return;
         }
+
+        // This check should fix this crash bug: https://youtu.be/GbpkerPoO7g
+        if (GetVectorDistance(fEntityPos, fClientPos, false) > g_cIdentifyDistance.FloatValue - 5.0)
+        {
+            return;
+        }
     }
     
     if (!g_cGrabAlive.BoolValue)
@@ -371,7 +379,7 @@ void GrabSomething(int client)
         EmitSoundToClientAny(client, sSound, _, _, _, _, g_cGrabSoundVol.FloatValue);
     }
 
-    g_iPlayer[client].Distance = GetVectorDistance(VecPos_Ent, VecPos_Client, false);
+    g_iPlayer[client].Distance = GetVectorDistance(fEntityPos, fClientPos, false);
 
     float position[3];
     TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, position);

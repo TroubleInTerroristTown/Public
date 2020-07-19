@@ -336,9 +336,9 @@ public Action Timer_FixMode(Handle timer, any userid)
 
 void DropWeapons(int client)
 {
-    for(int offset = 0; offset < 128; offset += 4)
+    for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
-        int weapon = GetEntDataEnt2(client, FindSendPropInfo("CBasePlayer", "m_hMyWeapons") + offset);
+        int weapon = GetEntPropEnt(client, Prop_Send, "m_hMyWeapons", i);
 
         if (IsValidEntity(weapon))
         {

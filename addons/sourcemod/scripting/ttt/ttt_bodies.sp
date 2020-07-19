@@ -549,7 +549,25 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
 
             if (iRagdoll > 0)
             {
-                AcceptEntityInput(iRagdoll, "Kill");
+                if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
+                {
+                    AcceptEntityInput(iRagdoll, "Kill");
+                    g_aRagdoll.Erase(i);
+                }
+                else
+                {
+                    int iParticle = EntRefToEntIndex(g_iParticleRef[iRagdoll]);
+
+                    if (IsValidEntity(iParticle))
+                    {
+                        AcceptEntityInput(iParticle, "DestroyImmediately");
+                    }
+                    
+                    if (IsValidEntity(iRagdoll))
+                    {
+                        AcceptEntityInput(iRagdoll, "Kill");
+                    }
+                }
             }
         }
     }
@@ -962,7 +980,25 @@ void IdentifyEntity(int client, int button = 0, bool skip = false, int target = 
                 {
                     CPrintToChat(client, "%s %T", g_sPluginTag, "Invalid Ragdoll", client);
 
-                    AcceptEntityInput(iEntity, "Kill");
+                    if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
+                    {
+                        AcceptEntityInput(iEntity, "Kill");
+                    }
+                    else
+                    {
+                        int iParticle = EntRefToEntIndex(g_iParticleRef[iEntity]);
+
+                        if (IsValidEntity(iParticle))
+                        {
+                            AcceptEntityInput(iParticle, "DestroyImmediately");
+                        }
+                        
+                        if (IsValidEntity(iEntity))
+                        {
+                            AcceptEntityInput(iEntity, "Kill");
+                        }
+                    }
+
                     g_aRagdoll.Erase(i);
 
                     return;
