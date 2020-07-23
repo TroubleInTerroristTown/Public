@@ -7,6 +7,9 @@
 #include <ttt>
 #include <ttt_ragdoll>
 
+#undef REQUIRE_PLUGIN
+#include <ttt_grabbermod>
+
 #define MODEL_MICROWAVE "props/cs_office/microwave.mdl"
 
 public Plugin myinfo =
@@ -22,6 +25,8 @@ ArrayList g_aRagdoll = null;
 
 GlobalForward g_fwOnBodyFound = null;
 GlobalForward g_fwOnBodyCheck = null;
+
+bool g_bGrabberMod = false;
 
 enum struct PlayerData {
     bool IsChecking;
@@ -105,6 +110,30 @@ public void OnConfigsExecuted()
     g_cDebugMessages = FindConVar("ttt_show_debug_messages");
     g_cAddSteamIDtoLogs = FindConVar("ttt_steamid_add_to_logs");
     g_cSteamIDLogFormat = FindConVar("ttt_steamid_log_format");
+}
+
+public void OnAllPluginsLoaded()
+{
+    if (LibraryExists("ttt_grabbermod"))
+    {
+        g_bGrabberMod = true;
+    }
+}
+
+public void OnLibraryAdded(const char[] library)
+{
+    if (StrEqual(library, "ttt_grabbermod", false))
+    {
+        g_bGrabberMod = true;
+    }
+}
+
+public void OnLibraryRemoved(const char[] library)
+{
+    if (StrEqual(library, "ttt_grabbermod", false))
+    {
+        g_bGrabberMod = false;
+    }
 }
 
 public void OnMapStart()
@@ -545,29 +574,26 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
         {
             g_aRagdoll.Erase(i);
 
-            int iRagdoll = EntRefToEntIndex(body.EntityRef);
-
-            if (iRagdoll > 0)
+            if (g_bGrabberMod)
             {
-                if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
-                {
-                    AcceptEntityInput(iRagdoll, "Kill");
-                }
-                else
-                {
-                    int iParticle = EntRefToEntIndex(g_iParticleRef[iRagdoll]);
+                int iGrabber = -1;
 
-                    if (IsValidEntity(iParticle))
+                int iEnt = EntRefToEntIndex(body.EntityRef);
+                LoopValidClients(j)
+                {
+                    if (iEnt == TTT_GetGrabEntity(j))
                     {
-                        AcceptEntityInput(iParticle, "DestroyImmediately");
+                        iGrabber = j;
                     }
-                    
-                    if (IsValidEntity(iRagdoll))
-                    {
-                        AcceptEntityInput(iRagdoll, "Kill");
-                    }
+                }
+
+                if (iGrabber > 0)
+                {
+                    TTT_ResetClientGrab(iGrabber);
                 }
             }
+
+            RequestFrame(Frame_RemoveBody, body.EntityRef);
         }
     }
 }
@@ -928,15 +954,16 @@ void IdentifyEntity(int client, int button = 0, bool skip = false, int target = 
 {
     int iEntity = -1;
 
-    if (!skip && g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
+    if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
     {
         iEntity = GetClientAimTarget(client, false);
     }
-    else if (!skip && g_cSpawnType.IntValue == 2)
+    else if (g_cSpawnType.IntValue == 2 && !skip)
     {
         GetClientTraceTarget(client);
+        return;
     }
-    else if (skip && g_cSpawnType.IntValue == 2)
+    else if (g_cSpawnType.IntValue == 2 && skip)
     {
         iEntity = target;
     }
@@ -979,24 +1006,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false, int target = 
                 {
                     CPrintToChat(client, "%s %T", g_sPluginTag, "Invalid Ragdoll", client);
 
-                    if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
-                    {
-                        AcceptEntityInput(iEntity, "Kill");
-                    }
-                    else
-                    {
-                        int iParticle = EntRefToEntIndex(g_iParticleRef[iEntity]);
-
-                        if (IsValidEntity(iParticle))
-                        {
-                            AcceptEntityInput(iParticle, "DestroyImmediately");
-                        }
-                        
-                        if (IsValidEntity(iEntity))
-                        {
-                            AcceptEntityInput(iEntity, "Kill");
-                        }
-                    }
+                    RequestFrame(Frame_RemoveBody, body.EntityRef);
 
                     g_aRagdoll.Erase(i);
 
@@ -1275,5 +1285,32 @@ public int Menu_BodyInspect(Menu menu, MenuAction action, int client, int itemNu
     if (action == MenuAction_End)
     {
         delete menu;
+    }
+}
+
+public void Frame_RemoveBody(int ref)
+{
+    int iRagdoll = EntRefToEntIndex(ref);
+
+    if (iRagdoll > 0)
+    {
+        if (g_cSpawnType.IntValue == 0 || g_cSpawnType.IntValue == 1)
+        {
+            AcceptEntityInput(iRagdoll, "Kill");
+        }
+        else
+        {
+            int iParticle = EntRefToEntIndex(g_iParticleRef[iRagdoll]);
+
+            if (IsValidEntity(iParticle))
+            {
+                AcceptEntityInput(iParticle, "DestroyImmediately");
+            }
+            
+            if (IsValidEntity(iRagdoll))
+            {
+                AcceptEntityInput(iRagdoll, "Kill");
+            }
+        }
     }
 }

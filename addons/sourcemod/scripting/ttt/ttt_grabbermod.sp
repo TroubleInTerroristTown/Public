@@ -71,6 +71,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_fwOnGrabbing = new GlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
 
     CreateNative("TTT_GetGrabEntity", Native_GetGrabEntity);
+    CreateNative("TTT_ResetClientGrab", Native_ResetClientGrab);
 
     RegPluginLibrary("ttt_grabbermod");
 
@@ -388,7 +389,7 @@ void GrabSomething(int client)
 bool ValidGrab(int client)
 {
     int iObject = EntRefToEntIndex(g_iPlayer[client].Object);
-    if (iObject != -1 && IsValidEntity(iObject))
+    if (iObject > 0 && IsValidEntity(iObject))
     {
         return true;
     }
@@ -621,15 +622,17 @@ public void OnPreThink(int i)
 
             TeleportEntity(iEntity, NULL_VECTOR, NULL_VECTOR, vecVel);
         }
+        else
+        {
+            Command_UnGrab(i);
+        }
     }
     // }
 }
 
 public void OnClientDisconnect(int client)
 {
-    g_iPlayer[client].Object = -1;
-    SDKUnhook(client, SDKHook_PreThink, OnPreThink);
-    g_iPlayer[client].Time = 0.0;
+    Command_UnGrab(client);
 }
 
 void LoadLists()
@@ -865,10 +868,17 @@ public int Native_GetGrabEntity(Handle plugin, int numParams)
 
     if (ValidGrab(client))
     {
-        return g_iPlayer[client].Object;
+        return EntRefToEntIndex(g_iPlayer[client].Object);
     }
 
     return -1;
+}
+
+public int Native_ResetClientGrab(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+
+    Command_UnGrab(client);
 }
 
 void ThrowObject(int client)

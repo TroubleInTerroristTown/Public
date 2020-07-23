@@ -15,9 +15,16 @@ forward Action TTT_OnGrabbing(int client, int entity);
 /*
  * 
  * @param client                The client index
- * @return                        Entity reference (use EntRefToEntIndex to get index)
+ * @return                      Entity reference (use EntRefToEntIndex to get index)
  */
 native int TTT_GetGrabEntity(int client);
+
+/*
+ *
+ * @param client                The client index
+ * @noreturn
+ */
+native void TTT_ResetClientGrab(int client);
 
 public SharedPlugin __pl_ttt_grabbermod = 
 {
