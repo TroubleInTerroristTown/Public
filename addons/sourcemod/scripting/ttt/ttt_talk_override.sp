@@ -52,7 +52,7 @@ public void OnPluginStart()
     CreateConVar("ttt2_talk_override_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cEnableTVoice = AutoExecConfig_CreateConVar("tor_traitor_voice_chat", "1", "Enable traitor voice chat (command for players: sm_tvoice)?", _, true, 0.0, true, 1.0);
     g_cDeadTalk = AutoExecConfig_CreateConVar("ttt_enable_dead_talk", "1", "Allows dead players to talk with other dead players.", _, true, 0.0, true, 1.0);
-    g_cAdminFlags = AutoExecConfig_CreateConVar("ttt_dead_admin_flags", "b", "Admin flags to get access to 'immortal voice'.");
+    g_cAdminFlags = AutoExecConfig_CreateConVar("ttt_dead_admin_flags", "b", "Admin flags to get access to 'immortal voice'. \"\" for no immunity.");
     TTT_EndConfig();
 
     if (g_cEnableTVoice.BoolValue)
@@ -204,7 +204,10 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
 void SetListen(int client)
 {
-    if (!TTT_CheckCommandAccess(client, "ttt_talk_override", g_cAdminFlags, true))
+    char sBuffer[18];
+    g_cAdminFlags.GetString(sBuffer, sizeof(sBuffer));
+
+    if (strlen(sBuffer) < 1 || !TTT_CheckCommandAccess(client, "ttt_talk_override", g_cAdminFlags, true))
     {
         LoopValidClients(i)
         {
