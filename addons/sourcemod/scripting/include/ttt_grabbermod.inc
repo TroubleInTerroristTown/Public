@@ -41,5 +41,6 @@ public SharedPlugin __pl_ttt_grabbermod =
 public void __pl_ttt_grabbermod_SetNTVOptional()
 {
     MarkNativeAsOptional("TTT_GetGrabEntity");
+    MarkNativeAsOptional("TTT_ResetClientGrab");
 }
 #endif
