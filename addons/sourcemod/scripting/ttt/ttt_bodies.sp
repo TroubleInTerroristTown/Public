@@ -81,6 +81,8 @@ public void OnPluginStart()
     Ragdoll body;
     g_aRagdoll = new ArrayList(sizeof(body));
 
+    TTT_StartConfig("bodies");
+    CreateConVar("ttt2_bodies_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cShowNewPlayersAs = AutoExecConfig_CreateConVar("ttt_show_new_player_as", "1", "Show new players as alive (0) or dead (1)?", _, true, 0.0, true, 1.0);
     g_cSpawnType = AutoExecConfig_CreateConVar("ttt_spawn_type", "2", "Which spawn you want. 0 - Default (Ragdoll), 1 - Physics Multiplayer, 2 - Particle (Ghosts)", _, true, 0.0, true, 2.0);
     g_cIdentifyCommand = AutoExecConfig_CreateConVar("ttt_allow_identify_command", "0", "Allowing players to identify ragdolls with the command \"sm_identify\"?", _, true, 0.0, true, 1.0);
@@ -89,6 +91,7 @@ public void OnPluginStart()
     g_cSilentIdEnabled = AutoExecConfig_CreateConVar("ttt_silent_id", "0", "0 = Disabled. 1 = Enable silent id (+speed and +use together). Silent ID wont print on chat when someone inspects a body.", _, true, 0.0, true, 1.0);
     g_cSilentIdColor = AutoExecConfig_CreateConVar("ttt_silent_id_color", "1", "0 = Disabled, will not change the color of the body. 1 = Silent ID will color the body when inspecting. (Green = Innocent, Red = Traitor, Blue = Detective)", _, true, 0.0, true, 1.0);
     g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");
+    TTT_EndConfig();
 
     RegConsoleCmd("sm_identify", Command_Identify);
 
