@@ -1016,7 +1016,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false, int target = 
                     return;
                 }
 
-                if (IsPlayerAlive(client) && (!skipCheck && !g_iPlayer[client].IsChecking))
+                if (IsPlayerAlive(client) && (skipCheck || (!skipCheck && !g_iPlayer[client].IsChecking)))
                 {
                     g_iPlayer[client].IsChecking = true;
 
