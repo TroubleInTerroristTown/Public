@@ -83,8 +83,8 @@ public void OnPluginStart()
     TTT_StartConfig("overlay");
     CreateConVar("ttt2_overlay_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.");
-    g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for detectives during the round.");
-    g_cInnocentIcon = AutoExecConfig_CreateConVar("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for detectives during the round.");
+    g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for traitors during the round.");
+    g_cInnocentIcon = AutoExecConfig_CreateConVar("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for innocents during the round.");
     g_coverlayDWin = AutoExecConfig_CreateConVar("ttt_overlay_detective_win", "overlays/ttt/detectives_winNew", "The overlay to display when detectives win.");
     g_coverlayTWin = AutoExecConfig_CreateConVar("ttt_overlay_traitor_win", "overlays/ttt/traitors_winNew", "The overlay to display when traitors win.");
     g_coverlayIWin = AutoExecConfig_CreateConVar("ttt_overlay_inno_win", "overlays/ttt/innocents_winNew", "The overlay to display when innocent win.");
