@@ -424,8 +424,11 @@ void TurretTickFollow(int owner, int player)
     }
     
     g_iPlayer[owner].Aim = m_iDegreesX;
-    SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesX, 0);
-    SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesY, 1);
+    if (g_iPlayer[client].Turret > 0)
+    {
+        SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesX, 0);
+        SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesY, 1);
+    }
     
     if(g_iPlayer[owner].CanShoot)
     {
@@ -514,7 +517,7 @@ void TurretTickIdle(int client)
         g_iPlayer[client].Aim = (g_iPlayer[client].Aim - 0.01);
     }
     
-    if (g_iPlayer[client].Turret)
+    if (g_iPlayer[client].Turret > 0)
     {
 	    SetEntPropFloat(g_iPlayer[client].Turret, Prop_Send, "m_flPoseParameter", g_iPlayer[client].Aim, 0);
 	    SetEntPropFloat(g_iPlayer[client].Turret, Prop_Send, "m_flPoseParameter", 0.5, 1);

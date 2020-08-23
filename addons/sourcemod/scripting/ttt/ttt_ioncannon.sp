@@ -495,8 +495,11 @@ void ClearIon(int client, bool ammo = false)
     iEntity = -1;
     g_iPlayer[client].iFireWeaponStartTime = 0;
 
-    SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime", 0.0);
-    SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 0);
+    if (TTT_IsClientValid(client))
+    {
+        SetEntPropFloat(client, Prop_Send, "m_flProgressBarStartTime", 0.0);
+        SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 0);
+    }
 
     TTT_ClearTimer(g_iPlayer[client].hIonTarget);
     TTT_ClearTimer(g_iPlayer[client].hFiringWeapon);

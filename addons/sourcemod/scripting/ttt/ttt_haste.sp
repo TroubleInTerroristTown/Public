@@ -94,7 +94,7 @@ public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detec
 
 public void TTT_OnRoundEnd(int winner, Handle array)
 {
-    TTT_ClearTimer(g_hRoundTimer);
+    delete g_hRoundTimer;
 }
 
 public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)

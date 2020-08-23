@@ -1491,12 +1491,19 @@ public void TTT_OnInventoryReady()
 {
     LoopValidClients(client)
     {
+        int iLength = 0;
         if (g_smUsages[client] != null)
         {
-            delete g_smUsages[client];
+            StringMapSnapshot snap = g_smUsages[client].Snapshot();
+            iLength = snap.Length;
+
         }
 
-        g_smUsages[client] = new StringMap();
+        if (iLength == 0)
+        {
+            delete g_smUsages[client];
+            g_smUsages[client] = new StringMap();
+        }
     }
 }
 
