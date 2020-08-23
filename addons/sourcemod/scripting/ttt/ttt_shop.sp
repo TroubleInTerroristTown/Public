@@ -1496,7 +1496,7 @@ public void TTT_OnInventoryReady()
         {
             StringMapSnapshot snap = g_smUsages[client].Snapshot();
             iLength = snap.Length;
-
+            delete snap;
         }
 
         if (iLength == 0)
