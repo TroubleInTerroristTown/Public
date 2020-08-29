@@ -274,6 +274,7 @@ public void OnConfigsExecuted()
 public void TTT_OnSQLConnect(Database db)
 {
     g_dDB = db;
+    AlterIDColumn();
     AlterNameColumn();
     AlterKarmaColumn();
     AlterRSlaysColumn();
@@ -282,6 +283,21 @@ public void TTT_OnSQLConnect(Database db)
     if (g_cSaveLogsInSQL.BoolValue)
     {
         CreateLogTable();
+    }
+}
+
+void AlterIDColumn()
+{
+    if (g_dDB != null)
+    {
+        char sQuery[76];
+        g_dDB.Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` MODIFY COLUMN `id` INT UNSIGNED NOT NULL AUTO_INCREMENT;");
+        g_dDB.Query(SQL_AlterIDColumn, sQuery);
+    }
+    else
+    {
+        SetFailState("(AlterRSlaysColumn) Database handle is invalid!");
+        return;
     }
 }
 

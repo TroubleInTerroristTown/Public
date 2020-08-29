@@ -1,11 +1,23 @@
+
+
 void Db_InsertDeath(int victim, int attacker)
 {
     int victimId = TTT_GetPlayerID(victim);
+    if (victimId < 1)
+    {
+        LogError("Invalid TTT_PlayerID in 'Db_InsertDeath' from client %d", victim);
+        return;
+    }
     int victimRole = TTT_GetClientRole(victim);
     char sVictimRole[10] = "none";
     RoleEnum(sVictimRole, sizeof(sVictimRole), victimRole);
 
     int attackerId = TTT_GetPlayerID(attacker);
+    if (attackerId < 1)
+    {
+        LogError("Invalid TTT_PlayerID in 'Db_InsertDeath' from client %d", attacker);
+        return;
+    }
     int attackerRole = TTT_GetClientRole(attacker);
     char sAttackerRole[10] = "none";
     RoleEnum(sAttackerRole, sizeof(sAttackerRole), attackerRole);
