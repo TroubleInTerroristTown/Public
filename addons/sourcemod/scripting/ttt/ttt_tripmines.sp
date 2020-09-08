@@ -73,7 +73,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("tripmines_count", "1", "Amount of purchases for tripmines per round");
     g_cTDamage = AutoExecConfig_CreateConVar("tripmines_traitor_damage", "1", "Block damage for other traitors", _, true, 0.0, true, 1.0);
     g_cOwnDamage = AutoExecConfig_CreateConVar("tripmines_own_damage", "1", "Block own damage as tripmine owner", _, true, 0.0, true, 1.0);
-    g_cUsage = AutoExecConfig_CreateConVar("tripmines_usage", "0", "Determinate if player should place mines with sm_tripmine command (0) or if they can place it using start melee weapon from ttt core (1)", _, true, 0.0, true, 1.0);
+    g_cUsage = AutoExecConfig_CreateConVar("tripmines_usage", "0", "Determinate if player should place mines with sm_tripmine command (0) or if they can place (left click) it using start malee weapon from ttt core ( ttt_start_melee_weapon ) (1)", _, true, 0.0, true, 1.0);
     g_cUsageCooldown = AutoExecConfig_CreateConVar("tripmines_usage_cooldown", "1", "Determinate how fast player can place another mine. Min value is 1 second.", _, true, 1.0, false, 0.0);
     g_cActTime = AutoExecConfig_CreateConVar("tripmines_activate_time", "3.0");
     g_cColor = AutoExecConfig_CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the sBeam but tripmines_random_beam_color must be on 0 (Example: \"R G B\" or as color code: \"255 0 0 \" for red sBeam");
@@ -81,11 +81,6 @@ public void OnPluginStart()
     g_cRadius = AutoExecConfig_CreateConVar("tripmines_radius", "256", "The explosion radius in units for tripmines", _, true, 60.0);
     g_cDamage = AutoExecConfig_CreateConVar("tripmines_damage", "550", "The explosion damage for tripmines", _, true, 100.0);
     TTT_EndConfig();
-
-    if (!g_cUsage.BoolValue)
-    {
-        RegConsoleCmd("sm_tripmine", Command_TripMine);
-    }
 
     LoopValidClients(i)
     {
@@ -109,6 +104,11 @@ public void OnConfigsExecuted()
     g_cMeleeWeapon.GetString(g_sMeleeWeapon, sizeof(g_sMeleeWeapon));
 
     RegisterItem();
+    
+    if (!g_cUsage.BoolValue)
+    {
+        RegConsoleCmd("sm_tripmine", Command_TripMine);
+    }
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)
@@ -235,10 +235,17 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     }
 
 	if(buttons & IN_ATTACK && TTT_GetClientItemQuantity(client, SHORT_NAME_T) > 0 && GetGameTime() > g_fCooldown[client]) {
-        int iWeapon;
-        char sWeapon[32];
+        int iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon");
 
-        if((iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon")) != -1 && IsValidEntity(iWeapon) && IsValidEdict(iWeapon) && GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon)) && StrEqual(sWeapon, g_sMeleeWeapon, false)) {
+        if (!IsValidEntity(iWeapon))
+        {
+            return Plugin_Continue;
+        }
+
+        char sWeapon[32];
+        GetEntityClassname(iWeapon, sWeapon, sizeof(sWeapon));
+
+        if(StrEqual(sWeapon, g_sMeleeWeapon, false)) {
             SetMine(client);
 
             buttons |= IN_ATTACK;
