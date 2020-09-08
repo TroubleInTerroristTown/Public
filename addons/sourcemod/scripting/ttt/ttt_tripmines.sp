@@ -24,7 +24,7 @@
 #define DEFAULT_MODEL "models/tripmine/tripmine.mdl"
 
 ConVar g_cPluginTag = null;
-ConVar g_cMaleeWeapon = null;
+ConVar g_cMeleeWeapon = null;
 ConVar g_cLongName = null;
 ConVar g_cPrice = null;
 ConVar g_cLimit = null;
@@ -44,7 +44,7 @@ ConVar g_cDamage = null;
 int g_iCount = 0;
 
 char g_sPluginTag[64];
-char g_sMaleeWeapon[64];
+char g_sMeleeWeapon[64];
 
 float g_fCooldown[MAXPLAYERS + 1];
 
@@ -73,7 +73,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("tripmines_count", "1", "Amount of purchases for tripmines per round");
     g_cTDamage = AutoExecConfig_CreateConVar("tripmines_traitor_damage", "1", "Block damage for other traitors", _, true, 0.0, true, 1.0);
     g_cOwnDamage = AutoExecConfig_CreateConVar("tripmines_own_damage", "1", "Block own damage as tripmine owner", _, true, 0.0, true, 1.0);
-    g_cUsage = AutoExecConfig_CreateConVar("tripmines_usage", "0", "Determinate if player should place mines with sm_tripmine command (0) or if they can place it using start malee weapon from ttt core (1)", _, true, 0.0, true, 1.0);
+    g_cUsage = AutoExecConfig_CreateConVar("tripmines_usage", "0", "Determinate if player should place mines with sm_tripmine command (0) or if they can place it using start melee weapon from ttt core (1)", _, true, 0.0, true, 1.0);
     g_cUsageCooldown = AutoExecConfig_CreateConVar("tripmines_usage_cooldown", "1", "Determinate how fast player can place another mine. Min value is 1 second.", _, true, 1.0, false, 0.0);
     g_cActTime = AutoExecConfig_CreateConVar("tripmines_activate_time", "3.0");
     g_cColor = AutoExecConfig_CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the sBeam but tripmines_random_beam_color must be on 0 (Example: \"R G B\" or as color code: \"255 0 0 \" for red sBeam");
@@ -104,9 +104,9 @@ public void OnConfigsExecuted()
     g_cPluginTag.AddChangeHook(OnConVarChanged);
     g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 
-    g_cMaleeWeapon = FindConVar("ttt_start_melee_weapon");
-    g_cMaleeWeapon.AddChangeHook(OnConVarChanged);
-    g_cMaleeWeapon.GetString(g_sMaleeWeapon, sizeof(g_sMaleeWeapon));
+    g_cMeleeWeapon = FindConVar("ttt_start_melee_weapon");
+    g_cMeleeWeapon.AddChangeHook(OnConVarChanged);
+    g_cMeleeWeapon.GetString(g_sMeleeWeapon, sizeof(g_sMeleeWeapon));
 
     RegisterItem();
 }
@@ -117,9 +117,9 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
     {
         g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
     }
-    else if (convar == g_cMaleeWeapon)
+    else if (convar == g_cMeleeWeapon)
     {
-        g_cMaleeWeapon.GetString(g_sMaleeWeapon, sizeof(g_sMaleeWeapon));
+        g_cMeleeWeapon.GetString(g_sMeleeWeapon, sizeof(g_sMeleeWeapon));
     }
 }
 
@@ -238,7 +238,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         int iWeapon;
         char sWeapon[32];
 
-        if((iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon")) != -1 && IsValidEntity(iWeapon) && IsValidEdict(iWeapon) && GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon)) && StrEqual(sWeapon, g_sMaleeWeapon, false)) {
+        if((iWeapon = GetEntPropEnt(client, Prop_Send, "m_hActiveWeapon")) != -1 && IsValidEntity(iWeapon) && IsValidEdict(iWeapon) && GetEdictClassname(iWeapon, sWeapon, sizeof(sWeapon)) && StrEqual(sWeapon, g_sMeleeWeapon, false)) {
             SetMine(client);
 
             buttons |= IN_ATTACK;
