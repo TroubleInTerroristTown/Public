@@ -710,7 +710,7 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
     return false;
 }
 
-stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
+stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
 {
     for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
@@ -723,7 +723,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
 
             if (StrEqual(sClass, classname, false))
             {
-                return TTT_SafeRemoveWeapon(client, weapon, slot);
+                return TTT_SafeRemoveWeapon(client, weapon);
             }
         }
     }
@@ -731,7 +731,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
     return false;
 }
 
-stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
+stock bool TTT_SafeRemoveWeapon(int client, int weapon)
 {
     if (HasEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex"))
     {
@@ -757,11 +757,6 @@ stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
         {
             return false;
         }
-    }
-    
-    if (GetPlayerWeaponSlot(client, slot) != weapon)
-    {
-        return false;
     }
     
     if (!RemovePlayerItem(client, weapon))
@@ -1129,7 +1124,7 @@ stock void TTT_RemoveMeleeWeapons(int client)
 
             if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
             {
-                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
+                TTT_SafeRemoveWeapon(client, weapon);
             }
         }
     }

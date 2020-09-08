@@ -145,7 +145,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         GetEntityClassname(g_iPlayer[client].Weapon, sWeapon, sizeof(sWeapon));
         if (!StrEqual(sWeapon, "weapon_awp", false))
         {
-            TTT_SafeRemoveWeapon(client, g_iPlayer[client].Weapon, CS_SLOT_PRIMARY);
+            TTT_SafeRemoveWeapon(client, g_iPlayer[client].Weapon);
             g_iPlayer[client].Weapon = -1;
         }
     }

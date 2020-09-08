@@ -1599,7 +1599,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cPrimaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GivePrimary, GetClientUserId(client));
                 }
             }
@@ -1636,7 +1636,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -1683,7 +1683,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -1730,7 +1730,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -4900,7 +4900,7 @@ void StripAllWeapons(int client)
     {
         while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
         {
-            TTT_SafeRemoveWeapon(client, iEnt, i);
+            TTT_SafeRemoveWeapon(client, iEnt);
         }
     }
 }

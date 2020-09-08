@@ -138,7 +138,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         TTT_AddInventoryItem(client, DRONE_SHORT_NAME);
     }
     
-    TTT_RemoveWeaponByClassname(client, "weapon_tagrenade", CS_SLOT_GRENADE);
+    TTT_RemoveWeaponByClassname(client, "weapon_tagrenade");
 
     GivePlayerItem(client, "weapon_tagrenade");
     return Plugin_Continue;

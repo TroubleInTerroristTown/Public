@@ -28,6 +28,7 @@ ConVar g_cIPrio = null;
 ConVar g_cICount = null;
 ConVar g_cILimit = null;
 ConVar g_cShieldDrop = null;
+ConVar g_cShieldRemove = null;
 
 ConVar g_cPluginTag = null;
 char g_sPluginTag[PLATFORM_MAX_PATH] = "";
@@ -62,6 +63,7 @@ public void OnPluginStart()
     g_cICount = AutoExecConfig_CreateConVar("shield_innocent_count", "1", "The amount of usages for shields per round as an innocent. 0 to disable.");
     g_cILimit = AutoExecConfig_CreateConVar("shield_innocent_limit", "0", "The amount of purchases for all innocents during a round.", _, true, 0.0);
     g_cShieldDrop = AutoExecConfig_CreateConVar("shield_disable_drop", "1", "Disallow players to drop thier shields.", _, true, 0.0,  true, 1.0);
+    g_cShieldRemove = AutoExecConfig_CreateConVar("shield_remove_on_start", "1", "Remove shield on ttt round start?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 }
 
@@ -110,6 +112,43 @@ void RegisterItem()
     TTT_RegisterShopItem(SHORT_NAME_T, sBuffer, g_cTPrice.IntValue, TTT_TEAM_TRAITOR, g_cTPrio.IntValue, g_cTCount.IntValue, g_cTLimit.IntValue, OnItemPurchased);
     TTT_RegisterShopItem(SHORT_NAME_D, sBuffer, g_cDPrice.IntValue, TTT_TEAM_DETECTIVE, g_cDPrio.IntValue, g_cDCount.IntValue, g_cDLimit.IntValue, OnItemPurchased);
     TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cICount.IntValue, g_cILimit.IntValue, OnItemPurchased);
+}
+
+public void TTT_OnClientGetRole(int client, int role)
+{
+    if (!g_cShieldRemove.BoolValue)
+    {
+        return;
+    }
+
+    int iShield = -1;
+    int iMax = 0;
+    char sClass[32];
+
+    while (iShield == -1)
+    {
+        iShield = GetPlayerWeaponSlot(client, 11); // 11 - CS_SLOT_BOOST, this is not defined in SM1.10...
+
+        if (iShield == -1)
+        {
+            iMax++;
+        }
+        else
+        {
+            GetEntityClassname(iShield, sClass, sizeof(sClass));
+
+            if (StrContains(sClass, "shield", false) != -1)
+            {
+                TTT_SafeRemoveWeapon(client, iShield);
+                return;
+            }
+        }
+
+        if (iMax == 2)
+        {
+            return;
+        }
+    }
 }
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
