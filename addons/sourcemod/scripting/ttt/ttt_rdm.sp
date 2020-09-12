@@ -168,7 +168,7 @@ public void TTT_OnClientDeath(int victim, int attacker)
         TTT_GetClientName(attacker, sAttackerName, sizeof(sAttackerName));
         TTT_GetClientName(victim, sVictimName, sizeof(sVictimName));
 
-        CPrintToChatAdmins(ADMFLAG_GENERIC, "%T", "RDM: Staff Bad Action Report", LANG_SERVER, sAttackerName, attackerKarma, sAttackerName, victimKarma);
+        CPrintToChatAdmins(ADMFLAG_GENERIC, "%T", "RDM: Staff Bad Action Report", LANG_SERVER, sAttackerName, attackerKarma, sVictimName, victimKarma);
     }
 
     Db_InsertDeath(victim, attacker);
