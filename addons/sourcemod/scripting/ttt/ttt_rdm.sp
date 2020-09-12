@@ -299,6 +299,9 @@ void RoleEnum(char[] buffer, int maxlength, int role)
 
 bool BadKill(int attackerRole, int victimRole)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+        return false;
+
     if (attackerRole == victimRole) return true;
     //else if (attackerRole == TTT_TEAM_TRAITOR || victimRole == TTT_TEAM_TRAITOR) return false;
     else if ((attackerRole | victimRole) & TTT_TEAM_TRAITOR) return false;
