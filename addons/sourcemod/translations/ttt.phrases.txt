@@ -1296,25 +1296,25 @@
 	"Detective scan found body Innocent"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role i}{2} {default}| Weapon: {highlight}{3}"
-		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role i}{2} {default}| Waffe: {highlight}{3}"
-		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Ofiara: {role i}{2} {default}| Broń: {highlight}{3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role i}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role i}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role i}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"Detective scan found body Detective"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role d}{2} {default}| Weapon: {highlight}{3}"
-		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role d}{2} {default}| Waffe: {highlight}{3}"
-		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Opfer: {role d}{2} {default}| Broń: {highlight}{3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role d}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role d}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role d}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"Detective scan found body Traitor"
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
-		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Victim: {role t}{2} {default}| Weapon: {highlight}{3}"
-		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Opfer: {role t}{2} {default}| Waffe: {highlight}{3}"
-		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Opfer: {role t}{2} {default}| Broń: {highlight}{3}"
+		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role t}{2} {default}| Weapon: {highlight}{3}"
+		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role t}{2} {default}| Waffe: {highlight}{3}"
+		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role t}{2} {default}| Broń: {highlight}{3}"
 	}
 
 	"No karma hurt traitor"
