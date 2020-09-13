@@ -1616,6 +1616,11 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         return;
     }
 
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return;
+    }
+
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
@@ -1722,6 +1727,11 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
 public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
 {
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return;
+    }
+
     if ((TTT_GetClientRole(client) & g_cCreditsFoundBodyRole.IntValue) && !silentID || (g_cSilentIdRewards.BoolValue && silentID))
     {
         addCredits(client, g_cCreditsFoundBody.IntValue);
