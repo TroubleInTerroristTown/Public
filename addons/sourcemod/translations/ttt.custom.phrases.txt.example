@@ -5,6 +5,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"We are {1} players!"
+		"chi"		"当前共有 {1} 名玩家！"
 		"de"		"Wir sind {1} Spieler!"
 		"pl"		"Aktualnie mamy {1} graczy!"
 	}
@@ -13,6 +14,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Remaining players to start a round: {1}"
+		"chi"		"仍需要 {1} 名玩家以开始游戏。"
 		"de"		"Verbleibende Spieler für eine neue Runde: {1}"
 		"pl"		"Pozostała liczba graczy, aby zacząć rundę: {1}"
 	}

@@ -4,6 +4,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"You have {highlight}{1} {default}karma."
+		"chi"		"您当前有 {highlight}{1} {default}业力。"
 		"de"		"Du hast {highlight}{1} {default}Karma."
 		"pl"		"Aktualnie masz {highlight}{1} {default}karmy."
 	}
@@ -11,6 +12,7 @@
 	"TEAMS HAS BEEN SELECTED"
 	{
 		"en"		"Teams have been selected."
+		"chi"		"团队已选择。"
 		"de"		"Teams wurden ausgewählt."
 		"pl"		"Drużyny zostały wybrane."
 	}
@@ -19,6 +21,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"We need {highlight}{1} {default}players to start the game."
+		"chi"		"当前需要 {highlight}{1} {default}名玩家才能开始游戏。"
 		"de"		"Wir brauchen {highlight}{1} {default}Spieler, um das Spiel zu starten."
 		"pl"		"Potrzebujemy {highlight}{1} {default}graczy, aby rozpocząć grę."
 	}
@@ -26,6 +29,7 @@
 	"Your Team is DETECTIVES"
 	{
 		"en"		"You are now a {role d}Detective{default}."
+		"chi"		"您当前是{role d}警探{default}。"
 		"de"		"Du bist nun ein {role d}Detektiv{default}."
 		"pl"		"Twoja rola to {role d}Detektyw{default}."
 	}
@@ -33,6 +37,7 @@
 	"Your Team is TRAITORS"
 	{
 		"en"		"You are now a {role t}Traitor{default}."
+		"chi"		"您当前是{role t}叛徒{default}。"
 		"de"		"Du bist nun ein {role t}Traitor{default}."
 		"pl"		"Twoja rola to {role t}Zdrajca{default}."
 	}
@@ -40,6 +45,7 @@
 	"Your Team is INNOCENTS"
 	{
 		"en"		"You are now an {role i}Innocent{default}."
+		"chi"		"您当前是{role i}平民{default}。"
 		"de"		"Du bist nun ein {role i}Innocent{default}."
 		"pl"		"Twoja rola to {role i}Niewinny{default}."
 	}
@@ -48,6 +54,7 @@
 	{
 		"#format"	"{1:i},{2:s}"
 		"en"		"You have {highlight}{1} {default}{2}."
+		"chi"		"您有 {highlight}{1} {default}{2}点金钱。"
 		"de"		"Du hast {highlight}{1} {default}{2}."
 		"pl"		"Aktualnie masz {highlight}{1} {default}{2}."
 	}
@@ -55,6 +62,7 @@
 	"Your killer is a Traitor"
 	{
 		"en"		"You were killed by a {role t}Traitor{default}!"
+		"chi"		"您被{role t}叛徒{default}击杀！"
 		"de"		"Du wurdest von ein {role t}Traitor{default} getötet!"
 		"pl"		"Zostałeś zabity przez {role t}Zdrajcę{default}!"
 	}
@@ -62,6 +70,7 @@
 	"Your killer is a Detective"
 	{
 		"en"		"You were killed by a {role d}Detective{default}!"
+		"chi"		"您被{role d}警探{default}击杀！"
 		"de"		"Du wurdest von ein {role d}Detektiv{default} getötet!"
 		"pl"		"Zostałeś zabity przez {role d}Detektywa{default}!"
 	}
@@ -69,6 +78,7 @@
 	"Your killer is an Innocent"
 	{
 		"en"		"You were killed by an {role i}Innocent{default}!"
+		"chi"		"您被{role i}平民{default}击杀！"
 		"de"		"Du wurdest von einen {role i}Innocent{default} getötet!"
 		"pl"		"Zostałeś zabity przez {role i}Niewinnego{default}!"
 	}
@@ -76,6 +86,7 @@
 	"You killed a Traitor"
 	{
 		"en"		"You killed a {role t}Traitor{default}!"
+		"chi"		"您杀死了一名{role t}叛徒{default}！"
 		"de"		"Du hast ein {role t}Traitor{default} getötet!"
 		"pl"		"Zabiłeś {role t}Zdrajcę{default}!"
 	}
@@ -83,6 +94,7 @@
 	"You killed a Detective"
 	{
 		"en"		"You killed a {role d}Detective{default}!"
+		"chi"		"您杀死了一名{role d}警探{default}！"
 		"de"		"Du hast ein {role d}Detektiv{default} getötet!"
 		"pl"		"Zabiłeś {role d}Detektywa{default}!"
 	}
@@ -90,6 +102,7 @@
 	"You killed an Innocent"
 	{
 		"en"		"You killed an {role i}Innocent{default}!"
+		"chi"		"您杀死了一名{role i}平民{default}！"
 		"de"		"Du hast ein {role i}Innocent{default} getötet!"
 		"pl"		"Zabiłeś {role i}Niewinnego{default}!"
 	}
@@ -98,6 +111,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Scan Complete: {player}{1} {default}is a {role t}Traitor{default}!"
+		"chi"		"扫描完成：{player}{1} {default}是{role t}叛徒{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role t}Traitor{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}jest {role t}Zdrajcą{default}!"
 	}
@@ -106,6 +120,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Scan Complete: {player}{1} {default}is a {role d}Detective{default}!"
+		"chi"		"扫描完成：{player}{1} {default}是{role d}警探{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role d}Detektiv{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}jest {role d}Detektywem{default}!"
 	}
@@ -114,6 +129,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Scan Complete: {player}{1} {default}is {role i}Innocent{default}!"
+		"chi"		"扫描完成：{player}{1} {default}是{role i}平民{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}ist ein {role i}Innocent{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}jest {role i}Niewinnym{default}!"
 	}
@@ -122,6 +138,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"Scan Complete: {player}{1} {default}scanned a body. Killer: {role t}{2} {default}| Weapon: {highlight}{3}"
+		"chi"		"扫描完成：{player}{1} {default}扫描了尸体。凶手：{role t}{2} {default}| 武器：{highlight}{3}"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}untersuchte ein Körper. Mörder: {role t}{2} {default}| Waffe: {highlight}{3}"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował ciało. Zabójca: {role t}{2} {default}| Broń: {highlight}{3}"
 	}
@@ -130,6 +147,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Health Station - {1}"
+		"chi"		"医疗站 - {1}"
 		"de"		"Health Station - {1}"
 		"pl"		"Stacja lecząca - {1}"
 	}
@@ -137,6 +155,7 @@
 	"Please wait till your team is assigned"
 	{
 		"en"		"Please wait, your role has not been assigned."
+		"chi"		"请稍等，您尚未被分配角色。"
 		"de"		"Bitte warte, deine Rolle wurde noch nicht zugewiesen."
 		"pl"		"Zaczekaj, nie otrzymałeś jeszcze żadnej roli."
 	}
@@ -145,6 +164,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You don't have enough {1}!"
+		"chi"		"您的 {1} 不足！"
 		"de"		"Du hast nicht genug {1}!"
 		"pl"		"Nie masz wystarczająco {1}!"
 	}
@@ -152,6 +172,7 @@
 	"Traitors"
 	{
 		"en"		"Traitors"
+		"chi"		"叛徒"
 		"de"		"Traitor"
 		"pl"		"Zdrajcy"
 	}
@@ -159,6 +180,7 @@
 	"Detectives"
 	{
 		"en"		"Detectives"
+		"chi"		"警探"
 		"de"		"Detektive"
 		"pl"		"Detektywi"
 	}
@@ -166,6 +188,7 @@
 	"Innocents"
 	{
 		"en"		"Innocents"
+		"chi"		"平民"
 		"de"		"Innocents"
 		"pl"		"Niewinni"
 	}
@@ -173,6 +196,7 @@
 	"Inspected body. The extracted data are the following"
 	{
 		"en"		"Body Inspected\nThe following data was extracted:"
+		"chi"		"已检视尸体\n下列是提取的数据："
 		"de"		"Körper inspiziert\nDie folgenden Daten wurden entnommen:"
 		"pl"		"Ciało zostało sprawdzone\nOto dane które udało się wydobyć:"
 	}
@@ -181,6 +205,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Victim Name: {1}"
+		"chi"		"受害者：{1}"
 		"de"		"Name des Opfers: {1}"
 		"pl"		"Nazwa ofiary: {1}"
 	}
@@ -189,6 +214,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Role: {1}"
+		"chi"		"角色：{1}"
 		"de"		"Rolle: {1}"
 		"pl"		"rola: {1}"
 	}
@@ -197,6 +223,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"Time since Death: {1} second(s)"
+		"chi"		"已死亡时间：{1} 秒"
 		"de"		"Todeszeitpunkt: vor {1} Sekunde(n)"
 		"pl"		"Czas od śmierci: {1} sekund"
 	}
@@ -205,6 +232,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Murder Weapon: {1}"
+		"chi"		"凶手武器：{1}"
 		"de"		"Mordwaffe: {1}"
 		"pl"		"Broń mordercy: {1}"
 	}
@@ -212,6 +240,7 @@
 	"The weapon used has been: himself (suicide)"
 	{
 		"en"		"Himself (suicide)"
+		"chi"		"自杀"
 		"de"		"Selbst (Suizid)"
 		"pl"		"On sam (samobójstwo)"
 	}
@@ -220,6 +249,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{default}[{role t}Traitors{default}] {role t}{1}: {role i}{2}"
+		"chi"		"{default}[{role t}叛徒{default}] {role t}{1}: {role i}{2}"
 		"de"		"{default}[{role t}Traitor{default}] {role t}{1}: {role i}{2}"
 		"pl"		"{default}[{role t}Zdrajcy{default}] {role t}{1}: {role i}{2}"
 	}
@@ -228,6 +258,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{default}[{role d}Detectives{default}] {role d}{1}: {role i}{2}"
+		"chi"		"{default}[{role d}警探{default}] {role d}{1}: {role i}{2}"
 		"de"		"{default}[{role d}Detektive{default}] {role d}{1}: {role i}{2}"
 		"pl"		"{default}[{role d}Detektywi{default}] {role d}{1}: {role i}{2}"
 	}
@@ -235,6 +266,7 @@
 	"You dont have it!"
 	{
 		"en"		"You don't have it!"
+		"chi"		"您尚未拥有！"
 		"de"		"Du hast das nicht!"
 		"pl"		"Nie posiadasz tego!"
 	}
@@ -243,6 +275,7 @@
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"TTT Shop\nYour {2}: {1}"
+		"en"		"匪城疑云商店\n您的 {2}: {1}"
 		"de"		"TTT Shop\nDeine {2}: {1}"
 		"pl"		"Sklep TTT\nTwoje {2}: {1}"
 	}
@@ -251,6 +284,7 @@
 	{
 		"#format"	"{1:i},{2:i},{3:s}"
 		"en"		"You earned {1} {3}\nYour current {3} are: {2}"
+		"chi"		"您赚得了 {1} {3}\n您当前的{3}为：{2}"
 		"de"		"Du erhälst {1} {3}\nDu hast nun {2} {3}"
 		"pl"		"Otrzymałeś {1} {3}\nAktualnie posiadasz {2} {3}"
 	}
@@ -259,6 +293,7 @@
 	{
 		"#format"	"{1:i},{2:i},{3:s}"
 		"en"		"You lost {1} {3}\nYour current {3} are: {2}"
+		"chi"		"您失去了 {1} {3}\n您当前的{3}为：{2}"
 		"de"		"Du verlierst {1} {3}\nDu hast nun {2} {3}"
 		"pl"		"Straciłeś {1} {3}\nAktualnie posiadasz {2} {3}"
 	}
@@ -267,6 +302,7 @@
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"You earned {1} karma\nYour karma is now: {2}"
+		"chi"		"您赚得了 {1} 业力\n您当前业力为：{2}"
 		"de"		"Du erhälst {1} Karma\nDein Karma ist nun {2}"
 		"pl"		"Otrzymałeś {1} karmy\nAktualnie posiadasz {2} karmy"
 	}
@@ -275,6 +311,7 @@
 	{
 		"#format"	"{1:i},{2:i}"
 		"en"		"You lost {1} karma\nYour karma is now: {2}"
+		"chi"		"您失去了 {1} 业力\n您当前业力为：{2}"
 		"de"		"Du verlierst {1} Karma\nDein Karma ist nun {2}"
 		"pl"		"Straciłeś {1} karmy\nAktualnie posiadasz {2} karmy"
 	}
@@ -282,6 +319,7 @@
 	"no logs yet"
 	{
 		"en"		"No logs yet"
+		"chi"		"尚无日志"
 		"de"		"Noch keine Protokolle"
 		"pl"		"Brak logów na ten moment"
 	}
@@ -289,6 +327,7 @@
 	"See your console"
 	{
 		"en"		"Logs Received! Check your console to see the logs."
+		"chi"		"收到日志！请前往控制台查看日志。"
 		"de"		"Protokolle erhalten! Schau in deiner Konsole um die Protokolle zu sehen."
 		"pl"		"Logi otrzymane! Sprawdź swoją konsolę by zobaczyć logi."
 	}
@@ -296,6 +335,7 @@
 	"you cant see logs"
 	{
 		"en"		"You can´t see the logs now, you need be dead or the round has to be inactive"
+		"chi"		"您现在无法查看日志，您必须在死亡状态或回合未开始时查看。"
 		"de"		"Du kannst aktuell die Protokolle nicht sehen, dafür musst du tot sein oder die Runde vorbei."
 		"pl"		"Nie możesz zobaczyć teraz logów, musisz nieżyć lub runda musi być nieaktywna."
 	}
@@ -303,6 +343,7 @@
 	"Receiving logs"
 	{
 		"en"		"Receiving logs... Please wait a moment."
+		"chi"		"正接收日志... 请稍候。"
 		"de"		"Erhalte Protokolle... Bitte warte ein Moment."
 		"pl"		"Otrzymywanie logów... Poczekaj chwilkę."
 	}
@@ -311,6 +352,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Body Found: {player}{1} {default}found {role i}{2}{default}."
+		"chi"		"发现尸体：{player}{1} {default}发现了 {role i}{2}{default} 的尸体。"
 		"de"		"Körper gefunden: {player}{1} {default}hat {role i}{2}{default} gefunden."
 		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role i}{2}{default}."
 	}
@@ -319,6 +361,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Body Found: {player}{1} {default}found {role d}{2}{default}."
+		"chi"		"发现尸体：{player}{1} {default}发现了 {role d}{2}{default} 的尸体。"
 		"de"		"Körper gefunden: {player}{1} {default}hat {role d}{2}{default} gefunden."
 		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role d}{2}{default}."
 	}
@@ -327,6 +370,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Body Found: {player}{1} {default}found {role t}{2}{default}."
+		"chi"		"发现尸体：{player}{1} {default}发现了 {role t}{2}{default} 的尸体。"
 		"de"		"Körper gefunden: {player}{1} {default}hat {role t}{2}{default} gefunden."
 		"pl"		"Ciało znalezione: {player}{1} {default}znalazł {role t}{2}{default}."
 	}
@@ -334,6 +378,7 @@
 	"Your bomb is not armed."
 	{
 		"en"		"Your bomb is not armed."
+		"chi"		"您的炸弹尚未预位。"
 		"de"		"Deine Bombe ist noch nicht scharf."
 		"pl"		"Twoja bomba nie jest uzbrojona."
 	}
@@ -341,6 +386,7 @@
 	"Your bomb is now armed."
 	{
 		"en"		"Your bomb is now armed."
+		"chi"		"您的炸弹现已预位。"
 		"de"		"Deine Bombe ist nun scharf."
 		"pl"		"Twoja bomba jest już uzbrojona."
 	}
@@ -349,6 +395,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Bomb will arm in {highlight}{1}{default} second(s), press {highlight}F{default} twice to explode."
+		"chi"		"炸弹将于 {highlight}{1}{default} 秒后预位，连按两下 {highlight}F{default} 即可引爆。"
 		"de"		"Bombe scharf in {highlight}{1}{default} Sekunde(n), drücke zweimal {highlight}F{default} um die explodieren zu lassen."
 		"pl"		"Bomba uzbroi się za {highlight}{1}{default} sekund, naciśnij {highlight}F{default} dwa razy, aby eksplodować."
 	}
@@ -356,6 +403,7 @@
 	"Your Karma is too low"
 	{
 		"en"		"You were banned because your karma is too low!"
+		"chi"		"您由于业力值过低已被封禁！"
 		"de"		"Du wurdest gebannt, weil dein Karma zu niedrig ist!"
 		"pl"		"Zostałeś zbanowany, ponieważ Twoja karma była zbyt mała!"
 	}
@@ -364,6 +412,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"There are {role t}{1} Traitor(s){default}."
+		"chi"		"当前共有 {role t}{1} 名叛徒{default}。"
 		"de"		"Es gibt {role t}{1} Traitor{default}."
 		"pl"		"Jest {role t}{1} Zdrajców{default}."
 	}
@@ -371,6 +420,7 @@
 	"Suicide Blocked"
 	{
 		"en"		"Suicide blocked"
+		"chi"		"已阻止自杀"
 		"de"		"Suizid blockiert"
 		"pl"		"Samobójstwa są zablokowane"
 	}
@@ -378,6 +428,7 @@
 	"Right click to plant the C4"
 	{
 		"en"		"Right-click to plant the C4!"
+		"chi"		"右击以安放 C4！"
 		"de"		"Rechtsklick um das C4 zu platzieren!"
 		"pl"		"Kliknij prawy przycisk, aby podłożyć bombę!"
 	}
@@ -385,6 +436,7 @@
 	"You already have an active Health Station"
 	{
 		"en"		"You already have an active Health Station!"
+		"chi"		"您已有了活跃中的医疗站！"
 		"de"		"Du hast bereits eine aktive Health Station!"
 		"pl"		"Już masz aktywną stację leczącą!"
 	}
@@ -392,6 +444,7 @@
 	"The player who RDM'd you is no longer available"
 	{
 		"en"		"The player who RDM'd you is no longer available!"
+		"chi"		"RDM 您的玩家已不可用！"
 		"de"		"Der Spieler der dich RDM'd hast, ist nicht mehr da!"
 		"pl"		"Gracz który Cię zRDM'ował nie jest już dostępny!"
 	}
@@ -400,6 +453,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You were RDM'd by {1}!"
+		"chi"		"您被 {1} RDM!"
 		"de"		"Du wurdest von {1} RDM'd!"
 		"pl"		"Zostałeś zRDM'owany przez {1}!"
 	}
@@ -407,6 +461,7 @@
 	"Forgive"
 	{
 		"en"		"Forgive"
+		"chi"		"饶恕"
 		"de"		"Vergeben"
 		"pl"		"Przebacz"
 	}
@@ -414,6 +469,7 @@
 	"Punish"
 	{
 		"en"		"Punish"
+		"chi"		"惩罚"
 		"de"		"Bestrafen"
 		"pl"		"Ukaraj"
 	}
@@ -422,6 +478,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{1} has chosen to punish {2} for RDMing them!"
+		"chi"		"{1} 选择以牙还牙 {2}！"
 		"de"		"{1} bestraft {2} für den RDM!"
 		"pl"		"{1} ukarał {2} za RDM'a!"
 	}
@@ -430,6 +487,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You have chosen to forgive {1} for RDMing you!"
+		"chi"		"您选择饶恕 {1}！"
 		"de"		"Du vergibst {1} für den RDM!"
 		"pl"		"Wybrałeś przebaczenie dla {1} za zRDM'owanie Ciebie!"
 	}
@@ -438,6 +496,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} has chosen to forgive you for RDMing them!"
+		"chi"		"{1} 选择了饶恕您！"
 		"de"		"{1} vergibt dir für deinen RDM!"
 		"pl"		"{1} wybrał dla Ciebie przebaczenie za zRDM'owanie go!"
 	}
@@ -446,6 +505,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}is now a {role t}Traitor{default}!"
+		"chi"		"{player}{1} {default}现为{role t}叛徒{default}！"
 		"de"		"{player}{1} {default}ist nun ein {role t}Traitor{default}!"
 		"pl"		"{player}{1} {default}jest teraz {role t}Zdrajcą{default}!"
 	}
@@ -454,6 +514,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}is now a {role d}Detective{default}!"
+		"chi"		"{player}{1} {default}现为{role d}警探{default}！"
 		"de"		"{player}{1} {default}ist nun ein {role d}Detektiv{default}!"
 		"pl"		"{player}{1} {default}jest teraz {role d}Detektywem{default}!"
 	}
@@ -461,6 +522,7 @@
 	"You Are Unassigned"
 	{
 		"en"		"Your role has not been assigned yet!"
+		"chi"		"您的角色尚未被分配！"
 		"de"		"Dir wurde noch keine Rolle zugewiesen!"
 		"pl"		"Twoja rola nie została jeszcze Ci przyznana!!"
 	}
@@ -468,6 +530,7 @@
 	"You Are Now Innocent"
 	{
 		"en"		"You are an {role i}Innocent{default}!"
+		"chi"		"您现在是{role i}平民{default}！"
 		"de"		"Du bist nun ein {role i}Innocent{default}!"
 		"pl"		"Jesteś {role i}Niewinnym{default}!"
 	}
@@ -475,6 +538,7 @@
 	"You Are Now Traitor"
 	{
 		"en"		"You are a {role t}Traitor{default}!"
+		"chi"		"您现在是{role t}叛徒{default}！"
 		"de"		"Du bist nun ein {role t}Traitor{default}!"
 		"pl"		"Jesteś {role t}Zdrajcą{default}!"
 	}
@@ -482,6 +546,7 @@
 	"You Are Now Detective"
 	{
 		"en"		"You are a {role d}Detective{default}!"
+		"chi"		"您现在是{role d}警探{default}！"
 		"de"		"Du bist nun ein {role d}Detektiv{default}!"
 		"pl"		"Jesteś {role d}Detektywem{default}!"
 	}
@@ -490,6 +555,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} triggered the falling building as an Innocent."
+		"en"		"{1} 以平民的身份触发了建筑物倒塌。"
 		"de"		"{1} triggered the falling building as an Innocent."
 		"pl"		"{1} odpalił spadający budynek jako Niewinny."
 	}
@@ -497,6 +563,7 @@
 	"Bomb Detonated"
 	{
 		"en"		"Your bomb has detonated!"
+		"chi"		"您的炸弹已被引爆！"
 		"de"		"Deine Bombe ist explodiert!"
 		"pl"		"Twoja bomba została zdetonowana!"
 	}
@@ -504,6 +571,7 @@
 	"Set C4 Timer"
 	{
 		"en"		"Set the C4 Timer..."
+		"chi"		"设置 C4 起爆计时..."
 		"de"		"Das C4 explodiert in..."
 		"pl"		"Ustaw czas dla C4..."
 	}
@@ -512,6 +580,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"{1} second(s)"
+		"chi"		"{1} 秒"
 		"de"		"{1} Sekunde(n)"
 		"pl"		"{1} sekund"
 	}
@@ -519,6 +588,7 @@
 	"Defuse C4"
 	{
 		"en"		"Defuse the C4!"
+		"chi"		"拆除 C4！"
 		"de"		"Entschärfe das C4!"
 		"pl"		"Rozbrój C4!"
 	}
@@ -527,6 +597,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Wire {1}"
+		"chi"		"引线 {1}"
 		"de"		"Kabel {1}"
 		"pl"		"Kabel {1}"
 	}
@@ -535,6 +606,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You have defused {player}{1}{default}'s bomb!"
+		"chi"		"您成功拆除了 {player}{1}{default} 的炸弹！"
 		"de"		"Du hast die Bombe von {player}{1}{default} entschärft!"
 		"pl"		"Właśnie rozbroiłeś bomę {player}{1}{default}'a!"
 	}
@@ -543,6 +615,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}has defused your bomb!"
+		"chi"		"{player}{1} {default}拆除了您的炸弹！"
 		"de"		"{player}{1} {default}hat deine Bombe entschärft!"
 		"pl"		"{player}{1} {default}rozbroił Twoją bombę!"
 	}
@@ -550,6 +623,7 @@
 	"Failed Defuse"
 	{
 		"en"		"Failed to defuse!"
+		"chi"		"拆除失败！"
 		"de"		"Entschärfung fehlgeschlagen!"
 		"pl"		"Nieudało się rozbroić bomby!"
 	}
@@ -557,6 +631,7 @@
 	"Alive to Plant"
 	{
 		"en"		"You must be alive to plant a bomb!"
+		"chi"		"您必须存活才能安放炸弹！"
 		"de"		"Du musst leben um eine Bombe zu platzieren!"
 		"pl"		"Musisz być żywy, aby podłożyć bombę!"
 	}
@@ -565,6 +640,7 @@
 	{
 		"#format"	"{1:.2f}"
 		"en"		"Deploying a C4 that will explode in {highlight}{1} {default}second(s)."
+		"chi"		"正在部署 C4，炸弹将于 {highlight}{1} {default}后引爆。"
 		"de"		"Platzierung des C4 das in {highlight}{1} {default}Sekunde(n) explodieren wird."
 		"pl"		"Ustawiłeś C4 które wybuchnie za {highlight}{1} {default}sekund."
 	}
@@ -572,6 +648,7 @@
 	"Bomb Was Not Found"
 	{
 		"en"		"Your bomb was not found!"
+		"chi"		"未找到您的炸弹！"
 		"de"		"Deine Bombe wurde nicht gefunden!"
 		"pl"		"Twoja bomba nie została znaleziona!"
 	}
@@ -580,6 +657,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"The defuse wire is {highlight}{1}{default}!"
+		"chi"		"解爆引线为 {highlight}{1}{default}!"
 		"de"		"Das Kabel zur Entschärfung ist {highlight}{1}{default}!"
 		"pl"		"Kabel do rozbrojenia to {highlight}{1}{default}!"
 	}
@@ -587,6 +665,7 @@
 	"Your Traitor Partners"
 	{
 		"en"		"Your Traitor partners are:"
+		"chi"		"您的叛徒盟友为："
 		"de"		"Deine Traitor Partner sind:"
 		"pl"		"Twoimi wspólnikami są:"
 	}
@@ -594,6 +673,7 @@
 	"No Traitor Partners"
 	{
 		"en"		"You have no partners."
+		"chi"		"您没有盟友。"
 		"de"		"Du hast keine Partner."
 		"pl"		"Nie masz żadnych wspólników."
 	}
@@ -602,6 +682,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Remove the word {1} from your name!"
+		"chi"		"请先从您的名字中删去 {1}！"
 		"de"		"Entferne das Wort {1} aus deinem Namen!"
 		"pl"		"Usuń słowo {1} z swojej nazwy!"
 	}
@@ -609,6 +690,7 @@
 	"Health Station Deployed"
 	{
 		"en"		"Health Station deployed. Stand near it to gain HP!"
+		"chi"		"已部署医疗站，站在其附近以恢复血量！"
 		"de"		"Health Station platziert! Bleib in der Reichweite der Health Station um geheilt zu werden"
 		"pl"		"Stacja lecząca postawiona! Stój blisko niej, aby otrzymać HP!"
 	}
@@ -617,6 +699,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Healing from {player}{1}{default}'s Health Station!"
+		"chi"		"正在从 {player}{1}{default} 的医疗站恢复血量！"
 		"de"		"Du wirst von {player}{1}{default}'s Health Station geheilt!"
 		"pl"		"Leczenie z stacji {player}{1}{default}'a!"
 	}
@@ -624,6 +707,7 @@
 	"Health Station Out Of Charges"
 	{
 		"en"		"This Health Station is out of charges! Wait for it to recharge!"
+		"chi"		"此医疗站的电量不足！请等待其充电完毕！"
 		"de"		"Diese Health Station ist leer! Warte auf Regenerierung!"
 		"pl"		"Ta stacja nie ma już ładunków! Zaczekaj aż się naładuje!"
 	}
@@ -639,6 +723,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Hello {1},\nWelcome to Trouble in Terrorist Town.\n\nAre you familiar with the rules?"
+		"chi"		"您好 {1}，\n欢迎来到匪城疑云。\n\n您熟悉规则吗？"
 		"de"		"Hallo {1},\nWillkommen in Trouble in Terrorist Town.\n\nKennst du bereits die Regeln?"
 		"pl"		"Witaj {1},\nWitamy na serwerze Trouble in Terrorist Town.\n\nJesteś zaznajomiony z zasadami?"
 	}
@@ -646,6 +731,7 @@
 	"WM Yes"
 	{
 		"en"		"Yes, I'm familiar with the rules!"
+		"chi"		"是，我熟悉规则！"
 		"de"		"Ja, Ich kenne die Regeln!"
 		"pl"		"Tak, jestem zaznajomiony z nimi!"
 	}
@@ -653,6 +739,7 @@
 	"WM Kick Message"
 	{
 		"en"		"You are inactive or you closed the rules menu!"
+		"chi"		"您正在挂机或关闭了规则菜单！"
 		"de"		"Du bist Inaktiv oder hast du Regel Menü geschlossen!"
 		"pl"		"Byłeś nieaktywny lub zamknąłeś menu z zasadami!"
 	}
@@ -660,6 +747,7 @@
 	"AM Question"
 	{
 		"en"		"You want to play as a detective?\nThen you need to agree with:\n\n- Working Microphone\n- Communicate with Players\n- Be Active\n\nDo you agree?"
+		"chi"		"您想游玩警探身份吗？\n您需要：\n\n- 可用的麦克风\n- 与其他玩家交流\n- 活跃\n\n您是否同意？"
 		"de"		"Du möchtest als Detektiv spielen?\nDann musst du folgendes akzeptieren:\n\n- funktionierendes Mikrofon\n- Kommuniziere mit Spieler\n- sei Aktiv\n\nBist du einverstanden?"
 		"pl"		"Chcesz grać jako detektyw?\nW takim wypadku będziesz potrzebował:\n\n- Działającego mikrofonu\n- Komunikacji z gracami\n- Być aktywny\n\nZgadzasz się na te warunki?"
 	}
@@ -667,6 +755,7 @@
 	"AM Yes"
 	{
 		"en"		"Yes, I agree."
+		"chi"		"是，我同意。"
 		"de"		"Ja, Ich bin einverstanden."
 		"pl"		"Tak, zgadzam się."
 	}
@@ -674,6 +763,7 @@
 	"AM No"
 	{
 		"en"		"No, I disagree."
+		"chi"		"否，我不同意。"
 		"de"		"Nein, Danke."
 		"pl"		"Nie, dziękuje."
 	}
@@ -681,6 +771,7 @@
 	"WM No"
 	{
 		"en"		"No, show me the rules!"
+		"chi"		"否，让我看看规则！"
 		"de"		"Nein, zeig mir die Regeln!"
 		"pl"		"Nie, pokaż mi zasady!"
 	}
@@ -689,6 +780,7 @@
 	{
 		"#format"	"{1:.0f}"
 		"en"		"Next round will start in {1} second(s)!"
+		"chi"		"下回合将于 {1} 秒内开始！"
 		"de"		"Nächste Runde startet in {1} Sekunde(n)!"
 		"pl"		"Następna runda rozpocznie się za {1} sekund!"
 	}
@@ -696,6 +788,7 @@
 	"Hurt Station Deployed"
 	{
 		"en"		"Hurt station has been deployed! It will damage any nearby players!"
+		"chi"		"伤害站已部署！其将对附近玩家造成伤害！"
 		"de"		"Hurt Station wurde platziert! Spieler in Reichweite werden Schaden durch die Hurt Station erleiden!"
 		"pl"		"Stacja raniąca została postawiona! Będzie raniła wszystkich pobliskich graczy!"
 	}
@@ -704,6 +797,7 @@
 	{
 		"#format"	"{1:i}"
 		"en"		"You can only buy {1} of these per round!"
+		"chi"		"您每回合仅可购买 {1} 个此类道具！"
 		"de"		"Du kannst nur {1} pro Runde kaufen!"
 		"pl"		"Możesz to kupić tylko {1} razy na rundę!"
 	}
@@ -711,6 +805,7 @@
 	"All karma has been updated"
 	{
 		"en"		"All players have now had their karma updated."
+		"chi"		"已更新所有玩家的业力。"
 		"de"		"Das Karma aller Spieler hat sich aktualisiert."
 		"pl"		"Wszyscy gracze mają już zaktualizowaną karmę."
 	}
@@ -718,6 +813,7 @@
 	"ID: Need to be Alive"
 	{
 		"en"		"You need to be alive to use this command."
+		"chi"		"您必须存活才能使用此命令。"
 		"de"		"Du musst leben um diesen Befehl zu nutzen."
 		"pl"		"Musisz być żywy, aby używać tej komendy."
 	}
@@ -725,6 +821,7 @@
 	"ID: Need to buy ID"
 	{
 		"en"		"You don't have an ID. Buy one in the Shop."
+		"chi"		"您没有 ID。请在商店中购买。"
 		"de"		"Du besitzt keine ID Karte. Kaufe eine im Shop."
 		"pl"		"Nie posiadasz ID. Kup je w sklepie."
 	}
@@ -733,6 +830,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} is Innocent."
+		"chi"		"{1} 是平民。"
 		"de"		"{1} ist Innocent."
 		"pl"		"{1} jest Niewinnym."
 	}
@@ -741,6 +839,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}has found a fake body!"
+		"chi"		"{player}{1} {default}发现了一具架尸体！"
 		"de"		"{player}{1} {default}hat ein falschen Körper gefunden!"
 		"pl"		"{player}{1} {default}znalazł sztuczne ciało!"
 	}
@@ -749,6 +848,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit for tasers! (Usage(s) per round: {1})"
+		"chi"		"您已达到了电击枪使用限制！(每回合可使用：{1})"
 		"de"		"Du hast das Limit für Taser erreicht! (Benutzungen pro Runde: {1})"
 		"pl"		"Osiągnąłeś limit taser'ów! (Limit na rundę: {1})"
 	}
@@ -757,6 +857,7 @@
 	{
 		"#format"	"{1:s},{2:d},{3:s}"
 		"en"		"You have given {player}{1} {default}{2} {highlight}{3}!"
+		"chi"		"您给予了玩家 {player}{1} {default}{2} {highlight}{3}！"
 		"de"		"Du hast {player}{1} {default}{2} {highlight}{3} gegeben!"
 		"pl"		"Dałeś {player}{1} {default}{2} {highlight}{3}!"
 	}
@@ -764,6 +865,7 @@
 	"ID: Buy Message"
 	{
 		"en"		"Type !id to show your innocence."
+		"chi"		"键入 !id 以展示您的无辜。"
 		"de"		"Gib !id ein um deine Unschuld zu beweisen."
 		"pl"		"Wpisz !id, aby udowodnić swoją niewinność."
 	}
@@ -772,6 +874,7 @@
 	{
 		"#format"	"{1:d},{2:s},{3:d}"
 		"en"		"<font size='{1}' color='#{2}'>Round starts in {3} second(s)</font>"
+		"chi"		"<font size='{1}' color='#{2}'>回合将于 {3} 秒后开始</font>"
 		"de"		"<font size='{1}' color='#{2}'>Runde startet in {3} Sekunde(n)</font>"
 		"pl"		"<font size='{1}' color='#{2}'>Runda rozpocznie się za {3} sekund</font>"
 	}
@@ -780,6 +883,7 @@
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"<font size='{1}' color='#{2}'><bold>Good luck, have fun.</bold></font>"
+		"chi"		"<font size='{1}' color='#{2}'>祝您好运，玩的开心。</font>"
 		"de"		"<font size='{1}' color='#{2}'><bold>Viel Glück und Viel Spaß.</bold></font>"
 		"pl"		"<font size='{1}' color='#{2}'><bold>Powodzenia i miłej zabawy.</bold></font>"
 	}
@@ -787,6 +891,7 @@
 	"YouAreDead"
 	{
 		"en"		"You can't use this while your dead."
+		"chi"		"您死亡时无法使用此操作。"
 		"de"		"Du kannst das nicht als toter benutzen."
 		"pl"		"Nie możesz tego użyć dopóki nieżyjesz."
 	}
@@ -795,6 +900,7 @@
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"You've reached the limit of {1}'s ({highlight}{2}{default})"
+		"chi"		"您达到了 {1} 的限制 ({highlight}{2}{default})"
 		"de"		"Du hast von Limit von {1} erreicht ({highlight}{2}{default})"
 		"pl"		"Osiągnąłeś limit {1} ({highlight}{2}{default})"
 	}
@@ -802,6 +908,7 @@
 	"DT: Invalid Position"
 	{
 		"en"		"Decoy Position was incorrect. (Stuck problem)"
+		"chi"		"诱饵位置不正确。(卡住)"
 		"de"		"Deine Teleport Decoy ist an einem ungünstigen Ort gelandet. (Stuck Problem)"
 		"pl"		"Pozycja Decoy'a była nieprawidłowa. (Problem z utknięciem)"
 	}
@@ -809,6 +916,7 @@
 	"SpecMenu: Title"
 	{
 		"en"		"Spec Menu"
+		"chi"		"观察者菜单"
 		"de"		"Zuschauer Menü"
 		"pl"		"Menu Widza"
 	}
@@ -817,6 +925,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Player: {1}"
+		"chi"		"玩家：{1}"
 		"de"		"Spieler: {1}"
 		"pl"		"Gracz: {1}"
 	}
@@ -824,6 +933,7 @@
 	"SpecMenu: Next"
 	{
 		"en"		"Next Player"
+		"chi"		"下个玩家"
 		"de"		"Nächster Spieler"
 		"pl"		"Następny gracz"
 	}
@@ -831,6 +941,7 @@
 	"SpecMenu: Prev"
 	{
 		"en"		"Prev Player"
+		"chi"		"上个玩家"
 		"de"		"Vorheriger Spieler"
 		"pl"		"Poprzedni gracz"
 	}
@@ -838,6 +949,7 @@
 	"SpecMenu: Mute"
 	{
 		"en"		"Mute this Player"
+		"chi"		"禁言此玩家"
 		"de"		"Diesen Spieler stummschalten"
 		"pl"		"Wycisz tego gracza"
 	}
@@ -845,6 +957,7 @@
 	"Hud Name"
 	{
 		"en"		"Name"
+		"chi"		"名称"
 		"de"		"Name"
 		"pl"		"Nazwa"
 	}
@@ -852,6 +965,7 @@
 	"Hud Health"
 	{
 		"en"		"Health"
+		"chi"		"血量"
 		"de"		"Gesundheit"
 		"pl"		"Życie"
 	}
@@ -866,6 +980,7 @@
 	"Hud Karma"
 	{
 		"en"		"Karma"
+		"chi"		"业力"
 		"de"		"Karma"
 		"pl"		"Karma"
 	}
@@ -874,6 +989,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1}"
+		"chi"		"{1}"
 		"de"		"{1}"
 		"pl"		"{1}"
 	}
@@ -882,6 +998,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Scan Complete: {player}{1} {default}scanned {role t}{2} {default}and he is a {role t}Traitor{default}!"
+		"chi"		"扫描完成：{player}{1} {default}扫描了 {role t}{2} {default}发现他/她是{role t}叛徒{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role t}{2} {default}und ist ein{role t}Traitor{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role t}{2} {default}i jest {role t}Zdrajcą{default}!"
 	}
@@ -890,6 +1007,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Scan Complete: {player}{1} {default}scanned {role d}{2} {default}and he is a {role d}Detective{default}!"
+		"chi"		"扫描完成：{player}{1} {default}扫描了 {role d}{2} {default}发现他/她是{role d}警探{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role d}{2} {default}und ist ein {role d}Detektiv{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role d}{2} {default}i jest {role d}Detektywem{default}!"
 	}
@@ -898,6 +1016,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"Scan Complete: {player}{1} {default}scanned {role i}{2} {default}and he is {role i}Innocent{default}!"
+		"chi"		"扫描完成：{player}{1} {default}扫描了 {role i}{2} {default}发现他/她是{role i}平民{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role i}{2} {default}und ist ein {role i}Innocent{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role i}{2} {default}i jest {role i}Niewinnym{default}!"
 	}
@@ -906,6 +1025,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} is now talking in Traitor Voice Chat"
+		"chi"		"{1} 正于叛徒语音频道说话"
 		"de"		"{1} spricht nun im Traitor Sprachchat"
 		"pl"		"{1} mówi teraz na czacie głosowym dla Zdrajców"
 	}
@@ -914,6 +1034,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} stopped talking in Traitor Voice Chat"
+		"chi"		"{1} 停止在叛徒语音频道说话"
 		"de"		"{1} spricht nicht mehr im Traitor Sprachchat"
 		"pl"		"{1} przestał mówić na czacie głosowym Zdrajców"
 	}
@@ -921,6 +1042,7 @@
 	"Traitor Voice Chat: Disabled!"
 	{
 		"en"		"Traitor Voice Chat: Disabled!"
+		"chi"		"叛徒语音频道：已禁用！"
 		"de"		"Traitor Sprachchat: Deaktiviert!"
 		"pl"		"Głosowy czat zdrajców: Wyłączony!"
 	}
@@ -928,6 +1050,7 @@
 	"Traitor Voice Chat: Enabled!"
 	{
 		"en"		"Traitor Voice Chat: Enabled!"
+		"chi"		"叛徒语音频道：已启用！"
 		"de"		"Traitor Sprachchat: Aktiviert!"
 		"pl"		"Głosowy czat zdrajców: Włączony!"
 	}
@@ -935,6 +1058,7 @@
 	"ID: Cooldown"
 	{
 		"en"		"You need to wait before using that command again."
+		"chi"		"您必须稍等片刻才能使用此命令。"
 		"de"		"Du musst noch warten bevor du den Befehl wieder benutzen kannst."
 		"pl"		"Musisz chwile poczekać zanim ponownie użyjesz tej komendy."
 	}
@@ -942,6 +1066,7 @@
 	"SpecMenu: Unmute Dead"
 	{
 		"en"		"Unmute Dead Players"
+		"chi"		"解除禁言死亡玩家"
 		"de"		"Tote Spieler entmuten"
 		"pl"		"Odmutuj nieżywych graczy"
 	}
@@ -949,6 +1074,7 @@
 	"SpecMenu: Mute Dead"
 	{
 		"en"		"Mute Dead Players"
+		"chi"		"禁言死亡玩家"
 		"de"		"Tote Spieler stummschalten"
 		"pl"		"Zmutuj nieżywych graczy"
 	}
@@ -956,6 +1082,7 @@
 	"SpecMenu: Unmute Alive"
 	{
 		"en"		"Unmute Alive Players"
+		"chi"		"解除禁言存活玩家"
 		"de"		"Lebende Spieler entmuten"
 		"pl"		"Odmutuj żyjących graczy"
 	}
@@ -963,6 +1090,7 @@
 	"SpecMenu: Mute Alive"
 	{
 		"en"		"Mute Alive Players"
+		"chi"		"禁言存活玩家"
 		"de"		"Lebende Spieler stummschalten"
 		"pl"		"Zmutuj żyjących graczy"
 	}
@@ -970,6 +1098,7 @@
 	"Reopen Shop deactivated"
 	{
 		"en"		"Shop will close after buying an item."
+		"chi"		"商店将在购买完物品后关闭。"
 		"de"		"Shop schließt sich nach dem Kauf."
 		"pl"		"Sklep zostanie zamknięty po zakupieniu itemu."
 	}
@@ -977,6 +1106,7 @@
 	"Reopen Shop activated"
 	{
 		"en"		"Shop will open again after buying an item."
+		"chi"		"商店将在购买完物品后再次开启。"
 		"de"		"Shop öffnet sich nach dem Kauf."
 		"pl"		"Sklep zostanie otworzony po zakupieniu itemu."
 	}
@@ -984,6 +1114,7 @@
 	"You already have an active Station"
 	{
 		"en"		"You already have an active Station!"
+		"chi"		"您已有了活跃中的站点！"
 		"de"		"Du hast bereits eine aktive Station!"
 		"pl"		"Już masz aktywną stację!"
 	}
@@ -992,6 +1123,7 @@
 	{
 		"#format"	"{1:i},{2:s},{3:d},{4:s}"
 		"en"		"Item {2} bought for {3} {4}! Remaining {4}: {1}"
+		"chi"		"{3} 已购买物品 {2} {4}! 剩余{4}：{1}"
 		"de"		"Item {2} für {3} {4} gekauft! Verbleibend {4}: {1}"
 		"pl"		"Item {2} kupiony za {3} {4}! Pozostało {4}: {1}"
 	}
@@ -1000,6 +1132,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}is {role i}alive {default}and watching logs of current round."
+		"chi"		"{player}{1} {default}正{role i}存活{default}且正查看当前回合日志。"
 		"de"		"{player}{1} {default}ist am {role i}leben {default}und schaut sich die aktuellen Protokolle an."
 		"pl"		"{player}{1} {default}jest {role i}żyjącym {default}i przegląda logi aktualnej rundy."
 	}
@@ -1008,6 +1141,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}is now {role i}Innocent{default}!"
+		"chi"		"{player}{1} {default}现为{role i}平民{default}！"
 		"de"		"{player}{1} {default}ist nun ein {role i}Innocent{default}!"
 		"pl"		"{player}{1} {default}jest teraz {role i}Niewinnym{default}!"
 	}
@@ -1016,6 +1150,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:d}"
 		"en"		"{player}{1} {default}was slayed by {player}{2} {default}for {highlight}{3} {default}rounds!"
+		"chi"		"{player}{1} {default}被{player}{2} {default}击杀了 {highlight}{3} {default}个回合！"
 		"de"		"{player}{1} {default}wird erschlagen von {player}{2} {default}für weitere{highlight}{3} {default}Runden!"
 		"pl"		"{player}{1} {default}został zabity przez {player}{2} {default}na {highlight}{3} {default}rund!"
 	}
@@ -1024,6 +1159,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You were slayed! You will be slain for {highlight}{1} {default}more rounds."
+		"chi"		"您已被击杀！您还将被连续击杀 {highlight}{1} {default}个回合。"
 		"de"		"Du wurdest erschlagen! Du wirst weitere {highlight}{1} {default}Runden erschlagen."
 		"pl"		"Zostałeś zabity! Będziesz zabijany przez następne {highlight}{1} {default}rund."
 	}
@@ -1032,6 +1168,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"({1}%% OFF)"
+		"chi"		"(力减 {1}%%)"
 		"de"		"({1}%% RABATT)"
 		"pl"		"({1}%% RABAT)"
 	}
@@ -1040,6 +1177,7 @@
 	{
 		"#format"	"{1:.2f}"
 		"en"		"Sprint is active for {1} second(s)!"
+		"chi"		"冲刺已启用，持续时间 {1} 秒！"
 		"de"		"Sprint ist für {1} Sekunde(n) aktiv!"
 		"pl"		"Sprint jest aktywny przez {1} sekund!"
 	}
@@ -1048,6 +1186,7 @@
 	{
 		"#format"	"{1:.2f}"
 		"en"		"Sprint is available in {1} second(s)."
+		"chi"		"冲刺将在 {1} 秒后可用！"
 		"de"		"Sprint ist in {1} Sekunde(n) verfügbar."
 		"pl"		"Sprint będzie dostępny za {1} sekund."
 	}
@@ -1055,6 +1194,7 @@
 	"Sprint available"
 	{
 		"en"		"Sprint is now available!"
+		"chi"		"冲刺现已可用！"
 		"de"		"Sprint ist jetzt verfügbar!"
 		"pl"		"Sprint jest już dostępny!"
 	}
@@ -1062,6 +1202,7 @@
 	"TAGrenade We Found"
 	{
 		"en"		"The following people were found:"
+		"chi"		"发现了以下玩家："
 		"de"		"Es wurden folgende Personen gefunden:"
 		"pl"		"Następujące osoby zostały znalezione:"
 	}
@@ -1070,6 +1211,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"{role i}{1} Innocents"
+		"chi"		"{role i}{1} 名平民"
 		"de"		"{role i}{1} Innocents"
 		"pl"		"{role i}{1} Niewinnych"
 	}
@@ -1078,6 +1220,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"{role t}{1} Traitors"
+		"chi"		"{role i}{1} 名叛徒"
 		"de"		"{role t}{1} Traitor"
 		"pl"		"{role t}{1} Zdrajców"
 	}
@@ -1086,6 +1229,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"{role d}{1} Detectives"
+		"chi"		"{role i}{1} 名警探"
 		"de"		"{role d}{1} Detektive"
 		"pl"		"{role d}{1} Detektywów"
 	}
@@ -1093,6 +1237,7 @@
 	"Location Saved"
 	{
 		"en"		"Location saved! Type '{highlight}!tele{default}' in chat to teleport you."
+		"chi"		"已保存位置！请在聊天框里键入 '{highlight}!tele{default}' 进行传送。"
 		"de"		"Position gespeichert! Gib '{highlight}!tele{default}' ein um dich zu teleportieren."
 		"pl"		"Lokalizacja zapisana! Wpisz '{highlight}!tele{default}' na czacie, aby się teleportować."
 	}
@@ -1101,6 +1246,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You've reached the limit! ({highlight}{1}{default})"
+		"chi"		"您已达到限制！({highlight}{1}{default})"
 		"de"		"Du hast das Limit erreicht! ({highlight}{1}{default})"
 		"pl"		"Właśnie osiągnąłeś limit! ({highlight}{1}{default})"
 	}
@@ -1108,6 +1254,7 @@
 	"Radar Updated"
 	{
 		"en"		"Radar updated!"
+		"chi"		"雷达已更新！"
 		"de"		"Radar aktualisiert!"
 		"pl"		"Radar został zaktualizowany!"
 	}
@@ -1115,6 +1262,7 @@
 	"Decoy Body Active"
 	{
 		"en"		"You found a decoy body! RUN!"
+		"chi"		"您发现了一具诱饵尸体！快跑！"
 		"de"		"Du hast ein explodierenden Körper gefunden! LAUF!"
 		"pl"		"Znalazłeś ciało przynętę! UCIEKAJ!"
 	}
@@ -1129,6 +1277,7 @@
 	"TTT Radio Menu: Commands"
 	{
 		"en"		"TTT Radio Commands"
+		"chi"		"匪城疑云无线电指令"
 		"de"		"TTT Radio Befehle"
 		"pl"		"TTT Radio Komendy"
 	}
@@ -1136,6 +1285,7 @@
 	"TTT Radio Menu: Yes"
 	{
 		"en"		"Yes"
+		"chi"		"是"
 		"de"		"Ja"
 		"pl"		"Tak"
 	}
@@ -1143,6 +1293,7 @@
 	"TTT Radio Menu: No"
 	{
 		"en"		"No"
+		"chi"		"否"
 		"de"		"Nein"
 		"pl"		"Nie"
 	}
@@ -1150,6 +1301,7 @@
 	"TTT Radio Menu: Maybe"
 	{
 		"en"		"Maybe"
+		"chi"		"可能"
 		"de"		"Vielleicht"
 		"pl"		"Możliwe"
 	}
@@ -1157,6 +1309,7 @@
 	"TTT Radio Menu: Help"
 	{
 		"en"		"Help"
+		"chi"		"救命"
 		"de"		"Hilfe"
 		"pl"		"Pomocy"
 	}
@@ -1164,6 +1317,7 @@
 	"TTT Radio Menu: Check"
 	{
 		"en"		"Check"
+		"chi"		"检查"
 		"de"		"Check"
 		"pl"		"Sprawdź"
 	}
@@ -1171,6 +1325,7 @@
 	"TTT Radio Menu: Im With"
 	{
 		"en"		"Im with..."
+		"chi"		"我和..."
 		"de"		"Ich bin bei..."
 		"pl"		"Jestem z..."
 	}
@@ -1178,6 +1333,7 @@
 	"TTT Radio Menu: Suspect"
 	{
 		"en"		"Suspect..."
+		"chi"		"怀疑..."
 		"de"		"Verdächtig..."
 		"pl"		"Podejrzane..."
 	}
@@ -1185,6 +1341,7 @@
 	"TTT Radio Menu: Traitor"
 	{
 		"en"		"Traitor..."
+		"chi"		"叛徒..."
 		"de"		"Traitor..."
 		"pl"		"Zdrajca..."
 	}
@@ -1192,6 +1349,7 @@
 	"TTT Radio Menu: Innocent"
 	{
 		"en"		"Innocent..."
+		"chi"		"平民..."
 		"de"		"Innocent..."
 		"pl"		"Niewinny..."
 	}
@@ -1199,6 +1357,7 @@
 	"TTT Radio Menu: See"
 	{
 		"en"		"See..."
+		"chi"		"看见..."
 		"de"		"Ich sehe..."
 		"pl"		"Widzę..."
 	}
@@ -1206,6 +1365,7 @@
 	"TTT Radio: Yes"
 	{
 		"en"		"Yes"
+		"chi"		"是..."
 		"de"		"Ja"
 		"pl"		"Tak"
 	}
@@ -1213,6 +1373,7 @@
 	"TTT Radio: No"
 	{
 		"en"		"No"
+		"chi"		"否"
 		"de"		"Nein"
 		"pl"		"Nie"
 	}
@@ -1220,6 +1381,7 @@
 	"TTT Radio: Maybe"
 	{
 		"en"		"Maybe"
+		"chi"		"可能"
 		"de"		"Vielleicht"
 		"pl"		"Możliwe"
 	}
@@ -1227,6 +1389,7 @@
 	"TTT Radio: Help"
 	{
 		"en"		"Help"
+		"chi"		"救命"
 		"de"		"Hilfe"
 		"pl"		"Pomocy"
 	}
@@ -1234,6 +1397,7 @@
 	"TTT Radio: Check"
 	{
 		"en"		"Check"
+		"chi"		"检查"
 		"de"		"Check"
 		"pl"		"Sprawdź"
 	}
@@ -1242,6 +1406,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Im with {1}"
+		"chi"		"我和 {1} 在一起"
 		"de"		"Ich bin bei {1}"
 		"pl"		"Jestem z {1}"
 	}
@@ -1250,6 +1415,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} acts suspicious."
+		"chi"		"{1} 形迹可疑"
 		"de"		"{1} wirkt verdächtig."
 		"pl"		"{1} zachowuje się podejrzanie."
 	}
@@ -1258,6 +1424,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} is the traitor!"
+		"chi"		"{1} 是叛徒！"
 		"de"		"{1} ist ein Traitor!"
 		"pl"		"{1} jest zdrajcą!"
 	}
@@ -1266,6 +1433,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} is innocent."
+		"chi"		"{1} 是平民。"
 		"de"		"{1} ist Innocent."
 		"pl"		"{1} jest niewinnym."
 	}
@@ -1274,6 +1442,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"I see {1}"
+		"chi"		"我看见了 {1}"
 		"de"		"Ich sehe {1}"
 		"pl"		"Widzę {1}"
 	}
@@ -1281,6 +1450,7 @@
 	"Random Teleporter: Cant find ragdoll"
 	{
 		"en"		"Could not find the ragdoll to teleport to."
+		"chi"		"无法找到要传送至的布娃娃。"
 		"de"		"Körper zum teleportieren konnte nicht gefunden werden."
 		"pl"		"Nie można znaleźć ciała do teleportacji."
 	}
@@ -1289,6 +1459,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You switched positions with {player}{1}{default}."
+		"chi"		"您与 {player}{1}{default} 交换了位置。"
 		"de"		"Du hast die Positionen mit {player}{1}{default} getauscht."
 		"pl"		"Zamieniłeś się miejscami z {player}{1}{default}."
 	}
@@ -1297,6 +1468,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role i}{2} {default}| Weapon: {highlight}{3}"
+		"chi"		"扫描完毕：{role d}{1} {default}扫描了一具尸体。凶手：{role i}{2} {default}| 武器：{highlight}{3}"
 		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role i}{2} {default}| Waffe: {highlight}{3}"
 		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role i}{2} {default}| Broń: {highlight}{3}"
 	}
@@ -1305,6 +1477,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role d}{2} {default}| Weapon: {highlight}{3}"
+		"chi"		"扫描完毕：{role d}{1} {default}扫描了一具尸体。凶手：{role d}{2} {default}| 武器：{highlight}{3}"
 		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role d}{2} {default}| Waffe: {highlight}{3}"
 		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role d}{2} {default}| Broń: {highlight}{3}"
 	}
@@ -1313,6 +1486,7 @@
 	{
 		"#format"	"{1:s},{2:s},{3:s}"
 		"en"		"Scan Complete: {role d}{1} {default}scanned a body. Killer: {role t}{2} {default}| Weapon: {highlight}{3}"
+		"chi"		"扫描完毕：{role d}{1} {default}扫描了一具尸体。凶手：{role t}{2} {default}| 武器：{highlight}{3}"
 		"de"		"Überprüfung abgeschlossen: {role d}{1} {default} scannte ein Körper. Mörder: {role t}{2} {default}| Waffe: {highlight}{3}"
 		"pl"		"Skan ukończony: {role d}{1} {default} przeskanował ciało. Zabójca: {role t}{2} {default}| Broń: {highlight}{3}"
 	}
@@ -1320,6 +1494,7 @@
 	"No karma hurt traitor"
 	{
 		"en"		"You didn't lose karma because a {role t}Traitor {default}damaged you first."
+		"chi"		"由于{role t}叛徒{default}首先伤害的您，故您未损失业力。"
 		"de"		"Du hast kein Karma verloren, weil ein {role t}Traitor {default}dich zuerst angegriffen hat."
 		"pl"		"Nie straciłeś karmy, ponieważ {role t}Zdrajca {default}zranił Ciebie pierwszego."
 	}
@@ -1327,6 +1502,7 @@
 	"No karma hurt innocent"
 	{
 		"en"		"You didn't lose karma because an {role i}Innocent {default}damaged you first."
+		"chi"		"由于{role i}平民{default}首先伤害的您，故您未损失业力。"
 		"de"		"Du hast kein Karma verloren, weil ein {role i}Innocent {default}dich zuerst angegriffen hat."
 		"pl"		"Nie straciłeś karmy, ponieważ {role i}Niewinny {default}zranił Ciebie pierwszego."
 	}
@@ -1334,6 +1510,7 @@
 	"No karma hurt detective"
 	{
 		"en"		"You didn't lose Karma because a {role d}Detective {default}damaged you first."
+		"chi"		"由于{role d}警探{default}首先伤害的您，故您未损失业力。"
 		"de"		"Du hast kein Karma verloren, weil ein {role d}Detektiv {default}dich zuerst angegriffen hat."
 		"pl"		"Nie straciłeś karmy, ponieważ {role d}Detektyw {default}zranił Ciebie pierwszego."
 	}
@@ -1342,6 +1519,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Can't find '{1}' as valid shop item"
+		"chi"		"无法找到商店物品 '{1}'"
 		"de"		"'{1}' als Item nicht verfügbar"
 		"pl"		"'{1}' nie jest prawidłowym itemem w sklepie"
 	}
@@ -1350,6 +1528,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"KOS {1}!"
+		"chi"		"目击击杀 {1}！"
 		"de"		"KOS {1}!"
 		"pl"		"KOS {1}!"
 	}
@@ -1358,6 +1537,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Body Found (Silent): You found {role i}{1}{default}."
+		"chi"		"发现尸体 (静音)：您发现了 {role i}{1}{default}."
 		"de"		"Körper gefunden (Leise): Du hast {role i}{1}{default} gefunden."
 		"pl"		"Ciało znalezione (Ciche): Znalazłeś {role i}{1}{default}."
 	}
@@ -1366,6 +1546,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Body Found (Silent): You found {role d}{1}{default}."
+		"chi"		"发现尸体 (静音)：您发现了 {role d}{1}{default}."
 		"de"		"Körper gefunden (Leise): Du hast {role d}{1}{default} gefunden."
 		"pl"		"Ciało znalezione (Ciche): Znalazłeś {role d}{1}{default}."
 	}
@@ -1374,6 +1555,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Body Found (Silent): You found {role t}{1}{default}."
+		"chi"		"发现尸体 (静音)：您发现了 {role t}{1}{default}."
 		"de"		"Körper gefunden (Leise): Du hast {role t}{1}{default} gefunden."
 		"pl"		"Ciało znalezione (Ciche): Znalazłeś {role t}{1}{default}."
 	}
@@ -1381,6 +1563,7 @@
 	"C4: Choose Punishment"
 	{
 		"en"		"Choose Punishment:"
+		"chi"		"选择惩罚："
 		"de"		"Bestrafung wählen:"
 		"pl"		"Wybierz karę:"
 	}
@@ -1388,6 +1571,7 @@
 	"C4: Slay"
 	{
 		"en"		"Slay Player"
+		"chi"		"击杀玩家"
 		"de"		"Spieler erschlagen"
 		"pl"		"Zabij gracza"
 	}
@@ -1395,6 +1579,7 @@
 	"C4: Explode"
 	{
 		"en"		"Explode bomb"
+		"chi"		"引爆炸弹"
 		"de"		"Bombe explodieren"
 		"pl"		"Wysadź bombę"
 	}
@@ -1402,6 +1587,7 @@
 	"Name Change Kick Reason"
 	{
 		"en"		"Name changes are not allowed during an active round!"
+		"chi"		"回合中禁止更改名称！"
 		"de"		"Änderung des Namens ist während einer aktiven Runde nicht erlaubt!"
 		"pl"		"Zmiana nazwy nie jest dozwolona podczas aktywnej rundy!"
 	}
@@ -1409,6 +1595,7 @@
 	"Name Change Reason"
 	{
 		"en"		"Name change during an active round."
+		"chi"		"回合中更改名称。"
 		"de"		"Änderung des Namnes innerhalb einer aktiven Runde."
 		"pl"		"Zmiana nazwy podczas aktywnej rundy."
 	}
@@ -1417,6 +1604,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{player}{1} {default}changed name to {player}{2}{default}!"
+		"chi"		"{player}{1} {default}更改了名称至 {player}{2}{default}！"
 		"de"		"{player}{1} {default}ändert sein Name zu {player}{2}{default}!"
 		"pl"		"{player}{1} {default}zmienił nazwę na {player}{2}{default}!"
 	}
@@ -1424,6 +1612,7 @@
 	"No tripmines"
 	{
 		"en"		"You do not have any tripmines."
+		"chi"		"您没有绊雷。"
 		"de"		"Du hast keine Tretminen."
 		"pl"		"Nie masz żadnych min."
 	}
@@ -1431,6 +1620,7 @@
 	"Invalid location"
 	{
 		"en"		"Invalid location for Tripmine"
+		"chi"		"绊雷安放地点无效。"
 		"de"		"Ungültige Position für eine Tretmine"
 		"pl"		"Nieprawidłowa lokalizacja dla min"
 	}
@@ -1438,6 +1628,7 @@
 	"AlreadyTaser"
 	{
 		"en"		"You already have a taser in your inventory!"
+		"chi"		"您的物品栏里已有电击枪！"
 		"de"		"Du hast bereits ein Taser in deinem Inventar!"
 		"pl"		"Już masz taser w swoim ekwipunku!"
 	}
@@ -1446,6 +1637,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Tripmines Remaining: {highlight}{1}{default}."
+		"chi"		"剩余绊雷：{highlight}{1}{default}."
 		"de"		"Tretminen Verbleibend: {highlight}{1}{default}."
 		"pl"		"Pozostało min: {highlight}{1}{default}."
 	}
@@ -1453,6 +1645,7 @@
 	"TTT Radio Menu: KOS"
 	{
 		"en"		"KOS..."
+		"chi"		"目击击杀..."
 		"de"		"KOS..."
 		"pl"		"KOS..."
 	}
@@ -1460,6 +1653,7 @@
 	"Place Tripmine"
 	{
 		"en"		"To place a tripmine, type '{highlight}!tripmine{default}' in chat."
+		"chi"		"要放置绊雷，请在聊天框内键入 '{highlight}!tripmine{default}'。"
 		"de"		"Um eine Tretmine zu platzieren, gib '{highlight}!tripmine{default}' im Textchat ein."
 		"pl"		"Aby postawić minę, wpisz '{highlight}!tripmine{default}' na czacie."
 	}
@@ -1468,6 +1662,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You used a free DNA scanner! You have {highlight}{1} {default}uses left."
+		"chi"		"您使用了免费的 DNA 扫描器！您还剩下 {highlight}{1} {default}次使用次数。"
 		"de"		"Du hast einen kostenlosen DNA Scanner verwendet! Du hast noch {highlight}{1} {default}Stück."
 		"pl"		"Użyłeś darmowego skanera DNA! Pozostało Ci {highlight}{1} {default}użyć."
 	}
@@ -1476,6 +1671,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"We are {1} player(s)!"
+		"chi"		"当前共有 {1} 名玩家！"
 		"de"		"Wir sind {1} Spieler!"
 		"pl"		"Aktualnie mamy {1} graczy!"
 	}
@@ -1484,6 +1680,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Remaining player(s) to start a round: {1}"
+		"chi"		"仍需要 {1} 名玩家以开始游戏。"
 		"de"		"Weitere {1} Spieler werden benötigt"
 		"pl"		"Pozostała liczba graczy, aby zacząć rundę: {1}"
 	}
@@ -1491,6 +1688,7 @@
 	"HUD Health - Invalid"
 	{
 		"en"		"Invalid Value"
+		"chi"		"无效值"
 		"de"		"Ungültiger Wert"
 		"pl"		"Nieprawidłowa wartość"
 	}
@@ -1498,6 +1696,7 @@
 	"HUD Health - NearDeath"
 	{
 		"en"		"Near Death"
+		"chi"		"濒死"
 		"de"		"Nahezu Tot"
 		"pl"		"Bliski śmierci"
 	}
@@ -1505,6 +1704,7 @@
 	"HUD Health - BadlyWounded"
 	{
 		"en"		"Badly Wounded"
+		"chi"		"重伤"
 		"de"		"Schwer Verwundet"
 		"pl"		"Poważnie zraniony"
 	}
@@ -1512,6 +1712,7 @@
 	"HUD Health - Wounded"
 	{
 		"en"		"Wounded"
+		"chi"		"轻伤"
 		"de"		"Verwundet"
 		"pl"		"Zraniony"
 	}
@@ -1519,6 +1720,7 @@
 	"HUD Health - Hurt"
 	{
 		"en"		"Hurt"
+		"chi"		"受伤"
 		"de"		"Angeschlagen"
 		"pl"		"Skrzywdzony"
 	}
@@ -1526,6 +1728,7 @@
 	"HUD Health - Healthy"
 	{
 		"en"		"Healthy"
+		"chi"		"健康"
 		"de"		"Gesund"
 		"pl"		"Zdrowy"
 	}
@@ -1533,6 +1736,7 @@
 	"HUD Karma - Invalid"
 	{
 		"en"		"Invalid Value"
+		"chi"		"无效值"
 		"de"		"Ungültiger Wert"
 		"pl"		"Nieprawidłowa wartość"
 	}
@@ -1540,6 +1744,7 @@
 	"HUD Karma - Liability"
 	{
 		"en"		"Liability"
+		"chi"		"倾向"
 		"de"		"Sehr Schlecht"
 		"pl"		"Odpowiedzialny"
 	}
@@ -1547,6 +1752,7 @@
 	"HUD Karma - Dangerous"
 	{
 		"en"		"Dangerous"
+		"chi"		"危险"
 		"de"		"Gefährlich"
 		"pl"		"Niebezpieczny"
 	}
@@ -1554,6 +1760,7 @@
 	"HUD Karma - TriggerHappy"
 	{
 		"en"		"Trigger-Happy"
+		"chi"		"好战"
 		"de"		"Normal"
 		"pl"		"Normalny"
 	}
@@ -1561,6 +1768,7 @@
 	"HUD Karma - Crude"
 	{
 		"en"		"Crude"
+		"chi"		"粗鲁"
 		"de"		"Gut"
 		"pl"		"Surowy"
 	}
@@ -1568,6 +1776,7 @@
 	"HUD Karma - Reputable"
 	{
 		"en"		"Reputable"
+		"chi"		"声誉良好"
 		"de"		"Sehr gut"
 		"pl"		"Renomowany"
 	}
@@ -1576,6 +1785,7 @@
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"{player}{1} {default}wants to revive you, wait {highlight}{2} {default}second(s) until you can accept it."
+		"chi"		"{player}{1} {default}想要复活您，请在接受前稍等 {highlight}{2} {default}秒。"
 		"de"		"{player}{1} {default}möchte dich wiederbeleben, warte noch {highlight}{2} {default}Sekunde(n) bis du es akzeptieren kannst."
 		"pl"		"{player}{1} {default}chciałby Cię wskrzesić, zaczekaj {highlight}{2} {default}sekund zanim będziesz mógł zaakceptować."
 	}
@@ -1584,6 +1794,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"You will revive {player}{1}{default}."
+		"chi"		"您将复活 {player}{1}{default}。"
 		"de"		"Du belebst {player}{1}{default} wieder."
 		"pl"		"Wskrzesisz {player}{1}{default}."
 	}
@@ -1592,6 +1803,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}must accept your revive request."
+		"chi"		"{player}{1} {default}必须接受您的复活请求。"
 		"de"		"{player}{1} {default}muss deine Anfrage akzeptieren."
 		"pl"		"{player}{1} {default}musi zaakceptować prośbę o wskrzeszenie."
 	}
@@ -1600,6 +1812,7 @@
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"{1} wants to revive you.\nDo you accept this request?\nYou've {2} second(s)..."
+		"chi"		"{1} 想要复活您。\n您是否接受此请求？\n您有 {2} 秒的确认时间..."
 		"de"		"{1} möchte dich wiederbeleben.\nAkzeptierst du diese Anfrage?\nDu hast {2} Sekunde(n)..."
 		"pl"		"{1} chciałby Cię wskrzesić.\nAkceptujesz tą prośbę?\nMasz na to {2} sekund..."
 	}
@@ -1607,6 +1820,7 @@
 	"Revive: Menu - Yes"
 	{
 		"en"		"Yes, revive me!"
+		"chi"		"是，请复活我！"
 		"de"		"Ja, beleb mich wieder!"
 		"pl"		"Tak, wskrześ mnie!"
 	}
@@ -1614,6 +1828,7 @@
 	"Revive: Menu - No"
 	{
 		"en"		"No, thank you!"
+		"chi"		"不，谢谢！"
 		"de"		"Nein, danke!"
 		"pl"		"Nie, dziękuje!"
 	}
@@ -1622,6 +1837,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"Menu timed out... No response from {1}"
+		"chi"		"菜单超时... {1} 未响应"
 		"de"		"Menü abgelaufen... Keine Reaktion von {1}"
 		"pl"		"Czas minął... Brak odpowiedzi od {1}"
 	}
@@ -1630,6 +1846,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} accepted your request and is now back in-game!"
+		"chi"		"{1} 接受了您的请求并已重返游戏！"
 		"de"		"{1} hat deine Anfrage akzeptiert und ist nun wieder im Spiel!"
 		"pl"		"{1} zaakceptował Twoją prośbę i jest znów w grze!"
 	}
@@ -1638,6 +1855,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} declined your request!"
+		"chi"		"{1} 拒绝了您的请求！"
 		"de"		"{1} hat deine Anfrage abgelehnt!"
 		"pl"		"{1} odrzucił Twoją prośbę!"
 	}
@@ -1646,6 +1864,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1} {default}is not dead!"
+		"chi"		"{player}{1} {default}尚未死亡！"
 		"de"		"{player}{1} {default}ist nicht Tot!"
 		"pl"		"{player}{1} {default}wciąż żyje!"
 	}
@@ -1654,6 +1873,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{player}{1} {default}respawned {player}{2}{default}!"
+		"chi"		"{player}{1} {default}重生了 {player}{2}{default}！"
 		"de"		"{player}{1} {default}belebt {player}{2}{default} wieder!"
 		"pl"		"{player}{1} {default}wskrzesił {player}{2}{default}!"
 	}
@@ -1661,6 +1881,7 @@
 	"Tasers: Enabled"
 	{
 		"en"		"Tasers loaded and enabled!"
+		"chi"		"电击枪装填就绪！"
 		"de"		"Taser geladen und aktiviert!"
 		"pl"		"Tasery zostały naładowane i aktywowane!"
 	}
@@ -1669,6 +1890,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"This server is running the latest version ({highlight}{1}{default}) of Trouble in Terrorist Town."
+		"chi"		"此服务器正运行最新版 ({highlight}{1}{default}) 的匪城疑云。"
 		"de"		"Dieser Server verwendet die aktuellste ({highlight}{1}{default}) von Trouble in Terrorist Town."
 		"pl"		"Ten serwer działa na najnowszej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town."
 	}
@@ -1677,6 +1899,7 @@
 	{
 		"#format"	"{1:d},{2:d}"
 		"en"		"This server is running an unknown version ({highlight}{1}{default}) of Trouble in Terrorist Town. Latest Version is {highlight}{2}."
+		"chi"		"此服务器正运行未知版本 ({highlight}{1}{default}) 的匪城疑云，最新版本为 {highlight}{2}。"
 		"de"		"Dieser Server verwendet eine unbekannte Version ({highlight}{1}{default}) von Trouble in Terrorist Town. Aktuellste Version ist {highlight}{2}."
 		"pl"		"Ten serwer działa na nieznanej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town. Najnowsza wersja to {highlight}{2}."
 	}
@@ -1685,6 +1908,7 @@
 	{
 		"#format"	"{1:d},{2:d}"
 		"en"		"This server is running an older version ({highlight}{1}{default}) of Trouble in Terrorist Town. Latest Version is {highlight}{2}."
+		"chi"		"此服务器正运行旧版本 ({highlight}{1}{default}) 的匪城疑云，最新版本为 {highlight}{2}。"
 		"de"		"Dieser Server verwendet eine alte Version ({highlight}{1}{default}) von Trouble in Terrorist Town. Aktuellste Version ist {highlight}{2}."
 		"de"		"Ten serwer działa na starszej wersji ({highlight}{1}{default}) trybu Trouble in Terrorist Town. Najnowsza wersja to {highlight}{2}."
 	}
@@ -1692,6 +1916,7 @@
 	"Revolver: Suicide"
 	{
 		"en"		"A {role d}Detective {default}tried to kill an {role i}Innocent {default}with the Revolver!"
+		"chi"		"一名{role d}警探{default}试图使用左轮手枪击杀{role i}平民{default}！"
 		"de"		"Ein {role d}Detektiv {default}versuchte ein {role i}Innocent {default}mit ein Revolver zu töten!"
 		"pl"		"{role d}Detektyw {default}próbował zabić {role i}Niewinnego {default}z Revolvera!"
 	}
@@ -1699,6 +1924,7 @@
 	"Bullets: Have already"
 	{
 		"en"		"You already have one type of bullets."
+		"chi"		"您已有了一种类型的子弹。"
 		"de"		"Du hast bereits Kugeln eines anderen Typs."
 		"pl"		"Już masz jeden typ naboi."
 	}
@@ -1707,6 +1933,7 @@
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"You now have {highlight}{1} {default}{2}."
+		"chi"		"您现有 {highlight}{1} {default}{2}。"
 		"de"		"Du hast nun {highlight}{1} {default}{2}."
 		"pl"		"Od teraz masz {highlight}{1} {default}{2}."
 	}
@@ -1722,6 +1949,7 @@
 	{
 		"#format"	"{1:.1f},{2:s}"
 		"en"		"Your new name for {highlight}{1} {default}second(s) is: {player}{2}{default}."
+		"chi"		"您于接下来 {highlight}{1} {default}秒内的新名称为：{player}{2}{default}."
 		"de"		"Dein neuer Name für {highlight}{1} {default}Sekunde(n) ist: {player}{2}{default}."
 		"pl"		"Twoja nowa nazwa przez {highlight}{1} {default}sekund to: {player}{2}{default}."
 	}
@@ -1729,6 +1957,7 @@
 	"Fake Name: Name expired"
 	{
 		"en"		"Your name has expired. Reverting back to your old name now!"
+		"chi"		"您的名称已过期，正改回您原来的名称！"
 		"de"		"Dein neuer Name auf Zeit ist abgelaufen. Dein alter Name wird wiederhergestellt!"
 		"pl"		"Twoja nazwa wygasła. Twoja stara nazwa powróciła!"
 	}
@@ -1737,6 +1966,7 @@
 	{
 		"#format"	"{1:.1f}"
 		"en"		"Your name is now invisible for {highlight}{1} {default}second(s)."
+		"chi"		"您的名称现将被隐藏 {highlight}{1} {default}秒。"
 		"de"		"Dein Name ist nun für {highlight}{1} {default}Sekunde(n) unsichtbar."
 		"pl"		"Twoja nazwa jest teraz niewidzialna przez {highlight}{1} {default}sekund."
 	}
@@ -1744,6 +1974,7 @@
 	"Invisible Name: Stop"
 	{
 		"en"		"Your name is no longer invisible!"
+		"chi"		"您的名称已不再被隐藏。"
 		"de"		"Dein Name ist nicht mehr unsichtbar!"
 		"pl"		"Twoja nazwa jest już widoczna!"
 	}
@@ -1751,6 +1982,7 @@
 	"ClanTag: Traitor"
 	{
 		"en"		"Traitor"
+		"chi"		"叛徒"
 		"de"		"Traitor"
 		"pl"		"Zdrajca"
 	}
@@ -1758,6 +1990,7 @@
 	"ClanTag: Detective"
 	{
 		"en"		"Detective"
+		"chi"		"警探"
 		"de"		"Detektiv"
 		"pl"		"Detektyw"
 	}
@@ -1765,6 +1998,7 @@
 	"ClanTag: Unassigned"
 	{
 		"en"		"No Role"
+		"chi"		"无角色"
 		"de"		"Keine Rolle"
 		"pl"		"Brak Roli"
 	}
@@ -1772,6 +2006,7 @@
 	"ClanTag: Innocent"
 	{
 		"en"		"Innocent"
+		"chi"		"平民"
 		"de"		"Innocent"
 		"pl"		"Niewinny"
 	}
@@ -1780,6 +2015,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"There has been {highlight}#{1} {default}rounds in total."
+		"chi"		"共计进行了 {highlight}#{1} {default}个回合。"
 		"de"		"Es wurden insgesamt {highlight}#{1} {default}Runden gespielt."
 		"pl"		"Było łącznie {highlight}#{1} {default}rozegranych rund."
 	}
@@ -1787,6 +2023,7 @@
 	"RoundInactive"
 	{
 		"en"		"No active round."
+		"chi"		"回合未开始。"
 		"de"		"Keine aktive Runde."
 		"pl"		"Nie ma aktywnej rundy."
 	}
@@ -1794,6 +2031,7 @@
 	"InventoryNoItems"
 	{
 		"en"		"You have no items registered in your inventory."
+		"chi"		"您的物品栏内尚无物品。"
 		"de"		"Du hast kein registriertes Item in deinem Inventar."
 		"pl"		"Nie masz żadnych zarejestrowanych itemów w ekwipunku."
 	}
@@ -1801,6 +2039,7 @@
 	"InventoryTitle"
 	{
 		"en"		"TTT Inventory"
+		"chi"		"匪城疑云物品栏"
 		"de"		"TTT Inventar"
 		"pl"		"Ekwipunek TTT"
 	}
@@ -1809,6 +2048,7 @@
 	{
 		"#format"	"{1:i},{2:i},{3:s},{4:s}"
 		"en"		"You have looted {highlight}{1} {default}{4} and {highlight}{2} {default}items from {player}{3}{default}'s corpse."
+		"chi"		"您从 {player}{3}{default} 的尸体上掠夺了 {highlight}{1} {default}{4} 及 {highlight}{2} {default}件物品。"
 		"de"		"Du hast {highlight}{1} {default}{4} und {highlight}{2} {default}Items von der Leiche von {player}{3}{default} geplündert."
 		"pl"		"Znalazłeś {highlight}{1} {default}{4} i {highlight}{2} {default}itemów z ciała {player}{3}{default}'a."
 	}
@@ -1816,6 +2056,7 @@
 	"NoItems"
 	{
 		"en"		"No items in your inventory"
+		"chi"		"您的物品栏中尚无物品"
 		"de"		"Keine Items in deinem Inventar"
 		"pl"		"Brak itemów w Twoim ekwipunku"
 	}
@@ -1824,6 +2065,7 @@
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"You already used {highlight}{1} {2} {default}times! Purchase Aborted."
+		"chi"		"您已使用了 {highlight}{1} {2} {default}次！购买终止。"
 		"de"		"Du hast bereits {highlight}{1} {2} {default}mal benutzt! Kauf abgebrochen."
 		"pl"		"Już użyłeś {highlight}{1} {2} {default}razy! Zakup anulowany."
 	}
@@ -1832,6 +2074,7 @@
 	{
 		"#format"	"{1:s},{2:d}"
 		"en"		"For {1} is the global limit of {2} times reached."
+		"chi"		"物品 {1} 已达到了 {2} 次的全域购买限制。"
 		"de"		"Für {1} wurde das Limit von {2} mal erreicht."
 		"pl"		"Dla {1} jest globalny limit wynoszący {2} użyć."
 	}
@@ -1840,6 +2083,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"You have already reached the Purchase Limit! (Limit: {highlight}{1}{default})"
+		"chi"		"您已达到了购买限制！(限制：{highlight}{1}{default})"
 		"de"		"Du hast bereits das Kauflimit erreicht! (Limit: {highlight}{1}{default})"
 		"pl"		"Już osiągnąłeś limit kupowania! (Limit: {highlight}{1}{default})"
 	}
@@ -1848,6 +2092,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{highlight}{1} {default}is Disabled. (Limit: {highlight}0{default})."
+		"chi"		"{highlight}{1} {default}已被禁用。(限制：{highlight}0{default})."
 		"de"		"{highlight}{1} {default}ist Deaktiviert. (Limit: {highlight}0{default})."
 		"pl"		"{highlight}{1} {default}jest wyłączony. (Limit: {highlight}0{default})."
 	}
@@ -1855,6 +2100,7 @@
 	"Blackout: Already Active"
 	{
 		"en"		"Blackout is already active!"
+		"chi"		"已在断电中！"
 		"de"		"Blackout ist bereits aktiv!"
 		"pl"		"Wyciemnie jest już aktywne!"
 	}
@@ -1863,6 +2109,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Blackout starting in {highlight}{1} {default}second(s)!"
+		"chi"		"断电将于 {highlight}{1} {default}秒后开始！"
 		"de"		"Blackout startet in {highlight}{1} {default}Sekunde(n)!"
 		"pl"		"Wyciemnienie zacznie się za {highlight}{1} {default}sekund!"
 	}
@@ -1871,6 +2118,7 @@
 	{
 		"#format"	"{1:.1f}"
 		"en"		"You are respawning in {highlight}{1} {default}second(s)!"
+		"chi"		"您将于 {highlight}{1} {default}秒后重生！"
 		"de"		"Du wirst in {highlight}{1} {default}Sekunde(n) wiederbelebt!"
 		"pl"		"Zostałesz wskrzeszony za {highlight}{1} {default}sekund!"
 	}
@@ -1878,6 +2126,7 @@
 	"Radio: Invalid target"
 	{
 		"en"		"Target is invalid or you are not aiming at someone."
+		"chi"		"目标无效或您未瞄准玩家。"
 		"de"		"Das Ziel ist ungültig oder du visierst niemanden an."
 		"pl"		"Cel jest nieprawidłowy lub na nikogo nie patrzysz."
 	}
@@ -1885,6 +2134,7 @@
 	"NightVision: Command Usage"
 	{
 		"en"		"Night Vision can be accessed via {highlight}!nvg{default}."
+		"chi"		"您可通过 {highlight}!nvg{default} 购买夜视仪。"
 		"de"		"Nachtsichtgerät kann mit {highlight}!nvg{default} benutzt werden."
 		"pl"		"Dostęp do noktowizji możesz zmieniać komendą {highlight}!nvg{default}."
 	}
@@ -1892,6 +2142,7 @@
 	"Spec Menu: Searching"
 	{
 		"en"		"Search process is already running. Please wait a moment!"
+		"chi"		"搜索已在进行中，请稍候！"
 		"de"		"Der Suchprozess läuft bereits. Bitte warte einen Moment!"
 		"pl"		"Aktualnie trwa proces szukania. Zaczekaj chwile!"
 	}
@@ -1899,6 +2150,7 @@
 	"Spec Menu: Freelook"
 	{
 		"en"		"To use this function, you should be in 1st or 3rd person!"
+		"chi"		"要使用此功能，您应处于第一或第三人称。"
 		"de"		"Um diese Funktion zu benutzen, solltest du im 1st oder 3rd Person sein!"
 		"pl"		"Aby użyć tej funkcji musisz być w trybie 1-szo lub 3-cio osobowym!"
 	}
@@ -1906,6 +2158,7 @@
 	"Traitor Tester: Cooldown expired"
 	{
 		"en"		"Traitor Tester: The usage cooldown has expired."
+		"chi"		"叛徒测试仪：使用冷却已过。"
 		"de"		"Traitor Tester: Die Abklingzeit ist abgelaufen."
 		"pl"		"Tester zdrajców: Ponownie można użyć testera."
 	}
@@ -1914,6 +2167,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Traitor Tester: Maximum Capacity Reached! (Max {highlight}{1}{default})"
+		"chi"		"叛徒测试仪：达到最大限制！(最大 {highlight}{1}{default})"
 		"de"		"Traitor Tester: Maximale Kapazität erreicht! (Max {highlight}{1}{default})"
 		"pl"		"Tester zdrajców: Maksymalna ilość osób osiągnięta! (Max {highlight}{1}{default})"
 	}
@@ -1921,6 +2175,7 @@
 	"Shop: Currency"
 	{
 		"en"		"Credits"
+		"chi"		"金钱"
 		"de"		"Credits"
 		"pl"		"Kredytów"
 	}
@@ -1929,6 +2184,7 @@
 	{
 		"#format"	"{1:s},{2:s}"
 		"en"		"{player}{1}{default} has been banned for being detective."
+		"chi"		"{player}{1}{default} 已被禁止扮演警探。"
 		"de"		"{player}{1}{default} has been banned for being detective."
 		"pl"		"{player}{1}{default} został zbanowany na drużynę detektywów."
 	}
@@ -1937,6 +2193,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{player}{1}{default} has been unbanned for being detective."
+		"chi"		"{player}{1}{default} 已被允许扮演警探。"
 		"de"		"{player}{1}{default} has been unbanned for being detective."
 		"pl"		"{player}{1}{default} został odbanowany na drużynę detektywów."
 	}
@@ -1944,6 +2201,7 @@
 	"Detective bans: Empty reason"
 	{
 		"en"		"** No reason **"
+		"chi"		"** 无原因 **"
 		"de"		"** Kein grund **"
 		"pl"		"** Brak powodu **"
 	}
@@ -1952,6 +2210,7 @@
 	{
 		"#format"	"{1:d},{2:d}"
 		"en"		"{role t}Attention Traitors! {role i}That's a haste round! {role d}Time left: {1}:{2}"
+		"chi"		"{role t}叛徒注意！{role i}当前为急速回合！{role d}剩余时间：{1}:{2}"
 		"de"		"{role t}Achtung Traitors! {role i}Das ist eine Haste Round! {role d}Verbleibene Zeit: {1}:{2}"
 		"pl"		"{role t}Uwaga zdrajcy! {role i}To jest runda Haste! {role d}Pozostały czas: {1}:{2}"
 	}
@@ -1959,6 +2218,7 @@
 	"Ion cannon: One ion per time"
 	{
 		"en"		"You can only place one Ion Cannon at the same time"
+		"chi"		"您只可放置一座离子大炮"
 		"de"		"Du kannst nur eine Ion Cannon gleichzeitig platzieren"
 		"pl"		"Możesz użyć tylko jednego działa w tej samej chwili"
 	}
@@ -1967,6 +2227,7 @@
 	{
 		"#format"	"{1:d}"
 		"en"		"Placing an Ion Cannon - {1} seconds"
+		"chi"		"正在放置离子大炮 - {1} 秒"
 		"de"		"Platziere Ion Cannon - {1} Sekunden"
 		"pl"		"Ustawianie Działa Orbitalnego - {1} sekund"
 	}
@@ -1974,6 +2235,7 @@
 	"Ion cannon: Stopped placing ion beacon"
 	{
 		"en"		"Stopped placing Ion Cannon"
+		"chi"		"已停止放置离子大炮"
 		"de"		"Ion Cannon Platzierung abgebrochen"
 		"pl"		"Przerwano ustawianie Działa Orbitalnego"
 	}
@@ -1981,6 +2243,7 @@
 	"Ion cannon: Select ion target"
 	{
 		"en"		"Select target for Ion Cannon"
+		"chi"		"选择离子大炮目标"
 		"de"		"Ziel für Ion Cannon auswählen"
 		"pl"		"Wybierz cel dla Działa Orbitalnego"
 	}
@@ -1988,6 +2251,7 @@
 	"Ion cannon: Target left the area"
 	{
 		"en"		"Target left the area..."
+		"chi"		"目标离开了区域..."
 		"de"		"Ziel hat das Areal verlassen..."
 		"pl"		"Cel opuścił pole działań..."
 	}
@@ -1995,6 +2259,7 @@
 	"Ion cannon: Fire at last know location"
 	{
 		"en"		"Ion Cannon will fire at last known location."
+		"chi"		"离子大炮将向最后已知地点开火。"
 		"de"		"Ion Cannon wird auf die letzte bekannte Position schießen"
 		"pl"		"Działo wymierzy w ostatnio znaną lokalizację."
 	}
@@ -2002,6 +2267,7 @@
 	"Ion cannon: Ion cannon deployed"
 	{
 		"en"		"Somebody deployed an {highlight}Ion Cannon{default}."
+		"chi"		"有人部署了{highlight}离子大炮{default}。"
 		"de"		"Jemand hat eine {highlight}Ion Cannon{default} platziert."
 		"pl"		"Ktoś zamówił {highlight}Działo Orbitalne{default}."
 	}
@@ -2009,6 +2275,7 @@
 	"Ion cannon: Auto ion cannon deployed"
 	{
 		"en"		"Somebody deployed an {highlight}automatical Ion Cannon{default}."
+		"chi"		"有人部署了{highlight}自动离子大炮{default}。"
 		"de"		"Jemand hat eine {highlight}automatische Ion Cannon{default} platziert."
 		"pl"		"Ktoś zamówił {highlight}automatyczne Działo Orbitalne{default}."
 	}
@@ -2016,12 +2283,14 @@
 	"Ion cannon: Satellite approaching"
 	{
 		"en"		"{role t}Warning - {highlight}Ion cannon {default}satellite approaching."
+		"chi"		"{role t}警告 - {highlight}离子大炮{default}卫星接近中。"
 		"de"		"{role t}Warnung - {highlight}Ion Cannon {default}nähert sich!"
 	}
 
 	"Shield: Cannot have two"
 	{
 		"en"		"You already have {highlight}shield{default}!"
+		"chi"		"您已有了{highlight}护盾{default}！"
 		"de"		"Du hast bereits ein {highlight}Schild{default}!"
 		"pl"		"Już masz {highlight}tarczę{default}!"
 	}
@@ -2029,6 +2298,7 @@
 	"Menu - Mic Check Title"
 	{
 		"en"		"Mic Check:"
+		"chi"		"麦克风检查："
 		"de"		"Mic Check:"
 		"pl"		"Stan mikrofonu:"
 	}
@@ -2036,6 +2306,7 @@
 	"Invalid Ragdoll"
 	{
 		"en"		"Invalid body removed."
+		"chi"		"移动了无效尸体。"
 		"de"		"Ungültiger Körper entfernt."
 	}
 }
