@@ -296,7 +296,7 @@ void AlterIDColumn()
     }
     else
     {
-        SetFailState("(AlterRSlaysColumn) Database handle is invalid!");
+        SetFailState("(AlterIDColumn) Database handle is invalid!");
         return;
     }
 }
