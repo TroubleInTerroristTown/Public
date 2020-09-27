@@ -2091,8 +2091,8 @@
 	"Shop: Item Disabled - MaxUsages"
 	{
 		"#format"	"{1:s}"
-		"chi"		"{highlight}{1} {default}is Disabled. (Limit: {highlight}0{default})."
-		"en"		"{highlight}{1} {default}已被禁用。(限制：{highlight}0{default})."
+		"en"		"{highlight}{1} {default}is Disabled. (Limit: {highlight}0{default})."
+		"chi"		"{highlight}{1} {default}已被禁用。(限制：{highlight}0{default})."
 		"de"		"{highlight}{1} {default}ist Deaktiviert. (Limit: {highlight}0{default})."
 		"pl"		"{highlight}{1} {default}jest wyłączony. (Limit: {highlight}0{default})."
 	}
