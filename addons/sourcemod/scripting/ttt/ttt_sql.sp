@@ -162,7 +162,7 @@ void Call_OnSQLConnect()
 void CheckAndCreateTables()
 {
     char sQuery[256];
-    Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
+    Format(sQuery, sizeof(sQuery), "CREATE TABLE IF NOT EXISTS `ttt` ( `id` INT UNSIGNED NOT NULL AUTO_INCREMENT , `communityid` VARCHAR(64) NOT NULL , PRIMARY KEY (`id`), UNIQUE (`communityid`)) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;");
 
     TTT_Query("Callback_CheckAndCreateTables", sQuery);
 
