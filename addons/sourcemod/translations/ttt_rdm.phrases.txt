@@ -4,161 +4,191 @@
     {
         "#format"   "{1:s},{2:d},{3:s},{4:d}"
         "en"        "{default}Bad Action: [{player}{1}{default}] ({highlight}{2}{default}) killed [{player}{3}{default}] ({highlight}{4}{default})"
+        "chi"       "{default}恶意行为：[{player}{1}{default}] ({highlight}{2}{default}) 击杀了 [{player}{3}{default}] ({highlight}{4}{default})"
     }
 
     "RDM: Staff Handle - Case awaiting verdict"
     {
         "en"        "You cannot handle a new case whilst you still have a case awaiting your verdict."
+        "chi"       "您仍有待裁定的案件，故无法接受新案件。"
     }
 
     "RDM: Staff Handle - No Cases"
     {
         "en"        "There are currently no available cases."
+        "chi"       "当前无案情。"
     }
 
     "RDM: Staff Handle - Has taken Case"
     {
         "#format"   "{1:s}"
         "en"        "{player}{1} {default}has taken an RDM case."
+        "chi"       "{player}{1} {default}已接手了 RDM 案件。"
     }
 
     "RDM: Staff Handle - Case Info"
     {
         "#format"   "{1:d},{2:s},{3:s}"
         "en"        "You have taken case {highlight}#{1}: {player}{2}'s {default}accusing {player}{3} of RDM."
+        "chi"        "您接手了 {highlight}#{1}: {player}{2} {default}指控玩家 {player}{3} RDM 的案件。"
     }
 
     "RDM: Staff Info - Death & Round"
     {
         "#format"   "{1:d},{2:d}"
         "en"        "Case information for Death: {highlight}{1}{default}({highlight}{2} {default}rounds ago)"
+        "chi"       "死亡信息：{highlight}{1}{default}({highlight}{2} {default}回合前)"
     }
 
     "RDM: Staff Info - Last Shot"
     {
         "#format"   "{1:d}"
         "en"        "The victim had shot last {highlight}{1} {default}seconds before there death."
+        "chi"       "受害者在死亡前 {highlight}{1} {default}秒进行了反击。"
     }
 
     "RDM: Staff Info - Accuser"
     {
         "#format"   "{1:s},{2:d},{3:s}"
         "en"        "Accuser: {player}{1}{default}({highlight}{2}{default}) - {3}"
+        "chi"       "指控者：{player}{1}{default}({highlight}{2}{default}) - {3}"
     }
 
     "RDM: Staff Info - Accused"
     {
         "#format"   "{1:s},{2:d},{3:s}"
         "en"        "Accused: {player}{1}{default}({highlight}{2}{default}) - {3}"
+        "chi"       "被指控者：{player}{1}{default}({highlight}{2}{default}) - {3}"
     }
 
     "RDM: Staff Verdict - No Case"
     {
         "en"        "You do not currently have a case to cast a verdict upon."
+        "chi"       "您当前没有可裁定的案件。"
     }
 
     "RDM: Staff Verdict - Invalid Input Verdict"
     {
         "en"        "Please pass either Innocent or Guilty."
+        "chi"       "请裁定为无辜(Innocent)或有罪(Guilty)。"
     }
 
     "RDM: Verdict - Innocent Accuser"
     {
         "#format"   "{1:s},{2:s}"
         "en"        "{player}{1} {default}has handled your case against {player}{2} {default}and has concluded them to be {role i}Innocent{default}, if you have any questions please message staff using an @ before your message or /chat."
+        "chi"       "{player}{1} {default}已接手您对 {player}{2} {default}的指控，且裁定他/她{role i}无罪{default}。若您有任何疑问，请使用 @ 或 /chat 私信管理员。"
     }
 
     "RDM: Verdict - Innocent Accused"
     {
         "#format"   "{1:s},{2:s}"
         "en"        "{player}{1} {default}has found you {role i}Innocent {default}in your defense against {player}{2}{default}, have a nice day."
+        "chi"       "{player}{1} {default}裁定您在 {player}{2}{default} 对您的指控中{role i}无罪{default}，祝您愉快。"
     }
 
     "RDM: Verdict - Innocent Staff"
     {
         "#format"   "{1:d}"
         "en"        "You have concluded the defendant {role i}Innocent {default}for case {highlight}{1}."
+        "chi"       "您裁定案件 {highlight}{1}{default} 中的被告{role i}无罪{default}。"
     }
 
     "RDM: Verdict - Guilty Accuser"
     {
         "#format"   "{1:s},{2:s}"
-        "en"        "{player}{1} {default}has handled your case against {player}{2} {defalt}and has concluded them to be {error}guilty{default}. Thanks for your report."
+        "en"        "{player}{1} {default}has handled your case against {player}{2} {default}and has concluded them to be {error}guilty{default}. Thanks for your report."
+        "chi"       "{player}{1} {default}已接手您对 {player}{2} {default}的指控，且裁定他/她{error}有罪{default}。感谢您的举报。"
+        
     }
 
     "RDM: Verdict - Guilty Accused Slay"
     {
         "#format"   "{1:s},{2:s}"
         "en"        "You are being slayed next round by {player}{1} {default}for killing {player}{2}{default}. If you have any questions about this please message staff by using an @ before your message."
+        "chi"       "您由于恶意击杀 {player}{2}{default} 而将在下回合被 {player}{1} {default} 指定自动死亡。若您有任何疑问，请使用 @ 或 /chat 私信管理员。"
     }
 
     "RDM: Verdict - Guilty Accused Warn"
     {
         "#format"   "{1:s},{2:s}"
         "en"        "You have been found guilty of RDM by {player}{1} {default}for killing {player}{2} {default}further action may be taken. If you have any questions about this please message staff by using an @ before your message or /chat."
+        "chi"       "您被 {player}{1} {default} 指控杀害 {player}{2} {default}时存在 RDM 行为，其可能采取进一步行动。若您有任何疑问，请使用 @ 或 /chat 私信管理员。"
     }
 
     "RDM: Verdict - Guilty Staff"
     {
         "#format"   "{1:d}"
         "en"        "You have concluded the defendant {error}guilty {default}for case {highlight}{1}."
+        "chi"       "您已裁定被告在案件 {highlight}{1}{default} 中{error}有罪{default}。"
     }
 
     "RDM: Case Count - None"
     {
         "en"        "There are currently no unhandled cases."
+        "chi"       "当前没有待处理的案件。"
     }
 
     "RDM: Case Count - One"
     {
         "en"        "There is now {highlight}1 {default}unhandled case."
+        "chi"       "当前共有 {highlight}1 {default}件未处理的案件。"
     }
 
     "RDM: Case Count - Many"
     {
         "#format"   "{1:d}"
         "en"        "There are now {highlight}{1} {default}unhandled cases."
+        "chi"       "当前共有 {highlight}{1} {default}件未处理的案件。"
     }
 
     "RDM: Report - Death Message"
     {
         "en"        "If you believe this death was a case of RDM, please use {highlight}!rdm {default}to report it."
+        "chi"       "若您认为此次死亡是 RDM 导致，请使用 {highlight}!rdm {default}举报。"
     }
 
     "RDM: Report - Menu Title"
     {
         "en"        "Please select the death you would like to report."
+        "chi"       "请选择要汇报的死亡记录。"
     }
 
     "RDM: Report - Menu Death"
     {
         "#format"   "{1:s},{2:d}"
         "en"        "{1} ({2} rounds ago)"
+        "chi"       "{1} ({2} 回合前)"
     }
 
     "RDM: Report - Punishment Menu Title"
     {
         "en"        "What type of punishment should they serve?"
+        "chi"       "他/她该受到何等惩罚？"
     }
 
     "RDM: Report - Punishment Warning"
     {
         "en"        "A Warning"
+        "chi"       "警告"
     }
 
     "RDM: Report - Punishment Slay"
     {
         "en"        "Slay them"
+        "chi"       "以牙还牙"
     }
 
     "RDM: Report - Acknowledge submission"
     {
         "en"        "Thanks for submitting a case, a staff member shall be in contact shortly."
+        "chi"       "感谢您的举报，管理员应在稍后很快为您做出处理。"
     }
 
     "RDM: Report - Notify Staff"
     {
         "#format"   "{1:s}"
         "en"        "{player}{1} {default}opened a new RDM case."
+        "chi"       "{player}{1} {default}汇报了新的 RDM 案件。"
     }
 }
