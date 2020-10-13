@@ -284,6 +284,8 @@ public void TTT_OnSQLConnect(Database db)
     {
         CreateLogTable();
     }
+
+    LateLoadClients();
 }
 
 void AlterIDColumn()
