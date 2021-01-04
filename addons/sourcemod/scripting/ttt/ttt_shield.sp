@@ -139,7 +139,7 @@ public void TTT_OnClientGetRole(int client, int role)
 
             if (StrContains(sClass, "shield", false) != -1)
             {
-                TTT_SafeRemoveWeapon(client, iShield);
+                TTT_SafeRemoveWeapon(client, iShield, 11);
                 return;
             }
         }
