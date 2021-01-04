@@ -36,7 +36,7 @@ public void OnPluginStart()
 {
     TTT_StartConfig("discord");
     CreateConVar("ttt2_discord_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cBotToken = AutoExecConfig_CreateConVar("discord_chat_bot_token", "bot token...", "Set the bot token", FCVAR_PROTECTED);
+    g_cBotToken = AutoExecConfig_CreateConVar("discord_chat_bot_token", "bot token...", "Set the bot token.\nYou must create a websocket connection, before you can use this:\nhttps://github.com/Deathknife/sourcemod-discord/blob/f0bd0feae98ce28bd0aacb293025d065523ef76d/README.md", FCVAR_PROTECTED);
     g_cChannelName = AutoExecConfig_CreateConVar("discord_chat_get_channel_name", "channel name...", "Channel name that will be read", FCVAR_PROTECTED);
     g_cChannelID = AutoExecConfig_CreateConVar("discord_chat_get_channel_id", "channel id...", "Channel ID that will be read", FCVAR_PROTECTED);
     TTT_EndConfig();
