@@ -139,38 +139,3 @@ methodmap DiscordMessage < Handle {
 #include <discord/webhook>
 #include <discord/bot>
 #include <discord/GuildMember>
-
-
-stock bool GetWebHook(const char[] sWebhook, char[] sUrl, int iLength)
-{
-    KeyValues kv = new KeyValues("Discord");
-
-    char sFile[PLATFORM_MAX_PATH];
-    BuildPath(Path_SM, sFile, sizeof(sFile), "configs/ttt/Discord.cfg");
-
-    if (!FileExists(sFile))
-    {
-        SetFailState("[GetWebHook] \"%s\" not found!", sFile);
-		delete kv;
-        return false;
-    }
-
-    if (!kv.ImportFromFile(sFile))
-    {
-        SetFailState("[GetWebHook] Can't read: \"%s\"!", sFile);
-		delete kv;
-        return false;
-    }
-
-    kv.GetString(sWebhook, sUrl, iLength, "default");
-
-    if (strlen(sUrl) > 2)
-    {
-		delete kv;
-        return true;
-    }
-
-    delete kv;
-    return false;
-}
-
