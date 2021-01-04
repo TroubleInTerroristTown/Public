@@ -275,7 +275,7 @@
 	{
 		"#format"	"{1:d},{2:s}"
 		"en"		"TTT Shop\nYour {2}: {1}"
-		"en"		"匪城疑云商店\n您的 {2}: {1}"
+		"chi"		"匪城疑云商店\n您的 {2}: {1}"
 		"de"		"TTT Shop\nDeine {2}: {1}"
 		"pl"		"Sklep TTT\nTwoje {2}: {1}"
 	}
@@ -555,7 +555,7 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} triggered the falling building as an Innocent."
-		"en"		"{1} 以平民的身份触发了建筑物倒塌。"
+		"chi"		"{1} 以平民的身份触发了建筑物倒塌。"
 		"de"		"{1} triggered the falling building as an Innocent."
 		"pl"		"{1} odpalił spadający budynek jako Niewinny."
 	}
