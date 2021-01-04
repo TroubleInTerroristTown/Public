@@ -383,7 +383,7 @@ bool RemoveC4(int client)
 {
     if (!TTT_IsItemInInventory(client, SHORT_NAME_C4) && !TTT_IsItemInInventory(client, SHORT_NAME_J))
     {
-        return TTT_RemoveWeaponByClassname(client, "weapon_c4");
+        return TTT_RemoveWeaponByClassname(client, "weapon_c4", CS_SLOT_C4);
     }
     
     return false;

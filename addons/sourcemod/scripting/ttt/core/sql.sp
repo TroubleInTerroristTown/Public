@@ -19,20 +19,6 @@ public void SQL_AlterKarmaColumn(Database db, DBResultSet results, const char[] 
     }
 }
 
-public void SQL_AlterIDColumn(Database db, DBResultSet results, const char[] error, any data)
-{
-    if (db == null || strlen(error) > 0)
-    {
-        LogError("(SQL_AlterIDColumn) Query failed: %s", error);
-        
-        return;
-    }
-    else
-    {
-        LateLoadClients(false);
-    }
-}
-
 public void SQL_AlterRSlaysColumn(Database db, DBResultSet results, const char[] error, any data)
 {
     if (db == null || strlen(error) > 0)

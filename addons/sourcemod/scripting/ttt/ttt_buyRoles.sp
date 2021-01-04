@@ -98,13 +98,13 @@ void RegisterItem()
     char sBuffer[MAX_ITEM_LENGTH];
     
     g_cTLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterShopItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue, 1, g_cTLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(T_SHORT_NAME, sBuffer, g_cTPrice.IntValue, TTT_TEAM_INNOCENT, g_cTPrio.IntValue, 1, g_cTLimit.IntValue, OnItemPurchased, false);
     
     g_cTiLongName.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterShopItem(TI_SHORT_NAME, sBuffer, g_cTiPrice.IntValue, TTT_TEAM_INNOCENT, g_cTiPrio.IntValue, 1, g_cTiLimit.IntValue, OnItemPurchased);
     
     g_cDLongName.GetString(sBuffer, sizeof(sBuffer));
-    TTT_RegisterShopItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue, 1, g_cDLimit.IntValue, OnItemPurchased);
+    TTT_RegisterShopItem(D_SHORT_NAME, sBuffer, g_cDPrice.IntValue, TTT_TEAM_INNOCENT, g_cDPrio.IntValue, 1, g_cDLimit.IntValue, OnItemPurchased, false);
     
     g_cDiLongName.GetString(sBuffer, sizeof(sBuffer));
     TTT_RegisterShopItem(DI_SHORT_NAME, sBuffer, g_cDiPrice.IntValue, TTT_TEAM_INNOCENT, g_cDiPrio.IntValue, 1, g_cDiLimit.IntValue, OnItemPurchased);

@@ -43,6 +43,8 @@ ConVar g_cUpdateTeamScore = null;
 ConVar g_cSeeRole = null;
 ConVar g_cTimeOverlays = null;
 ConVar g_cTimeOverlaysTime = null;
+ConVar g_cHudTextDeadPlayers = null;
+ConVar g_cHudTextFlag = null;
 
 bool g_bEndOverlay = false;
 
@@ -104,6 +106,8 @@ public void OnPluginStart()
     g_cUpdateTeamScore = AutoExecConfig_CreateConVar("ttt_team_score_update", "1", "Update team score based on detective/innocent win and traitor win?", _, true, 0.0, true, 1.0);
     g_cTimeOverlays = AutoExecConfig_CreateConVar("ttt_time_overlays_enable", "0", "Enable / Disable time overlays? You could show overlays during a active(!) round. 0 - Disable, 1 - Enable", _, true, 0.0, true, 1.0);
     g_cTimeOverlaysTime = AutoExecConfig_CreateConVar("ttt_time_overlays_time", "3.0", "Time in seconds how long the time overlays will be shown.");
+    g_cHudTextDeadPlayers = AutoExecConfig_CreateConVar("ttt_hud_text_dead_players", "0", "Show hud text only to dead players?", _, true, 0.0, true, 1.0);
+    g_cHudTextFlag = AutoExecConfig_CreateConVar("ttt_hud_text_flag", "", "Show hud text only to specific players with specific flag(s).");
     TTT_EndConfig();
 
     g_hSyncR = CreateHudSynchronizer();
@@ -571,6 +575,19 @@ void showHudToAll(char[] message, Handle sync, float x, float y, const char[] re
 {
     LoopValidClients(client)
     {
+        if (g_cHudTextDeadPlayers.BoolValue && TTT_IsPlayerAlive(client))
+        {
+            continue;
+        }
+
+        char sBuffer[18];
+        g_cHudTextFlag.GetString(sBuffer, sizeof(sBuffer));
+
+        if (strlen(sBuffer) > 0 && !TTT_CheckCommandAccess(client, "ttt_hud_text", g_cHudTextFlag, true))
+        {
+            continue;
+        }
+
         SetHudTextParams(x, y, 2.1, StringToInt(red), StringToInt(green), StringToInt(blue), StringToInt(alpha), 0, 0.0, 0.0, 0.0);
         ShowSyncHudText(client, sync, message);
     }

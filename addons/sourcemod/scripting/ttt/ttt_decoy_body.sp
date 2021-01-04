@@ -85,7 +85,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("decoy_body_count", "2", "Max usages per round for this item (0 - Disabled).");
     g_cLimit = AutoExecConfig_CreateConVar("decoy_body_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cBlockOwnBodyIdentify = AutoExecConfig_CreateConVar("decoy_body_block_own_identify", "1", "Block decoy body identify for own bodies?", _, true, 0.0, true, 1.0);
-    g_cBlockTDecoyIdentify = AutoExecConfig_CreateConVar("decoy_body_block_t_identify", "1", "Block decoy body effeect if a Traitor identify a decoy body?", _, true, 0.0, true, 1.0);
+    g_cBlockTDecoyIdentify = AutoExecConfig_CreateConVar("decoy_body_block_t_identify", "1", "Block decoy body effect if a Traitor identify a decoy body?", _, true, 0.0, true, 1.0);
     g_cNoTraitorDecoyDamage = AutoExecConfig_CreateConVar("decoy_body_block_traitor_decoy_damage", "1", "No traitor damage if decoy body explode?", _, true, 0.0, true, 1.0);
     g_cSetDecoyOwnBody = AutoExecConfig_CreateConVar("decoy_body_set_decoy_own_body", "1", "Activate decoy body on own traitor bodies, when you die with decoy in your inventory?", _, true, 0.0, true, 1.0);
     g_cSetDecoyKilledBody = AutoExecConfig_CreateConVar("decoy_body_set_decoy_killed_body", "1", "Activate decoy body on killed bodies?", _, true, 0.0, true, 1.0);
@@ -320,8 +320,17 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)
 {
+    char sName[32];
+    GetEntPropString(inflictor, Prop_Send, "m_iName", sName, sizeof(sName));
+
+    if (StrContains(sName, "decoybody", false) == -1)
+    {
+        return Plugin_Continue;
+    }
+
     if (!g_cNoTraitorDecoyDamage.BoolValue)
     {
+        TTT_LogString("-> [%N got %.0f damage from decoy body.]", iVictim, damage);
         return Plugin_Continue;
     }
 
@@ -337,6 +346,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         }
     }
     
+    TTT_LogString("-> [%N got %.0f damage from decoy body.]", iVictim, damage);
     return Plugin_Continue;
 }
 
@@ -384,6 +394,11 @@ void CreateExplosion(int body)
     if((entity = CreateEntityByName("env_explosion")) != -1)
     {
         DispatchKeyValue(entity, "rendermode", "5");
+
+        char sName[32];
+        FormatEx(sName, sizeof(sName), SHORT_NAME ... "%d", body);
+        DispatchKeyValue(entity, "targetname", sName);
+        
         SetEntProp(entity, Prop_Data, "m_iMagnitude", g_cDamage.IntValue);
         SetEntProp(entity, Prop_Data, "m_iRadiusOverride", g_cExplosionSize.IntValue);
         
@@ -409,12 +424,19 @@ void CreateExplosion(int body)
             EmitAmbientSoundAny(EXPLODE_SOUND3, fPos, entity, _, _, g_cExplosionVolume.FloatValue);
         }
         
-        RequestFrame(Frame_TriggerEploxsion, entity);
+        RequestFrame(Frame_TriggerEploxsion, EntIndexToEntRef(entity));
     }
 }
 
-public void Frame_TriggerEploxsion(int entity)
+public void Frame_TriggerEploxsion(int ref)
 {
-    AcceptEntityInput(entity, "explode");
-    AcceptEntityInput(entity, "Kill");
+    int iEntity = EntRefToEntIndex(ref);
+
+    if (IsValidEntity(iEntity))
+    {
+        AcceptEntityInput(iEntity, "explode");
+        AcceptEntityInput(iEntity, "Kill");
+
+        TTT_RemoveRagdollFromArray(iEntity);
+    }
 }

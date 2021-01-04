@@ -35,6 +35,7 @@ ConVar g_cThrowForce = null;
 ConVar g_cReloadFlag = null;
 ConVar g_cAllowFreeze = null;
 ConVar g_cGrabButton = null;
+ConVar g_cMultiGrab = null;
 ConVar g_cDebug = null;
 ConVar g_cIdentifyDistance = null;
 
@@ -70,8 +71,10 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 {
     g_fwOnGrabbing = new GlobalForward("TTT_OnGrabbing", ET_Event, Param_Cell, Param_Cell);
 
-    CreateNative("TTT_GetGrabEntity", Native_GetGrabEntity);
+    CreateNative("TTT_GetClientGrabEntity", Native_GetClientGrabEntity);
     CreateNative("TTT_ResetClientGrab", Native_ResetClientGrab);
+    CreateNative("TTT_GetEntityGrabber", Native_GetEntityGrabber);
+    CreateNative("TTT_ResetClientGrabByEntity", Native_ResetClientGrabByEntity);
 
     RegPluginLibrary("ttt_grabbermod");
 
@@ -104,6 +107,7 @@ public void OnPluginStart()
     g_cReloadFlag = AutoExecConfig_CreateConVar("gbm_reload_flag", "z", "Admin flags to reload the white/blacklist");
     g_cAllowFreeze = AutoExecConfig_CreateConVar("gbm_allow_freeze", "1", "Allow freeze while grabbing?", _, true, 0.0, true, 1.0);
     g_cGrabButton = AutoExecConfig_CreateConVar("gbm_grab_button", "5", "To change the grab button, take the number after \"<<\" (as example 5 for IN_USE/E) from this list:\nhttps://github.com/alliedmodders/sourcemod/blob/cfa4998ac1203f14464598c5454710a7faebada4/plugins/include/entity_prop_stocks.inc#L100-L125");
+    g_cMultiGrab = AutoExecConfig_CreateConVar("gbm_allow_multi_grab", "0", "Allow players to grab 1 entity 2 times or more", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
     
     LoadLists();
@@ -220,18 +224,22 @@ void GrabSomething(int client)
         return;
     }
 
-    iEntity = EntRefToEntIndex(iEntity);
-
-    if (iEntity == INVALID_ENT_REFERENCE)
-    {
-        return;
-    }
-
     GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fEntityPos);
     GetClientEyePosition(client, fClientPos);
     if (GetVectorDistance(fEntityPos, fClientPos, false) > g_cGrabDistance.FloatValue)
     {
         return;
+    }
+
+    if (!g_cMultiGrab.BoolValue)
+    {
+        LoopValidClients(i)
+        {
+            if (i != client && g_iPlayer[client].Object == EntIndexToEntRef(iEntity))
+            {
+                return;
+            }
+        }
     }
 
     if (g_bCustomKeyValues)
@@ -862,7 +870,7 @@ bool CheckLists(int client, int entity, const char[] name)
     return false;
 }
 
-public int Native_GetGrabEntity(Handle plugin, int numParams)
+public int Native_GetClientGrabEntity(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
 
@@ -879,6 +887,36 @@ public int Native_ResetClientGrab(Handle plugin, int numParams)
     int client = GetNativeCell(1);
 
     Command_UnGrab(client);
+}
+
+public int Native_GetEntityGrabber(Handle plugin, int numParams)
+{
+    int iEnt = GetNativeCell(1);
+    LoopValidClients(i)
+    {
+        if (ValidGrab(i))
+        {
+            if (EntRefToEntIndex(g_iPlayer[i].Object) == iEnt)
+            {
+                return i;
+            }
+        }
+    }
+
+    return 0; // returning 0 so we only need to do if (ent) { ... }
+}
+
+public int Native_ResetClientGrabByEntity(Handle plugin, int numParams)
+{
+    int entity = GetNativeCell(1);
+
+    LoopValidClients(client)
+    {
+        if (EntRefToEntIndex(g_iPlayer[client].Object) == entity)
+        {
+            Command_UnGrab(client);
+        }
+    }
 }
 
 void ThrowObject(int client)

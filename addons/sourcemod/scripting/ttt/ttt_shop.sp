@@ -25,6 +25,7 @@ public Plugin myinfo =
 };
 
 bool g_bItemReady = false;
+bool g_bHasRegisteredCommands = false;
 
 ArrayList g_aShopItems = null;
 
@@ -77,6 +78,7 @@ ConVar g_cTestingMode = null;
 ConVar g_cLogPurchases = null;
 ConVar g_cMaxSQLCredits = null;
 ConVar g_cMaxVIPSQLCredits = null;
+ConVar g_cOpenShopPlayerPing = null;
 
 ConVar g_cDebugMessages = null;
 ConVar g_cPluginTag = null;
@@ -120,6 +122,7 @@ enum struct Item
     int Limit;
     Handle Plugin;
     Function Callback;
+    bool Logging;
 }
 
 enum struct PlayerData {
@@ -145,7 +148,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     g_fwOnCreditsGiven_Pre = new GlobalForward("TTT_OnCreditsChanged_Pre", ET_Event, Param_Cell, Param_Cell, Param_CellByRef);
     g_fwOnCreditsGiven = new GlobalForward("TTT_OnCreditsChanged", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnShopReady = new GlobalForward("TTT_OnShopReady", ET_Ignore);
-    g_fwRegisterShopItemPost = new GlobalForward("TTT_OnRegisterShopItemPost", ET_Ignore, Param_String, Param_String, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+    g_fwRegisterShopItemPost = new GlobalForward("TTT_OnRegisterShopItemPost", ET_Ignore, Param_String, Param_String, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
     g_fwOnStartCredits = new GlobalForward("TTT_OnStartCredits", ET_Event, Param_Cell, Param_CellByRef);
     g_fwOnItemRemove = new GlobalForward("TTT_OnItemRemove", ET_Ignore, Param_String);
 
@@ -249,6 +252,7 @@ public void OnPluginStart()
     g_cLogPurchases = AutoExecConfig_CreateConVar("ttt_shop_log_purchases", "2", "Logs purchases of shop items (0 = off, 1 = all, 2 = detective/traitor only", _, true, 0.0, true, 2.0);
     g_cMaxSQLCredits = AutoExecConfig_CreateConVar("ttt_shop_max_sql_credits", "0", "Limit the max possible credits if ttt_sql_credits is 1", _, true, 0.0);
     g_cMaxVIPSQLCredits = AutoExecConfig_CreateConVar("ttt_shop_max_vip_sql_credits", "0", "Limit the max possible vip credits if ttt_sql_credits is 1", _, true, 0.0);
+    g_cOpenShopPlayerPing = AutoExecConfig_CreateConVar("ttt_open_shop_player_ping", "1", "Open shop when player use the command \"player_ping\"? (0 - No, 1 - Yes)", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoadTranslations("common.phrases");
@@ -297,37 +301,42 @@ public void OnConfigsExecuted()
     g_cCredits.GetString(sBuffer, sizeof(sBuffer));
     Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
     
-    if(!CommandExists(sBuffer))
+    if (!g_bHasRegisteredCommands)
     {
-        RegConsoleCmd(sBuffer, Command_Credits);
-    }
+        if(!CommandExists(sBuffer))
+        {
+            RegConsoleCmd(sBuffer, Command_Credits);
+        }
 
-    g_cBuyCmd.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-    
-    if(!CommandExists(sBuffer))
-    {
-        RegConsoleCmd(sBuffer, Command_Buy);
-    }
+        g_cBuyCmd.GetString(sBuffer, sizeof(sBuffer));
+        Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
+        
+        if(!CommandExists(sBuffer))
+        {
+            RegConsoleCmd(sBuffer, Command_Buy);
+        }
 
-    g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
-    Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-    
-    if(!CommandExists(sBuffer))
-    {
-        RegConsoleCmd(sBuffer, Command_ShowItems);
-    }
+        g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
+        Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
+        
+        if(!CommandExists(sBuffer))
+        {
+            RegConsoleCmd(sBuffer, Command_ShowItems);
+        }
 
-    char sCVarCMD[64];
-    g_cShopCMDs.GetString(sCVarCMD, sizeof(sCVarCMD));
+        char sCVarCMD[64];
+        g_cShopCMDs.GetString(sCVarCMD, sizeof(sCVarCMD));
 
-    g_iCommands = ExplodeString(sCVarCMD, ";", g_sCommandList, sizeof(g_sCommandList), sizeof(g_sCommandList[]));
+        g_iCommands = ExplodeString(sCVarCMD, ";", g_sCommandList, sizeof(g_sCommandList), sizeof(g_sCommandList[]));
 
-    for (int i = 0; i < g_iCommands; i++)
-    {
-        char sCommand[32];
-        Format(sCommand, sizeof(sCommand), "sm_%s", g_sCommandList[i]);
-        RegConsoleCmd(sCommand, Command_Shop);
+        for (int i = 0; i < g_iCommands; i++)
+        {
+            char sCommand[32];
+            Format(sCommand, sizeof(sCommand), "sm_%s", g_sCommandList[i]);
+            RegConsoleCmd(sCommand, Command_Shop);
+        }
+
+        g_bHasRegisteredCommands = true;
     }
 
     LoopValidClients(i)
@@ -866,7 +875,10 @@ public Action Command_Shop(int client, int args)
 
 public Action Listener_PlayerPing(int client, const char[] command, int args)
 {
-    Command_Shop(client, 0);
+    if (g_cOpenShopPlayerPing.BoolValue)
+    {
+        Command_Shop(client, 0);
+    }
 }
 
 public Action Command_ReopenShop(int client, int args)
@@ -1075,7 +1087,7 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
                             }
                         }
                     
-                        if ((StrContains(item.Short, "buyTRole", false) == -1) && (StrContains(item.Short, "buyCTRole", false) == -1))
+                        if (item.Logging)
                         {
                             TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, item.Long);
                         }
@@ -1215,7 +1227,9 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
 
     Function temp_callback = GetNativeFunction(8);
 
-    LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d, - Role: %d - Sort: %d - MaxUsages: %d, Limit: %d", sShort, temp_long, temp_price, temp_role, temp_sort, temp_maxUsages, temp_limit);
+    bool temp_logging = view_as<bool>(GetNativeCell(9));
+
+    LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d, - Role: %d - Sort: %d - MaxUsages: %d, Limit: %d, Logging: %d", sShort, temp_long, temp_price, temp_role, temp_sort, temp_maxUsages, temp_limit, temp_logging);
 
     if ((strlen(sShort) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
     {
@@ -1246,6 +1260,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
     item.Limit = temp_limit;
     item.Plugin = plugin;
     item.Callback = temp_callback;
+    item.Logging = temp_logging;
 
     if (iIndex != -1)
     {
@@ -1268,6 +1283,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
         Call_PushCell(item.Sort);
         Call_PushCell(item.MaxUsages);
         Call_PushCell(item.Limit);
+        Call_PushCell(item.Logging);
         Call_Finish();
 
         if (g_cSortItems.IntValue)
@@ -1491,19 +1507,12 @@ public void TTT_OnInventoryReady()
 {
     LoopValidClients(client)
     {
-        int iLength = 0;
         if (g_smUsages[client] != null)
         {
-            StringMapSnapshot snap = g_smUsages[client].Snapshot();
-            iLength = snap.Length;
-            delete snap;
+            delete g_smUsages[client];
         }
 
-        if (iLength == 0)
-        {
-            delete g_smUsages[client];
-            g_smUsages[client] = new StringMap();
-        }
+        g_smUsages[client] = new StringMap();
     }
 }
 
@@ -1616,11 +1625,6 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         return;
     }
 
-    if (TTT_GetRoundStatus() != Round_Active)
-    {
-        return;
-    }
-
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
@@ -1727,11 +1731,6 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
 public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
 {
-    if (TTT_GetRoundStatus() != Round_Active)
-    {
-        return;
-    }
-
     if ((TTT_GetClientRole(client) & g_cCreditsFoundBodyRole.IntValue) && !silentID || (g_cSilentIdRewards.BoolValue && silentID))
     {
         addCredits(client, g_cCreditsFoundBody.IntValue);

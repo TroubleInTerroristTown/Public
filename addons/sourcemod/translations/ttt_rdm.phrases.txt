@@ -99,7 +99,6 @@
         "#format"   "{1:s},{2:s}"
         "en"        "{player}{1} {default}has handled your case against {player}{2} {default}and has concluded them to be {error}guilty{default}. Thanks for your report."
         "chi"       "{player}{1} {default}已接手您对 {player}{2} {default}的指控，且裁定他/她{error}有罪{default}。感谢您的举报。"
-        
     }
 
     "RDM: Verdict - Guilty Accused Slay"

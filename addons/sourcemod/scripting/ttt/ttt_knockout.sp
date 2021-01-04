@@ -194,7 +194,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         return Plugin_Stop;
     }
 
-    TTT_RemoveWeaponByClassname(client, "weapon_taser");
+    TTT_RemoveWeaponByClassname(client, "weapon_taser", CS_SLOT_KNIFE);
     
     GivePlayerItem(client, "weapon_taser");
 
@@ -347,7 +347,7 @@ void DropWeapons(int client)
 
             if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
             {
-                if (!TTT_SafeRemoveWeapon(client, weapon))
+                if (!TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE))
                 {
                     LogError("Can't remove knife! Player: \"%L\"", client);
                 }

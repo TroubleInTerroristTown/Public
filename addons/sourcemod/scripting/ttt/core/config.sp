@@ -32,6 +32,7 @@ void SetupConfig()
     g_cmaxDetectives = AutoExecConfig_CreateConVar("ttt_detective_max", "32", "Maximum number of detectives. Can be used to cap or disable detectives.");
     g_cminKarmaDetective = AutoExecConfig_CreateConVar("ttt_detective_karma_min", "100", "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
     g_cblockSuicide = AutoExecConfig_CreateConVar("ttt_block_suicide", "0", "Block players from suiciding with console. 1 = Block, 0 = Don't Block", _, true, 0.0, true, 1.0);
+    g_cSkipOwnSuicide = AutoExecConfig_CreateConVar("ttt_skip_own_suicide", "1", "Should TTT skip own suicide action? 1 = Skip (no karma losses), 0 = Don't skip", _, true, 0.0, true, 1.0);
     g_cblockRadioMessage = AutoExecConfig_CreateConVar("ttt_block_radio_message", "1", "Block radio messages in chat. 1 = Block, 0 = Don't Block", _, true, 0.0, true, 1.0);
     g_cshowDeathMessage = AutoExecConfig_CreateConVar("ttt_show_death_message", "1", "Display a message showing who killed you. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cshowKillMessage = AutoExecConfig_CreateConVar("ttt_show_kill_message", "1", "Display a message showing who you killed. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);

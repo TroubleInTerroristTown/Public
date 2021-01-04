@@ -378,10 +378,14 @@ void checkDistanceFromStation(int client, int owner, int entity)
         if (g_iPlayer[owner].Type == Hurt)
         {
             iNewHealth = iCurrentHealth - g_cHurtDamage.IntValue;
+
+            TTT_LogString("-> [%N's death station damaged %N (-%d)]", owner, client, g_cHurtDamage.IntValue);
         }
         else
         {
             iNewHealth = iCurrentHealth + g_cHealthHeal.IntValue;
+
+            TTT_LogString("-> [%N's health station healed %N (+%d)]", owner, client, g_cHurtDamage.IntValue);
         }
 
         if (iNewHealth >= g_cMaxHealth.IntValue)

@@ -1,5 +1,5 @@
 /*
- * VPhysics Crash tests by c0rp3n
+ * VPhysics Crash Avoider by c0rp3n
  *
  * Changelogs:
  * v0.1.0 Initial plugin checks whether players are too close before they die 
@@ -18,7 +18,13 @@
  *        calculation has still not been performed.
  *
  * v1.0.0 Release, slightly altered push distance based on testing, double death
-          buffer size incase of respawns, though this should rarely happen.
+ *        buffer size incase of respawns, though this should rarely happen.
+ *
+ * v1.0.1 Reduce move distance by 32u, also make sure the change is networked.
+ *
+ * v1.0.2 Use Get and SetEndData methods, not as safe but faster than checking,
+ *        the hash table storing offsets.
+ *        Also made the pos vector static, saves realloc.
  */
 
 #pragma semicolon 1
@@ -29,12 +35,14 @@
 
 public Plugin myinfo =
 {
-    name = "VPhysics Crash Fix",
+    name = "VPhysics Crash Avoider",
     author = "c0rp3n",
     description = "",
-    version = "1.0.0",
+    version = "1.0.2",
     url = ""
 };
+
+int m_vecOrigin;
 
 enum struct DeathInfo
 {
@@ -48,6 +56,12 @@ DeathInfo g_deaths[MAXPLAYERS * 2];
 
 public void OnPluginStart()
 {
+    m_vecOrigin = FindSendPropInfo("CBaseEntity", "m_vecOrigin");
+    if (m_vecOrigin < 1)
+    {
+        SetFailState("Invalid offset for \"m_vecOrigin\"");
+    }
+
     HookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 }
 
@@ -84,8 +98,8 @@ public void Hook_OnTakeDamageAlive(int victim, int attacker, int inflictor, floa
 {
     if (float(GetClientHealth(victim)) - damage <= 0.0)
     {
-        float pos[3];
-        GetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos);
+        static float pos[3];
+        GetEntDataVector(victim, m_vecOrigin, pos);
 
         // d* differce along the axis
         // ad* absolute difference
@@ -103,12 +117,13 @@ public void Hook_OnTakeDamageAlive(int victim, int attacker, int inflictor, floa
                 float theta = ArcTangent2(dx, dy);
                 // calculate the distance required to make sure the players are
                 // no longer stacked
-                float dist = 32.0 + (32.0 - Max(adx, ady));
+                float dist = 32.0 - Max(adx, ady);
 
                 // move the victim by the distance in the direction of theta
                 pos[0] += dist * Cosine(theta);
                 pos[1] += dist * Sine(theta);
-                SetEntPropVector(victim, Prop_Send, "m_vecOrigin", pos);
+                // Need to see if it is better to use TeleportEntity here
+                SetEntDataVector(victim, m_vecOrigin, pos, true);
 
                 LogMessage("moved client #%d away from death #%d by %fu (%frad)", victim, i, dist, theta);
 

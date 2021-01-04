@@ -271,14 +271,17 @@ public void OnButtonPressed(int activator, int caller)
         {
             SetEntProp(caller, Prop_Data, "m_bLocked", 0, 1);
 
-            CreateTimer(1.0, Timer_Button, caller);
+            CreateTimer(1.0, Timer_Button, EntIndexToEntRef(caller));
         }
     }
 }
 
-public Action Timer_Button(Handle timer, int entity)
+public Action Timer_Button(Handle timer, int ref)
 {
-    SetEntProp(entity, Prop_Data, "m_bLocked", 1, 1);
+    if (IsValidEntity(EntRefToEntIndex(ref)))
+    {
+        SetEntProp(EntRefToEntIndex(ref), Prop_Data, "m_bLocked", 1, 1);
+    }
 }
 
 stock int GetClientTraceTarget(int client)

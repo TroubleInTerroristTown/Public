@@ -424,6 +424,7 @@ void TurretTickFollow(int owner, int player)
     }
     
     g_iPlayer[owner].Aim = m_iDegreesX;
+
     if (g_iPlayer[owner].Turret > 0)
     {
         SetEntPropFloat(g_iPlayer[owner].Turret, Prop_Send, "m_flPoseParameter", m_iDegreesX, 0);

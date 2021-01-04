@@ -13,18 +13,40 @@
 forward Action TTT_OnGrabbing(int client, int entity);
 
 /*
- * 
- * @param client                The client index
- * @return                      Entity reference (use EntRefToEntIndex to get index)
- */
-native int TTT_GetGrabEntity(int client);
-
-/*
+ * Get valid client object. 
  *
  * @param client                The client index
+ *
+ * @return                      Entity reference (use EntRefToEntIndex to get index) [-1 otherwise]
+ */
+native int TTT_GetClientGrabEntity(int client);
+
+/*
+ * Resets client grab (similar to droping object).
+ *
+ * @param client                The client index
+ *
  * @noreturn
  */
 native void TTT_ResetClientGrab(int client);
+
+/*
+ * Client index of entity.
+ *
+ * @param entity                The entity index.
+ *
+ * @return                      The client index (0 on failure)
+ */
+native int TTT_GetEntityGrabber(int entity);
+
+/*
+ * Reset all clients that grabbed the specific entity
+ *
+ * @param entity                The entity index
+ *
+ * @noreturn
+ */
+native void TTT_ResetClientGrabByEntity(int entity);
 
 public SharedPlugin __pl_ttt_grabbermod = 
 {
@@ -40,7 +62,9 @@ public SharedPlugin __pl_ttt_grabbermod =
 #if !defined REQUIRE_PLUGIN
 public void __pl_ttt_grabbermod_SetNTVOptional()
 {
-    MarkNativeAsOptional("TTT_GetGrabEntity");
+    MarkNativeAsOptional("TTT_GetClientGrabEntity");
     MarkNativeAsOptional("TTT_ResetClientGrab");
+    MarkNativeAsOptional("TTT_GetEntityGrabber");
+    MarkNativeAsOptional("TTT_ResetClientGrabByEntity");
 }
 #endif

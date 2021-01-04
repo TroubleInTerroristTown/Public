@@ -6,6 +6,14 @@
 #include <ttt_ragdoll>
 
 /**
+ * Called when a clients ragdoll entity is about to be created.
+ *
+ * @param client            The client
+ * @param attacker          The attacker.
+ */
+forward Action TTT_OnClientRagdollCreate(int client, int attacker, const char[] weapon);
+
+/**
  * Called when a body is found.
  * Use must use TTT_GetEntityRefRagdoll(client, entityref) to get the enum struct.
  *
@@ -123,6 +131,13 @@ native int TTT_RemoveClientRagdoll(int client);
  * Gets the status of which bodies have been found.
  */
 native int TTT_GetFoundArray(int[] found, int size);
+
+/*
+ * Remove entity from ragdoll array
+ *
+ * @param entity            The entity index
+ */
+native bool TTT_RemoveRagdollFromArray(int entity);
 
 public SharedPlugin __pl_ttt_bodies = 
 {

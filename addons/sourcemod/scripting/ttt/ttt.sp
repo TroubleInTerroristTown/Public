@@ -18,7 +18,7 @@
 #include <ttt_bodies>
 #include <ttt_detective_bans>
 #include <ttt_ioncannon>
-#tryinclude <sourcebans>
+#tryinclude <sourcebanspp>
 #define REQUIRE_PLUGIN
 
 #pragma newdecls required
@@ -148,7 +148,7 @@ public void OnPluginStart()
 
 public void OnAllPluginsLoaded()
 {
-    if (LibraryExists("sourcebans"))
+    if (LibraryExists("sourcebans++"))
     {
         g_bSourcebans = true;
     }
@@ -172,7 +172,7 @@ public void OnAllPluginsLoaded()
 
 public void OnLibraryAdded(const char[] library)
 {
-    if (StrEqual(library, "sourcebans", false))
+    if (StrEqual(library, "sourcebans++", false))
     {
         g_bSourcebans = true;
     }
@@ -196,7 +196,7 @@ public void OnLibraryAdded(const char[] library)
 
 public void OnLibraryRemoved(const char[] library)
 {
-    if (StrEqual(library, "sourcebans", false))
+    if (StrEqual(library, "sourcebans++", false))
     {
         g_bSourcebans = false;
     }
@@ -274,7 +274,6 @@ public void OnConfigsExecuted()
 public void TTT_OnSQLConnect(Database db)
 {
     g_dDB = db;
-    AlterIDColumn();
     AlterNameColumn();
     AlterKarmaColumn();
     AlterRSlaysColumn();
@@ -283,23 +282,6 @@ public void TTT_OnSQLConnect(Database db)
     if (g_cSaveLogsInSQL.BoolValue)
     {
         CreateLogTable();
-    }
-
-    LateLoadClients();
-}
-
-void AlterIDColumn()
-{
-    if (g_dDB != null)
-    {
-        char sQuery[76];
-        g_dDB.Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` MODIFY COLUMN `id` INT UNSIGNED NOT NULL AUTO_INCREMENT;");
-        g_dDB.Query(SQL_AlterIDColumn, sQuery);
-    }
-    else
-    {
-        SetFailState("(AlterIDColumn) Database handle is invalid!");
-        return;
     }
 }
 
@@ -1617,7 +1599,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cPrimaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon);
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
                     RequestFrame(Frame_GivePrimary, GetClientUserId(client));
                 }
             }
@@ -1654,7 +1636,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon);
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -1701,7 +1683,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon);
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -1748,11 +1730,15 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon);
+                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
+    }
+    else
+    {
+        g_iPlayer[client].Alive = false;
     }
 
     for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
@@ -1830,6 +1816,7 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
     if (g_iStatus == Round_Active && !g_iPlayer[client].Respawn)
     {
         SetClanTag(client, TTT_TEAM_UNASSIGNED);
+        g_iPlayer[client].Alive = false;
         return Plugin_Stop;
     }
 
@@ -2133,7 +2120,9 @@ void BanBadPlayerKarma(int client)
 
     if (g_bSourcebans)
     {
-        SBBanPlayer(0, client, g_ckarmaBanLength.IntValue, sReason);
+        #if defined _sourcebanspp_included //got to actually check if the include was included, to allow compiles without it.
+        SBPP_BanPlayer(0, client, g_ckarmaBanLength.IntValue, sReason);
+        #endif
     }
     else
     {
@@ -2186,6 +2175,11 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
         }
 
         if (!TTT_IsClientValid(iAttacker) || !TTT_IsClientValid(iVictim))
+        {
+            return Plugin_Continue;
+        }
+
+        if (g_cSkipOwnSuicide.BoolValue && iAttacker == iVictim)
         {
             return Plugin_Continue;
         }
@@ -3231,7 +3225,7 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
                 CPrintToChat(i, "%s %T", g_sTag, "Name Change Message", i, sOld, sNew);
             }
         }
-        else if (g_cNameChangePunish.IntValue == 2)
+        else if (g_cNameChangePunish.IntValue == 2 && !StrEqual(g_iPlayer[client].Name, sNew))
         {
             DataPack pack = new DataPack();
             RequestFrame(Frame_RechangeName, pack);
@@ -3255,7 +3249,9 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
 
             if (g_bSourcebans)
             {
-                SBBanPlayer(0, client, g_cNameChangeLength.IntValue, sReason);
+                #if defined _sourcebanspp_included
+                SBPP_BanPlayer(0, client, g_cNameChangeLength.IntValue, sReason);
+                #endif
             }
             else
             {
@@ -4918,7 +4914,7 @@ void StripAllWeapons(int client)
     {
         while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
         {
-            TTT_SafeRemoveWeapon(client, iEnt);
+            TTT_SafeRemoveWeapon(client, iEnt, i);
         }
     }
 }

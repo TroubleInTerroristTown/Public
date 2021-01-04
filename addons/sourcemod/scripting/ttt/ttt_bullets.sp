@@ -85,9 +85,9 @@ public void OnPluginStart()
     g_cPoisonPrio = AutoExecConfig_CreateConVar("bullets_poison_sort_prio", "0", "The sorting priority of the poison bullets in the shop menu.");
     g_cPoisonNb = AutoExecConfig_CreateConVar("bullets_poison_number", "5", "The number of poison bullets that the player can use per time");
     g_cPoisonLimit = AutoExecConfig_CreateConVar("bullets_poison_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
-    g_cPoisonTimer = AutoExecConfig_CreateConVar("bullets_poison_timer", "2", "The number of time the target should be poisened");		
-    g_cPoisonDmg = AutoExecConfig_CreateConVar("bullets_poison_dmg", "5", "The damage the target should receive per time");	
-    TTT_EndConfig();	
+    g_cPoisonTimer = AutoExecConfig_CreateConVar("bullets_poison_timer", "2", "The number of time the target should be poisened");
+    g_cPoisonDmg = AutoExecConfig_CreateConVar("bullets_poison_dmg", "5", "The damage the target should receive per time");
+    TTT_EndConfig();
 
     HookEvent("player_spawn", Event_PlayerSpawn);
     

@@ -69,11 +69,18 @@ public void OnPluginStart()
     g_cGlowDetective = AutoExecConfig_CreateConVar("glow_light_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
     g_cGlowTraitor = AutoExecConfig_CreateConVar("glow_light_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
+
+    HookEvent("player_death", Event_OnPlayerDeath);
 }
 
 public void OnPluginEnd()
 {
     RemoveAllGlow();
+}
+
+public void TTT_OnVersionReceive(int version)
+{
+    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
 }
 
 public void OnLibraryAdded(const char[] library)
@@ -103,19 +110,23 @@ public void OnMapStart()
 
 public void OnClientDisconnect(int client)
 {
-    RemoveGlow(client);
+    ResetClientGlow(client);
 }
 
 public void TTT_OnClientGetRole(int client, int role)
 {
     ResetClientGlow(client);
-    RemoveGlow(client);
     CreateGlow(client);
 }
 
-public Action TTT_OnPlayerDeath(int victim, int attacker)
+public Action Event_OnPlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
-    RemoveGlow(victim);
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
+    if (TTT_IsClientValid(client))
+    {
+        ResetClientGlow(client);
+    }
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
@@ -243,13 +254,14 @@ stock void RemoveAllGlow()
 {
     LoopValidClients(i)
     {
-        RemoveGlow(i);
         ResetClientGlow(i);
     }
 }
 
 stock void ResetClientGlow(int client)
 {
+    RemoveGlow(client);
+
     g_iPlayer[client].bCanSeeAll = false;
     g_iPlayer[client].bAllCanSee = false;
 

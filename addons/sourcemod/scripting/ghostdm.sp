@@ -41,7 +41,7 @@ enum struct PlayerData {
     Handle Spawn;
 }
 
-PlayerData g_iPlayer[MAXPLAYERS + 1];
+PlayerData Player[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -64,12 +64,12 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public int Native_IsClientInRedie(Handle plugin, int numParams)
 {
-    return g_iPlayer[GetNativeCell(1)].Redie;
+    return Player[GetNativeCell(1)].Redie;
 }
 
 public int Native_IsClientInDeathmatch(Handle plugin, int numParams)
 {
-    return g_iPlayer[GetNativeCell(1)].Deathmatch;
+    return Player[GetNativeCell(1)].Deathmatch;
 }
 
 public void OnPluginStart()
@@ -135,18 +135,18 @@ public Action Command_Redie(int client, int args)
         return Plugin_Handled;
     }
 
-    if (g_iPlayer[client].Redie && g_iPlayer[client].Deathmatch)
+    if (Player[client].Redie && Player[client].Deathmatch)
     {
         ReplyToCommand(client, "You must leave deathmatch first! Type !dm");
         return Plugin_Handled;
     }
 
-    g_iPlayer[client].Redie = !g_iPlayer[client].Redie;
+    Player[client].Redie = !Player[client].Redie;
 
-    PrintToChat(client, "Changed redie status to: %s", g_iPlayer[client].Redie ? "On" : "Off");
+    PrintToChat(client, "Changed redie status to: %s", Player[client].Redie ? "On" : "Off");
     CS_RespawnPlayer(client);
 
-    if (g_iPlayer[client].Redie)
+    if (Player[client].Redie)
     {
         SetRedie(client);
     }
@@ -170,17 +170,17 @@ public Action Command_Deathmatch(int client, int args)
         return Plugin_Handled;
     }
 
-    if (!g_iPlayer[client].Redie)
+    if (!Player[client].Redie)
     {
         ReplyToCommand(client, "You must be in redie to join deathmatch");
         return Plugin_Handled;
     }
 
-    g_iPlayer[client].Deathmatch = !g_iPlayer[client].Deathmatch;
+    Player[client].Deathmatch = !Player[client].Deathmatch;
 
-    PrintToChat(client, "Changed deathmatch status to: %s", g_iPlayer[client].Deathmatch ? "On" : "Off");
+    PrintToChat(client, "Changed deathmatch status to: %s", Player[client].Deathmatch ? "On" : "Off");
 
-    if (g_iPlayer[client].Deathmatch)
+    if (Player[client].Deathmatch)
     {
         SetRedie(client, true);
     }
@@ -214,7 +214,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
     if (IsClientValid(client))
     {
-        if (!g_iPlayer[client].Redie)
+        if (!Player[client].Redie)
         {
             ResetClient(client);
         }
@@ -222,7 +222,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
         {
             SetRedie(client);
             
-            if (g_iPlayer[client].Deathmatch)
+            if (Player[client].Deathmatch)
             {
                 RequestFrame(Frame_GiveWeapons, event.GetInt("userid"));
             }
@@ -251,15 +251,15 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     int victim = GetClientOfUserId(event.GetInt("userid"));
 
-    if (IsClientValid(victim) && g_iPlayer[victim].Deathmatch)
+    if (IsClientValid(victim) && Player[victim].Deathmatch)
     {
-        if (g_iPlayer[victim].Respawn != null)
+        if (Player[victim].Respawn != null)
         {
-            ClearTimer(g_iPlayer[victim].Respawn);
+            ClearTimer(Player[victim].Respawn);
         }
 
         PrintToChat(victim, "You will be respawned in %.1f seconds!", g_fRespawn);
-        g_iPlayer[victim].Respawn = CreateTimer(g_fRespawn, Timer_Respawn, GetClientUserId(victim), TIMER_FLAG_NO_MAPCHANGE);
+        Player[victim].Respawn = CreateTimer(g_fRespawn, Timer_Respawn, GetClientUserId(victim), TIMER_FLAG_NO_MAPCHANGE);
 
         Handle hPlugin = FindPluginByFile("ttt/ttt_hide_radar.smx");
 
@@ -271,7 +271,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     int attacker = GetClientOfUserId(event.GetInt("attacker"));
 
-    if (IsClientValid(attacker) && g_iPlayer[attacker].Deathmatch)
+    if (IsClientValid(attacker) && Player[attacker].Deathmatch)
     {
         char sWeapon[32];
         event.GetString("weapon", sWeapon, sizeof(sWeapon));
@@ -290,7 +290,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
             LoopClients(i)
             {
-                if (g_iPlayer[i].Deathmatch == (g_iPlayer[attacker].Deathmatch && g_iPlayer[victim].Deathmatch))
+                if (Player[i].Deathmatch == (Player[attacker].Deathmatch && Player[victim].Deathmatch))
                 {
                     eEvent.FireToClient(i);
                 }
@@ -310,14 +310,14 @@ public Action Timer_Respawn(Handle timer, int userid)
 {
     int client = GetClientOfUserId(userid);
 
-    if (IsClientValid(client) && g_iPlayer[client].Respawn != null)
+    if (IsClientValid(client) && Player[client].Respawn != null)
     {
-        if (g_iPlayer[client].Deathmatch)
+        if (Player[client].Deathmatch)
         {
             CS_RespawnPlayer(client);
         }
 
-        g_iPlayer[client].Respawn = null;
+        Player[client].Respawn = null;
     }
 
     return Plugin_Stop;
@@ -330,7 +330,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
         return Plugin_Continue;
     }
     
-    if(g_iPlayer[client].Redie)
+    if(Player[client].Redie)
     {
         if (buttons & IN_ATTACK)
         {
@@ -351,7 +351,7 @@ public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &
     
     if (IsClientValid(client))
     {
-        if (g_iPlayer[client].Redie && !g_iPlayer[client].Deathmatch)
+        if (Player[client].Redie && !Player[client].Deathmatch)
         {
             return Plugin_Stop;
         }
@@ -361,7 +361,7 @@ public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &
 
         LoopClients(i)
         {
-            if (g_iPlayer[client].Deathmatch == g_iPlayer[i].Deathmatch)
+            if (Player[client].Deathmatch == Player[i].Deathmatch)
             {
                 clients[numClients] = i;
                 numClients++;
@@ -398,7 +398,7 @@ public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int nu
         return Plugin_Continue;
     }
 
-    if (g_iPlayer[client].Redie && !g_iPlayer[client].Deathmatch)
+    if (Player[client].Redie && !Player[client].Deathmatch)
     {
         return Plugin_Stop;
     }
@@ -413,7 +413,7 @@ public Action TE_OnShotgunShot(const char[] te_name, const int[] clients, int nu
             continue;
         }
 
-        if (g_iPlayer[client].Deathmatch == g_iPlayer[i].Deathmatch)
+        if (Player[client].Deathmatch == Player[i].Deathmatch)
         {
             newClients[nClients++] = i;
         }
@@ -455,7 +455,7 @@ public Action TE_OnEffectDispatch(const char[] te_name, const int[] clients, int
 
     if (IsClientValid(victim))
     {
-        if (g_iPlayer[victim].Deathmatch)
+        if (Player[victim].Deathmatch)
         {
             return Plugin_Handled;
         }
@@ -476,12 +476,12 @@ public Action OnSetTransmit(int target, int client)
         return Plugin_Continue;
     }
 
-    if (g_iPlayer[target].Redie != g_iPlayer[client].Redie)
+    if (Player[target].Redie != Player[client].Redie)
     {
         return Plugin_Handled;
     }
 
-    if (g_iPlayer[target].Deathmatch != g_iPlayer[client].Deathmatch)
+    if (Player[target].Deathmatch != Player[client].Deathmatch)
     {
         return Plugin_Handled;
     }
@@ -501,17 +501,17 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    if (g_iPlayer[iVictim].Redie && !g_iPlayer[iVictim].Deathmatch)
+    if (Player[iVictim].Redie && !Player[iVictim].Deathmatch)
     {
         return Plugin_Handled;
     }
 
-    if (g_iPlayer[iAttacker].Deathmatch != g_iPlayer[iVictim].Deathmatch)
+    if (Player[iAttacker].Deathmatch != Player[iVictim].Deathmatch)
     {
         return Plugin_Handled;
     }
 
-    if (g_iPlayer[iAttacker].Deathmatch && g_iPlayer[iVictim].Spawn != null)
+    if (Player[iAttacker].Deathmatch && Player[iVictim].Spawn != null)
     {
         return Plugin_Handled;
     }
@@ -528,7 +528,7 @@ public Action OnWeapon(int client, int weapon)
 
     if(IsClientValid(client) && IsValidEntity(weapon))
     {
-        if (g_iPlayer[client].Deathmatch)
+        if (Player[client].Deathmatch)
         {
             char sWeapon[32];
             GetEntityClassname(weapon, sWeapon, sizeof(sWeapon));
@@ -539,7 +539,7 @@ public Action OnWeapon(int client, int weapon)
             }
         }
 
-        if (g_iPlayer[client].Redie && !g_iPlayer[client].Deathmatch)
+        if (Player[client].Redie && !Player[client].Deathmatch)
         {
             return Plugin_Handled;
         }
@@ -561,7 +561,7 @@ public void Frame_SetBlock(int ref)
 
 void SetRedie(int client, bool bDeathmatch = false)
 {
-    if (g_iPlayer[client].Redie)
+    if (Player[client].Redie)
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", HUD_RADAR);
 
@@ -574,19 +574,19 @@ void SetRedie(int client, bool bDeathmatch = false)
             
             if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
             {
-                SetEntPropFloat(iWeapon, Prop_Send, "m_flNextPrimaryAttack" GetGameTime() + 9999.9);
+                SetEntPropFloat(iWeapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() + 9999.9);
                 SetEntPropFloat(iWeapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() + 9999.9);
             }
         }
 
         if (bDeathmatch)
         {
-            if (g_iPlayer[client].Spawn != null)
+            if (Player[client].Spawn != null)
             {
-                ClearTimer(g_iPlayer[client].Spawn);
+                ClearTimer(Player[client].Spawn);
             }
 
-            g_iPlayer[client].Spawn = CreateTimer(g_fSpawnProt, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+            Player[client].Spawn = CreateTimer(g_fSpawnProt, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
             PrintToChat(client, "You have now spawn protection for %.1f seconds!", g_fSpawnProt);
         }
@@ -601,14 +601,14 @@ void SetRedie(int client, bool bDeathmatch = false)
 
 void SetListener(int client)
 {
-    if (g_iPlayer[client].Redie)
+    if (Player[client].Redie)
     {
         LoopClients(i)
         {
             if (!g_cListenerMode.BoolValue)
             {
                 // Redie (incl. deathmatch) players can hear living players but can't talk to living players
-                if (IsPlayerAlive(i) && !g_iPlayer[client].Redie)
+                if (IsPlayerAlive(i) && !Player[client].Redie)
                 {
                     SetListenOverride(client, i, Listen_Yes);
                     SetListenOverride(i, client, Listen_No);
@@ -618,7 +618,7 @@ void SetListener(int client)
             else
             {
                 // Redie (incl. deathmatch) players can't hear and talk to living players
-                if (IsPlayerAlive(i) && !g_iPlayer[client].Redie)
+                if (IsPlayerAlive(i) && !Player[client].Redie)
                 {
                     SetListenOverride(client, i, Listen_No);
                     SetListenOverride(i, client, Listen_No);
@@ -627,7 +627,7 @@ void SetListener(int client)
             }
 
             // Deathmatch players can hear and talk to other deathmatch players
-            if (g_iPlayer[i].Deathmatch && g_iPlayer[client].Deathmatch)
+            if (Player[i].Deathmatch && Player[client].Deathmatch)
             {
                 SetListenOverride(client, i, Listen_Yes);
                 SetListenOverride(i, client, Listen_Yes);
@@ -635,7 +635,7 @@ void SetListener(int client)
             }
 
             // Deathmath players can't hear and talk to other non deathmatch players
-            if (g_iPlayer[i].Deathmatch && !g_iPlayer[client].Deathmatch)
+            if (Player[i].Deathmatch && !Player[client].Deathmatch)
             {
                 SetListenOverride(client, i, Listen_No);
                 SetListenOverride(i, client, Listen_No);
@@ -643,7 +643,7 @@ void SetListener(int client)
             }
 
             // Redie players can hear and talk to other redie players
-            if (g_iPlayer[i].Redie && !g_iPlayer[i].Deathmatch && !g_iPlayer[client].Deathmatch)
+            if (Player[i].Redie && !Player[i].Deathmatch && !Player[client].Deathmatch)
             {
                 SetListenOverride(client, i, Listen_Yes);
                 SetListenOverride(i, client, Listen_Yes);
@@ -651,7 +651,7 @@ void SetListener(int client)
             }
 
             // Redie players can't hear and talk to other non redie/ghostdeathmatch players
-            if (!g_iPlayer[i].Redie)
+            if (!Player[i].Redie)
             {
                 SetListenOverride(client, i, Listen_No);
                 SetListenOverride(i, client, Listen_No);
@@ -692,7 +692,7 @@ public Action Timer_Spawn(Handle timer, int userid)
 
     if (IsClientValid(client))
     {
-        g_iPlayer[client].Spawn = null;
+        Player[client].Spawn = null;
     }
 
     return Plugin_Stop;
@@ -700,13 +700,13 @@ public Action Timer_Spawn(Handle timer, int userid)
 
 void ResetClient(int client)
 {
-    g_iPlayer[client].Redie = false;
-    g_iPlayer[client].Deathmatch = false;
+    Player[client].Redie = false;
+    Player[client].Deathmatch = false;
 
     if (IsClientInGame(client))
     {
-        ClearTimer(g_iPlayer[client].Respawn);
-        ClearTimer(g_iPlayer[client].Spawn);
+        ClearTimer(Player[client].Respawn);
+        ClearTimer(Player[client].Spawn);
 
         SetListener(client);
 
@@ -721,14 +721,14 @@ void ResetClient(int client)
             
             if (strlen(sWeapon) > 1 && (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1))
             {
-                SetEntDataFloat(iWeapon, g_iNextPrimaryAttack, GetGameTime() - 0.1);
-                SetEntDataFloat(iWeapon, g_iNextSecondaryAttack, GetGameTime() - 0.1);
+                SetEntPropFloat(iWeapon, Prop_Send, "m_flNextPrimaryAttack", GetGameTime() - 0.1);
+                SetEntPropFloat(iWeapon, Prop_Send, "m_flNextSecondaryAttack", GetGameTime() - 0.1);
             }
         }
     }
 
-    g_iPlayer[client].Respawn = null;
-    g_iPlayer[client].Spawn = null;
+    Player[client].Respawn = null;
+    Player[client].Spawn = null;
 }
 
 bool IsClientValid(int client, bool nobots = false)

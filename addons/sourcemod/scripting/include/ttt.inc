@@ -96,9 +96,9 @@ forward Action TTT_OnRoundStart_Pre();
  * @param roundid           ID of the current round
  * @param innocents         Count of innocent players.
  * @param traitors          Count of traitor players.
- * @param detective         Count of detective players.
+ * @param detectives         Count of detective players.
  */
-forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective);
+forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives);
 
 /**
  * Called when round start is failed or prevented.
@@ -710,7 +710,7 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
     return false;
 }
 
-stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
+stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
 {
     for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
@@ -723,7 +723,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
 
             if (StrEqual(sClass, classname, false))
             {
-                return TTT_SafeRemoveWeapon(client, weapon);
+                return TTT_SafeRemoveWeapon(client, weapon, slot);
             }
         }
     }
@@ -731,7 +731,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
     return false;
 }
 
-stock bool TTT_SafeRemoveWeapon(int client, int weapon)
+stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
 {
     if (HasEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex"))
     {
@@ -757,6 +757,11 @@ stock bool TTT_SafeRemoveWeapon(int client, int weapon)
         {
             return false;
         }
+    }
+    
+    if (GetPlayerWeaponSlot(client, slot) != weapon)
+    {
+        return false;
     }
     
     if (!RemovePlayerItem(client, weapon))
@@ -1124,7 +1129,7 @@ stock void TTT_RemoveMeleeWeapons(int client)
 
             if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
             {
-                TTT_SafeRemoveWeapon(client, weapon);
+                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
             }
         }
     }

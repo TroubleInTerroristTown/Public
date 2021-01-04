@@ -15,6 +15,7 @@ ConVar g_cDebug = null;
 Database g_dDB = null;
 
 ConVar g_cPlayers = null;
+ConVar g_cConsoleRoundLogs = null;
 
 bool g_bValidRound = false;
 
@@ -34,7 +35,7 @@ enum struct PlayerData {
     int KilledTraitors;
     int KilledDetectives;
     int BadKills;
-    int IdenfifiedBodies;
+    int IdentifiedBodies;
     int IdentifiedTraitors;
     int ScannedBodies;
     int ScannedTraitors;
@@ -44,9 +45,28 @@ enum struct PlayerData {
     bool InRound;
 
     char Auth[32];
+
+    void ResetRound()
+    {
+        this.ShotsFired = 0;
+        this.DamageTaken = 0;
+        this.DamageGiven = 0;
+        this.BadDamageTaken = 0;
+        this.BadDamageGiven = 0;
+        this.KilledInnocents = 0;
+        this.KilledTraitors = 0;
+        this.KilledDetectives = 0;
+        this.BadKills = 0;
+        this.IdentifiedBodies = 0;
+        this.IdentifiedTraitors = 0;
+        this.ScannedBodies = 0;
+        this.ScannedTraitors = 0;
+        this.BoughtItems = 0;
+    }
 }
 
-PlayerData g_iPlayer[MAXPLAYERS + 1];
+PlayerData Player[MAXPLAYERS + 1];
+PlayerData PlayerRound[MAXPLAYERS + 1];
 
 public Plugin myinfo =
 {
@@ -66,6 +86,7 @@ public void OnPluginStart()
     TTT_StartConfig("stats");
     CreateConVar("ttt2_stats_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
     g_cPlayers = AutoExecConfig_CreateConVar("stats_required_players", "8", "Required amount of players to enable stats");
+    g_cConsoleRoundLogs = AutoExecConfig_CreateConVar("stats_console_round_log", "1", "Print round logs to players console?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     if (TTT_GetSQLConnection() != null)
@@ -163,45 +184,45 @@ void ShowPlayerStats(int client, int target)
     menu.SetTitle("Player Statistics for %s", sName);
 
     char sBuffer[64];
-    Format(sBuffer, sizeof(sBuffer), "Rounds Played: %d", g_iPlayer[target].RoundsPlayed);
+    Format(sBuffer, sizeof(sBuffer), "Rounds Played: %d", Player[target].RoundsPlayed);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), " - as Innocent: %d", g_iPlayer[target].PlayedAsInnocent);
+    Format(sBuffer, sizeof(sBuffer), " - as Innocent: %d", Player[target].PlayedAsInnocent);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), " - as Traitor: %d", g_iPlayer[target].PlayedAsTraitor);
+    Format(sBuffer, sizeof(sBuffer), " - as Traitor: %d", Player[target].PlayedAsTraitor);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), " - as Detective: %d", g_iPlayer[target].PlayedAsDetective);
+    Format(sBuffer, sizeof(sBuffer), " - as Detective: %d", Player[target].PlayedAsDetective);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Rounds Won: %d", g_iPlayer[target].RoundsWon);
+    Format(sBuffer, sizeof(sBuffer), "Rounds Won: %d", Player[target].RoundsWon);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Shots Fired: %d", g_iPlayer[target].ShotsFired);
+    Format(sBuffer, sizeof(sBuffer), "Shots Fired: %d", Player[target].ShotsFired);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Damage Taken: %d", g_iPlayer[target].DamageTaken);
+    Format(sBuffer, sizeof(sBuffer), "Damage Taken: %d", Player[target].DamageTaken);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Damage Given: %d", g_iPlayer[target].DamageGiven);
+    Format(sBuffer, sizeof(sBuffer), "Damage Given: %d", Player[target].DamageGiven);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Bad Damage Taken: %d", g_iPlayer[target].BadDamageTaken);
+    Format(sBuffer, sizeof(sBuffer), "Bad Damage Taken: %d", Player[target].BadDamageTaken);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Bad Damage Given: %d", g_iPlayer[target].BadDamageGiven);
+    Format(sBuffer, sizeof(sBuffer), "Bad Damage Given: %d", Player[target].BadDamageGiven);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Rounds Slayed: %d", g_iPlayer[target].SlayedRounds);
+    Format(sBuffer, sizeof(sBuffer), "Rounds Slayed: %d", Player[target].SlayedRounds);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Innocent kills: %d", g_iPlayer[target].KilledInnocents);
+    Format(sBuffer, sizeof(sBuffer), "Innocent kills: %d", Player[target].KilledInnocents);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Traitor kills: %d", g_iPlayer[target].KilledTraitors);
+    Format(sBuffer, sizeof(sBuffer), "Traitor kills: %d", Player[target].KilledTraitors);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Detective kills: %d", g_iPlayer[target].KilledDetectives);
+    Format(sBuffer, sizeof(sBuffer), "Detective kills: %d", Player[target].KilledDetectives);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Bad kills: %d", g_iPlayer[target].BadKills);
+    Format(sBuffer, sizeof(sBuffer), "Bad kills: %d", Player[target].BadKills);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Identified Bodies: %d", g_iPlayer[target].IdenfifiedBodies);
+    Format(sBuffer, sizeof(sBuffer), "Identified Bodies: %d", Player[target].IdentifiedBodies);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Identified Traitors: %d", g_iPlayer[target].IdentifiedTraitors);
+    Format(sBuffer, sizeof(sBuffer), "Identified Traitors: %d", Player[target].IdentifiedTraitors);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Scanned Bodies: %d", g_iPlayer[target].ScannedBodies);
+    Format(sBuffer, sizeof(sBuffer), "Scanned Bodies: %d", Player[target].ScannedBodies);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Scanned Traitors: %d", g_iPlayer[target].ScannedTraitors);
+    Format(sBuffer, sizeof(sBuffer), "Scanned Traitors: %d", Player[target].ScannedTraitors);
     menu.AddItem(sBuffer, sBuffer);
-    Format(sBuffer, sizeof(sBuffer), "Items bought: %d", g_iPlayer[target].BoughtItems);
+    Format(sBuffer, sizeof(sBuffer), "Items bought: %d", Player[target].BoughtItems);
     menu.AddItem(sBuffer, sBuffer);
 
     menu.ExitBackButton = false;
@@ -219,8 +240,8 @@ public int Menu_ShowPlayerStats(Menu menu, MenuAction action, int client, int pa
 
 public void OnClientPutInServer(int client)
 {
-    g_iPlayer[client].Ready = false;
-    g_iPlayer[client].InRound = false;
+    Player[client].Ready = false;
+    Player[client].InRound = false;
 }
 
 public void OnClientPostAdminCheck(int client)
@@ -230,14 +251,14 @@ public void OnClientPostAdminCheck(int client)
         return;
     }
 
-    if (!GetClientAuthId(client, AuthId_SteamID64, g_iPlayer[client].Auth, sizeof(PlayerData::Auth)))
+    if (!GetClientAuthId(client, AuthId_SteamID64, Player[client].Auth, sizeof(PlayerData::Auth)))
     {
         LogError("[Stats] (OnClientPostAdminCheck) GetClientAuthId: Can't get the communityid for: \"%L\"", client);
         return;
     }
 
     char sQuery[512];
-    Format(sQuery, sizeof(sQuery), "SELECT rounds_played, rounds_won, played_as_innocent, played_as_traitor, played_as_detective, shots_fired, damage_taken, damage_given, bad_damage_taken, bad_damage_given, slayed_rounds, killed_innocents, killed_traitors, killed_detectives, bad_kills, identified_bodies, identified_traitors, scanned_bodies, scanned_traitors, bought_items FROM ttt_stats WHERE communityid = \"%s\";", g_iPlayer[client].Auth);
+    Format(sQuery, sizeof(sQuery), "SELECT rounds_played, rounds_won, played_as_innocent, played_as_traitor, played_as_detective, shots_fired, damage_taken, damage_given, bad_damage_taken, bad_damage_given, slayed_rounds, killed_innocents, killed_traitors, killed_detectives, bad_kills, identified_bodies, identified_traitors, scanned_bodies, scanned_traitors, bought_items FROM ttt_stats WHERE communityid = \"%s\";", Player[client].Auth);
 
     if (g_cDebug.BoolValue)
     {
@@ -251,8 +272,8 @@ public void OnClientDisconnect(int client)
 {
     UpdatePlayer(client);
 
-    g_iPlayer[client].Ready = false;
-    g_iPlayer[client].InRound = false;
+    Player[client].Ready = false;
+    Player[client].InRound = false;
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)
@@ -272,7 +293,9 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
     {
         if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_INNOCENT || TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
         {
-            g_iPlayer[i].InRound = true;
+            PlayerRound[i].ResetRound();
+
+            Player[i].InRound = true;
         }
     }
 }
@@ -286,7 +309,7 @@ public int TTT_OnRoundSlay(int client, int remaining)
 
     if (Stats_IsClientValid(client))
     {
-        g_iPlayer[client].SlayedRounds++;
+        Player[client].SlayedRounds++;
     }
 }
 
@@ -299,7 +322,8 @@ public void TTT_OnItemPurchasePost(int client, int price, int count, const char[
 
     if (Stats_IsClientValid(client))
     {
-        g_iPlayer[client].BoughtItems++;
+        Player[client].BoughtItems++;
+        PlayerRound[client].BoughtItems++;
     }
 }
 
@@ -320,7 +344,8 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
             return; 
         }
         
-        g_iPlayer[client].ShotsFired++;
+        Player[client].ShotsFired++;
+        PlayerRound[client].ShotsFired++;
     }
 }
 
@@ -335,13 +360,17 @@ public void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon,
     {
         if (badAction)
         {
-            g_iPlayer[attacker].BadDamageGiven += RoundToCeil(damage);
-            g_iPlayer[victim].BadDamageTaken += RoundToCeil(damage);
+            Player[attacker].BadDamageGiven += RoundToCeil(damage);
+            Player[victim].BadDamageTaken += RoundToCeil(damage);
+            PlayerRound[attacker].BadDamageGiven += RoundToCeil(damage);
+            PlayerRound[victim].BadDamageTaken += RoundToCeil(damage);
         }
         else
         {
-            g_iPlayer[attacker].DamageGiven += RoundToCeil(damage);
-            g_iPlayer[victim].DamageTaken += RoundToCeil(damage);
+            Player[attacker].DamageGiven += RoundToCeil(damage);
+            Player[victim].DamageTaken += RoundToCeil(damage);
+            PlayerRound[attacker].DamageGiven += RoundToCeil(damage);
+            PlayerRound[victim].DamageTaken += RoundToCeil(damage);
         }
     }
 }
@@ -359,20 +388,24 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
 
         if (iRole == TTT_TEAM_TRAITOR)
         {
-            g_iPlayer[attacker].KilledTraitors++;
+            Player[attacker].KilledTraitors++;
+            PlayerRound[attacker].KilledTraitors++;
         }
         else if (iRole == TTT_TEAM_DETECTIVE)
         {
-            g_iPlayer[attacker].KilledDetectives++;
+            Player[attacker].KilledDetectives++;
+            PlayerRound[attacker].KilledDetectives++;
         }
         else if (iRole == TTT_TEAM_INNOCENT)
         {
-            g_iPlayer[attacker].KilledInnocents++;
+            Player[attacker].KilledInnocents++;
+            PlayerRound[attacker].KilledInnocents++;
         }
 
         if (badAction)
         {
-            g_iPlayer[attacker].BadKills++;
+            Player[attacker].BadKills++;
+            PlayerRound[attacker].BadKills++;
         }
     }
 }
@@ -391,11 +424,13 @@ public void TTT_OnBodyFound(int attacker, int victim, int victimRole, int attack
 
         if (body.VictimRole == TTT_TEAM_TRAITOR)
         {
-            g_iPlayer[attacker].IdentifiedTraitors++;
+            Player[attacker].IdentifiedTraitors++;
+            PlayerRound[attacker].IdentifiedTraitors++;
         }
         else
         {
-            g_iPlayer[attacker].IdenfifiedBodies++;
+            Player[attacker].IdentifiedBodies++;
+            PlayerRound[attacker].IdentifiedBodies++;
         }
     }
 }
@@ -414,11 +449,13 @@ public Action TTT_OnBodyCheck(int attacker, int entityref)
 
         if (body.VictimRole == TTT_TEAM_TRAITOR)
         {
-            g_iPlayer[attacker].ScannedTraitors++;
+            Player[attacker].ScannedTraitors++;
+            PlayerRound[attacker].ScannedTraitors++;
         }
         else
         {
-            g_iPlayer[attacker].ScannedBodies++;
+            Player[attacker].ScannedBodies++;
+            PlayerRound[attacker].ScannedBodies++;
         }
     }
 }
@@ -439,45 +476,69 @@ public void TTT_OnRoundEnd(int winner, Handle array)
     {
         if (g_cDebug.BoolValue)
         {
-            PrintToChat(i, "InRound: %d", g_iPlayer[i].InRound);
+            PrintToChat(i, "InRound: %d", Player[i].InRound);
         }
 
-        if (g_iPlayer[i].InRound)
+        if (Player[i].InRound)
         {
             int iRole = TTT_GetClientRole(i);
 
-            g_iPlayer[i].RoundsPlayed++;
+            Player[i].RoundsPlayed++;
 
             if  (iRole == winner || (iRole == TTT_TEAM_DETECTIVE && winner == TTT_TEAM_INNOCENT) || (iRole == TTT_TEAM_INNOCENT && winner == TTT_TEAM_DETECTIVE))
             {
-                g_iPlayer[i].RoundsWon++;
+                Player[i].RoundsWon++;
             }
 
             if (iRole == TTT_TEAM_INNOCENT)
             {
-                g_iPlayer[i].PlayedAsInnocent++;
+                Player[i].PlayedAsInnocent++;
             }
             if (iRole == TTT_TEAM_TRAITOR)
             {
-                g_iPlayer[i].PlayedAsTraitor++;
+                Player[i].PlayedAsTraitor++;
             }
             if (iRole == TTT_TEAM_DETECTIVE)
             {
-                g_iPlayer[i].PlayedAsDetective++;
+                Player[i].PlayedAsDetective++;
+            }
+
+            if (g_cConsoleRoundLogs.BoolValue)
+            {
+                PrintConsoleRoundLogs(i);
             }
         }
 
         if (g_cDebug.BoolValue)
         {
-            PrintToChat(i, "Played: %d, Won: %d", g_iPlayer[i].RoundsPlayed, g_iPlayer[i].RoundsWon);
+            PrintToChat(i, "Played: %d, Won: %d", Player[i].RoundsPlayed, Player[i].RoundsWon);
         }
 
-        g_iPlayer[i].InRound = false;
+        Player[i].InRound = false;
 
         UpdatePlayer(i);
     }
 
     g_bValidRound = false;
+}
+
+void PrintConsoleRoundLogs(int client)
+{
+    PrintToConsole(client, "Your logs for this round:");
+    PrintToConsole(client, " Shots Fired: %d", PlayerRound[client].ShotsFired);
+    PrintToConsole(client, " Damage Taken: %d", PlayerRound[client].DamageTaken);
+    PrintToConsole(client, " Damage Given: %d", PlayerRound[client].DamageGiven);
+    PrintToConsole(client, " Bad Damage Taken: %d", PlayerRound[client].BadDamageTaken);
+    PrintToConsole(client, " Bad Damage Given: %d", PlayerRound[client].BadDamageGiven);
+    PrintToConsole(client, " Killed Innocents: %d", PlayerRound[client].KilledInnocents);
+    PrintToConsole(client, " Killed Traitors: %d", PlayerRound[client].KilledTraitors);
+    PrintToConsole(client, " Killed Detectives: %d", PlayerRound[client].KilledDetectives);
+    PrintToConsole(client, " Bad Kills: %d", PlayerRound[client].BadKills);
+    PrintToConsole(client, " Identified Bodies: %d", PlayerRound[client].IdentifiedBodies);
+    PrintToConsole(client, " Identified Traitors: %d", PlayerRound[client].IdentifiedTraitors);
+    PrintToConsole(client, " Scanned Bodies: %d", PlayerRound[client].ScannedBodies);
+    PrintToConsole(client, " Scanned Traitors: %d", PlayerRound[client].ScannedTraitors);
+    PrintToConsole(client, " Bought Items: %d", PlayerRound[client].BoughtItems);
 }
 
 public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] error, int userid)
@@ -495,33 +556,33 @@ public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] err
         {
             if (results.RowCount > 0 && results.FetchRow())
             {
-                g_iPlayer[client].RoundsPlayed = results.FetchInt(0);
-                g_iPlayer[client].RoundsWon = results.FetchInt(1);
-                g_iPlayer[client].PlayedAsInnocent = results.FetchInt(2);
-                g_iPlayer[client].PlayedAsTraitor = results.FetchInt(3);
-                g_iPlayer[client].PlayedAsDetective = results.FetchInt(4);
-                g_iPlayer[client].ShotsFired = results.FetchInt(5);
-                g_iPlayer[client].DamageTaken = results.FetchInt(6);
-                g_iPlayer[client].DamageGiven = results.FetchInt(7);
-                g_iPlayer[client].BadDamageTaken = results.FetchInt(8);
-                g_iPlayer[client].BadDamageGiven = results.FetchInt(9);
-                g_iPlayer[client].SlayedRounds = results.FetchInt(10);
-                g_iPlayer[client].KilledInnocents = results.FetchInt(11);
-                g_iPlayer[client].KilledTraitors = results.FetchInt(12);
-                g_iPlayer[client].KilledDetectives = results.FetchInt(13);
-                g_iPlayer[client].BadKills = results.FetchInt(14);
-                g_iPlayer[client].IdenfifiedBodies = results.FetchInt(15);
-                g_iPlayer[client].IdentifiedTraitors = results.FetchInt(16);
-                g_iPlayer[client].ScannedBodies = results.FetchInt(17);
-                g_iPlayer[client].ScannedTraitors = results.FetchInt(18);
-                g_iPlayer[client].BoughtItems = results.FetchInt(19);
+                Player[client].RoundsPlayed = results.FetchInt(0);
+                Player[client].RoundsWon = results.FetchInt(1);
+                Player[client].PlayedAsInnocent = results.FetchInt(2);
+                Player[client].PlayedAsTraitor = results.FetchInt(3);
+                Player[client].PlayedAsDetective = results.FetchInt(4);
+                Player[client].ShotsFired = results.FetchInt(5);
+                Player[client].DamageTaken = results.FetchInt(6);
+                Player[client].DamageGiven = results.FetchInt(7);
+                Player[client].BadDamageTaken = results.FetchInt(8);
+                Player[client].BadDamageGiven = results.FetchInt(9);
+                Player[client].SlayedRounds = results.FetchInt(10);
+                Player[client].KilledInnocents = results.FetchInt(11);
+                Player[client].KilledTraitors = results.FetchInt(12);
+                Player[client].KilledDetectives = results.FetchInt(13);
+                Player[client].BadKills = results.FetchInt(14);
+                Player[client].IdentifiedBodies = results.FetchInt(15);
+                Player[client].IdentifiedTraitors = results.FetchInt(16);
+                Player[client].ScannedBodies = results.FetchInt(17);
+                Player[client].ScannedTraitors = results.FetchInt(18);
+                Player[client].BoughtItems = results.FetchInt(19);
 
-                g_iPlayer[client].Ready = true;
+                Player[client].Ready = true;
             }
             else
             {
                 char sQuery[256];
-                Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_stats (communityid) VALUES (\"%s\");", g_iPlayer[client].Auth);
+                Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_stats (communityid) VALUES (\"%s\");", Player[client].Auth);
 
                 if (g_cDebug.BoolValue)
                 {
@@ -561,14 +622,14 @@ void UpdatePlayer(int client)
         return;
     }
 
-    if (strlen(g_iPlayer[client].Auth) < 2)
+    if (strlen(Player[client].Auth) < 2)
     {
         return;
     }
 
     char sQuery[1024];
     Format(sQuery, sizeof(sQuery), "UPDATE ttt_stats SET `rounds_played` = '%d', `rounds_won` = '%d', `played_as_innocent` = '%d', `played_as_traitor` = '%d', `played_as_detective` = '%d', `shots_fired` = '%d', `damage_taken` = '%d', `damage_given` = '%d', `bad_damage_taken` = '%d', `bad_damage_given` = '%d', `slayed_rounds` = '%d', `killed_innocents` = '%d', `killed_traitors` = '%d', `killed_detectives` = '%d', `bad_kills` = '%d', `identified_bodies` = '%d', `identified_traitors` = '%d', `scanned_bodies` = '%d', `scanned_traitors` = '%d', `bought_items` = '%d' WHERE communityid = \"%s\";",
-    g_iPlayer[client].RoundsPlayed, g_iPlayer[client].RoundsWon, g_iPlayer[client].PlayedAsInnocent, g_iPlayer[client].PlayedAsTraitor, g_iPlayer[client].PlayedAsDetective, g_iPlayer[client].ShotsFired, g_iPlayer[client].DamageTaken, g_iPlayer[client].DamageGiven, g_iPlayer[client].BadDamageTaken, g_iPlayer[client].BadDamageGiven, g_iPlayer[client].SlayedRounds, g_iPlayer[client].KilledInnocents, g_iPlayer[client].KilledTraitors, g_iPlayer[client].KilledDetectives, g_iPlayer[client].BadKills, g_iPlayer[client].IdenfifiedBodies, g_iPlayer[client].IdentifiedTraitors, g_iPlayer[client].ScannedBodies, g_iPlayer[client].ScannedTraitors, g_iPlayer[client].BoughtItems, g_iPlayer[client].Auth);
+    Player[client].RoundsPlayed, Player[client].RoundsWon, Player[client].PlayedAsInnocent, Player[client].PlayedAsTraitor, Player[client].PlayedAsDetective, Player[client].ShotsFired, Player[client].DamageTaken, Player[client].DamageGiven, Player[client].BadDamageTaken, Player[client].BadDamageGiven, Player[client].SlayedRounds, Player[client].KilledInnocents, Player[client].KilledTraitors, Player[client].KilledDetectives, Player[client].BadKills, Player[client].IdentifiedBodies, Player[client].IdentifiedTraitors, Player[client].ScannedBodies, Player[client].ScannedTraitors, Player[client].BoughtItems, Player[client].Auth);
 
     if (g_cDebug.BoolValue)
     {

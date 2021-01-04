@@ -146,7 +146,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool inrestart)
     }
     
     GetClientAbsOrigin(client, g_iPlayer[client].Location);
-    CreateTimer(g_cGrenadeDelay.FloatValue, Timer_CreateGrenade, client);
+    CreateTimer(g_cGrenadeDelay.FloatValue, Timer_CreateGrenade, event.GetInt("userid"));
     
     if (TTT_RemoveInventoryItem(client, SHORT_NAME_I))
     {
@@ -168,19 +168,27 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool inrestart)
     
 }
 
-public void CreateGrenade(int client)
+public void CreateGrenade(int userid)
 {
-    int entity = CreateEntityByName("hegrenade_projectile");
-    DispatchSpawn(entity);
-    
-    // Make sure the grenade doesn't spawn in the ground
-    g_iPlayer[client].Location[2] += 30;
-    TeleportEntity(entity, g_iPlayer[client].Location, NULL_VECTOR, NULL_VECTOR);
-    AcceptEntityInput(entity, "InitializeSpawnFromWorld");
-    
-    SetEntPropEnt(entity, Prop_Data, "m_hThrower", client);
-    SetEntProp(entity, Prop_Data, "m_iTeamNum", GetClientTeam(client));
-    SetEntPropFloat(entity, Prop_Data, "m_flDamage", g_cDamage.FloatValue);
-    SetEntPropFloat(entity, Prop_Data, "m_DmgRadius", g_cExplosionSize.FloatValue); 
+    int client = GetClientOfUserId(userid);
 
+    if (!TTT_IsClientValid(client))
+    {
+        return;
+    }
+
+    int iEntity = CreateEntityByName("hegrenade_projectile");
+
+    if (DispatchSpawn(iEntity))
+    {
+        // Make sure the grenade doesn't spawn in the ground
+        g_iPlayer[client].Location[2] += 30;
+        TeleportEntity(iEntity, g_iPlayer[client].Location, NULL_VECTOR, NULL_VECTOR);
+        AcceptEntityInput(iEntity, "InitializeSpawnFromWorld");
+        
+        SetEntPropEnt(iEntity, Prop_Data, "m_hThrower", client);
+        SetEntProp(iEntity, Prop_Data, "m_iTeamNum", GetClientTeam(client));
+        SetEntPropFloat(iEntity, Prop_Data, "m_flDamage", g_cDamage.FloatValue);
+        SetEntPropFloat(iEntity, Prop_Data, "m_DmgRadius", g_cExplosionSize.FloatValue); 
+    }
 }

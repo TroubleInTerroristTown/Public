@@ -87,8 +87,9 @@ forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcred
  * @param price             The price of the item.
  * @param role              The optional role to restrict the item to. (Default: 0 - for all)
  * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
+ * // TODO: Add missing descriptions
  */
-forward void TTT_OnRegisterShopItemPost(const char[] itemshort, const char[] itemlong, int price, int role, int sort, int maxUsages, int limit);
+forward void TTT_OnRegisterShopItemPost(const char[] itemshort, const char[] itemlong, int price, int role, int sort, int maxUsages, int limit, bool logging);
 
 /*
  * Called before start credits (on player_spawn) will be given.
@@ -117,8 +118,9 @@ forward void TTT_OnItemRemove(const char[] itemshort);
  * @param maxUsages         Max usages for this items per round. ( 0 - Disabled )
  * @param limit             The amount of purchases for all players during a round. ( 0 - Disabled )
  * @param callback          A local function pointer to be called when the registered item is purchased.
+ * @param logging           Enable or Disable purchase logging
  */
-native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback);
+native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback, bool logging = true);
 
 /*
  * Update shop item.

@@ -344,7 +344,7 @@ public Action Timer_Revive(Handle timer, DataPack pack)
         return Plugin_Stop;
     }
     
-    if (g_iPlayer[client].Ragdoll == TTT_GetGrabEntity(client))
+    if (g_iPlayer[client].Ragdoll == TTT_GetClientGrabEntity(client))
     {
         g_iPlayer[client].Timer = null;
         delete pack;

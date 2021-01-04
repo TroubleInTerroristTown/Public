@@ -114,7 +114,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action Command_TVoice(int client, int args)
 {
-    if (TTT_GetRoundStatus() != Round_Active)
+    if (!g_cEnableTVoice.BoolValue || TTT_GetRoundStatus() != Round_Active)
     {
         return Plugin_Handled;
     }

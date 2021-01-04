@@ -24,11 +24,11 @@ jobs:
           VERSION=$(git rev-list --count HEAD)
           SHORT=$(git describe --always --long --dirty)
           SOURCEMOD_PATH=$GITHUB_WORKSPACE/addons/sourcemod
-          echo ::set-env name=GIT_COMMIT::$VERSION
-          echo ::set-env name=PLUGIN_VERSION::${{ matrix.SM_VERSION }}.$VERSION.$SHORT
-          echo ::set-env name=SOURCEMOD_PATH::$SOURCEMOD_PATH
-          echo ::set-env name=SCRIPTS_PATH::$SOURCEMOD_PATH/scripting
-          echo ::set-env name=PLUGINS_PATH::$SOURCEMOD_PATH/plugins
+          echo "GIT_COMMIT=$VERSION" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=${{ matrix.SM_VERSION }}.$VERSION.$SHORT" >> $GITHUB_ENV
+          echo "SOURCEMOD_PATH=$SOURCEMOD_PATH" >> $GITHUB_ENV
+          echo "SCRIPTS_PATH=$SOURCEMOD_PATH/scripting" >> $GITHUB_ENV
+          echo "PLUGINS_PATH=$SOURCEMOD_PATH/plugins" >> $GITHUB_ENV
 
       - name: Setup SourcePawn Compiler ${{ matrix.SM_VERSION }}
         uses: rumblefrog/setup-sp@master
@@ -39,8 +39,27 @@ jobs:
         run: |
           sed -i "s/<VERSION>/$PLUGIN_VERSION/g" $SCRIPTS_PATH/include/ttt_stock.inc
       
-      - name: Generate colorlib.inc
-        run: python3 ./color_gen.py -r --config "./ttt_colors.yaml" "../addons/sourcemod/scripting/include/colorlib_map.inc"
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      
+      - name: Install dependencies
+        run: python3 -m pip install --upgrade pip setuptools wheel
+
+      - name: Download colorlib-gen
+        run: |
+          cd tools
+          git clone https://github.com/c0rp3n/colorlib-gen.git
+      
+      - name: Install colorlib-gen
+        run: |
+          cd tools/colorlib-gen
+          pip install -r ./requirements.txt
+          python3 ./setup.py install
+
+      - name: Generate colorlib_map.inc
+        run: colorlib_gen -r --config "./ttt_colors.yaml" "../addons/sourcemod/scripting/include/colorlib_map.inc"
         working-directory: ./tools
 
       - name: Compile TTT
@@ -54,7 +73,7 @@ jobs:
 
       - name: Compile 3rd party plugins
         run: |
-          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core" "vphysics_crash_fix"
+          for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core" "vphysics_crash_avoider"
           do
             echo -e "\nCompiling $plugin.sp..."
             spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
