@@ -114,10 +114,10 @@ jobs:
 
       - name: Download DHooks, SMJansson and SteamWorks
         run: |
-          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-linux.tar.gz -O steamworks_linux.tar.gz
-          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git131-windows.zip -O steamworks_windows.zip
-          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=184479&d=1602926778" -o dhooks.zip
-          curl -s "https://forums.alliedmods.net/attachment.php?attachmentid=133799&d=1400973546" -o smjansson.zip
+          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git132-linux.tar.gz -O steamworks_linux.tar.gz
+          wget http://users.alliedmods.net/~kyles/builds/SteamWorks/SteamWorks-git132-windows.zip -O steamworks_windows.zip
+          wget https://github.com/peace-maker/DHooks2/releases/download/v2.2.0-detours16/dhooks-2.2.0-detours16-sm110.zip -O dhooks.zip
+          wget "https://forums.alliedmods.net/attachment.php?attachmentid=133799&d=1400973546" -O smjansson.zip
 
       - name: Unpacking DHooks, SMJansson and SteamWorks
         run: |
