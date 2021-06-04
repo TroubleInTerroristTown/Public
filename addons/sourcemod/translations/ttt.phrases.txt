@@ -239,7 +239,7 @@
 
 	"The weapon used has been: himself (suicide)"
 	{
-		"en"		"Himself (suicide)"
+		"en"		"Themself (suicide)"
 		"chi"		"自杀"
 		"de"		"Selbst (Suizid)"
 		"pl"		"On sam (samobójstwo)"
@@ -997,7 +997,7 @@
 	"You tased a Traitor"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"Scan Complete: {player}{1} {default}scanned {role t}{2} {default}and he is a {role t}Traitor{default}!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role t}{2} {default}and they are a {role t}Traitor{default}!"
 		"chi"		"扫描完成：{player}{1} {default}扫描了 {role t}{2} {default}发现他/她是{role t}叛徒{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role t}{2} {default}und ist ein{role t}Traitor{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role t}{2} {default}i jest {role t}Zdrajcą{default}!"
@@ -1006,7 +1006,7 @@
 	"You tased a Detective"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"Scan Complete: {player}{1} {default}scanned {role d}{2} {default}and he is a {role d}Detective{default}!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role d}{2} {default}and they are a {role d}Detective{default}!"
 		"chi"		"扫描完成：{player}{1} {default}扫描了 {role d}{2} {default}发现他/她是{role d}警探{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role d}{2} {default}und ist ein {role d}Detektiv{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role d}{2} {default}i jest {role d}Detektywem{default}!"
@@ -1015,7 +1015,7 @@
 	"You tased an Innocent"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"Scan Complete: {player}{1} {default}scanned {role i}{2} {default}and he is {role i}Innocent{default}!"
+		"en"		"Scan Complete: {player}{1} {default}scanned {role i}{2} {default}and they are {role i}Innocent{default}!"
 		"chi"		"扫描完成：{player}{1} {default}扫描了 {role i}{2} {default}发现他/她是{role i}平民{default}！"
 		"de"		"Untersuchung abgeschlossen: {player}{1} {default}scannt {role i}{2} {default}und ist ein {role i}Innocent{default}!"
 		"pl"		"Skan ukończony: {player}{1} {default}przeskanował {role i}{2} {default}i jest {role i}Niewinnym{default}!"
