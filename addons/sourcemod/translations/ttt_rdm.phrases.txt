@@ -43,7 +43,7 @@
     "RDM: Staff Info - Last Shot"
     {
         "#format"   "{1:d}"
-        "en"        "The victim had shot last {highlight}{1} {default}seconds before there death."
+        "en"        "The victim had shot last {highlight}{1} {default}seconds before their death."
         "chi"       "受害者在死亡前 {highlight}{1} {default}秒进行了反击。"
     }
 

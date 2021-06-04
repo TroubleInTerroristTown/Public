@@ -1252,14 +1252,14 @@ void InspectBody(int client, int victim, int victimRole, int attacker, int time,
     {
         static char sTime[128];
         static char sWeaponUsed[128];
-        Format(sTime, sizeof(sTime), "%T", "Elapsed since his death", client, time);
+        Format(sTime, sizeof(sTime), "%T", "Elapsed since their death", client, time);
         if (attacker > 0 && attacker != victim)
         {
             Format(sWeaponUsed, sizeof(sWeaponUsed), "%T", "The weapon used has been", client, weapon);
         }
         else
         {
-            Format(sWeaponUsed, sizeof(sWeaponUsed), "%T", "The weapon used has been: himself (suicide)", client);
+            Format(sWeaponUsed, sizeof(sWeaponUsed), "%T", "The weapon used has been: themself (suicide)", client);
         }
         
         Format(sBuffer, sizeof(sBuffer), "<center><pre><font color=\"#FFFFFF\"><font size=\"48\">%s (%s)</font>\n<font size=\"32\">%s\n%s</font></font></pre></center>", victimName, team, sTime, sWeaponUsed);
