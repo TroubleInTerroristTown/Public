@@ -219,7 +219,7 @@
 		"pl"		"rola: {1}"
 	}
 
-	"Elapsed since his death"
+	"Elapsed since their death"
 	{
 		"#format"	"{1:i}"
 		"en"		"Time since Death: {1} second(s)"
@@ -237,7 +237,7 @@
 		"pl"		"Broń mordercy: {1}"
 	}
 
-	"The weapon used has been: himself (suicide)"
+	"The weapon used has been: themself (suicide)"
 	{
 		"en"		"Themself (suicide)"
 		"chi"		"自杀"
