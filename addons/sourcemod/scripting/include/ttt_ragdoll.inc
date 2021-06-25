@@ -25,4 +25,5 @@ enum struct Ragdoll
     char AttackerSteam3[24];
     char AttackerSteamID64[24];
     char Weaponused[32];
+    char Model[PLATFORM_MAX_PATH+1];
 }

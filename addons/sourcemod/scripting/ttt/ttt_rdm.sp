@@ -25,7 +25,6 @@ int g_currentRound = -1;
 ConVar g_cTSlays = null;
 ConVar g_cDSlays = null;
 ConVar g_cISlays = null;
-ConVar g_cSendMessageToAdmins = null;
 
 enum CaseChoice
 {
@@ -78,7 +77,6 @@ public void OnPluginStart()
     g_cTSlays = AutoExecConfig_CreateConVar("rdm_traitor_slays", "5", "The amount of slays if the victim was a Traitor.", _, true, 0.0);
     g_cDSlays = AutoExecConfig_CreateConVar("rdm_detective_slays", "5", "The amount of slays if the victim was a Detective.", _, true, 0.0);
     g_cISlays = AutoExecConfig_CreateConVar("rdm_innocent_slays", "3", "The amount of slays if the victim was a Innocent.", _, true, 0.0);
-    g_cSendMessageToAdmins = AutoExecConfig_CreateConVar("rdm_send_message_to_admins", "1", "Send 'bad action report' message on player death?", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoopValidClients(i)
@@ -162,7 +160,7 @@ public void TTT_OnClientDeath(int victim, int attacker)
     int victimKarma = TTT_GetClientKarma(victim);
     int attackerKarma = TTT_GetClientKarma(attacker);
 
-    if (g_cSendMessageToAdmins.BoolValue && BadKill(TTT_GetClientRole(attacker), TTT_GetClientRole(victim)))
+    if (BadKill(TTT_GetClientRole(attacker), TTT_GetClientRole(victim)))
     {
         CPrintToChat(victim, "%T", "RDM: Report - Death Message", victim);
 

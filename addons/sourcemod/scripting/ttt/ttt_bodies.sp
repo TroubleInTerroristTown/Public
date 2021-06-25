@@ -354,6 +354,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     body.GameTime = GetGameTime();
     body.Explode = false;
 
+    GetClientModel(client, body.Model, sizeof(Ragdoll::Model));
+
     if (iUAttacker > 0)
     {
         GetClientAuthId(iAttacker, AuthId_Steam2, body.AttackerSteam2, sizeof(body.AttackerSteam2));
@@ -1163,6 +1165,18 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
 
                 if (bSetColor)
                 {
+                    if (g_cSpawnType.IntValue == 2)
+                    {
+                        char sClass[32];
+                        if (IsValidEntity(iEntity) && GetEntityClassname(iEntity, sClass, sizeof(sClass)))
+                        {
+                            if (StrContains(sClass, "prop_", false) != -1)
+                            {
+                                skip = true;
+                            }
+                        }
+                    }
+
                     if (body.VictimRole == TTT_TEAM_INNOCENT)
                     {
                         if (!skip)
