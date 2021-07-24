@@ -138,20 +138,36 @@ jobs:
 
       - name: Compress package
         run: |
-          zip -9rq TTT.Linux.${{ env.PLUGIN_VERSION }}.zip build-linux/*
-          zip -9rq TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
+          mkdir packages
+          zip -9rq packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip build-linux/*
+          zip -9rq packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
 
-      - name: Upload package
-        run: |
-          curl -T TTT.Linux.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
-          curl -T TTT.Windows.${{ env.PLUGIN_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
+      - name: Upload packages
+        uses: SamKirkland/FTP-Deploy-Action@2.0.0
+        env:
+          FTP_SERVER: ${{ secrets.SFTP_HOST }}
+          FTP_USERNAME: ${{ secrets.SFTP_USER }}
+          FTP_PASSWORD: ${{ secrets.SFTP_PASS }}
+          LOCAL_DIR: packages
+          METHOD: sftp
+          PORT: ${{ secrets.SFTP_PORT }}
+          ARGS: --no-empty-dirs
       
-      - name: Upload latest package
+      - name: Create latest package
         run: |
-          mv TTT.Linux.${{ env.PLUGIN_VERSION }}.zip TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
-          mv TTT.Windows.${{ env.PLUGIN_VERSION }}.zip TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
-          curl -T TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
-          curl -T TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip -u ${{ secrets.FTP_NAME }}:${{ secrets.FTP_PASS }} ftp://${{ secrets.FTP_HOST }}:${{ secrets.FTP_PORT }}/downloads/
+          mv packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
+          mv packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
+
+      - name: Upload latest package
+        uses: SamKirkland/FTP-Deploy-Action@2.0.0
+        env:
+          FTP_SERVER: ${{ secrets.SFTP_HOST }}
+          FTP_USERNAME: ${{ secrets.SFTP_USER }}
+          FTP_PASSWORD: ${{ secrets.SFTP_PASS }}
+          LOCAL_DIR: packages
+          METHOD: sftp
+          PORT: ${{ secrets.SFTP_PORT }}
+          ARGS: --no-empty-dirs
 
       - name: Update version
         run: |
