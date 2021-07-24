@@ -50,7 +50,7 @@ public void OnPluginStart()
     
     TTT_StartConfig("icon");
     CreateConVar("ttt2_icon_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_roles", "0", "Allow dead players to see other roles. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
+    g_cSeeRoles = AutoExecConfig_CreateConVar("ttt_dead_players_can_see_other_teams", "0", "Allow dead players to see other teams. 0 = Disabled (default). 1 = Enabled.", _, true, 0.0, true, 1.0);
     g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_icon_traitor_icon", "decals/ttt/traitor_iconNew", "Path to traitor icon file");
     g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_icon_detective_icon", "decals/ttt/detective_iconNew", "Path to detective icon file");
     g_cAdminImmunity = AutoExecConfig_CreateConVar("ttt_icon_dead_admin", "b", "Show traitor icon for dead admins? (Nothing to disable it)");
@@ -138,7 +138,7 @@ public Action Timer_CreateIcon(Handle timer)
     {
         if (IsPlayerAlive(client))
         {
-            g_iPlayer[client].Icon = CreateIcon(client, TTT_GetClientRole(client));
+            g_iPlayer[client].Icon = CreateIcon(client, TTT_GetClientTeam(client));
         }
     }
 
@@ -150,9 +150,9 @@ public void TTT_OnRoundStart()
     ApplyIcons();
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
-    g_iPlayer[client].Icon = CreateIcon(client, role);
+    g_iPlayer[client].Icon = CreateIcon(client, team);
 }
 
 public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroadcast)
@@ -180,16 +180,16 @@ void ApplyIcons()
     {
         if (IsPlayerAlive(i))
         {
-            g_iPlayer[i].Icon = CreateIcon(i, TTT_GetClientRole(i));
+            g_iPlayer[i].Icon = CreateIcon(i, TTT_GetClientTeam(i));
         }
     }
 }
 
-int CreateIcon(int client, int role)
+int CreateIcon(int client, int team)
 {
     ClearIcon(client);
 
-    if (role < TTT_TEAM_TRAITOR)
+    if (team < TTT_TEAM_TRAITOR)
     {
         return -1;
     }
@@ -212,12 +212,12 @@ int CreateIcon(int client, int role)
     char sBuffer[PLATFORM_MAX_PATH];
     char sScale[PLATFORM_MAX_PATH];
 
-    if (role == TTT_TEAM_DETECTIVE)
+    if (team == TTT_TEAM_DETECTIVE)
     {
         g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
-    else if (role == TTT_TEAM_TRAITOR)
+    else if (team == TTT_TEAM_TRAITOR)
     {
         g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
@@ -227,7 +227,7 @@ int CreateIcon(int client, int role)
     Action res = Plugin_Continue;
     bool bAsTraitor = false;
 
-    if (role == TTT_TEAM_TRAITOR)
+    if (team == TTT_TEAM_TRAITOR)
     {
         bAsTraitor = true;
     }
@@ -251,12 +251,12 @@ int CreateIcon(int client, int role)
     DispatchKeyValue(ent, "scale", sScale);
     DispatchKeyValue(ent, "rendermode", "1");
     DispatchKeyValue(ent, "rendercolor", "255 255 255");
-    DispatchSpawn(ent);
     TeleportEntity(ent, origin, NULL_VECTOR, NULL_VECTOR);
+    DispatchSpawn(ent);
     SetVariantString(iTarget);
     AcceptEntityInput(ent, "SetParent", ent, ent);
 
-    if (role == TTT_TEAM_TRAITOR && bAsTraitor)
+    if (team == TTT_TEAM_TRAITOR && bAsTraitor)
     {
         SDKHook(ent, SDKHook_SetTransmit, Hook_SetTransmitT);
     }
@@ -282,7 +282,7 @@ public Action Hook_SetTransmitT(int entity, int client)
             }
         }
 
-        if (IsPlayerAlive(client) && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (IsPlayerAlive(client) && TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             return Plugin_Continue;
         }
@@ -297,12 +297,12 @@ void ClearIcon(int client)
         g_iPlayer[client].Icon = -1;
     }
 
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     int entity = EntRefToEntIndex(g_iPlayer[client].Icon);
 
     if (IsValidEdict(entity))
     {
-        if (role == TTT_TEAM_TRAITOR)
+        if (iTeam == TTT_TEAM_TRAITOR)
         {
             SDKUnhook(entity, SDKHook_SetTransmit, Hook_SetTransmitT);
         }
@@ -316,9 +316,9 @@ void ClearIcon(int client)
 public int Native_SetIcon(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
-    int role = GetNativeCell(2);
+    int team = GetNativeCell(2);
 
-    g_iPlayer[client].Icon = CreateIcon(client, role);
+    g_iPlayer[client].Icon = CreateIcon(client, team);
 
     return 0;
 }

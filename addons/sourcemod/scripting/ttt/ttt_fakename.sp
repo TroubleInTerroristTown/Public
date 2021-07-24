@@ -69,7 +69,7 @@ public void OnPluginStart()
     g_cCount = AutoExecConfig_CreateConVar("fakename_count", "5", "The number of fakename that the player can use in a round");
     g_cLimit = AutoExecConfig_CreateConVar("fakename_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTimer = AutoExecConfig_CreateConVar("fakename_timer", "15.0", "The time the target should be renamed");
-    g_cIgnoreRole = AutoExecConfig_CreateConVar("fakename_ignore_role", "4", "Which role should be ignored when traitor use fakename? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreRole = AutoExecConfig_CreateConVar("fakename_ignore_team", "4", "Which team should be ignored when traitor use fakename? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
 
     g_cInviLongName = AutoExecConfig_CreateConVar("invisible_name_name", "Invisible Name", "The name of this in Shop");
     g_cInviPrice = AutoExecConfig_CreateConVar("invisible_name_price", "5000", "The amount of credits invisiblename costs as traitor. 0 to disable.");
@@ -132,12 +132,12 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
             return Plugin_Stop;
         }
 
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
         char sName[128];
         g_cLongName.GetString(sName, sizeof(sName));
         
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -159,12 +159,12 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
             return Plugin_Stop;
         }
 
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
         char sName[128];
         g_cLongName.GetString(sName, sizeof(sName));
         
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -301,24 +301,14 @@ public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
 
 void ResetFakename(int client)
 {
-    if (g_iPlayer[client].FakeTimer != null)
-    {
-        KillTimer(g_iPlayer[client].FakeTimer);
-    }
-
-    g_iPlayer[client].FakeTimer = null;
+    delete g_iPlayer[client].FakeTimer;
     Format(g_iPlayer[client].FakeName, sizeof(PlayerData::FakeName), "");
 }
 
 
 void ResetInvisible(int client)
 {
-    if (g_iPlayer[client].InviTimer != null)
-    {
-        KillTimer(g_iPlayer[client].InviTimer);
-    }
-
-    g_iPlayer[client].InviTimer = null;
+    delete g_iPlayer[client].InviTimer;
 }
 
 bool CheckPlayerID()

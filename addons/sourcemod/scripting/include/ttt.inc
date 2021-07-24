@@ -9,6 +9,10 @@
 #define TTT_TEAM_INNOCENT (1 << 1)
 #define TTT_TEAM_TRAITOR (1 << 2)
 #define TTT_TEAM_DETECTIVE (1 << 3)
+#define TTT_TEAM_MISC (1 << 4)
+
+#define TTT_TEAM_GENERIC (TTT_TEAM_INNOCENT | TTT_TEAM_TRAITOR | TTT_TEAM_DETECTIVE) 
+#define TTT_TEAM_GOOD (TTT_TEAM_INNOCENT | TTT_TEAM_DETECTIVE)
 
 #define ROLE_LENGTH 24
 #define MAX_ITEM_LENGTH 64
@@ -98,7 +102,7 @@ forward Action TTT_OnRoundStart_Pre();
  * @param traitors          Count of traitor players.
  * @param detectives         Count of detective players.
  */
-forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives);
+forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives, int misc);
 
 /**
  * Called when round start is failed or prevented.
@@ -109,15 +113,16 @@ forward void TTT_OnRoundStart(int roundid, int innocents, int traitors, int dete
  * @param requiredPlayers   The amount of players we need.
  * @param detective         The amount needed for detective.
  */
-forward void TTT_OnRoundStartFailed(int players, int requiredPlayers, int detective);
+forward void TTT_OnRoundStartFailed(int players, int requiredPlayers);
 
 /**
  * Called when the actual TTT round ended.
  *
  * @param winner             The Winning Team.
+ * @param role               The Winning Role (0 - Unless a Miscelaneous Team Wins)
  * @param array              Round logs as handle (if you want ArrayList instead of Handle use this: `ArrayList aLogs = view_as<ArrayList>(array);´)
  */
-forward void TTT_OnRoundEnd(int winner, Handle array);
+forward void TTT_OnRoundEnd(int winner, int role, Handle array);
 
 /**
  * Called when a client's role is assigned.
@@ -125,7 +130,7 @@ forward void TTT_OnRoundEnd(int winner, Handle array);
  * @param client            Client index.
  * @param role              Role.
  */
-forward void TTT_OnClientGetRole(int client, int role);
+forward void TTT_OnClientGetRole(int client, int team, int role);
 
 /**
  * Called when a client take damage
@@ -233,8 +238,9 @@ forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const ch
  * @param traitors              Amount of traitors
  * @param detectives            Amount of detectives
  * @param innocents             Amount of innocents
+ * @param misc                  Amount of miscellaneous
  */
-forward Action TTT_OnRoleSelection(int& traitors, int& detectives, int& innocents);
+forward Action TTT_OnRoleSelection(int& traitors, int& detectives, int& innocents, int& misc);
 
 
 /**
@@ -251,6 +257,13 @@ forward Action TTT_OnRoundTimerStart_Pre(bool& startRoundTimer, float& time);
  */
 #pragma deprecated TTT_IsRoundActive will be removed. Please use TTT_GetRoundStatus
 native bool TTT_IsRoundActive();
+
+/**
+ * Retrieve a client's team.
+ *
+ * @param client            Client index.
+ */
+native int TTT_GetClientTeam(int client);
 
 /**
  * Retrieve a client's role.
@@ -485,19 +498,47 @@ native void TTT_TerminateRound(float delay, CSRoundEndReason reason);
 
 native bool TTT_GetClientName(int client, char[] buffer, int size);
 
-stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
+stock void TTT_GetTeamColorByID(int team, char[] color, int length = ROLE_LENGTH)
 {
-    if (role == TTT_TEAM_INNOCENT)
+    if (team == TTT_TEAM_INNOCENT)
+    {
+        Format(color, length, "{role i}");
+    }
+    else if (team == TTT_TEAM_DETECTIVE)
+    {
+        Format(color, length, "{role d}");
+    }
+    else if (team == TTT_TEAM_TRAITOR)
+    {
+        Format(color, length, "{role t}");
+    }
+    else if (team == TTT_TEAM_MISC)
+    {
+        Format(color, length, "{role m}");
+    }
+    else
+    {
+        Format(color, length, "{player}");
+    }
+}
+
+stock void TTT_GetTeamNameByID(int team, char[] name, int length = ROLE_LENGTH)
+{
+    if (team == TTT_TEAM_INNOCENT)
     {
         Format(name, length, "Innocent");
     }
-    else if (role == TTT_TEAM_DETECTIVE)
+    else if (team == TTT_TEAM_DETECTIVE)
     {
         Format(name, length, "Detective");
     }
-    else if (role == TTT_TEAM_TRAITOR)
+    else if (team == TTT_TEAM_TRAITOR)
     {
         Format(name, length, "Traitor");
+    }
+    else if (team == TTT_TEAM_MISC)
+    {
+        Format(name, length, "Miscellaneous");
     }
     else
     {
@@ -505,7 +546,7 @@ stock void TTT_GetRoleNameByID(int role, char[] name, int length = ROLE_LENGTH)
     }
 }
 
-stock void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH)
+stock void TTT_GetTeamNameByShortName(const char[] shortName, char[] name, int length = ROLE_LENGTH)
 {
     if (StrEqual(shortName, "inno", false))
     {
@@ -519,13 +560,17 @@ stock void TTT_GetRoleNameByShortName(const char[] shortName, char[] name, int l
     {
         Format(name, length, "Traitor");
     }
+    else if (StrEqual(shortName, "misc", false))
+    {
+        Format(name, length, "Miscellaneous");
+    }
     else
     {
         Format(name, length, "Unassigned");
     }
 }
 
-stock int TTT_GetRoleIDByName(const char[] name)
+stock int TTT_GetTeamIDByName(const char[] name)
 {
     if (StrEqual(name, "innocent", false))
     {
@@ -539,13 +584,17 @@ stock int TTT_GetRoleIDByName(const char[] name)
     {
         return TTT_TEAM_TRAITOR;
     }
+    else if (StrEqual(name, "miscellaneous", false))
+    {
+        return TTT_TEAM_MISC;
+    }
     else
     {
         return TTT_TEAM_UNASSIGNED;
     }
 }
 
-stock int TTT_GetRoleIDByShortName(const char[] shortName)
+stock int TTT_GetTeamIDByShortName(const char[] shortName)
 {
     if (StrEqual(shortName, "inno", false))
     {
@@ -559,25 +608,33 @@ stock int TTT_GetRoleIDByShortName(const char[] shortName)
     {
         return TTT_TEAM_TRAITOR;
     }
+    else if (StrEqual(shortName, "misc", false))
+    {
+        return TTT_TEAM_MISC;
+    }
     else
     {
         return TTT_TEAM_UNASSIGNED;
     }
 }
 
-stock void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROLE_LENGTH)
+stock void TTT_GetShortTeamNameByID(int team, char[] shortName, int length = ROLE_LENGTH)
 {
-    if (role == TTT_TEAM_INNOCENT)
+    if (team == TTT_TEAM_INNOCENT)
     {
         Format(shortName, length, "inno");
     }
-    else if (role == TTT_TEAM_DETECTIVE)
+    else if (team == TTT_TEAM_DETECTIVE)
     {
         Format(shortName, length, "dete");
     }
-    else if (role == TTT_TEAM_TRAITOR)
+    else if (team == TTT_TEAM_TRAITOR)
     {
         Format(shortName, length, "trai");
+    }
+    else if (team == TTT_TEAM_MISC)
+    {
+        Format(shortName, length, "misc");
     }
     else
     {
@@ -585,7 +642,7 @@ stock void TTT_GetShortRoleNameByID(int role, char[] shortName, int length = ROL
     }
 }
 
-stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH)
+stock void TTT_GetShortTeamNameByName(const char[] name, char[] shortName, int length = ROLE_LENGTH)
 {
     if (StrEqual(name, "Innocent", false))
     {
@@ -598,6 +655,10 @@ stock void TTT_GetShortRoleNameByName(const char[] name, char[] shortName, int l
     else if (StrEqual(name, "Traitor", false))
     {
         Format(shortName, length, "trai");
+    }
+    else if (StrEqual(name, "Miscellaneous", false))
+    {
+        Format(shortName, length, "misc");
     }
     else
     {
@@ -685,7 +746,7 @@ stock bool tHasFlags(int client, AdminFlag flags[24])
     return false;
 }
 
-stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int slot)
+stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname)
 {
     for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
     {
@@ -698,7 +759,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
 
             if (StrEqual(sClass, classname, false))
             {
-                return TTT_SafeRemoveWeapon(client, weapon, slot);
+                return TTT_SafeRemoveWeapon(client, weapon);
             }
         }
     }
@@ -706,7 +767,7 @@ stock bool TTT_RemoveWeaponByClassname(int client, const char[] classname, int s
     return false;
 }
 
-stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
+stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot = -1)
 {
     if (HasEntProp(weapon, Prop_Send, "m_iItemDefinitionIndex"))
     {
@@ -734,7 +795,7 @@ stock bool TTT_SafeRemoveWeapon(int client, int weapon, int slot)
         }
     }
     
-    if (GetPlayerWeaponSlot(client, slot) != weapon)
+    if (slot > -1 && GetPlayerWeaponSlot(client, slot) != weapon)
     {
         return false;
     }
@@ -796,7 +857,7 @@ stock int TTT_GetRandomPlayer(bool alive = true, int targetRole = -1)
             continue;
         }
 
-        if (targetRole != -1 && TTT_IsValidRole(i, targetRole))
+        if (targetRole != -1 && TTT_IsValidTeam(i, targetRole))
         {
             continue;
         }
@@ -844,23 +905,14 @@ stock bool TTT_IsWorldDamage(int iAttacker, int damagetype)
     return false;
 }
 
-stock void TTT_ClearTimer(Handle &timer, bool autoClose = false)
-{
-    if (timer != null)
-    {
-        KillTimer(timer, autoClose);
-        timer = null;
-    }
-}
-
 stock bool TTT_IsWarmUp()
 {
     return view_as<bool>(GameRules_GetProp("m_bWarmupPeriod"));
 }
 
-stock int TTT_IsValidRole(int client, int role)
+stock int TTT_IsValidTeam(int client, int team)
 {
-    return (role & TTT_GetClientRole(client));
+    return (team & TTT_GetClientTeam(client));
 }
 
 stock bool TTT_IsPrimaryWeapon(int weapon)
@@ -1104,7 +1156,7 @@ stock void TTT_RemoveMeleeWeapons(int client)
 
             if ((StrContains(sClass, "melee", false) != -1) || (StrContains(sClass, "taser", false) != -1) || (StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
             {
-                TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_MELEE);
+                TTT_SafeRemoveWeapon(client, weapon);
             }
         }
     }
@@ -1266,11 +1318,11 @@ stock void PrintCenterText2All(const char[] title, const char[] message, any ...
     EndMessage();
 }
 
-stock bool TTT_ClientValidRole(int client)
+stock bool TTT_ClientValidTeam(int client)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role == TTT_TEAM_TRAITOR || role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_INNOCENT)
+    if (iTeam == TTT_TEAM_TRAITOR || iTeam == TTT_TEAM_DETECTIVE || iTeam == TTT_TEAM_INNOCENT || iTeam == TTT_TEAM_MISC)
     {
         return true;
     }
@@ -1318,4 +1370,56 @@ stock bool IsStringNumeric(const char[] str)
 	}
 
 	return true;
+}
+
+/**
+ * Checks whether the passed team is a genetic team.
+ * Generic teams are Innocent, Traitor, Detecive.
+ *
+ * @param team              Team ID.
+ * @return                  Whether the team ID was generic.
+ */
+stock bool TTT_IsTeamGeneric(int team)
+{
+    return (team & TTT_TEAM_GENERIC) != 0;
+}
+
+/**
+ * Checks whether the passed team is a good team.
+ * Generic teams are Innocent, Detecive.
+ *
+ * @param team              Team ID.
+ * @return                  Whether the team ID was good.
+ */
+stock bool TTT_IsTeamGood(int team)
+{
+    return (team & TTT_TEAM_GOOD) != 0;
+}
+
+/**
+ * Checks whether a action is bad or not.
+ * Truth table:
+ *   I T D M
+ * I x   x
+ * T   x
+ * D x   x
+ * M       x
+ *
+ * @param team              Team ID.
+ * @return                  Whether the team ID was good.
+ */
+stock bool TTT_IsBadAction(int victimTeam, int attackerTeam)
+{
+    if (victimTeam == attackerTeam)
+    {
+        return true;
+    }
+    else if (TTT_IsTeamGood(victimTeam) && TTT_IsTeamGood(attackerTeam))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

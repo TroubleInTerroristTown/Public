@@ -81,7 +81,7 @@ public void OnConfigsExecuted()
     cvar.SetBool(true, true, false);
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     DeleteAndClearAllClient(client);
     CreateGlowProp(client);
@@ -92,7 +92,7 @@ public Action TTT_OnPlayerDeath(int victim, int attacker)
     DeleteAndClearAllClient(victim);
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     DeleteAndClearAll();
 }
@@ -216,16 +216,16 @@ void CreateGlowProp(int client)
         return;
     }
     
-    int iRole = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    SetupSee(client, iRole);
+    SetupSee(client, iTeam);
 
     int skin = CreatePlayerModelProp(client);
     if (skin > MaxClients)
     {
         if (SDKHookEx(skin, SDKHook_SetTransmit, OnSetTransmit_All))
         {
-            SetGlowTeam(skin, iRole);
+            SetGlowTeam(skin, iTeam);
         }
     }
 }
@@ -239,15 +239,15 @@ public Action OnSetTransmit_All(int skin, int client)
         return Plugin_Handled;
     }
 
-    int iRole = TTT_GetClientRole(client);
-    int iTargetRole = TTT_GetClientRole(target);
+    int iTeam = TTT_GetClientTeam(client);
+    int iTargetTeam = TTT_GetClientTeam(target);
 
-    if (iRole == TTT_TEAM_DETECTIVE && iRole == iTargetRole && g_cDGlow.BoolValue)
+    if (iTeam == TTT_TEAM_DETECTIVE && iTeam == iTargetTeam && g_cDGlow.BoolValue)
     {
         return Plugin_Continue;
     }
 
-    if (iRole == TTT_TEAM_TRAITOR && iRole == iTargetRole && g_cTGlow.BoolValue)
+    if (iTeam == TTT_TEAM_TRAITOR && iTeam == iTargetTeam && g_cTGlow.BoolValue)
     {
         return Plugin_Continue;
     }
@@ -389,7 +389,7 @@ Action Timer_ResetGlowColor(Handle timer, any userid)
     if (client > 0 && IsPlayerAlive(client))
     {
         int skin = EntRefToEntIndex(g_iPlayer[client].SkinRef);
-        UpdateGlowTeam(skin, TTT_GetClientRole(client));
+        UpdateGlowTeam(skin, TTT_GetClientTeam(client));
     }
 }
 
@@ -457,13 +457,13 @@ void DeleteAndClearAllClient(int client)
     g_iPlayer[client].CanSeeAll = false;
     g_iPlayer[client].AllCanSee = false;
 
-    TTT_ClearTimer(g_iPlayer[client].CanSeeAllTimer);
-    TTT_ClearTimer(g_iPlayer[client].AllCanSeeTimer);
+    delete g_iPlayer[client].CanSeeAllTimer;
+    delete g_iPlayer[client].AllCanSeeTimer;
 
     LoopValidClients(i)
     {
         g_iPlayer[client].CanSee[i] = false;
-        TTT_ClearTimer(g_iPlayer[client].CanSeeTimer[i]);
+        delete g_iPlayer[client].CanSeeTimer[i];
     }
 }
 
@@ -483,13 +483,13 @@ void DeleteGlowProp(int client)
 
 void SetupSee(int client, int role)
 {
-    int iRole;
+    int iTeam;
 
     LoopValidClients(i)
     {
-        iRole = TTT_GetClientRole(i);
+        iTeam = TTT_GetClientTeam(i);
 
-        if (iRole & (TTT_TEAM_TRAITOR | TTT_TEAM_DETECTIVE) && iRole == role)
+        if (iTeam & (TTT_TEAM_TRAITOR | TTT_TEAM_DETECTIVE) && iTeam == role)
         {
             g_iPlayer[i].CanSee[client] = true;
         }

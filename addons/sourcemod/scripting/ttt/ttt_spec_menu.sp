@@ -537,9 +537,9 @@ bool IsValidTarget(int client)
 {
     if (TTT_IsClientValid(client) && TTT_IsPlayerAlive(client))
     {
-        int iRole = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
-        if (iRole == TTT_TEAM_TRAITOR || iRole == TTT_TEAM_INNOCENT || iRole == TTT_TEAM_DETECTIVE)
+        if (iTeam == TTT_TEAM_TRAITOR || iTeam == TTT_TEAM_INNOCENT || iTeam == TTT_TEAM_DETECTIVE)
         {
             return true;
         }

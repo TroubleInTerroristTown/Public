@@ -161,13 +161,13 @@ public Action Command_Radio(int client, int args)
     GetCmdArgString(sMessage, sizeof(sMessage));
     
     char sColor[16];
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     
-    if (role == TTT_TEAM_INNOCENT || role == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_INNOCENT || iTeam == TTT_TEAM_TRAITOR)
     {
         Format(sColor, sizeof(sColor), "green");
     }
-    else if (role == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         Format(sColor, sizeof(sColor), "darkblue");
     }

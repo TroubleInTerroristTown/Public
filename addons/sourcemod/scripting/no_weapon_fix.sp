@@ -202,7 +202,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundStart(int id, int i, int t, int d)
+public void TTT_OnRoundStart(int id, int i, int t, int d, int m)
 {
     RequestFrame(Frame_ResetDrawViewModel);
 }

@@ -1,0 +1,6 @@
+UnlitGeneric
+{
+	$basetexture "ttt/c0rp3n/overlays/icon/ttt_overlay_icon_innocent"
+
+	$translucent 1
+}

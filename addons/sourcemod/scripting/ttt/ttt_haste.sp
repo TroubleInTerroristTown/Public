@@ -77,9 +77,9 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     g_bIsActive = false;
 }
 
-public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives)
+public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives, int misc)
 {
-    int iCount = innocents + traitors + detectives;
+    int iCount = innocents + traitors + detectives + misc;
 
     if (g_cRequired.IntValue == 0 || g_cRequired.IntValue < iCount)
     {
@@ -87,9 +87,9 @@ public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detec
     }
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
-    TTT_ClearTimer(g_hRoundTimer);
+    delete g_hRoundTimer;
 }
 
 public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
@@ -104,7 +104,7 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
 {
     if (!g_cSecondsOn.IntValue)
     {
-        CalculateTime(TTT_GetClientRole(victim), TTT_GetClientRole(attacker));
+        CalculateTime(TTT_GetClientTeam(victim), TTT_GetClientTeam(attacker));
     }
 }
 

@@ -162,7 +162,7 @@ void RegisterItem()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+    if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -190,7 +190,7 @@ public Action OnTraceAttack(int victim, int& attacker, int& inflictor, float& da
                 return Plugin_Handled;
             }
 
-            if (g_cTDamage.BoolValue && attacker != victim && TTT_GetClientRole(victim) == TTT_TEAM_TRAITOR)
+            if (g_cTDamage.BoolValue && attacker != victim && TTT_GetClientTeam(victim) == TTT_TEAM_TRAITOR)
             {
                 return Plugin_Handled;
             }
@@ -301,8 +301,8 @@ void SetMine(int client)
         int iBeamMDL = CreateEntityByName("prop_dynamic_override");
         SetEntityModel(iBeamMDL, DEFAULT_MODEL);
         DispatchKeyValue(iBeamMDL, "StartDisabled", "false");
-        DispatchSpawn(iBeamMDL);
         TeleportEntity(iBeamMDL, fEnd, fAngles, NULL_VECTOR);
+        DispatchSpawn(iBeamMDL);
         SetEntProp(iBeamMDL, Prop_Data, "m_usSolidFlags", 152);
         SetEntProp(iBeamMDL, Prop_Data, "m_CollisionGroup", 1);
         SetEntityMoveType(iBeamMDL, MOVETYPE_NONE);

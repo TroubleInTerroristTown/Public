@@ -27,10 +27,12 @@ void SetupConfig()
     g_cmaxKarmaVip = AutoExecConfig_CreateConVar("ttt_max_karma_vip", "300", "The maximum amount of karma a VIP player can have.");
     g_ckarmaFlag = AutoExecConfig_CreateConVar("ttt_vip_karma_flag", "t", "VIP flag for increased karma value.");
     g_crequiredPlayersD = AutoExecConfig_CreateConVar("ttt_required_players_detective", "6", "The amount of players required to activate the detective role.");
+    g_crequiredPlayersM = AutoExecConfig_CreateConVar("ttt_required_players_miscellaneous", "8", "The amount of players required to activate the miscellaneous role.");
     g_crequiredPlayers = AutoExecConfig_CreateConVar("ttt_required_player", "3", "The amount of players required to start the game.");
     g_cmaxTraitors = AutoExecConfig_CreateConVar("ttt_traitor_max", "32", "Maximum number of traitors. Customize this if you want to finetune the number of traitors at your server's max playercount, for example to make sure there are max 3 traitors on a 16 player server.");
     g_cmaxDetectives = AutoExecConfig_CreateConVar("ttt_detective_max", "32", "Maximum number of detectives. Can be used to cap or disable detectives.");
-    g_cminKarmaDetective = AutoExecConfig_CreateConVar("ttt_detective_karma_min", "100", "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
+    g_cmaxMisc = AutoExecConfig_CreateConVar("ttt_miscellaneous_max", "2", "Maximum number of miscellaneous. Can be used to cap or disable miscellaneous roles.");
+    // g_cminKarmaDetective = AutoExecConfig_CreateConVar("ttt_detective_karma_min", "100", "If a player's Karma falls below this point, his chances of being selected as detective are reduced.");
     g_cblockSuicide = AutoExecConfig_CreateConVar("ttt_block_suicide", "0", "Block players from suiciding with console. 1 = Block, 0 = Don't Block", _, true, 0.0, true, 1.0);
     g_cSkipOwnSuicide = AutoExecConfig_CreateConVar("ttt_skip_own_suicide", "1", "Should TTT skip own suicide action? 1 = Skip (no karma losses), 0 = Don't skip", _, true, 0.0, true, 1.0);
     g_cblockRadioMessage = AutoExecConfig_CreateConVar("ttt_block_radio_message", "1", "Block radio messages in chat. 1 = Block, 0 = Don't Block", _, true, 0.0, true, 1.0);
@@ -47,6 +49,7 @@ void SetupConfig()
     g_cspawnHPT = AutoExecConfig_CreateConVar("ttt_spawn_t", "100", "The amount of health traitors spawn with. ( 0 = disabled )", _, true, 0.0);
     g_cspawnHPD = AutoExecConfig_CreateConVar("ttt_spawn_d", "100", "The amount of health detectives spawn with. ( 0 = disabled )", _, true, 0.0);
     g_cspawnHPI = AutoExecConfig_CreateConVar("ttt_spawn_i", "100", "The amount of health innocents spawn with. ( 0 = disabled )", _, true, 0.0);
+    g_cspawnHPM = AutoExecConfig_CreateConVar("ttt_spawn_m", "100", "The amount of health miscellaneous spawn with. ( 0 = disabled )", _, true, 0.0);
     g_crulesClosePunishment = AutoExecConfig_CreateConVar("ttt_rules_close_punishment", "0", "The punishment for abusing the rules menu by closing it with another menu. 0 = Kick, Anything Else = Do Nothing", _, true, 0.0);
     g_ctimeToReadDetectiveRules = AutoExecConfig_CreateConVar("ttt_time_to_read_detective_rules", "15", "The time in seconds the detective rules menu will stay open.");
     g_ctimeToReadRules = AutoExecConfig_CreateConVar("ttt_time_to_read_rules", "30", "The time in seconds the general rules menu will stay open.");
@@ -64,6 +67,7 @@ void SetupConfig()
     g_cremoveBomb = AutoExecConfig_CreateConVar("ttt_remove_bomb_on_spawn", "1", "Remove the bomb spots from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
     g_ctraitorRatio = AutoExecConfig_CreateConVar("ttt_traitor_ratio", "25", "The chance of getting the traitor role.");
     g_cdetectiveRatio = AutoExecConfig_CreateConVar("ttt_detective_ratio", "13", "The chance of getting the detective role.");
+    g_cmiscRatio = AutoExecConfig_CreateConVar("ttt_miscellaneous_ratio", "8", "The chance of getting a miscellaneous role.");
     g_cdenyFire = AutoExecConfig_CreateConVar("ttt_deny_fire", "1", "Stop players who have not been assigned a role yet from shooting. (Mouse1 & Mouse2)", _, true, 0.0, true, 1.0);
     g_cslayAfterStart = AutoExecConfig_CreateConVar("ttt_slay_after_start", "1", "Slay all players after ttt round started", _, true, 0.0, true, 1.0);
     g_cremoveBuyzone = AutoExecConfig_CreateConVar("ttt_disable_buyzone", "0", "Remove all buyzones from the map to prevent interference. 1 = Remove, 0 = Don't Remove", _, true, 0.0, true, 1.0);
@@ -95,7 +99,7 @@ void SetupConfig()
     g_cGiveWeaponsOnFailStart = AutoExecConfig_CreateConVar("ttt_give_weapons_on_failed_start", "0", "Give player weapons on a fail start?", _, true, 0.0, true, 1.0);
     g_cFSPrimary = AutoExecConfig_CreateConVar("ttt_give_weapons_fail_start_primary", "ak47", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)");
     g_cFSSecondary = AutoExecConfig_CreateConVar("ttt_give_weapons_fail_start_secondary", "deagle", "What primary weapon do you want? (WITHOUT 'weapon_' TAG!)");
-    g_cSetRole = AutoExecConfig_CreateConVar("ttt_command_access_setrole", "d", "Admin flags to access the 'setrole' command.");
+    g_cSetTeam = AutoExecConfig_CreateConVar("ttt_command_access_setteam", "d", "Admin flags to access the 'setteam' command.");
     g_cKarmaReset = AutoExecConfig_CreateConVar("ttt_command_access_karmareset", "m", "Admin flags to access the 'karmareset' command.");
     g_cSetKarma = AutoExecConfig_CreateConVar("ttt_command_access_setkarma", "m", "Admin flags to access the 'setkarma' command.");
     g_cAddSteamIDtoLogs = AutoExecConfig_CreateConVar("ttt_steamid_add_to_logs", "1", "Should we add steam id to all log actions? Prevent abusing with namefakers", _, true, 0.0, true, 1.0);
@@ -143,9 +147,9 @@ void SetupConfig()
     g_cDisableRounds = AutoExecConfig_CreateConVar("ttt_disable_rounds", "0", "Disable TTT Rounds? This will require an map change, server restart or plugin that can execute TTT_TerminateRound.", _, true, 0.0, true, 1.0);
     g_cClearRounds = AutoExecConfig_CreateConVar("ttt_clear_rounds", "0", "Clear old rounds? 0 - Default means disabled, other value will be presumed as days.", _, true, 0.0);
     g_cClearLogs = AutoExecConfig_CreateConVar("ttt_clear_logs", "0", "Clear old logs? 0 - Default means disabled, other value will be presumed as days.", _, true, 0.0);
-    g_cStartMelee = AutoExecConfig_CreateConVar("ttt_start_melee_weapon", "fists", "Spawn with which melee weapon?");
-    g_cAdditionalMeleeRole = AutoExecConfig_CreateConVar("ttt_additional_melee_role", "14", "Who gets the additional melee weapon? (Useful: https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 0.0, true, 14.0);
-    g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_Additional_melee_weapon", "knife", "Which additional weapon?");
+    g_cStartMelee = AutoExecConfig_CreateConVar("ttt_start_melee_weapon", "knife", "Spawn with which melee weapon?");
+    g_cAdditionalMeleeTeam = AutoExecConfig_CreateConVar("ttt_additional_melee_team", "0", "Who gets the additional melee weapon? (Useful: https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 0.0, true, 14.0);
+    g_cAdditionalMeleeWeapon = AutoExecConfig_CreateConVar("ttt_Additional_melee_weapon", "", "Which additional weapon?");
     g_cUnloadPlugins = AutoExecConfig_CreateConVar("ttt_unload_plugins", "1", "Unload old/obsolete plugins?", _, true, 0.0, true, 1.0);
     g_cRemovePlugins = AutoExecConfig_CreateConVar("ttt_remove_plugins", "1", "Remove old/obsolete plugins (ttt_remove_plugins must be 1)?", _, true, 0.0, true, 1.0);
     g_cFixThirdperson = AutoExecConfig_CreateConVar("ttt_fix_thirdperson_view", "1", "Reset thirdperson view back to firstperson, if players comes from other servers with thirdperson view (Zombie, Prop Hunt, ...)", _, true, 0.0, true, 1.0);
@@ -169,7 +173,7 @@ void SetupConfig()
     g_cRoundStartFontColor.AddChangeHook(OnConVarChanged);
     g_cFSPrimary.AddChangeHook(OnConVarChanged);
     g_cFSSecondary.AddChangeHook(OnConVarChanged);
-    g_cSetRole.AddChangeHook(OnConVarChanged);
+    g_cSetTeam.AddChangeHook(OnConVarChanged);
     g_cKarmaReset.AddChangeHook(OnConVarChanged);
     g_cSetKarma.AddChangeHook(OnConVarChanged);
     g_cDisableRounds.AddChangeHook(OnConVarChanged);

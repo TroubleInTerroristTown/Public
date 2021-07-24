@@ -16,7 +16,7 @@ ConVar g_cPrice = null;
 ConVar g_cPrio = null;
 ConVar g_cPrintTo = null;
 ConVar g_cLongName = null;
-ConVar g_cRoleColor = null;
+ConVar g_cTeamColor = null;
 ConVar g_cStartWith = null;
 ConVar g_cFreeCount = null;
 ConVar g_cCount = null;
@@ -49,7 +49,7 @@ public void OnPluginStart()
     g_cPrice = AutoExecConfig_CreateConVar("dna_price", "9000", "The amount of credits a dna scanner costs as detective. 0 to disable.");
     g_cPrio = AutoExecConfig_CreateConVar("dna_sort_prio", "0", "The sorting priority of the dna scanner in the shop menu.");
     g_cPrintTo = AutoExecConfig_CreateConVar("dna_print_message_to", "0", "Print scanner to... 0 - Nothing just detective, 1 - All detectives, 2 - All players (Default: 0)", _, true, 0.0, true, 2.0);
-    g_cRoleColor = AutoExecConfig_CreateConVar("dna_role_color", "0", "Show role color on dna scan message?", _, true, 0.0, true, 1.0);
+    g_cTeamColor = AutoExecConfig_CreateConVar("dna_team_color", "0", "Show team color on dna scan message?", _, true, 0.0, true, 1.0);
     g_cStartWith = AutoExecConfig_CreateConVar("dna_spawn_with", "1", "Spawn with dna scanner?", _, true, 0.0, true, 1.0);
     g_cFreeCount = AutoExecConfig_CreateConVar("dna_free_scanner_count", "3", "Limited the free dna scanner to X usages? (0 - disabled/unlimited)", _, true, 0.0);
     g_cCount = AutoExecConfig_CreateConVar("dna_count", "6", "Max dna scanner usages per round (dna_count + dna_free_scanner_count -> example 6 + 3 (free) is the max. count 9)");
@@ -105,9 +105,9 @@ public void TTT_OnInventoryReady()
 {
     LoopValidClients(client)
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
         
-        if (role == TTT_TEAM_DETECTIVE)
+        if (iTeam == TTT_TEAM_DETECTIVE)
         {
             if (g_cStartWith.BoolValue)
             {
@@ -119,9 +119,9 @@ public void TTT_OnInventoryReady()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_DETECTIVE)
+    if (iTeam != TTT_TEAM_DETECTIVE)
     {
         return Plugin_Stop;
     }
@@ -145,7 +145,7 @@ public Action TTT_OnBodyCheck(int client, int entityref)
         return Plugin_Continue;
     }
 
-    if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE || !TTT_IsItemInInventory(client, SHORT_NAME))
+    if (TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE || !TTT_IsItemInInventory(client, SHORT_NAME))
     {
         return Plugin_Continue;
     }
@@ -161,8 +161,8 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     
     LogMessage("[DNA-Scanner] Attacker UserID: %d (Index: %d), Victim UserID: %d (Index: %d), If Check: %d", body.Attacker, attacker, body.Victim, victim, (attacker > 0 && attacker != victim));
 
-    char sAttackerID[24], sClientID[24], sRole[ROLE_LENGTH], sName[MAX_NAME_LENGTH];
-    TTT_GetRoleNameByID(body.AttackerRole, sRole, sizeof(sRole));
+    char sAttackerID[24], sClientID[24], sTeam[ROLE_LENGTH], sName[MAX_NAME_LENGTH];
+    TTT_GetTeamNameByID(body.AttackerTeam, sTeam, sizeof(sTeam));
     TTT_GetClientName(client, sName, sizeof(sName));
     
     if (g_cAddLogs != null && g_cAddLogs.BoolValue)
@@ -195,7 +195,7 @@ public Action TTT_OnBodyCheck(int client, int entityref)
         }
     }
 
-    TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %s%s (%s) with Weapon: %s]", client, sClientID, body.AttackerName, sAttackerID, sRole, body.Weaponused);
+    TTT_LogString("-> [%N%s (Detective) scanned a body, Killer was %s%s (%s) with Weapon: %s]", client, sClientID, body.AttackerName, sAttackerID, sTeam, body.Weaponused);
 
     char sClientName[MAX_NAME_LENGTH];
     TTT_GetClientName(client, sClientName, sizeof(sClientName));
@@ -204,14 +204,14 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     {
         LoopValidClients(j)
         {
-            if (!g_cRoleColor.BoolValue)
+            if (!g_cTeamColor.BoolValue)
             {
                 CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, sName, body.AttackerName, body.Weaponused);
             }
             else
             {
                 char sTranslation[64];
-                Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+                Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sTeam);
                 CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, sClientName, body.AttackerName, body.Weaponused);
             }
         }
@@ -220,16 +220,16 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     {
         LoopValidClients(j)
         {
-            if (TTT_GetClientRole(j) == TTT_TEAM_DETECTIVE)
+            if (TTT_GetClientTeam(j) == TTT_TEAM_DETECTIVE)
             {
-                if (!g_cRoleColor.BoolValue)
+                if (!g_cTeamColor.BoolValue)
                 {
                     CPrintToChat(j, "%s %T", g_sPluginTag, "Detective scan found body", j, sName, body.AttackerName, body.Weaponused);
                 }
                 else
                 {
                     char sTranslation[64];
-                    Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+                    Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sTeam);
                     CPrintToChat(j, "%s %T", g_sPluginTag, sTranslation, j, sClientName, body.AttackerName, body.Weaponused);
                 }
             }
@@ -237,14 +237,14 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     }
     else
     {
-        if (!g_cRoleColor.BoolValue)
+        if (!g_cTeamColor.BoolValue)
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Detective scan found body", client, sName, body.AttackerName, body.Weaponused);
         }
         else
         {
             char sTranslation[64];
-            Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sRole);
+            Format(sTranslation, sizeof(sTranslation), "Detective scan found body %s", sTeam);
             CPrintToChat(client, "%s %T", g_sPluginTag, sTranslation, client, sClientName, body.AttackerName, body.Weaponused);
         }
     }

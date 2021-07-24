@@ -128,7 +128,7 @@ public int Native_HasAutoIonCannon(Handle plugin, int numParams)
 {
     int target = GetClientOfUserId(g_iPlayer[GetNativeCell(1)].iIonTarget);
 
-    return target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR;
+    return target > 0 && IsPlayerAlive(target) && TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR;
 }
 
 public int Native_GetIonCannon(Handle plugin, int numParams)
@@ -140,7 +140,7 @@ public int Native_GetAutoIonCannon(Handle plugin, int numParams)
 {
     int target = GetClientOfUserId(g_iPlayer[GetNativeCell(1)].iIonTarget);
     
-    return (target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR) ? target : -1;
+    return (target > 0 && IsPlayerAlive(target) && TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR) ? target : -1;
 }
 
 public int Native_AddIonCannon(Handle plugin, int numParams)
@@ -300,7 +300,7 @@ public void TTT_OnShopReady()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+    if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -344,7 +344,7 @@ void ShowTargetMenu(int client)
     char sUID[8], sNick[MAX_NAME_LENGTH];
     LoopValidClients(i)
     {
-        if (IsPlayerAlive(i) && client != i && TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
+        if (IsPlayerAlive(i) && client != i && TTT_GetClientTeam(i) != TTT_TEAM_TRAITOR)
         {
             Format(sUID, sizeof(sUID), "%i", i);
             TTT_GetClientName(i, sNick, sizeof(sNick));
@@ -366,7 +366,7 @@ public int Menu_IonHandler(Handle menu, MenuAction action, int client, int param
 
         int target = StringToInt(sUID);
 
-        if (TTT_IsClientValid(target) && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR)
+        if (TTT_IsClientValid(target) && IsPlayerAlive(target) && TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR)
         {
             AimAtTarget(client, target);
         }
@@ -409,7 +409,7 @@ Action Timer_UpdateTargetPosition(Handle timer, any userid)
 
     int target = GetClientOfUserId(g_iPlayer[client].iIonTarget);
 
-    if (TTT_IsClientValid(target) && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR)
+    if (TTT_IsClientValid(target) && IsPlayerAlive(target) && TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR)
     {
         GetClientAbsOrigin(target, g_iPlayer[client].fInfoTargetOrigin);
     }
@@ -423,7 +423,7 @@ Action Timer_UpdateTargetPosition(Handle timer, any userid)
             CPrintToChat(i, "%s %T", g_sPluginTag, "Ion cannon: Fire at last know location", i);
         }
 
-        TTT_ClearTimer(g_iPlayer[client].hIonTarget);
+        delete g_iPlayer[client].hIonTarget;
     }
 }
 
@@ -446,14 +446,14 @@ public void OnClientDisconnect(int client)
                 CPrintToChat(j, "%s %T", g_sPluginTag, "Ion cannon: Fire at last know location", j);
             }
 
-            TTT_ClearTimer(g_iPlayer[i].hIonTarget);
+            delete g_iPlayer[i].hIonTarget;
         }
     }
 
     ClearIon(client);
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     LoopValidClients(i)
     {
@@ -496,9 +496,9 @@ void ClearIon(int client, bool ammo = false)
         SetEntProp(client, Prop_Send, "m_iProgressBarDuration", 0);
     }
 
-    TTT_ClearTimer(g_iPlayer[client].hIonTarget);
-    TTT_ClearTimer(g_iPlayer[client].hFiringWeapon);
-    TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
+    delete g_iPlayer[client].hIonTarget;
+    delete g_iPlayer[client].hFiringWeapon;
+    delete g_iPlayer[client].hFiringWeaponCountdown;
 }
 
 Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
@@ -570,8 +570,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[
         g_iPlayer[client].iIonCannonAmmo++;
         g_iPlayer[client].iFireWeaponStartTime = 0;
 
-        TTT_ClearTimer(g_iPlayer[client].hFiringWeapon);
-        TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
+        delete g_iPlayer[client].hFiringWeapon;
+        delete g_iPlayer[client].hFiringWeaponCountdown;
         
         StopSoundAny(client, SNDCHAN_WEAPON, SOUND_BEACON);
         
@@ -610,7 +610,7 @@ Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
 
     if (!IsClientInGame(client) || g_iPlayer[client].iFireWeaponStartTime == 0)
     {
-        TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
+        delete g_iPlayer[client].hFiringWeaponCountdown;
         return;
     }
     
@@ -618,7 +618,7 @@ Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
 
     if (iDifference < 1)
     {
-        TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
+        delete g_iPlayer[client].hFiringWeaponCountdown;
         return;
     }
 
@@ -693,11 +693,11 @@ Action Timer_OnIonPlanted(Handle timer, any userid)
     iEffects |= 32;
     SetEntProp(iEntity, Prop_Send, "m_fEffects", iEffects);
 
+    GetClientAbsOrigin(target, g_iPlayer[client].fInfoTargetOrigin);
+    TeleportEntity(iEntity, g_iPlayer[client].fInfoTargetOrigin, NULL_VECTOR, NULL_VECTOR);
+
     if (DispatchSpawn(iEntity))
     {
-        GetClientAbsOrigin(target, g_iPlayer[client].fInfoTargetOrigin);
-        TeleportEntity(iEntity, g_iPlayer[client].fInfoTargetOrigin, NULL_VECTOR, NULL_VECTOR);
-        
         TE_SetupGlowSprite(g_iPlayer[client].fInfoTargetOrigin, g_iGlowSprite, 3.0, 1.0, 100);
         TE_SendToAll();
         
@@ -1028,7 +1028,7 @@ Action Timer_OnFireIonCannon(Handle timer, any userid)
 
     int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? GetClientOfUserId(g_iPlayer[client].iIonTarget) : -1;
 
-    if (target > 0 && IsPlayerAlive(target) && TTT_GetClientRole(target) != TTT_TEAM_TRAITOR)
+    if (target > 0 && IsPlayerAlive(target) && TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR)
     {
         ForcePlayerSuicide(target);
 
@@ -1046,7 +1046,7 @@ Action Timer_OnFireIonCannon(Handle timer, any userid)
 
     g_iPlayer[client].iIonTarget = -1;
 
-    TTT_ClearTimer(g_iPlayer[client].hIonTarget);
+    delete g_iPlayer[client].hIonTarget;
     
     float fIonRadius = g_cIonExplosionRadius.FloatValue;
     float fShakeTime = g_cIonShakeTime.FloatValue;

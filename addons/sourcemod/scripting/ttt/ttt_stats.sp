@@ -271,11 +271,11 @@ public void OnClientDisconnect(int client)
     Player[client].InRound = false;
 }
 
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int innocents, int traitors, int detective, int misc)
 {
     g_bValidRound = false;
 
-    int iPlayers = innocents + traitors + detective;
+    int iPlayers = innocents + traitors + detective + misc;
 
     if (iPlayers < g_cPlayers.IntValue)
     {
@@ -286,7 +286,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
     LoopValidClients(i)
     {
-        if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_INNOCENT || TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR || TTT_GetClientTeam(i) == TTT_TEAM_INNOCENT || TTT_GetClientTeam(i) == TTT_TEAM_DETECTIVE)
         {
             PlayerRound[i].ResetRound();
 
@@ -379,19 +379,19 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
 
     if (Stats_IsClientValid(victim) && Stats_IsClientValid(attacker))
     {
-        int iRole = TTT_GetClientRole(victim);
+        int iTeam = TTT_GetClientTeam(victim);
 
-        if (iRole == TTT_TEAM_TRAITOR)
+        if (iTeam == TTT_TEAM_TRAITOR)
         {
             Player[attacker].KilledTraitors++;
             PlayerRound[attacker].KilledTraitors++;
         }
-        else if (iRole == TTT_TEAM_DETECTIVE)
+        else if (iTeam == TTT_TEAM_DETECTIVE)
         {
             Player[attacker].KilledDetectives++;
             PlayerRound[attacker].KilledDetectives++;
         }
-        else if (iRole == TTT_TEAM_INNOCENT)
+        else if (iTeam == TTT_TEAM_INNOCENT)
         {
             Player[attacker].KilledInnocents++;
             PlayerRound[attacker].KilledInnocents++;
@@ -405,7 +405,7 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
     }
 }
 
-public void TTT_OnBodyFound(int attacker, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
+public void TTT_OnBodyFound(int attacker, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID)
 {
     if (!g_bValidRound)
     {
@@ -417,7 +417,7 @@ public void TTT_OnBodyFound(int attacker, int victim, int victimRole, int attack
         Ragdoll body;
         TTT_GetEntityRefRagdoll(entityref, body);
 
-        if (body.VictimRole == TTT_TEAM_TRAITOR)
+        if (body.VictimTeam == TTT_TEAM_TRAITOR)
         {
             Player[attacker].IdentifiedTraitors++;
             PlayerRound[attacker].IdentifiedTraitors++;
@@ -442,7 +442,7 @@ public Action TTT_OnBodyCheck(int attacker, int entityref)
         Ragdoll body;
         TTT_GetEntityRefRagdoll(entityref, body);
 
-        if (body.VictimRole == TTT_TEAM_TRAITOR)
+        if (body.VictimTeam == TTT_TEAM_TRAITOR)
         {
             Player[attacker].ScannedTraitors++;
             PlayerRound[attacker].ScannedTraitors++;
@@ -455,7 +455,7 @@ public Action TTT_OnBodyCheck(int attacker, int entityref)
     }
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     if (g_cDebug.BoolValue)
     {
@@ -476,24 +476,24 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
         if (Player[i].InRound)
         {
-            int iRole = TTT_GetClientRole(i);
+            int iTeam = TTT_GetClientTeam(i);
 
             Player[i].RoundsPlayed++;
 
-            if  (iRole == winner || (iRole == TTT_TEAM_DETECTIVE && winner == TTT_TEAM_INNOCENT) || (iRole == TTT_TEAM_INNOCENT && winner == TTT_TEAM_DETECTIVE))
+            if  (iTeam == winner || (iTeam == TTT_TEAM_DETECTIVE && winner == TTT_TEAM_INNOCENT) || (iTeam == TTT_TEAM_INNOCENT && winner == TTT_TEAM_DETECTIVE))
             {
                 Player[i].RoundsWon++;
             }
 
-            if (iRole == TTT_TEAM_INNOCENT)
+            if (iTeam == TTT_TEAM_INNOCENT)
             {
                 Player[i].PlayedAsInnocent++;
             }
-            if (iRole == TTT_TEAM_TRAITOR)
+            if (iTeam == TTT_TEAM_TRAITOR)
             {
                 Player[i].PlayedAsTraitor++;
             }
-            if (iRole == TTT_TEAM_DETECTIVE)
+            if (iTeam == TTT_TEAM_DETECTIVE)
             {
                 Player[i].PlayedAsDetective++;
             }

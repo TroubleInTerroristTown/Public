@@ -29,7 +29,7 @@ ConVar g_cLimit = null;
 ConVar g_cMute = null;
 
 ConVar g_cStartMelee = null;
-ConVar g_cAdditionalMeleeRole = null;
+ConVar g_cAdditionalMeleeTeam = null;
 ConVar g_cAdditionalMeleeWeapon = null;
 
 int g_iFreeze = -1;
@@ -156,7 +156,7 @@ public void OnMapStart()
 public void OnConfigsExecuted()
 {
     g_cStartMelee = FindConVar("ttt_start_melee_weapon");
-    g_cAdditionalMeleeRole = FindConVar("ttt_additional_melee_role");
+    g_cAdditionalMeleeTeam = FindConVar("ttt_additional_melee_role");
     g_cAdditionalMeleeWeapon = FindConVar("ttt_additional_melee_weapon");
 
     RegisterItem();
@@ -182,14 +182,14 @@ public void OnClientPutInServer(int client)
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int role = TTT_GetClientTeam(client);
 
     if (role != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
 
-    TTT_RemoveWeaponByClassname(client, "weapon_taser", CS_SLOT_KNIFE);
+    TTT_RemoveWeaponByClassname(client, "weapon_taser");
     
     GivePlayerItem(client, "weapon_taser");
 
@@ -264,11 +264,11 @@ void KnockoutPlayer(int client)
     char sName[24];
     Format(sName, sizeof(sName), "knockout_ragdoll_%d", GetClientUserId(client));
     DispatchKeyValue(iEntity, "targetname", sName);
+    pos[2] -= 16.0;
+    TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
 
     if (DispatchSpawn(iEntity))
     {
-        pos[2] -= 16.0;
-        TeleportEntity(iEntity, pos, NULL_VECTOR, NULL_VECTOR);
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS_TRIGGER);
         AcceptEntityInput(iEntity, "EnableMotion");
         SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
@@ -342,7 +342,7 @@ void DropWeapons(int client)
 
             if ((StrContains(sClass, "knife", false) != -1) || (StrContains(sClass, "bayonet", false) != -1))
             {
-                if (!TTT_SafeRemoveWeapon(client, weapon, CS_SLOT_KNIFE))
+                if (!TTT_SafeRemoveWeapon(client, weapon))
                 {
                     LogError("Can't remove knife! Player: \"%L\"", client);
                 }
@@ -492,7 +492,7 @@ void GiveMelee(int client)
 {
     TTT_RemoveMeleeWeapons(client);
 
-    if (g_cStartMelee == null || g_cAdditionalMeleeRole == null || g_cAdditionalMeleeWeapon == null)
+    if (g_cStartMelee == null || g_cAdditionalMeleeTeam == null || g_cAdditionalMeleeWeapon == null)
     {
         return;
     }
@@ -504,7 +504,7 @@ void GiveMelee(int client)
     int iWeapon = GivePlayerItem(client, sWeapon);
     EquipPlayerWeapon(client, iWeapon);
 
-    if (g_cAdditionalMeleeRole.IntValue & TTT_GetClientRole(client))
+    if (g_cAdditionalMeleeTeam.IntValue & TTT_GetClientTeam(client))
     {
         g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
         Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);

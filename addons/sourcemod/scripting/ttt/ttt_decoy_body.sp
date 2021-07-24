@@ -152,9 +152,9 @@ public void OnClientDisconnect(int client)
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -163,7 +163,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID)
 {
     int entity = EntRefToEntIndex(entityref);
 
@@ -175,11 +175,11 @@ public void TTT_OnBodyFound(int client, int victim, int victimRole, int attacker
     Ragdoll body;
     TTT_GetEntityRefRagdoll(entityref, body);
 
-    int iRole = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
     if (g_cGiveTraitorDecoyBack.BoolValue)
     {
-        if (body.Explode && iRole == TTT_TEAM_TRAITOR)
+        if (body.Explode && iTeam == TTT_TEAM_TRAITOR)
         {
             body.Explode = false;
             TTT_SetRagdoll(body, sizeof(body));
@@ -223,7 +223,7 @@ public void TTT_OnBodyFound(int client, int victim, int victimRole, int attacker
             return;
         }
 
-        if (g_cBlockTDecoyIdentify.BoolValue && iRole == TTT_TEAM_TRAITOR)
+        if (g_cBlockTDecoyIdentify.BoolValue && iTeam == TTT_TEAM_TRAITOR)
         {
             return;
         }
@@ -334,7 +334,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         char sClass[32];
         GetEntityClassname(inflictor, sClass, sizeof(sClass));
 
-        if (StrEqual(sClass, "env_explosion", false) && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
+        if (StrEqual(sClass, "env_explosion", false) && TTT_GetClientTeam(iVictim) == TTT_TEAM_TRAITOR)
         {
             damage = 0.0;
             return Plugin_Changed;
@@ -401,8 +401,8 @@ void CreateExplosion(int body)
         GetEntPropVector(body, Prop_Send, "m_vecOrigin", fPos);
         fPos[2] += 30;
         
-        DispatchSpawn(entity);
         TeleportEntity(entity, fPos, NULL_VECTOR, NULL_VECTOR);
+        DispatchSpawn(entity);
         
         int iSound = GetRandomInt(1, 3);
         

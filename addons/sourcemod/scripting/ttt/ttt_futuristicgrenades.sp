@@ -302,12 +302,12 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     
     // All grenades
-    if (role == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FUTURISTIC_I, false)) ||
-        (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FUTURISTIC_T, false)) ||
-        (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FUTURISTIC_D, false)))
+    if (iTeam == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FUTURISTIC_I, false)) ||
+        (iTeam == TTT_TEAM_TRAITOR && StrEqual(itemshort, FUTURISTIC_T, false)) ||
+        (iTeam == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FUTURISTIC_D, false)))
     {
         if (g_iPlayer[client].HasAll || g_iPlayer[client].Mode != DecoyMode_Normal)
         {
@@ -325,9 +325,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     
     // Forcefield
-    if (role == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FF_SNAME_I, false)) ||
-        (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FF_SNAME_T, false)) ||
-        (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FF_SNAME_D, false)))
+    if (iTeam == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FF_SNAME_I, false)) ||
+        (iTeam == TTT_TEAM_TRAITOR && StrEqual(itemshort, FF_SNAME_T, false)) ||
+        (iTeam == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FF_SNAME_D, false)))
     {
         if (g_iPlayer[client].HasAll || g_iPlayer[client].Mode != DecoyMode_Normal)
         {
@@ -346,9 +346,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     
     // Blackhole
-    if (role == TTT_TEAM_INNOCENT && (StrEqual(itemshort, BH_SNAME_I, false)) ||
-        (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, BH_SNAME_T, false)) ||
-        (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, BH_SNAME_D, false)))
+    if (iTeam == TTT_TEAM_INNOCENT && (StrEqual(itemshort, BH_SNAME_I, false)) ||
+        (iTeam == TTT_TEAM_TRAITOR && StrEqual(itemshort, BH_SNAME_T, false)) ||
+        (iTeam == TTT_TEAM_DETECTIVE && StrEqual(itemshort, BH_SNAME_D, false)))
     {
         if (g_iPlayer[client].HasAll || g_iPlayer[client].Mode != DecoyMode_Normal)
         {
@@ -367,9 +367,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     
     // Explosion
-    if (role == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FE_SNAME_I, false)) ||
-        (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FE_SNAME_T, false)) ||
-        (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FE_SNAME_D, false)))
+    if (iTeam == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FE_SNAME_I, false)) ||
+        (iTeam == TTT_TEAM_TRAITOR && StrEqual(itemshort, FE_SNAME_T, false)) ||
+        (iTeam == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FE_SNAME_D, false)))
     {
         if (g_iPlayer[client].HasAll || g_iPlayer[client].Mode != DecoyMode_Normal)
         {
@@ -388,9 +388,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     
     // Implosion
-    if (role == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FI_SNAME_I, false)) ||
-        (role == TTT_TEAM_TRAITOR && StrEqual(itemshort, FI_SNAME_T, false)) ||
-        (role == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FI_SNAME_D, false)))
+    if (iTeam == TTT_TEAM_INNOCENT && (StrEqual(itemshort, FI_SNAME_I, false)) ||
+        (iTeam == TTT_TEAM_TRAITOR && StrEqual(itemshort, FI_SNAME_T, false)) ||
+        (iTeam == TTT_TEAM_DETECTIVE && StrEqual(itemshort, FI_SNAME_D, false)))
     {
         if (g_iPlayer[client].HasAll || g_iPlayer[client].Mode != DecoyMode_Normal)
         {

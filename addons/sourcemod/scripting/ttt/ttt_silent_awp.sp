@@ -140,7 +140,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         GetEntityClassname(g_iPlayer[client].Weapon, sWeapon, sizeof(sWeapon));
         if (!StrEqual(sWeapon, "weapon_awp", false))
         {
-            TTT_SafeRemoveWeapon(client, g_iPlayer[client].Weapon, CS_SLOT_PRIMARY);
+            TTT_SafeRemoveWeapon(client, g_iPlayer[client].Weapon);
             g_iPlayer[client].Weapon = -1;
         }
     }
@@ -155,19 +155,19 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 
     int max = 0;
     int min = 0;
-    int iRole = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (iRole == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         max = g_cMaxShotsT.IntValue;
         min = g_cMinShotsT.IntValue;
     }
-    else if (iRole == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         max = g_cMaxShotsD.IntValue;
         min = g_cMinShotsD.IntValue;
     }
-    else if (iRole == TTT_TEAM_INNOCENT)
+    else if (iTeam == TTT_TEAM_INNOCENT)
     {
         max = g_cMaxShotsI.IntValue;
         min = g_cMinShotsI.IntValue;

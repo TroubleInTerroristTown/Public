@@ -166,7 +166,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     {
         if (health)
         {
-            if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+            if (TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
             {
                 return Plugin_Stop;
             }
@@ -183,7 +183,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         }
         else if (hurt)
         {
-            if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
             {
                 return Plugin_Stop;
             }
@@ -242,7 +242,7 @@ public Action Timer_CheckDistance(Handle timer, any ref)
 
     LoopValidClients(i)
     {
-        if (!IsPlayerAlive(i) || !TTT_ClientValidRole(i))
+        if (!IsPlayerAlive(i) || !TTT_ClientValidTeam(i))
         {
             continue;
         }
@@ -271,7 +271,7 @@ public Action Timer_AddCharge(Handle timer)
 
 public void OnClientDisconnect(int client)
 {
-    TTT_ClearTimer(g_iPlayer[client].Timer);
+    delete g_iPlayer[client].Timer;
 }
 
 public Action Timer_RemoveCooldown(Handle timer, any userid)
@@ -353,7 +353,7 @@ void checkDistanceFromStation(int client, int owner, int entity)
 
     iCurrentHealth = GetClientHealth(client);
 
-    if (!g_cHurtTraitors.BoolValue && g_iPlayer[owner].Type == Hurt && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+    if (!g_cHurtTraitors.BoolValue && g_iPlayer[owner].Type == Hurt && TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
     {
         return;
     }
@@ -433,16 +433,16 @@ void spawnStation(int client)
         GetClientAbsOrigin(client, fClientPos);
         SetEntProp(iStation, Prop_Send, "m_hOwnerEntity", client);
         DispatchKeyValue(iStation, "model", "models/props/cs_office/microwave.mdl");
+        TeleportEntity(iStation, fClientPos, NULL_VECTOR, NULL_VECTOR);
 
         if (DispatchSpawn(iStation))
         {
             SDKHook(iStation, SDKHook_OnTakeDamage, OnTakeDamageStation);
-            TeleportEntity(iStation, fClientPos, NULL_VECTOR, NULL_VECTOR);
 
             g_iPlayer[client].Health = 10;
             g_iPlayer[client].IsActive = true;
 
-            if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
             {
                 g_iPlayer[client].Charges = g_cHurtCharges.IntValue;
                 g_iPlayer[client].Type = Hurt;
@@ -470,6 +470,6 @@ void cleanupStation()
         g_iPlayer[i].IsActive = false;
         g_iPlayer[i].Cooldown = false;
 
-        TTT_ClearTimer(g_iPlayer[i].Timer);
+        delete g_iPlayer[i].Timer;
     }
 }

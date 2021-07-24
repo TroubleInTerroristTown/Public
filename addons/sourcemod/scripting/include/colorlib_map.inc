@@ -19,6 +19,7 @@ enum CL_Color
     CL_Color_Role_i = 0x04,
     CL_Color_Role_t = 0x02,
     CL_Color_Role_d = 0x0C,
+    CL_Color_Role_m = 0x10,
     CL_Color_Warning = 0x0F,
     CL_Color_Error = 0x07,
     CL_Color_Setting = 0x02,
@@ -171,6 +172,11 @@ CL_Color _CL_ColorMap(const char[] color, int& length)
             {
                 length = 7;
                 return CL_Color_Role_d;
+            }
+            else if (color[5] == 'm')
+            {
+                length = 7;
+                return CL_Color_Role_m;
             }
         }
         else if (color[1] == 'e')

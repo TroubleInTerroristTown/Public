@@ -1,0 +1,5 @@
+"MonitorScreen"
+{
+	"$basetexture" "ttt/default/overlays/win/ttt_overlay_win_detectives"
+	"$translucent" 1
+}

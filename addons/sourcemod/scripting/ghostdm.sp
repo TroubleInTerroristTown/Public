@@ -253,10 +253,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (IsClientValid(victim) && Player[victim].Deathmatch)
     {
-        if (Player[victim].Respawn != null)
-        {
-            ClearTimer(Player[victim].Respawn);
-        }
+        delete g_iPlayer[victim].Respawn;
 
         PrintToChat(victim, "You will be respawned in %.1f seconds!", g_fRespawn);
         Player[victim].Respawn = CreateTimer(g_fRespawn, Timer_Respawn, GetClientUserId(victim), TIMER_FLAG_NO_MAPCHANGE);
@@ -581,10 +578,7 @@ void SetRedie(int client, bool bDeathmatch = false)
 
         if (bDeathmatch)
         {
-            if (Player[client].Spawn != null)
-            {
-                ClearTimer(Player[client].Spawn);
-            }
+            delete g_iPlayer[victim].Spawn;
 
             Player[client].Spawn = CreateTimer(g_fSpawnProt, Timer_Spawn, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 
@@ -705,8 +699,8 @@ void ResetClient(int client)
 
     if (IsClientInGame(client))
     {
-        ClearTimer(Player[client].Respawn);
-        ClearTimer(Player[client].Spawn);
+        delete g_iPlayer[client].Respawn;
+        delete g_iPlayer[client].Spawn;
 
         SetListener(client);
 
@@ -749,13 +743,4 @@ bool IsClientValid(int client, bool nobots = false)
     }
 
     return false;
-}
-
-void ClearTimer(Handle &timer, bool autoClose = false)
-{
-    if (timer != null)
-    {
-        KillTimer(timer, autoClose);
-        timer = null;
-    }
 }

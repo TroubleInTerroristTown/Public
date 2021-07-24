@@ -102,9 +102,9 @@ public void OnClientDisconnect(int client)
 
 public Action OnPurchase(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_DETECTIVE)
+    if (iTeam != TTT_TEAM_DETECTIVE)
     {
         return Plugin_Stop;
     }

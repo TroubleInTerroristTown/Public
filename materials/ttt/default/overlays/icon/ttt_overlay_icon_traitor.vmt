@@ -1,0 +1,5 @@
+"UnlitGeneric"
+{
+	"$basetexture" "ttt/default/overlays/icon/ttt_overlay_icon_traitor"
+	"$translucent" 1
+}

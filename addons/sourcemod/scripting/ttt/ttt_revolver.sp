@@ -132,7 +132,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     {
         if(HasPlayerRevolver(iAttacker))
         {
-            if(TTT_GetClientRole(iVictim) != TTT_TEAM_TRAITOR)
+            if(TTT_GetClientTeam(iVictim) != TTT_TEAM_TRAITOR)
             {
                 ForcePlayerSuicide(iAttacker);
 

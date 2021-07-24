@@ -17,6 +17,7 @@
 #include <ttt_bodies>
 #include <ttt_detective_bans>
 #include <ttt_ioncannon>
+#include <ttt_roles>
 #tryinclude <sourcebanspp>
 #define REQUIRE_PLUGIN
 
@@ -24,6 +25,7 @@
 
 #include "core/globals.sp"
 #include "core/config.sp"
+#include "core/forwards.sp"
 #include "core/natives.sp"
 #include "core/sql.sp"
 
@@ -65,7 +67,7 @@ public void OnPluginStart()
     CreateTimer(5.0, Timer_5, _, TIMER_REPEAT);
 
     // Admin commands
-    RegConsoleCmd("sm_setrole", Command_SetRole);
+    RegConsoleCmd("sm_setteam", Command_SetTeam);
     RegConsoleCmd("sm_karmareset", Command_KarmaReset);
     RegConsoleCmd("sm_setkarma", Command_SetKarma);
     RegConsoleCmd("sm_status", Command_Status);
@@ -163,6 +165,7 @@ public void OnAllPluginsLoaded()
     {
         g_bIonCannon = true;
     }
+    g_bRoles = TTT_CheckRoleLibraryExists();
 }
 
 public void OnLibraryAdded(const char[] library)
@@ -187,6 +190,10 @@ public void OnLibraryAdded(const char[] library)
     {
         g_bIonCannon = true;
     }
+    else if (TTT_CheckRoleLibraryName(library))
+    {
+        g_bRoles = true;
+    }
 }
 
 public void OnLibraryRemoved(const char[] library)
@@ -210,6 +217,10 @@ public void OnLibraryRemoved(const char[] library)
     else if (LibraryExists("ttt_ioncannon"))
     {
         g_bIonCannon = false;
+    }
+    else if (TTT_CheckRoleLibraryName(library))
+    {
+        g_bRoles = false;
     }
 }
 
@@ -263,6 +274,7 @@ public void OnConfigsExecuted()
 public void TTT_OnSQLConnect(Database db)
 {
     g_dDB = db;
+    AlterIDColumn();
     AlterNameColumn();
     AlterKarmaColumn();
     AlterRSlaysColumn();
@@ -271,6 +283,21 @@ public void TTT_OnSQLConnect(Database db)
     if (g_cSaveLogsInSQL.BoolValue)
     {
         CreateLogTable();
+    }
+}
+
+void AlterIDColumn()
+{
+    if (g_dDB != null)
+    {
+        char sQuery[76];
+        g_dDB.Format(sQuery, sizeof(sQuery), "ALTER TABLE `ttt` MODIFY COLUMN `id` INT UNSIGNED NOT NULL AUTO_INCREMENT;");
+        g_dDB.Query(SQL_AlterIDColumn, sQuery);
+    }
+    else
+    {
+        SetFailState("(AlterIDColumn) Database handle is invalid!");
+        return;
     }
 }
 
@@ -803,7 +830,7 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
         return;
     }
 
-    char sClientID[32], sRole[ROLE_LENGTH], sName[512], iItem[TTT_LOG_SIZE];
+    char sClientID[32], sTeam[ROLE_LENGTH], sName[512], iItem[TTT_LOG_SIZE];
     if (g_cAddSteamIDtoLogs.BoolValue)
     {
         if (g_cSteamIDLogFormat.IntValue == 1)
@@ -829,10 +856,10 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
         }
     }
 
-    TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+    TTT_GetTeamNameByID(TTT_GetClientTeam(client), sTeam, sizeof(sTeam));
     GetEntPropString(entity, Prop_Data, "m_iName", sName, sizeof(sName));
 
-    Format(iItem, sizeof(iItem), "-> [%s%s (%s) pressed the button %s (%d)]", g_iPlayer[client].Name, sClientID, sRole, sName, entity);
+    Format(iItem, sizeof(iItem), "-> [%s%s (%s) pressed the button %s (%d)]", g_iPlayer[client].Name, sClientID, sTeam, sName, entity);
     PushStringToLogs(iItem);
 
     g_bPressed[entity] = true;
@@ -887,7 +914,9 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
     LoopValidClients(i)
     {
-        g_iPlayer[i].Role = TTT_TEAM_UNASSIGNED;
+        g_iPlayer[i].Team = TTT_TEAM_UNASSIGNED;
+        PrintToChat(i, "Set to Unassigned");
+        g_iPlayer[i].Role = TTT_ROLE_DEFAULT;
         g_iPlayer[i].InnocentKills = 0;
         g_iPlayer[i].TraitorKills = 0;
         g_iPlayer[i].DetectiveKills = 0;
@@ -910,7 +939,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
     if (g_hStartTimer != null)
     {
-        TTT_ClearTimer(g_hStartTimer);
+        delete g_hStartTimer;
     }
 
     if (g_cDebugMessages.BoolValue)
@@ -920,7 +949,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
     if (g_hCountdownTimer != null)
     {
-        TTT_ClearTimer(g_hCountdownTimer);
+        delete g_hCountdownTimer;
     }
 
     if (g_cDebugMessages.BoolValue)
@@ -962,7 +991,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 
     if (g_hRoundTimer != null)
     {
-        TTT_ClearTimer(g_hRoundTimer);
+        delete g_hRoundTimer;
     }
 
     if (g_cDebugMessages.BoolValue)
@@ -973,11 +1002,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     bool bStartTimer = true;
     float fEndTime = g_cFreezeTime.FloatValue + (g_cRoundTime.FloatValue * 60.0);
 
-    Call_StartForward(g_fOnRoundTimerStart_Pre);
-    Call_PushCellRef(bStartTimer);
-    Call_PushCellRef(fEndTime);
-    Call_Finish();
-
+    Forward_OnRoundStartTimer_Pre(bStartTimer, fEndTime);
     if (bStartTimer)
     {
         g_hRoundTimer = CreateTimer(fEndTime, Timer_OnRoundEnd, _, TIMER_FLAG_NO_MAPCHANGE);
@@ -991,7 +1016,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     g_bBlockKill = false;
 }
 
-public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID)
 {
     TeamTag(victim);
 }
@@ -1084,61 +1109,19 @@ public Action Timer_Selection(Handle hTimer)
     g_iStatus = Round_Selection;
     g_hStartTimer = null;
 
-    ArrayList aPlayers = new ArrayList(1);
+    static int clients[MAXPLAYERS * 2];  // clients is double sized incase all
+    static bool hasRole[MAXPLAYERS + 1]; // players are pushed twice.
+    int iClientCount = 0;
     int iPlayers = 0;
-    bool bSkip = false;
 
     LoopValidClients(i)
     {
-        bSkip = false;
-
-        if (g_iPlayer[i].RoundSlays > 0)
+        if (GetClientRoundSlays(i))
         {
-            if (g_iPlayer[i].RoundSlays < 0)
+            if (DoClientRoundSlays(i))
             {
-                g_iPlayer[i].RoundSlays = 0;
-                UpdatePlayerRSlays(i);
                 continue;
             }
-            else if (g_iPlayer[i].RoundSlays == 0)
-            {
-                UpdatePlayerRSlays(i);
-                continue;
-            }
-
-            if (IsPlayerAlive(i))
-            {
-                ForcePlayerSuicide(i);
-            }
-
-            g_iPlayer[i].RoundSlays--;
-            bSkip = true;
-
-            Call_StartForward(g_fwOnRoundSlay);
-            Call_PushCell(i);
-            Call_PushCell(g_iPlayer[i].RoundSlays);
-            Call_Finish();
-
-            // Players was slain, so we should decrease iPlayers by one. Otherwise the balance isn't really correct
-            iPlayers--;
-
-            if (g_iPlayer[i].RoundSlays > 0)
-            {
-                CPrintToChat(i, "%s %T", g_sTag, "RS - Slayed", i, g_iPlayer[i].RoundSlays);
-                LogAction(0, i, "\"%L\" was slayed! Remaining Rounds: %d", i, g_iPlayer[i].RoundSlays);
-            }
-
-            UpdatePlayerRSlays(i);
-
-            if (g_cOpenRulesOnPunish.BoolValue)
-            {
-                TTT_ClientOpenRules(i);
-            }
-        }
-
-        if (bSkip)
-        {
-            continue;
         }
 
         int iTeam = GetClientTeam(i);
@@ -1160,25 +1143,21 @@ public Action Timer_Selection(Handle hTimer)
             }
         }
 
-        aPlayers.Push(i);
-        iPlayers++;
+        clients[iPlayers] = i;
+        hasRole[i] = false;
+        ++iClientCount;
+        ++iPlayers;
 
-        if ((g_cDoublePushInno.BoolValue && g_iPlayer[i].LastRole == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iPlayer[i].LastRole == TTT_TEAM_DETECTIVE))
+        if ((g_cDoublePushInno.BoolValue && g_iPlayer[i].LastTeam == TTT_TEAM_INNOCENT) || (g_cDoublePushDete.BoolValue && g_iPlayer[i].LastTeam == TTT_TEAM_DETECTIVE))
         {
-            aPlayers.Push(i);
+            clients[iPlayers] = i;
+            ++iClientCount;
         }
     }
 
-    Action res = Plugin_Continue;
-    Call_StartForward(g_fwOnRoundStart_Pre);
-    Call_Finish(res);
-
-    if (res >= Plugin_Handled)
+    if (Forward_OnRoundStart_Pre() >= Plugin_Handled)
     {
-        Call_StartForward(g_fwOnRoundStartFailed);
-        Call_PushCell(-1);
-        Call_PushCell(g_crequiredPlayers.IntValue);
-        Call_Finish();
+        Forward_OnRoundStartFailed(-1);
 
         GiveWeaponsOnFailStart();
 
@@ -1196,7 +1175,10 @@ public Action Timer_Selection(Handle hTimer)
         return;
     }
 
+    // Should really be using RSlays to handle slaying players so can probably
+    // deprecate this and helps with the static buffer for clients - c0rp3n
     //Check if there are any slain players
+    /*
     for (int i = 0; i < aPlayers.Length; i++)
     {
         if(!IsPlayerAlive(aPlayers.Get(i)))
@@ -1204,6 +1186,7 @@ public Action Timer_Selection(Handle hTimer)
             aPlayers.Erase(i);
         }
     }
+    */
 
     if (iPlayers < g_crequiredPlayers.IntValue)
     {
@@ -1239,10 +1222,7 @@ public Action Timer_Selection(Handle hTimer)
             PrintToServer("(Timer_Selection) g_bCheckPlayers 1: %d", g_bCheckPlayers);
         }
 
-        Call_StartForward(g_fwOnRoundStartFailed);
-        Call_PushCell(iPlayers);
-        Call_PushCell(g_crequiredPlayers.IntValue);
-        Call_Finish();
+        Forward_OnRoundStartFailed(iPlayers);
 
         GiveWeaponsOnFailStart();
 
@@ -1277,227 +1257,261 @@ public Action Timer_Selection(Handle hTimer)
         PrintToServer("(Timer_Selection), g_bCheckPlayers 2: %d", g_bCheckPlayers);
     }
 
-    int iTraitors;
-    int iDetectives;
-    int iInnocents;
-    int iRand;
-    int client;
-    int iIndex;
-    char sQuery[64];
+    int iInnocents; // I Count
+    int iTraitors; // T Count
+    int iDetectives; // D Count
+    int iMisc; // Misc Count
 
-
-    Action result = Plugin_Continue;
-    Call_StartForward(g_fwOnRoleSelection);
-    Call_PushCellRef(iTraitors);
-    Call_PushCellRef(iDetectives);
-    Call_PushCellRef(iInnocents);
-    Call_Finish(result);
-
-    ArrayList aTraitors = null;
-
+    Action result = Forward_OnRoleSelection(iTraitors, iDetectives, iInnocents, iMisc);
     if (result >= Plugin_Handled)
     {
-        delete aPlayers;
-
-        delete g_aLogs;
-
-        g_aLogs = new ArrayList(MAX_LOG_LENGTH);
-
-        g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_rounds (start) VALUES (UNIX_TIMESTAMP());");
-
-        DataPack pack = new DataPack();
-        pack.WriteCell(iInnocents);
-        pack.WriteCell(iTraitors);
-        pack.WriteCell(iDetectives);
-        pack.WriteCell(aTraitors);
-        g_dDB.Query(SQL_InsertRound, sQuery, pack, DBPrio_Normal);
+        // A plugin has overidden the normal role selection procedure
+        // Start the round after the query has completed
+        StartRound(iInnocents, iTraitors, iDetectives, iMisc, null);
         
         return;
     }
 
-    aTraitors = new ArrayList();
+    // Init normal role counts
+    int iTCount = GetTCount(iPlayers);
+    int iDCount = GetDCount(iPlayers);
+    int iMCount = GetMCount(iPlayers);
+    int iICount = iPlayers - iTCount - iDCount - iMCount;
 
-    int iTCount = GetTCount(aPlayers);
-    int iDCount = GetDCount(aPlayers);
+    // Init actual role counts
+    iInnocents = iICount;
+    iTraitors = iTCount;
+    iDetectives = 0;
+    iMisc = 0;
 
-    while (iTraitors < iTCount)
+    ArrayList aTraitors = new ArrayList(1, iTraitors);
+    // Shuffle clients, double permute this? current method may not be random
+    // enough, or readd in bias by double stacking detectives and innocents, in
+    // the clients array.
+    SortIntegers(clients, iClientCount, Sort_Random);
+
+    // Assign roles
+    // This step shall now be a triple pass essentially, assign Traitors and
+    // then Detectives, then start again giving everyone without a role to be a
+    // innocent.
+    // It is only triple pass if too many people had detective bans or avoided
+    // detective so generally there will only be two passes.
+    // We also need to handle if everyone avoids detectives so that will be done
+    // at the start of the second pass.
+    if (g_bRoles)
     {
-        if (g_aForceTraitor.Length > 0)
+        int i = 0;
+        static int roles[MAXPLAYERS];
+        // Traitors
+        TTT_GetTeamRoles(TTT_TEAM_TRAITOR, iTCount, iPlayers, roles);
+        for (int j = 0; j < iTCount && i < iClientCount; ++j)
         {
-            client = GetClientOfUserId(g_aForceTraitor.Get(0));
-
-            if (client > 0)
+            while (hasRole[clients[i]])
             {
-                iIndex = aPlayers.FindValue(client);
-
-                if (iIndex != -1)
+                ++i;
+                if (i >= iClientCount)
                 {
-                    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
+                    break;
+                }
+            }
+
+            SetClientRole(clients[i], TTT_TEAM_TRAITOR, roles[j]);
+            PrintToServer("%N - Team Traitor, Role: %d", clients[i], roles[j]);
+            hasRole[clients[i]] = true;
+            aTraitors.Set(j, i);
+            ++i;
+        }
+        // Detectives
+        if (iDCount > 0)
+        {
+            TTT_GetTeamRoles(TTT_TEAM_DETECTIVE, iDCount, iPlayers, roles);
+            for (int j = 0; j < iDCount && i < iClientCount; ++j)
+            {
+                while (hasRole[clients[i]] ||
+                      g_iPlayer[clients[i]].AvoidDetective || 
+                      g_bDetectiveBans && TTT_IsDetectiveBanned(i))
+                {
+                    ++i;
+                    if (i >= iClientCount)
                     {
-                        g_iPlayer[client].Role = TTT_TEAM_TRAITOR;
-                        g_iPlayer[client].LastRole = TTT_TEAM_TRAITOR;
-
-                        aTraitors.Push(client);
-
-                        iTraitors++;
+                        break;
                     }
-
-                    aPlayers.Erase(iIndex);
                 }
-            }
-
-            g_aForceTraitor.Erase(0);
-            continue;
-        }
-
-        iRand = GetRandomInt(0, aPlayers.Length - 1);
-        client = aPlayers.Get(iRand);
-
-        if (TTT_IsClientValid(client) && (g_iPlayer[client].LastRole != TTT_TEAM_TRAITOR || GetRandomInt(1, 6) == 4))
-        {
-            if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
-            {
-                g_iPlayer[client].Role = TTT_TEAM_TRAITOR;
-                g_iPlayer[client].LastRole = TTT_TEAM_TRAITOR;
-
-                aTraitors.Push(client);
-
-                iTraitors++;
-            }
-
-            aPlayers.Erase(iRand);
-        }
-    }
-
-    int count[MAXPLAYERS + 1] = { 0, ... };
-    for (int i = 0; i < aPlayers.Length; i++)
-    {
-        int iClient = aPlayers.Get(i);
-        count[iClient]++;
-
-        if (count[iClient] > 1)
-        {
-            count[iClient] = 1;
-            aPlayers.Erase(i);
-        }
-    }
-
-    while (iDetectives < iDCount && aPlayers.Length > 0)
-    {
-        if (g_aForceDetective.Length > 0)
-        {
-            client = GetClientOfUserId(g_aForceDetective.Get(0));
-
-            if (client > 0)
-            {
-                if (g_bDetectiveBans && TTT_IsDetectiveBanned(client))
+                
+                if (g_bDetectiveBans && TTT_IsDetectiveBanned(i))
                 {
-                    continue;
-                }
-
-                iIndex = aPlayers.FindValue(client);
-
-                if (iIndex != -1)
-                {
-                    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
-                    {
-                        g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
-                        g_iPlayer[client].Role = TTT_TEAM_DETECTIVE;
-                        iDetectives++;
-                    }
-
-                    aPlayers.Erase(iIndex);
-                }
-            }
-
-            g_aForceDetective.Erase(0);
-            continue;
-        }
-
-        if (aPlayers.Length <= (iDCount - iDetectives))
-        {
-            for (int i = 0; i < aPlayers.Length; i++)
-            {
-                if(g_iPlayer[client].AvoidDetective)
-                {
-                    continue;
-                }
-
-                g_iPlayer[aPlayers.Get(i)].Role = TTT_TEAM_DETECTIVE;
-                g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
-                iDetectives++;
-            }
-            break;
-        }
-
-        iRand = GetRandomInt(0, aPlayers.Length - 1);
-        client = aPlayers.Get(iRand);
-
-        if (TTT_IsClientValid(client) && ((TTT_GetClientKarma(client) > g_cminKarmaDetective.IntValue && g_iPlayer[client].LastRole == TTT_TEAM_INNOCENT) || GetRandomInt(1, 6) == 4))
-        {
-            if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
-            {
-                if (g_iPlayer[client].AvoidDetective)
-                {
-                    g_iPlayer[client].LastRole = TTT_TEAM_INNOCENT;
-                    g_iPlayer[client].Role = TTT_TEAM_INNOCENT;
+                    SetClientRole(clients[i], TTT_TEAM_INNOCENT, TTT_ROLE_DEFAULT);
+                    ++iInnocents;
                 }
                 else
                 {
-                    g_iPlayer[client].LastRole = TTT_TEAM_DETECTIVE;
-                    g_iPlayer[client].Role = TTT_TEAM_DETECTIVE;
-                    iDetectives++;
+                    SetClientRole(clients[i], TTT_TEAM_DETECTIVE, roles[j]);
+                    ++iDetectives;
+                }
+                
+                hasRole[clients[i]] = true;
+                ++i;
+            }
+        }
+        // Misc
+        if (iMCount > 0)
+        {
+            TTT_GetTeamRoles(TTT_TEAM_MISC, iMCount, iPlayers, roles);
+            for (int j = 0; j < iMCount && i < iClientCount; ++j)
+            {
+                while (hasRole[clients[i]])
+                {
+                    ++i;
+                    if (i >= iClientCount)
+                    {
+                        break;
+                    }
+                }
+
+                if (roles[j] != TTT_ROLE_DEFAULT)
+                {
+                    SetClientRole(clients[i], TTT_TEAM_MISC, roles[j]);
+                    PrintToServer("Player: %N, Team: Misc, Role: %d", clients[i], roles[j]);
+                    ++iMisc;
+                }
+                else
+                {
+                    SetClientRole(clients[i], TTT_TEAM_INNOCENT, TTT_ROLE_DEFAULT);
+                    ++iInnocents;
+                }
+
+                hasRole[clients[i]] = true;
+                ++i;
+            }
+        }
+        // Seconds pass
+        // Detectives
+        i = 0;
+        while (iDetectives < iDCount)
+        {
+            while (hasRole[clients[i]] ||
+                  g_bDetectiveBans && TTT_IsDetectiveBanned(i))
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
                 }
             }
 
-            aPlayers.Erase(iRand);
+            // Default them to a standard detective, should stop trying to avoid
+            // isnt going to get you more t rounds buddy.
+            SetClientRole(clients[i], TTT_TEAM_DETECTIVE, TTT_ROLE_DEFAULT);
+            hasRole[clients[i]] = true;
+            ++iDetectives;
+            ++i;
         }
-    }
-
-    iInnocents = aPlayers.Length;
-
-    while (aPlayers.Length > 0)
-    {
-        client = aPlayers.Get(0);
-        if (TTT_IsClientValid(client) && g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
+        // Third pass
+        // Innocents
+        i = 0;
+        TTT_GetTeamRoles(TTT_TEAM_INNOCENT, iICount, iPlayers, roles);
+        for (int j = 0; j < iICount && i < iClientCount; ++j)
         {
-            g_iPlayer[client].LastRole = TTT_TEAM_INNOCENT;
-            g_iPlayer[client].Role = TTT_TEAM_INNOCENT;
+            while (hasRole[clients[i]])
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
+                }
+            }
+
+            SetClientRole(clients[i], TTT_TEAM_INNOCENT, roles[j]);
+            ++i;
         }
-        aPlayers.Erase(0);
+    }
+    else // if roles is not loaded give all players the standard roles
+    {
+        int i = 0;
+        // Traitors
+        for (int j = 0; j < iTCount && i < iClientCount; ++j)
+        {
+            while (hasRole[clients[i]])
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
+                }
+            }
+
+            SetClientRole(i, TTT_TEAM_TRAITOR, TTT_ROLE_DEFAULT);
+            hasRole[clients[i]] = true;
+            aTraitors.Set(j, i);
+            ++i;
+        }
+        // Detectives
+        for (int j = 0; j < iDCount && i < iClientCount; ++j)
+        {
+            while (hasRole[clients[i]] ||
+                  g_iPlayer[clients[i]].AvoidDetective || 
+                  g_bDetectiveBans && TTT_IsDetectiveBanned(i))
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
+                }
+            }
+
+            SetClientRole(clients[i], TTT_TEAM_DETECTIVE, TTT_ROLE_DEFAULT);
+            hasRole[clients[i]] = true;
+            ++iDetectives;
+            ++i;
+        }
+        // Seconds pass
+        // Detectives
+        i = 0;
+        while (iDetectives < iDCount)
+        {
+            while (hasRole[clients[i]] ||
+                  g_bDetectiveBans && TTT_IsDetectiveBanned(i))
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
+                }
+            }
+
+            // Default them to a standard detective, should stop trying to avoid
+            // isnt going to get you more t rounds buddy.
+            SetClientRole(clients[i], TTT_TEAM_DETECTIVE, TTT_ROLE_DEFAULT);
+            hasRole[clients[i]] = true;
+            ++iDetectives;
+            ++i;
+        }
+        // Tripple Pass thanks detective bans
+        i = 0;
+        // Innocents
+        for (int j = 0; j < iICount && i < iClientCount; ++j)
+        {
+            while (hasRole[clients[i]])
+            {
+                ++i;
+                if (i >= iClientCount)
+                {
+                    break;
+                }
+            }
+
+            SetClientRole(i, TTT_TEAM_INNOCENT, TTT_ROLE_DEFAULT);
+            ++i;
+        }
     }
 
-    delete aPlayers;
-
-    delete g_aLogs;
-    g_aLogs = new ArrayList(MAX_LOG_LENGTH);
-
-    g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_rounds (start) VALUES (UNIX_TIMESTAMP());");
-    DataPack pack = new DataPack();
-    pack.WriteCell(iInnocents);
-    pack.WriteCell(iTraitors);
-    pack.WriteCell(iDetectives);
-    pack.WriteCell(aTraitors);
-    g_dDB.Query(SQL_InsertRound, sQuery, pack, DBPrio_Normal);
+    // Start the round once the round has been inserted
+    StartRound(iInnocents, iTraitors, iDetectives, iMisc, aTraitors);
 }
 
-int GetTCount(ArrayList array)
+int GetTCount(int activePlayers)
 {
-    int iActivePlayers = 0;
-    bool bChecked[MAXPLAYERS + 1] = { false, ... };
-
-    for (int i = 0; i < array.Length; i++)
-    {
-        int client = array.Get(i);
-
-        if (!bChecked[client])
-        {
-            bChecked[client] = true;
-            iActivePlayers++;
-        }
-    }
-
-    int iTCount = RoundToFloor(float(iActivePlayers) * (float(g_ctraitorRatio.IntValue) / 100.0));
+    int iTCount = RoundToFloor(float(activePlayers) * (float(g_ctraitorRatio.IntValue) / 100.0));
 
     if (iTCount < 1)
     {
@@ -1512,28 +1526,14 @@ int GetTCount(ArrayList array)
     return iTCount;
 }
 
-int GetDCount(ArrayList array)
+int GetDCount(int activePlayers)
 {
-    int iActivePlayers = 0;
-    bool bChecked[MAXPLAYERS + 1] = { false, ... };
-
-    for (int i = 0; i < array.Length; i++)
-    {
-        int client = array.Get(i);
-
-        if (!bChecked[client])
-        {
-            bChecked[client] = true;
-            iActivePlayers++;
-        }
-    }
-
-    if (iActivePlayers < g_crequiredPlayersD.IntValue)
+    if (activePlayers < g_crequiredPlayersD.IntValue)
     {
         return 0;
     }
 
-    int iDCount = RoundToFloor(float(iActivePlayers) * (float(g_cdetectiveRatio.IntValue) / 100.0));
+    int iDCount = RoundToFloor(float(activePlayers) * (float(g_cdetectiveRatio.IntValue) / 100.0));
 
     if (iDCount > g_cmaxDetectives.IntValue)
     {
@@ -1541,6 +1541,52 @@ int GetDCount(ArrayList array)
     }
 
     return iDCount;
+}
+
+int GetMCount(int activePlayers)
+{
+    if (activePlayers < g_crequiredPlayersM.IntValue)
+    {
+        return 0;
+    }
+
+    int iMCount = RoundToFloor(float(activePlayers) * (float(g_cmiscRatio.IntValue) / 100.0));
+
+    if (iMCount > g_cmaxMisc.IntValue)
+    {
+        iMCount = g_cmaxMisc.IntValue;
+    }
+
+    return iMCount;
+}
+
+void SetClientRole(int client, int team, int role)
+{
+    g_iPlayer[client].Team = team;
+    g_iPlayer[client].LastTeam = team;
+    g_iPlayer[client].Role = role;
+}
+
+void StartRound(int innocents, int traitors, int detectives, int misc, ArrayList aTraitors)
+{
+    // Init a new log list, why do we not just call ArrayList.Clear() here
+    // instead of creating a new ArrayList?
+    delete g_aLogs;
+    g_aLogs = new ArrayList(MAX_LOG_LENGTH);
+
+    static char sQuery[64]; // make this static so that it isnt reallocated
+    // This also null terminates so dont need to care about the old data in
+    // sQuery, so it was made static
+    g_dDB.Format(sQuery, sizeof(sQuery), "INSERT INTO ttt_rounds (start) VALUES (UNIX_TIMESTAMP());");
+
+    DataPack pack = new DataPack();
+    pack.WriteCell(innocents);
+    pack.WriteCell(traitors);
+    pack.WriteCell(detectives);
+    pack.WriteCell(misc);
+    pack.WriteCell(aTraitors);
+
+    g_dDB.Query(SQL_InsertRound, sQuery, pack, DBPrio_Normal);
 }
 
 void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
@@ -1561,7 +1607,7 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
 
     int iTeam = GetClientTeam(client);
 
-    if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+    if (g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
     {
         if (g_cforceTeams.BoolValue)
         {
@@ -1588,15 +1634,10 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cPrimaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_PRIMARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GivePrimary, GetClientUserId(client));
                 }
             }
-        }
-
-        if (announce)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Your Team is DETECTIVES", client);
         }
 
         DispatchKeyValue(client, "targetname", "DETECTIVE");
@@ -1625,19 +1666,14 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
     }
-    else if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
     {
-        if (announce)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Your Team is TRAITORS", client);
-        }
-
         DispatchKeyValue(client, "targetname", "TRAITOR");
 
         if (g_cspawnHPT.IntValue > 0)
@@ -1672,19 +1708,14 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
         }
     }
-    else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
     {
-        if (announce)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Your Team is INNOCENTS", client);
-        }
-
         DispatchKeyValue(client, "targetname", "INNOCENT");
 
         if (g_cspawnHPI.IntValue > 0)
@@ -1719,7 +1750,49 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
                 }
                 else if (g_cSecondaryWeaponUpdate.IntValue == 2)
                 {
-                    TTT_SafeRemoveWeapon(client, iWeapon, CS_SLOT_SECONDARY);
+                    TTT_SafeRemoveWeapon(client, iWeapon);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
+                }
+            }
+        }
+    }
+    else if (g_iPlayer[client].Team == TTT_TEAM_MISC)
+    {
+        DispatchKeyValue(client, "targetname", "MISC");
+
+        if (g_cspawnHPM.IntValue > 0)
+        {
+            SetEntityHealth(client, g_cspawnHPM.IntValue);
+        }
+
+        if (g_cforceTeams.BoolValue)
+        {
+            if ((iTeam == CS_TEAM_T || iTeam == CS_TEAM_CT) || (g_cSwitchSpec.BoolValue && iTeam == CS_TEAM_SPECTATOR))
+            {
+                CS_SwitchTeam(client, CS_TEAM_T);
+            }
+        }
+
+        GiveMelee(client);
+
+        if (!skipWeapons)
+        {
+            int iWeapon = GetPlayerWeaponSlot(client, CS_SLOT_SECONDARY);
+
+            if (iWeapon == -1)
+            {
+                RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
+            }
+            else
+            {
+                if (g_cSecondaryWeaponUpdate.IntValue == 1)
+                {
+                    SDKHooks_DropWeapon(client, iWeapon);
+                    RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
+                }
+                else if (g_cSecondaryWeaponUpdate.IntValue == 2)
+                {
+                    TTT_SafeRemoveWeapon(client, iWeapon);
                     RequestFrame(Frame_GiveSecondary, GetClientUserId(client));
                 }
             }
@@ -1728,6 +1801,18 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
     else
     {
         g_iPlayer[client].Alive = false;
+    }
+
+    if (announce)
+    {
+        char sRole[ROLE_LENGTH], sColor[12], sTranslation[64];
+        TTT_GetTeamNameByID(g_iPlayer[client].Team, sRole, sizeof(sRole));
+        TTT_GetTeamColorByID(g_iPlayer[client].Team, sColor, sizeof(sColor));
+
+        FormatEx(sTranslation, sizeof(sTranslation), "Role: %s", sRole);
+        FormatEx(sRole, sizeof(sRole), "%s%T", sColor, sTranslation, client);
+
+        CPrintToChat(client, "%s %T", g_sTag, "Your Role", client, sRole);
     }
 
     for(int i = 0; i < GetEntPropArraySize(client, Prop_Send, "m_hMyWeapons"); i++)
@@ -1760,20 +1845,10 @@ void TeamInitialize(int client, bool skipWeapons = false, bool announce = true)
 
     if (bUpdate)
     {
-        char sModel[PLATFORM_MAX_PATH + 1];
-        GetClientModel(client, sModel, sizeof(sModel));
-
-        Call_StartForward(g_fwOnModelUpdate);
-        Call_PushCell(client);
-        Call_PushString(sModel);
-        Call_Finish();
-
+        Forward_OnClientModelUpdate(client);
     }
 
-    Call_StartForward(g_fwOnClientGetRole);
-    Call_PushCell(client);
-    Call_PushCell(g_iPlayer[client].Role);
-    Call_Finish();
+    Forward_OnClientGetRole(client);
 }
 
 void TeamTag(int client)
@@ -1783,9 +1858,9 @@ void TeamTag(int client)
         return;
     }
 
-    if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE || g_iPlayer[client].Role == TTT_TEAM_TRAITOR || g_iPlayer[client].Role == TTT_TEAM_INNOCENT || g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
+    if (TTT_IsValidTeam(client, g_iPlayer[client].Team))
     {
-        SetClanTag(client, g_iPlayer[client].Role);
+        SetClanTag(client, g_iPlayer[client].Team);
     }
     else
     {
@@ -1886,7 +1961,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
         {
             if (g_cslayAfterStart.BoolValue)
             {
-                g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
+                g_iPlayer[client].Team = TTT_TEAM_UNASSIGNED;
+                PrintToChat(client, "Set to Unassigned");
 
                 RequestFrame(Frame_SlayPlayer, GetClientUserId(client));
 
@@ -2111,7 +2187,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
 
     if (g_bIonCannon && TTT_IsFriendlyFired())
     {
-        if (TTT_HasAutoIonCannon(iAttacker) && g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
+        if (TTT_HasAutoIonCannon(iAttacker) && g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Team == TTT_TEAM_TRAITOR)
         {
             return Plugin_Handled;
         }
@@ -2189,7 +2265,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
             }
         }
 
-        bool badAction = false;
+        bool badAction = TTT_IsBadAction(g_iPlayer[iVictim].Team, g_iPlayer[iAttacker].Team);
 
         char sDamageType[18];
         if (damagetype & CS_DMG_HEADSHOT)
@@ -2201,110 +2277,57 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
             Format(sDamageType, sizeof(sDamageType), " (THROW DAMAGE)");
         }
 
-        if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
+        char sBad[16], sAttackerRole[ROLE_LENGTH], sVictimRole[ROLE_LENGTH];
+        TTT_GetTeamNameByID(g_iPlayer[iAttacker].Team, sAttackerRole, sizeof(sAttackerRole));
+        TTT_GetTeamNameByID(g_iPlayer[iVictim].Team, sVictimRole, sizeof(sVictimRole));
+
+        if (badAction)
         {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) damaged %s%s (Innocent) for %.0f damage%s with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
+            FormatEx(sBad, sizeof(sBad), " - BAD ACTION");
+        }
 
-            badAction = true;
+        Format(iItem, sizeof(iItem), "-> [%s%s (%s) damaged %s%s (%s) for %.0f damage%s with %s]", g_iPlayer[iAttacker].Name, sAttackerID, sAttackerRole, g_iPlayer[iVictim].Name, sClientID, sVictimRole, fDamage, sDamageType, sWeapon, sBad);
+        PushStringToLogs(iItem);
 
-            if (g_cEnableDamageKarma.BoolValue)
+        if (g_cEnableDamageKarma.BoolValue)
+        {
+            if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Team == TTT_TEAM_INNOCENT)
             {
                 subtractKarma(iAttacker, g_cDamageKarmaII.IntValue, false);
             }
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) damaged %s%s (Traitor) for %.0f damage%s with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Team == TTT_TEAM_TRAITOR)
             {
                 addKarma(iAttacker, g_cDamageKarmaIT.IntValue, false);
             }
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) damaged %s%s (Detective) for %.0f damage%s with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            badAction = true;
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[iVictim].Team == TTT_TEAM_DETECTIVE)
             {
                 subtractKarma(iAttacker, g_cDamageKarmaID.IntValue, false);
             }
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) damaged %s%s (Innocent) for %.0f damage%s with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Team == TTT_TEAM_INNOCENT)
             {
                 addKarma(iAttacker, g_cDamageKarmaTI.IntValue, false);
             }
-
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) damaged %s%s (Traitor) for %.0f damage%s with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            badAction = true;
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Team == TTT_TEAM_TRAITOR)
             {
                 subtractKarma(iAttacker, g_cDamageKarmaTT.IntValue, false);
             }
-
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) damaged %s%s (Detective) for %.0f damage%s with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[iVictim].Team == TTT_TEAM_DETECTIVE)
             {
                 addKarma(iAttacker, g_cDamageKarmaTD.IntValue, false);
             }
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_INNOCENT)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Detective) damaged %s%s (Innocent) for %.0f damage%s with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            badAction = true;
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Team == TTT_TEAM_INNOCENT)
             {
                 subtractKarma(iAttacker, g_cDamageKarmaDI.IntValue, false);
             }
-
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_TRAITOR)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Detective) damaged %s%s (Traitor) for %.0f damage%s with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Team == TTT_TEAM_TRAITOR)
             {
                 addKarma(iAttacker, g_cDamageKarmaDT.IntValue, false);
             }
-        }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Role == TTT_TEAM_DETECTIVE)
-        {
-            Format(iItem, sizeof(iItem), "-> [%s%s (Detective) damaged %s%s (Detective) for %.0f damage%s with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[iVictim].Name, sClientID, fDamage, sDamageType, sWeapon);
-            PushStringToLogs(iItem);
-
-            badAction = true;
-
-            if (g_cEnableDamageKarma.BoolValue)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[iVictim].Team == TTT_TEAM_DETECTIVE)
             {
                 subtractKarma(iAttacker, g_cDamageKarmaDD.IntValue, false);
             }
         }
-
 
         if (fDamage != damage)
         {
@@ -2312,13 +2335,7 @@ public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &inflictor, flo
             action = Plugin_Changed;
         }
 
-        Call_StartForward(g_fwOnTakeDamage);
-        Call_PushCell(iVictim);
-        Call_PushCell(iAttacker);
-        Call_PushFloat(fDamage);
-        Call_PushCell(iWeapon);
-        Call_PushCell(view_as<int>(badAction));
-        Call_Finish();
+        Forward_OnTakeDamage(iVictim, iAttacker, fDamage, iWeapon, badAction);
     }
 
     return action;
@@ -2349,19 +2366,13 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         return Plugin_Changed;
     }
 
-    if (g_iPlayer[client].Role > TTT_TEAM_UNASSIGNED)
+    if (g_iPlayer[client].Team > TTT_TEAM_UNASSIGNED)
     {
         g_iPlayer[client].Alive = false;
 
         int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
 
-        Action res = Plugin_Continue;
-
-        Call_StartForward(g_fwOnPlayerDeathPre);
-        Call_PushCell(client);
-        Call_PushCell(iAttacker);
-        Call_Finish(res);
-
+        Action res = Forward_OnPlayerDeathPre(client, iAttacker);
         if (res == Plugin_Stop || res == Plugin_Changed)
         {
             event.BroadcastDisabled = true;
@@ -2371,29 +2382,29 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         if (g_iStatus == Round_Active &&  (client != iAttacker && iAttacker != 0 && !g_iPlayer[iAttacker].ImmuneRDMManager))
         {
             if (
-                (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR) ||
-                (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE) ||
-                (g_cShowInnoRDMMenu.BoolValue && g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+                (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_TRAITOR) ||
+                (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE) ||
+                (g_cShowInnoRDMMenu.BoolValue && g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
             )
             {
                 if (g_iPlayer[client].RDMTimer != null)
                 {
-                    TTT_ClearTimer(g_iPlayer[client].RDMTimer);
+                    delete g_iPlayer[client].RDMTimer;
                 }
 
                 g_iPlayer[client].RDMTimer = CreateTimer(3.0, Timer_RDMTimer, GetClientUserId(client));
                 g_iPlayer[client].RDMAttacker = iAttacker;
             }
 
-            if ((g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
+            if ((g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE))
             {
                 g_iPlayer[iAttacker].InnocentKills++;
             }
-            else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+            else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
             {
                 g_iPlayer[iAttacker].TraitorKills++;
             }
-            else if ((g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
+            else if ((g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_INNOCENT) || (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE))
             {
                 g_iPlayer[iAttacker].DetectiveKills++;
             }
@@ -2424,7 +2435,8 @@ public void OnClientPostAdminCheck(int client)
     nameCheck(client);
 
     g_iPlayer[client].ImmuneRDMManager = false;
-    g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
+    g_iPlayer[client].Team = TTT_TEAM_UNASSIGNED;
+    PrintToChat(client, "Set to Unassigned");
     g_iPlayer[client].Ready = true;
 
     DispatchKeyValue(client, "targetname", "UNASSIGNED");
@@ -2715,12 +2727,7 @@ void ShowRules(int client, int iItem)
     }
 
     bool bShow = true;
-    Action res = Plugin_Continue;
-    Call_StartForward(g_fwOnRulesMenu);
-    Call_PushCell(client);
-    Call_PushCellRef(bShow);
-    Call_Finish(res);
-
+    Action res = Forward_OnRulesMenu(client, bShow);
     if (res == Plugin_Changed && !bShow)
     {
         return;
@@ -3004,12 +3011,7 @@ void AskClientForMicrophone(int client)
     }
 
     bool bShow = true;
-    Action res = Plugin_Continue;
-    Call_StartForward(g_fwOnDetectiveMenu);
-    Call_PushCell(client);
-    Call_PushCellRef(bShow);
-    Call_Finish(res);
-
+    Action res = Forward_OnDetectiveMenu(client, bShow);
     if (res == Plugin_Changed && !bShow)
     {
         return;
@@ -3096,7 +3098,7 @@ public void OnClientDisconnect(int client)
             g_iPlayer[client].Armor = 0;
         }
 
-        TTT_ClearTimer(g_iPlayer[client].RDMTimer);
+        delete g_iPlayer[client].RDMTimer;
 
         g_iPlayer[client].ReceivingLogs = false;
         g_iPlayer[client].ImmuneRDMManager = false;
@@ -3207,7 +3209,7 @@ public Action Timer_1(Handle timer)
     {
         if (IsPlayerAlive(i))
         {
-            if (g_iPlayer[i].Role == TTT_TEAM_UNASSIGNED && g_iStatus != Round_Active && g_cdenyFire.BoolValue)
+            if (g_iPlayer[i].Team == TTT_TEAM_UNASSIGNED && g_iStatus != Round_Active && g_cdenyFire.BoolValue)
             {
                 for(int j = 0; j < GetEntPropArraySize(i, Prop_Send, "m_hMyWeapons"); j++)
                 {
@@ -3226,7 +3228,7 @@ public Action Timer_1(Handle timer)
                     }
                 }
             }
-            if (g_iPlayer[i].Role == TTT_TEAM_TRAITOR)
+            if (g_iPlayer[i].Team == TTT_TEAM_TRAITOR)
             {
                 g_iTraitorAlive++;
                 int[] clients = new int[MaxClients];
@@ -3234,7 +3236,7 @@ public Action Timer_1(Handle timer)
 
                 LoopValidClients(j)
                 {
-                    if (IsPlayerAlive(j) && j != i && (g_iPlayer[j].Role == TTT_TEAM_TRAITOR))
+                    if (IsPlayerAlive(j) && j != i && (g_iPlayer[j].Team == TTT_TEAM_TRAITOR))
                     {
                         clients[index] = j;
                         index++;
@@ -3247,11 +3249,11 @@ public Action Timer_1(Handle timer)
                 TE_SetupBeamRingPoint(vec, 50.0, 60.0, g_iBeamSprite, g_iHaloSprite, 0, 15, 0.1, 10.0, 0.0, { 0, 0, 255, 255 }, 10, 0);
                 TE_Send(clients, index);
             }
-            else if (g_iPlayer[i].Role == TTT_TEAM_INNOCENT)
+            else if (g_iPlayer[i].Team == TTT_TEAM_INNOCENT)
             {
                 g_iInnoAlive++;
             }
-            else if (g_iPlayer[i].Role == TTT_TEAM_DETECTIVE)
+            else if (g_iPlayer[i].Team == TTT_TEAM_DETECTIVE)
             {
                 g_iDetectiveAlive++;
             }
@@ -3315,45 +3317,41 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         return;
     }
 
-    Action res = Plugin_Continue;
-
-    Call_StartForward(g_fwOnClientDeathPre);
-    Call_PushCell(client);
-    Call_PushCell(iAttacker);
-    Call_Finish(res);
-
+    Action res = Forward_OnClientDeath_Pre(client, iAttacker);
     if (res == Plugin_Stop || res == Plugin_Changed)
     {
         return;
     }
 
+    // TODO
     if (g_cshowDeathMessage.BoolValue)
     {
-        if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR)
+        if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is a Traitor", client);
         }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE)
+        else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is a Detective", client);
         }
-        else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT)
+        else if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT)
         {
             CPrintToChat(client, "%s %T", g_sTag, "Your killer is an Innocent", client);
         }
     }
 
+    // TODO
     if (g_cshowKillMessage.BoolValue)
     {
-        if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+        if (g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed a Traitor", iAttacker);
         }
-        else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+        else if (g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed a Detective", iAttacker);
         }
-        else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+        else if (g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
         {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "You killed an Innocent", iAttacker);
         }
@@ -3365,7 +3363,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     char sAttackerID[32], sClientID[32];
 
-    bool badAction = false;
+    bool badAction = TTT_IsBadAction(g_iPlayer[client].Team, g_iPlayer[iAttacker].Team);
 
     if (g_cAddSteamIDtoLogs.BoolValue)
     {
@@ -3397,13 +3395,20 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         }
     }
 
-    if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+    char sBad[16], sAttackerRole[ROLE_LENGTH], sVictimRole[ROLE_LENGTH];
+    TTT_GetTeamNameByID(g_iPlayer[iAttacker].Team, sAttackerRole, sizeof(sAttackerRole));
+    TTT_GetTeamNameByID(g_iPlayer[client].Team, sVictimRole, sizeof(sVictimRole));
+
+    if (badAction)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) killed %s%s (Innocent) with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
+        FormatEx(sBad, sizeof(sBad), " - BAD ACTION");
+    }
 
-        badAction = true;
+    Format(iItem, sizeof(iItem), "-> [%s%s (%s) killed %s%s (%s) with %s]%s", g_iPlayer[iAttacker].Name, sAttackerID, sAttackerRole, g_iPlayer[client].Name, sClientID, sVictimRole, sWeapon, sBad);
+    PushStringToLogs(iItem);
 
+    if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
+    {
         if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3412,20 +3417,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             subtractKarma(iAttacker, g_ckarmaII.IntValue, true);
         }
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) killed %s%s (Traitor) with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
         addKarma(iAttacker, g_ckarmaIT.IntValue, true);
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Innocent) killed %s%s (Detective) with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
-        badAction = true;
-
         if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3434,20 +3431,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             subtractKarma(iAttacker, g_ckarmaID.IntValue, true);
         }
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) killed %s%s (Innocent) with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
         addKarma(iAttacker, g_ckarmaTI.IntValue, true);
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) killed %s%s (Traitor) with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
-        badAction = true;
-
         if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt traitor", iAttacker);
         } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3456,20 +3445,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             subtractKarma(iAttacker, g_ckarmaTT.IntValue, true);
         }
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Traitor) killed %s%s (Detective) with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
         addKarma(iAttacker, g_ckarmaTD.IntValue, true);
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Detective) killed %s%s (Innocent) with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
-        badAction = true;
-
         if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt innocent", iAttacker);
         } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3478,20 +3459,12 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             subtractKarma(iAttacker, g_ckarmaDI.IntValue, true);
         }
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Detective) killed %s%s (Traitor) with %s]", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
         addKarma(iAttacker, g_ckarmaDT.IntValue, true);
     }
-    else if (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
     {
-        Format(iItem, sizeof(iItem), "-> [%s%s (Detective) killed %s%s (Detective) with %s] - BAD ACTION", g_iPlayer[iAttacker].Name, sAttackerID, g_iPlayer[client].Name, sClientID, sWeapon);
-        PushStringToLogs(iItem);
-
-        badAction = true;
-
         if (g_iPlayer[client].HurtedPlayer1 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
             CPrintToChat(iAttacker, "%s %T", g_sTag, "No karma hurt detective", iAttacker);
         } else if (g_iPlayer[client].HurtedPlayer2 == iAttacker && !g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
@@ -3501,18 +3474,14 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         }
     }
 
-    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
+    if (g_iPlayer[client].Team == TTT_TEAM_UNASSIGNED)
     {
         SetClanTag(client, TTT_TEAM_UNASSIGNED);
     }
 
     CheckTeams();
 
-    Call_StartForward(g_fwOnClientDeath);
-    Call_PushCell(client);
-    Call_PushCell(iAttacker);
-    Call_PushCell(view_as<int>(badAction));
-    Call_Finish();
+    Forward_OnClientDeath(client, iAttacker, badAction);
 }
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
@@ -3533,11 +3502,11 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
         return;
     }
 
-    if ((g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) ||
-       (g_iPlayer[iAttacker].Role == TTT_TEAM_INNOCENT && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE) ||
-       (g_iPlayer[iAttacker].Role == TTT_TEAM_TRAITOR && g_iPlayer[client].Role == TTT_TEAM_TRAITOR)    ||
-       (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_INNOCENT) ||
-       (g_iPlayer[iAttacker].Role == TTT_TEAM_DETECTIVE && g_iPlayer[client].Role == TTT_TEAM_DETECTIVE))
+    if ((g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_INNOCENT) ||
+       (g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE) ||
+       (g_iPlayer[iAttacker].Team == TTT_TEAM_TRAITOR && g_iPlayer[client].Team == TTT_TEAM_TRAITOR)    ||
+       (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_INNOCENT) ||
+       (g_iPlayer[iAttacker].Team == TTT_TEAM_DETECTIVE && g_iPlayer[client].Team == TTT_TEAM_DETECTIVE))
     {
         if (g_iPlayer[iAttacker].HurtedPlayer1 == -1 && iAttacker != g_iPlayer[client].HurtedPlayer1) {
             g_iPlayer[iAttacker].HurtedPlayer1 = client;
@@ -3628,11 +3597,11 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
 
         if (IsPlayerAlive(client))
         {
-            if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
+            if (g_iPlayer[client].Team == TTT_TEAM_INNOCENT)
             {
                 bInnoAlive = true;
             }
-            else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+            else if (g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
             {
                 bDeteAlive = true;
             }
@@ -3659,10 +3628,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
         iTeam = TTT_TEAM_TRAITOR;
     }
 
-    Call_StartForward(g_fwOnRoundEnd);
-    Call_PushCell(iTeam);
-    Call_PushCell(view_as<Handle>(g_aLogs));
-    Call_Finish();
+    Forward_OnRoundEnd(iTeam, TTT_ROLE_DEFAULT);
 
     if (g_crandomWinner.BoolValue)
     {
@@ -3736,7 +3702,7 @@ public Action OnPlayerRunCmd(int client, int &buttons)
         return Plugin_Continue;
     }
 
-    if (g_cdenyFire.BoolValue && g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
+    if (g_cdenyFire.BoolValue && g_iPlayer[client].Team == TTT_TEAM_UNASSIGNED && ((buttons & IN_ATTACK) || (buttons & IN_ATTACK2)))
     {
         buttons &= ~IN_ATTACK;
         buttons &= ~IN_ATTACK2;
@@ -3752,25 +3718,19 @@ public Action OnPlayerRunCmd(int client, int &buttons)
         {
             if (!(g_iPlayer[client].LastButtons & button))
             {
-                Call_StartForward(g_fwOnButtonPress);
-                Call_PushCell(client);
                 if ((buttons & IN_USE|IN_SPEED) == IN_USE|IN_SPEED)
                 {
-                    Call_PushCell(buttons);
+                    Forward_OnButtonPress(client, buttons);
                 }
                 else
                 {
-                    Call_PushCell(button);
+                    Forward_OnButtonPress(client, button);
                 }
-                Call_Finish();
             }
         }
         else if ((g_iPlayer[client].LastButtons & button))
         {
-            Call_StartForward(g_fwOnButtonRelease);
-            Call_PushCell(client);
-            Call_PushCell(button);
-            Call_Finish();
+            Forward_OnButtonRelease(client, button);
         }
     }
 
@@ -3831,11 +3791,11 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
         return Plugin_Continue;
     }
 
-    if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
+    if (g_iPlayer[client].Team == TTT_TEAM_TRAITOR)
     {
         LoopValidClients(i)
         {
-            if ((IsPlayerAlive(i) && g_iPlayer[i].Role == TTT_TEAM_TRAITOR) || (g_ctChatToDead.BoolValue && !IsPlayerAlive(i)))
+            if ((IsPlayerAlive(i) && g_iPlayer[i].Team == TTT_TEAM_TRAITOR) || (g_ctChatToDead.BoolValue && !IsPlayerAlive(i)))
             {
                 EmitSoundToClient(i, SND_TCHAT);
                 CPrintToChat(i, "%T", "T channel", i, g_iPlayer[client].Name, sText);
@@ -3844,11 +3804,11 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 
         return Plugin_Stop;
     }
-    else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+    else if (g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
     {
         LoopValidClients(i)
         {
-            if ((IsPlayerAlive(i) && g_iPlayer[i].Role == TTT_TEAM_DETECTIVE) || (g_cdChatToDead.BoolValue && !IsPlayerAlive(i)))
+            if ((IsPlayerAlive(i) && g_iPlayer[i].Team == TTT_TEAM_DETECTIVE) || (g_cdChatToDead.BoolValue && !IsPlayerAlive(i)))
             {
                 EmitSoundToClient(i, SND_TCHAT);
                 CPrintToChat(i, "%T", "D channel", i, g_iPlayer[client].Name, sText);
@@ -3862,13 +3822,7 @@ public Action OnClientSayCommand(int client, const char[] command, const char[] 
 
 int addKarma(int client, int karma, bool message = false)
 {
-    Action result = Plugin_Continue;
-    Call_StartForward(g_fwOnPreKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Add);
-    Call_PushCell(karma);
-    Call_Finish(result);
-
+    Action result = Forward_OnPreKarmaUpdate(client, Karma_Add, karma);
     if (result == Plugin_Stop || result == Plugin_Handled)
     {
         return -1;
@@ -3912,24 +3866,14 @@ int addKarma(int client, int karma, bool message = false)
 
     UpdatePlayer(client);
 
-    Call_StartForward(g_fwOnKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Add);
-    Call_PushCell(karma);
-    Call_Finish();
+    Forward_OnKarmaUpdate(client, Karma_Add, karma);
 
     return g_iPlayer[client].Karma;
 }
 
 int setKarma(int client, int karma, bool force = false)
 {
-    Action result = Plugin_Continue;
-    Call_StartForward(g_fwOnPreKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Set);
-    Call_PushCell(karma);
-    Call_Finish(result);
-
+    Action result = Forward_OnPreKarmaUpdate(client, Karma_Set, karma);
     if (result == Plugin_Stop || result == Plugin_Handled)
     {
         return -1;
@@ -3959,24 +3903,14 @@ int setKarma(int client, int karma, bool force = false)
 
     UpdatePlayer(client);
 
-    Call_StartForward(g_fwOnKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Set);
-    Call_PushCell(karma);
-    Call_Finish();
+    Forward_OnKarmaUpdate(client, Karma_Set, karma);
 
     return g_iPlayer[client].Karma;
 }
 
 int subtractKarma(int client, int karma, bool message = false)
 {
-    Action result = Plugin_Continue;
-    Call_StartForward(g_fwOnPreKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Subtract);
-    Call_PushCell(karma);
-    Call_Finish(result);
-
+    Action result = Forward_OnPreKarmaUpdate(client, Karma_Subtract, karma);
     if (result == Plugin_Stop || result == Plugin_Handled)
     {
         return -1;
@@ -4005,11 +3939,7 @@ int subtractKarma(int client, int karma, bool message = false)
 
     UpdatePlayer(client);
 
-    Call_StartForward(g_fwOnKarmaUpdate);
-    Call_PushCell(client);
-    Call_PushCell(Karma_Subtract);
-    Call_PushCell(karma);
-    Call_Finish();
+    Forward_OnKarmaUpdate(client, Karma_Subtract, karma);
 
     return g_iPlayer[client].Karma;
 }
@@ -4175,7 +4105,7 @@ public Action Timer_RDMTimer(Handle timer, any userid)
     return Plugin_Stop;
 }
 
-public Action Command_SetRole(int client, int args)
+public Action Command_SetTeam(int client, int args)
 {
     if (TTT_GetRoundStatus() != Round_Active)
     {
@@ -4187,7 +4117,7 @@ public Action Command_SetRole(int client, int args)
         return Plugin_Handled;
     }
 
-    if (!TTT_CheckCommandAccess(client, "ttt_set_role", g_cSetRole, true))
+    if (!TTT_CheckCommandAccess(client, "ttt_set_role", g_cSetTeam, true))
     {
         return Plugin_Handled;
     }
@@ -4195,7 +4125,7 @@ public Action Command_SetRole(int client, int args)
     if (args < 2 || args > 3)
     {
         ReplyToCommand(client, "[SM] Usage: sm_role <#userid|name> <role>");
-        ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
+        ReplyToCommand(client, "[SM] Teams: 1 - Innocent | 2 - Traitor | 3 - Detective");
         return Plugin_Handled;
     }
     char arg1[32];
@@ -4217,22 +4147,22 @@ public Action Command_SetRole(int client, int args)
         return Plugin_Handled;
     }
 
-    int iRole = StringToInt(arg2);
-    int iOld = TTT_GetClientRole(target);
+    int iTeam = StringToInt(arg2);
+    int iOld = TTT_GetClientTeam(target);
 
-    if (iRole < 1 || iRole > 3)
+    if (iTeam < 1 || iTeam > 3)
     {
-        ReplyToCommand(client, "[SM] Roles: 1 - Innocent | 2 - Traitor | 3 - Detective");
+        ReplyToCommand(client, "[SM] Teams: 1 - Innocent | 2 - Traitor | 3 - Detective");
         return Plugin_Handled;
     }
-    else if (iRole == 1)
+    else if (iTeam == 1)
     {
         if (iOld == TTT_TEAM_INNOCENT)
         {
             return Plugin_Handled;
         }
 
-        g_iPlayer[target].Role = TTT_TEAM_INNOCENT;
+        g_iPlayer[target].Team = TTT_TEAM_INNOCENT;
 
         TeamInitialize(target);
         CS_SetClientClanTag(target, " ");
@@ -4241,14 +4171,14 @@ public Action Command_SetRole(int client, int args)
 
         return Plugin_Handled;
     }
-    else if (iRole == 2)
+    else if (iTeam == 2)
     {
         if (iOld == TTT_TEAM_TRAITOR)
         {
             return Plugin_Handled;
         }
 
-        g_iPlayer[target].Role = TTT_TEAM_TRAITOR;
+        g_iPlayer[target].Team = TTT_TEAM_TRAITOR;
 
         TeamInitialize(target);
         CS_SetClientClanTag(target, " ");
@@ -4257,14 +4187,14 @@ public Action Command_SetRole(int client, int args)
 
         return Plugin_Handled;
     }
-    else if (iRole == 3)
+    else if (iTeam == 3)
     {
         if (iOld == TTT_TEAM_DETECTIVE)
         {
             return Plugin_Handled;
         }
 
-        g_iPlayer[target].Role = TTT_TEAM_DETECTIVE;
+        g_iPlayer[target].Team = TTT_TEAM_DETECTIVE;
 
         TeamInitialize(target);
         CPrintToChat(client, "%s %T", g_sTag, "Player is Now Detective", client, g_iPlayer[target].Name);
@@ -4344,22 +4274,14 @@ public Action Command_Status(int client, int args)
         return Plugin_Handled;
     }
 
-    if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
-    {
-        CPrintToChat(client, "%s %T", g_sTag, "You Are Unassigned", client);
-    }
-    else if (g_iPlayer[client].Role == TTT_TEAM_INNOCENT)
-    {
-        CPrintToChat(client, "%s %T", g_sTag, "You Are Now Innocent", client);
-    }
-    else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
-    {
-        CPrintToChat(client, "%s %T", g_sTag, "You Are Now Detective", client);
-    }
-    else if (g_iPlayer[client].Role == TTT_TEAM_TRAITOR)
-    {
-        CPrintToChat(client, "%s %T", g_sTag, "You Are Now Traitor", client);
-    }
+    char sRole[ROLE_LENGTH], sColor[12], sTranslation[64];
+    TTT_GetTeamNameByID(g_iPlayer[client].Team, sRole, sizeof(sRole));
+    TTT_GetTeamColorByID(g_iPlayer[client].Team, sColor, sizeof(sColor));
+
+    FormatEx(sTranslation, sizeof(sTranslation), "Role: %s", sRole);
+    FormatEx(sRole, sizeof(sRole), "%s%T", sColor, sTranslation, client);
+
+    CPrintToChat(client, "%s %T", g_sTag, "Your Role", client, sRole);
 
     return Plugin_Handled;
 }
@@ -4395,9 +4317,13 @@ public Action Timer_5(Handle timer)
             LogToFileEx(g_sKarmaFile, "(Timer_5) - 1 Client: \"%L\", g_iPlayer: KarmaReady: %d, g_cKarmaBan: %d, iKarma: %d (g_iPlayer: .Karma%d)", i, g_iPlayer[i].KarmaReady, g_ckarmaBan.IntValue, iKarma, g_iPlayer[i].Karma);
         }
 
-        if (g_iPlayer[i].KarmaReady && g_ckarmaBan.IntValue != 0 && iKarma <= g_ckarmaBan.IntValue)
+        if (g_iPlayer[i].KarmaReady && g_ckarmaBan.IntValue > 0 && iKarma > 0 && iKarma <= g_ckarmaBan.IntValue)
         {
             BanBadPlayerKarma(i);
+        }
+        else if (g_iPlayer[i].KarmaReady && iKarma < 1) // When Karma should be ready and iKarma is 0, we should re-check it.
+        {
+            LoadClientInfo(GetClientUserId(i));
         }
     }
 
@@ -4537,7 +4463,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
         return Plugin_Handled;
     }
     
-    if (g_iPlayer[activator].Role != TTT_TEAM_TRAITOR)
+    if (g_iPlayer[activator].Team != TTT_TEAM_TRAITOR)
     {
         TTT_AddRoundSlays(activator, g_cRoundSlayDestroyTrigger.IntValue, true);
 
@@ -4601,23 +4527,23 @@ void CheckTeams()
     {
         if (IsPlayerAlive(i))
         {
-            if (g_iPlayer[i].Role == TTT_TEAM_DETECTIVE)
+            if (g_iPlayer[i].Team == TTT_TEAM_DETECTIVE)
             {
                 SetClanTag(i, TTT_TEAM_DETECTIVE);
                 iD++;
             }
-            else if (g_iPlayer[i].Role == TTT_TEAM_TRAITOR)
+            else if (g_iPlayer[i].Team == TTT_TEAM_TRAITOR)
             {
                 iT++;
             }
-            else if (g_iPlayer[i].Role == TTT_TEAM_INNOCENT)
+            else if (g_iPlayer[i].Team == TTT_TEAM_INNOCENT)
             {
                 iI++;
             }
         }
         else
         {
-            if (g_iPlayer[i].Role == TTT_TEAM_UNASSIGNED)
+            if (g_iPlayer[i].Team == TTT_TEAM_UNASSIGNED)
             {
                 SetClanTag(i, TTT_TEAM_UNASSIGNED);
             }
@@ -4739,7 +4665,7 @@ void LoadClientInfo(any userid)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 3 Client: \"%L\", Valid Database", client);
             }
-            g_dDB.Query(SQL_OnClientPutInServer, sQuery, userid);
+            g_dDB.Query(SQL_LoadClientInfo, sQuery, userid);
         }
     }
 }
@@ -4820,7 +4746,7 @@ void StripAllWeapons(int client)
     {
         while ((iEnt = GetPlayerWeaponSlot(client, i)) != -1)
         {
-            TTT_SafeRemoveWeapon(client, iEnt, i);
+            TTT_SafeRemoveWeapon(client, iEnt);
         }
     }
 }
@@ -4841,11 +4767,11 @@ void CheckClantag(int client)
             bool found = TTT_WasBodyFound(client);
             if (!found)
             {
-                if (g_iPlayer[client].Role == TTT_TEAM_UNASSIGNED)
+                if (g_iPlayer[client].Team == TTT_TEAM_UNASSIGNED)
                 {
                     SetClanTag(client, TTT_TEAM_UNASSIGNED);
                 }
-                else if (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE)
+                else if (g_iPlayer[client].Team == TTT_TEAM_DETECTIVE)
                 {
                     SetClanTag(client, TTT_TEAM_DETECTIVE);
                 }
@@ -4904,25 +4830,25 @@ void GiveWeaponsOnFailStart()
     }
 }
 
-void SetClanTag(int client, int role)
+void SetClanTag(int client, int team)
 {
-    char sRoleName[ROLE_LENGTH], sRoleTagName[ROLE_LENGTH], sTranslation[64];
+    char sTeamName[ROLE_LENGTH], sTeamTagName[ROLE_LENGTH], sTranslation[64];
 
-    TTT_GetRoleNameByID(role, sRoleName, sizeof(sRoleName));
+    TTT_GetTeamNameByID(team, sTeamName, sizeof(sTeamName));
 
-    Format(sTranslation, sizeof(sTranslation), "ClanTag: %s", sRoleName);
-    Format(sRoleTagName, sizeof(sRoleTagName), "%t", sTranslation);
+    Format(sTranslation, sizeof(sTranslation), "ClanTag: %s", sTeamName);
+    Format(sTeamTagName, sizeof(sTeamTagName), "%t", sTranslation);
 
     if (g_cClanTagUpperLower.IntValue == 0)
     {
-        StringToUpper(sRoleTagName, sRoleTagName, sizeof(sRoleTagName));
+        StringToUpper(sTeamTagName, sTeamTagName, sizeof(sTeamTagName));
     }
     else if (g_cClanTagUpperLower.IntValue == 1)
     {
-        StringToLower(sRoleTagName, sRoleTagName, sizeof(sRoleTagName));
+        StringToLower(sTeamTagName, sTeamTagName, sizeof(sTeamTagName));
     }
 
-    CS_SetClientClanTag(client, sRoleTagName);
+    CS_SetClientClanTag(client, sTeamTagName);
 }
 
 void GiveMelee(int client)
@@ -4931,17 +4857,27 @@ void GiveMelee(int client)
 
     char sWeapon[32];
     g_cStartMelee.GetString(sWeapon, sizeof(sWeapon));
-    Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
 
-    int iWeapon = GivePlayerItem(client, sWeapon);
-    EquipPlayerWeapon(client, iWeapon);
+    int iWeapon = -1;
 
-    if (g_cAdditionalMeleeRole.IntValue & g_iPlayer[client].Role)
+    if (strlen(sWeapon) > 1)
     {
-        g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
         Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+
         iWeapon = GivePlayerItem(client, sWeapon);
         EquipPlayerWeapon(client, iWeapon);
+    }
+
+    if (g_cAdditionalMeleeTeam.IntValue & g_iPlayer[client].Team)
+    {
+        g_cAdditionalMeleeWeapon.GetString(sWeapon, sizeof(sWeapon));
+
+        if (strlen(sWeapon) > 1)
+        {
+            Format(sWeapon, sizeof(sWeapon), "weapon_%s", sWeapon);
+            iWeapon = GivePlayerItem(client, sWeapon);
+            EquipPlayerWeapon(client, iWeapon);
+        }
     }
 }
 
@@ -5000,8 +4936,10 @@ void CheckCPS()
 
 public void ClearClientData(int client)
 {
-    g_iPlayer[client].Role = TTT_TEAM_UNASSIGNED;
-    g_iPlayer[client].LastRole = TTT_TEAM_UNASSIGNED;
+    g_iPlayer[client].Team = TTT_TEAM_UNASSIGNED;
+    PrintToChat(client, "Set to Unassigned");
+    g_iPlayer[client].Role = TTT_ROLE_DEFAULT;
+    g_iPlayer[client].LastTeam = TTT_TEAM_UNASSIGNED;
     g_iPlayer[client].Karma = -1;
     g_iPlayer[client].KarmaStart = -1;
     g_iPlayer[client].Armor = 0;
@@ -5028,7 +4966,7 @@ public void ClearClientData(int client)
     g_iPlayer[client].ImmuneRDMManager = false;
     g_iPlayer[client].ResetHurt = false;
 
-    TTT_ClearTimer(g_iPlayer[client].RDMTimer);
+    delete g_iPlayer[client].RDMTimer;
 }
 
 // Stock taken from smlib
@@ -5099,4 +5037,52 @@ void EscapeName(char[] name, int size)
     {
         CRemoveTags(name, size);
     }
+}
+
+int GetClientRoundSlays(int client)
+{
+    return g_iPlayer[client].RoundSlays;
+}
+
+bool DoClientRoundSlays(int client)
+{
+    if (g_iPlayer[client].RoundSlays > 0)
+    {
+        if (IsPlayerAlive(client))
+        {
+            ForcePlayerSuicide(client);
+        }
+
+        g_iPlayer[client].RoundSlays--;
+
+        Forward_OnRoundSlay(client);
+
+        if (g_iPlayer[client].RoundSlays > 0)
+        {
+            CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iPlayer[client].RoundSlays);
+            LogAction(0, client, "\"%L\" was slayed! Remaining Rounds: %d", client, g_iPlayer[client].RoundSlays);
+        }
+
+        UpdatePlayerRSlays(client);
+
+        if (g_cOpenRulesOnPunish.BoolValue)
+        {
+            TTT_ClientOpenRules(client);
+        }
+    }
+    else if (g_iPlayer[client].RoundSlays < 0)
+    {
+        g_iPlayer[client].RoundSlays = 0;
+        UpdatePlayerRSlays(client);
+
+        return false;
+    }
+    else
+    {
+        UpdatePlayerRSlays(client);
+
+        return false;
+    }
+
+    return true;
 }

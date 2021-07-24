@@ -100,11 +100,11 @@ void RegisterItem()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
     if (StrEqual(itemshort, SHORT_NAME_TRACER, false))
     {
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -113,7 +113,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (StrEqual(itemshort, SHORT_NAME_JAMMER, false))
     {
-        if (role != TTT_TEAM_DETECTIVE)
+        if (iTeam != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -149,7 +149,7 @@ public Action Tracer_Display(Handle timer)
             }
         }
         
-        if(!TTT_IsItemInInventory(iClientToShow, SHORT_NAME_TRACER) || TTT_GetClientRole(iClientToShow) != TTT_TEAM_TRAITOR)
+        if(!TTT_IsItemInInventory(iClientToShow, SHORT_NAME_TRACER) || TTT_GetClientTeam(iClientToShow) != TTT_TEAM_TRAITOR)
         {
             continue;
         }
@@ -318,7 +318,7 @@ int GetCompassTarget(int client, float pos[3])
             continue;
         }
         
-        if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR || TTT_GetClientRole(i) == TTT_TEAM_UNASSIGNED)
+        if(TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR || TTT_GetClientTeam(i) == TTT_TEAM_UNASSIGNED)
         {
             continue;
         }

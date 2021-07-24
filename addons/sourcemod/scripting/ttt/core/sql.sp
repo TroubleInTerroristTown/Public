@@ -19,6 +19,20 @@ public void SQL_AlterKarmaColumn(Database db, DBResultSet results, const char[] 
     }
 }
 
+public void SQL_AlterIDColumn(Database db, DBResultSet results, const char[] error, any data)
+{
+    if (db == null || strlen(error) > 0)
+    {
+        LogError("(SQL_AlterIDColumn) Query failed: %s", error);
+
+        return;
+    }
+    else
+    {
+        LateLoadClients(false);
+    }
+}
+
 public void SQL_AlterRSlaysColumn(Database db, DBResultSet results, const char[] error, any data)
 {
     if (db == null || strlen(error) > 0)
@@ -124,8 +138,9 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
         int iInnocents = view_as<DataPack>(pack).ReadCell();
         int iTraitors = view_as<DataPack>(pack).ReadCell();
         int iDetectives = view_as<DataPack>(pack).ReadCell();
+        int iMisc = view_as<DataPack>(pack).ReadCell();
         ArrayList aTraitors = view_as<ArrayList>(view_as<DataPack>(pack).ReadCell());
-        delete view_as<DataPack>(pack);
+        delete pack;
 
         LoopValidClients(i)
         {
@@ -209,12 +224,7 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
         Format(sMessage, sizeof(sMessage), "TTT Round #%d has been started!", TTT_GetRoundID());
         PushStringToLogs(sMessage);
 
-        Call_StartForward(g_fwOnRoundStart);
-        Call_PushCell(g_iRoundID);
-        Call_PushCell(iInnocents);
-        Call_PushCell(iTraitors);
-        Call_PushCell(iDetectives);
-        Call_Finish();
+        Forward_OnRoundStart(iInnocents, iTraitors, iDetectives, iMisc);
     }
 }
 
@@ -270,38 +280,38 @@ public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char
 
     if (db == null || strlen(error) > 0)
     {
-        LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 1 (%N)", client);
-        LogToFileEx(g_sErrorFile, "(SQL_OnClientPutInServer) Query failed: %s", error);
+        LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 1 (%N)", client);
+        LogToFileEx(g_sErrorFile, "(SQL_LoadClientInfo) Query failed: %s", error);
         return;
     }
     else
     {
         if (results.RowCount > 0 && results.FetchRow())
         {
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 2 (%N), RowCount: %d", client, results.RowCount);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 2 (%N), RowCount: %d", client, results.RowCount);
 
             char sCommunityID[64];
 
             if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
             {
-                LogToFileEx(g_sErrorFile, "(SQL_OnClientPutInServer) Auth failed: #%d", client);
+                LogToFileEx(g_sErrorFile, "(SQL_LoadClientInfo) Auth failed: #%d", client);
                 return;
             }
 
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 3 (%N)", client);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 3 (%N)", client);
 
             g_iPlayer[client].ID = results.FetchInt(0);
             int karma = results.FetchInt(1);
             int rslays = results.FetchInt(2);
 
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 4 (%N) Karma: %d RSlays: %d", client, karma, rslays);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 4 (%N) Karma: %d RSlays: %d", client, karma, rslays);
 
             if (g_cDebugMessages.BoolValue)
             {
                 LogToFileEx(g_sLogFile, "Name: \"%L\" has %d karma and %d round slays", client, karma, rslays);
             }
 
-            if (karma == 0)
+            if (karma < 1)
             {
                 g_iPlayer[client].Karma = g_cstartKarma.IntValue;
             }
@@ -311,18 +321,18 @@ public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char
                 g_iPlayer[client].RoundSlays = rslays;
             }
 
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 5 (%N), Karma (g): %d, RSlays (g): %d", client, g_iPlayer[client].Karma, g_iPlayer[client].RoundSlays);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 5 (%N), Karma (g): %d, RSlays (g): %d", client, g_iPlayer[client].Karma, g_iPlayer[client].RoundSlays);
 
             CS_SetClientContributionScore(client, karma);
 
             g_iPlayer[client].KarmaReady = true;
 
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 5 (%N), Karma (gB): %d", client, g_iPlayer[client].KarmaReady);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 5 (%N), Karma (gB): %d", client, g_iPlayer[client].KarmaReady);
         }
         else
         {
             g_iPlayer[client].Karma = g_cstartKarma.IntValue;
-            LogToFileEx(g_sKarmaFile, "SQL_OnClientPutInServer - 1.1 (%N), Karma: %d", client, g_iPlayer[client].Karma);
+            LogToFileEx(g_sKarmaFile, "SQL_LoadClientInfo - 1.1 (%N), Karma: %d", client, g_iPlayer[client].Karma);
             UpdatePlayer(client);
         }
     }

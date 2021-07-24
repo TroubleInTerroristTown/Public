@@ -107,14 +107,14 @@ public void OnClientDisconnect(int client)
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role == TTT_TEAM_DETECTIVE)
+    if (iTeam == TTT_TEAM_DETECTIVE)
     {
         BuyPlayerGear(client);
         OverridePlayerGear(client, 1); // I'll override the gear, because detectives aren't always ct
     }
-    else if (role == TTT_TEAM_TRAITOR)
+    else if (iTeam == TTT_TEAM_TRAITOR)
     {
         BuyPlayerGear(client);
         OverridePlayerGear(client, 2);
@@ -133,7 +133,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         TTT_AddInventoryItem(client, DRONE_SHORT_NAME);
     }
     
-    TTT_RemoveWeaponByClassname(client, "weapon_tagrenade", CS_SLOT_GRENADE);
+    TTT_RemoveWeaponByClassname(client, "weapon_tagrenade");
 
     GivePlayerItem(client, "weapon_tagrenade");
     return Plugin_Continue;

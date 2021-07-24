@@ -25,6 +25,7 @@ void InitForwards()
 
 void InitNatives()
 {
+    CreateNative("TTT_GetClientTeam", Native_GetClientTeam);
     CreateNative("TTT_GetClientRole", Native_GetClientRole);
     CreateNative("TTT_SetClientRole", Native_SetClientRole);
     CreateNative("TTT_GetClientKarma", Native_GetClientKarma);
@@ -65,6 +66,18 @@ public int Native_IsRoundActive(Handle plugin, int numParams)
     }
 
     return false;
+}
+
+public int Native_GetClientTeam(Handle plugin, int numParams)
+{
+    int client = GetNativeCell(1);
+
+    if (TTT_IsClientValid(client))
+    {
+        return g_iPlayer[client].Team;
+    }
+
+    return -1;
 }
 
 public int Native_GetClientRole(Handle plugin, int numParams)
@@ -345,7 +358,7 @@ public int Native_IsPlayerAlive(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
 
-    if (TTT_IsClientValid(client) && (g_iPlayer[client].Role == TTT_TEAM_DETECTIVE || g_iPlayer[client].Role == TTT_TEAM_INNOCENT || g_iPlayer[client].Role == TTT_TEAM_TRAITOR))
+    if (TTT_IsClientValid(client) && TTT_ClientValidTeam(client))
     {
         return g_iPlayer[client].Alive;
     }
@@ -437,14 +450,7 @@ public int Native_CheckCommandAccess(Handle plugin, int numParams)
 
     bool access = false;
 
-    Action result = Plugin_Continue;
-    Call_StartForward(g_fwOnCheckCommandAccess);
-    Call_PushCell(client);
-    Call_PushString(sCommand);
-    Call_PushString(sFlags);
-    Call_PushCellRef(access);
-    Call_Finish(result);
-
+    Action result = Forward_OnCheckCommandAccess(client, sCommand, sFlags, access);
     if (result == Plugin_Changed)
     {
         return access;
@@ -468,9 +474,7 @@ public int Native_RespawnPlayerRandom(Handle plugin, int numParams)
         TTT_RemoveClientRagdoll(client);
     }
 
-    Call_StartForward(g_fwOnPlayerRespawn);
-    Call_PushCell(client);
-    Call_Finish();
+    Forward_OnPlayerRespawn(client);
 }
 
 public int Native_RespawnPlayer(Handle plugin, int numParams)
@@ -516,9 +520,7 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
             }
         }
 
-        Call_StartForward(g_fwOnPlayerRespawn);
-        Call_PushCell(client);
-        Call_Finish();
+        Forward_OnPlayerRespawn(client);
     }
     else
     {
@@ -585,7 +587,7 @@ public int Native_SetRoundStatus(Handle plugin, int numParams)
 
 public int Native_StopRoundTimer(Handle plugin, int numParams)
 {
-    TTT_ClearTimer(g_hRoundTimer);
+    delete g_hRoundTimer;
 }
 
 public int Native_StopRound(Handle plugin, int numParams)

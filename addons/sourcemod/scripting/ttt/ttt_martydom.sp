@@ -174,11 +174,12 @@ public void CreateGrenade(int userid)
 
     int iEntity = CreateEntityByName("hegrenade_projectile");
 
+    // Make sure the grenade doesn't spawn in the ground
+    g_iPlayer[client].Location[2] += 30;
+    TeleportEntity(iEntity, g_iPlayer[client].Location, NULL_VECTOR, NULL_VECTOR);
+
     if (DispatchSpawn(iEntity))
     {
-        // Make sure the grenade doesn't spawn in the ground
-        g_iPlayer[client].Location[2] += 30;
-        TeleportEntity(iEntity, g_iPlayer[client].Location, NULL_VECTOR, NULL_VECTOR);
         AcceptEntityInput(iEntity, "InitializeSpawnFromWorld");
         
         SetEntPropEnt(iEntity, Prop_Data, "m_hThrower", client);

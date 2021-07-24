@@ -182,14 +182,6 @@ void CreateTurret(int client)
     SetEntProp(ent, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
     SetEntProp(ent, Prop_Send, "m_fEffects", EF_BONEMERGE|EF_NOSHADOW|EF_NORECEIVESHADOW|EF_PARENT_ANIMATES);
     
-    
-    DispatchSpawn(ent);
-    ActivateEntity(ent);
-    
-    SetVariantString("deploy");
-    AcceptEntityInput(ent, "SetAnimation", -1, -1, 0);
-    
-    
     float fPos[3], fAngle[3], fDir[3];
     
     GetClientEyeAngles(client, fAngle);
@@ -205,6 +197,12 @@ void CreateTurret(int client)
     g_iPlayer[client].Turret = ent;
     g_iPlayer[client].DamageTaken = 0.0;
     g_iPlayer[client].TurretTeam = GetClientTeam(client);
+    
+    DispatchSpawn(ent);
+    ActivateEntity(ent);
+    
+    SetVariantString("deploy");
+    AcceptEntityInput(ent, "SetAnimation", -1, -1, 0);
     
     if (GetRandomInt(1, 0))
     {

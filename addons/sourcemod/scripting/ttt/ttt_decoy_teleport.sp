@@ -102,16 +102,16 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         GivePlayerItem(client, "weapon_decoy");
 
         TTT_AddInventoryItem(client, SHORT_NAME);
         return Plugin_Continue;
     }
-    else if (role == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         GivePlayerItem(client, "weapon_decoy");
 
@@ -161,14 +161,14 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
 
         if (stuck && g_cRefund.IntValue == 1)
         {
-            int role = TTT_GetClientRole(client);
-            if (role == TTT_TEAM_TRAITOR)
+            int iTeam = TTT_GetClientTeam(client);
+            if (iTeam == TTT_TEAM_TRAITOR)
             {
                 TTT_AddClientCredits(client, g_cTPrice.IntValue);
                 TTT_RemoveInventoryItem(client, SHORT_NAME);
                 TTT_AddItemUsage(client, SHORT_NAME);
             }
-            else if (role == TTT_TEAM_DETECTIVE)
+            else if (iTeam == TTT_TEAM_DETECTIVE)
             {
                 TTT_AddClientCredits(client, g_cDPrice.IntValue);
                 TTT_RemoveInventoryItem(client, SHORT_NAME_D);
@@ -181,13 +181,13 @@ public Action Event_DecoyStarted(Event event, const char[] name, bool dontBroadc
         }
         else
         {
-            int role = TTT_GetClientRole(client);
-            if (role == TTT_TEAM_TRAITOR)
+            int iTeam = TTT_GetClientTeam(client);
+            if (iTeam == TTT_TEAM_TRAITOR)
             {
                 TTT_RemoveInventoryItem(client, SHORT_NAME);
                 TTT_AddItemUsage(client, SHORT_NAME);
             }
-            else if (role == TTT_TEAM_DETECTIVE)
+            else if (iTeam == TTT_TEAM_DETECTIVE)
             {
                 TTT_RemoveInventoryItem(client, SHORT_NAME_D);
                 TTT_AddItemUsage(client, SHORT_NAME_D);

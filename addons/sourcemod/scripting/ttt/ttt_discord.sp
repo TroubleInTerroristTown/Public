@@ -95,7 +95,7 @@ public int Native_SendDiscordMessage(Handle plugin, int numParams)
     return 0;
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     ArrayList aLogs = view_as<ArrayList>(array);
 
@@ -104,7 +104,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
         ArrayList aMessages = new ArrayList(1998);
 
         char sWinner[32], sMessage[1998], sDelimiter[64];
-        TTT_GetRoleNameByID(winner, sWinner, sizeof(sWinner));
+        TTT_GetTeamNameByID(winner, sWinner, sizeof(sWinner));
         Format(sDelimiter, sizeof(sDelimiter), "-----------------------------------------------------------\n");
         Format(sMessage, sizeof(sMessage), "%sWinners: %s\n", sDelimiter, sWinner);
 
