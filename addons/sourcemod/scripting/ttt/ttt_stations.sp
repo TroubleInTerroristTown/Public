@@ -224,7 +224,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     cleanupStation();
 }
 
-public Action Timer_CheckDistance(Handle timer, int ref)
+public Action Timer_CheckDistance(Handle timer, any ref)
 {
     int iEnt = EntRefToEntIndex(ref);
 

@@ -720,15 +720,15 @@ void RespawnParticle(int iEntity, const char[] sEffect)
     RequestFrame(Frame_RespawnParticle, pack);
 }
 
-public void Frame_RespawnParticle(DataPack pack)
+public void Frame_RespawnParticle(any pack)
 {
-    pack.Reset();
-    int iEntity = EntRefToEntIndex(pack.ReadCell());
+    view_as<DataPack>(pack).Reset();
+    int iEntity = EntRefToEntIndex(view_as<DataPack>(pack).ReadCell());
     int iParticle = EntRefToEntIndex(g_iParticleRef[iEntity]);
 
     char sEffect[16];
-    pack.ReadString(sEffect, sizeof(sEffect));
-    delete pack;
+    view_as<DataPack>(pack).ReadString(sEffect, sizeof(sEffect));
+    delete view_as<DataPack>(pack);
 
     if (!IsValidEntity(iEntity) || !IsValidEntity(iParticle))
     {
@@ -766,10 +766,10 @@ public void Frame_RespawnParticle(DataPack pack)
 
         AcceptEntityInput(iEntity, "EnableMotion");
 
-        pack = new DataPack();
-        pack.WriteCell(EntIndexToEntRef(iEntity));
-        pack.WriteCell(EntIndexToEntRef(iParticle));
-        RequestFrame(Frame_SetParent, pack);
+        DataPack pack2 = new DataPack();
+        pack2.WriteCell(EntIndexToEntRef(iEntity));
+        pack2.WriteCell(EntIndexToEntRef(iParticle));
+        RequestFrame(Frame_SetParent, pack2);
     }
 }
 
@@ -934,13 +934,13 @@ int CreateRagdoll(int client)
     return iEntity;
 }
 
-public void Frame_SetParent(DataPack pack)
+public void Frame_SetParent(any pack)
 {
-    pack.Reset();
-    int iEntity = EntRefToEntIndex(pack.ReadCell());
-    int iParticleRef = pack.ReadCell();
+    view_as<DataPack>(pack).Reset();
+    int iEntity = EntRefToEntIndex(view_as<DataPack>(pack).ReadCell());
+    int iParticleRef = view_as<DataPack>(pack).ReadCell();
     int iParticle = EntRefToEntIndex(iParticleRef);
-    delete pack;
+    delete view_as<DataPack>(pack);
 
     if (!IsValidEntity(iEntity) || !IsValidEntity(iParticle))
     {
@@ -1293,7 +1293,7 @@ public int Menu_BodyInspect(Menu menu, MenuAction action, int client, int itemNu
     }
 }
 
-public void Frame_RemoveBody(int ref)
+public void Frame_RemoveBody(any ref)
 {
     int iRagdoll = EntRefToEntIndex(ref);
 

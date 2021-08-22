@@ -541,7 +541,7 @@ void PrintConsoleRoundLogs(int client)
     PrintToConsole(client, " Bought Items: %d", PlayerRound[client].BoughtItems);
 }
 
-public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -595,7 +595,7 @@ public void SQL_GetPlayerData(Database db, DBResultSet results, const char[] err
     }
 }
 
-public void SQL_InsertPlayer(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_InsertPlayer(Database db, DBResultSet results, const char[] error, any userid)
 {
     if ((db == null || strlen(error) > 0) && StrContains(error, "Duplicate entry", false) == -1)
     {
@@ -639,7 +639,7 @@ void UpdatePlayer(int client)
     g_dDB.Query(SQL_UpdatePlayer, sQuery, GetClientUserId(client), DBPrio_High);
 }
 
-public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {

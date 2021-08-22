@@ -428,7 +428,7 @@ void CreateExplosion(int body)
     }
 }
 
-public void Frame_TriggerEploxsion(int ref)
+public void Frame_TriggerEploxsion(any ref)
 {
     int iEntity = EntRefToEntIndex(ref);
 

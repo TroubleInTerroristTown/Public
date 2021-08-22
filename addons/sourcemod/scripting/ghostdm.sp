@@ -232,7 +232,7 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     return Plugin_Continue;
 }
 
-public void Frame_GiveWeapons(int userid)
+public void Frame_GiveWeapons(any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -306,7 +306,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     return Plugin_Continue;
 }
 
-public Action Timer_Respawn(Handle timer, int userid)
+public Action Timer_Respawn(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -548,7 +548,7 @@ public Action OnWeapon(int client, int weapon)
     return Plugin_Continue;
 }
 
-public void Frame_SetBlock(int ref)
+public void Frame_SetBlock(any ref)
 {
     int iWeapon = EntRefToEntIndex(ref);
 
@@ -686,7 +686,7 @@ void SetListener(int client)
     }
 }
 
-public Action Timer_Spawn(Handle timer, int userid)
+public Action Timer_Spawn(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 

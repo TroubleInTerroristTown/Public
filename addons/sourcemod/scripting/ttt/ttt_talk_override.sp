@@ -82,7 +82,7 @@ public void OnClientPostAdminCheck(int client)
     RequestFrame(Frame_PostAdminCheck, GetClientUserId(client));
 }
 
-public void Frame_PostAdminCheck(int userid)
+public void Frame_PostAdminCheck(any userid)
 {
     int client = GetClientOfUserId(userid);
 

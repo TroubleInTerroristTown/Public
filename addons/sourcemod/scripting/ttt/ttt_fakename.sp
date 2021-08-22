@@ -250,7 +250,7 @@ void Start_Invisiblename(int client)
     g_iPlayer[client].InviTimer = CreateTimer(g_cInviTimer.FloatValue, Timer_ResetInvi, GetClientUserId(client));
 }
 
-public Action Timer_ResetName(Handle timer, int userid)
+public Action Timer_ResetName(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -264,7 +264,7 @@ public Action Timer_ResetName(Handle timer, int userid)
     return Plugin_Stop;
 }
 
-public Action Timer_ResetInvi(Handle timer, int userid)
+public Action Timer_ResetInvi(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 

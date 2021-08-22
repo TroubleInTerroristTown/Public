@@ -368,7 +368,7 @@ int TraceClientViewEntity(int client)
 
 
 
-public bool TRDontHitSelf(int entity, int mask, int data)
+public bool TRDontHitSelf(int entity, int mask, any data)
 {
     return (entity != data);
 }

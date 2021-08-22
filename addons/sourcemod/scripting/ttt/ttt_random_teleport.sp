@@ -276,24 +276,24 @@ int RandomTeleport(int client)
     return target;
 }
 
-public void Frame_Teleport(DataPack pack)
+public void Frame_Teleport(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(pack.ReadCell());
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
 
     if (TTT_IsClientValid(client))
     {
         float fOrigin[3];
 
-        fOrigin[0] = pack.ReadFloat();
-        fOrigin[1] = pack.ReadFloat();
-        fOrigin[2] = pack.ReadFloat();
+        fOrigin[0] = view_as<DataPack>(pack).ReadFloat();
+        fOrigin[1] = view_as<DataPack>(pack).ReadFloat();
+        fOrigin[2] = view_as<DataPack>(pack).ReadFloat();
 
         TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
 
         LogToFile(g_sLog, "[Random Teleporter] [2/2] Client: \"%L\" - To: %f:%f:%f", client, fOrigin[0], fOrigin[1], fOrigin[2]);
     }
 
-    delete pack;
+    delete view_as<DataPack>(pack);
 }

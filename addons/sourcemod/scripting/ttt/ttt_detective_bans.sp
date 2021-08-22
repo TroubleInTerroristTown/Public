@@ -209,7 +209,7 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
     }
 }
 
-public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -328,18 +328,18 @@ public Action Command_BanDetective(int client, int args)
     return Plugin_Handled;
 }
 
-public void SQL_InsertDetectiveBan(Database db, DBResultSet results, const char[] error, DataPack dPack) 
+public void SQL_InsertDetectiveBan(Database db, DBResultSet results, const char[] error, any pack) 
 {
-    dPack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(dPack.ReadCell());
-    int iTarget = GetClientOfUserId(dPack.ReadCell());
-    int iTime = dPack.ReadCell();
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int iTarget = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int iTime = view_as<DataPack>(pack).ReadCell();
 
     char sReason[256];
-    dPack.ReadString(sReason, sizeof(sReason));
+    view_as<DataPack>(pack).ReadString(sReason, sizeof(sReason));
 
-    delete dPack;
+    delete view_as<DataPack>(pack);
 
     if (results == null || strlen(error) > 0)
     {
@@ -446,7 +446,7 @@ public Action Command_UBanDetective(int client, int args)
     return Plugin_Handled;
 }
 
-public void SQL_RemoveDetectiveBan(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_RemoveDetectiveBan(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {

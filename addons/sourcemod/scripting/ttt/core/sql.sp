@@ -88,17 +88,17 @@ public void SQL_CreateLogTable(Database db, DBResultSet results, const char[] er
     }
 }
 
-public void SQL_InsertRound(Database db, DBResultSet results, const char[] error, DataPack pack)
+public void SQL_InsertRound(Database db, DBResultSet results, const char[] error, any pack)
 {
     if (db == null || strlen(error) > 0)
     {
-        pack.Reset();
-        pack.ReadCell();
-        pack.ReadCell();
-        pack.ReadCell();
-        ArrayList aTraitors = view_as<ArrayList>(pack.ReadCell());
+        view_as<DataPack>(pack).Reset();
+        view_as<DataPack>(pack).ReadCell();
+        view_as<DataPack>(pack).ReadCell();
+        view_as<DataPack>(pack).ReadCell();
+        ArrayList aTraitors = view_as<ArrayList>(view_as<DataPack>(pack).ReadCell());
         delete aTraitors;
-        delete pack;
+        delete view_as<DataPack>(pack);
 
         SetFailState("(SQL_InsertRound) Query failed: %s", error);
         return;
@@ -120,12 +120,12 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
         }
         g_iStatus = Round_Active;
 
-        pack.Reset();
-        int iInnocents = pack.ReadCell();
-        int iTraitors = pack.ReadCell();
-        int iDetectives = pack.ReadCell();
-        ArrayList aTraitors = view_as<ArrayList>(pack.ReadCell());
-        delete pack;
+        view_as<DataPack>(pack).Reset();
+        int iInnocents = view_as<DataPack>(pack).ReadCell();
+        int iTraitors = view_as<DataPack>(pack).ReadCell();
+        int iDetectives = view_as<DataPack>(pack).ReadCell();
+        ArrayList aTraitors = view_as<ArrayList>(view_as<DataPack>(pack).ReadCell());
+        delete view_as<DataPack>(pack);
 
         LoopValidClients(i)
         {
@@ -218,7 +218,7 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
     }
 }
 
-public void SQL_UpdateRoundEndTime(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_UpdateRoundEndTime(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -227,7 +227,7 @@ public void SQL_UpdateRoundEndTime(Database db, DBResultSet results, const char[
     }
 }
 
-public void Callback_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
+public void Callback_UpdatePlayer(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -250,7 +250,7 @@ public void Callback_UpdatePlayer(Database db, DBResultSet results, const char[]
     }
 }
 
-public void Callback_UpdateRoundSlays(Database db, DBResultSet results, const char[] error, int userid)
+public void Callback_UpdateRoundSlays(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -259,7 +259,7 @@ public void Callback_UpdateRoundSlays(Database db, DBResultSet results, const ch
     }
 }
 
-public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char[] error, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -337,7 +337,7 @@ public void SQL_TransactionLogsError(Database db, any data, int numQueries, cons
     }
 }
 
-public void SQL_ClearRounds(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_ClearRounds(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -346,7 +346,7 @@ public void SQL_ClearRounds(Database db, DBResultSet results, const char[] error
     }
 }
 
-public void SQL_ClearLogs(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_ClearLogs(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {

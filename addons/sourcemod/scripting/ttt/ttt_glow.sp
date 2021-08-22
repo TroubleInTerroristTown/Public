@@ -370,14 +370,14 @@ int CreatePlayerModelProp(int client)
     return -1;
 }
 
-public void Frame_SetParent(DataPack pack)
+public void Frame_SetParent(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(pack.ReadCell());
-    int skin = EntRefToEntIndex(pack.ReadCell());
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int skin = EntRefToEntIndex(view_as<DataPack>(pack).ReadCell());
 
-    delete pack;
+    delete view_as<DataPack>(pack);
 
     if (TTT_IsClientValid(client) && IsValidEntity(skin))
     {
@@ -388,7 +388,7 @@ public void Frame_SetParent(DataPack pack)
     }
 }
 
-Action Timer_ResetGlowColor(Handle timer, int userid)
+Action Timer_ResetGlowColor(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
     if (client > 0 && IsPlayerAlive(client))
@@ -398,12 +398,12 @@ Action Timer_ResetGlowColor(Handle timer, int userid)
     }
 }
 
-Action Timer_ResetCanSeeGlow(Handle timer, DataPack data)
+Action Timer_ResetCanSeeGlow(Handle timer, any pack)
 {
-    data.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(data.ReadCell());
-    int target = GetClientOfUserId(data.ReadCell());
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int target = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
 
     if (TTT_IsClientValid(client) && target && IsPlayerAlive(client))
     {
@@ -411,25 +411,23 @@ Action Timer_ResetCanSeeGlow(Handle timer, DataPack data)
     }
 }
 
-Action Timer_ResetCanSeeClientsGlow(Handle timer, DataPack data)
+Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
 {
-    data.Reset();
+    view_as<DataPack>(pack).Reset();
     
-    int client = GetClientOfUserId(data.ReadCell());
-    int target_count = data.ReadCell();
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int target_count = view_as<DataPack>(pack).ReadCell();
 
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {
         for (int i = 0; i < target_count; ++i)
         {
-            g_iPlayer[client].CanSee[GetClientOfUserId(data.ReadCell())] = false;
+            g_iPlayer[client].CanSee[GetClientOfUserId(view_as<DataPack>(pack).ReadCell())] = false;
         }
     }
-
-    delete data;
 }
 
-Action Timer_ResetCanSeeAll(Handle timer, int userid)
+Action Timer_ResetCanSeeAll(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -439,7 +437,7 @@ Action Timer_ResetCanSeeAll(Handle timer, int userid)
     }
 }
 
-Action Timer_ResetAllCanSee(Handle timer, int userid)
+Action Timer_ResetAllCanSee(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 

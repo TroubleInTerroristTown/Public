@@ -548,14 +548,14 @@ void SaveLogsSQL()
     g_dDB.Execute(tTransaction, _, SQL_TransactionLogsError);
 }
 
-public void Frame_Create(DataPack pack)
+public void Frame_Create(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int userid = pack.ReadCell();
-    int index = pack.ReadCell();
+    int userid = view_as<DataPack>(pack).ReadCell();
+    int index = view_as<DataPack>(pack).ReadCell();
 
-    delete pack;
+    delete view_as<DataPack>(pack);
 
     int client;
     if (userid == 0)
@@ -613,19 +613,19 @@ public void Frame_Create(DataPack pack)
             return;
         }
 
-        pack = new DataPack();
+        DataPack pack2 = new DataPack();
 
         if (TTT_IsClientValid(client))
         {
-            pack.WriteCell(GetClientUserId(client));
+            pack2.WriteCell(GetClientUserId(client));
         }
         else
         {
-            pack.WriteCell(0);
+            pack2.WriteCell(0);
         }
 
-        pack.WriteCell(index);
-        RequestFrame(Frame_Create, pack);
+        pack2.WriteCell(index);
+        RequestFrame(Frame_Create, pack2);
     }
 }
 
@@ -1865,7 +1865,7 @@ public Action Event_PlayerConnectFull(Event event, const char[] name, bool dontB
     }
 }
 
-public Action Timer_AutoAssignTeam(Handle timer, int userId)
+public Action Timer_AutoAssignTeam(Handle timer, any userId)
 {
     int client = GetClientOfUserId(userId);
     
@@ -3269,16 +3269,16 @@ public Action Event_ChangeName_Pre(Event event, const char[] name, bool dontBroa
     return Plugin_Continue;
 }
 
-public void Frame_RechangeName(DataPack pack)
+public void Frame_RechangeName(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int userid = pack.ReadCell();
+    int userid = view_as<DataPack>(pack).ReadCell();
 
     char sName[MAX_NAME_LENGTH];
-    pack.ReadString(sName, sizeof(sName));
+    view_as<DataPack>(pack).ReadString(sName, sizeof(sName));
 
-    delete pack;
+    delete view_as<DataPack>(pack);
 
     int client = GetClientOfUserId(userid);
 
@@ -4792,7 +4792,7 @@ void LoadBadNames()
     delete hFile;
 }
 
-void LoadClientInfo(int userid)
+void LoadClientInfo(any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -5039,7 +5039,7 @@ void GiveMelee(int client)
     }
 }
 
-public void Frame_GivePrimary(int userid)
+public void Frame_GivePrimary(any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -5049,7 +5049,7 @@ public void Frame_GivePrimary(int userid)
     }
 }
 
-public void Frame_GiveSecondary(int userid)
+public void Frame_GiveSecondary(any userid)
 {
     int client = GetClientOfUserId(userid);
 

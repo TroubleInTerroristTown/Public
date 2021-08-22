@@ -379,7 +379,7 @@ int TraceClientViewEntity(int client)
     return -1;
 }
 
-public bool TRDontHitSelf(int entity, int mask, int data)
+public bool TRDontHitSelf(int entity, int mask, any data)
 {
     return (entity != data);
 }
@@ -487,7 +487,7 @@ bool GetTranslationColor(const char[] type, const char[] translation, char[] sCo
     return false;
 }
 
-public Action Timer_RefreshHUD(Handle timer, int userid)
+public Action Timer_RefreshHUD(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 

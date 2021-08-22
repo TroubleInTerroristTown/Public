@@ -276,7 +276,7 @@ public void OnButtonPressed(int activator, int caller)
     }
 }
 
-public Action Timer_Button(Handle timer, int ref)
+public Action Timer_Button(Handle timer, any ref)
 {
     if (IsValidEntity(EntRefToEntIndex(ref)))
     {
@@ -297,7 +297,7 @@ stock int GetClientTraceTarget(int client)
     return -1;
 }
 
-public bool TR_Callback(int entity, int client)
+public bool TR_Callback(int entity, any client)
 {
     if (IsValidEntity(entity) && entity > MaxClients)
     {
@@ -420,7 +420,7 @@ public bool TR_Callback(int entity, int client)
     return true;
 }
 
-public Action Timer_ResetEntity(Handle timer, int ref)
+public Action Timer_ResetEntity(Handle timer, any ref)
 {
     int iIndex = g_aSpam.FindValue(ref);
 

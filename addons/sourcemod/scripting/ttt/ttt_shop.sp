@@ -478,7 +478,7 @@ void AlterCreditsColumn()
     }
 }
 
-public void SQL_AlterCreditsColumn(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_AlterCreditsColumn(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -531,7 +531,7 @@ void LoadClientCredits(int client)
     }
 }
 
-public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_OnClientPostAdminCheck(Database db, DBResultSet results, const char[] error, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -622,7 +622,7 @@ void UpdatePlayer(int client)
     }
 }
 
-public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, int userid)
+public void SQL_UpdatePlayer(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (db == null || strlen(error) > 0)
     {
@@ -1493,7 +1493,7 @@ public void TTT_OnClientGetRole(int client, int role)
     }
 }
 
-public void Frame_StartCreditsTimer(int userid)
+public void Frame_StartCreditsTimer(any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -2325,9 +2325,9 @@ void ResetItemsArray(const char[] sFunction, bool initArray = false)
     }
 }
 
-public void Frame_ShopReady(ArrayList aItems)
+public void Frame_ShopReady(any items)
 {
-    if (aItems != null && g_aShopItems != null && aItems == g_aShopItems) // ¯\_(ツ)_/¯
+    if (view_as<ArrayList>(items) != null && g_aShopItems != null && view_as<ArrayList>(items) == g_aShopItems) // ¯\_(ツ)_/¯
     {
         g_bItemReady = true;
 

@@ -403,7 +403,7 @@ void AimAtTarget(int client, int target)
     g_iPlayer[client].hIonTarget = CreateTimer(0.1, Timer_UpdateTargetPosition, GetClientUserId(client), TIMER_REPEAT);
 }
 
-Action Timer_UpdateTargetPosition(Handle timer, int userid)
+Action Timer_UpdateTargetPosition(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -604,7 +604,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[
     return Plugin_Continue;
 }
 
-Action Timer_OnUpdatePlaceCountdown(Handle timer, int userid)
+Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -645,7 +645,7 @@ void BlockKnife(int client)
     }
 }
 
-Action Timer_OnIonPlanted(Handle timer, int userid)
+Action Timer_OnIonPlanted(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -715,7 +715,7 @@ Action Timer_OnIonPlanted(Handle timer, int userid)
     }
 }
 
-Action Timer_OnPlayBeaconBeep(Handle timer, int userid)
+Action Timer_OnPlayBeaconBeep(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -752,7 +752,7 @@ Action Timer_OnPlayBeaconBeep(Handle timer, int userid)
     TE_SendToAll();
 }
 
-Action Timer_OnIonStartup(Handle timer, int userid)
+Action Timer_OnIonStartup(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -776,7 +776,7 @@ Action Timer_OnIonStartup(Handle timer, int userid)
     CreateTimer(g_cIonDeployTime.FloatValue, Timer_OnTraceReady, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnTraceReady(Handle timer, int userid)
+Action Timer_OnTraceReady(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -867,7 +867,7 @@ Action Timer_OnTraceReady(Handle timer, int userid)
     CreateTimer(15.2, Timer_OnFireIonCannon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnCreateFire(Handle timer, int userid)
+Action Timer_OnCreateFire(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -905,7 +905,7 @@ Action Timer_OnCreateFire(Handle timer, int userid)
     CreateTimer(1.5, Timer_OnCreateFire, userid, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnClearLasers(Handle timer, int userid)
+Action Timer_OnClearLasers(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -960,7 +960,7 @@ Action Timer_OnTraceStart(Handle timer, DataPack pack)
     RequestFrame(Frame_ShowBeam, pack);
 }
 
-Action Timer_OnLaserRotate(Handle timer, int userid)
+Action Timer_OnLaserRotate(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -991,7 +991,7 @@ Action Timer_OnLaserRotate(Handle timer, int userid)
     }
 }
 
-Action Timer_OnAddSpeed(Handle timer, int userid)
+Action Timer_OnAddSpeed(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -1015,7 +1015,7 @@ Action Timer_OnAddSpeed(Handle timer, int userid)
     CreateTimer(0.6, Timer_OnAddSpeed, userid, TIMER_FLAG_NO_MAPCHANGE);
 }
 
-Action Timer_OnFireIonCannon(Handle timer, int userid)
+Action Timer_OnFireIonCannon(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -1207,7 +1207,7 @@ Action Timer_OnFireIonCannon(Handle timer, int userid)
     g_iPlayer[client].iInfoTargetEntity = -1;
 }
 
-Action Timer_ShowExplosions(Handle timer, int userid)
+Action Timer_ShowExplosions(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -1314,7 +1314,7 @@ stock void SpawnShooter(int client, float fAngles[3], float fGibs, float fDelay,
     }
 }
 
-Action Timer_KillEntity(Handle timer, int ref)
+Action Timer_KillEntity(Handle timer, any ref)
 {
     int iEnt = EntRefToEntIndex(ref);
     if (iEnt > 0 && IsValidEntity(iEnt))
@@ -1423,14 +1423,14 @@ stock int FindStringIndex2(int index, const char[] str)
     return INVALID_STRING_INDEX;
 }
 
-void Frame_ShowBeam(DataPack pack)
+void Frame_ShowBeam(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int index = pack.ReadCell();
-    int client = pack.ReadCell();
+    int index = view_as<DataPack>(pack).ReadCell();
+    int client = view_as<DataPack>(pack).ReadCell();
 
-    delete pack;
+    delete view_as<DataPack>(pack);
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
     {
@@ -1448,9 +1448,9 @@ void Frame_ShowBeam(DataPack pack)
     TE_SetupGlowSprite(g_fBeamOrigin[client][index], g_iGlowSprite, 0.03, 5.0, 100);
     TE_SendToAll();
 
-    pack = new DataPack();
-    pack.WriteCell(index);
-    pack.WriteCell(client);
+    DataPack pack2 = new DataPack();
+    pack2.WriteCell(index);
+    pack2.WriteCell(client);
 
-    RequestFrame(Frame_ShowBeam, pack);
+    RequestFrame(Frame_ShowBeam, pack2);
 }

@@ -211,29 +211,29 @@ public void OnTagrenadeDetonate(Event event, const char[] name, bool dontBroadca
     }
 }
 
-public void Frame_OnGetTagrenadeTimes(DataPack pack)
+public void Frame_OnGetTagrenadeTimes(any pack)
 {
-    pack.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(pack.ReadCell());
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
     if (client == 0)
     {
-        delete pack;
+        delete view_as<DataPack>(pack);
         return;
     }
     
     int role = TTT_GetClientRole(client);
 
-    int entity = pack.ReadCell();
+    int entity = view_as<DataPack>(pack).ReadCell();
 
     float position[3];
     float targetposition[3];
     float distance;
 
-    position[0] = pack.ReadFloat();
-    position[1] = pack.ReadFloat();
-    position[2] = pack.ReadFloat();
-    delete pack;
+    position[0] = view_as<DataPack>(pack).ReadFloat();
+    position[1] = view_as<DataPack>(pack).ReadFloat();
+    position[2] = view_as<DataPack>(pack).ReadFloat();
+    delete view_as<DataPack>(pack);
 
     int iInno = 0;
     int iTraitor = 0;

@@ -433,7 +433,7 @@ int Native_AllCanSeeGlow(Handle plugin, int numParams)
 }
 
 // ** TIMERS ** //
-Action Timer_ResetGlowColor(Handle timer, int userid)
+Action Timer_ResetGlowColor(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -455,12 +455,12 @@ Action Timer_ResetGlowColor(Handle timer, int userid)
     }
 }
 
-Action Timer_ResetCanSeeGlow(Handle timer, DataPack data)
+Action Timer_ResetCanSeeGlow(Handle timer, any pack)
 {
-    data.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(data.ReadCell());
-    int target = GetClientOfUserId(data.ReadCell());
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int target = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
 
     g_iPlayer[client].hCanSeeTimer = null;
 
@@ -470,12 +470,12 @@ Action Timer_ResetCanSeeGlow(Handle timer, DataPack data)
     }
 }
 
-Action Timer_ResetCanSeeClientsGlow(Handle timer, DataPack data)
+Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
 {
-    data.Reset();
+    view_as<DataPack>(pack).Reset();
 
-    int client = GetClientOfUserId(data.ReadCell());
-    int target_count = data.ReadCell();
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int target_count = view_as<DataPack>(pack).ReadCell();
 
     g_iPlayer[client].hCanSeeTimer = null;
 
@@ -483,12 +483,12 @@ Action Timer_ResetCanSeeClientsGlow(Handle timer, DataPack data)
     {
         for (int i = 0; i < target_count; ++i)
         {
-            g_iPlayer[client].bCanSee[GetClientOfUserId(data.ReadCell())] = false;
+            g_iPlayer[client].bCanSee[GetClientOfUserId(view_as<DataPack>(pack).ReadCell())] = false;
         }
     }
 }
 
-Action Timer_ResetCanSeeAll(Handle timer, int userid)
+Action Timer_ResetCanSeeAll(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -500,7 +500,7 @@ Action Timer_ResetCanSeeAll(Handle timer, int userid)
     }
 }
 
-Action Timer_ResetAllCanSee(Handle timer, int userid)
+Action Timer_ResetAllCanSee(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 

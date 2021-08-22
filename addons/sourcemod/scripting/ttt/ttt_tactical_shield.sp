@@ -125,7 +125,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public void Frame_SetShield(int userid)
+public void Frame_SetShield(any userid)
 {
     int client = GetClientOfUserId(userid);
 

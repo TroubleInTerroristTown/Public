@@ -190,18 +190,18 @@ public int Native_Query(Handle plugin, int numParams)
     return 0;
 }
 
-public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, DataPack pack)
+public void SQL_QueryCB(Database db, DBResultSet results, const char[] error, any pack)
 {
     if (db == null || strlen(error) > 0)
     {
-        pack.Reset();
+        view_as<DataPack>(pack).Reset();
         char sBuffer[128];
-        pack.ReadString(sBuffer, sizeof(sBuffer));
+        view_as<DataPack>(pack).ReadString(sBuffer, sizeof(sBuffer));
 
         LogError("[SQL] (%s) Query failed: %s", sBuffer, error);
     }
     
-    delete pack;
+    delete view_as<DataPack>(pack);
 }
 
 public int Native_GetSQLConnection(Handle plugin, int numParams)

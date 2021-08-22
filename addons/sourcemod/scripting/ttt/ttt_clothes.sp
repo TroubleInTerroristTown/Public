@@ -108,7 +108,7 @@ public void TTT_OnBodyFound(int client, int victim, int victimRole, int attacker
     }
 }
 
-public Action Timer_Reset(Handle timer, int userid)
+public Action Timer_Reset(Handle timer, any userid)
 {
     int client = GetClientOfUserId(client);
 

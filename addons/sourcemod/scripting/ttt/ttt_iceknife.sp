@@ -342,7 +342,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     return Plugin_Continue;
 }
 
-public void Frame_SetAngles(int userid)
+public void Frame_SetAngles(any userid)
 {
     int client = GetClientOfUserId(userid);
 

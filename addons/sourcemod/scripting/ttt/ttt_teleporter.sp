@@ -167,7 +167,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
-public void Frame_Teleport(int userid)
+public void Frame_Teleport(any userid)
 {
     int client = GetClientOfUserId(userid);
 
@@ -179,7 +179,7 @@ public void Frame_Teleport(int userid)
 }
 
 
-public void Frame_Reset(int userid)
+public void Frame_Reset(any userid)
 {
     int client = GetClientOfUserId(userid);
 

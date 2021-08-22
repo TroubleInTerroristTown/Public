@@ -299,7 +299,7 @@ public Action Timer_EnableButton(Handle timer)
     }
 }
 
-public Action Timer_EnableLight(Handle timer, bool bRed)
+public Action Timer_EnableLight(Handle timer, any bRed)
 {
     enableLights(bRed);
 }

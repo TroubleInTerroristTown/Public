@@ -80,7 +80,7 @@ stock bool PrecacheSoundAny( const char[] szPath, bool preload=false)
     }
 }
 
-stock void EmitSoundAny(const clients[],
+stock void EmitSoundAny(const int[] clients,
                  int numClients,
                  const char[] sample,
                  int entity = SOUND_FROM_PLAYER,

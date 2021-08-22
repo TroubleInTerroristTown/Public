@@ -559,7 +559,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
-public Action Timer_Unblock(Handle timer, int refIndex)
+public Action Timer_Unblock(Handle timer, any refIndex)
 {
     int iIndex = g_aBlocklist.FindValue(refIndex);
 

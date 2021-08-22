@@ -258,12 +258,12 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public void Frame_DropEntity(DataPack pack)
+public void Frame_DropEntity(any pack)
 {
-    pack.Reset();
-    int client = GetClientOfUserId(pack.ReadCell());
-    int iEntity = EntRefToEntIndex(pack.ReadCell());
-    delete pack;
+    view_as<DataPack>(pack).Reset();
+    int client = GetClientOfUserId(view_as<DataPack>(pack).ReadCell());
+    int iEntity = EntRefToEntIndex(view_as<DataPack>(pack).ReadCell());
+    delete view_as<DataPack>(pack);
 
     if (TTT_IsClientValid(client) && IsValidEntity(iEntity))
     {

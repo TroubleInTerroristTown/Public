@@ -39,7 +39,7 @@ void Db_InsertHandle(int client, int death)
     g_database.Query(DbCallback_InsertHandle, query, GetClientUserId(client));
 }
 
-public void DbCallback_InsertHandle(Database db, DBResultSet results, const char[] error, int userid)
+public void DbCallback_InsertHandle(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (results == null)
     {
@@ -68,7 +68,7 @@ void Db_InsertReport(int client, int death, CaseChoice punishment)
     g_database.Query(DbCallback_InsertReport, query, GetClientUserId(client));
 }
 
-public void DbCallback_InsertReport(Database db, DBResultSet results, const char[] error, int userid)
+public void DbCallback_InsertReport(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (results == null)
     {
@@ -127,7 +127,7 @@ void Db_SelectNextCase(int client)
     g_database.Query(DbCallback_SelectNextCase, query, GetClientUserId(client));
 }
 
-public void DbCallback_SelectNextCase(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_SelectNextCase(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_SelectNextCase: %s", error);
@@ -154,7 +154,7 @@ void Db_SelectLastCase(int client)
     g_database.Query(DbCallback_SelectLastCase, query, GetClientUserId(client));
 }
 
-public void DbCallback_SelectLastCase(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_SelectLastCase(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_SelectLastCase: %s", error);
@@ -179,7 +179,7 @@ public void Db_SelectClientDeaths(int client)
     g_database.Query(DbCallback_SelectClientDeaths, query, GetClientUserId(client));
 }
 
-void DbCallback_SelectClientDeaths(Database db, DBResultSet results, const char[] error, int userid)
+void DbCallback_SelectClientDeaths(Database db, DBResultSet results, const char[] error, any userid)
 {
     if (results == null)
     {
@@ -222,7 +222,7 @@ void Db_SelectCaseBaseInfo(int client)
     g_database.Query(DbCallback_SelectCaseBaseInfo, query, GetClientUserId(client));
 }
 
-public void DbCallback_SelectCaseBaseInfo(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_SelectCaseBaseInfo(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_SelectCaseBaseInfo: %s", error);
@@ -247,7 +247,7 @@ void Db_SelectInfo(int client)
     g_database.Query(DbCallback_SelectInfo, query, GetClientUserId(client));
 }
 
-public void DbCallback_SelectInfo(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_SelectInfo(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_SelectInfo: %s", error);
@@ -289,7 +289,7 @@ void Db_SelectVerdictInfo(int client, int death)
     g_database.Query(DbCallback_SelectVerdictInfo, query, GetClientUserId(client));
 }
 
-public void DbCallback_SelectVerdictInfo(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_SelectVerdictInfo(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_SelectVerdictInfo: %s", error);
@@ -383,7 +383,7 @@ void Db_UpdateVerdict(int client, int death, CaseVerdict verdict)
     g_database.Query(DbCallback_UpdateVerdict, query, GetClientUserId(client));
 }
 
-public void DbCallback_UpdateVerdict(Database db, DBResultSet results, const char[] error, int userid) {
+public void DbCallback_UpdateVerdict(Database db, DBResultSet results, const char[] error, any userid) {
     if (results == null)
     {
         LogError("DbCallback_UpdateVerdict: %s", error);

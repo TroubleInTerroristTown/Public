@@ -118,7 +118,7 @@ public void TTT_OnClientDeath(int victim, int attacker, bool badAction)
     }
 }
 
-public Action Timer_Respawn(Handle timer, int userid)
+public Action Timer_Respawn(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
 
