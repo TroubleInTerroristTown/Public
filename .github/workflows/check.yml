@@ -40,7 +40,7 @@ jobs:
 
       - name: Check Files
         run: |
-          for file in $(find . -name '*.sp' -o -name '*.phrases.txt')
+          for file in $(find . -name '*.phrases.txt')
           do
             echo -e "Checking $file..."
             colorlib_check -r -c "$TOOLS_PATH/ttt_colors.yaml" $file
