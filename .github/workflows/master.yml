@@ -168,8 +168,3 @@ jobs:
           METHOD: sftp
           PORT: ${{ secrets.SFTP_PORT }}
           ARGS: --no-empty-dirs
-
-      - name: Update version
-        run: |
-          wget -q '${{ secrets.UPDATE_URL }}?version=${{ env.GIT_COMMIT }}&key=${{ secrets.UPDATE_KEY }}' -O version.log
-          rm version.log
