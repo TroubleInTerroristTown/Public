@@ -226,15 +226,6 @@ forward void TTT_OnKarmaUpdate(int client, KarmaUpdate type, int karma);
 forward bool TTT_OnCheckCommandAccess(int client, const char[] command, const char[] flags, bool access);
 
 /**
- * With this forward you get the latest version from csgottt.com(/version.php) as int
- * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
- *       must be installed!
- *
- * @param version            Latest TTT Version as int
- */
-forward void TTT_OnVersionReceive(int version);
-
-/**
  * This forward is called PRIOR to the role selection done from the core TTT.
  * The purpose of this forward is to be able to override the original Role selector
  * and write your own for potential custom modes.
@@ -460,22 +451,6 @@ native bool TTT_IsClientReady(int client);
 forward int TTT_OnRoundSlay(int client, int remaining);
 
 native int TTT_GetRoundID();
-
-/**
- * With this native you get the latest version from csgottt.com(/version_new.php) as int
- * NOTE: ttt_version_check must be "1" and SteamWorks ( https://forums.alliedmods.net/showthread.php?t=229556 )
- *       must be installed!
- *
- * @return            Latest TTT Version as Int
- */
-native int TTT_GetVersion();
-
-/**
- * With this native you get the plugin version as int
- *
- * @return            Latest TTT Version as Int
- */
-native int TTT_GetPluginVersion();
 
 /**
  * Returns the player id for the specific player
@@ -1301,31 +1276,6 @@ stock bool TTT_ClientValidRole(int client)
     }
 
     return false;
-}
-
-stock bool TTT_CheckVersion(const char[] git, int version)
-{
-    if (StrEqual(git, "<VERSION>", false) || version == -1)
-    {
-        return true;
-    }
-
-    int iGitVersion = -1;
-    char sSplit[3][12];
-    ExplodeString(git, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
-
-    if (IsStringNumeric(sSplit[2]))
-    {
-        iGitVersion = StringToInt(sSplit[2]);
-    }
-
-    if (version != iGitVersion)
-    {
-        SetFailState("This plugin use a different version as ttt.smx");
-        return false;
-    }
-
-    return true;
 }
 
 stock bool IsStringNumeric(const char[] str)

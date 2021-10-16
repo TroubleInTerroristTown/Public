@@ -104,11 +104,6 @@ public void OnPluginStart()
     RegConsoleCmd("sm_stats", Command_Stats);
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnConfigsExecuted()
 {
     g_cDebug = FindConVar("ttt_debug_mode");

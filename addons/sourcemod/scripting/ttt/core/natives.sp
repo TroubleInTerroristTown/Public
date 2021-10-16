@@ -20,7 +20,6 @@ void InitForwards()
     g_fwOnPlayerRespawn = new GlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
     g_fwOnRoundSlay = new GlobalForward("TTT_OnRoundSlay", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnRoleSelection = new GlobalForward("TTT_OnRoleSelection", ET_Event, Param_CellByRef, Param_CellByRef, Param_CellByRef);
-    g_fOnVersionCheck = new GlobalForward("TTT_OnVersionReceive", ET_Ignore, Param_Cell);
     g_fOnRoundTimerStart_Pre = new GlobalForward("TTT_OnRoundTimerStart_Pre", ET_Event, Param_CellByRef, Param_CellByRef);
 }
 
@@ -50,8 +49,6 @@ void InitNatives()
     CreateNative("TTT_GetRoundStatus", Native_GetRoundStatus);
     CreateNative("TTT_GetRoundID", Native_GetRoundID);
     CreateNative("TTT_IsClientReady", Native_IsClientReady);
-    CreateNative("TTT_GetVersion", Native_GetLatestVersion);
-    CreateNative("TTT_GetPluginVersion", Native_GetPluginVersion);
     CreateNative("TTT_GetPlayerID", Native_GetPlayerID);
     CreateNative("TTT_GetClientOfPlayerID", Native_GetClientOfPlayerID);
     CreateNative("TTT_SetRoundStatus", Native_SetRoundStatus);
@@ -563,30 +560,6 @@ public int Native_IsClientReady(Handle plugin, int numParams)
     }
 
     return false;
-}
-
-public int Native_GetLatestVersion(Handle plugin, int numParams)
-{
-    return g_iVersion;
-}
-
-public int Native_GetPluginVersion(Handle plugin, int numParams)
-{
-    if (StrEqual(TTT_PLUGIN_VERSION, "<VERSION>", false))
-    {
-        return -1;
-    }
-
-    int iVersion = -1;
-    char sSplit[3][12];
-    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
-
-    if (IsStringNumeric(sSplit[2]))
-    {
-        iVersion = StringToInt(sSplit[2]);
-    }
-
-    return iVersion;
 }
 
 public int Native_GetPlayerID(Handle plugin, int numParams)

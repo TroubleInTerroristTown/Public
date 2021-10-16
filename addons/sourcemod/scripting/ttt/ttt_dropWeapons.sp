@@ -83,11 +83,6 @@ public void OnConfigsExecuted()
     RegisterItem();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnMapStart()
 {
     g_iBeamSprite = PrecacheModel("materials/sprites/laserbeam.vmt");

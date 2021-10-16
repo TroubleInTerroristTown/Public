@@ -76,11 +76,6 @@ public void OnConfigsExecuted()
     RegisterItem();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void TTT_OnShopReady()
 {
     RegisterItem();

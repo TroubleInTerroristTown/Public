@@ -91,11 +91,6 @@ public void OnPluginEnd()
     }
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnMapStart()
 {
     g_iBeam = PrecacheModel("materials/sprites/bomb_planted_ring.vmt");

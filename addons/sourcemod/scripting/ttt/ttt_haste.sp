@@ -71,11 +71,6 @@ public void OnConfigsExecuted()
     g_cDebugMessage = FindConVar("ttt_show_debug_messages");
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     g_iRoundStart = GetTime();

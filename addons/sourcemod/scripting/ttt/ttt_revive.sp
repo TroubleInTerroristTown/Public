@@ -110,11 +110,6 @@ public void OnPluginEnd()
     }
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnClientDisconnect(int client)
 {
     ResetItem(client);

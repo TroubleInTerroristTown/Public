@@ -279,11 +279,6 @@ public void OnMapEnd()
     ResetItemsArray("OnMapEnd", false);
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnConfigsExecuted()
 {
     RemoveOldPlugins("ttt_shop_discount");

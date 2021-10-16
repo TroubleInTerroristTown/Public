@@ -4,7 +4,6 @@
 #include <sourcemod>
 #include <clientprefs>
 #include <sdkhooks>
-#include <SteamWorks>
 #include <colorlib>
 #include <emitsoundany>
 #include <ttt>
@@ -27,7 +26,6 @@
 #include "core/config.sp"
 #include "core/natives.sp"
 #include "core/sql.sp"
-#include "core/version.sp"
 
 public Plugin myinfo =
 {
@@ -81,9 +79,6 @@ public void OnPluginStart()
     RegConsoleCmd("sm_fl", Command_FL);
     RegConsoleCmd("sm_flashlight", Command_FL);
     RegConsoleCmd("sm_respawn", Command_Respawn);
-    RegConsoleCmd("sm_tttversion", Command_Version);
-    RegConsoleCmd("sm_version", Command_Version);
-    RegConsoleCmd("sm_checkversion", Command_CheckVersion);
     RegConsoleCmd("sm_miccheck", Command_MicCheck);
 
     AddCommandListener(Command_LAW, "+lookatweapon");
@@ -258,12 +253,6 @@ public void OnConfigsExecuted()
     {
         HookEntityOutput("func_button", "OnPressed", OnButtonPressed);
     }
-
-    if(g_cVersionCheck.BoolValue)
-    {
-        GetLatestVersion();
-    }
-
 
     if (g_cUnloadPlugins.BoolValue)
     {
@@ -1822,38 +1811,6 @@ public Action Event_PlayerSpawn_Pre(Event event, const char[] name, bool dontBro
 
     g_iPlayer[client].Alive = true;
 
-    if (g_cVersionMessage.BoolValue)
-    {
-        // TTT_PLUGIN_VERSION = X.Y.Z
-        char sSplit[3][12];
-        ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
-
-        int iVersion = -1;
-
-        if (IsStringNumeric(sSplit[2]))
-        {
-            iVersion = StringToInt(sSplit[2]);
-        }
-
-        if (iVersion == -1)
-        {
-            return Plugin_Continue;
-        }
-
-        if (iVersion == g_iVersion)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Current", client, g_iVersion);
-        }
-        else if (iVersion < g_iVersion)
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Older", client, iVersion, g_iVersion);
-        }
-        else
-        {
-            CPrintToChat(client, "%s %T", g_sTag, "Version Check: Unknown", client, iVersion, g_iVersion);
-        }
-    }
-
     return Plugin_Continue;
 }
 
@@ -2668,57 +2625,6 @@ public Action Command_Respawn(int client, int args)
     }
 
     return Plugin_Continue;
-}
-
-public Action Command_Version(int client, int args)
-{
-    int iVersion = -1;
-
-    char sSplit[3][12];
-    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
-
-    if (IsStringNumeric(sSplit[2]))
-    {
-        iVersion = StringToInt(sSplit[2]);
-    }
-
-    ReplyToCommand(client, "TTT Version: %d (as string: %s)", iVersion, TTT_PLUGIN_VERSION);
-}
-
-public Action Command_CheckVersion(int client, int args)
-{
-    int iVersion = -1;
-
-    char sSplit[3][12];
-    ExplodeString(TTT_PLUGIN_VERSION, ".", sSplit, sizeof(sSplit), sizeof(sSplit[]));
-
-    if (IsStringNumeric(sSplit[2]))
-    {
-        iVersion = StringToInt(sSplit[2]);
-    }
-
-    ReplyToCommand(client, "TTT Version: %d (as string: %s)", iVersion, TTT_PLUGIN_VERSION);
-    ReplyToCommand(client, "Git Version: %d", g_iVersion);
-
-    if (!StrEqual(TTT_PLUGIN_VERSION, "<VERSION>", false))
-    {
-        if (iVersion == g_iVersion)
-        {
-            ReplyToCommand(client, "TTT is up2date.");
-        }
-        else if (iVersion < g_iVersion)
-        {
-            ReplyToCommand(client, "TTT is outdated.");
-        }
-        else if (iVersion > g_iVersion)
-        {
-            ReplyToCommand(client, "TTT is newer???");
-        }
-        else
-        {
-            ReplyToCommand(client, "TTT with a unknown version???");
-        }
-    }
 }
 
 public Action Command_MicCheck(int client, int args)

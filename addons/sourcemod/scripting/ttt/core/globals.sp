@@ -76,7 +76,6 @@ GlobalForward g_fwOnCheckCommandAccess = null;
 GlobalForward g_fwOnPlayerRespawn = null;
 GlobalForward g_fwOnRoundSlay = null;
 GlobalForward g_fwOnRoleSelection = null;
-GlobalForward g_fOnVersionCheck = null;
 GlobalForward g_fOnRoundTimerStart_Pre = null;
 
 bool g_bDetectiveBans = false;
@@ -274,9 +273,6 @@ ConVar g_cUnloadPlugins = null;
 ConVar g_cRemovePlugins = null;
 ConVar g_cFixThirdperson = null;
 ConVar g_cShowRoundIDMessage = null;
-ConVar g_cVersionCheck = null;
-ConVar g_cVersionMessage = null;
-ConVar g_cSendServerData = null;
 ConVar g_cClanTagUpperLower = null;
 ConVar g_cSaveLogsInSQL = null;
 ConVar g_cDeleteLogsAfterDays = null;
@@ -336,7 +332,5 @@ enum struct PlayerData {
 }
 
 PlayerData g_iPlayer[MAXPLAYERS + 1];
-
-int g_iVersion = -1;
 
 bool g_bSpawnAllowed = true;

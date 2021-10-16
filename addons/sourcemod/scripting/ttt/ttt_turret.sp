@@ -58,11 +58,6 @@ public void OnConfigsExecuted()
     RegisterItem();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnAllPluginsLoaded()
 {
     g_cCheckTeam = FindConVar("sd_turret_checkteam");

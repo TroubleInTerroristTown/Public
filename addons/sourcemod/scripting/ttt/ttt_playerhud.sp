@@ -70,11 +70,6 @@ public void OnPluginStart()
     TTT_LoadTranslations();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnAllPluginsLoaded()
 {
     char sFile[] = "ttt_player_hud.smx";

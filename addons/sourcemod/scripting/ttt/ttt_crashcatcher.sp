@@ -32,11 +32,6 @@ public void OnPluginStart()
     CreateConVar("ttt2_crashcatcher_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnConfigsExecuted()
 {
     g_cSpawnType = FindConVar("ttt_spawn_type");

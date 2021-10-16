@@ -67,11 +67,6 @@ public void OnPluginStart()
     TTT_LoadTranslations();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnClientPutInServer(int client)
 {
     g_iPlayer[client].TraitorVoice = false;

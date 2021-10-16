@@ -150,9 +150,6 @@ void SetupConfig()
     g_cRemovePlugins = AutoExecConfig_CreateConVar("ttt_remove_plugins", "1", "Remove old/obsolete plugins (ttt_remove_plugins must be 1)?", _, true, 0.0, true, 1.0);
     g_cFixThirdperson = AutoExecConfig_CreateConVar("ttt_fix_thirdperson_view", "1", "Reset thirdperson view back to firstperson, if players comes from other servers with thirdperson view (Zombie, Prop Hunt, ...)", _, true, 0.0, true, 1.0);
     g_cShowRoundIDMessage = AutoExecConfig_CreateConVar("ttt_enable_round_id_message", "1", "Prints a message on every success round start in chat like: \"Round #X has been started\"", _, true, 0.0, true, 1.0);
-    g_cVersionCheck = AutoExecConfig_CreateConVar("ttt_version_check", "1", "Allow version checking", _, true, 0.0, true, 1.0);
-    g_cVersionMessage = AutoExecConfig_CreateConVar("ttt_version_message_on_spawn", "1", "Print a message on player spawn, if this server use the latest version.", _, true, 0.0, true, 1.0);
-    g_cSendServerData = AutoExecConfig_CreateConVar("ttt_send_server_ip_port", "1", "Sends your server ip+port and the ttt version to csgottt.com.\nYour server (Status On/Off, Map, Country and players (just the amount - no names) will be publicity listed on csgottt.com", _, true, 0.0, true, 1.0);
     g_cClanTagUpperLower = AutoExecConfig_CreateConVar("ttt_clan_tag_upper_lower", "1", "Format clantags to a upper string (0), lower string (1) or translation based (2)?", _, true, 0.0, true, 2.0);
     g_cSaveLogsInSQL = AutoExecConfig_CreateConVar("ttt_save_logs_in_mysql", "0", "Save round logs in a mysql table? For auto clean up take a look at \"ttt_clean_up_sql_logs\".", _, true, 0.0, true, 1.0);
     g_cDeleteLogsAfterDays = AutoExecConfig_CreateConVar("ttt_clean_up_sql_logs", "7", "Remove logs after X days, default is \"7\" days and \"0\" for no auto clean up.\nttt_save_logs_in_mysql must be \"1\"", _, true, 0.0);

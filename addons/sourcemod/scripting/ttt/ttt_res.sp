@@ -66,11 +66,6 @@ public void OnPluginStart()
     innSound = new ArrayList(512);
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnMapStart()
 {
     RefreshSounds(0);

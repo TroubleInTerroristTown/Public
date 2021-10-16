@@ -70,11 +70,6 @@ public void OnPluginStart()
     TTT_EndConfig();
 }
 
-public void TTT_OnVersionReceive(int version)
-{
-    TTT_CheckVersion(TTT_PLUGIN_VERSION, TTT_GetPluginVersion());
-}
-
 public void OnPluginEnd()
 {
     DeleteAndClearAll();
