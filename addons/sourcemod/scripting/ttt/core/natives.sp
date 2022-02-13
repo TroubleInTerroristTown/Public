@@ -1,28 +1,3 @@
-void InitForwards()
-{
-    g_fwOnRoundStart_Pre = new GlobalForward("TTT_OnRoundStart_Pre", ET_Event);
-    g_fwOnRoundStart = new GlobalForward("TTT_OnRoundStart", ET_Ignore, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
-    g_fwOnRoundStartFailed = new GlobalForward("TTT_OnRoundStartFailed", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnRoundEnd = new GlobalForward("TTT_OnRoundEnd", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnClientGetRole = new GlobalForward("TTT_OnClientGetRole", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnTakeDamage = new GlobalForward("TTT_OnTakeDamage", ET_Ignore, Param_Cell, Param_Cell, Param_Float, Param_Cell, Param_Cell);
-    g_fwOnClientDeath = new GlobalForward("TTT_OnClientDeath", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-    g_fwOnClientDeathPre = new GlobalForward("TTT_OnClientDeathPre", ET_Event, Param_Cell, Param_Cell);
-    g_fwOnButtonPress = new GlobalForward("TTT_OnButtonPress", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnButtonRelease = new GlobalForward("TTT_OnButtonRelease", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnModelUpdate = new GlobalForward("TTT_OnModelUpdate", ET_Ignore, Param_Cell, Param_String);
-    g_fwOnPlayerDeathPre = new GlobalForward("TTT_OnPlayerDeath", ET_Event, Param_Cell, Param_Cell);
-    g_fwOnPreKarmaUpdate = new GlobalForward("TTT_OnPreKarmaUpdate", ET_Event, Param_Cell, Param_Cell, Param_Cell);
-    g_fwOnKarmaUpdate = new GlobalForward("TTT_OnKarmaUpdate", ET_Ignore, Param_Cell, Param_Cell, Param_Cell);
-    g_fwOnRulesMenu = new GlobalForward("TTT_OnRulesMenu", ET_Event, Param_Cell, Param_CellByRef);
-    g_fwOnDetectiveMenu = new GlobalForward("TTT_OnDetectiveMenu", ET_Event, Param_Cell, Param_CellByRef);
-    g_fwOnCheckCommandAccess = new GlobalForward("TTT_OnCheckCommandAccess", ET_Event, Param_Cell, Param_String, Param_String, Param_CellByRef);
-    g_fwOnPlayerRespawn = new GlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
-    g_fwOnRoundSlay = new GlobalForward("TTT_OnRoundSlay", ET_Ignore, Param_Cell, Param_Cell);
-    g_fwOnRoleSelection = new GlobalForward("TTT_OnRoleSelection", ET_Event, Param_CellByRef, Param_CellByRef, Param_CellByRef);
-    g_fOnRoundTimerStart_Pre = new GlobalForward("TTT_OnRoundTimerStart_Pre", ET_Event, Param_CellByRef, Param_CellByRef);
-}
-
 void InitNatives()
 {
     CreateNative("TTT_GetClientTeam", Native_GetClientTeam);
@@ -207,7 +182,7 @@ public int Native_ForceTraitor(Handle plugin, int numParams)
     if (TTT_IsClientValid(client))
     {
         int userid = GetClientUserId(client);
-        
+
         if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
         {
             g_aForceTraitor.Push(userid);
@@ -228,7 +203,7 @@ public int Native_ForceDetective(Handle plugin, int numParams)
     if (TTT_IsClientValid(client))
     {
         int userid = GetClientUserId(client);
-    
+
         if(g_aForceTraitor.FindValue(userid) == -1 && g_aForceDetective.FindValue(userid) == -1)
         {
             g_aForceDetective.Push(userid);
@@ -245,7 +220,7 @@ public int Native_ForceDetective(Handle plugin, int numParams)
 public int Native_AddRoundSlays(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
-    
+
     if (TTT_IsClientValid(client))
     {
         int rounds = GetNativeCell(2);
@@ -257,10 +232,10 @@ public int Native_AddRoundSlays(Handle plugin, int numParams)
         }
 
         bool force = view_as<bool>(GetNativeCell(3));
-        
+
         AddRoundSlays(client, rounds, force);
         UpdatePlayerRSlays(client);
-        
+
         return g_iPlayer[client].RoundSlays;
     }
 
@@ -326,18 +301,18 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
             CReplyToCommand(client, "Rounds must be zero (reset) or higher.");
             return -1;
         }
-        
+
         bool force = view_as<bool>(GetNativeCell(3));
-        
+
         g_iPlayer[client].RoundSlays = rounds;
-        
+
         if (g_iStatus == Round_Active || force)
         {
             if (IsPlayerAlive(client) && g_iPlayer[client].RoundSlays > 0)
             {
                 ForcePlayerSuicide(client);
                 g_iPlayer[client].RoundSlays--;
-                
+
                 if (g_iPlayer[client].RoundSlays > 0)
                 {
                     CPrintToChat(client, "%s %T", g_sTag, "RS - Slayed", client, g_iPlayer[client].RoundSlays);
@@ -345,9 +320,9 @@ public int Native_SetRoundSlays(Handle plugin, int numParams)
                 }
             }
         }
-        
+
         UpdatePlayerRSlays(client);
-        
+
         return rounds;
     }
 
@@ -441,7 +416,7 @@ public int Native_CheckCommandAccess(Handle plugin, int numParams)
     {
         return false;
     }
-    
+
     int iFlags = ReadFlagString(sFlags);
     if (CheckCommandAccess(client, sCommand, iFlags, override_only))
     {
@@ -515,7 +490,7 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
                 {
                     PrintToChat(client, "Origin[2] = %.1f", fOrigin[2]);
                 }
-                
+
                 TeleportEntity(client, fOrigin, NULL_VECTOR, NULL_VECTOR);
             }
         }

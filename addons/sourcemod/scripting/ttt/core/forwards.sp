@@ -20,7 +20,6 @@ void InitForwards()
     g_fwOnPlayerRespawn = new GlobalForward("TTT_OnPlayerRespawn", ET_Ignore, Param_Cell);
     g_fwOnRoundSlay = new GlobalForward("TTT_OnRoundSlay", ET_Ignore, Param_Cell, Param_Cell);
     g_fwOnRoleSelection = new GlobalForward("TTT_OnRoleSelection", ET_Event, Param_CellByRef, Param_CellByRef, Param_CellByRef, Param_CellByRef);
-    g_fOnVersionCheck = new GlobalForward("TTT_OnVersionReceive", ET_Ignore, Param_Cell);
     g_fOnRoundTimerStart_Pre = new GlobalForward("TTT_OnRoundTimerStart_Pre", ET_Event, Param_CellByRef, Param_CellByRef);
 }
 
@@ -87,7 +86,7 @@ void Forward_OnClientDeath(int client, int attacker, bool badAction)
     Call_PushCell(client);
     Call_PushCell(attacker);
     Call_PushCell(view_as<int>(badAction));
-    Call_Finish(); 
+    Call_Finish();
 }
 
 Action Forward_OnClientDeath_Pre(int client, int attacker)
@@ -207,7 +206,7 @@ void Forward_OnRoundSlay(int client)
     Call_StartForward(g_fwOnRoundSlay);
     Call_PushCell(client);
     Call_PushCell(g_iPlayer[client].RoundSlays);
-    Call_Finish(); 
+    Call_Finish();
 }
 
 Action Forward_OnRoleSelection(int& traitors, int& detectives, int& innocents, int& misc)
@@ -221,13 +220,6 @@ Action Forward_OnRoleSelection(int& traitors, int& detectives, int& innocents, i
     Call_Finish(res);
 
     return res;
-}
-
-void Forward_OnVersionCheck()
-{
-    Call_StartForward(g_fOnVersionCheck);
-    Call_PushCell(g_iVersion);
-    Call_Finish();
 }
 
 void Forward_OnRoundStartTimer_Pre(bool& startTimer, float& endTime)

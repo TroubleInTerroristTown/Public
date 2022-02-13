@@ -362,14 +362,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     }
 
     GetClientAuthId(client, AuthId_Steam2, body.VictimSteam2, sizeof(body.VictimSteam2));
-    
+
     if (iUAttacker > 0)
     {
         GetClientAuthId(iAttacker, AuthId_Steam3, body.AttackerSteam3, sizeof(body.AttackerSteam3));
     }
 
     GetClientAuthId(client, AuthId_Steam3, body.VictimSteam3, sizeof(body.VictimSteam3));
-    
+
     if (iUAttacker > 0)
     {
         GetClientAuthId(iAttacker, AuthId_SteamID64, body.AttackerSteamID64, sizeof(body.AttackerSteamID64));
@@ -615,7 +615,7 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
             if (g_bGrabberMod)
             {
                 int iEnt = EntRefToEntIndex(body.EntityRef);
-                
+
                 TTT_ResetClientGrabByEntity(iEnt);
             }
 
@@ -761,7 +761,7 @@ public void Frame_RespawnParticle(any pack)
     if (DispatchSpawn(iParticle))
     {
         g_iParticleRef[iEntity] = EntIndexToEntRef(iParticle);
-        
+
         ActivateEntity(iParticle);
 
         AcceptEntityInput(iEntity, "EnableMotion");
@@ -1178,7 +1178,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                         }
                     }
 
-                    if (body.VictimRole == TTT_TEAM_INNOCENT)
+                    if (body.VictimTeam == TTT_TEAM_INNOCENT)
                     {
                         if (!skip)
                         {
@@ -1276,7 +1276,7 @@ void InspectBody(int client, int victim, int victimTeam, int attacker, int time,
         {
             Format(sWeaponUsed, sizeof(sWeaponUsed), "%T", "The weapon used has been: themself (suicide)", client);
         }
-        
+
         Format(sBuffer, sizeof(sBuffer), "<center><pre><font color=\"#FFFFFF\"><font size=\"48\">%s (%s)</font>\n<font size=\"32\">%s\n%s</font></font></pre></center>", victimName, team, sTime, sWeaponUsed);
     }
     else
@@ -1312,7 +1312,7 @@ public void Frame_RemoveBody(any ref)
             {
                 AcceptEntityInput(iParticle, "DestroyImmediately");
             }
-            
+
             if (IsValidEntity(iRagdoll))
             {
                 AcceptEntityInput(iRagdoll, "Kill");
@@ -1338,6 +1338,6 @@ void PrintCenterTextCustom(int client, const char[] message)
     pbMessage.AddString("params", NULL_STRING);
     pbMessage.AddString("params", NULL_STRING);
     pbMessage.AddString("params", NULL_STRING);
-    
+
     EndMessage();
 }

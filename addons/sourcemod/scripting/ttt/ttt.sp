@@ -279,7 +279,7 @@ public void TTT_OnSQLConnect(Database db)
     AlterKarmaColumn();
     AlterRSlaysColumn();
     CreateRoundTable();
-    
+
     if (g_cSaveLogsInSQL.BoolValue)
     {
         CreateLogTable();
@@ -1249,7 +1249,7 @@ public Action Timer_Selection(Handle hTimer)
             LogMessage("(Timer_Selection) g_iStatus set to %d from %d", Round_Selection, g_iStatus);
         }
     }
-    
+
     g_bCheckPlayers = false;
 
     if (g_cDebug.BoolValue)
@@ -1268,7 +1268,7 @@ public Action Timer_Selection(Handle hTimer)
         // A plugin has overidden the normal role selection procedure
         // Start the round after the query has completed
         StartRound(iInnocents, iTraitors, iDetectives, iMisc, null);
-        
+
         return;
     }
 
@@ -1328,7 +1328,7 @@ public Action Timer_Selection(Handle hTimer)
             for (int j = 0; j < iDCount && i < iClientCount; ++j)
             {
                 while (hasRole[clients[i]] ||
-                      g_iPlayer[clients[i]].AvoidDetective || 
+                      g_iPlayer[clients[i]].AvoidDetective ||
                       g_bDetectiveBans && TTT_IsDetectiveBanned(i))
                 {
                     ++i;
@@ -1337,7 +1337,7 @@ public Action Timer_Selection(Handle hTimer)
                         break;
                     }
                 }
-                
+
                 if (g_bDetectiveBans && TTT_IsDetectiveBanned(i))
                 {
                     SetClientRole(clients[i], TTT_TEAM_INNOCENT, TTT_ROLE_DEFAULT);
@@ -1348,7 +1348,7 @@ public Action Timer_Selection(Handle hTimer)
                     SetClientRole(clients[i], TTT_TEAM_DETECTIVE, roles[j]);
                     ++iDetectives;
                 }
-                
+
                 hasRole[clients[i]] = true;
                 ++i;
             }
@@ -1449,7 +1449,7 @@ public Action Timer_Selection(Handle hTimer)
         for (int j = 0; j < iDCount && i < iClientCount; ++j)
         {
             while (hasRole[clients[i]] ||
-                  g_iPlayer[clients[i]].AvoidDetective || 
+                  g_iPlayer[clients[i]].AvoidDetective ||
                   g_bDetectiveBans && TTT_IsDetectiveBanned(i))
             {
                 ++i;
@@ -1900,12 +1900,12 @@ public Action Event_PlayerConnectFull(Event event, const char[] name, bool dontB
 public Action Timer_AutoAssignTeam(Handle timer, any userId)
 {
     int client = GetClientOfUserId(userId);
-    
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Stop;
     }
-    
+
     int iTeam = DetermineTeam();
     int iLifeState = GetEntProp(client, Prop_Send, "m_lifeState");
     SetEntProp(client, Prop_Send, "m_lifeState", 2);
@@ -1913,31 +1913,31 @@ public Action Timer_AutoAssignTeam(Handle timer, any userId)
     ClientCommand(client, "jointeam %i", iTeam);
     CS_UpdateClientModel(client);
     SetEntProp(client, Prop_Send, "m_lifeState", iLifeState);
-    
+
     int iCurrent = GetClientTeam(client);
-    
+
     if (!IsPlayerAlive(client) && (iCurrent == CS_TEAM_T || iCurrent == CS_TEAM_CT) && (g_bSpawnAllowed || AreTeamsEmpty()))
     {
         CS_RespawnPlayer(client);
     }
-    
+
     return Plugin_Stop;
 }
 
 public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 {
     bool bWarmup = TTT_IsWarmUp();
-    
+
     if (bWarmup || g_cGraceTime.BoolValue)
     {
         g_bSpawnAllowed = true;
     }
-    
+
     if (bWarmup)
     {
         return;
     }
-    
+
     CreateTimer(g_cGraceTime.FloatValue, Timer_GraceTimeOver, _, TIMER_FLAG_NO_MAPCHANGE);
 }
 
@@ -3107,7 +3107,7 @@ public void OnClientDisconnect(int client)
     if (!AreTeamsEmpty()) {
         return;
     }
-    
+
     g_bSpawnAllowed = true;
 }
 
@@ -3847,7 +3847,7 @@ int addKarma(int client, int karma, bool message = false)
         if (g_iPlayer[client].Karma > g_cmaxKarma.IntValue)
         {
             g_iPlayer[client].Karma = g_cmaxKarma.IntValue;
-        }  
+        }
     }
 
     if (g_cshowEarnKarmaMessage.BoolValue && message)
@@ -3898,7 +3898,7 @@ int setKarma(int client, int karma, bool force = false)
         if (g_iPlayer[client].Karma > g_cmaxKarma.IntValue)
         {
             g_iPlayer[client].Karma = g_cmaxKarma.IntValue;
-        }  
+        }
     }
 
     UpdatePlayer(client);
@@ -3915,7 +3915,7 @@ int subtractKarma(int client, int karma, bool message = false)
     {
         return -1;
     }
-    
+
     if (g_iStatus != Round_Active)
     {
         return -1;
@@ -4462,7 +4462,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
     {
         return Plugin_Handled;
     }
-    
+
     if (g_iPlayer[activator].Team != TTT_TEAM_TRAITOR)
     {
         TTT_AddRoundSlays(activator, g_cRoundSlayDestroyTrigger.IntValue, true);
@@ -4472,7 +4472,7 @@ public Action OnUse(int entity, int activator, int caller, UseType type, float v
             CPrintToChat(i, "%s %T", g_sTag, "Triggered Falling Building", i, g_iPlayer[activator].Name);
         }
     }
-    
+
     return Plugin_Continue;
 }
 
@@ -4665,7 +4665,7 @@ void LoadClientInfo(any userid)
             {
                 LogToFileEx(g_sKarmaFile, "(LoadClientInfo) - 3 Client: \"%L\", Valid Database", client);
             }
-            g_dDB.Query(SQL_LoadClientInfo, sQuery, userid);
+            g_dDB.Query(SQL_OnClientPutInServer, sQuery, userid);
         }
     }
 }
@@ -5023,9 +5023,9 @@ int DetermineTeam()
 {
     int tCount = GetTeamClientCount(CS_TEAM_T);
     int ctCount = GetTeamClientCount(CS_TEAM_CT);
-    
+
     return tCount == ctCount ? GetRandomInt(CS_TEAM_T, CS_TEAM_CT) : tCount < ctCount ? CS_TEAM_T : CS_TEAM_CT;
-} 
+}
 
 void EscapeName(char[] name, int size)
 {

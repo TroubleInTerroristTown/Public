@@ -10,7 +10,7 @@ public void SQL_AlterKarmaColumn(Database db, DBResultSet results, const char[] 
         {
             LogError("(SQL_AlterKarmaColumn) Query failed: %s", error);
         }
-        
+
         return;
     }
     else
@@ -45,7 +45,7 @@ public void SQL_AlterRSlaysColumn(Database db, DBResultSet results, const char[]
         {
             LogError("(SQL_AlterRSlaysColumn) Query failed: %s", error);
         }
-        
+
         return;
     }
     else
@@ -66,7 +66,7 @@ public void SQL_AlterNameColumn(Database db, DBResultSet results, const char[] e
         {
             LogError("(SQL_AlterRSlaysColumn) Query failed: %s", error);
         }
-        
+
         return;
     }
     else
@@ -140,7 +140,7 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
         int iDetectives = view_as<DataPack>(pack).ReadCell();
         int iMisc = view_as<DataPack>(pack).ReadCell();
         ArrayList aTraitors = view_as<ArrayList>(view_as<DataPack>(pack).ReadCell());
-        delete pack;
+        delete view_as<DataPack>(pack);
 
         LoopValidClients(i)
         {
@@ -187,7 +187,7 @@ public void SQL_InsertRound(Database db, DBResultSet results, const char[] error
                         CPrintToChat(i, "%s %T", g_sTag, "Traitor List", i, g_iPlayer[iTraitor].Name);
                         iCount++;
                     }
-                
+
                     if (iCount == 0)
                     {
                         CPrintToChat(i, "%s %T", g_sTag, "No Traitor Partners", i);
