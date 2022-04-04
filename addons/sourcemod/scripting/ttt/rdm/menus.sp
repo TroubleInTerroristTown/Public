@@ -12,20 +12,22 @@ int MenuHandler_RDM(Menu menu, MenuAction action, int client, int data) {
             delete menu;
         }
     }
+    
+    return 0;
 }
 
 void Menu_PunishChoice(int client)
 {
-            Menu punishMenu = new Menu(MenuHandler_PunishChoice);
-            char sPunishTitle[64], sPunishSlay[64], sPunishWarn[64];
-            Format(sPunishTitle, sizeof(sPunishTitle), "%T", "RDM: Report - Punishment Menu Title", client);
-            punishMenu.SetTitle(sPunishTitle);
-            Format(sPunishSlay, sizeof(sPunishSlay), "%T", "RDM: Report - Punishment Slay", client);
-            punishMenu.AddItem("", sPunishSlay);
-            Format(sPunishWarn, sizeof(sPunishWarn), "%T", "RDM: Report - Punishment Warning", client);
-            punishMenu.AddItem("", sPunishWarn);
-
-            punishMenu.Display(client, 240);
+    Menu punishMenu = new Menu(MenuHandler_PunishChoice);
+    char sPunishTitle[64], sPunishSlay[64], sPunishWarn[64];
+    Format(sPunishTitle, sizeof(sPunishTitle), "%T", "RDM: Report - Punishment Menu Title", client);
+    punishMenu.SetTitle(sPunishTitle);
+    Format(sPunishSlay, sizeof(sPunishSlay), "%T", "RDM: Report - Punishment Slay", client);
+    punishMenu.AddItem("", sPunishSlay);
+    Format(sPunishWarn, sizeof(sPunishWarn), "%T", "RDM: Report - Punishment Warning", client);
+    punishMenu.AddItem("", sPunishWarn);
+    
+    punishMenu.Display(client, 240);
 }
 
 int MenuHandler_PunishChoice(Menu menu, MenuAction action, int client, int choice)
@@ -51,6 +53,8 @@ int MenuHandler_PunishChoice(Menu menu, MenuAction action, int client, int choic
             delete menu;
         }
     }
+    
+    return 0;
 }
 
 void Menu_Verdict(int client)
@@ -84,4 +88,6 @@ int MenuHandler_Verdict(Menu menu, MenuAction action, int client, int choice)
             delete menu;
         }
     }
+    
+    return 0;
 }

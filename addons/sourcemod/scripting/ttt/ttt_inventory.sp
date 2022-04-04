@@ -53,6 +53,8 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
     CreateNative("TTT_GetClientItemQuantity", Native_GetClientItemQuantity);
     
     RegPluginLibrary("ttt_inventory");
+    
+    return APLRes_Success;
 }
 
 public void OnPluginStart()
@@ -193,7 +195,7 @@ public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int i
             if (!IsPlayerAlive(client))
             {
                 CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
-                return;
+                return 0;
             }
             
             char sInfo[16];
@@ -210,6 +212,8 @@ public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int i
             delete menu;
         }
     }
+    
+    return 0;
 }
 
 public void TTT_OnRoundStart(int innocents, int traitors, int detective)

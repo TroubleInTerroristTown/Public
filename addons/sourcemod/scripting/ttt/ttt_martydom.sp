@@ -124,6 +124,8 @@ public Action Timer_CreateGrenade(Handle timer, any client)
     {
         CreateGrenade(client);
     }
+    
+    return Plugin_Handled;
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool inrestart)

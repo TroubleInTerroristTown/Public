@@ -125,6 +125,8 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
     {
         ClearIcon(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_CreateIcon(Handle timer)
@@ -160,6 +162,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] name, bool dontBroa
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     ClearIcon(client);
+    
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerTeamPre(Event event, const char[] name, bool dontBroadcast)

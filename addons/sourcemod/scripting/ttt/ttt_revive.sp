@@ -171,6 +171,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetItem(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action TTT_OnGrabbing(int client, int entity)
@@ -453,7 +455,7 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
     {
         if (TTT_GetRoundStatus() != Round_Active || IsPlayerAlive(target))
         {
-            return;
+            return 0;
         }
 
         char sParam[32];
@@ -475,17 +477,17 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
 
         if (!IsPlayerAlive(client) || !HasReviveItem(client))
         {
-            return;
+            return 0;
         }
 
         if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
         {
-            return;
+            return 0;
         }
 
         if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
         {
-            return;
+            return 0;
         }
 
         if (StrEqual(sParam, "yes", false))
@@ -532,6 +534,8 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 public void TTT_OnButtonPress(int client, int button)

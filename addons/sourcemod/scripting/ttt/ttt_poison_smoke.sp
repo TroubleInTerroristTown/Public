@@ -122,6 +122,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetStuff(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroadcast)

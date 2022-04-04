@@ -405,6 +405,8 @@ public Action Timer_Delete(Handle timer, any userid)
             GiveMelee(client);
         }
     }
+    
+    return Plugin_Handled;
 }
 
 bool SpawnCamAndAttach(int client, int ragdoll)

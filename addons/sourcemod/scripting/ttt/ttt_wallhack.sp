@@ -171,6 +171,8 @@ public Action Event_PlayerReset(Event event, const char[] name, bool dontBroadca
     {
         g_iPlayer[client].HasWH = false;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcast)
@@ -179,6 +181,8 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
     {
         g_iPlayer[client].HasWH = false;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)

@@ -349,13 +349,15 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetTaser(client, true);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)
 {
     if (TTT_GetRoundStatus() != Round_Active)
     {
-        return;
+        return Plugin_Continue;
     }
 
     int client = GetClientOfUserId(event.GetInt("userid"));
@@ -386,6 +388,8 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
             }
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)

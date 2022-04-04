@@ -228,6 +228,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetSprint(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetSprint(int client)

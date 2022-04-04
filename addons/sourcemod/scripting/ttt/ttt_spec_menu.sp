@@ -447,6 +447,8 @@ public int Menu_MainMenu(Menu menu, MenuAction action, int client, int param)
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 int GetObservTarget(int client)

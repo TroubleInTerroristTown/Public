@@ -150,6 +150,8 @@ public Action Timer_Retry(Handle timer)
 {
     g_iRetries++;
     SQL_Start();
+    
+    return Plugin_Handled;
 }
 
 void Call_OnSQLConnect()

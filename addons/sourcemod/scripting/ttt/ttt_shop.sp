@@ -874,6 +874,8 @@ public Action Listener_PlayerPing(int client, const char[] command, int args)
     {
         Command_Shop(client, 0);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Command_ReopenShop(int client, int args)
@@ -914,7 +916,7 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
         if (!IsPlayerAlive(client))
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "YouAreDead", client);
-            return;
+            return 0;
         }
 
         char info[32];
@@ -927,6 +929,8 @@ public int Menu_ShopHandler(Menu menu, MenuAction action, int client, int itemNu
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
@@ -1591,6 +1595,8 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     TTT_ClearTimer(g_iPlayer[client].Timer);
+    
+    return Plugin_Continue;
 }
 
 public void OnClientDisconnect(int client)
@@ -1617,13 +1623,13 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
 
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
-        return;
+        return Plugin_Continue;
     }
 
     if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
@@ -1662,6 +1668,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         subtractCredits(iAttacker, g_cCreditsDD.IntValue, true);
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective)
@@ -2304,6 +2312,8 @@ public int Native_GetClientCurrency(Handle plugin, int numParams)
     int client = GetNativeCell(1);
 
     SetNativeString(2, g_iPlayer[client].Currency, GetNativeCell(3));
+    
+    return 0;
 }
 
 void ResetItemsArray(const char[] sFunction, bool initArray = false)

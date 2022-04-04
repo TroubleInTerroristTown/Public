@@ -35,7 +35,6 @@ ConVar g_cTDamage = null;
 ConVar g_cOwnDamage = null;
 ConVar g_cUsage = null;
 ConVar g_cUsageCooldown = null;
-ConVar g_cActTime = null;
 ConVar g_cColor = null;
 ConVar g_cRandomColor = null;
 ConVar g_cRadius = null;
@@ -75,7 +74,6 @@ public void OnPluginStart()
     g_cOwnDamage = AutoExecConfig_CreateConVar("tripmines_own_damage", "1", "Block own damage as tripmine owner", _, true, 0.0, true, 1.0);
     g_cUsage = AutoExecConfig_CreateConVar("tripmines_usage", "0", "Determinate if player should place mines with sm_tripmine command (0) or if they can place (left click) it using start malee weapon from ttt core ( ttt_start_melee_weapon ) (1)", _, true, 0.0, true, 1.0);
     g_cUsageCooldown = AutoExecConfig_CreateConVar("tripmines_usage_cooldown", "1", "Determinate how fast player can place another mine. Min value is 1 second.", _, true, 1.0, false, 0.0);
-    g_cActTime = AutoExecConfig_CreateConVar("tripmines_activate_time", "3.0");
     g_cColor = AutoExecConfig_CreateConVar("tripmines_beam_color", "255 0 0", "RGB Color for the sBeam but tripmines_random_beam_color must be on 0 (Example: \"R G B\" or as color code: \"255 0 0 \" for red sBeam");
     g_cRandomColor = AutoExecConfig_CreateConVar("tripmines_random_beam_color", "0", "Determinate if beam from mines will get random colors 1 if true 0 otherwise.", _, true, 0.0, true, 1.0);
     g_cRadius = AutoExecConfig_CreateConVar("tripmines_radius", "256", "The explosion radius in units for tripmines", _, true, 60.0);
@@ -343,16 +341,6 @@ void SetMine(int client)
         SetEntPropFloat(iBeam, Prop_Data, "m_fWidth", 4.0);
         AcceptEntityInput(iBeam, "TurnOff");
 
-        DataPack pack = new DataPack();
-        CreateTimer(g_cActTime.FloatValue, Timer_TurnBeamOn, pack);
-
-        pack.WriteCell(GetClientUserId(client));
-        pack.WriteCell(EntIndexToEntRef(iBeamMDL));
-        pack.WriteCell(EntIndexToEntRef(iBeam));
-        pack.WriteFloat(fEnd[0]);
-        pack.WriteFloat(fEnd[1]);
-        pack.WriteFloat(fEnd[2]);
-
         EmitSoundToAll(SND_MINEPUT, iBeamMDL);
 
         PrintHintText(client, "%T", "Remaining Tripmines", client, TTT_GetClientItemQuantity(client, SHORT_NAME_T));
@@ -363,7 +351,7 @@ void SetMine(int client)
     }
 }
 
-public Action Timer_TurnBeamOn(Handle timer, DataPack pack)
+public Action f(Handle timer, DataPack pack)
 {
     pack.Reset();
 
@@ -396,6 +384,8 @@ public Action Timer_TurnBeamOn(Handle timer, DataPack pack)
     }
 
     delete pack;
+    
+    return Plugin_Handled;
 }
 
 public void MineBreak(const char[] output, int caller, int activator, float delay)

@@ -322,11 +322,15 @@ public void OnAllPluginsLoaded()
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     ResetStuff();
+    
+    return Plugin_Continue;
 }
 
 public Action TTT_OnRoundStart_Pre()
 {
     ResetStuff();
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
@@ -387,6 +391,8 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 public Action Timer_Delay(Handle timer, any data)
 {
     g_bEndOverlay = false;
+    
+    return Plugin_Handled;
 }
 
 public void TTT_OnClientGetRole(int client, int role)
@@ -398,7 +404,7 @@ public Action Timer_HUD(Handle timer)
 {
     if (TTT_GetRoundStatus() != Round_Active)
     {
-        return;
+        return Plugin_Continue;
     }
     
     int iDet = 0;
@@ -492,6 +498,8 @@ public Action Timer_HUD(Handle timer)
             TTT_ShowOverlayToAll(sOverlay);
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_DisableTimeOverlays(Handle timer)
@@ -601,6 +609,8 @@ public int Native_DisableRoleOverlays(Handle plugin, int numParams)
     float fTime = view_as<float>(GetNativeCell(1));
     g_bDisableRoleOverlays = true;
     CreateTimer(fTime, Timer_EnableRoleOverlays);
+    
+    return 0;
 }
 
 public Action Timer_EnableRoleOverlays(Handle timer)
