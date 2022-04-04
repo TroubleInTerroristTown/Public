@@ -93,6 +93,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetExojump(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetExojump(int client)

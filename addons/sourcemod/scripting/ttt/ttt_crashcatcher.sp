@@ -119,6 +119,8 @@ public Action Timer_Restore(Handle timer, any ref)
             SetEntityFlags(iEntity, iFlags&~FL_FROZEN);
         }
     }
+    
+    return Plugin_Handled;
 }
 
 public void Phys_OnObjectWake(int entity)

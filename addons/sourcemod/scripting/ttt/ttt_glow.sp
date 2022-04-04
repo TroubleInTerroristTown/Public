@@ -90,6 +90,8 @@ public void TTT_OnClientGetRole(int client, int role)
 public Action TTT_OnPlayerDeath(int victim, int attacker)
 {
     DeleteAndClearAllClient(victim);
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundEnd(int winner, Handle array)
@@ -119,6 +121,8 @@ int Native_SetGlowColor(Handle plugin, int numParams)
     {
         CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 int Native_SetGlowTeam(Handle plugin, int numParams)
@@ -136,6 +140,8 @@ int Native_SetGlowTeam(Handle plugin, int numParams)
     {
         CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 int Native_CanSeeGlow(Handle plugin, int numParams)
@@ -153,6 +159,8 @@ int Native_CanSeeGlow(Handle plugin, int numParams)
         data.WriteCell(GetClientUserId(client));
         data.WriteCell(GetClientUserId(target));
     }
+    
+    return 0;
 }
 
 int Native_CanSeeClientsGlow(Handle plugin, int numParams)
@@ -181,6 +189,8 @@ int Native_CanSeeClientsGlow(Handle plugin, int numParams)
 
         data.Reset();
     }
+    
+    return 0;
 }
 
 int Native_CanSeeAllGlow(Handle plugin, int numParams)
@@ -194,6 +204,8 @@ int Native_CanSeeAllGlow(Handle plugin, int numParams)
     {
         CreateTimer(duration, Timer_ResetCanSeeAll, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 int Native_AllCanSeeGlow(Handle plugin, int numParams)
@@ -207,6 +219,8 @@ int Native_AllCanSeeGlow(Handle plugin, int numParams)
     {
         CreateTimer(duration, Timer_ResetAllCanSee, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 void CreateGlowProp(int client)
@@ -391,6 +405,8 @@ Action Timer_ResetGlowColor(Handle timer, any userid)
         int skin = EntRefToEntIndex(g_iPlayer[client].SkinRef);
         UpdateGlowTeam(skin, TTT_GetClientRole(client));
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeGlow(Handle timer, any pack)
@@ -404,6 +420,8 @@ Action Timer_ResetCanSeeGlow(Handle timer, any pack)
     {
         g_iPlayer[client].CanSee[target] = false;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
@@ -420,6 +438,8 @@ Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
             g_iPlayer[client].CanSee[GetClientOfUserId(view_as<DataPack>(pack).ReadCell())] = false;
         }
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeAll(Handle timer, any userid)
@@ -430,6 +450,8 @@ Action Timer_ResetCanSeeAll(Handle timer, any userid)
     {
         g_iPlayer[client].CanSeeAll = false;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetAllCanSee(Handle timer, any userid)
@@ -440,6 +462,8 @@ Action Timer_ResetAllCanSee(Handle timer, any userid)
     {
         g_iPlayer[client].AllCanSee = false;
     }
+    
+    return Plugin_Handled;
 }
 
 void DeleteAndClearAll()

@@ -147,6 +147,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetCAD(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetCAD(int client)

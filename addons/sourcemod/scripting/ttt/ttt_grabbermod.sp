@@ -562,6 +562,8 @@ public Action Timer_Unblock(Handle timer, any refIndex)
     {
         g_aBlocklist.Erase(iIndex);
     }
+    
+    return Plugin_Handled;
 }
 
 // public Action Timer_Adjust(Handle timer)
@@ -882,6 +884,8 @@ public int Native_ResetClientGrab(Handle plugin, int numParams)
     int client = GetNativeCell(1);
 
     Command_UnGrab(client);
+    
+    return 0;
 }
 
 public int Native_GetEntityGrabber(Handle plugin, int numParams)
@@ -912,6 +916,8 @@ public int Native_ResetClientGrabByEntity(Handle plugin, int numParams)
             Command_UnGrab(client);
         }
     }
+    
+    return 0;
 }
 
 void ThrowObject(int client)

@@ -170,8 +170,6 @@ public void TTT_OnButtonPress(int client, int button)
     {
         IdentifyEntity(client, button);
     }
-
-    return 0;
 }
 
 public void TTT_OnButtonRelease(int client, int button)

@@ -277,6 +277,8 @@ public Action Timer_Button(Handle timer, any ref)
     {
         SetEntProp(EntRefToEntIndex(ref), Prop_Data, "m_bLocked", 1, 1);
     }
+    
+    return Plugin_Handled;
 }
 
 stock int GetClientTraceTarget(int client)
@@ -431,7 +433,7 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
 {
     if (TTT_GetClientRole(attacker) != TTT_TEAM_TRAITOR)
     {
-        return;
+        return 0;
     }
 
     AcceptEntityInput(caller, "Unlock");
@@ -474,6 +476,8 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
         TTT_GetRoleNameByID(TTT_GetClientRole(attacker), sRole, sizeof(sRole));
         TTT_LogString("-> [%N%s (%s) opened a traitor secret: %s]", attacker, sClientID, sRole, sName);
     }
+    
+    return 0;
 }
 
 void LoadButtons()

@@ -206,6 +206,8 @@ public Action Timer_Cooldown(Handle timer)
     {
         g_iPlayer[client].Cooldown = false;
     }
+    
+    return Plugin_Handled;
 }
 
 void DropWeapons(int client)
@@ -230,6 +232,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetDrop(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetDrop(int client)

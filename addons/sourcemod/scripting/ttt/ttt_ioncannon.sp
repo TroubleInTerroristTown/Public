@@ -379,6 +379,8 @@ public int Menu_IonHandler(Handle menu, MenuAction action, int client, int param
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 void AimAtTarget(int client, int target) 
@@ -404,7 +406,7 @@ Action Timer_UpdateTargetPosition(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
 
     int target = GetClientOfUserId(g_iPlayer[client].iIonTarget);
@@ -425,6 +427,8 @@ Action Timer_UpdateTargetPosition(Handle timer, any userid)
 
         TTT_ClearTimer(g_iPlayer[client].hIonTarget);
     }
+    
+    return Plugin_Continue;
 }
 
 public void OnClientDisconnect(int client)
@@ -507,10 +511,12 @@ Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroadcast)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
     
     ClearIon(client);
+    
+    return Plugin_Continue;
 }
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float fVel[3], float fAngles[3], int &weapon)
@@ -605,13 +611,13 @@ Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
 
     if (!IsClientInGame(client) || g_iPlayer[client].iFireWeaponStartTime == 0)
     {
         TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
-        return;
+        return Plugin_Continue;
     }
     
     int iDifference = g_cIonPlaceTime.IntValue - GetTime() + g_iPlayer[client].iFireWeaponStartTime;
@@ -619,7 +625,7 @@ Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
     if (iDifference < 1)
     {
         TTT_ClearTimer(g_iPlayer[client].hFiringWeaponCountdown);
-        return;
+        return Plugin_Continue;
     }
 
     BlockKnife(client);
@@ -627,6 +633,8 @@ Action Timer_OnUpdatePlaceCountdown(Handle timer, any userid)
     char sBuffer[1024];
     Format(sBuffer, sizeof(sBuffer), "%T", "Ion cannon: Placing ion beacon", client, iDifference);
     PrintCenterText2(client, "TTT - Ion Cannon", sBuffer);
+    
+    return Plugin_Continue;
 }
 
 void BlockKnife(int client)
@@ -646,7 +654,7 @@ Action Timer_OnIonPlanted(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? GetClientOfUserId(g_iPlayer[client].iIonTarget) : client;
@@ -679,7 +687,7 @@ Action Timer_OnIonPlanted(Handle timer, any userid)
     
     if (iEntity == -1)
     {
-        return;
+        return Plugin_Handled;
     }
     
     DispatchKeyValue(iEntity, "targetname", "info_target_ion");
@@ -708,6 +716,8 @@ Action Timer_OnIonPlanted(Handle timer, any userid)
 
         g_iPlayer[client].iInfoTargetEntity = EntIndexToEntRef(iEntity);
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnPlayBeaconBeep(Handle timer, any userid)
@@ -716,14 +726,14 @@ Action Timer_OnPlayBeaconBeep(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int iEntity = EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity);
     
     if (iEntity < 0 || !IsValidEntity(iEntity))
     {
-        return;
+        return Plugin_Handled;
     }
 
     g_iPlayer[client].iBeaconBeepPitch += 3;
@@ -745,6 +755,8 @@ Action Timer_OnPlayBeaconBeep(Handle timer, any userid)
 
     TE_SetupGlowSprite(g_iPlayer[client].fInfoTargetOrigin, g_iGlowSprite, g_iPlayer[client].fBeaconBeepTime, 1.0, 100);
     TE_SendToAll();
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnIonStartup(Handle timer, any userid)
@@ -753,12 +765,12 @@ Action Timer_OnIonStartup(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
     {
-        return;
+        return Plugin_Handled;
     }
     
     EmitSoundToAllAny(SOUND_APPROACH);
@@ -769,6 +781,8 @@ Action Timer_OnIonStartup(Handle timer, any userid)
     }
 
     CreateTimer(g_cIonDeployTime.FloatValue, Timer_OnTraceReady, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnTraceReady(Handle timer, any userid)
@@ -777,12 +791,12 @@ Action Timer_OnTraceReady(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
     {
-        return;
+        return Plugin_Handled;
     }
     
     // 1st
@@ -860,6 +874,8 @@ Action Timer_OnTraceReady(Handle timer, any userid)
     CreateTimer(11.5, Timer_OnCreateFire, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
     CreateTimer(12.5, Timer_OnClearLasers, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
     CreateTimer(15.2, Timer_OnFireIonCannon, GetClientUserId(client), TIMER_FLAG_NO_MAPCHANGE);
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnCreateFire(Handle timer, any userid)
@@ -868,12 +884,12 @@ Action Timer_OnCreateFire(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int iFire = CreateEntityByName("env_fire");
@@ -898,6 +914,8 @@ Action Timer_OnCreateFire(Handle timer, any userid)
     }
 
     CreateTimer(1.5, Timer_OnCreateFire, userid, TIMER_FLAG_NO_MAPCHANGE);
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnClearLasers(Handle timer, any userid)
@@ -906,13 +924,15 @@ Action Timer_OnClearLasers(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) > 0 && IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
     {
         g_iPlayer[client].bShowBeams = false;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnTraceStart(Handle timer, DataPack pack)
@@ -926,17 +946,17 @@ Action Timer_OnTraceStart(Handle timer, DataPack pack)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     delete pack;
     
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)))
     {
-        return;
+        return Plugin_Handled;
     }
     
-    g_iPlayer[client].fSkyOrigin = GetDistanceToSky(g_iPlayer[client].iInfoTargetEntity);
+    GetDistanceToSky(g_iPlayer[client].iInfoTargetEntity, g_iPlayer[client].fSkyOrigin);
 
     float fRandomZ = Math_GetRandomFloat(300.0, g_iPlayer[client].fSkyOrigin[2]);
     
@@ -953,6 +973,8 @@ Action Timer_OnTraceStart(Handle timer, DataPack pack)
     pack.WriteCell(client);
 
     RequestFrame(Frame_ShowBeam, pack);
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnLaserRotate(Handle timer, any userid)
@@ -961,12 +983,12 @@ Action Timer_OnLaserRotate(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
     {
-        return;
+        return Plugin_Handled;
     }
     
     g_iPlayer[client].fBeamDistance -= 0.467;
@@ -984,6 +1006,8 @@ Action Timer_OnLaserRotate(Handle timer, any userid)
         g_fBeamOrigin[client][i][1] = g_iPlayer[client].fInfoTargetOrigin[1] + Cosine(g_iPlayer[client].fBeamDegrees[i]) * g_iPlayer[client].fBeamDistance;
         g_fBeamOrigin[client][i][2] = g_iPlayer[client].fInfoTargetOrigin[2] + 0.0;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnAddSpeed(Handle timer, any userid)
@@ -992,12 +1016,12 @@ Action Timer_OnAddSpeed(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity) < 0 || !IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity)) || !g_iPlayer[client].bShowBeams)
     {
-        return;
+        return Plugin_Handled;
     }
     
     if (g_iPlayer[client].fBeamRotationSpeed > 1.0)
@@ -1008,6 +1032,8 @@ Action Timer_OnAddSpeed(Handle timer, any userid)
     g_iPlayer[client].fBeamRotationSpeed += 0.1;
     
     CreateTimer(0.6, Timer_OnAddSpeed, userid, TIMER_FLAG_NO_MAPCHANGE);
+    
+    return Plugin_Handled;
 }
 
 Action Timer_OnFireIonCannon(Handle timer, any userid)
@@ -1016,14 +1042,14 @@ Action Timer_OnFireIonCannon(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int iEntity = EntRefToEntIndex(g_iPlayer[client].iInfoTargetEntity);
 
     if (iEntity < 0 || !IsValidEntity(iEntity))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int target = TTT_IsClientValid(g_iPlayer[client].iIonTarget) ? GetClientOfUserId(g_iPlayer[client].iIonTarget) : -1;
@@ -1036,7 +1062,7 @@ Action Timer_OnFireIonCannon(Handle timer, any userid)
         
         if (event == null)
         {
-            return;
+            return Plugin_Handled;
         }
 
         event.SetInt("userid", GetClientUserId(target));
@@ -1200,6 +1226,8 @@ Action Timer_OnFireIonCannon(Handle timer, any userid)
     AcceptEntityInput(iEntity, "Kill");
 
     g_iPlayer[client].iInfoTargetEntity = -1;
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ShowExplosions(Handle timer, any userid)
@@ -1208,7 +1236,7 @@ Action Timer_ShowExplosions(Handle timer, any userid)
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     float fMagnitude = Math_GetRandomFloat(g_cIonExplosionMinDamage.FloatValue, g_cIonExplosionMaxDamage.FloatValue);
@@ -1239,6 +1267,8 @@ Action Timer_ShowExplosions(Handle timer, any userid)
             TE_SendToAll();
         }
     }
+    
+    return Plugin_Handled;
 }
 
 stock bool TraceRay_PlayerOnly(int entity, int contentsMask, any data)
@@ -1246,7 +1276,7 @@ stock bool TraceRay_PlayerOnly(int entity, int contentsMask, any data)
     return entity == data;
 }
 
-stock float GetDistanceToSky(int iEntity)
+stock void GetDistanceToSky(int iEntity, float skyOrigin[3])
 {
     float fTraceEnd[3];
     GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fTraceEnd);
@@ -1256,13 +1286,11 @@ stock float GetDistanceToSky(int iEntity)
     fTraceDest[1] = fTraceEnd[1];
     fTraceDest[2] = fTraceEnd[2] + 8192.0;
 
-    float fSkyOrigin[3];
     Handle hTrace = TR_TraceRayEx(fTraceEnd, fTraceDest, CONTENTS_WINDOW | CONTENTS_MONSTER, RayType_EndPoint);
 
-    TR_GetEndPosition(fSkyOrigin, hTrace);
+    TR_GetEndPosition(skyOrigin, hTrace);
 
     CloseHandle(hTrace);
-    return fSkyOrigin;
 }
 
 stock float GetDistance(const float fVec1[3], const float fVec2[3])
@@ -1322,6 +1350,8 @@ Action Timer_KillEntity(Handle timer, any ref)
             AcceptEntityInput(iEnt, "kill");
         }
     }
+    
+    return Plugin_Handled;
 }
 
 stock int PrecacheMaterial(const char[] material)

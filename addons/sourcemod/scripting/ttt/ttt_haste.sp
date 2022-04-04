@@ -75,6 +75,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
 {
     g_iRoundStart = GetTime();
     g_bIsActive = false;
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives)
@@ -296,4 +298,6 @@ public Action Timer_RoundTime(Handle timer)
     {
         TTT_TerminateRound(3.0, CSRoundEnd_CTWin);
     }
+    
+    return Plugin_Continue;
 }

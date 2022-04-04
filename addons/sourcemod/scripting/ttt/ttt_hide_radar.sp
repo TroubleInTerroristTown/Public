@@ -28,6 +28,8 @@ public void OnPluginStart()
 public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast)
 {
     CreateTimer(0.0, Timer_RemoveRadar, event.GetInt("userid"));
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_RemoveRadar(Handle timer, any userid)
@@ -38,6 +40,8 @@ public Action Timer_RemoveRadar(Handle timer, any userid)
     {
         SetEntProp(client, Prop_Send, "m_iHideHUD", 1<<12);
     }
+    
+    return Plugin_Handled;
 }
 
 public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadcast)
@@ -50,4 +54,6 @@ public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadca
         float fDuration = GetEntPropFloat(client, Prop_Send, "m_flFlashDuration");
         CreateTimer(fDuration, Timer_RemoveRadar, userid);
     }
+    
+    return Plugin_Continue;
 }

@@ -297,6 +297,8 @@ public Action Event_Player(Event event, const char[] name, bool dontBroadcast)
         ResetFakename(client);
         ResetInvisible(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetFakename(int client)
