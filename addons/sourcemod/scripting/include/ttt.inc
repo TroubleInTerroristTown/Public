@@ -17,6 +17,7 @@
 
 #include <ttt_stock>
 #include <sdktools>
+#include <sdkhooks>
 #include <cstrike>
 
 enum KarmaUpdate
@@ -973,7 +974,6 @@ stock int TTT_GetRoundTimeElapsed()
         return -1;
     }
 
-    ConVar cRoundTime = FindConVar("mp_roundtime");
     return (GetTime() - TTT_GetRoundTimestamp());
 }
 
@@ -1122,6 +1122,8 @@ stock bool TTT_LoadTranslations()
     }
 
     LoadTranslations("ttt.phrases");
+
+    return true;
 }
 
 stock int TTT_ObserversOfTarget(int observers[MAXPLAYERS + 1], int target, float fMaxDistance = 0.0, float fThreshold = 0.73)

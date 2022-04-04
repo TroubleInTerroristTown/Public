@@ -14,6 +14,8 @@ public int Native_DiscordBot_SendMessageToChannel(Handle plugin, int numParams) 
 	}
 	
 	SendMessage(bot, channel, message, fForward, data);
+
+	return 0;
 }
 
 public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
@@ -35,6 +37,8 @@ public int Native_DiscordBot_SendMessage(Handle plugin, int numParams) {
 	}
 	
 	SendMessage(bot, channelID, message, fForward, data);
+
+	return 0;
 }
 
 public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
@@ -57,6 +61,8 @@ public int Native_DiscordChannel_SendMessage(Handle plugin, int numParams) {
 	}
 	
 	SendMessage(bot, channelID, message, fForward, data);
+
+	return 0;
 }
 
 static void SendMessage(DiscordBot bot, char[] channel, char[] message, Handle fForward, any data) {
@@ -104,6 +110,8 @@ public Action SendMessageDelayed(Handle timer, any data) {
 	delete dp;
 	
 	SendMessage(bot, channel, message, fForward, dataa);
+
+	return Plugin_Continue;
 }
 
 public int GetSendMessageData(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -126,13 +134,15 @@ public int GetSendMessageData(Handle request, bool failure, int offset, int stat
 			SendMessage(bot, channel, message, fForward, data);
 			
 			delete request;
-			return;
+			return 0;
 		}
 		LogError("[DISCORD] Couldn't Send Message - Fail %i %i", failure, statuscode);
 		delete request;
 		delete view_as<Handle>(dp);
-		return;
+		return 0;
 	}
 	delete request;
 	delete view_as<Handle>(dp);
+
+	return 0;
 }

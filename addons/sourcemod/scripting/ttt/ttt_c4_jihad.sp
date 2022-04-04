@@ -695,6 +695,8 @@ public int TTT_OnButtonPress(int client, int button)
             }
         }
     }
+
+    return 0;
 }
 
 void showPlantMenu(int client)

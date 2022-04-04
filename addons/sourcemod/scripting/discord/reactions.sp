@@ -11,6 +11,8 @@ public int Native_DiscordBot_AddReaction(Handle plugin, int numParams) {
 	GetNativeString(4, emoji, sizeof(emoji));
 	
 	AddReaction(bot, channel, msgid, emoji);
+
+	return 0;
 }
 
 public int Native_DiscordBot_DeleteReaction(Handle plugin, int numParams) {
@@ -29,6 +31,8 @@ public int Native_DiscordBot_DeleteReaction(Handle plugin, int numParams) {
 	GetNativeString(5, user, sizeof(user));
 	
 	DeleteReaction(bot, channel, msgid, emoji, user);
+
+	return 0;
 }
 
 public int Native_DiscordBot_GetReaction(Handle plugin, int numParams) {
@@ -53,6 +57,8 @@ public int Native_DiscordBot_GetReaction(Handle plugin, int numParams) {
 	any data = GetNativeCell(6);
 	
 	GetReaction(bot, channel, msgid, emoji, fForward, data);
+
+	return 0;
 }
 
 ///channels/{channel.id}/messages/{message.id}/reactions/{emoji}/@me
@@ -94,6 +100,8 @@ public Action AddReactionDelayed(Handle timer, any data) {
 	delete dp;
 	
 	AddReaction(bot, channel, messageid, emoji);
+
+	return Plugin_Continue;
 }
 
 public AddReactionReceiveData(Handle request, bool failure, int offset, int statuscode, any data) {
@@ -173,6 +181,8 @@ public Action DeleteReactionDelayed(Handle timer, any data) {
 	delete dp;
 	
 	DeleteReaction(bot, channel, messageid, emoji, userid);
+
+	return Plugin_Continue;
 }
 
 public DeleteReactionReceiveData(Handle request, bool failure, int offset, int statuscode, any data) {
@@ -248,6 +258,8 @@ public Action GetReactionDelayed(Handle timer, any data) {
 	delete dp;
 	
 	GetReaction(bot, channel, messageid, emoji, fForward, addData);
+
+	return Plugin_Continue;
 }
 
 public GetReactionReceiveData(Handle request, bool failure, int offset, int statuscode, any data) {
@@ -325,4 +337,6 @@ public int GetReactionsData(const char[] data, any datapack) {
 		delete user;
 	}
 	delete alUsers;
+
+	return 0;
 }

@@ -127,6 +127,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetTemplate(client);
     }
+
+    return Plugin_Continue;
 }
 
 void ResetTemplate(int client)

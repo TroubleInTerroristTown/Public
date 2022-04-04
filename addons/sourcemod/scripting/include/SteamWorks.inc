@@ -269,9 +269,9 @@ typeset SteamWorksHTTPDataReceived
 
 typeset SteamWorksHTTPBodyCallback
 {
-	function void (const char sData[]);
-	function void (const char sData[], any value);
-	function void (const int data[], any value, int datalen);
+	function void (const char[] sData);
+	function void (const char[] sData, any value);
+	function void (const int[] data, any value, int datalen);
 };
 
 native bool SteamWorks_SetHTTPCallbacks(Handle hHandle, SteamWorksHTTPRequestCompleted fCompleted = INVALID_FUNCTION, SteamWorksHTTPHeadersReceived fHeaders = INVALID_FUNCTION, SteamWorksHTTPDataReceived fData = INVALID_FUNCTION, Handle hCalling = null);

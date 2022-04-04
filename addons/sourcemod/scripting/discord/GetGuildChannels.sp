@@ -17,6 +17,8 @@ public int Native_DiscordBot_GetGuildChannels(Handle plugin, int numParams) {
 	WritePackCell(dp, data);
 	
 	ThisSendRequest(bot, guild, dp);
+
+	return 0;
 }
 
 static void ThisSendRequest(DiscordBot bot, char[] guild, DataPack dp) {
@@ -44,6 +46,8 @@ public Action GetGuildChannelsDelayed(Handle timer, any data) {
 	ReadPackString(dp, guild, sizeof(guild));
 	
 	ThisSendRequest(bot, guild, dp);
+
+	return Plugin_Continue;
 }
 
 public int GetGuildChannelsData(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -58,15 +62,17 @@ public int GetGuildChannelsData(Handle request, bool failure, int offset, int st
 			ThisSendRequest(bot, guild, view_as<DataPack>(dp));
 			
 			delete request;
-			return;
+			return 0;
 		}
 		LogError("[DISCORD] Couldn't Retrieve Guild Channels - Fail %i %i", failure, statuscode);
 		delete request;
 		delete view_as<Handle>(dp);
-		return;
+		return 0;
 	}
 	SteamWorks_GetHTTPResponseBodyCallback(request, GetGuildChannelsData_Data, dp);
 	delete request;
+
+	return 0;
 }
 
 public int GetGuildChannelsData_Data(const char[] data, any datapack) {
@@ -149,4 +155,5 @@ public int GetGuildChannelsData_Data(const char[] data, any datapack) {
 	}
 	
 	delete hJson;
+	return 0;
 }

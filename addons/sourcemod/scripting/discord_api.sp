@@ -102,7 +102,7 @@ public int Native_DiscordBot_Token_Get(Handle plugin, int numParams) {
 	DiscordBot bot = GetNativeCell(1);
 	static char token[196];
 	JsonObjectGetString(bot, "token", token, sizeof(token));
-	SetNativeString(2, token, GetNativeCell(3));
+	return SetNativeString(2, token, GetNativeCell(3));
 }
 
 stock void BuildAuthHeader(Handle request, DiscordBot Bot) {
@@ -193,17 +193,19 @@ stock Handle PrepareRequestRaw(DiscordBot bot, char[] url, EHTTPMethod method=k_
 }
 
 public int HTTPCompleted(Handle request, bool failure, bool requestSuccessful, EHTTPStatusCode statuscode, any data, any data2) {
+	return 0;
 }
 
 public int HTTPDataReceive(Handle request, bool failure, int offset, int statuscode, any dp) {
 	delete request;
+	return 0;
 }
 
 public int HeadersReceived(Handle request, bool failure, any data, any datapack) {
 	DataPack dp = view_as<DataPack>(datapack);
 	if(failure) {
 		delete dp;
-		return;
+		return 0;
 	}
 	
 	char xRateLimit[16];
@@ -236,6 +238,8 @@ public int HeadersReceived(Handle request, bool failure, any data, any datapack)
 		SetTrieValue(hRateLeft, route, -1);
 		SetTrieValue(hRateLimit, route, -1);
 	}
+
+	return 0;
 }
 
 /*
@@ -300,6 +304,7 @@ public Action SendRequestAgain(Handle timer, any dp) {
 	ReadPackString(dp, route, sizeof(route));
 	delete view_as<Handle>(dp);
 	DiscordSendRequest(request, route);
+	return Plugin_Continue;
 }
 
 stock bool RenameJsonObject(Handle hJson, char[] key, char[] toKey) {
