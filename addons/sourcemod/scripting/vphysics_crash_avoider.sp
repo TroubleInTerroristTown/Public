@@ -88,6 +88,8 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
 {
     g_iDeathCount = 0;
     g_iDeathTimeIndex = 0;
+    
+    return Plugin_Continue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
