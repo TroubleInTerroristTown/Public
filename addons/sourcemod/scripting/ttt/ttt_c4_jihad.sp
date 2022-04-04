@@ -180,6 +180,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetGlobals(client);
     }
+
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadcast)
@@ -190,6 +192,8 @@ public Action Event_PlayerDeath(Event event, const char[] menu, bool dontBroadca
     {
         ResetJihad(client);
     }
+
+    return Plugin_Continue;
 }
 
 public void OnConfigsExecuted()
@@ -632,7 +636,7 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float vel[3
     return Plugin_Continue;
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (button & IN_ATTACK2 && !g_iPlayer[client].HasActiveBomb && TTT_IsItemInInventory(client, SHORT_NAME_C4))
     {
@@ -696,7 +700,7 @@ public int TTT_OnButtonPress(int client, int button)
         }
     }
 
-    return 0;
+    return;
 }
 
 void showPlantMenu(int client)
@@ -751,7 +755,7 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
-        return;
+        return 0;
     }
 
     if (action == MenuAction_Select)
@@ -791,6 +795,8 @@ public int plantBombMenu(Menu menu, MenuAction action, int client, int option)
         g_iPlayer[client].HasActiveBomb = false;
         removeBomb(client);
     }
+
+    return 0;
 }
 
 void showPlanterPunishments(int client)
@@ -820,7 +826,7 @@ public int punishmentsBombMenu(Menu menu, MenuAction action, int client, int opt
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
-        return;
+        return 0;
     }
 
     if (action == MenuAction_Select)
@@ -841,13 +847,15 @@ public int punishmentsBombMenu(Menu menu, MenuAction action, int client, int opt
     {
         delete menu;
     }
+
+    return 0;
 }
 
 public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
-        return;
+        return 0;
     }
 
     if (action == MenuAction_Select)
@@ -859,7 +867,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
         if (!TTT_IsClientValid(planter))
         {
             g_iPlayer[client].Planter = -1;
-            return;
+            return 0;
         }
 
         int wire;
@@ -915,9 +923,11 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
     {
         g_iPlayer[client].Planter = -1;
     }
+
+    return 0;
 }
 
-float plantBomb(int client, float time)
+void plantBomb(int client, float time)
 {
     if (!TTT_IsClientValid(client))
     {

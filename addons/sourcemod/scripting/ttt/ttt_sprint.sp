@@ -136,7 +136,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (!HasSprint(client) || TTT_GetRoundStatus() != Round_Active)
     {

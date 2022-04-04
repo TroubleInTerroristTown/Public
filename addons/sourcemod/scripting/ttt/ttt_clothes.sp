@@ -105,7 +105,7 @@ public void TTT_OnBodyFound(int client, int victim, int victimRole, int attacker
 
 public Action Timer_Reset(Handle timer, any userid)
 {
-    int client = GetClientOfUserId(client);
+    int client = GetClientOfUserId(userid);
 
     if (client)
     {
@@ -116,7 +116,7 @@ public Action Timer_Reset(Handle timer, any userid)
     return Plugin_Stop;
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (button & IN_USE && Player[client].Identify && Player[client].Target != -1)
     {

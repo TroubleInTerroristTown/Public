@@ -164,7 +164,7 @@ public void OnClientDisconnect(int client)
     g_iPlayer[client].Found = g_cShowNewPlayersAs.BoolValue;
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (button & IN_USE)
     {
@@ -174,14 +174,12 @@ public int TTT_OnButtonPress(int client, int button)
     return 0;
 }
 
-public int TTT_OnButtonRelease(int client, int button)
+public void TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {
         g_iPlayer[client].IsChecking = false;
     }
-
-    return 0;
 }
 
 public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] newValue)

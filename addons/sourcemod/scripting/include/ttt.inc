@@ -190,8 +190,8 @@ forward void TTT_OnModelUpdate(int client, const char[] model);
  */
 forward void TTT_OnPlayerRespawn(int client);
 
-forward int TTT_OnButtonPress(int client, int button);
-forward int TTT_OnButtonRelease(int client, int button);
+forward void TTT_OnButtonPress(int client, int button);
+forward void TTT_OnButtonRelease(int client, int button);
 
 /**
  * Called before RDM will be handled.

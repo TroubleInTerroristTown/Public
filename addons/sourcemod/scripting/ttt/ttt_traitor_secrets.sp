@@ -144,7 +144,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
     g_aSpam = new ArrayList();
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && button & IN_USE)
     {
@@ -156,7 +156,7 @@ public int TTT_OnButtonPress(int client, int button)
     }
 }
 
-public int TTT_OnButtonRelease(int client, int button)
+public void TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {

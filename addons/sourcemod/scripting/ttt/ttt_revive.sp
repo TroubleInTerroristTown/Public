@@ -534,7 +534,7 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
     }
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (g_cStopMovement.BoolValue && HasReviveItem(client) && g_iPlayer[client].InUse && (button &= ~IN_USE))
     {
@@ -548,7 +548,7 @@ public int TTT_OnButtonPress(int client, int button)
     }
 }
 
-public int TTT_OnButtonRelease(int client, int button)
+public void TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {
