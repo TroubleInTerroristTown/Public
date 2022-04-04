@@ -71,6 +71,11 @@ public void OnConfigsExecuted()
     g_cDebugMessage = FindConVar("ttt_show_debug_messages");
 }
 
+public void OnMapEnd()
+{
+    g_hRoundTimer = null;
+}
+
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     g_iRoundStart = GetTime();
