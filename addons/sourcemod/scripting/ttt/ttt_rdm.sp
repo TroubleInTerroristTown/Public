@@ -18,13 +18,14 @@ public Plugin myinfo = {
     url = TTT_PLUGIN_URL
 };
 
-Database g_database = null;
+Database g_dbDatabase = null;
 
-int g_currentRound = -1;
+int g_iCurrentRound = -1;
 
 ConVar g_cTSlays = null;
 ConVar g_cDSlays = null;
 ConVar g_cISlays = null;
+ConVar g_cBadActionsToAdminMessage = null;
 
 enum CaseChoice
 {
@@ -77,6 +78,7 @@ public void OnPluginStart()
     g_cTSlays = AutoExecConfig_CreateConVar("rdm_traitor_slays", "5", "The amount of slays if the victim was a Traitor.", _, true, 0.0);
     g_cDSlays = AutoExecConfig_CreateConVar("rdm_detective_slays", "5", "The amount of slays if the victim was a Detective.", _, true, 0.0);
     g_cISlays = AutoExecConfig_CreateConVar("rdm_innocent_slays", "3", "The amount of slays if the victim was a Innocent.", _, true, 0.0);
+    g_cBadActionsToAdminMessage = AutoExecConfig_CreateConVar("rdm_bad_action_message_to_admins", "1", "Send bad actions message to admins.", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 
     LoopValidClients(i)
@@ -94,8 +96,8 @@ public void OnPluginStart()
 
 public void TTT_OnSQLConnect(Database db)
 {
-    g_database = db;
-    g_currentRound = TTT_GetRoundID();
+    g_dbDatabase = db;
+    g_iCurrentRound = TTT_GetRoundID();
 
     Transaction tAction = new Transaction();
 
@@ -109,7 +111,7 @@ public void TTT_OnSQLConnect(Database db)
     tAction.AddQuery("CREATE OR REPLACE VIEW `death_info` AS SELECT `deaths`.`death_index`, `deaths`.`death_time`, `deaths`.`victim_id`, `ttt`.`name` as `attacker_name`, `deaths`.`round` FROM `deaths` LEFT JOIN `ttt` ON `deaths`.`attacker_id` = `ttt`.`id` GROUP BY `deaths`.`death_index`;", 6);
     tAction.AddQuery("CREATE OR REPLACE VIEW `case_info` AS SELECT `deaths`.`death_index`, `deaths`.`death_time`, `deaths`.`victim_id`, `victim_ttt`.`name` as `victim_name`, `deaths`.`victim_role`, `victim_ttt`.`karma` as `victim_karma`, `deaths`.`attacker_id`, `attacker_ttt`.`name` as `attacker_name`, `deaths`.`attacker_role`, `attacker_ttt`.`karma` as `attacker_karma`, `deaths`.`last_gun_fire`, `deaths`.`round`, `reports`.`punishment`, `handles`.`verdict` FROM `deaths` INNER JOIN `reports` ON `deaths`.`death_index` = `reports`.`death_index` LEFT JOIN `ttt` `victim_ttt` ON `deaths`.`victim_id` = `victim_ttt`.`id` LEFT JOIN `ttt` `attacker_ttt` ON `deaths`.`attacker_id` = `attacker_ttt`.`id` LEFT JOIN `handles` ON `deaths`.`death_index` = `handles`.`death_index` GROUP BY `deaths`.`death_index`;", 7);
 
-    g_database.Execute(tAction, sqlCreateTableSuccess, sqlCreateTableErrors);
+    g_dbDatabase.Execute(tAction, sqlCreateTableSuccess, sqlCreateTableErrors);
 }
 
 public void sqlCreateTableSuccess(Handle db, any data, int numQueries, DBResultSet[] results, any[] queryData)
@@ -141,7 +143,7 @@ public void OnClientPutInServer(int client)
     g_playerData[client].currentDeath = -1;
     g_playerData[client].lastGunFired = 0;
 
-    if (g_database != null)
+    if (g_dbDatabase != null)
     {
         if (CheckCommandAccess(client, "sm_handle", 0, false))
         {
@@ -152,11 +154,18 @@ public void OnClientPutInServer(int client)
 
 public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective)
 {
-    g_currentRound = roundid;
+    g_iCurrentRound = roundid;
 }
 
 public void TTT_OnClientDeath(int victim, int attacker)
 {
+    Db_InsertDeath(victim, attacker);
+
+    if (!g_cBadActionsToAdminMessage.BoolValue)
+    {
+        return;
+    }
+    
     int victimKarma = TTT_GetClientKarma(victim);
     int attackerKarma = TTT_GetClientKarma(attacker);
 
@@ -170,8 +179,6 @@ public void TTT_OnClientDeath(int victim, int attacker)
 
         CPrintToChatAdmins(ADMFLAG_GENERIC, "%T", "RDM: Staff Bad Action Report", LANG_SERVER, sAttackerName, attackerKarma, sVictimName, victimKarma);
     }
-
-    Db_InsertDeath(victim, attacker);
 }
 
 public Action Command_CaseCount(int client, int args)
