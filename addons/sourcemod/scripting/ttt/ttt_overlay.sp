@@ -649,6 +649,8 @@ public int Native_PrecacheIconOverlay(Handle plugin, int numParams)
         AddFileToDownloadsTable(sBuffer);
         PrecacheDecal(sBuffer, true);
     }
+    
+    return 0;
 }
 
 public int Native_PrecacheWinOverlay(Handle plugin, int numParams)
@@ -671,4 +673,6 @@ public int Native_PrecacheWinOverlay(Handle plugin, int numParams)
         AddFileToDownloadsTable(sBuffer);
         PrecacheDecal(sBuffer, true);
     }
+    
+    return 0;
 }

@@ -113,6 +113,8 @@ public void OnAllPluginsLoaded()
 public Action Overlay_OnPrecacheRoleOverlay(char[] path, int maxlen)
 {    
     TTT_PrecacheIconOverlay(ROLE_KEY);
+
+    return Plugin_Continue;
 }
 
 public Action Overlay_OnRoleOverlay(int client, char[] path, int maxlen)
@@ -190,6 +192,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             AwaitNextClientTarget(client);
         }
     }
+
+    return Plugin_Continue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

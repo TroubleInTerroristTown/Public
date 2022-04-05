@@ -112,11 +112,15 @@ public void OnAllPluginsLoaded()
 public Action Overlay_OnPrecacheRoleOverlay(char[] path, int maxlen)
 {    
     TTT_PrecacheIconOverlay(ROLE_KEY);
+
+    return Plugin_Continue;
 }
 
 public Action Overlay_OnPrecacheWinOverlay(char[] path, int maxlen)
 {
     TTT_PrecacheWinOverlay(ROLE_KEY);
+
+    return Plugin_Continue;
 }
 
 public Action Overlay_OnWinOverlay(int team, int role, char[] path, int maxlen)
@@ -204,6 +208,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             Player[client].WasJesterMurdered = true;
         }
     }
+
+    return Plugin_Continue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

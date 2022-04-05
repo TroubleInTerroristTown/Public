@@ -161,11 +161,6 @@ public void TTT_OnClientDeath(int victim, int attacker)
 {
     Db_InsertDeath(victim, attacker);
 
-    if (!g_cBadActionsToAdminMessage.BoolValue)
-    {
-        return;
-    }
-    
     int victimKarma = TTT_GetClientKarma(victim);
     int attackerKarma = TTT_GetClientKarma(attacker);
 

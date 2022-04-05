@@ -1651,7 +1651,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (TTT_GetRoundStatus() != Round_Active)
     {
-        return;
+        return Plugin_Continue;
     }
 
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));

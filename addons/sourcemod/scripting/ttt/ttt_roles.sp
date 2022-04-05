@@ -97,7 +97,7 @@ public int Native_RegisterRole(Handle plugin, int numParams)
 
     if (CheckRoleExist(team, role.Id))
     {
-        return;
+        return 0;
     }
 
     LogMessage("Team: %d, Id: %d, Rarity: %f, MinRequired: %d, MaxAmount: %d, Key: %s", team, role.Id, role.Rarity, role.MinRequired, role.MaxAmount, role.Key);
@@ -118,6 +118,8 @@ public int Native_RegisterRole(Handle plugin, int numParams)
     {
         g_aMiscRoles.PushArray(role, sizeof(role));
     }
+
+    return 0;
 }
 
 public int Native_GetTeamRoles(Handle plugin, int numParams)
@@ -238,7 +240,7 @@ void GetRoles(ArrayList inRoles, int skip, int count, int playerCount, int outRo
     SortIntegers(roleIndex, roleCount, Sort_Random);
 
     float roleChances[32];
-    float raritySum = 0.0;
+    // float raritySum = 0.0;
 
     // Sum and fetchrole
     for (int i = 0; i < roleCount; ++i)
@@ -246,7 +248,7 @@ void GetRoles(ArrayList inRoles, int skip, int count, int playerCount, int outRo
         inRoles.GetArray(roleIndex[i], role);
 
         roleChances[i] = role.Rarity;
-        raritySum += role.Rarity;
+        // raritySum += role.Rarity;
     }
 
     // Normalise
