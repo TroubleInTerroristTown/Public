@@ -217,6 +217,8 @@ public void TTT_OnInventoryMenuItemSelect(int client, const char[] itemshort)
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     cleanupStation();
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_CheckDistance(Handle timer, any ref)
@@ -267,6 +269,8 @@ public Action Timer_AddCharge(Handle timer)
             g_iPlayer[i].Charges++;
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public void OnClientDisconnect(int client)

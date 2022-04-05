@@ -13,6 +13,8 @@ public int Native_DiscordBot_StartTimer(Handle plugin, int numParams) {
 	json_object_set_new(hObj, "callback", json_integer(view_as<int>(fwd)));
 	
 	GetMessages(hObj);
+
+	return 0;
 }
 
 public void GetMessages(Handle hObject) {
@@ -50,10 +52,12 @@ public void GetMessages(Handle hObject) {
 
 public Action GetMessagesDelayed(Handle timer, any data) {
 	GetMessages(view_as<Handle>(data));
+	return Plugin_Continue;
 }
 
 public Action CheckMessageTimer(Handle timer, any dpt) {
 	GetMessages(view_as<Handle>(dpt));
+	return Plugin_Continue;
 }
 
 public int OnGetMessage(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -61,18 +65,20 @@ public int OnGetMessage(Handle request, bool failure, int offset, int statuscode
 		if(statuscode == 429 || statuscode == 500) {
 			GetMessages(view_as<Handle>(dp));
 			delete request;
-			return;
+			return 0;
 		}
 		LogError("[DISCORD] Couldn't Retrieve Messages - Fail %i %i", failure, statuscode);
 		delete request;
 		Handle fwd = view_as<Handle>(JsonObjectGetInt(view_as<Handle>(dp), "callback"));
 		if(fwd != null) delete fwd;
 		delete view_as<Handle>(dp);
-		return;
+		return 0;
 	}
 
 	SteamWorks_GetHTTPResponseBodyCallback(request, OnGetMessage_Data, dp);
 	delete request;
+
+	return 0;
 }
 
 public int OnGetMessage_Data(const char[] data, any dpt) {
@@ -87,7 +93,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 		delete channel;
 		delete hObj;
 		delete fwd;
-		return;
+		return 0;
 	}
 	
 	Handle hJson = json_load(data);
@@ -112,7 +118,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 				delete Bot;
 				delete channel;
 				delete hObj;
-				return;
+				return 0;
 			}
 			
 			char id[32];
@@ -139,7 +145,7 @@ public int OnGetMessage_Data(const char[] data, any dpt) {
 	
 	delete Bot;
 	delete channel;
-	
-	
 	delete hJson;
+
+	return 0;
 }

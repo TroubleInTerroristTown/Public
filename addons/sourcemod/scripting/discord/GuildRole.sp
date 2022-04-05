@@ -18,6 +18,8 @@ public int Native_DiscordBot_GetGuildRoles(Handle plugin, int numParams) {
 	json_object_set_new(hData, "callback", json_integer(view_as<int>(fwd)));
 	
 	GetGuildRoles(hData);
+
+	return 0;
 }
 
 static void GetGuildRoles(Handle hData) {
@@ -50,6 +52,7 @@ static void GetGuildRoles(Handle hData) {
 
 public Action SendGetGuildRoles(Handle timer, any data) {
 	GetGuildRoles(view_as<Handle>(data));
+	return Plugin_Continue;
 }
 
 
@@ -99,4 +102,6 @@ public int GetRolesData(const char[] data, any dp) {
 	delete hJson;
 	delete hData;
 	delete fwd;
+
+	return 0;
 }

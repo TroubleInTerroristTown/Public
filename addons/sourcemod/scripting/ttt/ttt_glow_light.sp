@@ -122,6 +122,8 @@ public Action Event_OnPlayerDeath(Event event, const char[] name, bool dontBroad
     {
         ResetClientGlow(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundEnd(int winner, int role, Handle array)
@@ -138,12 +140,12 @@ public Action Timer_CreateGlow(Handle timer, any client)
 {
     if (TTT_GetRoundStatus() != Round_Active)
     {
-        return;
+        return Plugin_Handled;
     }
 
     if (!(client = GetClientOfUserId(client)) || !TTT_IsClientValid(client) || IsValidEntity(EntRefToEntIndex(g_iPlayer[client].iSkinRef)) || !IsPlayerAlive(client))
     {
-        return;
+        return Plugin_Handled;
     }
 
     int iEnt;
@@ -151,7 +153,7 @@ public Action Timer_CreateGlow(Handle timer, any client)
     if ((iEnt = CreateEntityByName("env_sprite")) == -1)
     {
         PrintToServer("Can't create entity 'env_sprite'!");
-        return;
+        return Plugin_Handled;
     }
 
     float fPos[3];
@@ -173,7 +175,7 @@ public Action Timer_CreateGlow(Handle timer, any client)
     if (!DispatchSpawn(iEnt))
     {
         PrintToServer("Can't spawn entity 'env_sprite' (%i)!", iEnt);
-        return;
+        return Plugin_Handled;
     }
 
     SetVariantString("!activator");
@@ -190,6 +192,8 @@ public Action Timer_CreateGlow(Handle timer, any client)
     }
 
     SDKHook(iEnt, SDKHook_SetTransmit, Hook_TransmitGlow);
+    
+    return Plugin_Handled;
 }
 
 public Action Hook_TransmitGlow(int skin, int client)
@@ -306,6 +310,8 @@ int Native_SetGlowColor(Handle plugin, int numParams)
 
         g_iPlayer[client].hColorReset = CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 int Native_SetGlowTeam(Handle plugin, int numParams)
@@ -334,6 +340,8 @@ int Native_SetGlowTeam(Handle plugin, int numParams)
 
         g_iPlayer[client].hColorReset = CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
     }
+
+    return 0;
 }
 
 int Native_CanSeeGlow(Handle plugin, int numParams)
@@ -357,6 +365,8 @@ int Native_CanSeeGlow(Handle plugin, int numParams)
         data.WriteCell(GetClientUserId(client));
         data.WriteCell(GetClientUserId(target));
     }
+    
+    return 0;
 }
 
 int Native_CanSeeClientsGlow(Handle plugin, int numParams)
@@ -389,6 +399,8 @@ int Native_CanSeeClientsGlow(Handle plugin, int numParams)
             data.WriteCell(GetClientUserId(targets[i]));
         }
     }
+    
+    return 0;
 }
 
 int Native_CanSeeAllGlow(Handle plugin, int numParams)
@@ -407,6 +419,8 @@ int Native_CanSeeAllGlow(Handle plugin, int numParams)
 
         g_iPlayer[client].hCanSeeAllTimer = CreateTimer(duration, Timer_ResetCanSeeAll, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 int Native_AllCanSeeGlow(Handle plugin, int numParams)
@@ -425,6 +439,8 @@ int Native_AllCanSeeGlow(Handle plugin, int numParams)
 
         g_iPlayer[client].hAllCanSeeTimer = CreateTimer(duration, Timer_ResetAllCanSee, GetClientUserId(client));
     }
+    
+    return 0;
 }
 
 // ** TIMERS ** //
@@ -448,6 +464,8 @@ Action Timer_ResetGlowColor(Handle timer, any userid)
             }
         }
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeGlow(Handle timer, any pack)
@@ -463,6 +481,8 @@ Action Timer_ResetCanSeeGlow(Handle timer, any pack)
     {
         g_iPlayer[client].bCanSee[target] = false;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
@@ -481,6 +501,8 @@ Action Timer_ResetCanSeeClientsGlow(Handle timer, any pack)
             g_iPlayer[client].bCanSee[GetClientOfUserId(view_as<DataPack>(pack).ReadCell())] = false;
         }
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetCanSeeAll(Handle timer, any userid)
@@ -493,6 +515,8 @@ Action Timer_ResetCanSeeAll(Handle timer, any userid)
     {
         g_iPlayer[client].bCanSeeAll = false;
     }
+    
+    return Plugin_Handled;
 }
 
 Action Timer_ResetAllCanSee(Handle timer, any userid)
@@ -505,4 +529,6 @@ Action Timer_ResetAllCanSee(Handle timer, any userid)
     {
         g_iPlayer[client].bAllCanSee = false;
     }
+    
+    return Plugin_Handled;
 }

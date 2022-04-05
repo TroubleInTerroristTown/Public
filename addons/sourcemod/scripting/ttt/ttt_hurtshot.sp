@@ -106,11 +106,15 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetHurtshot(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcast)
 {
     g_aListHS.Clear();
+    
+    return Plugin_Continue;
 }
 
 public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcast)

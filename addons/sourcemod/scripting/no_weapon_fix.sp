@@ -88,6 +88,8 @@ public int OnSettingChanged(Handle convar, const char[] oldValue, const char[] n
         g_iCooldownHeat = StringToInt(newValue);
     else if(convar == cvFakeItemClass)
         g_iFakeItemClass = StringToInt(newValue);
+    
+    return 0;
 }
 
 public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast)
@@ -95,6 +97,8 @@ public Action Event_ItemEquip(Event event, const char[] name, bool dontBroadcast
     int client = GetClientOfUserId(event.GetInt("userid"));
 
     g_iPlayer[client].Grenade = event.GetInt("weptype") == 8;
+
+    return Plugin_Continue;
 }
 
 public Action OnWeaponCanUse(int client, int weapon)

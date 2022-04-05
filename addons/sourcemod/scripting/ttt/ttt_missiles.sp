@@ -290,12 +290,12 @@ public int InitMissile(const char[] output, int caller, int activator, float del
     // assume other plugins don't set this on any projectiles they create, this avoids conflicts.
     if (!TTT_IsClientValid(iOwner))
     {
-        return;
+        return 0;
     }
     
     if ((!g_iPlayer[iOwner].Missile && !g_iPlayer[iOwner].FollowingMissile && !g_iPlayer[iOwner].ControlMissile) || g_iPlayer[iOwner].Type != tNone)
     {
-        return;
+        return 0;
     }
         
     if(g_iPlayer[iOwner].ControlMissile)
@@ -379,6 +379,8 @@ public int InitMissile(const char[] output, int caller, int activator, float del
         g_iPlayer[iOwner].MissileEntity = caller;
         SetClientViewEntity(iOwner, caller);
     }
+    
+    return 0;
 }
 
 public void MissileThink(const char[] output, int caller, int activator, float delay)

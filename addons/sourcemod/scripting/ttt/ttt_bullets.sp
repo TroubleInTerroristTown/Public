@@ -221,6 +221,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
         ResetBullets(client);
         GetEntityRenderColor(client, g_iPlayer[client].DefaultRed, g_iPlayer[client].DefaultGreen, g_iPlayer[client].DefaultBlue, g_iPlayer[client].DefaultAlpha);
     }
+
+    return Plugin_Continue;
 }
 
 public Action OnTakeDamageAlive(int iVictim, int &iAttacker, int &iInflictor, float &fDamage, int &iDamageType, int &iWeapon, float fDamageForce[3], float fDamagePosition[3])

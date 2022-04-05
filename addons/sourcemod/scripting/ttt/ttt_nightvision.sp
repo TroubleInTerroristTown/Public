@@ -132,6 +132,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         SetClientNV(client, false);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
@@ -142,6 +144,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     {
         SetClientNV(client, false);
     }
+    
+    return Plugin_Continue;
 }
 
 bool GetClientNV(int client)

@@ -71,6 +71,8 @@ public void OnClientDisconnect(int client)
 public Action CreateTurrettest(int client, int args)
 {
     CreateTurret(client);
+
+    return Plugin_Continue;
 }
 
 public void Event_RoundStart(Handle event, const char[] name, bool dontBroadcast)
@@ -473,13 +475,14 @@ void TurretTickFollow(int owner, int player)
 
 public Action TurretSetState(Handle Timer, any ref)
 {
-    
     int entity = EntRefToEntIndex(ref);
     
     if (entity != INVALID_ENT_REFERENCE)
     {
         g_iPlayer[entity].CanShoot = true;
     }
+
+    return Plugin_Continue;
 }
 
 public void OnGameFrame()
@@ -542,9 +545,11 @@ public int Native_CreateTurret(Handle plugin, int numParams)
     if (!TTT_IsClientValid(client))
     {
         PrintToServer("Invalid client (%d)", client);
-        return;
+        return 0;
     }
     CreateTurret(client);
+
+    return 0;
 }
 
 public int Native_RemovePlayerTurret(Handle plugin, int numParams)
@@ -553,10 +558,12 @@ public int Native_RemovePlayerTurret(Handle plugin, int numParams)
     if (!TTT_IsClientValid(client))
     {
         PrintToServer("Invalid client (%d)", client);
-        return;
+        return 0;
     }
     DestroyTurrets(client);
     ResetPlayerVars(client);
+
+    return 0;
 }
 
 public int Native_SetTurretCanAttackClient(Handle plugin, int numParams)
@@ -566,8 +573,9 @@ public int Native_SetTurretCanAttackClient(Handle plugin, int numParams)
     if (!TTT_IsClientValid(client))
     {
         PrintToServer("Invalid client (%d)", client);
-        return;
+        return 0;
     }
     g_iPlayer[client].CanAttack = bCanAttack;
-    
+
+    return 0;
 }

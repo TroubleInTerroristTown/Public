@@ -25,6 +25,8 @@ public int Native_DiscordBot_GetGuildMembers(Handle plugin, int numParams) {
 	json_object_set_new(hData, "callback", json_integer(view_as<int>(fwd)));
 	
 	GetMembers(hData);
+
+	return 0;
 }
 
 public int Native_DiscordBot_GetGuildMembersAll(Handle plugin, int numParams) {
@@ -51,6 +53,8 @@ public int Native_DiscordBot_GetGuildMembersAll(Handle plugin, int numParams) {
 	json_object_set_new(hData, "callback", json_integer(view_as<int>(fwd)));
 	
 	GetMembers(hData);
+
+	return 0;
 }
 
 static void GetMembers(Handle hData) {
@@ -91,6 +95,7 @@ static void GetMembers(Handle hData) {
 
 public Action SendGetMembers(Handle timer, any data) {
 	GetMembers(view_as<Handle>(data));
+	return Plugin_Continue;
 }
 
 
@@ -146,11 +151,13 @@ public int GetMembersData(const char[] data, any dp) {
 			
 			json_object_set_new(hData, "afterID", json_string(lastID));
 			GetMembers(hData);
-			return;
+			return 0;
 		}
 	}
 	
 	delete hJson;
 	delete hData;
 	delete fwd;
+
+	return 0;
 }

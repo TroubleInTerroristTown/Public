@@ -138,6 +138,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetTacticalShield(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void ResetTacticalShield(int client)

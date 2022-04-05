@@ -153,6 +153,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetID(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnShopReady()

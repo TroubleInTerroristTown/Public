@@ -71,10 +71,17 @@ public void OnConfigsExecuted()
     g_cDebugMessage = FindConVar("ttt_show_debug_messages");
 }
 
+public void OnMapEnd()
+{
+    g_hRoundTimer = null;
+}
+
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
 {
     g_iRoundStart = GetTime();
     g_bIsActive = false;
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detectives, int misc)
@@ -296,4 +303,6 @@ public Action Timer_RoundTime(Handle timer)
     {
         TTT_TerminateRound(3.0, CSRoundEnd_CTWin);
     }
+    
+    return Plugin_Continue;
 }

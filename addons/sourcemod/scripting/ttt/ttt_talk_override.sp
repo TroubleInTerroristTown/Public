@@ -142,6 +142,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             SetListenOverride(i, client, Listen_Yes);
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
@@ -153,6 +155,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         SetTVoice(victim, false, false);
         SetListen(victim);
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnClientGetRole(int client, int team, int role)
@@ -171,6 +175,8 @@ public int TTT_OnRoundSlay(int client, int remaining)
 {
     SetTVoice(client, false, false);
     SetListen(client);
+    
+    return 0;
 }
 
 public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)

@@ -144,7 +144,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective, int mis
     g_aSpam = new ArrayList();
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR && button & IN_USE)
     {
@@ -156,7 +156,7 @@ public int TTT_OnButtonPress(int client, int button)
     }
 }
 
-public int TTT_OnButtonRelease(int client, int button)
+public void TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {
@@ -277,6 +277,8 @@ public Action Timer_Button(Handle timer, any ref)
     {
         SetEntProp(EntRefToEntIndex(ref), Prop_Data, "m_bLocked", 1, 1);
     }
+    
+    return Plugin_Handled;
 }
 
 stock int GetClientTraceTarget(int client)
@@ -431,7 +433,7 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
 {
     if (TTT_GetClientTeam(attacker) != TTT_TEAM_TRAITOR)
     {
-        return;
+        return 0;
     }
 
     AcceptEntityInput(caller, "Unlock");
@@ -474,6 +476,8 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
         TTT_GetTeamNameByID(TTT_GetClientTeam(attacker), sTeam, sizeof(sTeam));
         TTT_LogString("-> [%N%s (%s) opened a traitor secret: %s]", attacker, sClientID, sTeam, sName);
     }
+    
+    return 0;
 }
 
 void LoadButtons()

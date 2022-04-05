@@ -450,6 +450,8 @@ public int Native_RespawnPlayerRandom(Handle plugin, int numParams)
     }
 
     Forward_OnPlayerRespawn(client);
+
+    return 0;
 }
 
 public int Native_RespawnPlayer(Handle plugin, int numParams)
@@ -501,6 +503,8 @@ public int Native_RespawnPlayer(Handle plugin, int numParams)
     {
         TTT_RespawnPlayerRandom(client);
     }
+    
+    return 0;
 }
 
 public int Native_TerminateRound(Handle plugin, int numParams)
@@ -509,6 +513,8 @@ public int Native_TerminateRound(Handle plugin, int numParams)
     CSRoundEndReason rReason = view_as<CSRoundEndReason>(GetNativeCell(2));
 
     CS_TerminateRound(fDelay, rReason, true);
+    
+    return 0;
 }
 
 public int Native_DisableRounds(Handle plugin, int numParams)
@@ -563,6 +569,8 @@ public int Native_SetRoundStatus(Handle plugin, int numParams)
 public int Native_StopRoundTimer(Handle plugin, int numParams)
 {
     delete g_hRoundTimer;
+    
+    return 0;
 }
 
 public int Native_StopRound(Handle plugin, int numParams)
@@ -572,6 +580,8 @@ public int Native_StopRound(Handle plugin, int numParams)
 
     g_iStatus = Round_Ending;
     CS_TerminateRound(fTimer, reason);
+    
+    return 0;
 }
 
 public int Native_GetClientName(Handle plugin, int numParams)

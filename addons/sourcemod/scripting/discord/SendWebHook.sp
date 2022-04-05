@@ -1,6 +1,8 @@
 public int Native_DiscordWebHook_Send(Handle plugin, int numParams) {
 	DiscordWebHook hook = GetNativeCell(1);
 	SendWebHook(view_as<DiscordWebHook>(hook));
+
+	return 0;
 }
 
 public void SendWebHook(DiscordWebHook hook) {
@@ -71,6 +73,7 @@ public void SendWebHook(DiscordWebHook hook) {
 
 public Action SendWebHookDelayed(Handle timer, any data) {
 	SendWebHook(view_as<DiscordWebHook>(data));
+	return Plugin_Continue;
 }
 
 public SendWebHookReceiveData(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -101,4 +104,5 @@ public int WebHookData(const char[] data, any dp) {
 	stringJson[0] = '\0';
 	json_dump(view_as<Handle>(dp), stringJson, sizeof(stringJson), 0, true);
 	PrintToServer("DATA SENT: %s", stringJson);
+	return 0;
 }

@@ -67,7 +67,7 @@ jobs:
           for file in *.sp
           do
             echo -e "\nCompiling $file..."
-            spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $file
+            spcomp -E -w234 -O2 -v2 -i $includePath -i $SCRIPTS_PATH/include $file
           done
         working-directory: ${{ env.SCRIPTS_PATH }}/ttt
 
@@ -85,7 +85,7 @@ jobs:
           for plugin in "block_messages" "customkeyvalues" "discord_api" "no_weapon_fix" "turret_core" "vphysics_crash_avoider"
           do
             echo -e "\nCompiling $plugin.sp..."
-            spcomp -E -w234 -O2 -v2 -i $SCRIPTS_PATH/include $plugin.sp
+            spcomp -E -w234 -O2 -v2 -i $includePath -i $SCRIPTS_PATH/include $plugin.sp
           done
         working-directory: ${{ env.SCRIPTS_PATH }}/
 

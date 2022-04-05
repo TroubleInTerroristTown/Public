@@ -176,6 +176,7 @@ void Start_Blackout(int client)
 public Action Event_RoundEnd(Event event, const char[] name, bool dontBroadcast)
 {
     ResetBlackout();
+    return Plugin_Continue;
 }
 
 void ResetBlackout()

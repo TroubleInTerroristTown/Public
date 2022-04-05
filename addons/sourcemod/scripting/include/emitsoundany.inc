@@ -41,7 +41,7 @@
 static bool g_bCheckedEngine = false;
 static bool g_bNeedsFakePrecache = false;
 
-stock static int EmitSoundCheckEngineVersion()
+stock static void EmitSoundCheckEngineVersion()
 {
     if (g_bCheckedEngine)
     {

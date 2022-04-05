@@ -75,7 +75,7 @@ public int Native_AddDetectiveBan(Handle plugin, int numParams)
 
         if (!TTT_IsClientValid(client) || IsFakeClient(client) || !TTT_IsClientValid(target) || IsFakeClient(target) || TTT_IsDetectiveBanned(client) || time < 0)
         {
-            return;
+            return 0;
         }
 
         char sQuery[1024], reason[256], reasondb[256];
@@ -93,6 +93,8 @@ public int Native_AddDetectiveBan(Handle plugin, int numParams)
         dPack.WriteCell(time);
         dPack.WriteString(reason);
     }
+    
+    return 0;
 }
 
 public int Native_RemoveDetectiveBan(Handle plugin, int numParams)
@@ -104,13 +106,15 @@ public int Native_RemoveDetectiveBan(Handle plugin, int numParams)
 
         if (!TTT_IsClientValid(client) || IsFakeClient(client) || !TTT_IsClientValid(target) || IsFakeClient(target) || !TTT_IsDetectiveBanned(client))
         {
-            return;
+            return 0;
         }
 
         char sQuery[1024];
         g_dDatabase.Format(sQuery, sizeof(sQuery), "UPDATE `ttt_detective_bans` SET `removeid` = %i, `removetype` = 'U' WHERE `id` = %i;", TTT_GetPlayerID(client), g_iPlayer[target].iBanID);
         g_dDatabase.Query(SQL_RemoveDetectiveBan, sQuery, GetClientUserId(target));
     }
+    
+    return 0;
 }
 
 public void OnPluginStart()
@@ -197,7 +201,7 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
 
         if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
         {
-            return;
+            return Plugin_Handled;
         }
 
         if (g_dDatabase != null)
@@ -207,6 +211,8 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
             g_dDatabase.Query(SQL_OnClientPutInServer, sQuery, userid);
         }
     }
+    
+    return Plugin_Handled;
 }
 
 public void SQL_OnClientPutInServer(Database db, DBResultSet results, const char[] error, any userid)
@@ -250,6 +256,8 @@ public Action TTT_OnRoundStart_Pre()
         g_iPlayer[i].iBanID = 0;
         g_iPlayer[i].iUBanTime = 0;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Command_BanDetective(int client, int args)

@@ -197,6 +197,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
         GetEntityRenderColor(client, g_iPlayer[client].OldColors[0], g_iPlayer[client].OldColors[1], g_iPlayer[client].OldColors[2], g_iPlayer[client].OldColors[3]);
         ResetIceKnife(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnShopReady()

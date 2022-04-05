@@ -160,4 +160,6 @@ public Action Timer_SendMessage(Handle timer, DataPack pack)
     g_dBot.SendMessageToChannelID(g_sChannelID, sMessage, INVALID_FUNCTION);
 
     delete pack;
+
+    return Plugin_Handled;
 }

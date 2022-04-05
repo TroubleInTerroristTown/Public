@@ -161,6 +161,8 @@ public Action Tracer_Display(Handle timer)
         
         ShowHUD(client, iClientToShow);
     }
+    
+    return Plugin_Continue;
 }
 
 void ShowHUD(int client, int iClientToShow)

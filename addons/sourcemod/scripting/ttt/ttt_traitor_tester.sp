@@ -168,6 +168,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
             PrintToChat(client, "g_bInTester -> %d", g_bInTester[client]);
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action StartTouchTester(int entity, int client)
@@ -181,6 +183,8 @@ public Action StartTouchTester(int entity, int client)
             PrintToChat(client, "g_bInTester -> %d", g_bInTester[client]);
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action EndTouchTester(int entity, int client)
@@ -194,6 +198,8 @@ public Action EndTouchTester(int entity, int client)
             PrintToChat(client, "g_bInTester -> %d", g_bInTester[client]);
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public Action OnButtonPress(const char[] output, int entity, int client, float delay)
@@ -292,11 +298,15 @@ public Action Timer_EnableButton(Handle timer)
             CPrintToChat(i, "%s %T", g_sPluginTag, "Traitor Tester: Cooldown expired", i);
         }
     }
+    
+    return Plugin_Handled;
 }
 
 public Action Timer_EnableLight(Handle timer, any bRed)
 {
     enableLights(bRed);
+    
+    return Plugin_Handled;
 }
 
 public Action Timer_DisableLight(Handle timer)
@@ -314,6 +324,8 @@ public Action Timer_DisableLight(Handle timer)
     {
         PrintToChatAll("Reset. Green: %d, Red: %d", g_iGreenLight, g_iRedLight);
     }
+    
+    return Plugin_Handled;
 }
 
 void enableLights(bool bRed)

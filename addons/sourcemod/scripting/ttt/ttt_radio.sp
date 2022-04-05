@@ -320,6 +320,8 @@ public int Menu_RadioHandler(Menu menu, MenuAction action, int client, int param
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 public void Frame_Reopen(any userid)

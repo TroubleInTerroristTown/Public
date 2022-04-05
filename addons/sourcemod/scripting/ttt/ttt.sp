@@ -822,12 +822,12 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
 {
     if (!TTT_IsClientValid(client) || !IsPlayerAlive(client))
     {
-        return;
+        return 0;
     }
 
     if (IsValidEntity(entity) && g_bPressed[entity])
     {
-        return;
+        return 0;
     }
 
     char sClientID[32], sTeam[ROLE_LENGTH], sName[512], iItem[TTT_LOG_SIZE];
@@ -864,6 +864,8 @@ public int OnButtonPressed(const char[] output, int entity, int client, float de
 
     g_bPressed[entity] = true;
     CreateTimer(g_cLogButtonsSpam.FloatValue, Timer_EnableButton, EntIndexToEntRef(entity));
+    
+    return 0;
 }
 
 public Action Timer_EnableButton(Handle timer, any reference)
@@ -874,6 +876,8 @@ public Action Timer_EnableButton(Handle timer, any reference)
     {
         g_bPressed[entity] = false;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
@@ -892,7 +896,7 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
             }
         }
         g_iStatus = Round_Inactive;
-        return;
+        return Plugin_Continue;
     }
 
     g_iRoundTime = GetTime();
@@ -1014,6 +1018,8 @@ public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroad
     }
 
     g_bBlockKill = false;
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnBodyFound(int client, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID)
@@ -1051,6 +1057,8 @@ public Action Event_RoundEndPre(Event event, const char[] name, bool dontBroadca
         delete g_hRoundTimer;
         g_hRoundTimer = null;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
@@ -1064,10 +1072,12 @@ public Action Event_WinPanel(Event event, const char[] name, bool dontBroadcast)
             LogMessage("(Event_WinPanel) g_iStatus set to %d from %d", Round_Ending, g_iStatus);
         }
     }
-    if (!g_cDebug.BoolValue)
+    else
     {
         g_iStatus = Round_Ending;
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_SelectionCountdown(Handle hTimer)
@@ -1172,7 +1182,7 @@ public Action Timer_Selection(Handle hTimer)
         }
         g_iStatus = Round_Inactive;
 
-        return;
+        return Plugin_Handled;
     }
 
     // Should really be using RSlays to handle slaying players so can probably
@@ -1237,7 +1247,7 @@ public Action Timer_Selection(Handle hTimer)
         }
         g_iStatus = Round_Inactive;
 
-        return;
+        return Plugin_Handled;
     }
 
     if (g_cDebug.BoolValue)
@@ -1269,7 +1279,7 @@ public Action Timer_Selection(Handle hTimer)
         // Start the round after the query has completed
         StartRound(iInnocents, iTraitors, iDetectives, iMisc, null);
 
-        return;
+        return Plugin_Handled;
     }
 
     // Init normal role counts
@@ -1507,6 +1517,8 @@ public Action Timer_Selection(Handle hTimer)
 
     // Start the round once the round has been inserted
     StartRound(iInnocents, iTraitors, iDetectives, iMisc, aTraitors);
+
+    return Plugin_Handled;
 }
 
 int GetTCount(int activePlayers)
@@ -1895,6 +1907,8 @@ public Action Event_PlayerConnectFull(Event event, const char[] name, bool dontB
     {
         CreateTimer(2.0, Timer_AutoAssignTeam, event.GetInt("userid"), TIMER_FLAG_NO_MAPCHANGE);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Timer_AutoAssignTeam(Handle timer, any userId)
@@ -1944,6 +1958,8 @@ public void Event_RoundStart(Event event, char[] name, bool dontBroadcast)
 public Action Timer_GraceTimeOver(Handle timer)
 {
     g_bSpawnAllowed = false;
+    
+    return Plugin_Handled;
 }
 
 public void Event_RoundEnd(Event event, char[] name, bool dontBroadcast)
@@ -2035,6 +2051,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
 
         g_iPlayer[client].Respawn = false;
     }
+    
+    return Plugin_Continue;
 }
 
 public void Frame_SlayPlayer(any userid)
@@ -2142,6 +2160,8 @@ public Action OnPostThink(int client)
         }
         CS_SetClientContributionScore(client, iKarma);
     }
+    
+    return Plugin_Continue;
 }
 
 void BanBadPlayerKarma(int client)
@@ -2464,6 +2484,8 @@ public Action Timer_OnClientPutInServer(Handle timer, any userid)
         }
         LoadClientInfo(userid);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action Command_TRules(int client, int args)
@@ -2697,6 +2719,8 @@ public int Menu_MicCheck(Menu menu, MenuAction action, int client, int param)
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 public void Frame_ShowWelcomeMenu(any userid)
@@ -2717,6 +2741,8 @@ public Action Timer_ShowWelcomeMenu(Handle timer, any userid)
     {
         ShowRules(client, g_iPlayer[client].Site);
     }
+    
+    return Plugin_Handled;
 }
 
 void ShowRules(int client, int iItem)
@@ -3001,6 +3027,8 @@ public Action Timer_ShowDetectiveMenu(Handle timer, any userid)
     {
         AskClientForMicrophone(client);
     }
+    
+    return Plugin_Continue;
 }
 
 void AskClientForMicrophone(int client)
@@ -3299,8 +3327,9 @@ public Action Timer_1(Handle timer)
             }
         }
     }
+    
+    return Plugin_Continue;
 }
-
 
 public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadcast)
 {
@@ -3308,19 +3337,19 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
 
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
 
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client && !g_cDebug.BoolValue)
     {
-        return;
+        return Plugin_Continue;
     }
 
     Action res = Forward_OnClientDeath_Pre(client, iAttacker);
     if (res == Plugin_Stop || res == Plugin_Changed)
     {
-        return;
+        return Plugin_Continue;
     }
 
     // TODO
@@ -3482,6 +3511,8 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     CheckTeams();
 
     Forward_OnClientDeath(client, iAttacker, badAction);
+    
+    return Plugin_Continue;
 }
 
 public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcast)
@@ -3489,17 +3520,18 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
     int client = GetClientOfUserId(event.GetInt("userid"));
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return Plugin_Continue;
     }
 
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
-        return;
+        return Plugin_Continue;
     }
 
-    if (g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue) {
-        return;
+    if (g_cKarmaDecreaseWhenKillPlayerWhoHurt.BoolValue)
+    {
+        return Plugin_Continue;
     }
 
     if ((g_iPlayer[iAttacker].Team == TTT_TEAM_INNOCENT && g_iPlayer[client].Team == TTT_TEAM_INNOCENT) ||
@@ -3520,6 +3552,8 @@ public Action Event_PlayerHurt(Event event, const char[] name, bool dontBroadcas
             g_iPlayer[iAttacker].HurtedPlayer2 = client;
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public void OnMapEnd()
@@ -3570,6 +3604,8 @@ public Action Timer_OnRoundEnd(Handle timer)
         g_iStatus = Round_Ending;
         CS_TerminateRound(7.0, CSRoundEnd_CTWin);
     }
+    
+    return Plugin_Handled;
 }
 
 public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason)
@@ -4040,13 +4076,13 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 {
     if (!TTT_IsClientValid(client))
     {
-        return;
+        return 0;
     }
 
     int iAttacker = g_iPlayer[client].RDMAttacker;
     if (!TTT_IsClientValid(iAttacker))
     {
-        return;
+        return 0;
     }
 
     if (action == MenuAction_Select)
@@ -4095,13 +4131,17 @@ public int Menu_RDM(Menu menu, MenuAction action, int client, int option)
 
         delete menu;
     }
+    
+    return 0;
 }
 
 public Action Timer_RDMTimer(Handle timer, any userid)
 {
     int client = GetClientOfUserId(userid);
+    
     g_iPlayer[client].RDMTimer = null;
     manageRDM(client);
+    
     return Plugin_Stop;
 }
 
@@ -4342,6 +4382,8 @@ public Action Timer_5(Handle timer)
     {
         CheckPlayers();
     }
+    
+    return Plugin_Continue;
 }
 
 void CheckPlayers()

@@ -339,7 +339,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     return Plugin_Continue;
 }
 
+#if SOURCEMOD_V_MINOR < 11
 public Action OnNormalSHook(int[] clients, int &numClients, char[] sample, int &client, int &channel, float &volume, int &level, int &pitch, int &flags, char[] soundEntry, int &seed)
+#else
+public Action OnNormalSHook(int clients[MAXPLAYERS], int& numClients, char sample[PLATFORM_MAX_PATH], int& client, int& channel, float& volume, int& level, int& pitch, int& flags, char soundEntry[PLATFORM_MAX_PATH], int& seed)
+#endif
 {
     if (!g_cEnable.BoolValue)
     {

@@ -164,7 +164,7 @@ public void OnClientDisconnect(int client)
     g_iPlayer[client].Found = g_cShowNewPlayersAs.BoolValue;
 }
 
-public int TTT_OnButtonPress(int client, int button)
+public void TTT_OnButtonPress(int client, int button)
 {
     if (button & IN_USE)
     {
@@ -172,7 +172,7 @@ public int TTT_OnButtonPress(int client, int button)
     }
 }
 
-public int TTT_OnButtonRelease(int client, int button)
+public void TTT_OnButtonRelease(int client, int button)
 {
     if (button & IN_USE)
     {
@@ -592,7 +592,7 @@ public int Native_SetFoundStatus(Handle plugin, int numParams)
 {
     g_iPlayer[GetNativeCell(1)].Found = GetNativeCell(2);
 
-    return;
+    return 0;
 }
 
 public int Native_CreateClientRagdoll(Handle plugin, int numParams)
@@ -622,6 +622,8 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
             RequestFrame(Frame_RemoveBody, body.EntityRef);
         }
     }
+
+    return 0;
 }
 
 public int Native_GetFoundArray(Handle plugin, int numParams)
@@ -633,7 +635,7 @@ public int Native_GetFoundArray(Handle plugin, int numParams)
         bFound[i] = g_iPlayer[i].Found;
     }
 
-    SetNativeArray(1, bFound, GetNativeCell(2));
+    return SetNativeArray(1, bFound, GetNativeCell(2));
 }
 
 public int Native_RemoveRagdollFromArray(Handle plugin, int numParams)
@@ -1292,6 +1294,8 @@ public int Menu_BodyInspect(Menu menu, MenuAction action, int client, int itemNu
     {
         delete menu;
     }
+
+    return 0;
 }
 
 public void Frame_RemoveBody(any ref)

@@ -231,6 +231,8 @@ public int Menu_ShowPlayerStats(Menu menu, MenuAction action, int client, int pa
     {
         delete menu;
     }
+    
+    return 0;
 }
 
 public void OnClientPutInServer(int client)
@@ -299,13 +301,15 @@ public int TTT_OnRoundSlay(int client, int remaining)
 {
     if (!g_bValidRound)
     {
-        return;
+        return 0;
     }
 
     if (Stats_IsClientValid(client))
     {
         Player[client].SlayedRounds++;
     }
+    
+    return 0;
 }
 
 public void TTT_OnItemPurchasePost(int client, int price, int count, const char[] itemshort)
@@ -326,7 +330,7 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
 {
     if (!g_bValidRound)
     {
-        return;
+        return Plugin_Continue;
     }
         
     int client = GetClientOfUserId(event.GetInt("userid"));
@@ -336,12 +340,14 @@ public Action Event_WeaponFire(Event event, const char[] name, bool dontBroadcas
         char sWeapon[32];
         if (StrContains(sWeapon, "knife", false) != -1 || StrContains(sWeapon, "bayonet", false) != -1 || StrContains(sWeapon, "hegrenade", false) != -1 || StrContains(sWeapon, "flashbang", false) != -1 || StrContains(sWeapon, "smokegrenade", false) != -1 || StrContains(sWeapon, "inferno", false) != -1 || StrContains(sWeapon, "molotov", false) != -1 || StrContains(sWeapon, "incgrenade", false) != -1 || StrContains(sWeapon, "decoy", false) != -1)
         {
-            return; 
+            return Plugin_Continue;
         }
         
         Player[client].ShotsFired++;
         PlayerRound[client].ShotsFired++;
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnTakeDamage(int victim, int attacker, float damage, int weapon, bool badAction)
@@ -434,7 +440,7 @@ public Action TTT_OnBodyCheck(int attacker, int entityref)
 {
     if (!g_bValidRound)
     {
-        return;
+        return Plugin_Continue;
     }
 
     if (Stats_IsClientValid(attacker))
@@ -453,6 +459,8 @@ public Action TTT_OnBodyCheck(int attacker, int entityref)
             PlayerRound[attacker].ScannedBodies++;
         }
     }
+    
+    return Plugin_Continue;
 }
 
 public void TTT_OnRoundEnd(int winner, int role, Handle array)

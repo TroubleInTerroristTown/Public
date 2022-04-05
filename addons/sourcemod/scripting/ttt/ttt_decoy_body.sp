@@ -311,6 +311,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetStuff(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &damage, int &damagetype, int &ammotype, int hitbox, int hitgroup)

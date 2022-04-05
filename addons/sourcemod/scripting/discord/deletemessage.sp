@@ -19,6 +19,8 @@ public int Native_DiscordBot_DeleteMessageID(Handle plugin, int numParams) {
 	WritePackCell(dp, data);
 	
 	ThisDeleteMessage(bot, channelid, msgid, dp);
+
+	return 0;
 }
 
 public int Native_DiscordBot_DeleteMessage(Handle plugin, int numParams) {
@@ -44,6 +46,8 @@ public int Native_DiscordBot_DeleteMessage(Handle plugin, int numParams) {
 	WritePackCell(dp, data);
 	
 	ThisDeleteMessage(bot, channelid, msgid, dp);
+
+	return 0;
 }
 
 static void ThisDeleteMessage(DiscordBot bot, char[] channelid, char[] msgid, DataPack dp) {
@@ -74,6 +78,8 @@ public Action ThisDeleteMessageDelayed(Handle timer, any data) {
 	ReadPackString(dp, msgid, sizeof(msgid));
 	
 	ThisDeleteMessage(bot, channelid, msgid, dp);
+
+	return Plugin_Continue;
 }
 
 public int MessageDeletedResp(Handle request, bool failure, int offset, int statuscode, any dp) {
@@ -91,12 +97,12 @@ public int MessageDeletedResp(Handle request, bool failure, int offset, int stat
 			ThisDeleteMessage(bot, channelid, msgid, view_as<DataPack>(dp));
 			
 			delete request;
-			return;
+			return 0;
 		}
 		LogError("[DISCORD] Couldn't delete message - Fail %i %i", failure, statuscode);
 		delete request;
 		delete view_as<Handle>(dp);
-		return;
+		return 0;
 	}
 	
 	ResetPack(dp);
@@ -126,4 +132,6 @@ public int MessageDeletedResp(Handle request, bool failure, int offset, int stat
 	
 	delete view_as<Handle>(dp);
 	delete request;
+
+	return 0;
 }

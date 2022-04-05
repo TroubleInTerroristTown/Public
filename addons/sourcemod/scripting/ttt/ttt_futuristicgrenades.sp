@@ -298,6 +298,8 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     {
         ResetFuturistic(client);
     }
+    
+    return Plugin_Continue;
 }
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
