@@ -888,7 +888,6 @@ int CreateRagdoll(int client)
             float fPosition[3];
             GetClientAbsOrigin(client, fPosition);
             fPosition[2] -= 40.0;
-
             TeleportEntity(iEntity, fPosition, NULL_VECTOR, NULL_VECTOR);
 
             int iParticle = CreateEntityByName("info_particle_system");
