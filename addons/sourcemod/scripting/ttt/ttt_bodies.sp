@@ -848,7 +848,6 @@ int CreateRagdoll(int client)
             NormalizeVector(fVelocity, fVelocity);
             ScaleVector(fVelocity, Min(speed, 500.0));
         }
-        TeleportEntity(iEntity, fOrigin, fAngles, fVelocity);
 
         if (DispatchSpawn(iEntity))
         {
@@ -857,6 +856,7 @@ int CreateRagdoll(int client)
             SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
             AcceptEntityInput(iEntity, "EnableMotion");
             SetEntityMoveType(iEntity, MOVETYPE_VPHYSICS);
+            TeleportEntity(iEntity, fOrigin, fAngles, fVelocity);
         }
     }
     else
@@ -883,13 +883,13 @@ int CreateRagdoll(int client)
         SetEntProp(iEntity, Prop_Data, "m_nSolidType", SOLID_VPHYSICS);
         SetEntProp(iEntity, Prop_Data, "m_CollisionGroup", COLLISION_GROUP_DEBRIS);
 
-        float fPosition[3];
-        GetClientAbsOrigin(client, fPosition);
-        fPosition[2] -= 40.0;
-        TeleportEntity(iEntity, fPosition, NULL_VECTOR, NULL_VECTOR);
-
         if (DispatchSpawn(iEntity))
         {
+            float fPosition[3];
+            GetClientAbsOrigin(client, fPosition);
+            fPosition[2] -= 40.0;
+            TeleportEntity(iEntity, fPosition, NULL_VECTOR, NULL_VECTOR);
+
             int iParticle = CreateEntityByName("info_particle_system");
 
             if (!IsValidEntity(iParticle))
@@ -906,11 +906,10 @@ int CreateRagdoll(int client)
             DispatchKeyValue(iParticle, "start_active", "0");
             DispatchKeyValue(iParticle, "effect_name", "Ghost_Orange");
 
-            fPosition[2] += 7.0;
-            TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
-
             if (DispatchSpawn(iParticle))
             {
+                fPosition[2] += 7.0;
+                TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
                 ActivateEntity(iParticle);
 
                 g_iParticleRef[iEntity] = EntIndexToEntRef(iParticle);
