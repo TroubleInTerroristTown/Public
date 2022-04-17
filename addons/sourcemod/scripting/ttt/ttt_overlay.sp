@@ -20,12 +20,8 @@ public Plugin myinfo =
     url = TTT_PLUGIN_URL
 };
 
-ConVar g_cTraitorIcon = null;
-ConVar g_cDetectiveIcon = null;
-ConVar g_cInnocentIcon = null;
-ConVar g_coverlayDWin = null;
-ConVar g_coverlayTWin = null;
-ConVar g_coverlayIWin = null;
+ConVar g_cIconPath = null;
+ConVar g_cWinPath = null;
 ConVar g_cEnableHud = null;
 ConVar g_cPosRX = null;
 ConVar g_cPosRY = null;
@@ -69,10 +65,12 @@ bool g_bDisableRoleOverlays = false;
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
     CreateNative("TTT_DisableRoleOverlays", Native_DisableRoleOverlays);
+    CreateNative("TTT_PrecacheIconOverlay", Native_PrecacheIconOverlay);
+    CreateNative("TTT_PrecacheWinOverlay", Native_PrecacheWinOverlay);
 
     g_fwOnPrecacheWinOverlay = new GlobalForward("Overlay_OnPrecacheWinOverlay", ET_Event, Param_String, Param_Cell);
     g_fwOnPrecacheRoleOverlay = new GlobalForward("Overlay_OnPrecacheRoleOverlay", ET_Event, Param_String, Param_Cell);
-    g_fwOnWinOverlay = new GlobalForward("Overlay_OnWinOverlay", ET_Event, Param_Cell, Param_String, Param_Cell);
+    g_fwOnWinOverlay = new GlobalForward("Overlay_OnWinOverlay", ET_Event, Param_Cell, Param_Cell, Param_String, Param_Cell);
     g_fwOnRoleOverlay = new GlobalForward("Overlay_OnRoleOverlay", ET_Event, Param_Cell, Param_String, Param_Cell);
     
     RegPluginLibrary("ttt_overlay");
@@ -84,12 +82,8 @@ public void OnPluginStart()
 {
     TTT_StartConfig("overlay");
     CreateConVar("ttt2_overlay_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cDetectiveIcon = AutoExecConfig_CreateConVar("ttt_overlay_detective", "darkness/ttt/overlayDetective", "The overlay to display for detectives during the round.");
-    g_cTraitorIcon = AutoExecConfig_CreateConVar("ttt_overlay_traitor", "darkness/ttt/overlayTraitor", "The overlay to display for traitors during the round.");
-    g_cInnocentIcon = AutoExecConfig_CreateConVar("ttt_overlay_inno", "darkness/ttt/overlayInnocent", "The overlay to display for innocents during the round.");
-    g_coverlayDWin = AutoExecConfig_CreateConVar("ttt_overlay_detective_win", "overlays/ttt/detectives_winNew", "The overlay to display when detectives win.");
-    g_coverlayTWin = AutoExecConfig_CreateConVar("ttt_overlay_traitor_win", "overlays/ttt/traitors_winNew", "The overlay to display when traitors win.");
-    g_coverlayIWin = AutoExecConfig_CreateConVar("ttt_overlay_inno_win", "overlays/ttt/innocents_winNew", "The overlay to display when innocent win.");
+    g_cIconPath = AutoExecConfig_CreateConVar("ttt_overlay_icon_path", "ttt/default/overlays/icon/ttt_overlay_icon_<NAME>", "Overlay path to all icon files. Don't remove <NAME>");
+    g_cWinPath = AutoExecConfig_CreateConVar("ttt_overlay_win_path", "ttt/default/overlays/win/ttt_overlay_win_<NAME>", "Overlay path to all win files. Don't remove <NAME>");
     g_cEnableHud = AutoExecConfig_CreateConVar("ttt_hud_text_enable", "0", "Enable hud_text? (it's a bit buggy with 4:3 and 16:9 resolutions)", _, true, 0.0, true, 1.0);
     g_cPosRX = AutoExecConfig_CreateConVar("ttt_hud_text_remaining_x_position", "0.28", "Remaining position (Default Horizontal: 0.28 Vertical: 0.2) (<X>-POSITION>)");
     g_cPosDX = AutoExecConfig_CreateConVar("ttt_hud_text_detective_x_position", "0.37", "Detective position (Default Horizontal: 0.37 Vertical: 0.3) (<X>-POSITION>)");
@@ -124,14 +118,16 @@ public void OnMapStart()
 {
     char sBuffer[PLATFORM_MAX_PATH];
     
-    g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
     
-    g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -139,14 +135,16 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-    g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocents");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
     
-    g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocents");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -154,14 +152,16 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-    g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitors");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
     
-    g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitors");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -170,6 +170,7 @@ public void OnMapStart()
     }
 
     char sWinFile[PLATFORM_MAX_PATH];
+    g_cWinPath.GetString(sWinFile, sizeof(sWinFile));
     Action res = Plugin_Handled;
 
     Call_StartForward(g_fwOnPrecacheWinOverlay);
@@ -177,8 +178,9 @@ public void OnMapStart()
     Call_PushCell(sizeof(sWinFile));
     Call_Finish(res);
 
-    if (strlen(sWinFile) > 3 && res == Plugin_Changed)
+    if (res == Plugin_Changed && StrContains(sWinFile, "<NAME>", false) == -1)
     {
+        LogMessage("Overlays - Precache Win: %s", sWinFile);
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sWinFile);
         AddFileToDownloadsTable(sBuffer);
 
@@ -187,14 +189,16 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
 
-    g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -202,14 +206,16 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-    g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocent");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
 
-    g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocent");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -217,14 +223,16 @@ public void OnMapStart()
         PrecacheDecal(sBuffer, true);
     }
 
-    g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitor");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sBuffer);
         AddFileToDownloadsTable(sBuffer);
     }
 
-    g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitor");
     if (strlen(sBuffer) > 2)
     {
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sBuffer);
@@ -233,6 +241,7 @@ public void OnMapStart()
     }
 
     char sRoleOverlay[PLATFORM_MAX_PATH];
+    g_cIconPath.GetString(sRoleOverlay, sizeof(sRoleOverlay));
     res = Plugin_Handled;
 
     Call_StartForward(g_fwOnPrecacheRoleOverlay);
@@ -240,9 +249,9 @@ public void OnMapStart()
     Call_PushCell(sizeof(sRoleOverlay));
     Call_Finish(res);
 
-    if (strlen(sRoleOverlay) > 3 && res == Plugin_Changed)
+    if (res == Plugin_Changed && StrContains(sRoleOverlay, "<NAME>", false) == -1)
     {
-        LogMessage("Precaching Overlay... %s", sRoleOverlay);
+        LogMessage("Overlays - Precache Icon: %s", sRoleOverlay);
         
         Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sRoleOverlay);
         AddFileToDownloadsTable(sBuffer);
@@ -316,7 +325,7 @@ void PrecacheTimeOverlays()
 
 public void OnAllPluginsLoaded()
 {
-    g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_roles");
+    g_cSeeRole = FindConVar("ttt_dead_players_can_see_other_teams");
 }
 
 public Action Event_RoundStartPre(Event event, const char[] name, bool dontBroadcast)
@@ -333,7 +342,7 @@ public Action TTT_OnRoundStart_Pre()
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     g_bTimeOverlay = false;
     g_bDisableRoleOverlays = false;
@@ -346,23 +355,22 @@ public void TTT_OnRoundEnd(int winner, Handle array)
     }
     
     char sBuffer[PLATFORM_MAX_PATH];
+    g_cWinPath.GetString(sBuffer, sizeof(sBuffer));
+
     if (winner == TTT_TEAM_TRAITOR)
     {
         g_iTWin++;
-        
-        g_coverlayTWin.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitors");
     }
     else if (winner == TTT_TEAM_INNOCENT)
     {
         g_iCTWin++;
-        
-        g_coverlayIWin.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocents");
     }
     else if (winner == TTT_TEAM_DETECTIVE)
     {
         g_iCTWin++;
-        
-        g_coverlayDWin.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     }
 
     char sFile[PLATFORM_MAX_PATH];
@@ -370,6 +378,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
 
     Call_StartForward(g_fwOnWinOverlay);
     Call_PushCell(winner);
+    Call_PushCell(role);
     Call_PushStringEx(sFile, sizeof(sFile), SM_PARAM_STRING_COPY, SM_PARAM_COPYBACK);
     Call_PushCell(sizeof(sFile));
     Call_Finish(res);
@@ -395,9 +404,9 @@ public Action Timer_Delay(Handle timer, any data)
     return Plugin_Handled;
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
-    SetOverlay(client, role);
+    SetOverlay(client, team);
 }
 
 public Action Timer_HUD(Handle timer)
@@ -415,20 +424,20 @@ public Action Timer_HUD(Handle timer)
     {
         if (!g_bEndOverlay)
         {
-            SetOverlay(i, TTT_GetClientRole(i));
+            SetOverlay(i, TTT_GetClientTeam(i));
         }
         
         if (!TTT_WasBodyFound(i))
         {
-            if (TTT_GetClientRole(i) == TTT_TEAM_DETECTIVE)
+            if (TTT_GetClientTeam(i) == TTT_TEAM_DETECTIVE)
             {
                 iDet++;
             }
-            else if (TTT_GetClientRole(i) == TTT_TEAM_INNOCENT)
+            else if (TTT_GetClientTeam(i) == TTT_TEAM_INNOCENT)
             {
                 iInn++;
             }
-            else if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+            else if (TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR)
             {
                 iTra++;
             }
@@ -508,14 +517,14 @@ public Action Timer_DisableTimeOverlays(Handle timer)
     return Plugin_Stop;
 }
 
-public void SetOverlay(int client, int role)
+public void SetOverlay(int client, int team)
 {
     if (g_bTimeOverlay || g_bDisableRoleOverlays)
     {
         return;
     }
 
-    if (TTT_GetClientRole(client) < TTT_TEAM_INNOCENT)
+    if (TTT_GetClientTeam(client) < TTT_TEAM_INNOCENT)
     {
         TTT_ShowOverlayToClient(client, " ");
     }
@@ -537,24 +546,25 @@ public void SetOverlay(int client, int role)
 
                 if (TTT_IsClientValid(target) && TTT_IsPlayerAlive(target))
                 {
-                    role = TTT_GetClientRole(target);
+                    team = TTT_GetClientTeam(target);
                 }
             }
         }
     }
 
     char sBuffer[PLATFORM_MAX_PATH];
-    if (role == TTT_TEAM_DETECTIVE)
+    g_cIconPath.GetString(sBuffer, sizeof(sBuffer));
+    if (team == TTT_TEAM_DETECTIVE)
     {
-        g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "detectives");
     }
-    else if (role == TTT_TEAM_TRAITOR)
+    else if (team == TTT_TEAM_TRAITOR)
     {
-        g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "traitor");
     }
-    else if (role == TTT_TEAM_INNOCENT)
+    else if (team == TTT_TEAM_INNOCENT)
     {
-        g_cInnocentIcon.GetString(sBuffer, sizeof(sBuffer));
+        ReplaceString(sBuffer, sizeof(sBuffer), "<NAME>", "innocent");
     }
 
     char sFile[PLATFORM_MAX_PATH];
@@ -617,4 +627,52 @@ public Action Timer_EnableRoleOverlays(Handle timer)
 {
     g_bDisableRoleOverlays = false;
     return Plugin_Stop;
+}
+
+public int Native_PrecacheIconOverlay(Handle plugin, int numParams)
+{
+    char sRole[32];
+    GetNativeString(1, sRole, sizeof(sRole));
+
+    if (strlen(sRole) > 3)
+    {
+        char sOverlay[PLATFORM_MAX_PATH];
+        g_cIconPath.GetString(sOverlay, sizeof(sOverlay));
+
+        ReplaceString(sOverlay, sizeof(sOverlay), "<NAME>", sRole);
+        
+        char sBuffer[PLATFORM_MAX_PATH + 1];
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sOverlay);
+        AddFileToDownloadsTable(sBuffer);
+
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sOverlay);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
+    
+    return 0;
+}
+
+public int Native_PrecacheWinOverlay(Handle plugin, int numParams)
+{
+    char sRole[32];
+    GetNativeString(1, sRole, sizeof(sRole));
+
+    if (strlen(sRole) > 3)
+    {
+        char sOverlay[PLATFORM_MAX_PATH];
+        g_cWinPath.GetString(sOverlay, sizeof(sOverlay));
+
+        ReplaceString(sOverlay, sizeof(sOverlay), "<NAME>", sRole);
+        
+        char sBuffer[PLATFORM_MAX_PATH + 1];
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sOverlay);
+        AddFileToDownloadsTable(sBuffer);
+
+        Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sOverlay);
+        AddFileToDownloadsTable(sBuffer);
+        PrecacheDecal(sBuffer, true);
+    }
+    
+    return 0;
 }

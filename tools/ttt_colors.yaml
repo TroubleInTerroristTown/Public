@@ -10,6 +10,7 @@ colors:
   role i:       green
   role t:       darkred
   role d:       darkblue
+  role m:       orange
   warning:      lightred
   error:        red
   setting:      darkred

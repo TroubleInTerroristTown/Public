@@ -85,11 +85,11 @@ forward Action TTT_OnCreditsChanged_Pre(int client, int oldcredits, int &newcred
  * @param itemshort         The short-tag identifier of the item (must be unique).
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
- * @param role              The optional role to restrict the item to. (Default: 0 - for all)
+ * @param team              The optional team to restrict the item to. (Default: 0 - for all)
  * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
  * // TODO: Add missing descriptions
  */
-forward void TTT_OnRegisterShopItemPost(const char[] itemshort, const char[] itemlong, int price, int role, int sort, int maxUsages, int limit, bool logging);
+forward void TTT_OnRegisterShopItemPost(const char[] itemshort, const char[] itemlong, int price, int team, int sort, int maxUsages, int limit, bool logging);
 
 /*
  * Called before start credits (on player_spawn) will be given.
@@ -113,14 +113,14 @@ forward void TTT_OnItemRemove(const char[] itemshort);
  * @param itemshort         The short-tag identifier of the item (must be unique).
  * @param itemlong          The long fancy name for the item.
  * @param price             The price of the item.
- * @param role              The optional role to restrict the item to. (Default: 0 - for all)
+ * @param team              The optional team to restrict the item to. (Default: 0 - for all)
  * @param sort              The priority in Sorting. Buy menu is sorted from high to low. (Default: 0)
  * @param maxUsages         Max usages for this items per round. ( 0 - Disabled )
  * @param limit             The amount of purchases for all players during a round. ( 0 - Disabled )
  * @param callback          A local function pointer to be called when the registered item is purchased.
  * @param logging           Enable or Disable purchase logging
  */
-native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int role = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback, bool logging = true);
+native bool TTT_RegisterShopItem(const char[] itemshort, const char[] itemlong, int price, int team = 0, int sort = 0, int maxUsages, int limit, TTT_ItemPurchaseCallback callback, bool logging = true);
 
 /*
  * Update shop item.
@@ -148,11 +148,11 @@ native bool TTT_RemoveShopItem(const char[] itemshort);
 native int TTT_GetItemPrice(const char[] item);
 
 /*
- * Retrieve a item's role restriction.
+ * Retrieve a item's team restriction.
  *
  * @param item              The short-tag identifier of the item.
  */
-native int TTT_GetItemRole(const char[] item);
+native int TTT_GetItemTeam(const char[] item);
 
 /*
  * Gets the display name of the item.
@@ -320,7 +320,7 @@ public void __pl_ttt_shop_SetNTVOptional()
     MarkNativeAsOptional("TTT_UpdateShopItem");
     MarkNativeAsOptional("TTT_RemoveShopItem");
     MarkNativeAsOptional("TTT_GetItemPrice");
-    MarkNativeAsOptional("TTT_GetItemRole");
+    MarkNativeAsOptional("TTT_GetItemTeam");
     MarkNativeAsOptional("TTT_GetItemName");
     MarkNativeAsOptional("TTT_ShopItemExist");
     MarkNativeAsOptional("TTT_GetItemMaxUsages");

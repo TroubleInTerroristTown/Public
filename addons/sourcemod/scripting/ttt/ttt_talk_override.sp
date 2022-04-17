@@ -159,7 +159,7 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
     return Plugin_Continue;
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     SetTVoice(client, false, false);
     SetListen(client);
@@ -190,7 +190,7 @@ public void Event_PlayerTeam(Event event, const char[] name, bool dontBroadcast)
     }
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     LoopValidClients(i)
     {
@@ -244,7 +244,7 @@ void SetListen(int client)
 
 bool SetTVoice(int client, bool status, bool message = true)
 {
-    if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+    if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
     {
         return false;
     }
@@ -277,7 +277,7 @@ bool SetTVoice(int client, bool status, bool message = true)
         {
             SetListenOverride(i, client, Listen_Yes);
 
-            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR)
             {
                 if (message)
                 {
@@ -297,7 +297,7 @@ bool SetTVoice(int client, bool status, bool message = true)
 
         LoopValidClients(i)
         {
-            if (TTT_GetClientRole(i) != TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(i) != TTT_TEAM_TRAITOR)
             {
                 SetListenOverride(i, client, Listen_No);
             }

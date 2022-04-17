@@ -67,7 +67,7 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
         g_cPluginTag.GetString(g_sPluginTag, sizeof(g_sPluginTag));
 }
 
-public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective, int misc)
 {
     g_iGreenLight = -1;
     g_iRedLight = -1;
@@ -223,7 +223,7 @@ public Action OnButtonPress(const char[] output, int entity, int client, float d
         {
             iCount++;
 
-            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR)
             {
                 if (g_cDebug.BoolValue)
                 {

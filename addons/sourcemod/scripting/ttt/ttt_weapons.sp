@@ -519,12 +519,12 @@ public Action TTT_OnRoundStart_Pre()
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundStartFailed(int p, int r, int d)
+public void TTT_OnRoundStartFailed(int p, int r)
 {
     ResetStuff();
 }
 
-public void TTT_OnRoundStart(int i, int t, int d)
+public void TTT_OnRoundStart(int i, int t, int d, int m)
 {
     ResetStuff();
 }
@@ -540,7 +540,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 
     if (strcmp(itemshort, USP_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -556,7 +556,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, MP5SD_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -572,7 +572,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, AK_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -588,7 +588,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, DEAGLE_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -604,7 +604,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, REVOLVER_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -620,7 +620,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, SCOUT_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -636,7 +636,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, HAMMER_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -648,7 +648,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, AXE_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -660,7 +660,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, SPANNER_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR && TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -672,7 +672,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, HAMMER_D_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -684,7 +684,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, AXE_D_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -696,7 +696,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, SPANNER_D_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Stop;
         }
@@ -708,7 +708,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, HAMMER_T_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -720,7 +720,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, AXE_T_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -732,7 +732,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, SPANNER_T_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -744,7 +744,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, M4_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -760,7 +760,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, AWP_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -787,7 +787,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (strcmp(itemshort, BREACHCHARGE_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -816,28 +816,28 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     {
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
         {
             if (g_cBumpmine_Type.IntValue == 0)
             {
                 GiveBumpmine(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
         {
             if (g_cBumpmine_Type.IntValue == 0 || g_cBumpmine_Type.IntValue == 2)
             {
                 GiveBumpmine(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             GiveBumpmine(client);
         }
     }
     else if (strcmp(itemshort, KF_ITEM_SHORT, false) == 0)
     {
-        if (TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -851,21 +851,21 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     {
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
         {
             if (g_cKev_Type.IntValue == 0)
             {
                 GiveArmor(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
         {
             if (g_cKev_Type.IntValue == 0 || g_cKev_Type.IntValue == 1)
             {
                 GiveArmor(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             GiveArmor(client);
         }
@@ -881,21 +881,21 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     {
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
         {
             if (g_cHelm_Type.IntValue == 0)
             {
                 GiveHelm(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
         {
             if (g_cHelm_Type.IntValue == 0 || g_cHelm_Type.IntValue == 1)
             {
                 GiveHelm(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             GiveArmor(client);
         }
@@ -904,21 +904,21 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     {
         strcopy(sItem, sizeof(sItem), itemshort);
 
-        if (TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
         {
             if (g_cHeavy_Type.IntValue == 0)
             {
                 GiveHeavy(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
         {
             if (g_cHeavy_Type.IntValue == 0 || g_cHeavy_Type.IntValue == 1)
             {
                 GiveHeavy(client);
             }
         }
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             GiveHeavy(client);
         }
@@ -939,9 +939,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 
 void GiveBumpmine(int client)
 {
-    if (GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY) != -1)
+    if (GetPlayerWeaponSlot(client, CS_SLOT_C4) != -1)
     {
-        SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_PRIMARY));
+        SDKHooks_DropWeapon(client, GetPlayerWeaponSlot(client, CS_SLOT_C4));
     }
 
     int iBC = GivePlayerItem(client, "weapon_bumpmine");

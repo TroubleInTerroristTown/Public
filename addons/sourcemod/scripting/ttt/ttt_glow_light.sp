@@ -64,7 +64,7 @@ public void OnPluginStart()
     
     TTT_StartConfig("glow_light");
     CreateConVar("ttt2_glow_light_version", TTT_PLUGIN_VERSION, TTT_PLUGIN_DESCRIPTION, FCVAR_NOTIFY | FCVAR_DONTRECORD | FCVAR_REPLICATED);
-    g_cGlowMaterial = AutoExecConfig_CreateConVar("glow_light_material", "materials/sprites/ttt/frame.vmt", "Glow material sprite.");
+    g_cGlowMaterial = AutoExecConfig_CreateConVar("glow_light_material_file", "materials/ttt/sprites/frame.vmt", "Glow material sprite.");
     g_cGlowScale = AutoExecConfig_CreateConVar("glow_light_scale", "0.5", "Scale of client sprite", _, true, 0.0, true, 1.0);
     g_cGlowDetective = AutoExecConfig_CreateConVar("glow_light_detective_enable", "1", "Detectives see the glows of other detectives. 0 to disable.", _, true, 0.0, true, 1.0);
     g_cGlowTraitor = AutoExecConfig_CreateConVar("glow_light_traitor_enable", "1", "Traitors see the glows of other traitors. 0 to disable.", _, true, 0.0, true, 1.0);
@@ -108,7 +108,7 @@ public void OnClientDisconnect(int client)
     ResetClientGlow(client);
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     ResetClientGlow(client);
     CreateGlow(client);
@@ -126,7 +126,7 @@ public Action Event_OnPlayerDeath(Event event, const char[] name, bool dontBroad
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     RemoveAllGlow();
 }
@@ -184,7 +184,7 @@ public Action Timer_CreateGlow(Handle timer, any client)
     g_iPlayer[client].iSkinRef = EntIndexToEntRef(iEnt);
     g_iSkinClient[iEnt] = client;
 
-    switch (TTT_GetClientRole(client))
+    switch (TTT_GetClientTeam(client))
     {
         case TTT_TEAM_INNOCENT: { UpdateGlow(iEnt, TTT_INNOCENT_COLOR); }
         case TTT_TEAM_TRAITOR: { UpdateGlow(iEnt, TTT_TRAITOR_COLOR); }
@@ -205,15 +205,15 @@ public Action Hook_TransmitGlow(int skin, int client)
         return Plugin_Handled;
     }
     
-    int iRole = TTT_GetClientRole(client);
-    int iTargetRole = TTT_GetClientRole(target);
+    int iTeam = TTT_GetClientTeam(client);
+    int iTargetRole = TTT_GetClientTeam(target);
 
-    if (g_cGlowDetective.BoolValue && iRole == TTT_TEAM_DETECTIVE && iRole == iTargetRole)
+    if (g_cGlowDetective.BoolValue && iTeam == TTT_TEAM_DETECTIVE && iTeam == iTargetRole)
     {
         return Plugin_Continue;
     }
 
-    if (g_cGlowTraitor.BoolValue && iRole == TTT_TEAM_TRAITOR && iRole == iTargetRole)
+    if (g_cGlowTraitor.BoolValue && iTeam == TTT_TEAM_TRAITOR && iTeam == iTargetRole)
     {
         return Plugin_Continue;
     }
@@ -264,10 +264,10 @@ stock void ResetClientGlow(int client)
     g_iPlayer[client].bCanSeeAll = false;
     g_iPlayer[client].bAllCanSee = false;
 
-    TTT_ClearTimer(g_iPlayer[client].hColorReset);
-    TTT_ClearTimer(g_iPlayer[client].hCanSeeTimer);
-    TTT_ClearTimer(g_iPlayer[client].hCanSeeAllTimer);
-    TTT_ClearTimer(g_iPlayer[client].hAllCanSeeTimer);
+    delete g_iPlayer[client].hColorReset;
+    delete g_iPlayer[client].hCanSeeTimer;
+    delete g_iPlayer[client].hCanSeeAllTimer;
+    delete g_iPlayer[client].hAllCanSeeTimer;
 
     LoopValidClients(i)
     {
@@ -305,7 +305,7 @@ int Native_SetGlowColor(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hColorReset != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hColorReset);
+            delete g_iPlayer[client].hColorReset;
         }
 
         g_iPlayer[client].hColorReset = CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
@@ -335,7 +335,7 @@ int Native_SetGlowTeam(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hColorReset != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hColorReset);
+            delete g_iPlayer[client].hColorReset;
         }
 
         g_iPlayer[client].hColorReset = CreateTimer(duration, Timer_ResetGlowColor, GetClientUserId(client));
@@ -356,7 +356,7 @@ int Native_CanSeeGlow(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hCanSeeTimer != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hCanSeeTimer);
+            delete g_iPlayer[client].hCanSeeTimer;
         }
 
         DataPack data;
@@ -385,7 +385,7 @@ int Native_CanSeeClientsGlow(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hCanSeeTimer != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hCanSeeTimer);
+            delete g_iPlayer[client].hCanSeeTimer;
         }
 
         DataPack data;
@@ -414,7 +414,7 @@ int Native_CanSeeAllGlow(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hCanSeeAllTimer != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hCanSeeAllTimer);
+            delete g_iPlayer[client].hCanSeeAllTimer;
         }
 
         g_iPlayer[client].hCanSeeAllTimer = CreateTimer(duration, Timer_ResetCanSeeAll, GetClientUserId(client));
@@ -434,7 +434,7 @@ int Native_AllCanSeeGlow(Handle plugin, int numParams)
     {
         if (g_iPlayer[client].hAllCanSeeTimer != null)
         {
-            TTT_ClearTimer(g_iPlayer[client].hAllCanSeeTimer);
+            delete g_iPlayer[client].hAllCanSeeTimer;
         }
 
         g_iPlayer[client].hAllCanSeeTimer = CreateTimer(duration, Timer_ResetAllCanSee, GetClientUserId(client));
@@ -456,7 +456,7 @@ Action Timer_ResetGlowColor(Handle timer, any userid)
 
         if (iSkin > MaxClients)
         {
-            switch (TTT_GetClientRole(client))
+            switch (TTT_GetClientTeam(client))
             {
                 case TTT_TEAM_INNOCENT: { UpdateGlow(iSkin, TTT_INNOCENT_COLOR); }
                 case TTT_TEAM_TRAITOR: { UpdateGlow(iSkin, TTT_TRAITOR_COLOR); }

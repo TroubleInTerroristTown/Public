@@ -216,12 +216,12 @@ public int Menu_InventoryHandler(Menu menu, MenuAction action, int client, int i
     return 0;
 }
 
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int innocents, int traitors, int detective, int misc)
 {
     ResetAndCreateInventories();
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     ResetAndCreateInventories(false);
 }
@@ -281,9 +281,9 @@ public Action TTT_OnBodyCheck(int client, int entityref)
             char sKey[16];
             smsItems.GetKey(i, sKey, sizeof(sKey));
             
-            int clientRole = TTT_GetClientRole(client);
-            int itemRole = TTT_GetItemRole(sKey);
-            if (clientRole != itemRole || itemRole != TTT_TEAM_UNASSIGNED)
+            int clientTeam = TTT_GetClientTeam(client);
+            int itemTeam = TTT_GetItemTeam(sKey);
+            if (clientTeam != itemTeam || itemTeam != TTT_TEAM_UNASSIGNED)
             {
                 continue;
             }

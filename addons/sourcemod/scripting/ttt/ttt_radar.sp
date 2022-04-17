@@ -130,9 +130,9 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_DETECTIVE && role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_DETECTIVE && iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -150,7 +150,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 
 void SetBeam(int client)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     float fPos[3];
     
     LoopValidClients(i)
@@ -166,7 +166,7 @@ void SetBeam(int client)
             
             int iColor[4];
             
-            if (role == TTT_TEAM_TRAITOR)
+            if (iTeam == TTT_TEAM_TRAITOR)
             {
                 iColor[0] = g_cRed.IntValue;
                 iColor[1] = g_cGreen.IntValue;
@@ -175,7 +175,7 @@ void SetBeam(int client)
 
                 TE_SetupBeamRingPoint(fPos, 30.0, 31.0, g_iBeam, g_iHalo, 0, 15, g_cTInterval.FloatValue, 5.0, 0.0, iColor, 10, 0);
             }
-            else if (role == TTT_TEAM_DETECTIVE)
+            else if (iTeam == TTT_TEAM_DETECTIVE)
             {
                 iColor[0] = g_cTRed.IntValue;
                 iColor[1] = g_cTGreen.IntValue;
@@ -193,11 +193,11 @@ void SetBeam(int client)
 
     if (IsPlayerAlive(client))
     {
-        if (role == TTT_TEAM_TRAITOR)
+        if (iTeam == TTT_TEAM_TRAITOR)
         {
             CreateTimer((g_cTInterval.FloatValue - 1.5), Timer_UpdateRadar, GetClientUserId(client));
         }
-        else if (role == TTT_TEAM_DETECTIVE)
+        else if (iTeam == TTT_TEAM_DETECTIVE)
         {
             CreateTimer((g_cInterval.FloatValue - 1.5), Timer_UpdateRadar, GetClientUserId(client));
         }

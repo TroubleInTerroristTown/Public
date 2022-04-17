@@ -3,7 +3,7 @@
 #endif
 #define _ttt_icon_included
 
-native void TTT_SetIcon(int client, int role);
+native void TTT_SetIcon(int client, int team);
 
 forward Action Icon_OnPrecache(char[] path, int maxlen);
 forward Action Icon_OnIconCreate(int client, char[] path, int maxlen, bool &treatAsTraitor);

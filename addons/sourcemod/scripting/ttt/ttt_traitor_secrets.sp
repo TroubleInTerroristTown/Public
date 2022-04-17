@@ -105,7 +105,7 @@ public Action Command_Reload(int client, int args)
     return Plugin_Handled;
 }
 
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int innocents, int traitors, int detective, int misc)
 {
     char sClass[64];
     char sName[64];
@@ -146,7 +146,7 @@ public void TTT_OnRoundStart(int innocents, int traitors, int detective)
 
 public void TTT_OnButtonPress(int client, int button)
 {
-    if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR && button & IN_USE)
+    if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR && button & IN_USE)
     {
         if (IsClientInGame(client) && !g_bUse[client] && IsPlayerAlive(client))
         {
@@ -238,16 +238,16 @@ void OnLog(int entity, int client, const char[] event)
             GetEntityClassname(entity, sName, sizeof(sName));
         }
 
-        char sRole[ROLE_LENGTH];
-        TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+        char sTeam[ROLE_LENGTH];
+        TTT_GetTeamNameByID(TTT_GetClientTeam(client), sTeam, sizeof(sTeam));
 
         if (StrEqual(event, "Break", false))
         {
-            TTT_LogString("-> [%N%s (%s) breaks the entity: %s]", client, sClientID, sRole, sName);
+            TTT_LogString("-> [%N%s (%s) breaks the entity: %s]", client, sClientID, sTeam, sName);
         }
         else
         {
-            TTT_LogString("-> [%N%s (%s) damaged the entity: %s]", client, sClientID, sRole, sName);
+            TTT_LogString("-> [%N%s (%s) damaged the entity: %s]", client, sClientID, sTeam, sName);
         }
 
         if (g_cDelay.FloatValue > 0.0)
@@ -260,7 +260,7 @@ void OnLog(int entity, int client, const char[] event)
 
 public void OnButtonPressed(int activator, int caller) 
 {
-    if(TTT_GetClientRole(activator) == TTT_TEAM_TRAITOR)
+    if(TTT_GetClientTeam(activator) == TTT_TEAM_TRAITOR)
     {
         if(g_aButtons.FindValue(caller) !=  -1)
         {
@@ -338,7 +338,7 @@ public bool TR_Callback(int entity, any client)
 
             if (success)
             {
-                if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+                if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
                 {
                     return false;
                 }
@@ -392,9 +392,9 @@ public bool TR_Callback(int entity, any client)
                     }
                 }
 
-                char sRole[ROLE_LENGTH];
-                TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
-                TTT_LogString("-> [%N%s (%s) used traitor secret: %s]", client, sClientID, sRole, sName);
+                char sTeam[ROLE_LENGTH];
+                TTT_GetTeamNameByID(TTT_GetClientTeam(client), sTeam, sizeof(sTeam));
+                TTT_LogString("-> [%N%s (%s) used traitor secret: %s]", client, sClientID, sTeam, sName);
 
                 if (g_cDelay.FloatValue > 0.0)
                 {
@@ -431,7 +431,7 @@ public Action Timer_ResetEntity(Handle timer, any ref)
 
 public int OnLockedUse(const char[] output, int caller, int attacker, float data)
 {
-    if (TTT_GetClientRole(attacker) != TTT_TEAM_TRAITOR)
+    if (TTT_GetClientTeam(attacker) != TTT_TEAM_TRAITOR)
     {
         return 0;
     }
@@ -472,9 +472,9 @@ public int OnLockedUse(const char[] output, int caller, int attacker, float data
         char sName[64];
         GetEntPropString(caller, Prop_Data, "m_iName", sName, sizeof(sName));
 
-        char sRole[ROLE_LENGTH];
-        TTT_GetRoleNameByID(TTT_GetClientRole(attacker), sRole, sizeof(sRole));
-        TTT_LogString("-> [%N%s (%s) opened a traitor secret: %s]", attacker, sClientID, sRole, sName);
+        char sTeam[ROLE_LENGTH];
+        TTT_GetTeamNameByID(TTT_GetClientTeam(attacker), sTeam, sizeof(sTeam));
+        TTT_LogString("-> [%N%s (%s) opened a traitor secret: %s]", attacker, sClientID, sTeam, sName);
     }
     
     return 0;

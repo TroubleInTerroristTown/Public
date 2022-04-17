@@ -253,7 +253,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    if (!g_cFreezeTraitors.BoolValue && TTT_GetClientRole(iVictim) == TTT_TEAM_TRAITOR)
+    if (!g_cFreezeTraitors.BoolValue && TTT_GetClientTeam(iVictim) == TTT_TEAM_TRAITOR)
     {
         return Plugin_Continue;
     }
@@ -483,9 +483,10 @@ void SpawnIce(int client)
 
     SetEntPropEnt(iEntity, Prop_Send, "m_hOwnerEntity", client);
 
+    TeleportEntity(iEntity, fPos, NULL_VECTOR, NULL_VECTOR);
+
     if (DispatchSpawn(iEntity))
     {
-        TeleportEntity(iEntity, fPos, NULL_VECTOR, NULL_VECTOR);
         AcceptEntityInput(iEntity, "TurnOn", iEntity, iEntity);
         SetVariantString("!activator");
         AcceptEntityInput(iEntity, "SetParent", client, iEntity);

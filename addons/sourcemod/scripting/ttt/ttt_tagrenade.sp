@@ -217,7 +217,7 @@ public void Frame_OnGetTagrenadeTimes(any pack)
         return;
     }
     
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
     int entity = view_as<DataPack>(pack).ReadCell();
 
@@ -259,7 +259,7 @@ public void Frame_OnGetTagrenadeTimes(any pack)
             continue;
         }
 
-        if (TTT_GetClientRole(target) < TTT_TEAM_INNOCENT)
+        if (TTT_GetClientTeam(target) < TTT_TEAM_INNOCENT)
         {
             continue;
         }
@@ -274,16 +274,16 @@ public void Frame_OnGetTagrenadeTimes(any pack)
         GetClientEyePosition(target, targetposition);
         distance = GetVectorDistance(position, targetposition);
 
-        if (role == TTT_TEAM_TRAITOR && distance > g_cTagrenadeRange.FloatValue)
+        if (iTeam == TTT_TEAM_TRAITOR && distance > g_cTagrenadeRange.FloatValue)
         {
             continue;
         }
-        else if (role == TTT_TEAM_DETECTIVE && distance > g_cDTagrenadeRange.FloatValue)
+        else if (iTeam == TTT_TEAM_DETECTIVE && distance > g_cDTagrenadeRange.FloatValue)
         {
             continue;
         }
         
-        if (role == TTT_TEAM_TRAITOR)
+        if (iTeam == TTT_TEAM_TRAITOR)
         {
             if (g_cShowPlayersBehindWalls.BoolValue)
             {
@@ -303,21 +303,21 @@ public void Frame_OnGetTagrenadeTimes(any pack)
                 ++target_count;
             }
         }
-        else if (role == TTT_TEAM_DETECTIVE)
+        else if (iTeam == TTT_TEAM_DETECTIVE)
         {
             if (g_cCountPlayersBehindWalls.BoolValue)
             {
-                int tRole = TTT_GetClientRole(target);
+                int tTeam = TTT_GetClientTeam(target);
                 
-                if (tRole == TTT_TEAM_INNOCENT)
+                if (tTeam == TTT_TEAM_INNOCENT)
                 {
                     iInno++;
                 }
-                else if (tRole == TTT_TEAM_TRAITOR)
+                else if (tTeam == TTT_TEAM_TRAITOR)
                 {
                     iTraitor++;
                 }
-                else if (tRole == TTT_TEAM_DETECTIVE)
+                else if (tTeam == TTT_TEAM_DETECTIVE)
                 {
                     iDete++;
                 }
@@ -325,7 +325,7 @@ public void Frame_OnGetTagrenadeTimes(any pack)
         }
     }
 
-    if (role == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         if (g_bGlowLight)
         {
@@ -354,7 +354,7 @@ public void Frame_OnGetTagrenadeTimes(any pack)
         iPlayers += iDete;
     }
     
-    if (iPlayers >= g_cRequiredPlayers.IntValue && role == TTT_TEAM_DETECTIVE)
+    if (iPlayers >= g_cRequiredPlayers.IntValue && iTeam == TTT_TEAM_DETECTIVE)
     {
         CPrintToChat(client, "%s %T", g_sPluginTag, "TAGrenade We Found", client);
         

@@ -8,8 +8,8 @@ enum struct Ragdoll
     int EntityRef;
     int Victim;
     int Attacker;
-    int VictimRole;
-    int AttackerRole;
+    int VictimTeam;
+    int AttackerTeam;
     int VictimAccountID;
     int AttackerAccountID;
     bool Scanned;

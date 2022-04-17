@@ -148,11 +148,11 @@ bool SpawnFakeBody(int client)
     Ragdoll body;
     body.EntityRef = EntIndexToEntRef(iRagdoll);
     body.Victim = GetClientUserId(client);
-    body.VictimRole = TTT_GetClientRole(client);
+    body.VictimTeam = TTT_GetClientTeam(client);
     TTT_GetClientName(client, body.VictimName, sizeof(body.VictimName));
     body.Scanned = false;
     body.Attacker = 0;
-    body.AttackerRole = TTT_TEAM_TRAITOR;
+    body.AttackerTeam = TTT_TEAM_TRAITOR;
     Format(body.AttackerName, sizeof(body.AttackerName), "Fake!");
     body.GameTime = 0.0;
 
@@ -190,7 +190,7 @@ public Action TTT_OnBodyCheck(int client, int entityref)
     {
         if (!g_cAllowProofByTraitors.BoolValue)
         {
-            if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+            if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
             {
                 return Plugin_Stop;
             }

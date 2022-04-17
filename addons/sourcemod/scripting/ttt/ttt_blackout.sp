@@ -133,9 +133,9 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
         return Plugin_Stop;
     }
 
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }

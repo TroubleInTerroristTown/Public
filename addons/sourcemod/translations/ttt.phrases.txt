@@ -26,30 +26,6 @@
 		"pl"		"Potrzebujemy {highlight}{1} {default}graczy, aby rozpocząć grę."
 	}
 
-	"Your Team is DETECTIVES"
-	{
-		"en"		"You are now a {role d}Detective{default}."
-		"chi"		"您当前是{role d}警探{default}。"
-		"de"		"Du bist nun ein {role d}Detektiv{default}."
-		"pl"		"Twoja rola to {role d}Detektyw{default}."
-	}
-
-	"Your Team is TRAITORS"
-	{
-		"en"		"You are now a {role t}Traitor{default}."
-		"chi"		"您当前是{role t}叛徒{default}。"
-		"de"		"Du bist nun ein {role t}Traitor{default}."
-		"pl"		"Twoja rola to {role t}Zdrajca{default}."
-	}
-
-	"Your Team is INNOCENTS"
-	{
-		"en"		"You are now an {role i}Innocent{default}."
-		"chi"		"您当前是{role i}平民{default}。"
-		"de"		"Du bist nun ein {role i}Innocent{default}."
-		"pl"		"Twoja rola to {role i}Niewinny{default}."
-	}
-
 	"Your credits is"
 	{
 		"#format"	"{1:i},{2:s}"
@@ -517,38 +493,6 @@
 		"chi"		"{player}{1} {default}现为{role d}警探{default}！"
 		"de"		"{player}{1} {default}ist nun ein {role d}Detektiv{default}!"
 		"pl"		"{player}{1} {default}jest teraz {role d}Detektywem{default}!"
-	}
-
-	"You Are Unassigned"
-	{
-		"en"		"Your role has not been assigned yet!"
-		"chi"		"您的角色尚未被分配！"
-		"de"		"Dir wurde noch keine Rolle zugewiesen!"
-		"pl"		"Twoja rola nie została jeszcze Ci przyznana!!"
-	}
-
-	"You Are Now Innocent"
-	{
-		"en"		"You are an {role i}Innocent{default}!"
-		"chi"		"您现在是{role i}平民{default}！"
-		"de"		"Du bist nun ein {role i}Innocent{default}!"
-		"pl"		"Jesteś {role i}Niewinnym{default}!"
-	}
-
-	"You Are Now Traitor"
-	{
-		"en"		"You are a {role t}Traitor{default}!"
-		"chi"		"您现在是{role t}叛徒{default}！"
-		"de"		"Du bist nun ein {role t}Traitor{default}!"
-		"pl"		"Jesteś {role t}Zdrajcą{default}!"
-	}
-
-	"You Are Now Detective"
-	{
-		"en"		"You are a {role d}Detective{default}!"
-		"chi"		"您现在是{role d}警探{default}！"
-		"de"		"Du bist nun ein {role d}Detektiv{default}!"
-		"pl"		"Jesteś {role d}Detektywem{default}!"
 	}
 
 	"Triggered Falling Building"
@@ -2011,6 +1955,11 @@
 		"pl"		"Niewinny"
 	}
 
+	"ClanTag: Miscellaneous"
+	{
+		"en"		"Miscellaneous"
+	}
+
 	"Round ID Started"
 	{
 		"#format"	"{1:d}"
@@ -2308,5 +2257,33 @@
 		"en"		"Invalid body removed."
 		"chi"		"移动了无效尸体。"
 		"de"		"Ungültiger Körper entfernt."
+	}
+
+	"Role: Innocent"
+	{
+		"en"		"Innocent"
+	}
+	"Role: Detective"
+	{
+		"en"		"Detecive"
+	}
+	"Role: Traitor"
+	{
+		"en"		"Traitor"
+	}
+	"Role: Miscellaneous"
+	{
+		"en"		"Miscellaneous"
+	}
+	"Role: Unassigned"
+	{
+		"en"		"Unassigned"
+	}
+
+	"Your Role"
+	{
+		"#format"	"{1:s}"
+		"en"		"Your team: {1}"
+		"de"		"Dein Team: {1}"
 	}
 }

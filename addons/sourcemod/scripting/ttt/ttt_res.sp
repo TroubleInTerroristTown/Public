@@ -71,7 +71,7 @@ public void OnMapStart()
     RefreshSounds(0);
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     if (!g_cEnable.BoolValue)
     {

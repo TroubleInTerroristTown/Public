@@ -1,19 +1,33 @@
 void Db_InsertDeath(int victim, int attacker)
 {
     int victimId = TTT_GetPlayerID(victim);
-    int victimRole = TTT_GetClientRole(victim);
-    char sVictimRole[10] = "none";
-    RoleEnum(sVictimRole, sizeof(sVictimRole), victimRole);
+
+    if (victimId < 1)
+    {
+        LogError("Invalid TTT_PlayerID in 'Db_InsertDeath' from client %d", victim);
+        return;
+    }
+
+    int victimTeam = TTT_GetClientTeam(victim);
+    char sVictimTeam[10] = "none";
+    RoleEnum(sVictimTeam, sizeof(sVictimTeam), victimTeam);
 
     int attackerId = TTT_GetPlayerID(attacker);
-    int attackerRole = TTT_GetClientRole(attacker);
-    char sAttackerRole[10] = "none";
-    RoleEnum(sAttackerRole, sizeof(sAttackerRole), attackerRole);
+    
+    if (attackerId < 1)
+    {
+        LogError("Invalid TTT_PlayerID in 'Db_InsertDeath' from client %d", attacker);
+        return;
+    }
+
+    int attackerTeam = TTT_GetClientTeam(attacker);
+    char sAttackerTeam[10] = "none";
+    RoleEnum(sAttackerTeam, sizeof(sAttackerTeam), attackerTeam);
 
     char query[768];
     Format(
         query, sizeof(query), "INSERT INTO `deaths` (`death_time`, `victim_id`, `victim_role`, `attacker_id`, `attacker_role`, `last_gun_fire`, `round`) VALUES ('%d', '%d', '%s', '%d', '%s', '%d', '%d');",
-        GetTime(), victimId, sVictimRole, attackerId, sAttackerRole, g_playerData[victim].lastGunFired, g_iCurrentRound);
+        GetTime(), victimId, sVictimTeam, attackerId, sAttackerTeam, g_playerData[victim].lastGunFired, g_iCurrentRound);
     g_dbDatabase.Query(DbCallback_InsertDeath, query);
 }
 
@@ -261,24 +275,24 @@ public void DbCallback_SelectInfo(Database db, DBResultSet results, const char[]
         int death = results.FetchInt(0);
         int time = results.FetchInt(1);
         char victimName[64]; results.FetchString(2, victimName, sizeof(victimName));
-        Role victimRole = view_as<Role>(results.FetchInt(3));
+        Role victimTeam = view_as<Role>(results.FetchInt(3));
         int victimKarma = results.FetchInt(4);
         char attackerName[64]; results.FetchString(5, attackerName, sizeof(attackerName));
-        Role attackerRole = view_as<Role>(results.FetchInt(6));
+        Role attackerTeam = view_as<Role>(results.FetchInt(6));
         int attackerKarma = results.FetchInt(7);
         int lastshot = results.FetchInt(8);
         int round = results.FetchInt(9);
 
-        char sVictimRole[16];
-        RoleString(sVictimRole, sizeof(sVictimRole), victimRole);
+        char sVictimTeam[16];
+        RoleString(sVictimTeam, sizeof(sVictimTeam), victimTeam);
 
-        char sAttackerRole[16];
-        RoleString(sAttackerRole, sizeof(sAttackerRole), attackerRole);
+        char sAttackerTeam[16];
+        RoleString(sAttackerTeam, sizeof(sAttackerTeam), attackerTeam);
 
         CPrintToChat(client, "%T", "RDM: Staff Info - Death & Round", client, death, g_iCurrentRound - round);
         CPrintToChat(client, "%T", "RDM: Staff Info - Last Shot", client, time - lastshot);
-        CPrintToChat(client, "%T", "RDM: Staff Info - Accuser", client, victimName, victimKarma, sVictimRole);
-        CPrintToChat(client, "%T", "RDM: Staff Info - Accused", client, attackerName, attackerKarma, sAttackerRole);
+        CPrintToChat(client, "%T", "RDM: Staff Info - Accuser", client, victimName, victimKarma, sVictimTeam);
+        CPrintToChat(client, "%T", "RDM: Staff Info - Accused", client, attackerName, attackerKarma, sAttackerTeam);
     }
 }
 
@@ -339,15 +353,15 @@ public void DbCallback_SelectVerdictInfo(Database db, DBResultSet results, const
                 if (punishment == CaseChoice_Slay)
                 {
                     CPrintToChat(attacker, "%T", "RDM: Verdict - Guilty Accused Slay", attacker, sName, victimName);
-                    if (g_cTSlays.IntValue > 0 && TTT_GetClientRole(attacker) == TTT_TEAM_TRAITOR)
+                    if (g_cTSlays.IntValue > 0 && TTT_GetClientTeam(attacker) == TTT_TEAM_TRAITOR)
                     {
                         TTT_AddRoundSlays(attacker, g_cTSlays.IntValue, false);
                     }
-                    else if (g_cDSlays.IntValue > 0 && TTT_GetClientRole(attacker) == TTT_TEAM_DETECTIVE)
+                    else if (g_cDSlays.IntValue > 0 && TTT_GetClientTeam(attacker) == TTT_TEAM_DETECTIVE)
                     {
                         TTT_AddRoundSlays(attacker, g_cDSlays.IntValue, false);
                     }
-                    else if (g_cISlays.IntValue > 0 && TTT_GetClientRole(attacker) == TTT_TEAM_INNOCENT)
+                    else if (g_cISlays.IntValue > 0 && TTT_GetClientTeam(attacker) == TTT_TEAM_INNOCENT)
                     {
                         TTT_AddRoundSlays(attacker, g_cISlays.IntValue, false);
                     }

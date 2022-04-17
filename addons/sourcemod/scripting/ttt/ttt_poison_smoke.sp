@@ -96,9 +96,9 @@ public void OnClientDisconnect(int client)
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -187,7 +187,7 @@ public Action Timer_CheckPlayers(Handle timer, DataPack pack)
                     continue;
                 }
                 
-                if (!g_cTraitorDamage.BoolValue && TTT_GetClientRole(victim) == TTT_TEAM_TRAITOR)
+                if (!g_cTraitorDamage.BoolValue && TTT_GetClientTeam(victim) == TTT_TEAM_TRAITOR)
                 {
                     continue;
                 }

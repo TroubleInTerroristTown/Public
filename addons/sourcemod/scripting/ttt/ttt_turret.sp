@@ -60,7 +60,7 @@ public void OnConfigsExecuted()
 
 public void OnAllPluginsLoaded()
 {
-    g_cCheckTeam = FindConVar("sd_turret_checkteam");
+    g_cCheckTeam = FindConVar("sd_turret_checkiTeam");
     
     if(g_cCheckTeam != null)
     {
@@ -91,18 +91,18 @@ void RegisterItem()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     
-    if (role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
     
     LoopValidClients(i)
     {
-        int iRole = TTT_GetClientRole(i);
+        iTeam = TTT_GetClientTeam(i);
 
-        if(iRole == TTT_TEAM_DETECTIVE || iRole == TTT_TEAM_INNOCENT)
+        if(iTeam == TTT_TEAM_DETECTIVE || iTeam == TTT_TEAM_INNOCENT)
         {
             SetTurretCanAttackClient(i, true);
         }
@@ -152,11 +152,11 @@ public void Turret_OnTurretDead(int iOwner,int iAttacker)
     TTT_AddClientCredits(iAttacker, g_cKillTurretCount.IntValue);
 }
     
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     if (TTT_IsClientValid(client) && IsPlayerAlive(client))
     {    
-        if(role == TTT_TEAM_DETECTIVE || role == TTT_TEAM_INNOCENT)
+        if(team == TTT_TEAM_DETECTIVE || team == TTT_TEAM_INNOCENT)
         {
             SetTurretCanAttackClient(client,true);
         }

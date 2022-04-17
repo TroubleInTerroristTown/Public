@@ -241,7 +241,7 @@ public void ResetJihad(int client)
 {
     g_iPlayer[client].Detonate = false;
     
-    TTT_ClearTimer(g_iPlayer[client].TimerJihad);
+    delete g_iPlayer[client].TimerJihad;
 }
 
 public void ResetGlobals(int client)
@@ -253,17 +253,17 @@ public void ResetGlobals(int client)
     g_iPlayer[client].Wire = -1;
     g_iPlayer[client].C4 = -1;
     
-    TTT_ClearTimer(g_iPlayer[client].TimerExplosion);
-    TTT_ClearTimer(g_iPlayer[client].TimerJihad);
+    delete g_iPlayer[client].TimerExplosion;
+    delete g_iPlayer[client].TimerJihad;
 }
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
     if (StrEqual(itemshort, SHORT_NAME_C4, false))
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
-        if (role != TTT_TEAM_TRAITOR )
+        if (iTeam != TTT_TEAM_TRAITOR )
         {
             return Plugin_Stop;
         }
@@ -274,14 +274,14 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     }
     else if (StrEqual(itemshort, SHORT_NAME_J, false))
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
 
-        TTT_ClearTimer(g_iPlayer[client].TimerJihad);
+        delete g_iPlayer[client].TimerJihad;
 
         if (g_cJihadPreparingTime.FloatValue > 0.0)
         {
@@ -341,14 +341,14 @@ public Action OnTakeDamageAlive(int victim, int& attacker, int& inflictor, float
                 {
                     return Plugin_Handled;
                 }
-                else if (g_cC4TraitorDamage.BoolValue && attacker != victim && TTT_GetClientRole(victim) == TTT_TEAM_TRAITOR)
+                else if (g_cC4TraitorDamage.BoolValue && attacker != victim && TTT_GetClientTeam(victim) == TTT_TEAM_TRAITOR)
                 {
                     return Plugin_Handled;
                 }
             }
             else if (StrEqual(sName, "jihad", false))
             {
-                if (g_cJihadTraitorDamage.BoolValue && attacker != victim && TTT_GetClientRole(victim) == TTT_TEAM_TRAITOR)
+                if (g_cJihadTraitorDamage.BoolValue && attacker != victim && TTT_GetClientTeam(victim) == TTT_TEAM_TRAITOR)
                 {
                     return Plugin_Handled;
                 }
@@ -382,7 +382,7 @@ bool RemoveC4(int client)
 {
     if (!TTT_IsItemInInventory(client, SHORT_NAME_C4) && !TTT_IsItemInInventory(client, SHORT_NAME_J))
     {
-        return TTT_RemoveWeaponByClassname(client, "weapon_c4", CS_SLOT_C4);
+        return TTT_RemoveWeaponByClassname(client, "weapon_c4");
     }
     
     return false;
@@ -549,15 +549,15 @@ public Action Timer_ExplodeC4(Handle timer, DataPack pack)
         SetEntProp(explosionIndex, Prop_Data, "m_iMagnitude", g_cC4Magnitude.IntValue);
         SetEntPropEnt(explosionIndex, Prop_Send, "m_hOwnerEntity", client);
         DispatchKeyValue(explosionIndex, "targetname", "c4");
+        TeleportEntity(particleIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
+        TeleportEntity(explosionIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
+        TeleportEntity(shakeIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
         DispatchSpawn(particleIndex);
         DispatchSpawn(explosionIndex);
         DispatchSpawn(shakeIndex);
         ActivateEntity(shakeIndex);
         ActivateEntity(particleIndex);
         ActivateEntity(explosionIndex);
-        TeleportEntity(particleIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
-        TeleportEntity(explosionIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
-        TeleportEntity(shakeIndex, explosionOrigin, NULL_VECTOR, NULL_VECTOR);
         AcceptEntityInput(bombEnt, "Kill");
         g_iPlayer[client].C4 = -1;
         AcceptEntityInput(explosionIndex, "Explode");
@@ -581,7 +581,7 @@ public Action Timer_ExplodeC4(Handle timer, DataPack pack)
                 {
                     continue;
                 }
-                else if (g_cC4TraitorDamage.BoolValue && client != i && TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+                else if (g_cC4TraitorDamage.BoolValue && client != i && TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR)
                 {
                     continue;
                 }
@@ -650,10 +650,12 @@ public void TTT_OnButtonPress(int client, int button)
             SetEntProp(bombEnt, Prop_Send, "m_hOwnerEntity", client);
             DispatchKeyValue(bombEnt, "model", MDL_C4);
             DispatchKeyValue(bombEnt, "targetname", "c4_bomb");
+
+            g_iPlayer[client].C4 = EntIndexToEntRef(bombEnt);
+            TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
+
             if(DispatchSpawn(bombEnt))
             {
-                g_iPlayer[client].C4 = EntIndexToEntRef(bombEnt);
-                TeleportEntity(bombEnt, clientPos, NULL_VECTOR, NULL_VECTOR);
                 showPlantMenu(client);
             }
         }
@@ -893,7 +895,7 @@ public int defuseBombMenu(Menu menu, MenuAction action, int client, int option)
 
                 g_iPlayer[planter].HasActiveBomb = false;
                 
-                TTT_ClearTimer(g_iPlayer[planter].TimerExplosion);
+                delete g_iPlayer[planter].TimerExplosion;
 
                 SetEntProp(iBomb, Prop_Send, "m_hOwnerEntity", -1);
             }
@@ -959,7 +961,7 @@ void plantBomb(int client, float time)
             continue;
         }
 
-        TTT_ClearTimer(g_iPlayer[client].TimerExplosion);
+        delete g_iPlayer[client].TimerExplosion;
 
         DataPack explosionPack;
         g_iPlayer[client].TimerExplosion = CreateDataTimer(time, Timer_ExplodeC4, explosionPack, TIMER_FLAG_NO_MAPCHANGE);
@@ -1047,7 +1049,7 @@ public Action Timer_Beep(Handle timer, DataPack pack)
 
         LoopValidClients(j)
         {
-            if (TTT_IsPlayerAlive(j) && TTT_GetClientRole(j) == TTT_TEAM_TRAITOR)
+            if (TTT_IsPlayerAlive(j) && TTT_GetClientTeam(j) == TTT_TEAM_TRAITOR)
             {
                 clients[index] = j;
                 index++;

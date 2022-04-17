@@ -121,9 +121,9 @@ void RegisterItem()
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_TRAITOR)
+    if (iTeam != TTT_TEAM_TRAITOR)
     {
         return Plugin_Stop;
     }
@@ -177,7 +177,7 @@ void Start_DropWeapons(int client)
                 continue;
             }
 
-            if (TTT_GetClientRole(i) == TTT_TEAM_TRAITOR && !g_cDropTraitorWeapons.BoolValue)
+            if (TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR && !g_cDropTraitorWeapons.BoolValue)
             {
                 continue;
             }

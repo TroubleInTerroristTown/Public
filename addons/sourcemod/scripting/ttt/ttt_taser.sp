@@ -227,13 +227,9 @@ public void HookClient(int client)
     SDKHook(client, SDKHook_WeaponDrop, OnWeaponDrop);
 }
 
-public void TTT_OnRoundStart(int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int innocents, int traitors, int detective, int misc)
 {
-    if (g_hCooldown != null)
-    {
-        KillTimer(g_hCooldown);
-    }
-    g_hCooldown = null;
+    delete g_hCooldown;
 
     if (g_cTaserCooldown.FloatValue > 0.0)
     {
@@ -290,13 +286,9 @@ public Action Timer_ActivateTasers(Handle timer)
     return Plugin_Stop;
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
-    if (g_hCooldown != null)
-    {
-        KillTimer(g_hCooldown);
-    }
-    g_hCooldown = null;
+    delete g_hCooldown;
 
     LoopValidClients(i)
     {
@@ -311,9 +303,9 @@ public void TTT_OnInventoryReady()
 {
     LoopValidClients(client)
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
         
-        if (role == TTT_TEAM_DETECTIVE)
+        if (iTeam == TTT_TEAM_DETECTIVE)
         {
             if (g_cOnSpawn.BoolValue)
             {
@@ -568,15 +560,15 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         return Plugin_Continue;
     }
 
-    int iRole = TTT_GetClientRole(iVictim);
-    int iARole = TTT_GetClientRole(iAttacker);
+    int iTeam = TTT_GetClientTeam(iVictim);
+    int iATeam = TTT_GetClientTeam(iAttacker);
 
     Action result = Plugin_Continue;
 
     Call_StartForward(g_fwOnTased_Pre);
     Call_PushCell(iAttacker);
     Call_PushCell(iVictim);
-    Call_PushCellRef(iRole);
+    Call_PushCellRef(iTeam);
     Call_Finish(result);
 
     if (result == Plugin_Stop || result == Plugin_Handled)
@@ -621,7 +613,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
     TTT_GetClientName(iVictim, sVictimName, sizeof(sVictimName));
     
     // TODO: Make it shorter(?) with this natives - https://github.com/TroubleInTerroristTown/Public/issues/309
-    if (iRole == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
         TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
@@ -640,7 +632,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         
         TTT_SetClientCredits(iAttacker, TTT_GetClientCredits(iAttacker) + g_cTKDamage.IntValue);
     }
-    else if (iRole == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
         TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
@@ -657,7 +649,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
             CPrintToChat(iAttacker, "%s %T", g_sPluginTag, "You hurt a Detective", iVictim, sVictim);
         }
     }
-    else if (iRole == TTT_TEAM_INNOCENT)
+    else if (iTeam == TTT_TEAM_INNOCENT)
     {
         char sVictim[MAX_NAME_LENGTH], sAttacker[MAX_NAME_LENGTH];
         TTT_GetClientName(iVictim, sVictim, sizeof(sVictim));
@@ -708,7 +700,7 @@ public Action OnTraceAttack(int iVictim, int &iAttacker, int &inflictor, float &
         FadePlayer(iVictim, { 255, 255, 255, 100 });
     }
 
-    if (iARole != TTT_TEAM_TRAITOR)
+    if (iATeam != TTT_TEAM_TRAITOR)
     {
         if (g_cDamage.IntValue == 0)
         {

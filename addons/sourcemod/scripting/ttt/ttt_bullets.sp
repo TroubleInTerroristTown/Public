@@ -152,12 +152,12 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
 {
     if (StrEqual(itemshort, SHORT_NAME_ICE, false))
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
         char sName[128];
         g_cIceLongName.GetString(sName, sizeof(sName));
         
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -172,11 +172,11 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     } 
     else if (StrEqual(itemshort, SHORT_NAME_FIRE, false))
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
         char sName[128];
         g_cFireLongName.GetString(sName, sizeof(sName));
         
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }
@@ -191,11 +191,11 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     } 
     else if (StrEqual(itemshort, SHORT_NAME_POISON, false))
     {
-        int role = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
         char sName[128];
         g_cPoisonLongName.GetString(sName, sizeof(sName));			
         
-        if (role != TTT_TEAM_TRAITOR)
+        if (iTeam != TTT_TEAM_TRAITOR)
         {
             return Plugin_Stop;
         }

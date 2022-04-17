@@ -194,8 +194,8 @@ public bool PrepareText(int client, int target, char[] sName, int iNameLength, c
     Format(sKarma, iKarmaLength, "%T", "Hud Karma", client);
     Format(sPlayerKarma, iPlayerKarmaLength, "%T", "Hud PlayerKarma", client, sKarmaValue);
     
-    int iRole = TTT_GetClientRole(client);
-    int iTRole = TTT_GetClientRole(target);
+    int iRole = TTT_GetClientTeam(client);
+    int iTRole = TTT_GetClientTeam(target);
     
     char sText[512];
     

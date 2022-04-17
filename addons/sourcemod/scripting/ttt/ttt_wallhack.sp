@@ -68,7 +68,7 @@ public void OnPluginStart()
     g_cLongName = AutoExecConfig_CreateConVar("wallhack_name", "Wallhack", "The name of the Wallhack in the Shop");
     g_cTraitorPrice = AutoExecConfig_CreateConVar("wallhack_traitor_price", "9000", "The amount of credits the Traitor-Wallhack costs. 0 to disable.");
     g_cTraitorLimit = AutoExecConfig_CreateConVar("wallhack_traitor_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
-    g_cDetectivePrice = AutoExecConfig_CreateConVar("wallhack_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.\nBy using detective wallhack it will produce some irritation with white glows, when \"wallhack_show_roles_detective\" is 0.");
+    g_cDetectivePrice = AutoExecConfig_CreateConVar("wallhack_detective_price", "0", "The amount of credits the Dective-Wallhack costs. 0 to disable.\nBy using detective wallhack it will produce some irritation with white glows, when \"wallhack_show_teams_detective\" is 0.");
     g_cDetectiveLimit = AutoExecConfig_CreateConVar("wallhack_detective_limit", "0", "The amount of purchases for all players during a round.", _, true, 0.0);
     g_cTraitorCooldown = AutoExecConfig_CreateConVar("wallhack_traitor_cooldown", "15.0", "Time of the cooldown for Traitor-Wallhack (time in seconds)");
     g_cDetectiveCooldown = AutoExecConfig_CreateConVar("wallhack_detective_cooldown", "15.0", "Time of the cooldown for Dective-Wallhack (time in seconds)");
@@ -76,8 +76,8 @@ public void OnPluginStart()
     g_cDetectiveActive = AutoExecConfig_CreateConVar("wallhack_detective_active", "3.0", "Active time for Dective-Wallhack (time in seconds)");
     g_cTraitor_Prio = AutoExecConfig_CreateConVar("wallhack_traitor_sort_prio", "0", "The sorting priority of the Traitor - Wallhack in the shop menu.");
     g_cDetective_Prio = AutoExecConfig_CreateConVar("wallhack_detective_sort_prio", "0", "The sorting priority of the Detective - Wallhack in the shop menu.");
-    g_cColorsT = AutoExecConfig_CreateConVar("wallhack_show_roles_traitor", "1", "Show glows as role colors for traitors?\nAttention: If you set this to 0, it cause into some issues with missing role glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
-    g_cColorsD = AutoExecConfig_CreateConVar("wallhack_show_roles_detective", "0", "Show glows as role colors for detectives?\nAttention: If you set this to 0, it cause into some issues with missing role glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
+    g_cColorsT = AutoExecConfig_CreateConVar("wallhack_show_teams_traitor", "1", "Show glows as teams colors for traitors?\nAttention: If you set this to 0, it cause into some issues with missing iTeam glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
+    g_cColorsD = AutoExecConfig_CreateConVar("wallhack_show_teams_detective", "0", "Show glows as teams colors for detectives?\nAttention: If you set this to 0, it cause into some issues with missing iTeam glow between traitors<->traitors and detective<->detective", _, true, 0.0, true, 1.0);
     g_cDefaultRed = AutoExecConfig_CreateConVar("wallhack_default_color_red", "255", "Red color of default glow");
     g_cDefaultGreen = AutoExecConfig_CreateConVar("wallhack_default_color_green", "255", "Green color of default glow");
     g_cDefaultBlue = AutoExecConfig_CreateConVar("wallhack_default_color_blue", "255", "Blue color of default glow");
@@ -187,9 +187,9 @@ public Action Event_RoundReset(Event event, const char[] name, bool dontBroadcas
 
 public Action OnItemPurchased(int client, const char[] itemshort, int count, int price)
 {
-    int role = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (role != TTT_TEAM_TRAITOR && role != TTT_TEAM_DETECTIVE)
+    if (iTeam != TTT_TEAM_TRAITOR && iTeam != TTT_TEAM_DETECTIVE)
     {
         return Plugin_Stop;
     }
@@ -197,7 +197,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     g_iPlayer[client].HasWH = true;
     TTT_AddInventoryItem(client, itemshort);
     
-    GlowPlayers(client, role);
+    GlowPlayers(client, iTeam);
     return Plugin_Continue;
 }
 
@@ -210,11 +210,11 @@ public Action Timer_WHActive(Handle timer, any userid)
         g_iPlayer[client].HasWH = false;
         g_iPlayer[client].Timer = null;
 
-        if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+        if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
         {
             g_iPlayer[client].Timer = CreateTimer(g_cTraitorCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
         }
-        else if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+        else if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
         {
             g_iPlayer[client].Timer = CreateTimer(g_cDetectiveCooldown.FloatValue, Timer_WHCooldown, GetClientUserId(client));
         }
@@ -232,24 +232,24 @@ public Action Timer_WHCooldown(Handle timer, any userid)
         g_iPlayer[client].HasWH = true;
         g_iPlayer[client].Timer = null;
         
-        GlowPlayers(client, TTT_GetClientRole(client));
+        GlowPlayers(client, TTT_GetClientTeam(client));
     }
 
     return Plugin_Stop;
 }
 
-void GlowPlayers(int client, int role)
+void GlowPlayers(int client, int iTeam)
 {
-    if (role != TTT_TEAM_TRAITOR && role != TTT_TEAM_DETECTIVE)
+    if (iTeam != TTT_TEAM_TRAITOR && iTeam != TTT_TEAM_DETECTIVE)
     {
         return;
     }
 
-    float fTime = role == TTT_TEAM_TRAITOR ? g_cTraitorActive.FloatValue : g_cDetectiveActive.FloatValue;
+    float fTime = iTeam == TTT_TEAM_TRAITOR ? g_cTraitorActive.FloatValue : g_cDetectiveActive.FloatValue;
 
     g_iPlayer[client].Timer = CreateTimer(fTime, Timer_WHActive, GetClientUserId(client));
 
-    if ((role == TTT_TEAM_TRAITOR && !g_cColorsT.BoolValue) || (role == TTT_TEAM_DETECTIVE && !g_cColorsD.BoolValue))
+    if ((iTeam == TTT_TEAM_TRAITOR && !g_cColorsT.BoolValue) || (iTeam == TTT_TEAM_DETECTIVE && !g_cColorsD.BoolValue))
     {
         int iColor[4];
         iColor[0] = g_cDefaultRed.IntValue;

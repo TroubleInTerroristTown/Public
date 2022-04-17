@@ -30,9 +30,9 @@ ConVar g_cDCount = null;
 ConVar g_cICount = null;
 ConVar g_cLongName = null;
 ConVar g_cRagdoll = null;
-ConVar g_cIgnoreRoleTraitor = null;
-ConVar g_cIgnoreRoleInnocent = null;
-ConVar g_cIgnoreRoleDetective = null;
+ConVar g_cIgnoreTeamTraitor = null;
+ConVar g_cIgnoreTeamInnocent = null;
+ConVar g_cIgnoreTeamDetective = null;
 ConVar g_cActivation = null;
 
 ConVar g_cPluginTag = null;
@@ -76,9 +76,9 @@ public void OnPluginStart()
     g_cDCount = AutoExecConfig_CreateConVar("rt_detective_count", "1", "The amount of usages for Random Teleports per round as detective. 0 to disable.");
     g_cICount = AutoExecConfig_CreateConVar("rt_innocent_count", "1", "The amount of usages for Random Teleports per round as innocent. 0 to disable.");
     g_cRagdoll = AutoExecConfig_CreateConVar("rt_teleport_ragdolls", "1", "Teleport with dead players (ragdoll)?", _, true, 0.0, true, 1.0);
-    g_cIgnoreRoleTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_role", "4", "Which role should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
-    g_cIgnoreRoleInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_role", "-1", "Which role should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
-    g_cIgnoreRoleDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_role", "-1", "Which role should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreTeamTraitor = AutoExecConfig_CreateConVar("rt_traitor_ignore_team", "4", "Which team should be ignored when traitor use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreTeamInnocent = AutoExecConfig_CreateConVar("rt_innocent_ignore_team", "-1", "Which team should be ignored when innocent use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
+    g_cIgnoreTeamDetective = AutoExecConfig_CreateConVar("rt_detective_ignore_team", "-1", "Which team should be ignored when detective use random teleporter? -1 - Disabled ( https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks )", _, true, 2.0);
     g_cActivation = AutoExecConfig_CreateConVar("rt_activation_mode", "1", "Which activation mode? 0 - New, over !inventory menu; 1 - Old, on purchase", _, true, 0.0, true, 1.0);
     TTT_EndConfig();
 }
@@ -161,19 +161,19 @@ int RandomTeleport(int client)
     }
 
     int target = -1;
-    int iRole = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
 
-    if (iRole == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
-        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleTraitor.IntValue);
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreTeamTraitor.IntValue);
     }
-    else if (iRole == TTT_TEAM_INNOCENT)
+    else if (iTeam == TTT_TEAM_INNOCENT)
     {
-        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleInnocent.IntValue);
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreTeamInnocent.IntValue);
     }
-    else if (iRole == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
-        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreRoleDetective.IntValue);
+        target = TTT_GetRandomPlayer(bAlive, g_cIgnoreTeamDetective.IntValue);
     }
 
     if (target == -1 || !TTT_IsClientValid(target))
@@ -252,17 +252,17 @@ int RandomTeleport(int client)
     TTT_GetClientName(target, sName, sizeof(sName));
     CPrintToChat(client, "%s %T", g_sPluginTag, "Random Teleporter: Teleport", client, sName);
 
-    if (iRole == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         TTT_AddItemUsage(client, SHORT_NAME_T);
         TTT_RemoveInventoryItem(client, SHORT_NAME_T);
     }
-    else if (iRole == TTT_TEAM_INNOCENT)
+    else if (iTeam == TTT_TEAM_INNOCENT)
     {
         TTT_AddItemUsage(client, SHORT_NAME_I);
         TTT_RemoveInventoryItem(client, SHORT_NAME_I);
     }
-    else if (iRole == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         TTT_AddItemUsage(client, SHORT_NAME_D);
         TTT_RemoveInventoryItem(client, SHORT_NAME_D);

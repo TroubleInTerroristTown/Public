@@ -1,0 +1,6 @@
+UnlitGeneric
+{
+	$basetexture "ttt/c0rp3n/overlays/win/ttt_overlay_win_traitors"
+
+	$translucent 1
+}

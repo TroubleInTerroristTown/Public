@@ -109,7 +109,7 @@ void RegisterItem()
     TTT_RegisterShopItem(SHORT_NAME, sBuffer, g_cIPrice.IntValue, TTT_TEAM_INNOCENT, g_cIPrio.IntValue, g_cICount.IntValue, g_cILimit.IntValue, OnItemPurchased);
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     if (!g_cShieldRemove.BoolValue)
     {

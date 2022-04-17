@@ -420,7 +420,7 @@ public void MissileThink(const char[] output, int caller, int activator, float d
         {
             if (TTT_IsPlayerAlive(i))
             {
-                if(TTT_GetClientRole(i) == TTT_TEAM_TRAITOR)
+                if(TTT_GetClientTeam(i) == TTT_TEAM_TRAITOR)
                 {
                     continue;
                 }
@@ -640,11 +640,11 @@ void CreateExplosion(int entity)
         SetEntProp(iExplosion, Prop_Data, "m_spawnflags", 6146);
         SetEntProp(iExplosion, Prop_Data, "m_iMagnitude", g_cDamage.IntValue);
         SetEntProp(iExplosion, Prop_Data, "m_iRadiusOverride", g_cRadius.IntValue);
-        
+
+        TeleportEntity(iExplosion, fMissilePos, NULL_VECTOR, NULL_VECTOR);
         DispatchSpawn(iExplosion);
         ActivateEntity(iExplosion);
         
-        TeleportEntity(iExplosion, fMissilePos, NULL_VECTOR, NULL_VECTOR);
         SetEntPropEnt(iExplosion, Prop_Send, "m_hOwnerEntity", iMissileOwner);
         SetEntProp(iExplosion, Prop_Send, "m_iTeamNum", iMissileTeam);
         

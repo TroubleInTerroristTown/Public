@@ -438,11 +438,11 @@ public void OnMapStart()
     delete kvConfig;
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     if (g_bEnable)
     {
-        SetModel(client, role);
+        SetModel(client, team);
     }
 }
 
@@ -455,13 +455,13 @@ public void TTT_OnPlayerRespawn(int client)
 
     if (g_bEnable)
     {
-        SetModel(client, TTT_GetClientRole(client));
+        SetModel(client, TTT_GetClientTeam(client));
     }
 }
 
-void SetModel(int client, int role)
+void SetModel(int client, int team)
 {
-    if (role == TTT_TEAM_DETECTIVE)
+    if (team == TTT_TEAM_DETECTIVE)
     {
         char sName[64];
         char sFileName[PLATFORM_MAX_PATH+1];
@@ -495,13 +495,13 @@ void SetModel(int client, int role)
         }
     }
     
-    if (role == TTT_TEAM_INNOCENT || role == TTT_TEAM_TRAITOR)
+    if (team == TTT_TEAM_INNOCENT || team == TTT_TEAM_TRAITOR)
     {
-        char sName[64],  sRole[ROLE_LENGTH];
+        char sName[64],  sTeam[ROLE_LENGTH];
         char sFileName[PLATFORM_MAX_PATH+1];
         int model = GetRandomInt(1, g_iITCount);
 
-        TTT_GetRoleNameByID(role, sRole, sizeof(sRole));
+        TTT_GetTeamNameByID(team, sTeam, sizeof(sTeam));
         Format(sName, sizeof(sName), "ITModel%d", model);
         g_smModels.GetString(sName, sFileName, sizeof(sFileName));
         SetEntityModel(client, sFileName);
@@ -510,7 +510,7 @@ void SetModel(int client, int role)
         {
             char sPlayerName[MAX_NAME_LENGTH];
             TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
-            LogToFile(g_sLog, "Player Model: %s (%s), Model: (%d) %s", sPlayerName, sRole, model, sFileName);
+            LogToFile(g_sLog, "Player Model: %s (%s), Model: (%d) %s", sPlayerName, sTeam, model, sFileName);
         }
 
         if (g_bEnableArms)
@@ -525,7 +525,7 @@ void SetModel(int client, int role)
             {
                 char sPlayerName[MAX_NAME_LENGTH];
                 TTT_GetClientName(client, sPlayerName, sizeof(sPlayerName));
-                LogToFile(g_sLog, "Player Arms: %s (%s), Arms: (%d) %s", sPlayerName, sRole, model, sFileName);
+                LogToFile(g_sLog, "Player Arms: %s (%s), Arms: (%d) %s", sPlayerName, sTeam, model, sFileName);
             }
         }
     }

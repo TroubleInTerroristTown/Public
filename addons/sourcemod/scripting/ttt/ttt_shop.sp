@@ -42,18 +42,25 @@ ConVar g_cReopenMenu = null;
 ConVar g_cCreditsII = null;
 ConVar g_cCreditsIT = null;
 ConVar g_cCreditsID = null;
+ConVar g_cCreditsIM = null;
 ConVar g_cCreditsTI = null;
 ConVar g_cCreditsTT = null;
 ConVar g_cCreditsTD = null;
+ConVar g_cCreditsTM = null;
 ConVar g_cCreditsDI = null;
 ConVar g_cCreditsDT = null;
 ConVar g_cCreditsDD = null;
+ConVar g_cCreditsDM = null;
+ConVar g_cCreditsMI = null;
+ConVar g_cCreditsMT = null;
+ConVar g_cCreditsMD = null;
+ConVar g_cCreditsMM = null;
 ConVar g_cTraitorloseAliveNonTraitors = null;
 ConVar g_cTraitorloseDeadNonTraitors = null;
 ConVar g_cTraitorwinAliveTraitors = null;
 ConVar g_cTraitorwinDeadTraitors = null;
 ConVar g_cCreditsFoundBody = null;
-ConVar g_cCreditsFoundBodyRole = null;
+ConVar g_cCreditsFoundBodyTeam = null;
 ConVar g_cMessageTypCredits = null;
 ConVar g_cStartCredits = null;
 ConVar g_cCreditsMin = null;
@@ -116,7 +123,7 @@ enum struct Item
     char Long[SHOP_ITEM_NAME_LONG];
     char Short[SHOP_ITEM_NAME_SHORT];
     int Price;
-    int Role;
+    int Team;
     int Sort;
     int MaxUsages;
     int Limit;
@@ -154,7 +161,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
     CreateNative("TTT_RegisterShopItem", Native_RegisterShopItem);
     CreateNative("TTT_GetItemPrice", Native_GetItemPrice);
-    CreateNative("TTT_GetItemRole", Native_GetItemRole);
+    CreateNative("TTT_GetItemTeam", Native_GetItemTeam);
     CreateNative("TTT_UpdateShopItem", Native_UpdateShopItem);
     CreateNative("TTT_RemoveShopItem", Native_RemoveShopItem);
     CreateNative("TTT_GetItemName", Native_GetItemName);
@@ -209,18 +216,25 @@ public void OnPluginStart()
     g_cCreditsII = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_innocent_subtract", "1500", "The amount of credits an innocent will lose for killing an innocent.");
     g_cCreditsIT = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_traitor_add", "3000", "The amount of credits an innocent will recieve when killing a traitor.");
     g_cCreditsID = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_detective_subtract", "4200", "The amount of credits an innocent will lose for killing a detective.");
+    g_cCreditsIM = AutoExecConfig_CreateConVar("ttt_credits_killer_innocent_victim_misc_subtract", "1500", "The amount of credits an innocent will lose for killing a misc.");
     g_cCreditsTI = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_innocent_add", "600", "The amount of credits a traitor will recieve for killing an innocent.");
     g_cCreditsTT = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_traitor_subtract", "3000", "The amount of credits a traitor will lose for killing a traitor.");
     g_cCreditsTD = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_detective_add", "4200", "The amount of credits a traitor will recieve for killing a detective.");
+    g_cCreditsTM = AutoExecConfig_CreateConVar("ttt_credits_killer_traitor_victim_misc_add", "0", "The amount of credits a traitor will recieve for killing a misc.");
     g_cCreditsDI = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_innocent_subtract", "300", "The amount of credits a detective will lose for killing an innocent.");
     g_cCreditsDT = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_traitor_add", "2100", "The amount of credits a detective will recieve for killing a traitor.");
     g_cCreditsDD = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_detective_subtract", "300", "The amount of credits a detective will lose for killing a detective.");
+    g_cCreditsDM = AutoExecConfig_CreateConVar("ttt_credits_killer_detective_victim_misc_subtract", "300", "The amount of credits a detective will lose for killing a misc.");
+    g_cCreditsMI = AutoExecConfig_CreateConVar("ttt_credits_killer_misc_victim_innocent_subtract", "0", "The amount of credits a detective will lose for killing an innocent.");
+    g_cCreditsMT = AutoExecConfig_CreateConVar("ttt_credits_killer_misc_victim_traitor_add", "0", "The amount of credits a detective will recieve for killing a traitor.");
+    g_cCreditsMD = AutoExecConfig_CreateConVar("ttt_credits_killer_misc_victim_detective_subtract", "0", "The amount of credits a detective will lose for killing a detective.");
+    g_cCreditsMM = AutoExecConfig_CreateConVar("ttt_credits_killer_misc_victim_misc_subtract", "0", "The amount of credits a detective will lose for killing a misc.");
     g_cTraitorloseAliveNonTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorlose_alive_nontraitors", "4800", "The amount of credits an innocent or detective will recieve for winning the round if they survived.");
     g_cTraitorloseDeadNonTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorlose_dead_nontraitors", "1200", "The amount of credits an innocent or detective will recieve for winning the round if they died.");
     g_cTraitorwinAliveTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_alive_traitors", "4800", "The amount of credits a traitor will recieve for winning the round if they survived.");
     g_cTraitorwinDeadTraitors = AutoExecConfig_CreateConVar("ttt_credits_roundend_traitorwin_dead_traitors", "1200", "The amount of credits a traitor will recieve for winning the round if they died.");
     g_cCreditsFoundBody = AutoExecConfig_CreateConVar("ttt_credits_found_body_add", "1200", "The amount of credits the player will recieve for discovering a new dead body.");
-    g_cCreditsFoundBodyRole = AutoExecConfig_CreateConVar("ttt_credits_found_body_add_role", "6", "How can gain credits for identifing a dead body?\nPlease read this before you this: https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks");
+    g_cCreditsFoundBodyTeam = AutoExecConfig_CreateConVar("ttt_credits_found_body_add_team", "6", "How can gain credits for identifing a dead body?\nPlease read this before you this: https://github.com/TroubleInTerroristTown/Public/wiki/CVAR-Masks");
     g_cShowEarnCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_earn_credits", "1", "Display a message showing how many credits you earned. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cShowLoseCreditsMessage = AutoExecConfig_CreateConVar("ttt_show_message_lose_credits", "1", "Display a message showing how many credits you lost. 1 = Enabled, 0 = Disabled", _, true, 0.0, true, 1.0);
     g_cMessageTypCredits = AutoExecConfig_CreateConVar("ttt_message_typ_credits", "1", "The credit message type. 1 = Hint Text, 2 = Chat Message", _, true, 1.0, true, 2.0);
@@ -291,11 +305,11 @@ public void OnConfigsExecuted()
 
     g_cAddLogs = FindConVar("ttt_steamid_add_to_logs");
     g_cLogFormat = FindConVar("ttt_steamid_log_format");
-    
+
     char sBuffer[32];
     g_cCredits.GetString(sBuffer, sizeof(sBuffer));
     Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-    
+
     if (!g_bHasRegisteredCommands)
     {
         if(!CommandExists(sBuffer))
@@ -305,7 +319,7 @@ public void OnConfigsExecuted()
 
         g_cBuyCmd.GetString(sBuffer, sizeof(sBuffer));
         Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-        
+
         if(!CommandExists(sBuffer))
         {
             RegConsoleCmd(sBuffer, Command_Buy);
@@ -313,7 +327,7 @@ public void OnConfigsExecuted()
 
         g_cShowCmd.GetString(sBuffer, sizeof(sBuffer));
         Format(sBuffer, sizeof(sBuffer), "sm_%s", sBuffer);
-        
+
         if(!CommandExists(sBuffer))
         {
             RegConsoleCmd(sBuffer, Command_ShowItems);
@@ -362,11 +376,16 @@ public void OnConVarChanged(ConVar convar, const char[] oldValue, const char[] n
 
 void LoadShopFile(const char[] sFile)
 {
+    delete g_smDiscountPercent;
+    delete g_smDiscountFlag;
+    delete g_smAccessFlag;
+
     Handle hFile = OpenFile(sFile, "rt");
 
     if (hFile == null)
     {
         SetFailState("[TTT] Can't open File: %s", sFile);
+        return;
     }
 
     KeyValues kvValues;
@@ -401,10 +420,6 @@ void LoadShopFile(const char[] sFile)
         delete hFile;
         return;
     }
-
-    delete g_smDiscountPercent;
-    delete g_smDiscountFlag;
-    delete g_smAccessFlag;
 
     g_smDiscountPercent = new StringMap();
     g_smDiscountFlag = new StringMap();
@@ -485,7 +500,7 @@ public void SQL_AlterCreditsColumn(Database db, DBResultSet results, const char[
         {
             LogError("(SQL_AlterCreditsColumn) Query failed: %s", error);
         }
-        
+
         return;
     }
     else
@@ -502,7 +517,7 @@ void LoadClientCredits(int client)
         {
             LogMessage("(LoadClientCredits) Client: \"%L\"", client);
         }
-        
+
         char sCommunityID[64];
 
         if (!GetClientAuthId(client, AuthId_SteamID64, sCommunityID, sizeof(sCommunityID)))
@@ -689,7 +704,7 @@ public Action Command_ShowItems(int client, int args)
         g_aShopItems.GetArray(i, item);
         if (strlen(item.Short) > 1)
         {
-            PrintToConsole(client, "Name: %s (%s) - Roles: %d - Price: %i - Max Usages: %d, Limit: %d", item.Long, item.Short, item.Role, item.Price, item.MaxUsages, item.Limit);
+            PrintToConsole(client, "Name: %s (%s) - Teams: %d - Price: %i - Max Usages: %d, Limit: %d", item.Long, item.Short, item.Team, item.Price, item.MaxUsages, item.Limit);
         }
     }
     return Plugin_Handled;
@@ -701,7 +716,7 @@ public Action Command_Shop(int client, int args)
     {
         PrintToChat(client, "Command_Shop - 0 - Start");
     }
-    
+
     if (!TTT_IsClientValid(client))
     {
         return Plugin_Handled;
@@ -735,11 +750,11 @@ public Action Command_Shop(int client, int args)
 
     if (g_cDebugMessages.BoolValue)
     {
-        PrintToChat(client, "Command_Shop - 3 - Yeah, you're alive! (Role: %d", TTT_GetClientRole(client));
+        PrintToChat(client, "Command_Shop - 3 - Yeah, you're alive! (Team: %d", TTT_GetClientTeam(client));
     }
 
-    int iRole = TTT_GetClientRole(client);
-    if (iRole != TTT_TEAM_UNASSIGNED)
+    int iTeam = TTT_GetClientTeam(client);
+    if (iTeam != TTT_TEAM_UNASSIGNED)
     {
         Menu menu = new Menu(Menu_ShopHandler);
         menu.SetTitle("%T", "TTT Shop", client, g_iPlayer[client].Credits, g_iPlayer[client].Currency);
@@ -762,8 +777,8 @@ public Action Command_Shop(int client, int args)
                 {
                     PrintToChat(client, "Command_Shop - 5 - Item: %s", item.Short);
                 }
-                
-                if ((item.Role == 1) || (item.Role == iRole))
+
+                if ((item.Team == 1) || (item.Team == iTeam))
                 {
                     int iPrice = item.Price;
 
@@ -773,7 +788,7 @@ public Action Command_Shop(int client, int args)
                     {
                         bAvailable = false;
                     }
-                    
+
                     bool bDiscount = false;
                     int iPercents = TTT_GetItemDiscount(client, item.Short);
 
@@ -819,7 +834,7 @@ public Action Command_Shop(int client, int args)
                     {
                         continue;
                     }
-                    
+
                     if (bDiscount)
                     {
                         Format(sDisplay, sizeof(sDisplay), "%s - %d %T", item.Long, iPrice, "Shop Discount Price", client, iPercents);
@@ -949,7 +964,7 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
     for (int i = 0; i < g_aShopItems.Length; i++)
     {
         g_aShopItems.GetArray(i, item);
-        if ((strlen(item.Short) > 0) && (strcmp(sItem, item.Short) == 0) && ((item.Role == 1) || (TTT_GetClientRole(client) == item.Role)))
+        if ((strlen(item.Short) > 0) && (strcmp(sItem, item.Short) == 0) && ((item.Team == 1) || (TTT_GetClientTeam(client) == item.Team)))
         {
             int iPrice = 0;
 
@@ -1027,7 +1042,7 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
             {
                 return false;
             }
-            
+
             if (g_cDebugMessages != null && g_cDebugMessages.BoolValue)
             {
                 if (CheckCommandAccess(client, "ttt_root", ADMFLAG_ROOT, true))
@@ -1049,17 +1064,17 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
                 if (res < Plugin_Stop)
                 {
                     setCredits(client, (g_iPlayer[client].Credits - iPrice));
-                    
+
                     if (!free)
                     {
                         CPrintToChat(client, "%s %T", g_sPluginTag, "Item bought! (NEW)", client, g_iPlayer[client].Credits, item.Long, iPrice, g_iPlayer[client].Currency);
                     }
 
-                    int iTeam = TTT_GetClientRole(client);
+                    int iTeam = TTT_GetClientTeam(client);
                     if (g_cLogPurchases != null && (g_cLogPurchases.IntValue == 1 || (g_cLogPurchases.IntValue == 2 && (iTeam == TTT_TEAM_TRAITOR || iTeam == TTT_TEAM_DETECTIVE))))
                     {
-                        char sClientID[32], sRole[ROLE_LENGTH];
-                        TTT_GetRoleNameByID(iTeam, sRole, sizeof(sRole));
+                        char sClientID[32], sTeam[ROLE_LENGTH];
+                        TTT_GetTeamNameByID(iTeam, sTeam, sizeof(sTeam));
 
                         if (g_cAddLogs != null && g_cAddLogs.BoolValue)
                         {
@@ -1085,10 +1100,10 @@ bool ClientBuyItem(int client, char[] sItem, bool menu, bool free = false)
                                 Format(sClientID, sizeof(sClientID), " (%s)", sClientID);
                             }
                         }
-                    
+
                         if (item.Logging)
                         {
-                            TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sRole, item.Long);
+                            TTT_LogString("-> [%N%s (%s) purchased an item from the shop: %s]", client, sClientID, sTeam, item.Long);
                         }
                     }
 
@@ -1151,7 +1166,7 @@ public Action TTT_OnItemPurchasePre(int client, int &price, int &count, const ch
 {
     char sFlag[16];
     g_smDiscountFlag.GetString(itemshort, sFlag, sizeof(sFlag));
-    
+
     if (strlen(sFlag) > 0 && !HasFlag(client, sFlag, g_sDiscountFile))
     {
         return Plugin_Continue;
@@ -1166,7 +1181,7 @@ public Action TTT_OnItemPurchasePre(int client, int &price, int &count, const ch
         price = iOld - iDiscount;
         return Plugin_Changed;
     }
-    
+
     return Plugin_Continue;
 }
 
@@ -1219,7 +1234,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
     GetNativeString(2, temp_long, sizeof(temp_long));
 
     int temp_price = GetNativeCell(3);
-    int temp_role = GetNativeCell(4);
+    int temp_team = GetNativeCell(4);
     int temp_sort = GetNativeCell(5);
     int temp_maxUsages = GetNativeCell(6);
     int temp_limit = GetNativeCell(7);
@@ -1228,7 +1243,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
 
     bool temp_logging = view_as<bool>(GetNativeCell(9));
 
-    LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d, - Role: %d - Sort: %d - MaxUsages: %d, Limit: %d, Logging: %d", sShort, temp_long, temp_price, temp_role, temp_sort, temp_maxUsages, temp_limit, temp_logging);
+    LogToFile(g_sLog, "Short: %s - Long: %s - Price: %d, - Team: %d - Sort: %d - MaxUsages: %d, Limit: %d, Logging: %d", sShort, temp_long, temp_price, temp_team, temp_sort, temp_maxUsages, temp_limit, temp_logging);
 
     if ((strlen(sShort) < 1) || (strlen(temp_long) < 1) || (temp_price <= 0))
     {
@@ -1253,7 +1268,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
     Format(item.Short, sizeof(sShort), "%s", sShort);
     Format(item.Long, sizeof(temp_long), "%s", temp_long);
     item.Price = temp_price;
-    item.Role = temp_role;
+    item.Team = temp_team;
     item.Sort = temp_sort;
     item.MaxUsages = temp_maxUsages;
     item.Limit = temp_limit;
@@ -1278,7 +1293,7 @@ public int Native_RegisterShopItem(Handle plugin, int numParams)
         Call_PushString(item.Short);
         Call_PushString(item.Long);
         Call_PushCell(item.Price);
-        Call_PushCell(item.Role);
+        Call_PushCell(item.Team);
         Call_PushCell(item.Sort);
         Call_PushCell(item.MaxUsages);
         Call_PushCell(item.Limit);
@@ -1299,27 +1314,27 @@ public int Native_UpdateShopItem(Handle plugin, int numParams)
     Item item;
     char sShort[16];
     GetNativeString(1, sShort, sizeof(sShort));
-    
+
     for (int i = 0; i < g_aShopItems.Length; i++)
     {
         g_aShopItems.GetArray(i, item);
         if (StrEqual(item.Short, sShort, false))
         {
             PrintToChatAll("Found: %s", sShort);
-            
+
             item.Price = GetNativeCell(2);
             item.Sort = GetNativeCell(3);
             item.MaxUsages = GetNativeCell(4);
             item.Limit = GetNativeCell(5);
-            
-            PrintToChatAll("New values... Price: %d, Role: %d, Sort: %d, Max Usages: %d, Limit: %d", item.Price, item.Role, item.Sort, item.MaxUsages, item.Limit);
-            
+
+            PrintToChatAll("New values... Price: %d, Team: %d, Sort: %d, Max Usages: %d, Limit: %d", item.Price, item.Team, item.Sort, item.MaxUsages, item.Limit);
+
             g_aShopItems.SetArray(i, item);
-            
+
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -1328,7 +1343,7 @@ public int Native_RemoveShopItem(Handle plugin, int numParams)
     Item item;
     char sShort[16];
     GetNativeString(1, sShort, sizeof(sShort));
-    
+
     if (g_aShopItems != null)
     {
         for (int i = 0; i < g_aShopItems.Length; i++)
@@ -1346,7 +1361,7 @@ public int Native_RemoveShopItem(Handle plugin, int numParams)
             }
         }
     }
-    
+
     return false;
 }
 
@@ -1355,13 +1370,13 @@ public int Native_GetItemName(Handle plugin, int numParams)
     char sName[16];
     int iSize = GetNativeCell(3);
     GetNativeString(1, sName, sizeof(sName));
-    
+
     char[] sBuffer = new char[iSize];
     if (GetItemLong(sName, sBuffer, iSize) && SetNativeString(2, sBuffer, iSize) == SP_ERROR_NONE)
     {
         return true;
     }
-    
+
     return false;
 }
 
@@ -1369,7 +1384,7 @@ public int Native_ShopItemExist(Handle plugin, int numParams)
 {
     char sName[16];
     GetNativeString(1, sName, sizeof(sName));
-    
+
     bool bExist = false;
     Item item;
     for (int i = 0; i < g_aShopItems.Length; i++)
@@ -1379,9 +1394,9 @@ public int Native_ShopItemExist(Handle plugin, int numParams)
         {
             bExist = true;
             break;
-        }    
+        }
     }
-    
+
     return bExist;
 }
 
@@ -1424,7 +1439,7 @@ public int Native_GetItemPrice(Handle plugin, int numParams)
     return 0;
 }
 
-public int Native_GetItemRole(Handle plugin, int numParams)
+public int Native_GetItemTeam(Handle plugin, int numParams)
 {
     char sShort[32];
     GetNativeString(1, sShort, sizeof(sShort));
@@ -1436,7 +1451,7 @@ public int Native_GetItemRole(Handle plugin, int numParams)
         g_aShopItems.GetArray(i, item);
         if (strcmp(sShort, item.Short, false) == 0)
         {
-            return item.Role;
+            return item.Team;
         }
     }
     return 0;
@@ -1480,13 +1495,13 @@ public int Native_GetItemLimit(Handle plugin, int numParams)
     return -1;
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
     if (g_cCreditsTimer.BoolValue)
     {
         if (g_cCreditsInterval.FloatValue >= 60.0)
         {
-            TTT_ClearTimer(g_iPlayer[client].Timer);
+            delete g_iPlayer[client].Timer;
             RequestFrame(Frame_StartCreditsTimer, GetClientUserId(client));
         }
     }
@@ -1506,12 +1521,20 @@ public void TTT_OnInventoryReady()
 {
     LoopValidClients(client)
     {
+        int iLength = 0;
         if (g_smUsages[client] != null)
         {
-            delete g_smUsages[client];
+            StringMapSnapshot snap = g_smUsages[client].Snapshot();
+            iLength = snap.Length;
+            delete snap;
+
         }
 
-        g_smUsages[client] = new StringMap();
+        if (iLength == 0)
+        {
+            delete g_smUsages[client];
+            g_smUsages[client] = new StringMap();
+        }
     }
 }
 
@@ -1524,7 +1547,7 @@ public Action Timer_CreditsTimer(Handle timer, any userid)
         if (IsPlayerAlive(client))
         {
             int iCredits = g_cCreditsMin.IntValue;
-            
+
             if (g_cCreditsMax.IntValue > g_cCreditsMin.IntValue)
             {
                 GetRandomInt(g_cCreditsMin.IntValue, g_cCreditsMax.IntValue);
@@ -1546,11 +1569,11 @@ public Action Event_PlayerSpawn(Event event, const char[] name, bool dontBroadca
     if (TTT_IsClientValid(client))
     {
         delete g_smUsages[client];
-        
+
         if (g_cResetCreditsEachRound.BoolValue && !g_cSQLCredits.BoolValue)
         {
             int iCredits = g_cStartCredits.IntValue;
-            
+
             Action res = Plugin_Continue;
             Call_StartForward(g_fwOnStartCredits);
             Call_PushCell(client);
@@ -1594,7 +1617,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 {
     int client = GetClientOfUserId(event.GetInt("userid"));
 
-    TTT_ClearTimer(g_iPlayer[client].Timer);
+    delete g_iPlayer[client].Timer;
     
     return Plugin_Continue;
 }
@@ -1602,7 +1625,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
 public void OnClientDisconnect(int client)
 {
     delete g_smUsages[client];
-    TTT_ClearTimer(g_iPlayer[client].Timer);
+    delete g_iPlayer[client].Timer;
 }
 
 public Action Command_Credits(int client, int args)
@@ -1626,68 +1649,103 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
         return Plugin_Continue;
     }
 
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return Plugin_Continue;
+    }
+
     int iAttacker = GetClientOfUserId(event.GetInt("attacker"));
     if (!TTT_IsClientValid(iAttacker) || iAttacker == client)
     {
         return Plugin_Continue;
     }
 
-    if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+    int iATeam = TTT_GetClientTeam(iAttacker);
+    int iVTeam = TTT_GetClientTeam(client);
+    if (iATeam == TTT_TEAM_INNOCENT && iVTeam == TTT_TEAM_INNOCENT)
     {
         subtractCredits(iAttacker, g_cCreditsII.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+    else if (iATeam == TTT_TEAM_INNOCENT && iVTeam == TTT_TEAM_TRAITOR)
     {
         addCredits(iAttacker, g_cCreditsIT.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_INNOCENT && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+    else if (iATeam == TTT_TEAM_INNOCENT && iVTeam == TTT_TEAM_DETECTIVE)
     {
         subtractCredits(iAttacker, g_cCreditsID.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+    else if (iATeam == TTT_TEAM_INNOCENT && iVTeam == TTT_TEAM_MISC)
+    {
+        subtractCredits(iAttacker, g_cCreditsIM.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_TRAITOR && iVTeam == TTT_TEAM_INNOCENT)
     {
         addCredits(iAttacker, g_cCreditsTI.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+    else if (iATeam == TTT_TEAM_TRAITOR && iVTeam == TTT_TEAM_TRAITOR)
     {
         subtractCredits(iAttacker, g_cCreditsTT.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_TRAITOR && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+    else if (iATeam == TTT_TEAM_TRAITOR && iVTeam == TTT_TEAM_DETECTIVE)
     {
         addCredits(iAttacker, g_cCreditsTD.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+    else if (iATeam == TTT_TEAM_TRAITOR && iVTeam == TTT_TEAM_MISC)
+    {
+        addCredits(iAttacker, g_cCreditsTM.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_DETECTIVE && iVTeam == TTT_TEAM_INNOCENT)
     {
         subtractCredits(iAttacker, g_cCreditsDI.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+    else if (iATeam == TTT_TEAM_DETECTIVE && iVTeam == TTT_TEAM_TRAITOR)
     {
         addCredits(iAttacker, g_cCreditsDT.IntValue, true);
     }
-    else if (TTT_GetClientRole(iAttacker) == TTT_TEAM_DETECTIVE && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+    else if (iATeam == TTT_TEAM_DETECTIVE && iVTeam == TTT_TEAM_DETECTIVE)
     {
         subtractCredits(iAttacker, g_cCreditsDD.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_DETECTIVE && iVTeam == TTT_TEAM_MISC)
+    {
+        subtractCredits(iAttacker, g_cCreditsDM.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_MISC && iVTeam == TTT_TEAM_INNOCENT)
+    {
+        subtractCredits(iAttacker, g_cCreditsMI.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_MISC && iVTeam == TTT_TEAM_TRAITOR)
+    {
+        addCredits(iAttacker, g_cCreditsMT.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_MISC && iVTeam == TTT_TEAM_DETECTIVE)
+    {
+        subtractCredits(iAttacker, g_cCreditsMD.IntValue, true);
+    }
+    else if (iATeam == TTT_TEAM_MISC && iVTeam == TTT_TEAM_MISC)
+    {
+        subtractCredits(iAttacker, g_cCreditsMM.IntValue, true);
     }
     
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective)
+public void TTT_OnRoundStart(int roundid, int innocents, int traitors, int detective, int misc)
 {
     delete g_smPurchases;
     g_smPurchases = new StringMap();
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     LoopValidClients(client)
     {
-        TTT_ClearTimer(g_iPlayer[client].Timer);
+        delete g_iPlayer[client].Timer;
         switch (winner)
         {
             case TTT_TEAM_DETECTIVE:
             {
-                if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE || TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+                if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE || TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
                 {
                     if (IsPlayerAlive(client))
                     {
@@ -1702,7 +1760,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
             }
             case TTT_TEAM_INNOCENT:
             {
-                if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE || TTT_GetClientRole(client) == TTT_TEAM_INNOCENT)
+                if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE || TTT_GetClientTeam(client) == TTT_TEAM_INNOCENT)
                 {
                     if (IsPlayerAlive(client))
                     {
@@ -1716,7 +1774,7 @@ public void TTT_OnRoundEnd(int winner, Handle array)
             }
             case TTT_TEAM_TRAITOR:
             {
-                if (TTT_GetClientRole(client) == TTT_TEAM_TRAITOR)
+                if (TTT_GetClientTeam(client) == TTT_TEAM_TRAITOR)
                 {
                     if (IsPlayerAlive(client))
                     {
@@ -1732,9 +1790,14 @@ public void TTT_OnRoundEnd(int winner, Handle array)
     }
 }
 
-public void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID)
+public void TTT_OnBodyFound(int client, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID)
 {
-    if ((TTT_GetClientRole(client) & g_cCreditsFoundBodyRole.IntValue) && !silentID || (g_cSilentIdRewards.BoolValue && silentID))
+    if (TTT_GetRoundStatus() != Round_Active)
+    {
+        return;
+    }
+
+    if ((TTT_GetClientTeam(client) & g_cCreditsFoundBodyTeam.IntValue) && !silentID || (g_cSilentIdRewards.BoolValue && silentID))
     {
         addCredits(client, g_cCreditsFoundBody.IntValue);
     }
@@ -2110,7 +2173,7 @@ public int Native_AddClientCredits(Handle plugin, int numParams)
 public int Native_GiveClientItem(Handle plugin, int numParams)
 {
     int client = GetNativeCell(1);
-    
+
     char sItem[16];
     GetNativeString(2, sItem, sizeof(sItem));
 
@@ -2128,9 +2191,9 @@ public int Native_GetItemUsages(Handle plugin, int numParams)
 
     char sShort[16];
     GetNativeString(2, sShort, sizeof(sShort));
-    
+
     int iUsages = -1;
-    
+
     if (g_smUsages[client].GetValue(sShort, iUsages))
     {
         return iUsages;
@@ -2266,22 +2329,22 @@ public int Native_GetItemDiscount(Handle plugin, int numParams)
     {
         char sFlag[16];
         g_smDiscountFlag.GetString(sItem, sFlag, sizeof(sFlag));
-        
+
         int iPercent = 0;
-        
+
         if (!HasFlag(client, sFlag, g_sDiscountFile))
         {
             return iPercent;
         }
-        
+
         if (g_smDiscountPercent.GetValue(sItem, iPercent))
         {
             return iPercent;
         }
-        
+
         return iPercent;
     }
-    
+
     return -1;
 }
 
@@ -2300,10 +2363,10 @@ public int Native_CheckItemAccess(Handle plugin, int numParams)
         {
             return true;
         }
-        
+
         return HasFlag(client, sFlag, g_sFlagsFile);
     }
-    
+
     return true;
 }
 
@@ -2322,7 +2385,7 @@ void ResetItemsArray(const char[] sFunction, bool initArray = false)
     delete g_aShopItems;
 
     LogToFile(g_sLog, "Function: %s - Init: %d", sFunction, initArray);
-    
+
     if (initArray)
     {
         g_aShopItems = new ArrayList(sizeof(Item));
@@ -2368,11 +2431,11 @@ bool GetItemLong(const char[] itemshort, char[] buffer, int size)
         {
             continue;
         }
-        
+
         strcopy(buffer, size, item.Long);
         return true;
     }
-    
+
     return false;
 }
 

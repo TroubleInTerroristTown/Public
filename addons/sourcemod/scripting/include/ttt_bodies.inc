@@ -19,12 +19,12 @@ forward Action TTT_OnClientRagdollCreate(int client, int attacker, const char[] 
  *
  * @param client            The client who identified the body.
  * @param victim            The client whom the body belongs to. (-1 for invalid index)
- * @param victimRole        The role of victim
- * @param attackerRole        The role of attacker
+ * @param victimTeam        The team of victim
+ * @param attackerTeam        The team of attacker
  * @param entityref         The entity reference to find the correct ragdoll
  * @param silentID          True if body was silenced id and false if normal inspect
  */
-forward void TTT_OnBodyFound(int client, int victim, int victimRole, int attackerRole, int entityref, bool silentID);
+forward void TTT_OnBodyFound(int client, int victim, int victimTeam, int attackerTeam, int entityref, bool silentID);
 
 /**
  * Called before a body will be scanned.

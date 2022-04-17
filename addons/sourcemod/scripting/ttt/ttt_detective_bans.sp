@@ -368,7 +368,7 @@ public void SQL_InsertDetectiveBan(Database db, DBResultSet results, const char[
         CS_SwitchTeam(iTarget, CS_TEAM_T);
     }
 
-    if (g_cUpdateRole.BoolValue && TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+    if (g_cUpdateRole.BoolValue && TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
     {
         TTT_SetClientRole(iTarget, TTT_TEAM_INNOCENT);
     }

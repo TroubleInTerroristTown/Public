@@ -155,7 +155,7 @@ public Action OnItemPurchased(int client, const char[] itemshort, int count, int
     return Plugin_Continue;
 }
 
-public void TTT_OnRoundEnd(int winner, Handle array)
+public void TTT_OnRoundEnd(int winner, int role, Handle array)
 {
     LoopValidClients(i)
     {
@@ -196,14 +196,14 @@ public Action TTT_OnGrabbing(int client, int entity)
             return Plugin_Continue;
         }
 
-        if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(target) != TTT_TEAM_DETECTIVE)
         {
             return Plugin_Continue;
         }
 
-        int iRole = TTT_GetClientRole(client);
+        int iTeam = TTT_GetClientTeam(client);
 
-        if (iRole != TTT_GetClientRole(target))
+        if (iTeam != TTT_GetClientTeam(target))
         {
             return Plugin_Continue;
         }
@@ -248,12 +248,12 @@ public Action TTT_OnGrabbing(int client, int entity)
             TTT_GetClientName(target, sPlayerName, sizeof(sPlayerName));
             Format(sMessage, sizeof(sMessage), "Reviving %s...", sPlayerName);
 
-            if (iRole == TTT_TEAM_TRAITOR)
+            if (iTeam == TTT_TEAM_TRAITOR)
             {
                 g_iPlayer[client].EndTime = (g_iPlayer[client].StartTime + g_cReviveT.IntValue);
                 g_iPlayer[client].Countdown = g_cReviveT.IntValue;
             }
-            else if (iRole == TTT_TEAM_DETECTIVE)
+            else if (iTeam == TTT_TEAM_DETECTIVE)
             {
                 g_iPlayer[client].EndTime = (g_iPlayer[client].StartTime + g_cReviveD.IntValue);
                 g_iPlayer[client].Countdown = g_cReviveD.IntValue;
@@ -371,14 +371,14 @@ public Action Timer_Revive(Handle timer, DataPack pack)
         return Plugin_Stop;
     }
 
-    if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+    if (TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(target) != TTT_TEAM_DETECTIVE)
     {
         g_iPlayer[client].Timer = null;
         delete pack;
         return Plugin_Stop;
     }
 
-    if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
+    if (TTT_GetClientTeam(client) != TTT_GetClientTeam(target))
     {
         g_iPlayer[client].Timer = null;
         delete pack;
@@ -480,12 +480,12 @@ public int Menu_ReviveRequest(Menu menu, MenuAction action, int target, int para
             return 0;
         }
 
-        if (TTT_GetClientRole(target) != TTT_TEAM_TRAITOR && TTT_GetClientRole(target) != TTT_TEAM_DETECTIVE)
+        if (TTT_GetClientTeam(target) != TTT_TEAM_TRAITOR && TTT_GetClientTeam(target) != TTT_TEAM_DETECTIVE)
         {
             return 0;
         }
 
-        if (TTT_GetClientRole(client) != TTT_GetClientRole(target))
+        if (TTT_GetClientTeam(client) != TTT_GetClientTeam(target))
         {
             return 0;
         }
@@ -544,11 +544,7 @@ public void TTT_OnButtonPress(int client, int button)
     {
         g_iPlayer[client].InUse = false;
 
-        if (g_iPlayer[client].Timer != null)
-        {
-            KillTimer(g_iPlayer[client].Timer);
-            g_iPlayer[client].Timer = null;
-        }
+        delete g_iPlayer[client].Timer;
     }
 }
 
@@ -558,11 +554,7 @@ public void TTT_OnButtonRelease(int client, int button)
     {
         g_iPlayer[client].InUse = false;
 
-        if (g_iPlayer[client].Timer != null)
-        {
-            KillTimer(g_iPlayer[client].Timer);
-            g_iPlayer[client].Timer = null;
-        }
+        delete g_iPlayer[client].Timer;
     }
 }
 
@@ -579,11 +571,7 @@ void ResetItem(int client)
     g_iPlayer[client].EndTime = -1;
     g_iPlayer[client].LastMessage = -1;
 
-    if (g_iPlayer[client].Timer != null)
-    {
-        KillTimer(g_iPlayer[client].Timer);
-        g_iPlayer[client].Timer = null;
-    }
+    delete g_iPlayer[client].Timer;
 }
 
 bool HasReviveItem(int client)
@@ -620,16 +608,16 @@ void RevivePlayer(int client, int target)
     CPrintToChat(client, "%s %T", g_sPluginTag, "Revive: Menu - Accepted", client, sName);
     TTT_RespawnPlayer(target);
 
-    int iRole = TTT_GetClientRole(client);
+    int iTeam = TTT_GetClientTeam(client);
     
-    if (iRole == TTT_TEAM_TRAITOR)
+    if (iTeam == TTT_TEAM_TRAITOR)
     {
         TTT_RemoveInventoryItem(client, SHORT_NAME_T);
         TTT_AddItemUsage(client, SHORT_NAME_T);
         SetEntityHealth(target, g_cHealthT.IntValue);
 
     }
-    else if (iRole == TTT_TEAM_DETECTIVE)
+    else if (iTeam == TTT_TEAM_DETECTIVE)
     {
         TTT_RemoveInventoryItem(client, SHORT_NAME_D);
         TTT_AddItemUsage(client, SHORT_NAME_D);

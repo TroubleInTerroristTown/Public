@@ -82,6 +82,7 @@ bool g_bDetectiveBans = false;
 bool g_bSourcebans = false;
 bool g_bBodies = false;
 bool g_bIonCannon = false;
+bool g_bRoles = false;
 bool g_bGhostDM = false;
 
 char g_sRadioCMDs[][] =  {
@@ -125,6 +126,7 @@ char g_sRemoveEntityList[][] =  {
 
 // Convars...
 ConVar g_crequiredPlayersD = null;
+ConVar g_crequiredPlayersM = null;
 ConVar g_crequiredPlayers = null;
 ConVar g_cstartKarma = null;
 ConVar g_ckarmaBan = null;
@@ -135,6 +137,7 @@ ConVar g_cmaxKarmaVip = null;
 ConVar g_cspawnHPT = null;
 ConVar g_cspawnHPD = null;
 ConVar g_cspawnHPI = null;
+ConVar g_cspawnHPM = null;
 ConVar g_ckarmaII = null;
 ConVar g_ckarmaIT = null;
 ConVar g_ckarmaID = null;
@@ -175,6 +178,7 @@ ConVar g_cremoveHostages = null;
 ConVar g_cremoveBomb = null;
 ConVar g_ctraitorRatio = null;
 ConVar g_cdetectiveRatio = null;
+ConVar g_cmiscRatio = null;
 ConVar g_cdenyFire = null;
 ConVar g_cslayAfterStart = null;
 ConVar g_cremoveBuyzone = null;
@@ -209,7 +213,8 @@ ConVar g_cShowTraitors = null;
 ConVar g_cRespawnDeadPlayers = null;
 ConVar g_cmaxTraitors = null;
 ConVar g_cmaxDetectives = null;
-ConVar g_cminKarmaDetective = null;
+ConVar g_cmaxMisc = null;
+// ConVar g_cminKarmaDetective = null;
 ConVar g_cEnableDamage = null;
 ConVar g_cGiveWeaponsOnFailStart = null;
 ConVar g_cFSPrimary = null;
@@ -218,7 +223,7 @@ ConVar g_cshowKarmaOnSpawn = null;
 ConVar g_cDebugMessages = null;
 ConVar g_cfakeHealth = null;
 ConVar g_cfakeLife = null;
-ConVar g_cSetRole = null;
+ConVar g_cSetTeam = null;
 ConVar g_cKarmaReset = null;
 ConVar g_cSetKarma = null;
 ConVar g_cAddSteamIDtoLogs = null;
@@ -267,7 +272,7 @@ ConVar g_cDisableRounds = null;
 ConVar g_cClearRounds = null;
 ConVar g_cClearLogs = null;
 ConVar g_cStartMelee = null;
-ConVar g_cAdditionalMeleeRole = null;
+ConVar g_cAdditionalMeleeTeam = null;
 ConVar g_cAdditionalMeleeWeapon = null;
 ConVar g_cUnloadPlugins = null;
 ConVar g_cRemovePlugins = null;
@@ -297,8 +302,9 @@ int g_iRoundID = -1;
 char g_sDriver[18];
 
 enum struct PlayerData {
+    int Team;
     int Role;
-    int LastRole;
+    int LastTeam;
     int Karma;
     int KarmaStart;
     int Armor;

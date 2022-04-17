@@ -51,7 +51,7 @@ ConVar g_cIdentifyDistance = null;
 ConVar g_cIdentifyCommand = null;
 ConVar g_cSilentIdEnabled = null;
 ConVar g_cSilentIdColor = null;
-ConVar g_cSilentIdRoles = null;
+ConVar g_cSilentIdTeams = null;
 
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
@@ -93,7 +93,7 @@ public void OnPluginStart()
     g_cIdentifyLog = AutoExecConfig_CreateConVar("ttt_identity_log", "0", "Log every identified body?", _, true, 0.0, true, 1.0);
     g_cSilentIdEnabled = AutoExecConfig_CreateConVar("ttt_silent_id", "0", "0 = Disabled. 1 = Enable silent id (+speed and +use together). Silent ID wont print on chat when someone inspects a body.", _, true, 0.0, true, 1.0);
     g_cSilentIdColor = AutoExecConfig_CreateConVar("ttt_silent_id_color", "1", "0 = Disabled, will not change the color of the body. 1 = Silent ID will color the body when inspecting. (Green = Innocent, Red = Traitor, Blue = Detective)", _, true, 0.0, true, 1.0);
-    g_cSilentIdRoles = AutoExecConfig_CreateConVar("ttt_silent_id_roles", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All roles can Silent ID)");
+    g_cSilentIdTeams = AutoExecConfig_CreateConVar("ttt_silent_id_teams", "14", "2 = Innocent. 4 = Traitor. 8 = Detective. For other combinations, just sum the values. (i.e.: 14 (2+4+8) = All teams can Silent ID)");
     TTT_EndConfig();
 
     RegConsoleCmd("sm_identify", Command_Identify);
@@ -209,9 +209,9 @@ public void TTT_OnRoundStart()
     }
 }
 
-public void TTT_OnClientGetRole(int client, int role)
+public void TTT_OnClientGetRole(int client, int team, int role)
 {
-    if (role == TTT_TEAM_UNASSIGNED)
+    if (team == TTT_TEAM_UNASSIGNED)
     {
         g_iPlayer[client].Found = true;
     }
@@ -293,7 +293,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
         AcceptEntityInput(iRagdoll, "Kill");
     }
 
-    if (TTT_GetClientRole(client) <= TTT_TEAM_UNASSIGNED)
+    if (TTT_GetClientTeam(client) <= TTT_TEAM_UNASSIGNED)
     {
         g_iPlayer[client].Found = true;
         return Plugin_Continue;
@@ -333,14 +333,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     }
 
     body.Victim = GetClientUserId(client);
-    body.VictimRole = TTT_GetClientRole(client);
+    body.VictimTeam = TTT_GetClientTeam(client);
     Format(body.VictimName, sizeof(body.VictimName), sName);
     body.Scanned = false;
 
     if (TTT_IsClientValid(iAttacker))
     {
         TTT_GetClientName(iAttacker, sName, sizeof(sName));
-        iARole = TTT_GetClientRole(iAttacker);
+        iARole = TTT_GetClientTeam(iAttacker);
     }
     else
     {
@@ -349,7 +349,7 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     }
 
     body.Attacker = iUAttacker;
-    body.AttackerRole = iARole;
+    body.AttackerTeam = iARole;
     Format(body.AttackerName, sizeof(body.AttackerName), sName);
     body.GameTime = GetGameTime();
     body.Explode = false;
@@ -362,14 +362,14 @@ public Action Event_PlayerDeathPre(Event event, const char[] menu, bool dontBroa
     }
 
     GetClientAuthId(client, AuthId_Steam2, body.VictimSteam2, sizeof(body.VictimSteam2));
-    
+
     if (iUAttacker > 0)
     {
         GetClientAuthId(iAttacker, AuthId_Steam3, body.AttackerSteam3, sizeof(body.AttackerSteam3));
     }
 
     GetClientAuthId(client, AuthId_Steam3, body.VictimSteam3, sizeof(body.VictimSteam3));
-    
+
     if (iUAttacker > 0)
     {
         GetClientAuthId(iAttacker, AuthId_SteamID64, body.AttackerSteamID64, sizeof(body.AttackerSteamID64));
@@ -615,7 +615,7 @@ public int Native_RemoveClientRagdoll(Handle plugin, int numParams)
             if (g_bGrabberMod)
             {
                 int iEnt = EntRefToEntIndex(body.EntityRef);
-                
+
                 TTT_ResetClientGrabByEntity(iEnt);
             }
 
@@ -755,15 +755,15 @@ public void Frame_RespawnParticle(any pack)
     DispatchKeyValue(iParticle, "start_active", "1");
     DispatchKeyValue(iParticle, "effect_name", sEffect);
 
+    float fPosition[3];
+    GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fPosition);
+    fPosition[2] += 7.0;
+    TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
+
     if (DispatchSpawn(iParticle))
     {
-        float fPosition[3];
-        GetEntPropVector(iEntity, Prop_Send, "m_vecOrigin", fPosition);
-        fPosition[2] += 7.0;
-
         g_iParticleRef[iEntity] = EntIndexToEntRef(iParticle);
 
-        TeleportEntity(iParticle, fPosition, NULL_VECTOR, NULL_VECTOR);
         ActivateEntity(iParticle);
 
         AcceptEntityInput(iEntity, "EnableMotion");
@@ -1008,7 +1008,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
         g_aRagdoll.GetArray(iIndex, body, sizeof(body));
         iEntity = EntRefToEntIndex(body.EntityRef);
 
-        if (body.VictimRole == TTT_TEAM_UNASSIGNED)
+        if (body.VictimTeam == TTT_TEAM_UNASSIGNED)
         {
             CPrintToChat(client, "%s %T", g_sPluginTag, "Invalid Ragdoll", client);
 
@@ -1046,7 +1046,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                 LogMessage("Victim: %d, Victim (UserID): %d, Attacker: %d, Attacker (UserID): %d", victim, body.Victim, attacker, body.Attacker);
             }
 
-            InspectBody(client, victim, body.VictimRole, attacker, RoundToNearest(GetGameTime() - body.GameTime), body.Weaponused, body.VictimName);
+            InspectBody(client, victim, body.VictimTeam, attacker, RoundToNearest(GetGameTime() - body.GameTime), body.Weaponused, body.VictimName);
 
             if (!body.Found)
             {
@@ -1116,11 +1116,11 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
 
                 char iItem[TTT_LOG_SIZE];
 
-                char sRole[ROLE_LENGTH];
-                TTT_GetRoleNameByID(TTT_GetClientRole(client), sRole, sizeof(sRole));
+                char sTeam[ROLE_LENGTH];
+                TTT_GetTeamNameByID(TTT_GetClientTeam(client), sTeam, sizeof(sTeam));
 
-                char sVictimRole[ROLE_LENGTH];
-                TTT_GetRoleNameByID(body.VictimRole, sVictimRole, sizeof(sVictimRole));
+                char sVictimTeam[ROLE_LENGTH];
+                TTT_GetTeamNameByID(body.VictimTeam, sVictimTeam, sizeof(sVictimTeam));
 
                 bool bSetColor = false;
 
@@ -1129,28 +1129,28 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                     char sClientName[MAX_NAME_LENGTH];
                     TTT_GetClientName(client, sClientName, sizeof(sClientName));
 
-                    if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidRole(client, g_cSilentIdRoles.IntValue)))
+                    if (!g_cSilentIdEnabled.BoolValue || !(bInWalk && TTT_IsValidTeam(client, g_cSilentIdTeams.IntValue)))
                     {
                         char sBuffer[32];
-                        Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimRole);
+                        Format(sBuffer, sizeof(sBuffer), "Found %s", sVictimTeam);
 
                         LoopValidClients(j)
                         {
                             CPrintToChat(j, "%s %T", g_sPluginTag, sBuffer, j, sClientName, body.VictimName);
                         }
 
-                        Format(iItem, sizeof(iItem), "-> %s (%s) identified body of %s%s (%s)", sClientName, sRole, body.VictimName, sClientID, sVictimRole);
+                        Format(iItem, sizeof(iItem), "-> %s (%s) identified body of %s%s (%s)", sClientName, sTeam, body.VictimName, sClientID, sVictimTeam);
 
                         bSetColor = true;
                     }
                     else
                     {
                         char sBuffer[32];
-                        Format(sBuffer, sizeof(sBuffer), "Found %s Silent", sVictimRole);
+                        Format(sBuffer, sizeof(sBuffer), "Found %s Silent", sVictimTeam);
 
                         CPrintToChat(client, "%s %T", g_sPluginTag, sBuffer, client, body.VictimName);
 
-                        Format(iItem, sizeof(iItem), "-> %s (%s) identified body of %s%s (%s) - SILENT", sClientName, sRole, body.VictimName, sClientID, sVictimRole);
+                        Format(iItem, sizeof(iItem), "-> %s (%s) identified body of %s%s (%s) - SILENT", sClientName, sTeam, body.VictimName, sClientID, sVictimTeam);
 
                         if (g_cSilentIdColor.BoolValue)
                         {
@@ -1179,7 +1179,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                         }
                     }
 
-                    if (body.VictimRole == TTT_TEAM_INNOCENT)
+                    if (body.VictimTeam == TTT_TEAM_INNOCENT)
                     {
                         if (!skip)
                         {
@@ -1190,7 +1190,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                             RespawnParticle(iEntity, "Ghost_Green");
                         }
                     }
-                    else if (body.VictimRole== TTT_TEAM_DETECTIVE)
+                    else if (body.VictimTeam== TTT_TEAM_DETECTIVE)
                     {
                         if (!skip)
                         {
@@ -1201,7 +1201,7 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                             RespawnParticle(iEntity, "Ghost_Cyan");
                         }
                     }
-                    else if (body.VictimRole == TTT_TEAM_TRAITOR)
+                    else if (body.VictimTeam == TTT_TEAM_TRAITOR)
                     {
                         if (!skip)
                         {
@@ -1231,8 +1231,8 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
                     Call_PushCell(-1);
                 }
 
-                Call_PushCell(body.VictimRole);
-                Call_PushCell(body.AttackerRole);
+                Call_PushCell(body.VictimTeam);
+                Call_PushCell(body.AttackerTeam);
                 Call_PushCell(body.EntityRef);
                 Call_PushCell(silentID);
                 Call_Finish();
@@ -1243,18 +1243,18 @@ void IdentifyEntity(int client, int button = 0, bool skip = false)
     }
 }
 
-void InspectBody(int client, int victim, int victimRole, int attacker, int time, const char[] weapon, const char[] victimName)
+void InspectBody(int client, int victim, int victimTeam, int attacker, int time, const char[] weapon, const char[] victimName)
 {
-    static char team[64];
-    if (victimRole == TTT_TEAM_TRAITOR)
+    char team[32];
+    if (victimTeam == TTT_TEAM_TRAITOR)
     {
         strcopy(team, sizeof(team), "<font color=\"#FF0000\">Traitor</font>");
     }
-    else if (victimRole == TTT_TEAM_DETECTIVE)
+    else if (victimTeam == TTT_TEAM_DETECTIVE)
     {
         strcopy(team, sizeof(team), "<font color=\"#0000FF\">Detective</font>");
     }
-    else if (victimRole == TTT_TEAM_INNOCENT)
+    else if (victimTeam == TTT_TEAM_INNOCENT)
     {
         strcopy(team, sizeof(team), "<font color=\"#00FF00\">Innocent</font>");
     }
@@ -1264,7 +1264,7 @@ void InspectBody(int client, int victim, int victimRole, int attacker, int time,
     }
 
     char sBuffer[MAX_MESSAGE_LENGTH];
-    if (TTT_GetClientRole(client) == TTT_TEAM_DETECTIVE)
+    if (TTT_GetClientTeam(client) == TTT_TEAM_DETECTIVE)
     {
         static char sTime[128];
         static char sWeaponUsed[128];
@@ -1277,7 +1277,7 @@ void InspectBody(int client, int victim, int victimRole, int attacker, int time,
         {
             Format(sWeaponUsed, sizeof(sWeaponUsed), "%T", "The weapon used has been: themself (suicide)", client);
         }
-        
+
         Format(sBuffer, sizeof(sBuffer), "<center><pre><font color=\"#FFFFFF\"><font size=\"48\">%s (%s)</font>\n<font size=\"32\">%s\n%s</font></font></pre></center>", victimName, team, sTime, sWeaponUsed);
     }
     else
@@ -1315,7 +1315,7 @@ public void Frame_RemoveBody(any ref)
             {
                 AcceptEntityInput(iParticle, "DestroyImmediately");
             }
-            
+
             if (IsValidEntity(iRagdoll))
             {
                 AcceptEntityInput(iRagdoll, "Kill");
@@ -1341,6 +1341,6 @@ void PrintCenterTextCustom(int client, const char[] message)
     pbMessage.AddString("params", NULL_STRING);
     pbMessage.AddString("params", NULL_STRING);
     pbMessage.AddString("params", NULL_STRING);
-    
+
     EndMessage();
 }

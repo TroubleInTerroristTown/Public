@@ -254,7 +254,7 @@ void GrabSomething(int client)
 
         if (success)
         {
-            if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientRole(client) != TTT_TEAM_TRAITOR)
+            if (view_as<bool>(StringToInt(sCustom)) && TTT_GetClientTeam(client) != TTT_TEAM_TRAITOR)
             {
                 return;
             }
