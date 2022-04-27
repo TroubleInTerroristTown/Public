@@ -1233,39 +1233,36 @@ public bool TraceASDF(int entity, int mask)
     return entity >= MaxClients;
 }
 
-stock void PrintCenterText2(int client, const char[] title, const char[] message)
+stock void PrintCenterText2(int client, const char[] title, const char[] message, any ...)
 {
     char sBuffer[2048];
-    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, message);
+    VFormat(sBuffer, sizeof(sBuffer), message, 4);
+    Format(sBuffer, sizeof(sBuffer), "</font>%s\n%s<script>", title, message);
+
     Protobuf pbMessage = view_as<Protobuf>(StartMessageOne("TextMsg", client));
-    pbMessage.SetInt("msg_dst", 4);
-    pbMessage.AddString("params", "#SFUI_ContractKillStart");
-    pbMessage.AddString("params", sBuffer);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    
+    SetPbParams(pbMessage, message);
     EndMessage();
 }
 
 stock void PrintCenterText2All(const char[] title, const char[] message, any ...)
 {
     char sBuffer[2048];
-    
     VFormat(sBuffer, sizeof(sBuffer), message, 3);
-    Format(sBuffer, sizeof(sBuffer), "</font>     %s\n%s\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", title, sBuffer);
+    Format(sBuffer, sizeof(sBuffer), "</font>%s\n%s<script>", title, message);
 
     Protobuf pbMessage = view_as<Protobuf>(StartMessageAll("TextMsg"));
-    pbMessage.SetInt("msg_dst", 4);
-    pbMessage.AddString("params", "#SFUI_ContractKillStart");
-    pbMessage.AddString("params", sBuffer);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    pbMessage.AddString("params", NULL_STRING);
-    
+    SetPbParams(pbMessage, message);
     EndMessage();
+}
+
+void SetPbParams(Protobuf pb, const char[] message)
+{
+    pb.SetInt("msg_dst", 4);
+    pb.AddString("params", "#SFUI_ContractKillStart");
+    pb.AddString("params", message);
+    pb.AddString("params", NULL_STRING);
+    pb.AddString("params", NULL_STRING);
+    pb.AddString("params", NULL_STRING);
 }
 
 stock bool TTT_ClientValidRole(int client)
