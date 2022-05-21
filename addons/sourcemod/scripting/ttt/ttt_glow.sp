@@ -354,15 +354,6 @@ int CreatePlayerModelProp(int client)
     iBodyId = GetEntProp(client, Prop_Send, "m_nBody");
     iSkinId = GetEntProp(client, Prop_Send, "m_nSkin");
 
-    if(iBodyId > 0)
-    {
-        SetEntProp(skin, Prop_Send, "m_nBody",iBodyId);
-    }
-
-    if(iSkinId > 0)
-    {
-        SetEntProp(skin, Prop_Send, "m_nSkin",iSkinId);
-    }
     DispatchKeyValue(skin, "model", sModel);
 
     DispatchKeyValue(skin, "disablereceiveshadows", "1");
@@ -376,7 +367,14 @@ int CreatePlayerModelProp(int client)
     {
         SetEntityRenderMode(skin, RENDER_TRANSALPHA);
         SetEntityRenderColor(skin, 0, 0, 0, 0);
-
+        if(iBodyId > 0)
+        {
+            SetEntProp(skin, Prop_Send, "m_nBody",iBodyId);
+        }
+        if(iSkinId > 0)
+        {
+            SetEntProp(skin, Prop_Send, "m_nSkin",iSkinId);
+        }
         SetEntProp(skin, Prop_Send, "m_fEffects", EF_BONEMERGE|EF_NOSHADOW|EF_NORECEIVESHADOW);
 
         DataPack pack = new DataPack();
