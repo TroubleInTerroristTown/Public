@@ -349,6 +349,20 @@ int CreatePlayerModelProp(int client)
 
     char sModel[PLATFORM_MAX_PATH];
     GetClientModel(client, sModel, sizeof(sModel));
+    
+    int iBodyId,iSkinId;
+    iBodyId = GetEntProp(client, Prop_Send, "m_nBody");
+    iSkinId = GetEntProp(client, Prop_Send, "m_nSkin");
+
+    if(iBodyId > 0)
+    {
+        SetEntProp(skin, Prop_Send, "m_nBody",iBodyId);
+    }
+
+    if(iSkinId > 0)
+    {
+        SetEntProp(skin, Prop_Send, "m_nSkin",iSkinId);
+    }
     DispatchKeyValue(skin, "model", sModel);
 
     DispatchKeyValue(skin, "disablereceiveshadows", "1");
