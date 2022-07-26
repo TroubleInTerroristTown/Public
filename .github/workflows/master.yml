@@ -157,3 +157,4 @@ jobs:
           protocol: ftp
           local-dir: ./packages/
           server-dir: ./
+          state-name: .ftp-deploy-sync-state-${{ matrix.SM_VERSION }}.json
