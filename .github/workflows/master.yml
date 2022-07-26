@@ -141,22 +141,11 @@ jobs:
           mkdir packages
           zip -9rq packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip build-linux/*
           zip -9rq packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
-
-      - name: Upload packages
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          port: ${{ secrets.SFTP_PORT }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          protocol: ftp
-          local-dir: ./packages/
-          server-dir: ./
       
       - name: Create latest package
         run: |
-          mv packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
-          mv packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
+          cp packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
+          cp packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
 
       - name: Upload latest package
         uses: SamKirkland/FTP-Deploy-Action@4.3.0
