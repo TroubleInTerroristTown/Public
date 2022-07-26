@@ -150,7 +150,7 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASS }}
           protocol: ftp
-          local-dir: packages
+          local-dir: ./packages/
           server-dir: ./
       
       - name: Create latest package
@@ -166,5 +166,5 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           password: ${{ secrets.SFTP_PASS }}
           protocol: ftp
-          local-dir: packages
+          local-dir: ./packages/
           server-dir: ./
