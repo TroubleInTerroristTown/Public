@@ -76,23 +76,39 @@ public void OnMapStart()
     char sFile[PLATFORM_MAX_PATH];
     
     g_cTraitorIcon.GetString(sFile, sizeof(sFile));
-    Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
-    AddFileToDownloadsTable(sFile);
+
+    if (strlen(sFile) > 0)
+    {
+        Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
+        AddFileToDownloadsTable(sFile);
+    }
 
     g_cTraitorIcon.GetString(sFile, sizeof(sFile));
-    Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
-    AddFileToDownloadsTable(sFile);
+
+    if (strlen(sFile) > 0)
+    {
+        Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
+        AddFileToDownloadsTable(sFile);
+    }
     PrecacheModel(sFile);
 
 
 
     g_cDetectiveIcon.GetString(sFile, sizeof(sFile));
-    Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
-    AddFileToDownloadsTable(sFile);
+
+    if (strlen(sFile) > 0)
+    {
+        Format(sFile, sizeof(sFile), "materials/%s.vtf", sFile);
+        AddFileToDownloadsTable(sFile);
+    }
 
     g_cDetectiveIcon.GetString(sFile, sizeof(sFile));
-    Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
-    AddFileToDownloadsTable(sFile);
+
+    if (strlen(sFile) > 0)
+    {
+        Format(sFile, sizeof(sFile), "materials/%s.vmt", sFile);
+        AddFileToDownloadsTable(sFile);
+    }
     PrecacheModel(sFile);
 
     char sBuffer[PLATFORM_MAX_PATH];
@@ -219,11 +235,23 @@ int CreateIcon(int client, int role)
     if (role == TTT_TEAM_DETECTIVE)
     {
         g_cDetectiveIcon.GetString(sBuffer, sizeof(sBuffer));
+
+        if (strlen(sBuffer) < 1)
+        {
+            return -1;
+        }
+
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
     else if (role == TTT_TEAM_TRAITOR)
     {
         g_cTraitorIcon.GetString(sBuffer, sizeof(sBuffer));
+
+        if (strlen(sBuffer) < 1)
+        {
+            return -1;
+        }
+
         Format(sBuffer, sizeof(sBuffer), "%s.vmt", sBuffer);
     }
 
