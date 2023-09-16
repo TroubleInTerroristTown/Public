@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Set environment variables
         run: |
@@ -26,7 +26,7 @@ jobs:
         run: python3 -m pip install --upgrade pip setuptools wheel
 
       - name: Clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: 'c0rp3n/colorlib-check'
           ref: 'master'
