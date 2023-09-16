@@ -148,7 +148,7 @@ jobs:
           cp packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
 
       - name: Upload latest package
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.SFTP_HOST }}
           port: ${{ secrets.SFTP_PORT }}
