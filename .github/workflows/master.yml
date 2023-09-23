@@ -3,14 +3,15 @@ name: Compile with SourceMod
 on:
   push:
     branches: master
+  workflow_dispatch:
+  schedule:
+    - cron: '53 05 01 */1 *' # Artifact expires after 1 month
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        SM_VERSION: ["1.11", "1.12"]
 
     steps:
       - uses: actions/checkout@v4
@@ -25,15 +26,13 @@ jobs:
           SHORT=$(git describe --always --long --dirty)
           SOURCEMOD_PATH=$GITHUB_WORKSPACE/addons/sourcemod
           echo "GIT_COMMIT=$VERSION" >> $GITHUB_ENV
-          echo "PLUGIN_VERSION=${{ matrix.SM_VERSION }}.$VERSION.$SHORT" >> $GITHUB_ENV
+          echo "PLUGIN_VERSION=SM1.11.$VERSION.$SHORT" >> $GITHUB_ENV
           echo "SOURCEMOD_PATH=$SOURCEMOD_PATH" >> $GITHUB_ENV
           echo "SCRIPTS_PATH=$SOURCEMOD_PATH/scripting" >> $GITHUB_ENV
           echo "PLUGINS_PATH=$SOURCEMOD_PATH/plugins" >> $GITHUB_ENV
 
-      - name: Setup SourcePawn Compiler ${{ matrix.SM_VERSION }}
+      - name: Setup SourcePawn Compiler SM1.11
         uses: rumblefrog/setup-sp@master
-        with:
-          version: ${{ matrix.SM_VERSION }}
 
       - name: Set TTT version
         run: |
@@ -141,20 +140,17 @@ jobs:
           mkdir packages
           zip -9rq packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip build-linux/*
           zip -9rq packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
-      
-      - name: Create latest package
-        run: |
-          cp packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Linux.latest.${{ matrix.SM_VERSION }}.zip
-          cp packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip packages/TTT.Windows.latest.${{ matrix.SM_VERSION }}.zip
 
-      - name: Upload latest package
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Upload linux artifact
+        uses: actions/upload-artifact@v3
         with:
-          server: ${{ secrets.SFTP_HOST }}
-          port: ${{ secrets.SFTP_PORT }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
-          protocol: ftp
-          local-dir: ./packages/
-          server-dir: ./
-          state-name: .ftp-deploy-sync-state-${{ matrix.SM_VERSION }}.json
+          name: TTT.Linux.${{ env.PLUGIN_VERSION }}
+          path: packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip
+
+
+      - name: Upload windows artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: TTT.Windows.${{ env.PLUGIN_VERSION }}
+          path: packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip
+  
