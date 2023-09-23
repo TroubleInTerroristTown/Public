@@ -1,6 +1,8 @@
 name: Check files with ColorLib - Check
 
-on: [push, pull_request]
+on:
+  check_run:
+    types: [requested_action, rerequested]
 
 jobs:
   check:
