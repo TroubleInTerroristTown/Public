@@ -142,14 +142,14 @@ jobs:
           zip -9rq packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip build-windows/*
 
       - name: Upload linux artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: TTT.Linux.${{ env.PLUGIN_VERSION }}
           path: packages/TTT.Linux.${{ env.PLUGIN_VERSION }}.zip
 
 
       - name: Upload windows artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: TTT.Windows.${{ env.PLUGIN_VERSION }}
           path: packages/TTT.Windows.${{ env.PLUGIN_VERSION }}.zip
