@@ -3,9 +3,6 @@ name: Compile with SourceMod
 on:
   push:
     branches: master
-  workflow_dispatch:
-  schedule:
-    - cron: '53 05 01 */1 *' # Artifact expires after 1 month
 
 jobs:
   build:
