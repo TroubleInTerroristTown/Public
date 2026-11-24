@@ -78,7 +78,7 @@ public class PositionDialog {
         // --- Typ
         typGroup = new RadioGroup(act);
         typGroup.setOrientation(RadioGroup.HORIZONTAL);
-        addTyp("Holz (Stück)", Position.HOLZ, 1);
+        addTyp("Stückholz", Position.HOLZ, 1);
         addTyp("Laufmeter", Position.LFM, 2);
         addTyp("Abschnitt", Position.TITEL, 3);
         root.addView(typGroup);

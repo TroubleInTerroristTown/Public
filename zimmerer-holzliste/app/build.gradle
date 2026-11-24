@@ -45,4 +45,20 @@ android {
     lint {
         abortOnError false
     }
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.all {
+            // Optional: lokal vorab geladene Robolectric-Jars verwenden (gradle -ProbolectricDir=...)
+            if (project.hasProperty('robolectricDir')) {
+                systemProperty 'robolectric.offline', 'true'
+                systemProperty 'robolectric.dependency.dir', project.property('robolectricDir')
+            }
+        }
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
 }

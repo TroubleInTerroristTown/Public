@@ -44,8 +44,8 @@ public class EditorActivity extends Activity {
 
     // Spalten rechts neben der fixierten Bezeichnung
     private static final String[] COL_HEAD = {"Stk", "B\ncm", "H\ncm", "L\nm", "Lfm\nm", "Vol.\nm³", "Fertig\nB/H cm", "Holzart", "Bemerkung"};
-    private static final int[] COL_W = {48, 52, 52, 62, 76, 76, 80, 130, 180};
-    private static final int LEFT_W = 150;
+    private static final int[] COL_W = {42, 46, 46, 56, 70, 70, 80, 130, 180};
+    private static final int LEFT_W = 140;
     private static final int ROW_H = 50, TITEL_H = 38;
 
     private Holzliste liste;
@@ -159,7 +159,7 @@ public class EditorActivity extends Activity {
         bar.setBackgroundColor(Ui.WEISS);
         int bp = Ui.dp(this, 6);
         bar.setPadding(bp, bp, bp, bp);
-        bar.addView(addButton("+ Holz", Position.HOLZ));
+        bar.addView(addButton("+ Stückholz", Position.HOLZ));
         bar.addView(addButton("+ Laufmeter", Position.LFM));
         bar.addView(addButton("+ Abschnitt", Position.TITEL));
         root.addView(bar);
@@ -213,8 +213,9 @@ public class EditorActivity extends Activity {
             if (p.isTitel()) {
                 zeile = 0;
                 int h = Ui.dp(this, TITEL_H);
-                TextView l = Ui.text(this, p.bezeichnung, 15, Ui.BRAUN, true);
-                l.setSingleLine(true);
+                TextView l = Ui.text(this, p.bezeichnung, 14, Ui.BRAUN, true);
+                l.setMaxLines(2);
+                l.setLineSpacing(0, 0.9f);
                 l.setEllipsize(android.text.TextUtils.TruncateAt.END);
                 l.setGravity(Gravity.CENTER_VERTICAL);
                 l.setPadding(Ui.dp(this, 10), 0, Ui.dp(this, 4), 0);
@@ -380,7 +381,7 @@ public class EditorActivity extends Activity {
     }
 
     private void typWahl(int index) {
-        String[] items = {"Holz (Stück)", "Laufmeterholz", "Abschnitt / Überschrift"};
+        String[] items = {"Stückholz", "Laufmeterholz", "Abschnitt / Überschrift"};
         String[] typen = {Position.HOLZ, Position.LFM, Position.TITEL};
         new AlertDialog.Builder(this).setTitle("Was einfügen?")
                 .setItems(items, (d, w) -> neuePosition(typen[w], index)).show();
