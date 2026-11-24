@@ -7,13 +7,13 @@
 
 1. **＋ Neue Liste** – eine Liste je Baustelle/Projekt (Projekt, Kunde, Datum oben antippen)
 2. **＋ Hinzufügen** – große Auswahl, was dazukommt:
-   - 🪵 **Balken & Kanthölzer** – Stückzahl × Länge, Querschnitt → m und m³
+   - 🌲 **Balken & Kanthölzer** – Stückzahl × Länge, Querschnitt → m und m³
    - 📏 **Latten & Bretter** – Meter gesamt, Querschnitt → m³
    - ▦ **Platten** (OSB, Gips, Dreischicht …) – zu belegende Fläche + Verschnitt → **Plattenanzahl wird berechnet**
    - 📦 **Sonstiges Material** – Schrauben, Dämmung, Folie, Mörtel … mit Menge und Einheit
      (Stk, m, m², kg, Sack, Paket, Rolle …), Reserve in % und optional Packungsinhalt
      (z. B. „Paket à 5,2 m²“ → **Anzahl Pakete wird berechnet**)
-   - 🔍 **Beim Händler suchen** – Artikel aus der Händler-Artikelliste, Art und Maße werden erkannt, Preis übernommen
+   - 🔍 **Aus Artikelliste suchen** – aus deiner Inventarliste oder Händlerliste, nach Kategorien; Art, Maße und Preis werden übernommen
    - ≡ **Überschrift** – z. B. „Dachstuhl“, „Dämmung“
 3. Jede Position erscheint als gut lesbare Karte: links **was bestellt wird** (z. B. „24 Stk“, „74 Platten“, „20 Paket“),
    daneben Bezeichnung, Material, Maße und Preis. Antippen = ändern, **⋮** = kopieren, verschieben, löschen.
@@ -22,11 +22,17 @@
 Weitere Angaben wie Preis, Artikelnummer, Bemerkung und Fertigmaß (gehobelt) liegen im Eingabedialog unter
 „Weitere Angaben“, damit die Eingabe übersichtlich bleibt.
 
-## Händler-Artikellisten (DATANORM 4)
+## Artikellisten: eigene Inventarliste (Excel) oder DATANORM
 
-Menü → „Händler-Artikellisten (DATANORM) …“ → Datei laden (DATANORM.001 … oder ZIP vom Händler).
-Die App erkennt automatisch Hölzer (Querschnitt/Länge), Platten (Format/Dicke) und sonstiges Material
-(Einheiten wie Sack, Paket, Rolle, kg). Beispieldatei: `beispiel/Beispiel-DATANORM.001`
+Menü → „Artikellisten (Inventar / DATANORM) …“ → Datei laden:
+- **Excel-Inventarliste (.xlsx) oder CSV**: Spalten werden über die Überschriften erkannt
+  (z. B. „Bezeichnung“, „Art.-Nr.“, „Einheit“, „Bestand“, „Preis“, „Kategorie“). Kategorien kommen aus einer
+  Kategorie-Spalte, aus Zwischenüberschriften, aus den Blattnamen oder werden automatisch aus der Bezeichnung
+  erkannt (Verankerungsmittel, Schrauben, Dämmung, Folien …). Beispiel: `beispiel/Beispiel-Inventarliste.xlsx`
+- **DATANORM 4** vom Holz-/Baustoffhändler (DATANORM.001 … oder ZIP). Beispiel: `beispiel/Beispiel-DATANORM.001`
+
+Bei „🔍 Aus Artikelliste suchen“ kann man oben eine Kategorie antippen und sieht nur deren Artikel.
+Die App erkennt automatisch Hölzer (Querschnitt/Länge), Platten (Format/Dicke) und sonstiges Material.
 
 ## Excel-Export
 

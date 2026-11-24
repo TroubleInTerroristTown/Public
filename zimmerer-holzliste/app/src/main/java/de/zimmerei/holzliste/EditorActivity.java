@@ -353,7 +353,7 @@ public class EditorActivity extends Activity {
                 {Position.LFM, Ui.symbol(Position.LFM), "Latten & Bretter", "Dachlatten, Schalung, Bretter … – in Metern"},
                 {Position.PLATTE, Ui.symbol(Position.PLATTE), "Platten", "OSB, Gipskarton, Dreischicht … – Fläche eingeben, Anzahl wird berechnet"},
                 {Position.MATERIAL, Ui.symbol(Position.MATERIAL), "Sonstiges Material", "Schrauben, Dämmung, Folie, Mörtel, Säcke …"},
-                {KATALOG, "🔍", "Beim Händler suchen", "Artikel aus der Artikelliste deines Händlers – mit Preis"},
+                {KATALOG, "🔍", "Aus Artikelliste suchen", "Deine Inventarliste oder Händlerliste – nach Kategorien sortiert"},
                 {Position.TITEL, Ui.symbol(Position.TITEL), "Überschrift", "z. B. „Dachstuhl“ oder „Dämmung“ – macht die Liste übersichtlicher"},
         };
         android.widget.BaseAdapter ad = new android.widget.BaseAdapter() {
@@ -621,7 +621,7 @@ public class EditorActivity extends Activity {
         menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
         menu.add(0, M_TITEL, 4, "Überschrift anfügen");
         menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
-        menu.add(0, M_KATALOG, 6, "Händler-Artikellisten (DATANORM) …");
+        menu.add(0, M_KATALOG, 6, "Artikellisten (Inventar / DATANORM) …");
         return true;
     }
 

@@ -110,7 +110,7 @@ public class PositionDialog {
         if (!p.isTitel()) root.addView(tTyp, full());
 
         // --- Händlerkatalog
-        Button katalogBtn = button("🔍  Beim Händler suchen (mit Preis)", Ui.WEISS, Ui.PRIMAER, Ui.PRIMAER);
+        Button katalogBtn = button("🔍  Aus Artikelliste suchen", Ui.WEISS, Ui.PRIMAER, Ui.PRIMAER);
         katalogBtn.setOnClickListener(v -> ausKatalog());
         LinearLayout.LayoutParams lpK = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 48));
         lpK.topMargin = Ui.dp(act, 10);

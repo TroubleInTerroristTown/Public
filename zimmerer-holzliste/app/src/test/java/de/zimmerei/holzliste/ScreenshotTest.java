@@ -189,9 +189,22 @@ public class ScreenshotTest {
         org.junit.Assert.assertEquals(1.5, osb.h, 1e-9);
         org.junit.Assert.assertTrue(dn.artikel.get(2).text.contains("imprägniert"));
         Katalog.speichern(ed, dn);
+
+        // Excel-Inventarliste mit Kategorien
+        Datanorm.Ergebnis inv = Datanorm.lesen(getClass().getResourceAsStream("/Inventar.xlsx"), "Inventar.xlsx");
+        org.junit.Assert.assertEquals(11, inv.artikel.size());
+        org.junit.Assert.assertEquals("Verankerungsmittel", inv.artikel.get(0).kategorie);
+        org.junit.Assert.assertEquals("Bolzenanker M12x100", inv.artikel.get(0).text);
+        org.junit.Assert.assertEquals(1.85, inv.artikel.get(0).preis, 1e-9);
+        org.junit.Assert.assertEquals(Position.MATERIAL, inv.artikel.get(3).typ()); // Spanplattenschraube ist keine Platte
+        org.junit.Assert.assertEquals("Dämmung", inv.artikel.get(5).kategorie);     // automatisch zugeordnet
+        org.junit.Assert.assertEquals("Folien & Bänder", inv.artikel.get(6).kategorie); // aus Blattname
+        org.junit.Assert.assertEquals("Verbindungsmittel", inv.artikel.get(8).kategorie); // aus Zwischenüberschrift
+        Katalog.speichern(ed, inv);
+        org.junit.Assert.assertEquals(3, Katalog.suche(Katalog.alle(ed), "", null, "Schrauben", 50).size()); // 2 Inventar + 1 DATANORM
         org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "kvh 6/12", Position.HOLZ, 10).size());
         org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "osb 15", Position.PLATTE, 10).size());
-        org.junit.Assert.assertEquals(4, Katalog.suche(Katalog.alle(ed), "", Position.MATERIAL, 10).size());
+        org.junit.Assert.assertEquals(15, Katalog.suche(Katalog.alle(ed), "", Position.MATERIAL, 100).size()); // 4 DATANORM + 11 Inventar
 
         ShadowDialog.getLatestDialog().dismiss();
         KatalogAuswahl.zeigen(ed, null, a -> {});

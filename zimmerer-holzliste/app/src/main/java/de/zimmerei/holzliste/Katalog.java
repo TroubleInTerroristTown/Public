@@ -35,7 +35,7 @@ public final class Katalog {
         Eintrag(Datanorm.Artikel a, String haendler) {
             this.a = a;
             this.haendler = haendler;
-            this.such = (a.text + " " + a.nr + " " + haendler).toLowerCase(Locale.GERMANY);
+            this.such = (a.text + " " + a.nr + " " + haendler + " " + a.kategorie).toLowerCase(Locale.GERMANY);
         }
     }
 
@@ -60,7 +60,8 @@ public final class Katalog {
             for (Datanorm.Artikel a : e.artikel) {
                 w.write(clean(a.nr) + "\t" + clean(a.text) + "\t" + clean(a.einheit) + "\t" + n(a.preis) + "\t"
                         + (a.netto ? "1" : "0") + "\t" + (a.platte ? "1" : "0") + "\t"
-                        + n(a.b) + "\t" + n(a.h) + "\t" + n(a.l) + "\t" + n(a.pb) + "\n");
+                        + n(a.b) + "\t" + n(a.h) + "\t" + n(a.l) + "\t" + n(a.pb) + "\t"
+                        + clean(a.kategorie) + "\t" + n(a.bestand) + "\n");
             }
         }
         cache = null;
@@ -109,6 +110,8 @@ public final class Katalog {
                     a.nr = f[0]; a.text = f[1]; a.einheit = f[2]; a.preis = d(f[3]);
                     a.netto = "1".equals(f[4]); a.platte = "1".equals(f[5]);
                     a.b = d(f[6]); a.h = d(f[7]); a.l = d(f[8]); a.pb = d(f[9]);
+                    a.kategorie = f.length > 10 && !f[10].isEmpty() ? f[10] : Kategorien.zuordnen(a.text);
+                    a.bestand = f.length > 11 ? d(f[11]) : null;
                     out.add(new Eintrag(a, i.name));
                 }
             } catch (IOException ignored) {
@@ -123,10 +126,37 @@ public final class Katalog {
      * erkannten Maße gefunden. typFilter: null = alle, sonst Positionsart (Position.HOLZ …; HOLZ umfasst auch LFM).
      */
     public static List<Eintrag> suche(List<Eintrag> alle, String query, String typFilter, int max) {
+        return suche(alle, query, typFilter, null, max);
+    }
+
+    static List<Eintrag> wrap(List<Datanorm.Artikel> l) {
+        List<Eintrag> out = new ArrayList<>();
+        for (Datanorm.Artikel a : l) out.add(new Eintrag(a, ""));
+        return out;
+    }
+
+    /** Alle Kategorien in der Reihenfolge ihres ersten Auftretens (mit Anzahl Artikel). */
+    public static java.util.Map<String, Integer> kategorien(List<Eintrag> alle) {
+        java.util.Map<String, Integer> m = new java.util.TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        for (Eintrag e : alle) {
+            String k = e.a.kategorie == null || e.a.kategorie.isEmpty() ? Kategorien.SONSTIGES : e.a.kategorie;
+            Integer n = m.get(k);
+            m.put(k, n == null ? 1 : n + 1);
+        }
+        // „Sonstiges“ ans Ende
+        Integer s = m.remove(Kategorien.SONSTIGES);
+        java.util.Map<String, Integer> out = new java.util.LinkedHashMap<>(m);
+        if (s != null) out.put(Kategorien.SONSTIGES, s);
+        return out;
+    }
+
+    public static List<Eintrag> suche(List<Eintrag> alle, String query, String typFilter, String kategorie, int max) {
         String[] woerter = query.toLowerCase(Locale.GERMANY).trim().split("\\s+");
         List<Eintrag> out = new ArrayList<>();
         for (Eintrag e : alle) {
             if (typFilter != null && !passtTyp(e.a.typ(), typFilter)) continue;
+            if (kategorie != null && !kategorie.equalsIgnoreCase(e.a.kategorie == null || e.a.kategorie.isEmpty()
+                    ? Kategorien.SONSTIGES : e.a.kategorie)) continue;
             boolean ok = true;
             for (String w : woerter) {
                 if (w.isEmpty()) continue;

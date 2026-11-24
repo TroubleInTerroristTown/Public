@@ -41,6 +41,8 @@ public final class Datanorm {
         public Double b, h;         // cm (Querschnitt) – bei Platten: h = Dicke in cm
         public Double l;            // m (Länge; bei Platten Plattenlänge)
         public Double pb;           // cm (Plattenbreite)
+        public String kategorie = ""; // z. B. Schrauben, Dämmung (aus Liste oder automatisch)
+        public Double bestand;      // Lagerbestand (nur Inventarliste)
 
         /** Kurze Maßangabe für die Anzeige. */
         public String masse() {
@@ -78,6 +80,8 @@ public final class Datanorm {
 
     public static Ergebnis lesen(InputStream in, String dateiname) throws IOException {
         byte[] daten = alles(in);
+        if (InventarListe.istXlsx(daten)) return InventarListe.lesenXlsx(daten, dateiname);
+        if (dateiname != null && dateiname.toLowerCase(Locale.ROOT).endsWith(".csv")) return InventarListe.lesenCsv(dekodieren(daten), dateiname);
         Ergebnis e = new Ergebnis();
         Map<String, Artikel> map = new LinkedHashMap<>();
         if (istZip(daten)) {
@@ -123,6 +127,7 @@ public final class Datanorm {
                 a.einheit = einheit(f[8]);
                 a.preis = preis(f[9], f[7]);
                 erkenneMasse(a);
+                a.kategorie = Kategorien.zuordnen(a.text);
                 map.put(nr, a);
             }
         }
@@ -166,7 +171,7 @@ public final class Datanorm {
     private static final Pattern LAENGE = Pattern.compile("(?<![\\w.,])(?:l\\s*=?\\s*)?" + ZAHL + "\\s*(m|mm)(?![a-z0-9²³])");
     private static final Pattern DICKE = Pattern.compile("(?<![\\w.,x])" + ZAHL + "\\s*mm(?![a-z0-9²³])");
     private static final Pattern KLEINTEIL = Pattern.compile(
-            "schraube|nagel|nägel|klammer|winkel|verbinder|anker|dübel|bolzen|mutter|scheibe|beschlag|band|folie|kleber|dichtband"
+            "schraube|nagel|nägel|klammer|winkel|verbinder|anker|schuh|pfostentr|lochblech|knagge|kreide|dübel|bolzen|mutter|scheibe|beschlag|band|folie|kleber|dichtband"
             + "|mörtel|zement|beton|putz|estrich|farbe|lasur|lack|silikon|acryl|schaum|kartusche|eimer|sack|bahn|vlies"
             + "|dämmung|mineralwolle|glaswolle|steinwolle|rinne|rohr|ziegel|pfanne|stein|kies|sand|splitt|kg\\b");
     private static final Pattern PLATTE = Pattern.compile(
@@ -174,8 +179,9 @@ public final class Datanorm {
 
     static void erkenneMasse(Artikel a) {
         String t = a.text.toLowerCase(Locale.GERMANY).replace('×', 'x').replace('*', 'x');
-        a.platte = "m²".equals(a.einheit) || PLATTE.matcher(t).find();
-        if (!a.platte && KLEINTEIL.matcher(t).find()) return; // Schrauben, Nägel … haben keinen Holzquerschnitt
+        boolean klein = KLEINTEIL.matcher(t).find();
+        a.platte = "m²".equals(a.einheit) || (PLATTE.matcher(t).find() && !klein);
+        if (!a.platte && klein) return; // Schrauben, Nägel … haben keinen Holzquerschnitt
 
         Matcher m3 = DREI.matcher(t);
         if (m3.find()) {
@@ -249,11 +255,11 @@ public final class Datanorm {
 
     // ------------------------------------------------------------------ Hilfen
 
-    private static boolean istZip(byte[] d) {
+    static boolean istZip(byte[] d) {
         return d.length > 4 && d[0] == 'P' && d[1] == 'K' && d[2] == 3 && d[3] == 4;
     }
 
-    private static byte[] alles(InputStream in) throws IOException {
+    static byte[] alles(InputStream in) throws IOException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         byte[] buf = new byte[65536];
         int n;

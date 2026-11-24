@@ -43,11 +43,12 @@ public final class KatalogAuswahl {
     /** @param typ Positionsart, nach der vorgefiltert wird (abschaltbar), null = alle */
     public static void zeigen(Activity act, String typ, Callback cb) {
         if (Katalog.liste(act).isEmpty()) {
-            new AlertDialog.Builder(act).setTitle("Kein Händlerkatalog vorhanden")
-                    .setMessage("Lade zuerst die Artikelliste deines Holz- oder Baustoffhändlers in die App "
-                            + "(DATANORM-Datei, z. B. DATANORM.001 oder eine ZIP-Datei).\n\nDie Datei bekommst du beim Händler "
-                            + "– meist per E-Mail oder im Kundenportal. Danach kannst du hier Artikel mit Preis suchen.")
-                    .setPositiveButton("Datei importieren", (d, w) -> importStarten(act))
+            new AlertDialog.Builder(act).setTitle("Noch keine Artikelliste geladen")
+                    .setMessage("Lade zuerst deine Artikelliste in die App:\n\n"
+                            + "• deine Inventarliste als Excel-Datei (.xlsx) oder CSV\n"
+                            + "• oder eine DATANORM-Datei vom Händler (DATANORM.001 oder ZIP)\n\n"
+                            + "Danach kannst du hier nach Kategorien sortiert suchen und Artikel übernehmen.")
+                    .setPositiveButton("Datei laden", (d, w) -> importStarten(act))
                     .setNegativeButton("Abbrechen", null).show();
             return;
         }
@@ -75,6 +76,16 @@ public final class KatalogAuswahl {
         TextView info = Ui.text(act, "", 12, Ui.GRAU, false);
         root.addView(info);
 
+        // Kategorien als Knöpfe zum Antippen
+        android.widget.HorizontalScrollView katScroll = new android.widget.HorizontalScrollView(act);
+        katScroll.setHorizontalScrollBarEnabled(false);
+        LinearLayout katLeiste = new LinearLayout(act);
+        katLeiste.setOrientation(LinearLayout.HORIZONTAL);
+        katLeiste.setPadding(0, Ui.dp(act, 6), 0, Ui.dp(act, 6));
+        katScroll.addView(katLeiste);
+        root.addView(katScroll);
+        final String[] kategorie = {null};
+
         ProgressBar lade = new ProgressBar(act);
         root.addView(lade);
 
@@ -97,10 +108,11 @@ public final class KatalogAuswahl {
                 String m = e.a.masse();
                 if (!m.isEmpty()) sb.append(m).append("  ·  ");
                 if (e.a.preis != null) sb.append(e.a.preisText()).append("  ·  ");
-                sb.append("Nr. ").append(e.a.nr);
+                if (e.a.bestand != null) sb.append("Lager: ").append(Fmt.num(e.a.bestand)).append("  ·  ");
+                if (!e.a.nr.startsWith("INV-")) sb.append("Nr. ").append(e.a.nr);
                 TextView s = Ui.text(act, sb.toString(), 13, Ui.farbe(e.a.typ()), false);
                 l.addView(s);
-                TextView h = Ui.text(act, e.haendler, 11, Ui.GRAU, false);
+                TextView h = Ui.text(act, Kategorien.symbol(e.a.kategorie) + " " + e.a.kategorie + "  ·  " + e.haendler, 12, Ui.GRAU, false);
                 l.addView(h);
                 return l;
             }
@@ -108,10 +120,10 @@ public final class KatalogAuswahl {
         lv.setAdapter(adapter);
         root.addView(lv, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(act, 380)));
 
-        AlertDialog d = new AlertDialog.Builder(act).setTitle("Aus Händlerkatalog")
+        AlertDialog d = new AlertDialog.Builder(act).setTitle("Artikel suchen")
                 .setView(root)
                 .setNegativeButton("Abbrechen", null)
-                .setNeutralButton("Kataloge …", (x, y) -> verwalten(act))
+                .setNeutralButton("Listen …", (x, y) -> verwalten(act))
                 .create();
 
         Handler ui = new Handler(Looper.getMainLooper());
@@ -123,7 +135,7 @@ public final class KatalogAuswahl {
             String q = such.getText().toString();
             String filter = nurTyp.isChecked() ? typ : null;
             new Thread(() -> {
-                List<Katalog.Eintrag> r = Katalog.suche(alle[0], q, filter, 300);
+                List<Katalog.Eintrag> r = Katalog.suche(alle[0], q, filter, kategorie[0], 300);
                 ui.post(() -> {
                     if (g != gen[0]) return;
                     treffer.clear();
@@ -147,6 +159,32 @@ public final class KatalogAuswahl {
             List<Katalog.Eintrag> l = Katalog.alle(act);
             ui.post(() -> {
                 alle[0] = l;
+                java.util.Map<String, Integer> kats = Katalog.kategorien(l);
+                List<TextView> chips = new ArrayList<>();
+                Runnable[] markieren = new Runnable[1];
+                java.util.List<String> namen = new ArrayList<>();
+                namen.add(null);
+                namen.addAll(kats.keySet());
+                for (String k : namen) {
+                    TextView c = Ui.text(act, k == null ? "Alle (" + l.size() + ")"
+                            : Kategorien.symbol(k) + " " + k + " (" + kats.get(k) + ")", 15, Ui.PRIMAER, true);
+                    c.setPadding(Ui.dp(act, 14), Ui.dp(act, 8), Ui.dp(act, 14), Ui.dp(act, 8));
+                    c.setTag(k);
+                    c.setOnClickListener(v -> { kategorie[0] = (String) v.getTag(); markieren[0].run(); suchen.run(); });
+                    LinearLayout.LayoutParams lpc = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    lpc.setMarginEnd(Ui.dp(act, 8));
+                    katLeiste.addView(c, lpc);
+                    chips.add(c);
+                }
+                markieren[0] = () -> {
+                    for (TextView c : chips) {
+                        boolean an = java.util.Objects.equals(c.getTag(), kategorie[0]);
+                        c.setTextColor(an ? Ui.WEISS : Ui.PRIMAER);
+                        c.setBackground(Ui.rounded(an ? Ui.PRIMAER : Ui.FLAECHE, Ui.HELL, Ui.dp(act, 20), Ui.dp(act, 1)));
+                    }
+                };
+                markieren[0].run();
+                katScroll.setVisibility(kats.size() > 1 ? View.VISIBLE : View.GONE);
                 lade.setVisibility(View.GONE);
                 suchen.run();
             });
@@ -158,10 +196,10 @@ public final class KatalogAuswahl {
     public static void verwalten(Activity act) {
         List<Katalog.Info> l = Katalog.liste(act);
         List<String> items = new ArrayList<>();
-        items.add("＋  Artikelliste vom Händler laden (DATANORM) …");
+        items.add("＋  Artikelliste laden (Excel-Inventar oder DATANORM) …");
         for (Katalog.Info i : l)
             items.add(i.name + "\n" + i.anzahl + " Artikel · importiert " + DateFormat.format("dd.MM.yyyy", i.datum));
-        new AlertDialog.Builder(act).setTitle("Händler-Artikellisten (DATANORM)")
+        new AlertDialog.Builder(act).setTitle("Artikellisten (Inventar / DATANORM)")
                 .setItems(items.toArray(new String[0]), (d, w) -> {
                     if (w == 0) { importStarten(act); return; }
                     Katalog.Info i = l.get(w - 1);
@@ -214,8 +252,9 @@ public final class KatalogAuswahl {
                 if (in == null) throw new java.io.IOException("Datei kann nicht geöffnet werden");
                 Datanorm.Ergebnis e = Datanorm.lesen(in, name);
                 if (e.artikel.isEmpty()) {
-                    meldung = "In der Datei „" + name + "“ wurden keine DATANORM-Artikel (A-Sätze) gefunden.\n\n"
-                            + "Unterstützt wird DATANORM 4 (Dateien DATANORM.001, .002 … oder als ZIP).";
+                    meldung = "In der Datei „" + name + "“ wurden keine Artikel gefunden.\n\n"
+                            + "Unterstützt werden Excel-Listen (.xlsx, Überschrift z. B. „Bezeichnung“, „Einheit“, „Preis“, „Kategorie“), "
+                            + "CSV-Dateien und DATANORM 4 (DATANORM.001 … oder als ZIP).";
                 } else {
                     Katalog.Info info = Katalog.speichern(act, e);
                     int holz = 0, platten = 0, material = 0;
@@ -226,6 +265,7 @@ public final class KatalogAuswahl {
                         else holz++;
                     }
                     meldung = info.anzahl + " Artikel von „" + info.name + "“ importiert.\n\n"
+                            + Katalog.kategorien(Katalog.wrap(e.artikel)).size() + " Kategorien\n"
                             + holz + " Hölzer (Balken, Latten, Bretter)\n"
                             + platten + " Platten\n"
                             + material + " sonstige Materialien";

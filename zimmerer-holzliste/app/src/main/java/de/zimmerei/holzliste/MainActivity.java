@@ -107,7 +107,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        menu.add(0, 1, 0, "Händler-Artikellisten (DATANORM) …");
+        menu.add(0, 1, 0, "Artikellisten (Inventar / DATANORM) …");
         return true;
     }
 
