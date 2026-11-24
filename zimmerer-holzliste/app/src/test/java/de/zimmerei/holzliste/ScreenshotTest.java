@@ -107,7 +107,7 @@ public class ScreenshotTest {
         return x;
     }
 
-    private static void png(View v, String name) throws Exception {
+    static void png(View v, String name) throws Exception {
         Bitmap bmp = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
         v.draw(new Canvas(bmp));
         File dir = new File("build/screenshots");

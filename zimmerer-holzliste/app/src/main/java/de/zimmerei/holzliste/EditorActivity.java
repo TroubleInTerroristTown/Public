@@ -345,6 +345,7 @@ public class EditorActivity extends Activity {
     }
 
     private static final String KATALOG = "katalog";
+    private static final String AW = "aw";
 
     /** Auswahl „Was möchtest du hinzufügen?“ mit großen Kacheln. */
     void hinzufuegen(int index) {
@@ -354,6 +355,7 @@ public class EditorActivity extends Activity {
                 {Position.PLATTE, Ui.symbol(Position.PLATTE), "Platten", "OSB, Gipskarton, Dreischicht … – Fläche eingeben, Anzahl wird berechnet"},
                 {Position.MATERIAL, Ui.symbol(Position.MATERIAL), "Sonstiges Material", "Schrauben, Dämmung, Folie, Mörtel, Säcke …"},
                 {KATALOG, "🔍", "Aus Artikelliste suchen", "Deine Inventarliste oder Händlerliste – nach Kategorien sortiert"},
+                {AW, "📄", "Aus Arbeitsanweisung (PDF)", "Überschriften und Material-Vorschläge aus einer PDF – ohne Internet"},
                 {Position.TITEL, Ui.symbol(Position.TITEL), "Überschrift", "z. B. „Dachstuhl“ oder „Dämmung“ – macht die Liste übersichtlicher"},
         };
         android.widget.BaseAdapter ad = new android.widget.BaseAdapter() {
@@ -369,7 +371,7 @@ public class EditorActivity extends Activity {
                 l.setGravity(Gravity.CENTER_VERTICAL);
                 int pd = Ui.dp(EditorActivity.this, 12);
                 l.setPadding(Ui.dp(EditorActivity.this, 20), pd, pd, pd);
-                int farbe = KATALOG.equals(it[0]) ? Ui.PRIMAER : Position.TITEL.equals(it[0]) ? Ui.GRAU : Ui.farbe(it[0]);
+                int farbe = KATALOG.equals(it[0]) || AW.equals(it[0]) ? Ui.PRIMAER : Position.TITEL.equals(it[0]) ? Ui.GRAU : Ui.farbe(it[0]);
                 TextView sym = Ui.text(EditorActivity.this, it[1], 28, farbe, true);
                 sym.setGravity(Gravity.CENTER);
                 l.addView(sym, new LinearLayout.LayoutParams(Ui.dp(EditorActivity.this, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -385,7 +387,9 @@ public class EditorActivity extends Activity {
         new AlertDialog.Builder(this).setTitle("Was möchtest du hinzufügen?")
                 .setAdapter(ad, (d, w) -> {
                     String typ = items[w][0];
-                    if (KATALOG.equals(typ)) {
+                    if (AW.equals(typ)) {
+                        AwImport.starten(this, index);
+                    } else if (KATALOG.equals(typ)) {
                         KatalogAuswahl.zeigen(this, null, a -> {
                             Position p = new Position();
                             PositionDialog.anwenden(p, a);
@@ -551,6 +555,7 @@ public class EditorActivity extends Activity {
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
         if (KatalogAuswahl.onActivityResult(this, req, res, data)) return;
+        if (AwImport.onActivityResult(this, req, res, data, liste, this::speichern)) return;
         if (req == REQ_SAVE && res == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
@@ -607,7 +612,7 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Menü
 
-    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7;
+    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7, M_AW = 8;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -620,6 +625,7 @@ public class EditorActivity extends Activity {
         menu.add(0, M_OPEN, 2, "In Excel öffnen");
         menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
         menu.add(0, M_TITEL, 4, "Überschrift anfügen");
+        menu.add(0, M_AW, 5, "Arbeitsanweisung (PDF) einlesen …");
         menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
         menu.add(0, M_KATALOG, 6, "Artikellisten (Inventar / DATANORM) …");
         return true;
@@ -635,6 +641,7 @@ public class EditorActivity extends Activity {
             case M_KOPF: kopfdatenDialog(); return true;
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
+            case M_AW: AwImport.starten(this, liste.positionen.size()); return true;
             case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);
