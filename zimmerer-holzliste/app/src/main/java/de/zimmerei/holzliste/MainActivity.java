@@ -104,6 +104,24 @@ public class MainActivity extends Activity {
                 }).show();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        menu.add(0, 1, 0, "Händlerkataloge (DATANORM) …");
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(android.view.MenuItem item) {
+        if (item.getItemId() == 1) { KatalogAuswahl.verwalten(this); return true; }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        KatalogAuswahl.onActivityResult(this, req, res, data);
+    }
+
     private class Adapter extends BaseAdapter {
         @Override public int getCount() { return listen.size(); }
         @Override public Object getItem(int i) { return listen.get(i); }

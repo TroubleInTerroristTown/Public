@@ -19,6 +19,10 @@ Zebra-Streifen, Summen, fixierte Kopfzeile, AutoFilter, Druckeinrichtung A4 quer
 - Holzart/Qualität und Bemerkung je Position, Vorschlagslisten für Bezeichnungen und Holzarten
 - Zeile antippen = bearbeiten; **lange drücken** = darüber/darunter einfügen, duplizieren, verschieben, löschen
 - „+ Nächste“ im Eingabedialog für schnelle Erfassung vieler Positionen
+- **Händlerkataloge (DATANORM 4)** importieren (DATANORM.001 … oder ZIP vom Holz-/Baustoffhändler):
+  Artikel im Eingabedialog über „Aus Händlerkatalog“ suchen (z. B. „KVH 8/20“, „OSB 22“) und übernehmen –
+  Material, Artikelnummer und aus dem Artikeltext erkannte Maße (Querschnitt, Länge, Plattenformat) werden
+  eingetragen, der Preis wird angezeigt. Beispieldatei: `beispiel/Beispiel-DATANORM.001`
 - **Zeilen aus der Zwischenablage einfügen** (Tab- oder Semikolon-getrennt, z. B. aus Excel kopiert):
   `Bezeichnung; Stück; Breite; Höhe; Länge; Holzart; Bemerkung`
 - Laufende Summen: m³ Stückhölzer, Laufmeter/m³ Laufmeterhölzer, m²/m³ Platten, Gesamt-m³

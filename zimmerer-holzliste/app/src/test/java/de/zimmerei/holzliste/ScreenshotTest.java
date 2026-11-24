@@ -136,6 +136,32 @@ public class ScreenshotTest {
         if (sv instanceof android.widget.ScrollView) { ((android.widget.ScrollView) sv).scrollTo(0, 100000); ShadowLooper.idleMainLooper(); }
         png(ed.getWindow().getDecorView(), "5_holzliste_rechts");
 
+        // DATANORM-Katalog importieren und Auswahl anzeigen
+        Datanorm.Ergebnis dn = Datanorm.lesen(getClass().getResourceAsStream("/DATANORM.001"), "DATANORM.001");
+        org.junit.Assert.assertEquals("Holzhandel Mustermann GmbH", dn.haendler);
+        org.junit.Assert.assertEquals(10, dn.artikel.size()); // 11 A-Sätze, einer gelöscht (L)
+        Datanorm.Artikel kvh = dn.artikel.get(0);
+        org.junit.Assert.assertEquals(6.0, kvh.b, 1e-9);
+        org.junit.Assert.assertEquals(12.0, kvh.h, 1e-9);
+        org.junit.Assert.assertEquals(13.0, kvh.l, 1e-9);
+        org.junit.Assert.assertEquals(4.25, kvh.preis, 1e-9);
+        Datanorm.Artikel osb = null;
+        for (Datanorm.Artikel x : dn.artikel) if (x.nr.equals("300110")) osb = x;
+        org.junit.Assert.assertTrue(osb.platte);
+        org.junit.Assert.assertEquals(2.5, osb.l, 1e-9);
+        org.junit.Assert.assertEquals(125.0, osb.pb, 1e-9);
+        org.junit.Assert.assertEquals(1.5, osb.h, 1e-9);
+        org.junit.Assert.assertTrue(dn.artikel.get(2).text.contains("imprägniert"));
+        Katalog.speichern(ed, dn);
+        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "kvh 6/12", false, 10).size());
+        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "osb 15", true, 10).size());
+
+        ShadowDialog.getLatestDialog().dismiss();
+        KatalogAuswahl.zeigen(ed, false, a -> {});
+        for (int k = 0; k < 10; k++) { ShadowLooper.idleMainLooper(); Thread.sleep(100); }
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "8_katalog");
+
         File xlsx = new File("build/screenshots/test.xlsx");
         try (FileOutputStream out = new FileOutputStream(xlsx)) { HolzlisteExcel.write(h, out); }
         assertTrue(xlsx.length() > 1000);

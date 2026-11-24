@@ -66,6 +66,7 @@ public class PositionDialog {
     private AutoCompleteTextView eHolzart;
     private LinearLayout rowStkL, rowLfm, groupMasse, groupHolz, groupPlatte;
     private TextView tLabelBez, tErgebnis, tLabelHolzart;
+    private Button katalogBtn;
 
     public PositionDialog(Activity act, Position p, boolean neu, Collection<String> bekannteHolzarten, Callback cb) {
         this.act = act;
@@ -102,6 +103,18 @@ public class PositionDialog {
         eBez.setText(p.bezeichnung);
         eBez.setHint("z. B. Sparren");
         root.addView(eBez, full());
+
+        // --- Händlerkatalog (DATANORM)
+        katalogBtn = new Button(act);
+        katalogBtn.setText("Aus Händlerkatalog (DATANORM)  ▾");
+        katalogBtn.setAllCaps(false);
+        katalogBtn.setTextSize(14);
+        katalogBtn.setTextColor(Ui.BRAUN);
+        katalogBtn.setBackground(Ui.rounded(Ui.BEIGE, Ui.BRAUN_HELL, Ui.dp(act, 8), Ui.dp(act, 1)));
+        LinearLayout.LayoutParams lpK = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 42));
+        lpK.topMargin = Ui.dp(act, 10);
+        katalogBtn.setOnClickListener(v -> ausKatalog());
+        root.addView(katalogBtn, lpK);
 
         groupMasse = new LinearLayout(act);
         groupMasse.setOrientation(LinearLayout.VERTICAL);
@@ -250,6 +263,34 @@ public class PositionDialog {
         if (neu && p.isPlatte() && ePL.getText().length() == 0 && ePB.getText().length() == 0) plattenAuswahl();
     }
 
+    /** Übernimmt einen Artikel aus dem Händlerkatalog in die Felder. */
+    private void ausKatalog() {
+        String t = typ();
+        KatalogAuswahl.zeigen(act, Position.PLATTE.equals(t), a -> {
+            if (a.platte && !Position.PLATTE.equals(typ())) typGroup.check(4);
+            else if (!a.platte && Position.PLATTE.equals(typ())) typGroup.check("m".equals(a.einheit) && a.l == null ? 2 : 1);
+            eHolzart.setText(a.text);
+            eHolzart.dismissDropDown();
+            if (a.platte) {
+                if (a.l != null) ePL.setText(Fmt.num(a.l * 100));
+                if (a.pb != null) ePB.setText(Fmt.num(a.pb));
+                if (a.h != null) eDicke.setText(Fmt.num(a.h * 10));
+            } else {
+                if (a.b != null) eB.setText(Fmt.num(a.b));
+                if (a.h != null) eH.setText(Fmt.num(a.h));
+                if (a.l != null && Position.HOLZ.equals(typ())) eL.setText(Fmt.num(a.l));
+            }
+            String bem = eBem.getText().toString().trim();
+            String nr = "Art.-Nr. " + a.nr;
+            if (!bem.contains(nr)) eBem.setText(bem.isEmpty() ? nr : bem + "; " + nr);
+            if (eBez.getText().toString().trim().isEmpty()) {
+                eBez.setText(a.text);
+                eBez.dismissDropDown();
+            }
+            Toast.makeText(act, "Übernommen: " + a.text + (a.preis != null ? " (" + a.preisText() + ")" : ""), Toast.LENGTH_LONG).show();
+        });
+    }
+
     /** Öffnet die Schnellauswahl gängiger / eigener Platten und übernimmt die Werte in die Felder. */
     private void plattenAuswahl() {
         Position akt = new Position();
@@ -294,6 +335,7 @@ public class PositionDialog {
         String t = typ();
         boolean titel = Position.TITEL.equals(t);
         groupMasse.setVisibility(titel ? View.GONE : View.VISIBLE);
+        katalogBtn.setVisibility(titel ? View.GONE : View.VISIBLE);
         boolean platte = Position.PLATTE.equals(t);
         rowStkL.setVisibility(Position.HOLZ.equals(t) ? View.VISIBLE : View.GONE);
         rowLfm.setVisibility(Position.LFM.equals(t) ? View.VISIBLE : View.GONE);

@@ -494,6 +494,7 @@ public class EditorActivity extends Activity {
     @Override
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if (KatalogAuswahl.onActivityResult(this, req, res, data)) return;
         if (req == REQ_SAVE && res == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
@@ -550,7 +551,7 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Menü
 
-    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6;
+    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -564,6 +565,7 @@ public class EditorActivity extends Activity {
         menu.add(0, M_KOPF, 3, "Kopfdaten bearbeiten");
         menu.add(0, M_PASTE, 4, "Zeilen aus Zwischenablage einfügen");
         menu.add(0, M_TITEL, 5, "Abschnitt-Überschrift anfügen");
+        menu.add(0, M_KATALOG, 6, "Händlerkataloge (DATANORM) …");
         return true;
     }
 
@@ -576,6 +578,7 @@ public class EditorActivity extends Activity {
             case M_OPEN: exportOeffnen(); return true;
             case M_KOPF: kopfdatenDialog(); return true;
             case M_PASTE: ausZwischenablage(); return true;
+            case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
             case M_TITEL: neuePosition(Position.TITEL, liste.positionen.size()); return true;
         }
         return super.onOptionsItemSelected(item);
