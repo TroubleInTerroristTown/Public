@@ -45,7 +45,7 @@ public final class KatalogAuswahl {
         if (Katalog.liste(act).isEmpty()) {
             new AlertDialog.Builder(act).setTitle("Noch keine Artikelliste geladen")
                     .setMessage("Lade zuerst deine Artikelliste in die App:\n\n"
-                            + "• deine Inventarliste als Excel-Datei (.xlsx) oder CSV\n"
+                            + "• deine Inventarliste als Excel-Datei (.xlsx oder .xls) oder CSV\n"
                             + "• oder eine DATANORM-Datei vom Händler (DATANORM.001 oder ZIP)\n\n"
                             + "Danach kannst du hier nach Kategorien sortiert suchen und Artikel übernehmen.")
                     .setPositiveButton("Datei laden", (d, w) -> importStarten(act))
@@ -253,7 +253,7 @@ public final class KatalogAuswahl {
                 Datanorm.Ergebnis e = Datanorm.lesen(in, name);
                 if (e.artikel.isEmpty()) {
                     meldung = "In der Datei „" + name + "“ wurden keine Artikel gefunden.\n\n"
-                            + "Unterstützt werden Excel-Listen (.xlsx, Überschrift z. B. „Bezeichnung“, „Einheit“, „Preis“, „Kategorie“), "
+                            + "Unterstützt werden Excel-Listen (.xlsx oder .xls, Überschrift z. B. „Bezeichnung“, „Einheit“, „Preis“, „Kategorie“), "
                             + "CSV-Dateien und DATANORM 4 (DATANORM.001 … oder als ZIP).";
                 } else {
                     Katalog.Info info = Katalog.speichern(act, e);

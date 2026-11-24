@@ -98,6 +98,22 @@ public final class InventarListe {
         return e;
     }
 
+    /** Altes Excel-Format (.xls, BIFF8). */
+    public static Datanorm.Ergebnis lesenXls(byte[] daten, String dateiname) throws IOException {
+        LinkedHashMap<String, List<String[]>> blaetter = XlsLeser.lesen(daten);
+        Datanorm.Ergebnis e = new Datanorm.Ergebnis();
+        Map<String, Datanorm.Artikel> map = new LinkedHashMap<>();
+        boolean mehrere = blaetter.size() > 1;
+        for (Map.Entry<String, List<String[]>> b : blaetter.entrySet()) {
+            e.zeilen += b.getValue().size();
+            ausTabelle(b.getValue(), b.getKey(), mehrere, map);
+        }
+        e.artikel.addAll(map.values());
+        e.aSaetze = e.artikel.size();
+        e.haendler = name(dateiname);
+        return e;
+    }
+
     public static Datanorm.Ergebnis lesenCsv(String text, String dateiname) {
         List<String[]> zeilen = new ArrayList<>();
         String[] lines = text.split("\\r?\\n");

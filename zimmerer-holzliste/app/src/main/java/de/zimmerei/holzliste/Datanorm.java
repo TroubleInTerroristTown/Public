@@ -80,6 +80,7 @@ public final class Datanorm {
 
     public static Ergebnis lesen(InputStream in, String dateiname) throws IOException {
         byte[] daten = alles(in);
+        if (XlsLeser.istXls(daten)) return InventarListe.lesenXls(daten, dateiname);
         if (InventarListe.istXlsx(daten)) return InventarListe.lesenXlsx(daten, dateiname);
         if (dateiname != null && dateiname.toLowerCase(Locale.ROOT).endsWith(".csv")) return InventarListe.lesenCsv(dekodieren(daten), dateiname);
         Ergebnis e = new Ergebnis();

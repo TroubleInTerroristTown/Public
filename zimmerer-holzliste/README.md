@@ -25,10 +25,11 @@ Weitere Angaben wie Preis, Artikelnummer, Bemerkung und Fertigmaß (gehobelt) li
 ## Artikellisten: eigene Inventarliste (Excel) oder DATANORM
 
 Menü → „Artikellisten (Inventar / DATANORM) …“ → Datei laden:
-- **Excel-Inventarliste (.xlsx) oder CSV**: Spalten werden über die Überschriften erkannt
+- **Excel-Inventarliste (.xlsx oder altes .xls) oder CSV**: Spalten werden über die Überschriften erkannt
   (z. B. „Bezeichnung“, „Art.-Nr.“, „Einheit“, „Bestand“, „Preis“, „Kategorie“). Kategorien kommen aus einer
   Kategorie-Spalte, aus Zwischenüberschriften, aus den Blattnamen oder werden automatisch aus der Bezeichnung
-  erkannt (Verankerungsmittel, Schrauben, Dämmung, Folien …). Beispiel: `beispiel/Beispiel-Inventarliste.xlsx`
+  erkannt (26 Kategorien wie Verankerungsmittel, Schrauben, Dämmung, Folien, Trockenbau, Dachfenster …;
+  geprüft an einer Baustoffhändler-Liste mit rund 9.600 Artikeln, davon landen unter 1 % in „Sonstiges“). Beispiel: `beispiel/Beispiel-Inventarliste.xlsx`
 - **DATANORM 4** vom Holz-/Baustoffhändler (DATANORM.001 … oder ZIP). Beispiel: `beispiel/Beispiel-DATANORM.001`
 
 Bei „🔍 Aus Artikelliste suchen“ kann man oben eine Kategorie antippen und sieht nur deren Artikel.

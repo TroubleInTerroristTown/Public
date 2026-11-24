@@ -200,6 +200,16 @@ public class ScreenshotTest {
         org.junit.Assert.assertEquals("Dämmung", inv.artikel.get(5).kategorie);     // automatisch zugeordnet
         org.junit.Assert.assertEquals("Folien & Bänder", inv.artikel.get(6).kategorie); // aus Blattname
         org.junit.Assert.assertEquals("Verbindungsmittel", inv.artikel.get(8).kategorie); // aus Zwischenüberschrift
+        // dieselbe Liste im alten Excel-Format (.xls)
+        Datanorm.Ergebnis xls = Datanorm.lesen(getClass().getResourceAsStream("/Inventar.xls"), "Inventar.xls");
+        org.junit.Assert.assertEquals(11, xls.artikel.size());
+        for (int k = 0; k < 11; k++) {
+            org.junit.Assert.assertEquals(inv.artikel.get(k).text, xls.artikel.get(k).text);
+            org.junit.Assert.assertEquals(inv.artikel.get(k).kategorie, xls.artikel.get(k).kategorie);
+        }
+        org.junit.Assert.assertEquals("Verankerungsmittel", Kategorien.zuordnen("WDVS-Tellerschlagdübel NTK-U 8/60 190 mm"));
+        org.junit.Assert.assertEquals("Trockenbau", Kategorien.zuordnen("Butler machts Tragschiene weiß Hacksystem, 3750x24x38 mm"));
+        org.junit.Assert.assertEquals("Kleber, Schaum & Dichtstoffe", Kategorien.zuordnen("Butler machts Bau Acryl 310 ml, weiß"));
         Katalog.speichern(ed, inv);
         org.junit.Assert.assertEquals(3, Katalog.suche(Katalog.alle(ed), "", null, "Schrauben", 50).size()); // 2 Inventar + 1 DATANORM
         org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "kvh 6/12", Position.HOLZ, 10).size());
