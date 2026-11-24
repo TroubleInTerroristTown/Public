@@ -35,6 +35,7 @@ public final class Ui {
     public static final int LINIE = Color.parseColor("#E0D7D3");
     public static final int AKZENT = Color.parseColor("#EF8F00");
     public static final int BLAU = Color.parseColor("#1565C0");
+    public static final int GRUEN = Color.parseColor("#2E7D32");
     public static final int SUMME = Color.parseColor("#FFF3E0");
 
     public static int dp(Context c, float dp) {

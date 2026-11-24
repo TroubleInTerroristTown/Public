@@ -34,10 +34,25 @@ public class Holzliste {
         return s;
     }
 
-    public double summeStueck() {
+    public double summeStueck() { return summeStueck(Position.HOLZ); }
+
+    public double summeStueck(String typ) {
         double s = 0;
-        for (Position p : positionen) if (p.isHolz() && p.stueck != null) s += p.stueck;
+        for (Position p : positionen)
+            if ((typ == null ? (p.isHolz() || p.isPlatte()) : typ.equals(p.typ)) && p.stueck != null && !p.isFlaecheDirekt())
+                s += p.stueck;
         return s;
+    }
+
+    public double summeFlaeche() {
+        double s = 0;
+        for (Position p : positionen) s += p.getFlaeche();
+        return s;
+    }
+
+    public boolean hatPlatten() {
+        for (Position p : positionen) if (p.isPlatte()) return true;
+        return false;
     }
 
     public int anzahlPositionen() {

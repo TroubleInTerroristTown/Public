@@ -53,7 +53,26 @@ public class ScreenshotTest {
         h.positionen.add(p(Position.LFM, "Dachlatten", null, 3.0, 5.0, null, 620.0, null, null, "Fichte S10 imprägniert", "Bündel à 4,5 m"));
         h.positionen.add(p(Position.LFM, "Konterlatten", null, 4.0, 6.0, null, 185.0, null, null, "Fichte S10 imprägniert", ""));
         h.positionen.add(p(Position.LFM, "Rauhspund", null, 14.0, 2.4, null, 95.5, 13.5, 2.2, "Fichte", ""));
+        h.positionen.add(p(Position.TITEL, "Plattenwerkstoffe", null, null, null, null, null, null, null, "", ""));
+        h.positionen.add(p(Position.PLATTE, "Dachschalung OSB", 32.0, 67.5, 2.2, 2.50, null, null, null, "OSB/3", "N+F"));
+        h.positionen.add(p(Position.PLATTE, "Wandbeplankung", 18.0, 125.0, 1.5, 2.50, null, null, null, "OSB/3", ""));
+        Position fl = p(Position.PLATTE, "Holzfaserdämmung Aufdach", null, null, 10.0, null, null, null, null, "Holzfaserdämmplatte", "Verschnitt 5 %");
+        fl.flaeche = 142.5;
+        h.positionen.add(fl);
         return h;
+    }
+
+    /** n-ter HorizontalScrollView im Baum (0 = Kopf, 1 = Tabelle). */
+    private static android.widget.HorizontalScrollView findHs(View v, int n) {
+        java.util.List<android.widget.HorizontalScrollView> l = new java.util.ArrayList<>();
+        sammle(v, l);
+        return l.size() > n ? l.get(n) : null;
+    }
+
+    private static void sammle(View v, java.util.List<android.widget.HorizontalScrollView> l) {
+        if (v instanceof android.widget.HorizontalScrollView) l.add((android.widget.HorizontalScrollView) v);
+        if (v instanceof android.view.ViewGroup)
+            for (int i = 0; i < ((android.view.ViewGroup) v).getChildCount(); i++) sammle(((android.view.ViewGroup) v).getChildAt(i), l);
     }
 
     private static void png(View v, String name) throws Exception {
@@ -88,6 +107,18 @@ public class ScreenshotTest {
         ShadowLooper.idleMainLooper();
         Dialog d = ShadowDialog.getLatestDialog();
         png(d.getWindow().getDecorView(), "3_position");
+        d.dismiss();
+
+        new PositionDialog(ed, h.positionen.get(12).copy(), false, java.util.Collections.emptySet(), (x, y) -> {}).show();
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "4_platte");
+
+        // Tabelle seitlich gescrollt (Mengen-Spalten)
+        android.widget.HorizontalScrollView hs = findHs(ed.getWindow().getDecorView(), 1);
+        if (hs != null) { hs.scrollTo(Ui.dp(ed, 190), 0); ShadowLooper.idleMainLooper(); }
+        View sv = hs == null ? null : (View) hs.getParent().getParent().getParent();
+        if (sv instanceof android.widget.ScrollView) { ((android.widget.ScrollView) sv).scrollTo(0, 100000); ShadowLooper.idleMainLooper(); }
+        png(ed.getWindow().getDecorView(), "5_holzliste_rechts");
 
         File xlsx = new File("build/screenshots/test.xlsx");
         try (FileOutputStream out = new FileOutputStream(xlsx)) { HolzlisteExcel.write(h, out); }

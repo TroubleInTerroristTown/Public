@@ -43,8 +43,9 @@ public class EditorActivity extends Activity {
     private static final int REQ_SAVE = 42;
 
     // Spalten rechts neben der fixierten Bezeichnung
-    private static final String[] COL_HEAD = {"Stk", "B\ncm", "H\ncm", "L\nm", "Lfm\nm", "Vol.\nm³", "Fertig\nB/H cm", "Holzart", "Bemerkung"};
-    private static final int[] COL_W = {42, 46, 46, 56, 70, 70, 80, 130, 180};
+    private static final String[] COL_HEAD = {"Stk", "B\ncm", "H/D\ncm", "L\nm", "Lfm\nm", "Fläche\nm²", "Vol.\nm³", "Fertig\nB/H cm", "Holzart / Material", "Bemerkung"};
+    private static final int[] COL_W = {42, 46, 50, 56, 70, 70, 70, 80, 140, 180};
+    private static final int COL_TEXT = 8; // ab hier linksbündige Textspalten
     private static final int LEFT_W = 140;
     private static final int ROW_H = 50, TITEL_H = 38;
 
@@ -104,7 +105,7 @@ public class EditorActivity extends Activity {
         LinearLayout headCells = new LinearLayout(this);
         headCells.setOrientation(LinearLayout.HORIZONTAL);
         for (int i = 0; i < COL_HEAD.length; i++) {
-            TextView t = Ui.cell(this, COL_HEAD[i], COL_W[i], i >= 7 ? Gravity.START : Gravity.END, true, Ui.WEISS);
+            TextView t = Ui.cell(this, COL_HEAD[i], COL_W[i], i >= COL_TEXT ? Gravity.START : Gravity.END, true, Ui.WEISS);
             t.setSingleLine(false);
             t.setMaxLines(2);
             t.setTextSize(12);
@@ -133,7 +134,7 @@ public class EditorActivity extends Activity {
         table.addView(hBody, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         body.addView(table);
 
-        emptyText = Ui.text(this, "Noch keine Positionen.\n\nUnten über „+ Holz“, „+ Laufmeter“ oder „+ Abschnitt“ hinzufügen.\n\nTipp: Eine Zeile antippen zum Bearbeiten, lange drücken für Einfügen, Verschieben, Kopieren, Löschen.",
+        emptyText = Ui.text(this, "Noch keine Positionen.\n\nUnten über „+ Stückholz“, „+ Laufmeter“ oder „+ Platten“ hinzufügen.\n\nTipp: Eine Zeile antippen zum Bearbeiten, lange drücken für Einfügen (auch Abschnitts-Überschriften), Verschieben, Kopieren, Löschen.",
                 15, Ui.GRAU, false);
         emptyText.setGravity(Gravity.CENTER);
         int ep = Ui.dp(this, 32);
@@ -161,7 +162,7 @@ public class EditorActivity extends Activity {
         bar.setPadding(bp, bp, bp, bp);
         bar.addView(addButton("+ Stückholz", Position.HOLZ));
         bar.addView(addButton("+ Laufmeter", Position.LFM));
-        bar.addView(addButton("+ Abschnitt", Position.TITEL));
+        bar.addView(addButton("+ Platten", Position.PLATTE));
         root.addView(bar);
         return root;
     }
@@ -252,8 +253,8 @@ public class EditorActivity extends Activity {
                     p.bezeichnung.isEmpty() ? Ui.GRAU : Ui.TEXT, true);
             bez.setSingleLine(true);
             bez.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            String sub = (p.isLfm() ? "Laufmeter" : "Stück") + (p.holzart.isEmpty() ? "" : " · " + p.holzart);
-            TextView art = Ui.text(this, sub, 11, p.isLfm() ? Ui.AKZENT : Ui.GRAU, false);
+            String sub = (p.isPlatte() ? "Platte" : p.isLfm() ? "Laufmeter" : "Stück") + (p.holzart.isEmpty() ? "" : " · " + p.holzart);
+            TextView art = Ui.text(this, sub, 11, p.isPlatte() ? Ui.GRUEN : p.isLfm() ? Ui.AKZENT : Ui.GRAU, false);
             art.setSingleLine(true);
             art.setEllipsize(android.text.TextUtils.TruncateAt.END);
             txt.addView(bez);
@@ -269,16 +270,20 @@ public class EditorActivity extends Activity {
             r.setBackground(Ui.touchBg(bg));
             r.setOnClickListener(click);
             r.setOnLongClickListener(longClick);
-            boolean holz = p.isHolz();
-            r.addView(Ui.cell(this, holz ? Fmt.num(p.stueck) : "–", COL_W[0], Gravity.END, true, holz ? Ui.TEXT : Ui.LINIE));
+            boolean platte = p.isPlatte();
+            boolean mitStk = (p.isHolz() || platte) && !p.isFlaecheDirekt();
+            boolean mitL = p.isHolz() || (platte && p.laenge != null);
+            r.addView(Ui.cell(this, mitStk ? Fmt.num(p.stueck) : "–", COL_W[0], Gravity.END, true, mitStk ? Ui.TEXT : Ui.LINIE));
             r.addView(Ui.cell(this, Fmt.num(p.breite), COL_W[1], Gravity.END, false, Ui.TEXT));
             r.addView(Ui.cell(this, Fmt.num(p.hoehe), COL_W[2], Gravity.END, false, Ui.TEXT));
-            r.addView(Ui.cell(this, holz ? (p.laenge == null ? "" : Fmt.fix(p.laenge, 2)) : "–", COL_W[3], Gravity.END, false, holz ? Ui.TEXT : Ui.LINIE));
-            r.addView(Ui.cell(this, Fmt.fix(p.getLaufmeterGesamt(), 2), COL_W[4], Gravity.END, p.isLfm(), p.isLfm() ? Ui.TEXT : Ui.GRAU));
-            r.addView(Ui.cell(this, Fmt.fix(p.getVolumen(), 3), COL_W[5], Gravity.END, true, Ui.BRAUN));
-            r.addView(Ui.cell(this, p.hasFertigmass() ? Fmt.querschnitt(p.fertigB, p.fertigH) : "", COL_W[6], Gravity.END, false, Ui.BLAU));
-            r.addView(Ui.cell(this, p.holzart, COL_W[7], Gravity.START, false, Ui.TEXT));
-            TextView bem = Ui.cell(this, p.bemerkung, COL_W[8], Gravity.START, false, Ui.GRAU);
+            r.addView(Ui.cell(this, mitL ? (p.laenge == null ? "" : Fmt.fix(p.laenge, 2)) : "–", COL_W[3], Gravity.END, false, mitL ? Ui.TEXT : Ui.LINIE));
+            r.addView(Ui.cell(this, platte ? "–" : Fmt.fix(p.getLaufmeterGesamt(), 2), COL_W[4], Gravity.END, p.isLfm(),
+                    platte ? Ui.LINIE : p.isLfm() ? Ui.TEXT : Ui.GRAU));
+            r.addView(Ui.cell(this, platte ? Fmt.fix(p.getFlaeche(), 2) : "–", COL_W[5], Gravity.END, platte, platte ? Ui.GRUEN : Ui.LINIE));
+            r.addView(Ui.cell(this, Fmt.fix(p.getVolumen(), 3), COL_W[6], Gravity.END, true, Ui.BRAUN));
+            r.addView(Ui.cell(this, p.hasFertigmass() ? Fmt.querschnitt(p.fertigB, p.fertigH) : "", COL_W[7], Gravity.END, false, Ui.BLAU));
+            r.addView(Ui.cell(this, p.holzart, COL_W[8], Gravity.START, false, Ui.TEXT));
+            TextView bem = Ui.cell(this, p.bemerkung, COL_W[9], Gravity.START, false, Ui.GRAU);
             bem.setTextSize(13);
             r.addView(bem);
             rightCol.addView(r, new LinearLayout.LayoutParams(totalRightWidth(), h));
@@ -288,6 +293,7 @@ public class EditorActivity extends Activity {
 
         sumText.setText("Stückhölzer: " + Fmt.fix(liste.summeVolumen(Position.HOLZ), 3) + " m³  (" + Fmt.fix(liste.summeStueck(), 0) + " Stk)\n"
                 + "Laufmeterhölzer: " + Fmt.fix(liste.summeLaufmeter(Position.LFM), 2) + " lfm · " + Fmt.fix(liste.summeVolumen(Position.LFM), 3) + " m³\n"
+                + (liste.hatPlatten() ? "Platten: " + Fmt.fix(liste.summeFlaeche(), 2) + " m² · " + Fmt.fix(liste.summeVolumen(Position.PLATTE), 3) + " m³\n" : "")
                 + "GESAMT: " + Fmt.fix(liste.summeVolumen(null), 3) + " m³");
     }
 
@@ -337,7 +343,7 @@ public class EditorActivity extends Activity {
         if (!Position.TITEL.equals(typ)) {
             for (int i = Math.min(index, liste.positionen.size()) - 1; i >= 0; i--) {
                 Position v = liste.positionen.get(i);
-                if (v.isTitel()) continue;
+                if (v.isTitel() || v.isPlatte() != Position.PLATTE.equals(typ)) continue;
                 p.holzart = v.holzart;
                 break;
             }
@@ -381,8 +387,8 @@ public class EditorActivity extends Activity {
     }
 
     private void typWahl(int index) {
-        String[] items = {"Stückholz", "Laufmeterholz", "Abschnitt / Überschrift"};
-        String[] typen = {Position.HOLZ, Position.LFM, Position.TITEL};
+        String[] items = {"Stückholz", "Laufmeterholz", "Plattenwerkstoff", "Abschnitt / Überschrift"};
+        String[] typen = {Position.HOLZ, Position.LFM, Position.PLATTE, Position.TITEL};
         new AlertDialog.Builder(this).setTitle("Was einfügen?")
                 .setItems(items, (d, w) -> neuePosition(typen[w], index)).show();
     }
@@ -539,7 +545,7 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Menü
 
-    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5;
+    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -552,6 +558,7 @@ public class EditorActivity extends Activity {
         menu.add(0, M_OPEN, 2, "In Excel öffnen");
         menu.add(0, M_KOPF, 3, "Kopfdaten bearbeiten");
         menu.add(0, M_PASTE, 4, "Zeilen aus Zwischenablage einfügen");
+        menu.add(0, M_TITEL, 5, "Abschnitt-Überschrift anfügen");
         return true;
     }
 
@@ -564,6 +571,7 @@ public class EditorActivity extends Activity {
             case M_OPEN: exportOeffnen(); return true;
             case M_KOPF: kopfdatenDialog(); return true;
             case M_PASTE: ausZwischenablage(); return true;
+            case M_TITEL: neuePosition(Position.TITEL, liste.positionen.size()); return true;
         }
         return super.onOptionsItemSelected(item);
     }

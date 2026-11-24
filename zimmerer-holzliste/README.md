@@ -11,14 +11,16 @@ Zebra-Streifen, Summen, fixierte Kopfzeile, AutoFilter, Druckeinrichtung A4 quer
 - **Positionsarten**
   - *Holz (Stück)*: Stück × Länge, Querschnitt B/H → Laufmeter und m³ automatisch
   - *Laufmeterholz*: Latten, Schalung, Bretter … mit Gesamt-Laufmeter → m³ automatisch
-  - *Abschnitt*: Überschrift wie „Dachstuhl“, „Decke EG“
+  - *Platten* (Plattenwerkstoffe wie OSB, Spanplatte, Dreischicht, Holzfaser): Stück × Länge [m] × Breite [cm]
+    → **m²**, mit Dicke [mm] → m³. Alternativ die Fläche direkt in m² eingeben.
+  - *Abschnitt*: Überschrift wie „Dachstuhl“, „Decke EG“ (über langes Drücken → Einfügen oder Menü)
 - **Fertigmaß** (z. B. gehobelt) zusätzlich zum Rohmaß
 - Holzart/Qualität und Bemerkung je Position, Vorschlagslisten für Bezeichnungen und Holzarten
 - Zeile antippen = bearbeiten; **lange drücken** = darüber/darunter einfügen, duplizieren, verschieben, löschen
 - „+ Nächste“ im Eingabedialog für schnelle Erfassung vieler Positionen
 - **Zeilen aus der Zwischenablage einfügen** (Tab- oder Semikolon-getrennt, z. B. aus Excel kopiert):
   `Bezeichnung; Stück; Breite; Höhe; Länge; Holzart; Bemerkung`
-- Laufende Summen: m³ Stückhölzer, Laufmeter/m³ Laufmeterhölzer, Gesamt-m³
+- Laufende Summen: m³ Stückhölzer, Laufmeter/m³ Laufmeterhölzer, m²/m³ Platten, Gesamt-m³
 - Automatisches Speichern am Gerät
 
 ## Excel-Export
@@ -30,7 +32,7 @@ Menü oben rechts:
 
 Die Arbeitsmappe enthält zwei Blätter:
 1. **Holzliste** – alle Positionen mit Formeln für Laufmeter und Volumen sowie Summen
-2. **Zusammenfassung** – Bestellübersicht nach Holzart und Querschnitt
+2. **Zusammenfassung** – Bestellübersicht nach Holzart/Querschnitt bzw. Plattenmaterial/Format
 
 Ein Beispiel liegt unter [`beispiel/Beispiel-Holzliste.xlsx`](beispiel/Beispiel-Holzliste.xlsx).
 
