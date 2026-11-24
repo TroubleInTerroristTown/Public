@@ -208,7 +208,7 @@ public class ScreenshotTest {
             org.junit.Assert.assertEquals(inv.artikel.get(k).kategorie, xls.artikel.get(k).kategorie);
         }
         org.junit.Assert.assertEquals("Verankerungsmittel", Kategorien.zuordnen("WDVS-Tellerschlagdübel NTK-U 8/60 190 mm"));
-        org.junit.Assert.assertEquals("Trockenbau", Kategorien.zuordnen("Butler machts Tragschiene weiß Hacksystem, 3750x24x38 mm"));
+        org.junit.Assert.assertEquals("Trockenbau", Kategorien.zuordnen("Butler machts Justier-Schwingbügel 30 mm Nr. 4-07184, für CW50 und UW50, JSB-30"));
         org.junit.Assert.assertEquals("Kleber, Schaum & Dichtstoffe", Kategorien.zuordnen("Butler machts Bau Acryl 310 ml, weiß"));
         Katalog.speichern(ed, inv);
         org.junit.Assert.assertEquals(3, Katalog.suche(Katalog.alle(ed), "", null, "Schrauben", 50).size()); // 2 Inventar + 1 DATANORM
