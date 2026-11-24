@@ -234,7 +234,7 @@ public final class Arbeitsanweisung {
             // Jeder Satz unter einer Überschrift ist ein Arbeitsschritt für die To-do-Liste
             String abschn = akt == null ? "" : akt.titel;
             if (titel == null && woerter(z) >= 2 && Character.isLetter(z.charAt(0)) && z.length() <= 160
-                    && !UNWICHTIG.matcher(abschn.toLowerCase(Locale.GERMANY)).find())
+                    && !FUSS.matcher(z).find() && !UNWICHTIG.matcher(abschn.toLowerCase(Locale.GERMANY)).find())
                 erg.aufgaben.add(new Aufgabe(abschn, z.replaceAll("[.;]+$", "").trim(), ""));
 
             // Treffer mit Fundstelle; die Zeile wird an den Fundstellen in Stücke geteilt, damit
@@ -283,11 +283,18 @@ public final class Arbeitsanweisung {
         String t = text == null ? "" : text.replace('\u00A0', ' ').replace("\uFB01", "fi").replace("\uFB02", "fl")
                 .replace("\u00AD", "").replace('\t', ' ').replace("\r", "")
                 .replaceAll("[\uE000-\uF8FF]", " "); // Aufzählungszeichen aus Symbol-Schriften
+        // Eigenheiten der Auftrags-Software: „õ“ statt „ä“, Textbaustein-Fehler in „Konstruktionsvollholz“
+        t = t.replace('õ', 'ä').replace("KonstruktionsStarnbergAmmerseeHolz", "Konstruktionsvollholz");
         // „Dämm-\nung“ → „Dämmung“ (nur wenn klein weitergeht)
         t = t.replaceAll("(\\p{Ll})-\\s*\\n\\s*(\\p{Ll})", "$1$2");
         List<String> out = new ArrayList<>();
         for (String z : t.split("\n")) {
             z = z.replaceAll("^[\\s•·▪■●◦\\-–*]+", "").replaceAll("\\s{2,}", " ").trim();
+            // Preisspalten aus Angebot / Auftragsbestätigung („12,47 € 62,35 €“, „E.P.“) gehören nicht zum Text
+            z = z.replaceAll("(\\s+-?\\d{1,3}(?:\\.\\d{3})*,\\d{2}\\s*€)+(\\s+E\\.P\\.)?\\s*$", "").replaceAll("\\s+E\\.P\\.$", "").trim();
+            // „Bedarf“ (Bedarfsposition) steht vor oder nach der Menge – nur ein Vermerk
+            if (z.equalsIgnoreCase("Bedarf")) continue;
+            z = z.replaceFirst("^(?i)bedarf\\s+(?=\\d)", "");
             if (!z.isEmpty()) out.add(z);
         }
         return out;
@@ -389,7 +396,8 @@ public final class Arbeitsanweisung {
     // ------------------------------------------------------------------ Leistungsverzeichnis
 
     // „2.5“ oder „2.5 20,00 LFM Konstruktionsholz …“ (Positionsnummer aus Auftrag / Arbeitsanweisung)
-    private static final Pattern LV_POS = Pattern.compile("^(\\d{1,2}(?:\\.\\d{1,4}){1,3})(?=\\s|$)\\s*(.*)$");
+    // auch einfache Nummern „1 1,00 Stück …“ (Arbeitsanweisungen ohne Titel-Gliederung) – zählt nur mit Menge dahinter
+    private static final Pattern LV_POS = Pattern.compile("^(\\d{1,2}(?:\\.\\d{1,4}){0,3})(?=\\s|$)\\s*(.*)$");
     // „20,00 LFM …“, „1,00 psch“, „2,50 Liter …“, „1,00“
     private static final Pattern LV_MENGE = Pattern.compile("^(\\d{1,3}(?:\\.\\d{3})*,\\d{1,3})(?:\\s+([\\p{L}²³][\\p{L}²³.]{0,11}))?(?:\\s+(.*))?$");
     private static final Pattern LV_TITEL = Pattern.compile("^(\\d{1,2})(?:\\s+(\\p{L}.{2,60}))?$");
@@ -398,7 +406,20 @@ public final class Arbeitsanweisung {
     // Einheiten / Texte, die kein Material sind
     private static final Pattern LOHN_EINHEIT = Pattern.compile("(?i)^(h|std|std\\.|stunden?|psch|pausch|pauschal|tag|tage|km|wo|woche|monat|ls)$");
     private static final Pattern LOHN_TEXT = Pattern.compile("stundensatz|stundenlohn|anfahrt|baustelleneinrichtung|gerüst|geruest|entsorg|demontage|"
-            + "materialkostenschätzung|kostenschätzung|regie|abbruch|rückbau|aufmaß|planung|statik|transport|kranstunde|hebebühne|vorhalte");
+            + "materialkostenschätzung|kostenschätzung|regie|zulage|psa\\b|schutzausrüstung|schützausrüstung|wartung|abbund|"
+            + "dachdeckerlift|\\blift\\b|toilette|container|mulde|einsatz für pauschale|abbruch|rückbau|aufmaß|planung|statik|transport|kranstunde|hebebühne|vorhalte");
+
+    /** Briefkopf, Fußzeile, Bankdaten, Unterschriftsfeld – nie Aufgabe oder Material. */
+    static final Pattern FUSS = Pattern.compile("(?i)(\\biban\\b|\\bbic\\b|swift|\\bblz\\b|\\bkto\\b|ust-?id|steuer-?nr|\\bhrb\\b|registergericht|finanzamt|"
+            + "\\bgmbh\\b|bank\\b|sparkasse|\\bseite\\s*\\d|übertrag|^tel\\b|^fax\\b|telefon|www\\.|@|auftrag erteilt|unterschrift|^ort,? datum|kundennr|^zeichen\\s*:|^datum\\s*:"
+            + "|^pos\\.?\\s+menge|gesamtzeitbedarf|^(end)?summe\\b|mwst|grü(ss|ß)e|^(herr|frau)$|^(arbeitsanweisung|auftragsbestätigung|angebot\\w*)\\s*:|^\\d{5}\\s+\\p{L})");
+    // Hinweise in einer Positionsbeschreibung, die keine Arbeit sind
+    private static final Pattern HINWEIS = Pattern.compile("(?i)^(\\(?zeitbedarf|einheit\\s*:|abrechnung|zulage|verwendung von|hinweis|preis|inkl\\.|zzgl\\.)");
+
+    // Beschreibungszeile ist ein Arbeitsschritt, wenn sie eine Tätigkeit nennt
+    private static final Pattern TAETIGKEIT = Pattern.compile("(?i)(reinig|prüf|austausch|tausch|einbau|ausbau|erstell|demont|montier|montage|dokument|"
+            + "abdicht|erneuer|befestig|kontroll|säuber|entfern|anbring|verleg|ausbesser|streich|schneid|abkleb|repar|aufbau|abbau|räum|ersetz|"
+            + "ergänz|freischneid|schließ|beseitig|aufnehm|verschraub|nachziehen|lackier|ölen|imprägnier|spachtel|aufmaß nehmen)");
 
     private static final Pattern KEINE_AUFGABE = Pattern.compile("stundensatz|stundenlohn|anfahrt|kostenschätzung|regiestunde|regiearbeit");
 
@@ -422,6 +443,7 @@ public final class Arbeitsanweisung {
     private static void leistungsverzeichnis(List<String> zeilen, Ergebnis erg) {
         Abschnitt akt = null;
         boolean inBeschreibung = false;
+        int letzteTitelNr = 0;
         for (int i = 0; i < zeilen.size(); i++) {
             String z = zeilen.get(i);
 
@@ -429,10 +451,17 @@ public final class Arbeitsanweisung {
             if (t.matches()) {
                 String titel = t.group(2);
                 if (titel == null && i + 1 < zeilen.size() && Character.isLetter(zeilen.get(i + 1).charAt(0))
-                        && zeilen.get(i + 1).length() <= 60 && !LV_POS.matcher(zeilen.get(i + 1)).matches()) {
+                        && zeilen.get(i + 1).length() <= 100 && !LV_POS.matcher(zeilen.get(i + 1)).matches()) {
                     titel = zeilen.get(++i);
                 }
+                int nrTitel = Integer.parseInt(t.group(1));
+                // „3 x gekantet …“ oder „6 bar“ in einer Beschreibung sind keine Kapitel: Kapitel zählen hoch
+                if (titel != null && (nrTitel < letzteTitelNr || (nrTitel == letzteTitelNr && !inBeschreibung) || nrTitel > letzteTitelNr + 2 || !Character.isUpperCase(titel.charAt(0)))) {
+                    if (t.group(2) == null) i--; // nächste Zeile normal weiter auswerten
+                    titel = null;
+                }
                 if (titel != null) {
+                    letzteTitelNr = nrTitel;
                     titel = titel.replaceAll("[:.,]+$", "").trim();
                     inBeschreibung = titel.toLowerCase(Locale.GERMANY).matches("(vor)?beschreibung|allgemein(es)?|vorbemerkungen?|leistungsbeschreibung");
                     akt = new Abschnitt();
@@ -477,7 +506,15 @@ public final class Arbeitsanweisung {
         // Maße stehen oft in der nächsten Zeile („120x120x5000 mm“)
         if (i + 1 < zeilen.size() && zeilen.get(i + 1).length() <= 40 && zeilen.get(i + 1).matches("^\\d{1,4}\\s*[x×*/]\\s*\\d.*"))
             text = text + " " + zeilen.get(++i);
-        text = text.replaceAll("[,;]+$", "").trim();
+        // Umbrochene Bezeichnung („Konstruktionsvollholz, nicht / keilgezinkt …“, „Brettschichtholz GL24, Fichte/ …“)
+        for (int k = 0; k < 2 && i + 1 < zeilen.size(); k++) {
+            String n = zeilen.get(i + 1);
+            if (LV_POS.matcher(n).matches() || FUSS.matcher(n).find() || HINWEIS.matcher(n).find() || n.length() > 60) break;
+            if (!(text.matches(".*[,/\\-]$") || text.matches("(?i).*\\b(nicht|und|mit|aus|für)$") || Character.isLowerCase(n.charAt(0)))) break;
+            text = text + (text.endsWith("/") || text.endsWith("-") ? "" : " ") + n;
+            i++;
+        }
+        text = text.replaceAll("(?i),\\s*standard$", "").replaceAll("[,;]+$", "").trim();
         String tk = text.toLowerCase(Locale.GERMANY);
         // To-do: jede Position außer Stundensätzen, Anfahrt und Kostenschätzungen
         if (text.length() >= 3 && !KEINE_AUFGABE.matcher(tk).find()) {
@@ -488,6 +525,8 @@ public final class Arbeitsanweisung {
         }
         if (LOHN_EINHEIT.matcher(einheit).matches() || LOHN_TEXT.matcher(tk).find() || text.length() < 3) {
             erg.uebersprungen++;
+            // Bei Arbeitspositionen ist die Beschreibung darunter die eigentliche Checkliste („Reinigen der Dachrinnen …“)
+            if (!KEINE_AUFGABE.matcher(tk).find()) i = beschreibungAlsAufgaben(nr, zeilen, i, erg, akt);
             return i;
         }
         if (akt == null) {
@@ -496,6 +535,29 @@ public final class Arbeitsanweisung {
             erg.abschnitte.add(akt);
         }
         akt.vorschlaege.add(lvVorschlag(nr, menge, einheit, text));
+        return i;
+    }
+
+    /** Zeilen unter einer Arbeitsposition als einzelne Aufgaben; Folgezeilen in Kleinschrift hängen am vorigen Punkt. */
+    private static int beschreibungAlsAufgaben(String nr, List<String> zeilen, int i, Ergebnis erg, Abschnitt akt) {
+        String abschnitt = akt == null ? "" : akt.titel;
+        Aufgabe letzte = null;
+        boolean hinweisLaeuft = false; // mehrzeiliger Hinweis („Verwendung von PSA nach / eigenem Ermessen …“)
+        while (i + 1 < zeilen.size()) {
+            String z = zeilen.get(i + 1);
+            Matcher p = LV_POS.matcher(z);
+            if (p.matches() && (LV_MENGE.matcher(p.group(2).trim()).matches() || p.group(2).trim().isEmpty())) break;
+            if (LV_TITEL.matcher(z).matches() || FUSS.matcher(z).find()) break;
+            i++;
+            boolean endetMitPunkt = z.trim().endsWith(".");
+            if (hinweisLaeuft || HINWEIS.matcher(z).find() || z.length() > 120) { letzte = null; hinweisLaeuft = !endetMitPunkt; continue; }
+            String t = z.replaceAll("[.;,]+$", "").trim();
+            if (t.length() < 3) continue;
+            if (Character.isLowerCase(t.charAt(0))) { if (letzte != null) letzte.text = letzte.text + " " + t; continue; }
+            if (!Character.isLetter(t.charAt(0)) || woerter(t) < 2 || !TAETIGKEIT.matcher(t).find()) { letzte = null; continue; }
+            letzte = new Aufgabe(abschnitt, t, "zu Pos. " + nr);
+            erg.aufgaben.add(letzte);
+        }
         return i;
     }
 

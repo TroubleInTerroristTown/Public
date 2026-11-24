@@ -365,4 +365,40 @@ public class ArbeitsanweisungTest {
         Bestellliste.write(h, Bestellliste.HOLZ, out);
         assertTrue(out.size() > 1000);
     }
+
+    /** Ausgedachte Wartungs-AW (Positionen 1, 2, 3 ohne Kapitel) und Auftragsbestätigung mit Preisspalte. */
+    static final String WARTUNG = "Zimmerei Muster GmbH - Hauptstr. 1 - 12345 Musterstadt\n"
+            + "Arbeitsanweisung\nBauvorhaben : Musterweg 5 Seite :1\n"
+            + "Pos. Menge Einh. Beschreibung\n"
+            + "1 1,00 Stück Anfahrtspauschale bis 20 km,\nStandard\nAbrechnung St/Tag\n"
+            + "2 1,00 psch Dachwartung Steildach bis 30°\n"
+            + "Augenscheinliche Überprüfung der Ziegeldeckung\n"
+            + "Reinigen der Dachrinnen und Fallrohre\n"
+            + "Verwendung von persönlicher Schutzausrüstung nach\n"
+            + "eigenem Ermessen in gesonderter Position.\n"
+            + "Dokumentation der Dachsituation.\n"
+            + "(Zeitbedarf: 10 Stunde(n) + 0 Minute(n))\n"
+            + "3 2,00 Stück Braas Firststein matt dunkelbraun 12,47 € 24,94 €\n"
+            + "Bedarf\n"
+            + "4 1,00 SAC Sakret Dachdeckermörtel grau 12,96 € 12,96 €\n"
+            + "Musterbank eG Zimmerei Muster GmbH mit Sitz in Musterstadt.\n"
+            + "IBAN: DE00 0000 0000 0000 0000 00\n";
+
+    @Test
+    public void wartungUndPreise() {
+        Arbeitsanweisung.Ergebnis e = Arbeitsanweisung.auswerten(WARTUNG, new ArrayList<>(), "26-00001-AW BV Muster Dachwartung.pdf");
+        List<String> texte = new ArrayList<>();
+        for (Aufgabe a : e.aufgaben) texte.add(a.text);
+        assertTrue(texte.toString(), texte.contains("Dachwartung Steildach bis 30°"));
+        assertTrue(texte.toString(), texte.contains("Reinigen der Dachrinnen und Fallrohre"));
+        assertTrue(texte.toString(), texte.contains("Dokumentation der Dachsituation"));
+        for (String t : texte) {
+            assertTrue(t, !t.contains("IBAN") && !t.contains("GmbH") && !t.contains("Anfahrt") && !t.contains("Ermessen"));
+        }
+        List<String> material = new ArrayList<>();
+        for (Arbeitsanweisung.Abschnitt a : e.abschnitte) for (Arbeitsanweisung.Vorschlag v : a.vorschlaege) material.add(v.name + "|" + v.einheit);
+        assertEquals(material.toString(), 2, material.size());
+        assertTrue(material.toString(), material.contains("Braas Firststein matt dunkelbraun|Stk")); // ohne Preise
+        assertTrue(material.toString(), material.contains("Sakret Dachdeckermörtel grau|Sack"));
+    }
 }
