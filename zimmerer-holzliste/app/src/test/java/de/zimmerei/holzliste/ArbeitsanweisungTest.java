@@ -292,4 +292,31 @@ public class ArbeitsanweisungTest {
         ShadowLooper.idleMainLooper();
         ScreenshotTest.png(main.getWindow().getDecorView(), "16_start");
     }
+
+    /** Schlichte Bestellliste: Holz und Material getrennt, ohne Überschriften und Kundendaten. */
+    @Test
+    public void bestellliste() throws Exception {
+        Holzliste h = new Holzliste();
+        h.projekt = "BV Mustermann Balkon";
+        h.kunde = "Max Mustermann";
+        Position t = new Position(); t.typ = Position.TITEL; t.bezeichnung = "Zimmererarbeiten"; h.positionen.add(t);
+        Position k = new Position(); k.typ = Position.HOLZ; k.bezeichnung = "KVH"; k.holzart = "Fichte";
+        k.stueck = 4.0; k.breite = 12.0; k.hoehe = 12.0; k.laenge = 5.0; h.positionen.add(k);
+        Position s = new Position(); s.typ = Position.MATERIAL; s.bezeichnung = "Terrassenschrauben 5x60";
+        s.menge = 400.0; s.einheit = "Stk"; s.packInhalt = 200.0; s.packName = "Paket"; h.positionen.add(s);
+        assertEquals(1, Bestellliste.anzahl(h, Bestellliste.HOLZ));
+        assertEquals(1, Bestellliste.anzahl(h, Bestellliste.MATERIAL));
+        assertEquals(2, Bestellliste.anzahl(h, Bestellliste.ALLES));
+        Object[] zk = Bestellliste.zeile(k);
+        assertEquals(4.0, (Double) zk[0], 0.001);
+        assertEquals("KVH Fichte", zk[2]);
+        assertEquals("12/12", zk[3]);
+        Object[] zs = Bestellliste.zeile(s);
+        assertEquals(2.0, (Double) zs[0], 0.001);
+        assertEquals("Paket", zs[1]);
+        assertEquals("à 200 Stk", zs[6]);
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        Bestellliste.write(h, Bestellliste.HOLZ, out);
+        assertTrue(out.size() > 1000);
+    }
 }

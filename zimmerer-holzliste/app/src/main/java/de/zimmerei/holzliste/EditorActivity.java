@@ -28,8 +28,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -597,12 +599,36 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Excel-Export
 
+    /** -1 = komplette Liste (wie bisher), sonst Bestellliste.HOLZ / MATERIAL / ALLES. */
+    private int exportArt = -1;
+
+    /** Fragt, was exportiert wird: schlichte Bestellliste(n) oder die komplette Liste. */
+    private void exportWahl(Runnable weiter) {
+        int nH = Bestellliste.anzahl(liste, Bestellliste.HOLZ), nM = Bestellliste.anzahl(liste, Bestellliste.MATERIAL);
+        List<String> texte = new ArrayList<>();
+        List<Integer> arten = new ArrayList<>();
+        if (nH > 0) { texte.add("🪵 Holzliste zum Bestellen (" + nH + " Pos.)\nBalken, Latten, Bretter, Platten"); arten.add(Bestellliste.HOLZ); }
+        if (nM > 0) { texte.add("🧱 Materialliste zum Bestellen (" + nM + " Pos.)\nBaustoffe, Schrauben, Dämmung …"); arten.add(Bestellliste.MATERIAL); }
+        if (nH > 0 && nM > 0) { texte.add("📋 Holz + Material in einer Bestellliste"); arten.add(Bestellliste.ALLES); }
+        texte.add("📑 Komplett (mit Abschnitten, Volumen, Preisen)");
+        arten.add(-1);
+        new AlertDialog.Builder(this).setTitle("Was soll in die Excel-Datei?")
+                .setItems(texte.toArray(new String[0]), (d, w) -> { exportArt = arten.get(w); weiter.run(); })
+                .setNegativeButton("Abbrechen", null).show();
+    }
+
+    private void schreiben(OutputStream out) throws java.io.IOException {
+        if (exportArt < 0) HolzlisteExcel.write(liste, out);
+        else Bestellliste.write(liste, exportArt, out);
+    }
+
     private String dateiname() {
         String n = liste.projekt == null ? "" : liste.projekt.trim();
         n = n.replaceAll("[^A-Za-z0-9ÄÖÜäöüß _-]", "").trim().replace(' ', '_');
         if (n.length() > 40) n = n.substring(0, 40);
         String d = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY).format(new Date());
-        return "Materialliste_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
+        String art = exportArt < 0 ? "Materialliste" : Bestellliste.titel(exportArt);
+        return art + "_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
     }
 
     private void exportSpeichern() {
@@ -626,7 +652,7 @@ public class EditorActivity extends Activity {
             Uri uri = data.getData();
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
                 if (out == null) throw new java.io.IOException("Datei kann nicht geöffnet werden");
-                HolzlisteExcel.write(liste, out);
+                schreiben(out);
                 Toast.makeText(this, "Excel-Datei gespeichert ✓", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 Toast.makeText(this, "Fehler beim Speichern: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -641,7 +667,7 @@ public class EditorActivity extends Activity {
         if (alt != null) for (File f : alt) f.delete();
         File f = new File(dir, dateiname());
         try (FileOutputStream out = new FileOutputStream(f)) {
-            HolzlisteExcel.write(liste, out);
+            schreiben(out);
         }
         return ExportProvider.uriFor(f.getName());
     }
@@ -652,8 +678,9 @@ public class EditorActivity extends Activity {
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType(XLSX_MIME);
             s.putExtra(Intent.EXTRA_STREAM, uri);
-            s.putExtra(Intent.EXTRA_SUBJECT, "Materialliste " + liste.titel());
-            s.putExtra(Intent.EXTRA_TEXT, "Materialliste " + liste.titel());
+            String betreff = (exportArt < 0 ? "Materialliste" : Bestellliste.titel(exportArt)) + " " + liste.titel();
+            s.putExtra(Intent.EXTRA_SUBJECT, betreff);
+            s.putExtra(Intent.EXTRA_TEXT, betreff);
             s.setClipData(ClipData.newRawUri("", uri));
             s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(s, "Excel-Datei senden an …"));
@@ -707,9 +734,9 @@ public class EditorActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: finish(); return true;
-            case M_SAVE: exportSpeichern(); return true;
-            case M_SHARE: exportTeilen(); return true;
-            case M_OPEN: exportOeffnen(); return true;
+            case M_SAVE: exportWahl(this::exportSpeichern); return true;
+            case M_SHARE: exportWahl(this::exportTeilen); return true;
+            case M_OPEN: exportWahl(this::exportOeffnen); return true;
             case M_KOPF: kopfdatenDialog(this, liste, this::speichern); return true;
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
