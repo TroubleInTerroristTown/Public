@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         lv.setOnItemClickListener((parent, v, pos, id) -> oeffnen(listen.get(pos), false));
         lv.setOnItemLongClickListener((parent, v, pos, id) -> { aktionen(listen.get(pos)); return true; });
 
-        leer = Ui.text(this, "Noch keine Baustelle angelegt.\n\nTippe unten auf  „📄 Neue Baustelle aus Arbeitsanweisung“ (PDF)\noder auf  „＋ Neue Baustelle“.\n\nJede Baustelle hat Material, Werkzeug und Aufgaben.", 16, Ui.GRAU, false);
+        leer = Ui.text(this, "Noch keine Baustelle angelegt.\n\nTippe unten auf  „📄 Neue Baustelle aus PDF“ (Arbeitsanweisung)\noder auf  „＋ Neue Baustelle“.\n\nJede Baustelle hat Material, Werkzeug und Aufgaben.", 16, Ui.GRAU, false);
         leer.setGravity(Gravity.CENTER);
         leer.setPadding(Ui.dp(this, 32), 0, Ui.dp(this, 32), 0);
 
@@ -56,9 +56,11 @@ public class MainActivity extends Activity {
 
         // Arbeitsanweisung ganz oben: der schnellste Weg zur fertigen Liste
         Button aw = new Button(this);
-        aw.setText("📄  Neue Baustelle aus Arbeitsanweisung");
+        aw.setText("📄  Neue Baustelle aus PDF");
         aw.setAllCaps(false);
         aw.setTextSize(19);
+        aw.setMaxLines(1);
+        aw.setAutoSizeTextTypeUniformWithConfiguration(12, 19, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
         aw.setTypeface(Typeface.DEFAULT_BOLD);
         aw.setTextColor(Ui.WEISS);
         aw.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
