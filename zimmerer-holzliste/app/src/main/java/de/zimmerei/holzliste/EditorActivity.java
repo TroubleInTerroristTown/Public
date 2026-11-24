@@ -172,6 +172,7 @@ public class EditorActivity extends Activity {
                 android.content.res.ColorStateList.valueOf(Ui.HELL), bg, null));
         card.setOnClickListener(v -> bearbeiten(idx));
         card.setOnLongClickListener(v -> { aktionen(idx); return true; });
+        card.setMinimumHeight(Ui.dp(this, 84));
 
         // links: Symbol + Bestellmenge
         LinearLayout links = new LinearLayout(this);

@@ -57,7 +57,7 @@ public final class Ui {
             case Position.PLATTE: return "▦";
             case Position.MATERIAL: return "📦";
             case Position.TITEL: return "≡";
-            default: return "🪵";
+            default: return "🌲";
         }
     }
 
