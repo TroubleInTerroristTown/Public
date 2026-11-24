@@ -110,7 +110,19 @@ public class BaustelleActivity extends Activity {
         r2.addView(kachel("📝", "Notiz",
                 liste.notiz == null || liste.notiz.trim().isEmpty() ? "leer" : kurz(liste.notiz),
                 Ui.LILA, false, v -> notiz()), spalte(false));
-        inhalt.addView(r2, zeile(Ui.dp(this, 18)));
+        inhalt.addView(r2, zeile(Ui.dp(this, 10)));
+
+        // Stunden: Zeiterfassung für diese Baustelle
+        java.util.List<Zeiteintrag> zeiten = Zeiten.alle(this);
+        long jetzt = ZeitActivity.jetzt();
+        int min = Zeiten.summeMin(Zeiten.zeitraum(zeiten, Long.MIN_VALUE, Long.MAX_VALUE, liste.id), jetzt);
+        Zeiteintrag lauf = Zeiten.laufend(zeiten);
+        boolean hier = lauf != null && liste.id.equals(lauf.baustelleId);
+        inhalt.addView(kachel("⏱", "Stunden",
+                (min == 0 ? "noch keine Zeiten" : Zeiten.hMin(min) + " auf dieser Baustelle")
+                        + (hier ? "\n● läuft gerade" + (lauf.taetigkeit.isEmpty() ? "" : " – " + lauf.taetigkeit)
+                        : "\nAntippen: Kommen / Gehen stempeln"),
+                Ui.PRIMAER, hier, v -> stunden()), zeile(Ui.dp(this, 18)));
 
         // Was noch kommt – ehrlich als „später“ gekennzeichnet.
         TextView spaeter = Ui.text(this, "KOMMT SPÄTER", 13, Ui.GRAU, true);
@@ -118,7 +130,7 @@ public class BaustelleActivity extends Activity {
         spaeter.setPadding(Ui.dp(this, 4), 0, 0, Ui.dp(this, 6));
         inhalt.addView(spaeter);
         LinearLayout r3 = reihe();
-        String[][] bald = {{"📖", "Lexikon"}, {"📷", "Fotos"}, {"⏱", "Stunden"}};
+        String[][] bald = {{"📖", "Lexikon"}, {"📷", "Fotos"}, {"📋", "Berichte"}};
         for (int i = 0; i < bald.length; i++) {
             TextView t = Ui.text(this, bald[i][0] + "\n" + bald[i][1], 14, Ui.GRAU, false);
             t.setGravity(Gravity.CENTER);
@@ -214,6 +226,13 @@ public class BaustelleActivity extends Activity {
         Intent i = new Intent(this, EditorActivity.class);
         i.putExtra(EditorActivity.EXTRA_ID, liste.id);
         i.putExtra(EditorActivity.EXTRA_REITER, reiter);
+        astOffen = true;
+        startActivity(i);
+    }
+
+    private void stunden() {
+        Intent i = new Intent(this, ZeitActivity.class);
+        i.putExtra(ZeitActivity.EXTRA_BAUSTELLE, liste.id);
         astOffen = true;
         startActivity(i);
     }

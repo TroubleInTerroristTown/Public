@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private final List<Holzliste> listen = new ArrayList<>();
     private BaseAdapter adapter;
     private TextView leer;
+    private TextView stempel;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -53,6 +54,15 @@ public class MainActivity extends Activity {
         frame.addView(lv);
         frame.addView(leer, new android.widget.FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.addView(frame, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+
+        // Zeiterfassung: Leiste mit dem aktuellen Stand, antippen öffnet „⏱ Stunden“
+        stempel = Ui.text(this, "", 16, Ui.PRIMAER, true);
+        stempel.setGravity(Gravity.CENTER_VERTICAL);
+        stempel.setPadding(Ui.dp(this, 16), 0, Ui.dp(this, 16), 0);
+        stempel.setOnClickListener(v -> startActivity(new Intent(this, ZeitActivity.class)));
+        LinearLayout.LayoutParams lpSt = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 52));
+        lpSt.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), 0);
+        root.addView(stempel, lpSt);
 
         // Arbeitsanweisung ganz oben: der schnellste Weg zur fertigen Liste
         Button aw = new Button(this);
@@ -92,6 +102,23 @@ public class MainActivity extends Activity {
         listen.addAll(Storage.alle(this));
         adapter.notifyDataSetChanged();
         leer.setVisibility(listen.isEmpty() ? View.VISIBLE : View.GONE);
+        stempelAnzeigen();
+    }
+
+    private void stempelAnzeigen() {
+        java.util.List<Zeiteintrag> z = Zeiten.alle(this);
+        Zeiteintrag lauf = Zeiten.laufend(z);
+        long jetzt = ZeitActivity.jetzt();
+        long t0 = ZeitActivity.tagesStart(jetzt);
+        int heute = Zeiten.summeMin(Zeiten.zeitraum(z, t0, Zeiten.plusTage(t0, 1), null), jetzt);
+        int farbe = lauf == null ? Ui.PRIMAER : lauf.inPause() ? Ui.AKZENT : Ui.GRUEN;
+        stempel.setText(lauf == null ? "⏱  Stunden · heute " + Zeiten.hMin(heute) + "   ›"
+                : (lauf.inPause() ? "☕  Pause" : "●  Läuft seit " + Zeiten.uhr(lauf.start))
+                + (lauf.baustelle.isEmpty() ? "" : " · " + lauf.baustelle) + "   ›");
+        stempel.setTextColor(farbe);
+        stempel.setSingleLine(true);
+        stempel.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        stempel.setBackground(Ui.rounded(Ui.WEISS, farbe, Ui.dp(this, 12), Ui.dp(this, 2)));
     }
 
     private void neueListe(boolean ausAw) {
@@ -127,12 +154,14 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         menu.add(0, 1, 0, "Artikellisten (Inventar / DATANORM) …");
+        menu.add(0, 2, 1, "⏱ Stunden / Zeiterfassung");
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         if (item.getItemId() == 1) { KatalogAuswahl.verwalten(this); return true; }
+        if (item.getItemId() == 2) { startActivity(new Intent(this, ZeitActivity.class)); return true; }
         return super.onOptionsItemSelected(item);
     }
 

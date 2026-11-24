@@ -30,6 +30,11 @@
             android:parentActivityName=".BaustelleActivity"
             android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".ZeitActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
         <provider
             android:name=".ExportProvider"
             android:authorities="de.zimmerei.holzliste.export"
