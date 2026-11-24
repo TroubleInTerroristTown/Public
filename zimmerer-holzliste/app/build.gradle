@@ -1,0 +1,48 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'de.zimmerei.holzliste'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'de.zimmerei.holzliste'
+        minSdk 26
+        targetSdk 34
+        // Build-Nummer aus GitHub Actions, damit Updates über die alte Version installiert werden können
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
+        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    signingConfigs {
+        // Fester Signaturschlüssel nur für diese private App (Sideload), damit Updates
+        // ohne Deinstallation möglich sind. Für eine Play-Store-Veröffentlichung durch
+        // einen geheimen Schlüssel ersetzen.
+        app {
+            storeFile file('holzliste.keystore')
+            storePassword 'holzliste'
+            keyAlias 'holzliste'
+            keyPassword 'holzliste'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.app
+        }
+        debug {
+            signingConfig signingConfigs.app
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        abortOnError false
+    }
+}
