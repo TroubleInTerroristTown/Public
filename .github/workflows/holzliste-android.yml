@@ -24,8 +24,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
-
+      # Android SDK ist auf ubuntu-latest vorinstalliert (ANDROID_HOME); setup-android@v3 scheitert dort an „sdkmanager tools“
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.14.3'
