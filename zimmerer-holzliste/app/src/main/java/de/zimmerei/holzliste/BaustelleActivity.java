@@ -103,7 +103,9 @@ public class BaustelleActivity extends Activity {
 
         LinearLayout r2 = reihe();
         r2.addView(kachel("✅", "Aufgaben",
-                nA == 0 ? "noch leer" : eA == nA ? "✓ alles erledigt (" + nA + ")" : eA + " von " + nA + " erledigt",
+                (nA == 0 ? "noch leer" : eA == nA ? "✓ alles erledigt (" + nA + ")" : eA + " von " + nA + " erledigt")
+                        + (AufgabenAnsicht.anzahlHeute(liste, false) == 0 ? "" : "\n☀️ heute " + AufgabenAnsicht.anzahlHeute(liste, true)
+                        + "/" + AufgabenAnsicht.anzahlHeute(liste, false)),
                 Ui.GRUEN, false, v -> ast(EditorActivity.R_AUFGABEN)), spalte(true));
         r2.addView(kachel("📝", "Notiz",
                 liste.notiz == null || liste.notiz.trim().isEmpty() ? "leer" : kurz(liste.notiz),

@@ -2,6 +2,7 @@ package de.zimmerei.holzliste;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.view.View;
 
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader;
 import com.tom_roush.pdfbox.pdmodel.PDDocument;
@@ -248,6 +249,51 @@ public class ArbeitsanweisungTest {
         EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
         ShadowLooper.idleMainLooper();
         ScreenshotTest.png(ed.getWindow().getDecorView(), "14_aufgaben");
+
+        // Tages-To-do: drei Aufgaben für heute, eine dringend
+        Holzliste h2 = Storage.laden(RuntimeEnvironment.getApplication(), h.id);
+        h2.aufgaben.get(2).heute = true;
+        h2.aufgaben.get(3).heute = true;
+        h2.aufgaben.get(3).prio = Werkzeug.ROT;
+        h2.aufgaben.get(4).heute = true;
+        h2.aufgaben.get(4).prio = Werkzeug.GRUEN;
+        Storage.speichern(RuntimeEnvironment.getApplication(), h2);
+        Holzliste g2 = Storage.laden(RuntimeEnvironment.getApplication(), h.id);
+        assertTrue(g2.aufgaben.get(3).heute);
+        assertEquals(Werkzeug.ROT, g2.aufgaben.get(3).prio);
+        assertEquals(3, AufgabenAnsicht.anzahlHeute(g2, false));
+        EditorActivity ed2 = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
+        ShadowLooper.idleMainLooper();
+        assertTrue(AufgabenAnsicht.heuteModus(g2));
+        ScreenshotTest.png(ed2.getWindow().getDecorView(), "14b_heute");
+        AufgabenAnsicht.heuteWaehlen(ed2, g2, () -> {});
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "14c_heute_waehlen");
+    }
+
+    /** Material: Kästchen-Auswahl über langes Drücken. */
+    @Test
+    public void materialAuswahl() throws Exception {
+        Arbeitsanweisung.Ergebnis e = Arbeitsanweisung.auswerten(LV, inventar(), "26-00001-AW BV Mustermann Balkon.pdf");
+        Holzliste h = new Holzliste();
+        h.projekt = e.projekt;
+        h.positionen.addAll(Arbeitsanweisung.positionen(e));
+        Storage.speichern(RuntimeEnvironment.getApplication(), h);
+        Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
+        i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
+        android.view.ViewGroup karten = (android.view.ViewGroup) ((android.view.ViewGroup) ((android.view.ViewGroup) ((android.view.ViewGroup)
+                ((android.view.ViewGroup) ed.findViewById(android.R.id.content)).getChildAt(0)).getChildAt(2)).getChildAt(0)).getChildAt(0);
+        int vorher = h.positionen.size();
+        // erste echte Karte (nicht Überschrift) lange drücken
+        View karte = null;
+        for (int k = 0; k < karten.getChildCount() && karte == null; k++)
+            if (!h.positionen.get(k).isTitel()) karte = karten.getChildAt(k);
+        assertNotNull(karte);
+        karte.performLongClick();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(ed.getWindow().getDecorView(), "17_material_auswahl");
+        assertTrue(vorher > 1);
     }
 
     /** Baustellen-Übersicht: Kacheln je Ast, die Kopfdaten oben; AW-Felder werden gespeichert. */

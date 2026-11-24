@@ -182,23 +182,9 @@ public final class AwImport {
             box.addView(todo);
         }
 
-        // Werkzeug passend zu allen Vorschlägen und Arbeitsschritten
-        Holzliste probe = new Holzliste();
-        probe.positionen.addAll(Arbeitsanweisung.positionen(erg));
-        probe.werkzeug.addAll(liste.werkzeug);
-        probe.positionen.addAll(liste.positionen);
-        List<String> standard = WerkzeugAnsicht.standard(act);
-        List<Werkzeug.Vorschlag> wz = Werkzeug.vorschlagen(probe, erg.arbeitsschritte, standard);
-        CheckBox werkzeug = null;
-        if (!wz.isEmpty()) {
-            StringBuilder s = new StringBuilder();
-            for (int i = 0; i < wz.size() && i < 5; i++) s.append(i > 0 ? ", " : "").append(wz.get(i).name);
-            if (wz.size() > 5) s.append(" … und ").append(wz.size() - 5).append(" weitere");
-            werkzeug = checkbox(act, "🔧 Spezielles Werkzeug vorschlagen (" + wz.size() + ")", s.toString(), true, false);
-            box.addView(werkzeug);
-        }
+        // Werkzeug wird hier bewusst nicht vorgeschlagen – erst auf der Werkzeug-Seite mit „💡 Vorschlagen“ (Wunsch Flo).
 
-        CheckBox kopfF = kopf, schritteF = schritte, werkzeugF = werkzeug, todoF = todo;
+        CheckBox kopfF = kopf, schritteF = schritte, todoF = todo;
         new AlertDialog.Builder(act).setTitle("📄 Aus der Arbeitsanweisung")
                 .setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
@@ -231,15 +217,6 @@ public final class AwImport {
                         for (Aufgabe a : erg.aufgaben) liste.aufgaben.add(a.copy());
                         aufAnz = erg.aufgaben.size();
                     }
-                    int wzAnz = 0;
-                    if (werkzeugF != null && werkzeugF.isChecked()) {
-                        for (Werkzeug.Vorschlag v : Werkzeug.vorschlagen(liste, erg.arbeitsschritte, standard)) {
-                            Werkzeug neuW = new Werkzeug(v.name, v.grund);
-                            neuW.prio = v.prio;
-                            liste.werkzeug.add(neuW);
-                            wzAnz++;
-                        }
-                    }
                     File tmp = tempDatei(act, liste);
                     if (dateiname != null && tmp.exists()) {
                         File ziel = pdfDatei(act, liste);
@@ -252,7 +229,7 @@ public final class AwImport {
                     fertig.geaendert();
                     int anz = 0;
                     for (Position x : neu) if (!x.isTitel()) anz++;
-                    Toast.makeText(act, anz + " Positionen" + (wzAnz > 0 ? ", " + wzAnz + " Werkzeuge" : "")
+                    Toast.makeText(act, anz + " Positionen"
                             + (aufAnz > 0 ? ", " + aufAnz + " Aufgaben" : "")
                             + " übernommen – bitte Mengen prüfen", Toast.LENGTH_LONG).show();
                 })
