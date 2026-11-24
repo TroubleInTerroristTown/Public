@@ -55,6 +55,8 @@ public final class Arbeitsanweisung {
         public boolean inventarGenutzt;
         /** Aufzählung allgemeiner Arbeitsschritte (z. B. „Demontage Dämmung“) – für die Notiz. */
         public final List<String> arbeitsschritte = new ArrayList<>();
+        /** To-do-Liste: alle Positionen und Arbeitsschritte in der Reihenfolge der Arbeitsanweisung. */
+        public final List<Aufgabe> aufgaben = new ArrayList<>();
         /** Positionen ohne Material (Stundenlohn, Pauschalen, Anfahrt …), die übersprungen wurden. */
         public int uebersprungen;
 
@@ -229,6 +231,12 @@ public final class Arbeitsanweisung {
                 // Überschrift kann selbst schon ein Material nennen („3. Zwischensparrendämmung“) → unten weiter auswerten
             }
 
+            // Jeder Satz unter einer Überschrift ist ein Arbeitsschritt für die To-do-Liste
+            String abschn = akt == null ? "" : akt.titel;
+            if (titel == null && woerter(z) >= 2 && Character.isLetter(z.charAt(0)) && z.length() <= 160
+                    && !UNWICHTIG.matcher(abschn.toLowerCase(Locale.GERMANY)).find())
+                erg.aufgaben.add(new Aufgabe(abschn, z.replaceAll("[.;]+$", "").trim(), ""));
+
             // Treffer mit Fundstelle; die Zeile wird an den Fundstellen in Stücke geteilt, damit
             // „Konterlattung 40/60 und Dachlattung 30/50, 320 lfm“ die Maße dem richtigen Material zuordnet.
             List<Regel> treffer = new ArrayList<>();
@@ -392,6 +400,8 @@ public final class Arbeitsanweisung {
     private static final Pattern LOHN_TEXT = Pattern.compile("stundensatz|stundenlohn|anfahrt|baustelleneinrichtung|gerüst|geruest|entsorg|demontage|"
             + "materialkostenschätzung|kostenschätzung|regie|abbruch|rückbau|aufmaß|planung|statik|transport|kranstunde|hebebühne|vorhalte");
 
+    private static final Pattern KEINE_AUFGABE = Pattern.compile("stundensatz|stundenlohn|anfahrt|kostenschätzung|regiestunde|regiearbeit");
+
     static boolean istLeistungsverzeichnis(List<String> zeilen) {
         int n = 0;
         for (int i = 0; i < zeilen.size(); i++) {
@@ -446,8 +456,10 @@ public final class Arbeitsanweisung {
             }
 
             if (inBeschreibung && z.length() <= 90 && woerter(z) >= 2 && Character.isLetter(z.charAt(0))
-                    && !z.matches("(?i)^(frau|herrn?|seite|pos\\.|menge|übertrag|arbeitsanweisung).*"))
+                    && !z.matches("(?i)^(frau|herrn?|seite|pos\\.|menge|übertrag|arbeitsanweisung).*")) {
                 erg.arbeitsschritte.add(z);
+                if (!KEINE_AUFGABE.matcher(z.toLowerCase(Locale.GERMANY)).find()) erg.aufgaben.add(new Aufgabe("Arbeitsschritte", z, ""));
+            }
         }
     }
 
@@ -467,6 +479,13 @@ public final class Arbeitsanweisung {
             text = text + " " + zeilen.get(++i);
         text = text.replaceAll("[,;]+$", "").trim();
         String tk = text.toLowerCase(Locale.GERMANY);
+        // To-do: jede Position außer Stundensätzen, Anfahrt und Kostenschätzungen
+        if (text.length() >= 3 && !KEINE_AUFGABE.matcher(tk).find()) {
+            String e = Einheit.norm(einheit);
+            if (e.equalsIgnoreCase("psch") || e.equalsIgnoreCase("pausch") || e.equalsIgnoreCase("pauschal")) e = "pauschal";
+            String info = "Pos. " + nr + (menge == null ? "" : " · " + ("pauschal".equals(e) ? e : Fmt.mengeText(menge) + (e.isEmpty() ? "" : " " + e)));
+            erg.aufgaben.add(new Aufgabe(akt == null ? "" : akt.titel, text, info));
+        }
         if (LOHN_EINHEIT.matcher(einheit).matches() || LOHN_TEXT.matcher(tk).find() || text.length() < 3) {
             erg.uebersprungen++;
             return i;

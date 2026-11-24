@@ -217,4 +217,39 @@ public class ArbeitsanweisungTest {
         ShadowLooper.idleMainLooper();
         ScreenshotTest.png(ed.getWindow().getDecorView(), "13_werkzeug");
     }
+
+    /** To-do-Liste aus den Positionen und Arbeitsschritten. */
+    @Test
+    public void aufgaben() throws Exception {
+        Arbeitsanweisung.Ergebnis e = Arbeitsanweisung.auswerten(LV, inventar(), "26-00001-AW BV Mustermann Balkon.pdf");
+        List<String> texte = new ArrayList<>();
+        for (Aufgabe a : e.aufgaben) texte.add(a.text);
+        assertTrue(texte.toString(), texte.contains("Demontage des alten Geländers"));
+        assertTrue(texte.toString(), texte.contains("Baustelleneinrichtung"));
+        assertTrue(texte.toString(), texte.contains("Balkonbretter Fi./Ta. 26x142x5100 mm"));
+        for (String t : texte) assertTrue(t, !t.toLowerCase().contains("stundensatz") && !t.toLowerCase().contains("anfahrt"));
+        Aufgabe bretter = e.aufgaben.get(texte.indexOf("Balkonbretter Fi./Ta. 26x142x5100 mm"));
+        assertEquals("Zimmererarbeiten", bretter.abschnitt);
+        assertEquals("Pos. 2.3 · 30 m", bretter.info);
+
+        Holzliste h = new Holzliste();
+        h.projekt = e.projekt;
+        h.positionen.addAll(Arbeitsanweisung.positionen(e));
+        for (Aufgabe a : e.aufgaben) h.aufgaben.add(a.copy());
+        h.aufgaben.get(0).erledigt = true;
+        h.aufgaben.get(1).erledigt = true;
+        Storage.speichern(RuntimeEnvironment.getApplication(), h);
+        Holzliste geladen = Storage.laden(RuntimeEnvironment.getApplication(), h.id);
+        assertEquals(h.aufgaben.size(), geladen.aufgaben.size());
+        assertEquals(2, geladen.anzahlErledigt());
+
+        Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
+        i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
+        android.view.ViewGroup root = (android.view.ViewGroup) ed.findViewById(android.R.id.content);
+        android.view.ViewGroup layout = (android.view.ViewGroup) root.getChildAt(0);
+        ((android.view.ViewGroup) layout.getChildAt(2)).getChildAt(2).performClick();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(ed.getWindow().getDecorView(), "14_aufgaben");
+    }
 }

@@ -187,10 +187,15 @@ final class WerkzeugAnsicht {
         return t;
     }
 
-    static TextView reiter(Activity act, String text, boolean aktiv) {
-        TextView t = Ui.text(act, text, 16, aktiv ? Ui.WEISS : Ui.PRIMAER, true);
+    /** Reiter-Knopf: Name (fett) und darunter klein der Stand, z. B. „3/12 dabei“. */
+    static TextView reiter(Activity act, String name, String stand, boolean aktiv) {
+        android.text.SpannableStringBuilder sb = new android.text.SpannableStringBuilder(name + "\n" + stand);
+        sb.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, name.length(), 0);
+        sb.setSpan(new android.text.style.RelativeSizeSpan(0.8f), name.length() + 1, sb.length(), 0);
+        TextView t = Ui.text(act, "", 15, aktiv ? Ui.WEISS : Ui.PRIMAER, false);
+        t.setText(sb);
         t.setGravity(Gravity.CENTER);
-        t.setTypeface(Typeface.DEFAULT_BOLD);
+        t.setMaxLines(2);
         t.setBackground(Ui.rounded(aktiv ? Ui.PRIMAER : Ui.WEISS, Ui.PRIMAER, Ui.dp(act, 10), Ui.dp(act, 1.5f)));
         return t;
     }

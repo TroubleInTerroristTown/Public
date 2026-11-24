@@ -156,6 +156,7 @@ public class Werkzeug {
         List<String> texte = new ArrayList<>();
         for (Position p : h.positionen) if (p.isTitel()) texte.add(p.bezeichnung);
         if (h.notiz != null) for (String z : h.notiz.split("\n")) texte.add(z);
+        for (Aufgabe x : h.aufgaben) texte.add(x.text);
         if (h.bauteil != null) texte.add(h.bauteil);
         if (zusatzText != null) texte.addAll(zusatzText);
         for (String z : texte) {

@@ -24,6 +24,15 @@ public class Holzliste {
     /** Reiter „Werkzeug“: was auf die Baustelle mit muss (zum Abhaken beim Laden). */
     public final List<Werkzeug> werkzeug = new ArrayList<>();
 
+    /** Reiter „Aufgaben“: To-do-Liste (z. B. aus den Positionen der Arbeitsanweisung). */
+    public final List<Aufgabe> aufgaben = new ArrayList<>();
+
+    public int anzahlErledigt() {
+        int n = 0;
+        for (Aufgabe a : aufgaben) if (a.erledigt) n++;
+        return n;
+    }
+
     public int anzahlEingepackt() {
         int n = 0;
         for (Werkzeug w : werkzeug) if (w.eingepackt) n++;
@@ -142,6 +151,9 @@ public class Holzliste {
         JSONArray w = new JSONArray();
         for (Werkzeug x : werkzeug) w.put(x.toJson());
         o.put("werkzeug", w);
+        JSONArray au = new JSONArray();
+        for (Aufgabe x : aufgaben) au.put(x.toJson());
+        o.put("aufgaben", au);
         return o;
     }
 
@@ -167,6 +179,13 @@ public class Holzliste {
             for (int i = 0; i < w.length(); i++) {
                 JSONObject x = w.optJSONObject(i);
                 if (x != null) h.werkzeug.add(Werkzeug.fromJson(x));
+            }
+        }
+        JSONArray au = o.optJSONArray("aufgaben");
+        if (au != null) {
+            for (int i = 0; i < au.length(); i++) {
+                JSONObject x = au.optJSONObject(i);
+                if (x != null) h.aufgaben.add(Aufgabe.fromJson(x));
             }
         }
         return h;

@@ -72,6 +72,7 @@ public final class Storage {
         copy.id = null;
         copy.projekt = (h.projekt == null ? "" : h.projekt) + " (Kopie)";
         for (Werkzeug w : copy.werkzeug) w.eingepackt = false; // Vorlage: neu abhaken
+        for (Aufgabe x : copy.aufgaben) x.erledigt = false;
         speichern(c, copy);
         return copy;
     }

@@ -58,10 +58,10 @@ public class MainActivity extends Activity {
         Button aw = new Button(this);
         aw.setText("📄  Neue Liste aus Arbeitsanweisung");
         aw.setAllCaps(false);
-        aw.setTextSize(18);
+        aw.setTextSize(19);
         aw.setTypeface(Typeface.DEFAULT_BOLD);
         aw.setTextColor(Ui.WEISS);
-        aw.setBackground(Ui.rounded(Ui.PRIMAER, 0, Ui.dp(this, 12), 0));
+        aw.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
         LinearLayout.LayoutParams lpAw = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
         lpAw.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), 0);
         aw.setOnClickListener(v -> neueListe(true));
@@ -70,17 +70,17 @@ public class MainActivity extends Activity {
         Button neu = new Button(this);
         neu.setText("＋  Neue Liste");
         neu.setAllCaps(false);
-        neu.setTextSize(19);
+        neu.setTextSize(17);
         neu.setTypeface(Typeface.DEFAULT_BOLD);
-        neu.setTextColor(Ui.WEISS);
-        neu.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        neu.setTextColor(Ui.PRIMAER);
+        neu.setBackground(Ui.rounded(Ui.WEISS, Ui.PRIMAER, Ui.dp(this, 12), Ui.dp(this, 2)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
         lp.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), Ui.dp(this, 14));
         neu.setOnClickListener(v -> neueListe(false));
         root.addView(neu, lp);
 
         setContentView(root);
-        setTitle("Meine Materiallisten");
+        setTitle("Meine Baustellen");
     }
 
     @Override
@@ -166,6 +166,15 @@ public class MainActivity extends Activity {
             TextView g = Ui.text(MainActivity.this, "geändert " + DateFormat.format("dd.MM.yyyy HH:mm", h.geaendert), 11, Ui.GRAU, false);
             left.addView(t);
             if (sub.length() > 0) left.addView(s);
+            StringBuilder stand = new StringBuilder();
+            if (!h.werkzeug.isEmpty()) stand.append("🔧 ").append(h.anzahlEingepackt()).append("/").append(h.werkzeug.size()).append(" dabei");
+            if (!h.aufgaben.isEmpty()) stand.append(stand.length() > 0 ? "   " : "").append("✅ ").append(h.anzahlErledigt()).append("/")
+                    .append(h.aufgaben.size()).append(" erledigt");
+            if (stand.length() > 0) {
+                TextView st = Ui.text(MainActivity.this, stand.toString(), 13, Ui.PRIMAER, true);
+                st.setPadding(0, Ui.dp(MainActivity.this, 3), 0, Ui.dp(MainActivity.this, 1));
+                left.addView(st);
+            }
             left.addView(g);
             card.addView(left, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
 

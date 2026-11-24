@@ -40,14 +40,15 @@ public class EditorActivity extends Activity {
     public static final String EXTRA_NEU = "neu";
     /** Neue Liste direkt aus einer Arbeitsanweisung (PDF-Auswahl öffnet sich sofort). */
     public static final String EXTRA_AW = "aw";
-    private static final String STATE_REITER = "reiter_werkzeug";
+    private static final String STATE_REITER = "reiter";
     static final String XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final int REQ_SAVE = 42;
 
     private Holzliste liste;
     private LinearLayout karten;
     private TextView kopfTitel, kopfInfo, sumText, emptyText;
-    private boolean werkzeugModus;
+    static final int R_MATERIAL = 0, R_WERKZEUG = 1, R_AUFGABEN = 2;
+    private int reiter = R_MATERIAL;
     private LinearLayout reiterLeiste;
     private Button addBtn, vorschlagBtn;
 
@@ -61,7 +62,7 @@ public class EditorActivity extends Activity {
             return;
         }
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
-        werkzeugModus = state != null && state.getBoolean(STATE_REITER, false);
+        reiter = state == null ? R_MATERIAL : state.getInt(STATE_REITER, R_MATERIAL);
         setContentView(buildLayout());
         render();
         if (state == null && getIntent().getBooleanExtra(EXTRA_AW, false)) AwImport.starten(this, 0);
@@ -71,7 +72,7 @@ public class EditorActivity extends Activity {
     @Override
     protected void onSaveInstanceState(Bundle out) {
         super.onSaveInstanceState(out);
-        out.putBoolean(STATE_REITER, werkzeugModus);
+        out.putInt(STATE_REITER, reiter);
     }
 
     // ================================================================ Layout
@@ -141,7 +142,10 @@ public class EditorActivity extends Activity {
         vorschlagBtn.setTypeface(Typeface.DEFAULT_BOLD);
         vorschlagBtn.setTextColor(Ui.PRIMAER);
         vorschlagBtn.setBackground(Ui.rounded(Ui.WEISS, Ui.PRIMAER, Ui.dp(this, 12), Ui.dp(this, 2)));
-        vorschlagBtn.setOnClickListener(v -> WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern));
+        vorschlagBtn.setOnClickListener(v -> {
+            if (reiter == R_AUFGABEN) AwImport.starten(this, liste.positionen.size());
+            else WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern);
+        });
         LinearLayout.LayoutParams lpV = new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1);
         lpV.setMarginEnd(Ui.dp(this, 8));
         bar.addView(vorschlagBtn, lpV);
@@ -153,7 +157,8 @@ public class EditorActivity extends Activity {
         addBtn.setTextColor(Ui.WEISS);
         addBtn.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
         addBtn.setOnClickListener(v -> {
-            if (werkzeugModus) WerkzeugAnsicht.bearbeiten(this, liste, -1, this::speichern);
+            if (reiter == R_WERKZEUG) WerkzeugAnsicht.bearbeiten(this, liste, -1, this::speichern);
+            else if (reiter == R_AUFGABEN) AufgabenAnsicht.bearbeiten(this, liste, -1, -1, this::speichern);
             else hinzufuegen(liste.positionen.size());
         });
         bar.addView(addBtn, new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1));
@@ -173,26 +178,39 @@ public class EditorActivity extends Activity {
         kopfInfo.setText(info.length() == 0 ? "✎ Antippen: Projekt, Kunde, Datum eintragen" : info + "   ✎");
 
         reiterLeiste.removeAllViews();
-        TextView tMat = WerkzeugAnsicht.reiter(this, "📦 Material (" + liste.anzahlPositionen() + ")", !werkzeugModus);
-        TextView tWz = WerkzeugAnsicht.reiter(this, "🔧 Werkzeug" + (liste.werkzeug.isEmpty() ? ""
-                : " (" + liste.anzahlEingepackt() + "/" + liste.werkzeug.size() + ")"), werkzeugModus);
-        tMat.setOnClickListener(v -> { werkzeugModus = false; render(); });
-        tWz.setOnClickListener(v -> { werkzeugModus = true; render(); });
-        LinearLayout.LayoutParams lpR = new LinearLayout.LayoutParams(0, Ui.dp(this, 44), 1);
-        lpR.setMarginEnd(Ui.dp(this, 8));
-        reiterLeiste.addView(tMat, lpR);
-        reiterLeiste.addView(tWz, new LinearLayout.LayoutParams(0, Ui.dp(this, 44), 1));
+        String[][] tabs = {
+                {"📦 Material", liste.anzahlPositionen() + (liste.anzahlPositionen() == 1 ? " Position" : " Positionen")},
+                {"🔧 Werkzeug", liste.werkzeug.isEmpty() ? "leer" : liste.anzahlEingepackt() + "/" + liste.werkzeug.size() + " dabei"},
+                {"✅ Aufgaben", liste.aufgaben.isEmpty() ? "leer" : liste.anzahlErledigt() + "/" + liste.aufgaben.size() + " erledigt"}};
+        for (int r = 0; r < tabs.length; r++) {
+            TextView t = WerkzeugAnsicht.reiter(this, tabs[r][0], tabs[r][1], reiter == r);
+            int nr = r;
+            t.setOnClickListener(v -> { reiter = nr; render(); });
+            LinearLayout.LayoutParams lpR = new LinearLayout.LayoutParams(0, Ui.dp(this, 52), 1);
+            if (r < tabs.length - 1) lpR.setMarginEnd(Ui.dp(this, 6));
+            reiterLeiste.addView(t, lpR);
+        }
 
         karten.removeAllViews();
-        vorschlagBtn.setVisibility(werkzeugModus ? View.VISIBLE : View.GONE);
-        addBtn.setText(werkzeugModus ? "＋  Werkzeug" : "＋  Hinzufügen");
-        if (werkzeugModus) {
+        vorschlagBtn.setVisibility(reiter == R_MATERIAL ? View.GONE : View.VISIBLE);
+        vorschlagBtn.setText(reiter == R_AUFGABEN ? "📄 Aus PDF" : "💡 Vorschlagen");
+        addBtn.setText(reiter == R_WERKZEUG ? "＋  Werkzeug" : reiter == R_AUFGABEN ? "＋  Aufgabe" : "＋  Hinzufügen");
+        if (reiter == R_WERKZEUG) {
             for (int i = 0; i < liste.werkzeug.size(); i++) karten.addView(WerkzeugAnsicht.karte(this, liste, i, this::speichern));
             emptyText.setText("Noch kein Werkzeug eingetragen.\n\nTippe auf  „💡 Vorschlagen“ – die App schlägt Werkzeug passend zum Material "
                     + "und zu den Arbeitsschritten vor.\n\nBeim Laden: Karte antippen = eingepackt ✓");
             emptyText.setVisibility(liste.werkzeug.isEmpty() ? View.VISIBLE : View.GONE);
             int n = liste.werkzeug.size(), e = liste.anzahlEingepackt();
             sumText.setText(n == 0 ? "Noch kein Werkzeug" : e == n ? "✓ Alles eingepackt (" + n + ")   ›" : e + " von " + n + " eingepackt   ›");
+            return;
+        }
+        if (reiter == R_AUFGABEN) {
+            AufgabenAnsicht.zeigen(this, liste, karten, this::speichern);
+            emptyText.setText("Noch keine Aufgaben.\n\nTippe auf  „📄 Aus PDF“ – aus den Positionen und Arbeitsschritten der "
+                    + "Arbeitsanweisung wird eine To-do-Liste.\n\nErledigt: Karte antippen ✓");
+            emptyText.setVisibility(liste.aufgaben.isEmpty() ? View.VISIBLE : View.GONE);
+            int n = liste.aufgaben.size(), e = liste.anzahlErledigt();
+            sumText.setText(n == 0 ? "Noch keine Aufgaben" : e == n ? "✓ Alles erledigt (" + n + ")   ›" : e + " von " + n + " erledigt   ›");
             return;
         }
         for (int i = 0; i < liste.positionen.size(); i++) {
@@ -349,7 +367,14 @@ public class EditorActivity extends Activity {
             + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.";
 
     private void summenDetails() {
-        if (werkzeugModus) {
+        if (reiter == R_AUFGABEN) {
+            if (liste.anzahlErledigt() == 0) return;
+            new AlertDialog.Builder(this).setMessage("Alle Aufgaben wieder als offen markieren?")
+                    .setPositiveButton("Häkchen entfernen", (d, w) -> { for (Aufgabe x : liste.aufgaben) x.erledigt = false; speichern(); })
+                    .setNegativeButton("Abbrechen", null).show();
+            return;
+        }
+        if (reiter == R_WERKZEUG) {
             if (liste.anzahlEingepackt() == 0) return;
             new AlertDialog.Builder(this).setMessage("Alle Häkchen beim Werkzeug entfernen (für die nächste Fahrt)?")
                     .setPositiveButton("Häkchen entfernen", (d, w) -> { for (Werkzeug x : liste.werkzeug) x.eingepackt = false; speichern(); })
@@ -710,7 +735,7 @@ public class EditorActivity extends Activity {
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
             case M_AW: AwImport.starten(this, liste.positionen.size()); return true;
-            case M_WZ: werkzeugModus = true; render(); WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
+            case M_WZ: reiter = R_WERKZEUG; render(); WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
             case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);

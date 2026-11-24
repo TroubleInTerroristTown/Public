@@ -102,7 +102,9 @@ public final class AwImport {
         sv.addView(box);
 
         StringBuilder info = new StringBuilder();
-        if (erg.anzahlVorschlaege() == 0) {
+        if (erg.anzahlVorschlaege() == 0 && !erg.aufgaben.isEmpty()) {
+            info.append("Kein Material erkannt – aber ").append(erg.aufgaben.size()).append(" Aufgaben für die To-do-Liste.");
+        } else if (erg.anzahlVorschlaege() == 0) {
             info.append("Es wurde kein Material erkannt. Du kannst trotzdem die Überschriften übernehmen und das Material selbst eintragen.");
         } else {
             info.append(erg.anzahlVorschlaege()).append(erg.anzahlVorschlaege() == 1 ? " Vorschlag" : " Vorschläge")
@@ -154,8 +156,17 @@ public final class AwImport {
             StringBuilder s = new StringBuilder();
             for (int i = 0; i < erg.arbeitsschritte.size() && i < 4; i++) s.append(i > 0 ? "\n" : "").append("• ").append(erg.arbeitsschritte.get(i));
             if (erg.arbeitsschritte.size() > 4) s.append("\n… und ").append(erg.arbeitsschritte.size() - 4).append(" weitere");
-            schritte = checkbox(act, "Arbeitsschritte in die Notiz (" + erg.arbeitsschritte.size() + ")", s.toString(), true, false);
+            schritte = checkbox(act, "Arbeitsschritte in die Notiz (" + erg.arbeitsschritte.size() + ")", s.toString(), erg.aufgaben.isEmpty(), false);
             box.addView(schritte);
+        }
+
+        CheckBox todo = null;
+        if (!erg.aufgaben.isEmpty()) {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < erg.aufgaben.size() && i < 3; i++) s.append(i > 0 ? "\n" : "").append("☐ ").append(erg.aufgaben.get(i).text);
+            if (erg.aufgaben.size() > 3) s.append("\n… und ").append(erg.aufgaben.size() - 3).append(" weitere");
+            todo = checkbox(act, "✅ To-do-Liste anlegen (" + erg.aufgaben.size() + " Aufgaben)", s.toString(), true, false);
+            box.addView(todo);
         }
 
         // Werkzeug passend zu allen Vorschlägen und Arbeitsschritten
@@ -173,7 +184,7 @@ public final class AwImport {
             box.addView(werkzeug);
         }
 
-        CheckBox kopfF = kopf, schritteF = schritte, werkzeugF = werkzeug;
+        CheckBox kopfF = kopf, schritteF = schritte, werkzeugF = werkzeug, todoF = todo;
         new AlertDialog.Builder(act).setTitle("📄 Aus der Arbeitsanweisung")
                 .setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
@@ -201,6 +212,11 @@ public final class AwImport {
                         for (String s : erg.arbeitsschritte) n.append("\n• ").append(s);
                         liste.notiz = n.toString();
                     }
+                    int aufAnz = 0;
+                    if (todoF != null && todoF.isChecked()) {
+                        for (Aufgabe a : erg.aufgaben) liste.aufgaben.add(a.copy());
+                        aufAnz = erg.aufgaben.size();
+                    }
                     int wzAnz = 0;
                     if (werkzeugF != null && werkzeugF.isChecked()) {
                         for (Werkzeug.Vorschlag v : Werkzeug.vorschlagen(liste, erg.arbeitsschritte)) {
@@ -211,7 +227,8 @@ public final class AwImport {
                     fertig.geaendert();
                     int anz = 0;
                     for (Position x : neu) if (!x.isTitel()) anz++;
-                    Toast.makeText(act, anz + " Positionen" + (wzAnz > 0 ? " und " + wzAnz + " Werkzeuge" : "")
+                    Toast.makeText(act, anz + " Positionen" + (wzAnz > 0 ? ", " + wzAnz + " Werkzeuge" : "")
+                            + (aufAnz > 0 ? ", " + aufAnz + " Aufgaben" : "")
                             + " übernommen – bitte Mengen prüfen", Toast.LENGTH_LONG).show();
                 })
                 .setNegativeButton("Abbrechen", null).show();
