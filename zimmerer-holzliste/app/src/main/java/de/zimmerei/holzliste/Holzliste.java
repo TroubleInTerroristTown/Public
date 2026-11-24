@@ -19,6 +19,9 @@ public class Holzliste {
     public String datum = "";
     public String bearbeiter = "";
     public String notiz = "";
+    /** Eingelesene Arbeitsanweisung: Dateiname und Datum (die PDF selbst liegt privat in der App, siehe AwImport.pdfDatei). */
+    public String awDatei = "";
+    public String awDatum = "";
     public long geaendert;
     public final List<Position> positionen = new ArrayList<>();
     /** Reiter „Werkzeug“: was auf die Baustelle mit muss (zum Abhaken beim Laden). */
@@ -144,6 +147,8 @@ public class Holzliste {
         o.put("datum", datum);
         o.put("bearbeiter", bearbeiter);
         o.put("notiz", notiz);
+        o.put("awDatei", awDatei);
+        o.put("awDatum", awDatum);
         o.put("geaendert", geaendert);
         JSONArray a = new JSONArray();
         for (Position p : positionen) a.put(p.toJson());
@@ -166,6 +171,8 @@ public class Holzliste {
         h.datum = o.optString("datum", "");
         h.bearbeiter = o.optString("bearbeiter", "");
         h.notiz = o.optString("notiz", "");
+        h.awDatei = o.optString("awDatei", "");
+        h.awDatum = o.optString("awDatum", "");
         h.geaendert = o.optLong("geaendert", 0);
         JSONArray a = o.optJSONArray("positionen");
         if (a != null) {

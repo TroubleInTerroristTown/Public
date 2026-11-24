@@ -190,7 +190,10 @@ public class ArbeitsanweisungTest {
         assertTrue(namen.toString(), namen.contains("Kappsäge"));            // wegen Holz
         assertTrue(namen.toString(), namen.contains("Pinsel & Farbroller")); // wegen Lasur
         assertTrue(namen.toString(), namen.contains("Säbelsäge"));           // wegen „Demontage des alten Geländers“
-        for (Werkzeug.Vorschlag x : v) h.werkzeug.add(new Werkzeug(x.name, ""));
+        for (String std : Werkzeug.GRUNDAUSSTATTUNG) assertTrue(std, !namen.contains(std)); // Standard nicht einzeln
+        for (Werkzeug.Vorschlag x : v) if (x.name.equals("Kappsäge")) assertEquals(Werkzeug.ROT, x.prio); // vom Material
+        for (int k = 1; k < v.size(); k++) assertTrue(v.get(k - 1).prio >= v.get(k).prio);                  // rot zuerst
+        for (Werkzeug.Vorschlag x : v) { Werkzeug w = new Werkzeug(x.name, x.grund); w.prio = x.prio; h.werkzeug.add(w); }
         h.werkzeug.get(0).eingepackt = true;
         h.werkzeug.get(1).anzahl = 2;
         assertTrue(Werkzeug.vorschlagen(h, e.arbeitsschritte).isEmpty()); // nichts doppelt
@@ -200,6 +203,7 @@ public class ArbeitsanweisungTest {
         assertEquals(h.werkzeug.size(), geladen.werkzeug.size());
         assertTrue(geladen.werkzeug.get(0).eingepackt);
         assertEquals(Integer.valueOf(2), geladen.werkzeug.get(1).anzahl);
+        assertEquals(h.werkzeug.get(0).prio, geladen.werkzeug.get(0).prio);
 
         android.app.Activity main = Robolectric.buildActivity(MainActivity.class).setup().get();
         ShadowLooper.idleMainLooper();
@@ -207,13 +211,8 @@ public class ArbeitsanweisungTest {
 
         Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
         i.putExtra(EditorActivity.EXTRA_ID, h.id);
-        org.robolectric.android.controller.ActivityController<EditorActivity> c = Robolectric.buildActivity(EditorActivity.class, i).setup();
-        EditorActivity ed = c.get();
-        // auf den Reiter „Werkzeug“ umschalten (zweiter Reiter-Knopf)
-        android.view.ViewGroup root = (android.view.ViewGroup) ed.findViewById(android.R.id.content);
-        android.view.ViewGroup layout = (android.view.ViewGroup) root.getChildAt(0);
-        android.view.ViewGroup reiter = (android.view.ViewGroup) layout.getChildAt(2);
-        reiter.getChildAt(1).performClick();
+        i.putExtra(EditorActivity.EXTRA_REITER, EditorActivity.R_WERKZEUG);
+        EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
         ShadowLooper.idleMainLooper();
         ScreenshotTest.png(ed.getWindow().getDecorView(), "13_werkzeug");
     }
@@ -245,11 +244,52 @@ public class ArbeitsanweisungTest {
 
         Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
         i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        i.putExtra(EditorActivity.EXTRA_REITER, EditorActivity.R_AUFGABEN);
         EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
-        android.view.ViewGroup root = (android.view.ViewGroup) ed.findViewById(android.R.id.content);
-        android.view.ViewGroup layout = (android.view.ViewGroup) root.getChildAt(0);
-        ((android.view.ViewGroup) layout.getChildAt(2)).getChildAt(2).performClick();
         ShadowLooper.idleMainLooper();
         ScreenshotTest.png(ed.getWindow().getDecorView(), "14_aufgaben");
+    }
+
+    /** Baustellen-Übersicht: Kacheln je Ast, die Kopfdaten oben; AW-Felder werden gespeichert. */
+    @Test
+    public void baustelle() throws Exception {
+        Arbeitsanweisung.Ergebnis e = Arbeitsanweisung.auswerten(LV, inventar(), "26-00001-AW BV Mustermann Balkon.pdf");
+        Holzliste h = new Holzliste();
+        h.projekt = e.projekt;
+        h.kunde = "Max Mustermann";
+        h.bauteil = "Balkon";
+        h.datum = "24.11.2026";
+        h.awDatei = "26-00001-AW BV Mustermann Balkon.pdf";
+        h.awDatum = "24.11.2026";
+        h.positionen.addAll(Arbeitsanweisung.positionen(e));
+        for (Aufgabe a : e.aufgaben) h.aufgaben.add(a.copy());
+        h.aufgaben.get(0).erledigt = true;
+        for (Werkzeug.Vorschlag x : Werkzeug.vorschlagen(h, e.arbeitsschritte)) h.werkzeug.add(new Werkzeug(x.name, x.grund));
+        h.werkzeug.get(0).eingepackt = true;
+        h.notiz = "Schlüssel beim Nachbarn (Hausnr. 3)";
+        Storage.speichern(RuntimeEnvironment.getApplication(), h);
+        Holzliste geladen = Storage.laden(RuntimeEnvironment.getApplication(), h.id);
+        assertEquals(h.awDatei, geladen.awDatei);
+        assertEquals("24.11.2026", geladen.awDatum);
+        assertEquals("", Storage.duplizieren(RuntimeEnvironment.getApplication(), geladen).awDatei);
+
+        Intent i = new Intent(RuntimeEnvironment.getApplication(), BaustelleActivity.class);
+        i.putExtra(BaustelleActivity.EXTRA_ID, h.id);
+        BaustelleActivity b = Robolectric.buildActivity(BaustelleActivity.class, i).setup().get();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(b.getWindow().getDecorView(), "15_baustelle");
+
+        // Kachel „Werkzeug“ öffnet die eigene Werkzeug-Seite
+        android.view.ViewGroup scroll = (android.view.ViewGroup) ((android.view.ViewGroup) b.findViewById(android.R.id.content)).getChildAt(0);
+        android.view.ViewGroup inhalt = (android.view.ViewGroup) scroll.getChildAt(0);
+        ((android.view.ViewGroup) inhalt.getChildAt(2)).getChildAt(1).performClick();
+        Intent naechste = org.robolectric.Shadows.shadowOf(b).getNextStartedActivity();
+        assertEquals(EditorActivity.class.getName(), naechste.getComponent().getClassName());
+        assertEquals(EditorActivity.R_WERKZEUG, naechste.getIntExtra(EditorActivity.EXTRA_REITER, -1));
+
+        // Neue Baustelle: Start zeigt die Übersicht mit Kopfdaten-Dialog
+        android.app.Activity main = Robolectric.buildActivity(MainActivity.class).setup().get();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(main.getWindow().getDecorView(), "16_start");
     }
 }

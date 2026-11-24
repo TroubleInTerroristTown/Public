@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         lv.setOnItemClickListener((parent, v, pos, id) -> oeffnen(listen.get(pos), false));
         lv.setOnItemLongClickListener((parent, v, pos, id) -> { aktionen(listen.get(pos)); return true; });
 
-        leer = Ui.text(this, "Noch keine Liste angelegt.\n\nTippe unten auf  „📄 Neue Liste aus Arbeitsanweisung“ (PDF)\noder auf  „＋ Neue Liste“.\n\nJede Baustelle / jedes Projekt bekommt eine eigene Liste.", 16, Ui.GRAU, false);
+        leer = Ui.text(this, "Noch keine Baustelle angelegt.\n\nTippe unten auf  „📄 Neue Baustelle aus Arbeitsanweisung“ (PDF)\noder auf  „＋ Neue Baustelle“.\n\nJede Baustelle hat Material, Werkzeug und Aufgaben.", 16, Ui.GRAU, false);
         leer.setGravity(Gravity.CENTER);
         leer.setPadding(Ui.dp(this, 32), 0, Ui.dp(this, 32), 0);
 
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 
         // Arbeitsanweisung ganz oben: der schnellste Weg zur fertigen Liste
         Button aw = new Button(this);
-        aw.setText("📄  Neue Liste aus Arbeitsanweisung");
+        aw.setText("📄  Neue Baustelle aus Arbeitsanweisung");
         aw.setAllCaps(false);
         aw.setTextSize(19);
         aw.setTypeface(Typeface.DEFAULT_BOLD);
@@ -68,7 +68,7 @@ public class MainActivity extends Activity {
         root.addView(aw, lpAw);
 
         Button neu = new Button(this);
-        neu.setText("＋  Neue Liste");
+        neu.setText("＋  Neue Baustelle");
         neu.setAllCaps(false);
         neu.setTextSize(17);
         neu.setTypeface(Typeface.DEFAULT_BOLD);
@@ -97,17 +97,17 @@ public class MainActivity extends Activity {
         h.datum = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY).format(new Date());
         h.bearbeiter = getSharedPreferences("einstellungen", MODE_PRIVATE).getString("bearbeiter", "");
         Storage.speichern(this, h);
-        Intent i = new Intent(this, EditorActivity.class);
-        i.putExtra(EditorActivity.EXTRA_ID, h.id);
-        i.putExtra(EditorActivity.EXTRA_NEU, true);
-        i.putExtra(EditorActivity.EXTRA_AW, ausAw);
+        Intent i = new Intent(this, BaustelleActivity.class);
+        i.putExtra(BaustelleActivity.EXTRA_ID, h.id);
+        i.putExtra(BaustelleActivity.EXTRA_NEU, true);
+        i.putExtra(BaustelleActivity.EXTRA_AW, ausAw);
         startActivity(i);
     }
 
     private void oeffnen(Holzliste h, boolean neu) {
-        Intent i = new Intent(this, EditorActivity.class);
-        i.putExtra(EditorActivity.EXTRA_ID, h.id);
-        i.putExtra(EditorActivity.EXTRA_NEU, neu);
+        Intent i = new Intent(this, BaustelleActivity.class);
+        i.putExtra(BaustelleActivity.EXTRA_ID, h.id);
+        i.putExtra(BaustelleActivity.EXTRA_NEU, neu);
         startActivity(i);
     }
 
@@ -116,7 +116,7 @@ public class MainActivity extends Activity {
                 .setItems(new String[]{"Öffnen", "Kopieren (als Vorlage)", "Löschen"}, (d, w) -> {
                     if (w == 0) oeffnen(h, false);
                     else if (w == 1) { Storage.duplizieren(this, h); onResume(); }
-                    else new AlertDialog.Builder(this).setMessage("Liste „" + h.titel() + "“ wirklich löschen?")
+                    else new AlertDialog.Builder(this).setMessage("Baustelle „" + h.titel() + "“ wirklich löschen?")
                                 .setPositiveButton("Löschen", (x, y) -> { Storage.loeschen(this, h.id); onResume(); })
                                 .setNegativeButton("Abbrechen", null).show();
                 }).show();

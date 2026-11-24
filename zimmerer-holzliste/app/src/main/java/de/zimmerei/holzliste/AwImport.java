@@ -3,6 +3,7 @@ package de.zimmerei.holzliste;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -17,7 +18,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.List;
 
 /**
@@ -73,6 +81,7 @@ public final class AwImport {
                             + "Tipp: Die Arbeitsanweisung direkt aus dem Programm als PDF speichern oder drucken, nicht scannen.";
                 } else {
                     erg = Arbeitsanweisung.auswerten(text, Katalog.alle(act), name);
+                    kopieren(act, uri, tempDatei(act, liste));
                 }
             } catch (Throwable ex) { // auch OutOfMemoryError: die App soll nie abstürzen
                 fehler = "Die PDF konnte nicht gelesen werden: " + (ex.getMessage() == null ? ex.toString() : ex.getMessage());
@@ -85,7 +94,7 @@ public final class AwImport {
                 if (f != null) {
                     new AlertDialog.Builder(act).setTitle("Arbeitsanweisung").setMessage(f).setPositiveButton("OK", null).show();
                 } else {
-                    vorschau(act, e, liste, fertig);
+                    vorschau(act, e, liste, name, fertig);
                 }
             });
         }).start();
@@ -94,6 +103,10 @@ public final class AwImport {
 
     /** Vorschau mit Häkchen: Überschriften, Material, Kopfdaten, Arbeitsschritte. */
     static void vorschau(Activity act, Arbeitsanweisung.Ergebnis erg, Holzliste liste, Fertig fertig) {
+        vorschau(act, erg, liste, null, fertig);
+    }
+
+    static void vorschau(Activity act, Arbeitsanweisung.Ergebnis erg, Holzliste liste, String dateiname, Fertig fertig) {
         ScrollView sv = new ScrollView(act);
         LinearLayout box = new LinearLayout(act);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -174,13 +187,14 @@ public final class AwImport {
         probe.positionen.addAll(Arbeitsanweisung.positionen(erg));
         probe.werkzeug.addAll(liste.werkzeug);
         probe.positionen.addAll(liste.positionen);
-        List<Werkzeug.Vorschlag> wz = Werkzeug.vorschlagen(probe, erg.arbeitsschritte);
+        List<String> standard = WerkzeugAnsicht.standard(act);
+        List<Werkzeug.Vorschlag> wz = Werkzeug.vorschlagen(probe, erg.arbeitsschritte, standard);
         CheckBox werkzeug = null;
         if (!wz.isEmpty()) {
             StringBuilder s = new StringBuilder();
             for (int i = 0; i < wz.size() && i < 5; i++) s.append(i > 0 ? ", " : "").append(wz.get(i).name);
             if (wz.size() > 5) s.append(" … und ").append(wz.size() - 5).append(" weitere");
-            werkzeug = checkbox(act, "🔧 Werkzeug-Liste vorschlagen (" + wz.size() + ")", s.toString(), true, false);
+            werkzeug = checkbox(act, "🔧 Spezielles Werkzeug vorschlagen (" + wz.size() + ")", s.toString(), true, false);
             box.addView(werkzeug);
         }
 
@@ -219,9 +233,20 @@ public final class AwImport {
                     }
                     int wzAnz = 0;
                     if (werkzeugF != null && werkzeugF.isChecked()) {
-                        for (Werkzeug.Vorschlag v : Werkzeug.vorschlagen(liste, erg.arbeitsschritte)) {
-                            liste.werkzeug.add(new Werkzeug(v.name, ""));
+                        for (Werkzeug.Vorschlag v : Werkzeug.vorschlagen(liste, erg.arbeitsschritte, standard)) {
+                            Werkzeug neuW = new Werkzeug(v.name, v.grund);
+                            neuW.prio = v.prio;
+                            liste.werkzeug.add(neuW);
                             wzAnz++;
+                        }
+                    }
+                    File tmp = tempDatei(act, liste);
+                    if (dateiname != null && tmp.exists()) {
+                        File ziel = pdfDatei(act, liste);
+                        ziel.delete();
+                        if (tmp.renameTo(ziel)) {
+                            liste.awDatei = dateiname;
+                            liste.awDatum = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY).format(new Date());
                         }
                     }
                     fertig.geaendert();
@@ -232,6 +257,54 @@ public final class AwImport {
                             + " übernommen – bitte Mengen prüfen", Toast.LENGTH_LONG).show();
                 })
                 .setNegativeButton("Abbrechen", null).show();
+    }
+
+    // ------------------------------------------------------------ PDF der Baustelle (nur privat in der App)
+
+    /** Hier liegt die zuletzt eingelesene Arbeitsanweisung der Baustelle. */
+    static File pdfDatei(Context c, Holzliste liste) {
+        File d = new File(c.getFilesDir(), "aw");
+        if (!d.exists()) d.mkdirs();
+        return new File(d, liste.id + ".pdf");
+    }
+
+    private static File tempDatei(Context c, Holzliste liste) {
+        return new File(pdfDatei(c, liste).getParentFile(), liste.id + ".neu");
+    }
+
+    static boolean hatPdf(Context c, Holzliste liste) {
+        return !leer(liste.awDatei) && pdfDatei(c, liste).exists();
+    }
+
+    private static void kopieren(Context c, Uri von, File nach) {
+        try (InputStream in = c.getContentResolver().openInputStream(von); OutputStream out = new FileOutputStream(nach)) {
+            if (in == null) return;
+            byte[] buf = new byte[16384];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+        } catch (Exception e) {
+            nach.delete(); // ohne Kopie geht der Import trotzdem
+        }
+    }
+
+    /** Öffnet die gespeicherte PDF in einer PDF-App. */
+    static void pdfOeffnen(Activity act, Holzliste liste) {
+        try {
+            File dir = new File(act.getCacheDir(), "export");
+            if (!dir.exists()) dir.mkdirs();
+            String name = liste.awDatei.replaceAll("[^A-Za-z0-9ÄÖÜäöüß ._-]", "_");
+            if (!name.toLowerCase(Locale.ROOT).endsWith(".pdf")) name += ".pdf";
+            File ziel = new File(dir, name);
+            kopieren(act, Uri.fromFile(pdfDatei(act, liste)), ziel);
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setDataAndType(ExportProvider.uriFor(name), "application/pdf");
+            i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            act.startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(act, "Keine App zum Anzeigen von PDFs gefunden", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(act, "PDF kann nicht geöffnet werden: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     static CheckBox checkbox(Activity act, String titel, String unter, boolean an, boolean fett) {

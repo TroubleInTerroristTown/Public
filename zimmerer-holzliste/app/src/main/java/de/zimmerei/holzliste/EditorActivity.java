@@ -40,7 +40,8 @@ public class EditorActivity extends Activity {
     public static final String EXTRA_NEU = "neu";
     /** Neue Liste direkt aus einer Arbeitsanweisung (PDF-Auswahl öffnet sich sofort). */
     public static final String EXTRA_AW = "aw";
-    private static final String STATE_REITER = "reiter";
+    /** Welcher Ast der Baustelle gezeigt wird: R_MATERIAL, R_WERKZEUG oder R_AUFGABEN. */
+    public static final String EXTRA_REITER = "reiter";
     static final String XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final int REQ_SAVE = 42;
 
@@ -49,7 +50,6 @@ public class EditorActivity extends Activity {
     private TextView kopfTitel, kopfInfo, sumText, emptyText;
     static final int R_MATERIAL = 0, R_WERKZEUG = 1, R_AUFGABEN = 2;
     private int reiter = R_MATERIAL;
-    private LinearLayout reiterLeiste;
     private Button addBtn, vorschlagBtn;
 
     @Override
@@ -62,17 +62,11 @@ public class EditorActivity extends Activity {
             return;
         }
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
-        reiter = state == null ? R_MATERIAL : state.getInt(STATE_REITER, R_MATERIAL);
+        reiter = getIntent().getIntExtra(EXTRA_REITER, R_MATERIAL);
         setContentView(buildLayout());
         render();
         if (state == null && getIntent().getBooleanExtra(EXTRA_AW, false)) AwImport.starten(this, 0);
-        else if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle out) {
-        super.onSaveInstanceState(out);
-        out.putInt(STATE_REITER, reiter);
+        else if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog(this, liste, this::speichern);
     }
 
     // ================================================================ Layout
@@ -88,20 +82,13 @@ public class EditorActivity extends Activity {
         int p = Ui.dp(this, 16);
         kopf.setPadding(p, Ui.dp(this, 12), p, Ui.dp(this, 12));
         kopf.setBackground(Ui.touchBg(Ui.WEISS));
-        kopf.setOnClickListener(v -> kopfdatenDialog());
+        kopf.setOnClickListener(v -> kopfdatenDialog(this, liste, this::speichern));
         kopfTitel = Ui.text(this, "", 20, Ui.DUNKEL, true);
         kopfInfo = Ui.text(this, "", 14, Ui.GRAU, false);
         kopf.addView(kopfTitel);
         kopf.addView(kopfInfo);
         root.addView(kopf);
         root.addView(Ui.divider(this, false));
-
-        // --- Reiter Material / Werkzeug
-        reiterLeiste = new LinearLayout(this);
-        reiterLeiste.setOrientation(LinearLayout.HORIZONTAL);
-        reiterLeiste.setBackgroundColor(Ui.HINTERGRUND);
-        reiterLeiste.setPadding(Ui.dp(this, 10), Ui.dp(this, 8), Ui.dp(this, 10), Ui.dp(this, 2));
-        root.addView(reiterLeiste);
 
         // --- Positionen als Karten
         ScrollView vScroll = new ScrollView(this);
@@ -169,7 +156,7 @@ public class EditorActivity extends Activity {
     // ================================================================ Darstellung
 
     private void render() {
-        setTitle("Materialliste");
+        setTitle(reiter == R_WERKZEUG ? "🔧 Werkzeug" : reiter == R_AUFGABEN ? "✅ Aufgaben" : "📦 Material");
         kopfTitel.setText(liste.titel());
         StringBuilder info = new StringBuilder();
         anhang(info, liste.kunde);
@@ -177,26 +164,12 @@ public class EditorActivity extends Activity {
         anhang(info, liste.datum);
         kopfInfo.setText(info.length() == 0 ? "✎ Antippen: Projekt, Kunde, Datum eintragen" : info + "   ✎");
 
-        reiterLeiste.removeAllViews();
-        String[][] tabs = {
-                {"📦 Material", liste.anzahlPositionen() + (liste.anzahlPositionen() == 1 ? " Position" : " Positionen")},
-                {"🔧 Werkzeug", liste.werkzeug.isEmpty() ? "leer" : liste.anzahlEingepackt() + "/" + liste.werkzeug.size() + " dabei"},
-                {"✅ Aufgaben", liste.aufgaben.isEmpty() ? "leer" : liste.anzahlErledigt() + "/" + liste.aufgaben.size() + " erledigt"}};
-        for (int r = 0; r < tabs.length; r++) {
-            TextView t = WerkzeugAnsicht.reiter(this, tabs[r][0], tabs[r][1], reiter == r);
-            int nr = r;
-            t.setOnClickListener(v -> { reiter = nr; render(); });
-            LinearLayout.LayoutParams lpR = new LinearLayout.LayoutParams(0, Ui.dp(this, 52), 1);
-            if (r < tabs.length - 1) lpR.setMarginEnd(Ui.dp(this, 6));
-            reiterLeiste.addView(t, lpR);
-        }
-
         karten.removeAllViews();
         vorschlagBtn.setVisibility(reiter == R_MATERIAL ? View.GONE : View.VISIBLE);
         vorschlagBtn.setText(reiter == R_AUFGABEN ? "📄 Aus PDF" : "💡 Vorschlagen");
         addBtn.setText(reiter == R_WERKZEUG ? "＋  Werkzeug" : reiter == R_AUFGABEN ? "＋  Aufgabe" : "＋  Hinzufügen");
         if (reiter == R_WERKZEUG) {
-            for (int i = 0; i < liste.werkzeug.size(); i++) karten.addView(WerkzeugAnsicht.karte(this, liste, i, this::speichern));
+            WerkzeugAnsicht.zeigen(this, liste, karten, this::speichern);
             emptyText.setText("Noch kein Werkzeug eingetragen.\n\nTippe auf  „💡 Vorschlagen“ – die App schlägt Werkzeug passend zum Material "
                     + "und zu den Arbeitsschritten vor.\n\nBeim Laden: Karte antippen = eingepackt ✓");
             emptyText.setVisibility(liste.werkzeug.isEmpty() ? View.VISIBLE : View.GONE);
@@ -549,23 +522,24 @@ public class EditorActivity extends Activity {
         }).show();
     }
 
-    private void kopfdatenDialog() {
-        SharedPreferences prefs = getSharedPreferences("einstellungen", MODE_PRIVATE);
-        ScrollView sv = new ScrollView(this);
-        LinearLayout l = new LinearLayout(this);
+    /** Kopfdaten der Baustelle bearbeiten (auch von der Baustellen-Übersicht aus). */
+    static void kopfdatenDialog(Activity act, Holzliste liste, Runnable fertig) {
+        SharedPreferences prefs = act.getSharedPreferences("einstellungen", MODE_PRIVATE);
+        ScrollView sv = new ScrollView(act);
+        LinearLayout l = new LinearLayout(act);
         l.setOrientation(LinearLayout.VERTICAL);
-        int pad = Ui.dp(this, 20);
-        l.setPadding(pad, Ui.dp(this, 8), pad, 0);
+        int pad = Ui.dp(act, 20);
+        l.setPadding(pad, Ui.dp(act, 8), pad, 0);
         sv.addView(l);
-        EditText eProjekt = feld(l, "Projekt / Bauvorhaben", liste.projekt);
-        EditText eKunde = feld(l, "Kunde / Bauherr", liste.kunde);
-        EditText eBauteil = feld(l, "Bauteil (z. B. Dachstuhl, Carport)", liste.bauteil);
-        EditText eDatum = feld(l, "Datum", liste.datum);
+        EditText eProjekt = feld(act, l, "Projekt / Bauvorhaben", liste.projekt);
+        EditText eKunde = feld(act, l, "Kunde / Bauherr", liste.kunde);
+        EditText eBauteil = feld(act, l, "Bauteil (z. B. Dachstuhl, Carport)", liste.bauteil);
+        EditText eDatum = feld(act, l, "Datum", liste.datum);
         String bearb = liste.bearbeiter == null || liste.bearbeiter.isEmpty() ? prefs.getString("bearbeiter", "") : liste.bearbeiter;
-        EditText eBearb = feld(l, "Bearbeiter", bearb);
-        EditText eNotiz = feld(l, "Notiz", liste.notiz);
+        EditText eBearb = feld(act, l, "Bearbeiter", bearb);
+        EditText eNotiz = feld(act, l, "Notiz", liste.notiz);
         eNotiz.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        new AlertDialog.Builder(this).setTitle("Kopfdaten").setView(sv)
+        new AlertDialog.Builder(act).setTitle("Kopfdaten").setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
                     liste.projekt = eProjekt.getText().toString().trim();
                     liste.kunde = eKunde.getText().toString().trim();
@@ -574,16 +548,16 @@ public class EditorActivity extends Activity {
                     liste.bearbeiter = eBearb.getText().toString().trim();
                     liste.notiz = eNotiz.getText().toString().trim();
                     prefs.edit().putString("bearbeiter", liste.bearbeiter).apply();
-                    speichern();
+                    fertig.run();
                 })
                 .setNegativeButton("Abbrechen", null).show();
     }
 
-    private EditText feld(LinearLayout parent, String label, String value) {
-        TextView t = Ui.text(this, label, 12, Ui.GRAU, false);
-        t.setPadding(Ui.dp(this, 4), Ui.dp(this, 10), 0, 0);
+    private static EditText feld(Activity act, LinearLayout parent, String label, String value) {
+        TextView t = Ui.text(act, label, 12, Ui.GRAU, false);
+        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 10), 0, 0);
         parent.addView(t);
-        EditText e = new EditText(this);
+        EditText e = new EditText(act);
         e.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         e.setText(value);
         parent.addView(e);
@@ -708,6 +682,12 @@ public class EditorActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (reiter != R_MATERIAL) { // Werkzeug & Aufgaben: kein Excel-Export, der ist nur fürs Material
+            if (reiter == R_WERKZEUG) menu.add(0, M_WZ, 0, "💡 Werkzeug vorschlagen …");
+            else menu.add(0, M_AW, 0, "📄 Arbeitsanweisung (PDF) einlesen …");
+            menu.add(0, M_KOPF, 1, "Projekt / Kunde / Datum ändern");
+            return true;
+        }
         MenuItem s = menu.add(0, M_SAVE, 0, "Als Excel speichern");
         s.setIcon(R.drawable.ic_save);
         s.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -718,7 +698,6 @@ public class EditorActivity extends Activity {
         menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
         menu.add(0, M_TITEL, 4, "Überschrift anfügen");
         menu.add(0, M_AW, 2, "📄 Arbeitsanweisung (PDF) einlesen …");
-        menu.add(0, M_WZ, 3, "💡 Werkzeug vorschlagen …");
         menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
         menu.add(0, M_KATALOG, 6, "Artikellisten (Inventar / DATANORM) …");
         return true;
@@ -731,11 +710,11 @@ public class EditorActivity extends Activity {
             case M_SAVE: exportSpeichern(); return true;
             case M_SHARE: exportTeilen(); return true;
             case M_OPEN: exportOeffnen(); return true;
-            case M_KOPF: kopfdatenDialog(); return true;
+            case M_KOPF: kopfdatenDialog(this, liste, this::speichern); return true;
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
             case M_AW: AwImport.starten(this, liste.positionen.size()); return true;
-            case M_WZ: reiter = R_WERKZEUG; render(); WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
+            case M_WZ: WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
             case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);

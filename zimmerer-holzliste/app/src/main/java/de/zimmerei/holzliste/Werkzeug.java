@@ -18,6 +18,13 @@ public class Werkzeug {
     public Integer anzahl;          // null = 1 / nicht angegeben
     public String bemerkung = "";
     public boolean eingepackt;      // beim Laden abgehakt
+    /** Priorität: ROT = muss unbedingt mit, GELB = wichtig, GRUEN = optional. */
+    public int prio = GELB;
+
+    public static final int GRUEN = 0, GELB = 1, ROT = 2;
+
+    public static String prioName(int p) { return p == ROT ? "Muss mit" : p == GRUEN ? "Optional" : "Wichtig"; }
+    public static String prioSymbol(int p) { return p == ROT ? "🔴" : p == GRUEN ? "🟢" : "🟡"; }
 
     public Werkzeug() {}
 
@@ -30,6 +37,7 @@ public class Werkzeug {
         Werkzeug w = new Werkzeug(name, bemerkung);
         w.anzahl = anzahl;
         w.eingepackt = eingepackt;
+        w.prio = prio;
         return w;
     }
 
@@ -39,6 +47,7 @@ public class Werkzeug {
         if (anzahl != null) o.put("anzahl", anzahl);
         o.put("bemerkung", bemerkung);
         o.put("eingepackt", eingepackt);
+        o.put("prio", prio);
         return o;
     }
 
@@ -46,6 +55,7 @@ public class Werkzeug {
         Werkzeug w = new Werkzeug(o.optString("name", ""), o.optString("bemerkung", ""));
         w.anzahl = o.has("anzahl") && !o.isNull("anzahl") ? o.optInt("anzahl") : null;
         w.eingepackt = o.optBoolean("eingepackt", false);
+        w.prio = o.optInt("prio", GELB);
         return w;
     }
 
@@ -54,9 +64,10 @@ public class Werkzeug {
     /** Ein vorgeschlagenes Werkzeug mit Begründung („wegen Dämmung 200 mm“). */
     public static final class Vorschlag {
         public final String name, grund;
+        public final int prio;
         public boolean gewaehlt = true;
 
-        Vorschlag(String name, String grund) { this.name = name; this.grund = grund; }
+        Vorschlag(String name, String grund, int prio) { this.name = name; this.grund = grund; this.prio = prio; }
     }
 
     private static final class Regel {
@@ -73,9 +84,10 @@ public class Werkzeug {
     private static final String W = "[\\p{L}\\p{N}_]";
     private static final String GRENZE = "(?:(?<=" + W + ")(?!" + W + ")|(?<!" + W + ")(?=" + W + "))";
 
+    /** Vorschlag für „Meine Standard-Ausrüstung“ (kann in der App angepasst werden). */
     public static final String[] GRUNDAUSSTATTUNG = {
             "Akkuschrauber + Akkus & Ladegerät", "Bit-Satz", "Zollstock / Maßband", "Wasserwaage", "Zimmermannsbleistift",
-            "Hammer", "Cuttermesser", "Kabeltrommel", "Erste-Hilfe-Kasten"};
+            "Zimmermannswinkel", "Hammer", "Cuttermesser", "Kabeltrommel", "Erste-Hilfe-Kasten"};
 
     // Material (Bezeichnung, Material, Kategorie) → Werkzeug
     private static final Regel[] MATERIAL = {
@@ -138,19 +150,25 @@ public class Werkzeug {
      * optional weiterem Text (z. B. Arbeitsanweisung). Bereits vorhandenes Werkzeug wird weggelassen.
      */
     public static List<Vorschlag> vorschlagen(Holzliste h, List<String> zusatzText) {
+        return vorschlagen(h, zusatzText, java.util.Arrays.asList(GRUNDAUSSTATTUNG));
+    }
+
+    /**
+     * Wie oben; Werkzeug aus der Standard-Ausrüstung wird nicht einzeln vorgeschlagen (das hat man sowieso dabei).
+     * Werkzeug wegen Material = ROT (speziell, z. B. Schaumpistole), wegen Arbeitsschritten = GELB.
+     */
+    public static List<Vorschlag> vorschlagen(Holzliste h, List<String> zusatzText, List<String> standard) {
         Map<String, Vorschlag> out = new LinkedHashMap<>();
         java.util.Set<String> vorhanden = new java.util.HashSet<>();
         for (Werkzeug w : h.werkzeug) vorhanden.add(schluessel(w.name));
-
-        if (h.werkzeug.isEmpty())
-            for (String g : GRUNDAUSSTATTUNG) add(out, vorhanden, g, "Grundausstattung");
+        if (standard != null) for (String st : standard) vorhanden.add(schluessel(st));
 
         for (Position p : h.positionen) {
             if (p.isTitel()) continue;
             String text = (p.bezeichnung + " " + p.holzart + " " + p.typ).toLowerCase(Locale.GERMANY);
             if (p.isHolz() || p.isLfm()) text += " balken"; // jedes Holz → Säge
             String grund = "wegen " + kurz(p.bezeichnung.isEmpty() ? p.holzart : p.bezeichnung);
-            for (Regel r : MATERIAL) if (r.muster.matcher(text).find()) for (String w : r.werkzeuge) add(out, vorhanden, w, grund);
+            for (Regel r : MATERIAL) if (r.muster.matcher(text).find()) for (String w : r.werkzeuge) add(out, vorhanden, w, grund, ROT);
         }
 
         List<String> texte = new ArrayList<>();
@@ -165,10 +183,13 @@ public class Werkzeug {
             String k = t.toLowerCase(Locale.GERMANY);
             for (Regel r : ARBEIT) {
                 Matcher m = r.muster.matcher(k);
-                if (m.find()) for (String w : r.werkzeuge) add(out, vorhanden, w, "wegen „" + kurz(t) + "“");
+                if (m.find()) for (String w : r.werkzeuge) add(out, vorhanden, w, "wegen „" + kurz(t) + "“", GELB);
             }
         }
-        return new ArrayList<>(out.values());
+        List<Vorschlag> l = new ArrayList<>(out.values());
+        // Wichtigstes zuerst (stabil: innerhalb gleicher Priorität bleibt die Reihenfolge)
+        java.util.Collections.sort(l, (a, b) -> Integer.compare(b.prio, a.prio));
+        return l;
     }
 
     /** Alle bekannten Werkzeugnamen (für die Eingabe-Vorschläge). */
@@ -182,11 +203,13 @@ public class Werkzeug {
         return new ArrayList<>(s);
     }
 
-    private static void add(Map<String, Vorschlag> out, java.util.Set<String> vorhanden, String name, String grund) {
+    private static void add(Map<String, Vorschlag> out, java.util.Set<String> vorhanden, String name, String grund, int prio) {
         String k = schluessel(name);
         if (vorhanden.contains(k) || out.containsKey(k)) return;
-        out.put(k, new Vorschlag(name, grund));
+        out.put(k, new Vorschlag(name, grund, prio));
     }
+
+    static boolean gleicherName(String a, String b) { return schluessel(a).equals(schluessel(b)); }
 
     private static String schluessel(String name) {
         return name == null ? "" : name.toLowerCase(Locale.GERMANY).replaceAll("[^\\p{L}\\p{N}]", "");

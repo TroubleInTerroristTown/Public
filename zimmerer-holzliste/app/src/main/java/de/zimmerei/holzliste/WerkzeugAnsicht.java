@@ -25,7 +25,65 @@ final class WerkzeugAnsicht {
 
     private WerkzeugAnsicht() {}
 
-    /** Karte: großes Häkchen (eingepackt), Name, Anzahl/Bemerkung, ⋮ für Aktionen. Antippen = abhaken. */
+    // ---------------------------------------------------------------- Standard-Ausrüstung
+
+    private static final String PREF_STANDARD = "standard_werkzeug";
+
+    /** „Meine Standard-Ausrüstung“ – hat man sowieso dabei, wird nicht einzeln vorgeschlagen. */
+    static List<String> standard(android.content.Context c) {
+        String s = c.getSharedPreferences("einstellungen", android.content.Context.MODE_PRIVATE).getString(PREF_STANDARD, null);
+        List<String> l = new ArrayList<>();
+        if (s == null) { java.util.Collections.addAll(l, Werkzeug.GRUNDAUSSTATTUNG); return l; }
+        for (String z : s.split("\n")) if (!z.trim().isEmpty()) l.add(z.trim());
+        return l;
+    }
+
+    static void standardBearbeiten(Activity act, Runnable danach) {
+        EditText e = new EditText(act);
+        e.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        e.setMinLines(6);
+        e.setGravity(Gravity.TOP);
+        e.setText(android.text.TextUtils.join("\n", standard(act)));
+        LinearLayout l = new LinearLayout(act);
+        l.setOrientation(LinearLayout.VERTICAL);
+        int pad = Ui.dp(act, 20);
+        l.setPadding(pad, Ui.dp(act, 4), pad, 0);
+        l.addView(Ui.text(act, "Was du immer dabei hast – ein Werkzeug pro Zeile. Das wird nicht einzeln vorgeschlagen, "
+                + "kann aber mit einem Haken komplett übernommen werden (z. B. für Lehrlinge).", 13, Ui.GRAU, false));
+        l.addView(e);
+        new AlertDialog.Builder(act).setTitle("🧰 Meine Standard-Ausrüstung").setView(l)
+                .setPositiveButton("Speichern", (d, w) -> {
+                    act.getSharedPreferences("einstellungen", android.content.Context.MODE_PRIVATE).edit()
+                            .putString(PREF_STANDARD, e.getText().toString().trim()).apply();
+                    if (danach != null) danach.run();
+                })
+                .setNegativeButton("Abbrechen", null).show();
+    }
+
+    // ---------------------------------------------------------------- Liste
+
+    static int prioFarbe(int p) {
+        return p == Werkzeug.ROT ? android.graphics.Color.parseColor("#C62828")
+                : p == Werkzeug.GRUEN ? Ui.GRUEN : android.graphics.Color.parseColor("#F9A825");
+    }
+
+    /** Alle Werkzeug-Karten, gruppiert: 🔴 Muss mit, 🟡 Wichtig, 🟢 Optional. */
+    static void zeigen(Activity act, Holzliste liste, LinearLayout karten, Runnable geaendert) {
+        for (int p = Werkzeug.ROT; p >= Werkzeug.GRUEN; p--) {
+            int n = 0, e = 0;
+            for (Werkzeug w : liste.werkzeug) if (w.prio == p) { n++; if (w.eingepackt) e++; }
+            if (n == 0) continue;
+            TextView t = Ui.text(act, Werkzeug.prioSymbol(p) + "  " + Werkzeug.prioName(p).toUpperCase(java.util.Locale.GERMANY)
+                    + (e == n ? "  ✓" : "  (" + e + "/" + n + ")"), 15, e == n ? Ui.GRUEN : Ui.PRIMAER, true);
+            t.setLetterSpacing(0.04f);
+            t.setPadding(Ui.dp(act, 6), Ui.dp(act, 14), 0, Ui.dp(act, 4));
+            karten.addView(t);
+            for (int i = 0; i < liste.werkzeug.size(); i++)
+                if (liste.werkzeug.get(i).prio == p) karten.addView(karte(act, liste, i, geaendert));
+        }
+    }
+
+    /** Karte: Farbstreifen (Priorität), großes Häkchen (eingepackt), Name, Anzahl/Bemerkung, ⋮. Antippen = abhaken. */
     static View karte(Activity act, Holzliste liste, int idx, Runnable geaendert) {
         Werkzeug w = liste.werkzeug.get(idx);
         LinearLayout card = new LinearLayout(act);
@@ -35,14 +93,19 @@ final class WerkzeugAnsicht {
         card.setBackground(new android.graphics.drawable.RippleDrawable(
                 android.content.res.ColorStateList.valueOf(Ui.HELL), bg, null));
         card.setMinimumHeight(Ui.dp(act, 64));
-        card.setPadding(Ui.dp(act, 6), 0, 0, 0);
+
+        View streifen = new View(act);
+        streifen.setBackground(Ui.rounded(prioFarbe(w.prio), 0, Ui.dp(act, 3), 0));
+        LinearLayout.LayoutParams lpS = new LinearLayout.LayoutParams(Ui.dp(act, 6), ViewGroup.LayoutParams.MATCH_PARENT);
+        lpS.setMargins(Ui.dp(act, 4), Ui.dp(act, 8), 0, Ui.dp(act, 8));
+        card.addView(streifen, lpS);
 
         CheckBox cb = new CheckBox(act);
         cb.setChecked(w.eingepackt);
         cb.setScaleX(1.3f);
         cb.setScaleY(1.3f);
         cb.setOnClickListener(v -> { w.eingepackt = cb.isChecked(); geaendert.run(); });
-        card.addView(cb, new LinearLayout.LayoutParams(Ui.dp(act, 52), ViewGroup.LayoutParams.WRAP_CONTENT));
+        card.addView(cb, new LinearLayout.LayoutParams(Ui.dp(act, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LinearLayout mitte = new LinearLayout(act);
         mitte.setOrientation(LinearLayout.VERTICAL);
@@ -70,13 +133,14 @@ final class WerkzeugAnsicht {
 
     static void aktionen(Activity act, Holzliste liste, int i, Runnable geaendert) {
         Werkzeug w = liste.werkzeug.get(i);
-        String[] items = {"✎   Ändern", "↑   Nach oben schieben", "↓   Nach unten schieben", "🗑   Löschen"};
+        String[] items = {"✎   Ändern", "🔴  Muss mit", "🟡  Wichtig", "🟢  Optional", "🗑   Löschen"};
         new AlertDialog.Builder(act).setTitle(w.name.isEmpty() ? "Werkzeug" : w.name).setItems(items, (d, x) -> {
             switch (x) {
                 case 0: bearbeiten(act, liste, i, geaendert); break;
-                case 1: if (i > 0) { liste.werkzeug.add(i - 1, liste.werkzeug.remove(i)); geaendert.run(); } break;
-                case 2: if (i < liste.werkzeug.size() - 1) { liste.werkzeug.add(i + 1, liste.werkzeug.remove(i)); geaendert.run(); } break;
-                case 3: liste.werkzeug.remove(i); geaendert.run(); break;
+                case 1: w.prio = Werkzeug.ROT; geaendert.run(); break;
+                case 2: w.prio = Werkzeug.GELB; geaendert.run(); break;
+                case 3: w.prio = Werkzeug.GRUEN; geaendert.run(); break;
+                case 4: liste.werkzeug.remove(i); geaendert.run(); break;
             }
         }).show();
     }
@@ -98,6 +162,21 @@ final class WerkzeugAnsicht {
         eName.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, Werkzeug.alleNamen()));
         eName.setText(w.name);
         l.addView(eName);
+
+        l.addView(label(act, "Wie wichtig?"));
+        android.widget.RadioGroup rg = new android.widget.RadioGroup(act);
+        rg.setOrientation(LinearLayout.HORIZONTAL);
+        int[] prios = {Werkzeug.ROT, Werkzeug.GELB, Werkzeug.GRUEN};
+        for (int p : prios) {
+            android.widget.RadioButton rb = new android.widget.RadioButton(act);
+            rb.setId(View.generateViewId());
+            rb.setText(Werkzeug.prioSymbol(p) + " " + Werkzeug.prioName(p));
+            rb.setTag(p);
+            rg.addView(rb, new android.widget.RadioGroup.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            if (w.prio == p) rb.setChecked(true);
+        }
+        l.addView(rg);
+
         l.addView(label(act, "Anzahl (leer = 1)"));
         EditText eAnz = new EditText(act);
         eAnz.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -109,28 +188,29 @@ final class WerkzeugAnsicht {
         eBem.setText(w.bemerkung);
         l.addView(eBem);
 
+        Runnable lesen = () -> {
+            w.name = eName.getText().toString().trim();
+            try {
+                String a = eAnz.getText().toString().trim();
+                w.anzahl = a.isEmpty() ? null : Integer.valueOf(a);
+            } catch (NumberFormatException e) {
+                w.anzahl = null;
+            }
+            w.bemerkung = eBem.getText().toString().trim();
+            View sel = rg.findViewById(rg.getCheckedRadioButtonId());
+            if (sel != null) w.prio = (Integer) sel.getTag();
+        };
         AlertDialog.Builder b = new AlertDialog.Builder(act).setTitle(idx < 0 ? "🔧 Werkzeug hinzufügen" : "🔧 Werkzeug ändern").setView(sv)
                 .setPositiveButton(idx < 0 ? "Hinzufügen" : "Übernehmen", (d, x) -> {
-                    w.name = eName.getText().toString().trim();
+                    lesen.run();
                     if (w.name.isEmpty()) return;
-                    try {
-                        String a = eAnz.getText().toString().trim();
-                        w.anzahl = a.isEmpty() ? null : Integer.valueOf(a);
-                    } catch (NumberFormatException e) {
-                        w.anzahl = null;
-                    }
-                    w.bemerkung = eBem.getText().toString().trim();
                     if (idx < 0) liste.werkzeug.add(w); else liste.werkzeug.set(idx, w);
                     geaendert.run();
                 })
                 .setNegativeButton("Abbrechen", null);
         if (idx < 0) b.setNeutralButton("Weiteres", (d, x) -> {
-            String n = eName.getText().toString().trim();
-            if (!n.isEmpty()) {
-                w.name = n;
-                w.bemerkung = eBem.getText().toString().trim();
-                try { w.anzahl = eAnz.getText().toString().trim().isEmpty() ? null : Integer.valueOf(eAnz.getText().toString().trim()); }
-                catch (NumberFormatException e) { w.anzahl = null; }
+            lesen.run();
+            if (!w.name.isEmpty()) {
                 liste.werkzeug.add(w);
                 geaendert.run();
             }
@@ -142,15 +222,15 @@ final class WerkzeugAnsicht {
         eName.requestFocus();
     }
 
-    /** Vorschläge aus Material und Arbeitsschritten mit Häkchen anzeigen. */
+    /** Vorschläge (speziell für diese Baustelle) + Standard-Ausrüstung als ein Haken. */
     static void vorschlaege(Activity act, Holzliste liste, List<String> zusatz, Runnable geaendert) {
-        List<Werkzeug.Vorschlag> v = Werkzeug.vorschlagen(liste, zusatz);
-        if (v.isEmpty()) {
-            new AlertDialog.Builder(act).setTitle("💡 Werkzeug-Vorschläge")
-                    .setMessage("Keine weiteren Vorschläge – alles Passende steht schon auf der Liste.\n\n"
-                            + "Die Vorschläge kommen aus dem Material (z. B. Dämmung → Dämmstoffmesser) und den Arbeitsschritten in der Notiz.")
-                    .setPositiveButton("OK", null).show();
-            return;
+        List<String> std = standard(act);
+        List<Werkzeug.Vorschlag> v = Werkzeug.vorschlagen(liste, zusatz, std);
+        List<String> stdFehlt = new ArrayList<>();
+        for (String s : std) {
+            boolean da = false;
+            for (Werkzeug w : liste.werkzeug) if (Werkzeug.gleicherName(w.name, s)) { da = true; break; }
+            if (!da) stdFehlt.add(s);
         }
         ScrollView sv = new ScrollView(act);
         LinearLayout box = new LinearLayout(act);
@@ -158,26 +238,48 @@ final class WerkzeugAnsicht {
         int pad = Ui.dp(act, 18);
         box.setPadding(pad, Ui.dp(act, 6), pad, Ui.dp(act, 6));
         sv.addView(box);
-        TextView info = Ui.text(act, "Abgeleitet aus Material und Arbeitsschritten. Häkchen weg = nicht übernehmen.", 14, Ui.GRAU, false);
+        TextView info = Ui.text(act, v.isEmpty() ? "Kein spezielles Werkzeug mehr vorzuschlagen – alles Passende steht schon auf der Liste."
+                : "Speziell für diese Baustelle, abgeleitet aus Material und Arbeitsschritten. Häkchen weg = nicht übernehmen.", 14, Ui.GRAU, false);
         info.setPadding(0, 0, 0, Ui.dp(act, 6));
         box.addView(info);
         List<CheckBox> boxen = new ArrayList<>();
         for (Werkzeug.Vorschlag x : v) {
-            CheckBox c = AwImport.checkbox(act, "🔧  " + x.name, x.grund, true, false);
+            CheckBox c = AwImport.checkbox(act, Werkzeug.prioSymbol(x.prio) + "  " + x.name, x.grund, true, false);
             box.addView(c);
             boxen.add(c);
         }
-        new AlertDialog.Builder(act).setTitle("💡 Werkzeug-Vorschläge (" + v.size() + ")").setView(sv)
+        CheckBox stdBox = null;
+        if (!stdFehlt.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < stdFehlt.size() && i < 4; i++) sb.append(i > 0 ? ", " : "").append(stdFehlt.get(i));
+            if (stdFehlt.size() > 4) sb.append(" … und ").append(stdFehlt.size() - 4).append(" weitere");
+            stdBox = AwImport.checkbox(act, "🧰  Meine Standard-Ausrüstung (" + stdFehlt.size() + ") – z. B. für Lehrlinge", sb.toString(), false, false);
+            ((LinearLayout.LayoutParams) stdBox.getLayoutParams()).topMargin = Ui.dp(act, 12);
+            box.addView(stdBox);
+        }
+        CheckBox stdF = stdBox;
+        new AlertDialog.Builder(act).setTitle("💡 Werkzeug-Vorschläge").setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
                     int n = 0;
                     for (int i = 0; i < v.size(); i++) {
                         if (!boxen.get(i).isChecked()) continue;
-                        liste.werkzeug.add(new Werkzeug(v.get(i).name, ""));
+                        Werkzeug neu = new Werkzeug(v.get(i).name, v.get(i).grund);
+                        neu.prio = v.get(i).prio;
+                        liste.werkzeug.add(neu);
                         n++;
+                    }
+                    if (stdF != null && stdF.isChecked()) {
+                        for (String s : stdFehlt) {
+                            Werkzeug neu = new Werkzeug(s, "");
+                            neu.prio = Werkzeug.GRUEN;
+                            liste.werkzeug.add(neu);
+                            n++;
+                        }
                     }
                     geaendert.run();
                     Toast.makeText(act, n + " Werkzeuge übernommen", Toast.LENGTH_SHORT).show();
                 })
+                .setNeutralButton("Standard anpassen", (d, w) -> standardBearbeiten(act, () -> vorschlaege(act, liste, zusatz, geaendert)))
                 .setNegativeButton("Abbrechen", null).show();
     }
 

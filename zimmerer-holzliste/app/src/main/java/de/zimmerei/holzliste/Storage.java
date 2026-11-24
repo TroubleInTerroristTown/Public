@@ -65,6 +65,7 @@ public final class Storage {
 
     public static void loeschen(Context c, String id) {
         new File(dir(c), id + ".json").delete();
+        new File(new File(c.getFilesDir(), "aw"), id + ".pdf").delete();
     }
 
     public static Holzliste duplizieren(Context c, Holzliste h) {
@@ -73,6 +74,8 @@ public final class Storage {
         copy.projekt = (h.projekt == null ? "" : h.projekt) + " (Kopie)";
         for (Werkzeug w : copy.werkzeug) w.eingepackt = false; // Vorlage: neu abhaken
         for (Aufgabe x : copy.aufgaben) x.erledigt = false;
+        copy.awDatei = ""; // die PDF gehört zur Original-Baustelle
+        copy.awDatum = "";
         speichern(c, copy);
         return copy;
     }

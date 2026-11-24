@@ -568,11 +568,13 @@ public final class Arbeitsanweisung {
             String kat = e.a.kategorie == null || e.a.kategorie.isEmpty() ? Kategorien.zuordnen(e.a.text) : e.a.kategorie;
             boolean katPasst = v.kategorie != null && kat.equalsIgnoreCase(v.kategorie);
             int score = katPasst ? 2 : 0;
+            // nur im Artikeltext suchen – nicht im Kategorienamen („Holzschutz, Farbe …“ passt sonst auf alles)
+            String atext = (e.a.text + " " + e.a.nr).toLowerCase(Locale.GERMANY);
             int wortTreffer = 0;
-            for (String s : v.suchwoerter) if (e.such.contains(s)) wortTreffer++;
+            for (String s : v.suchwoerter) if (atext.contains(s)) wortTreffer++;
             if (wortTreffer == 0 && !katPasst) continue;
             score += wortTreffer * 3;
-            for (String w : textWoerter) if (e.such.contains(w)) score += 2;
+            for (String w : textWoerter) if (atext.contains(w)) score += 2;
             if (H.equals(v.typ) || L.equals(v.typ)) {
                 // Holz nur mit passendem Querschnitt vorschlagen – sonst wäre es geraten
                 if (v.b == null || v.h == null || e.a.b == null || e.a.h == null) continue;
@@ -582,7 +584,7 @@ public final class Arbeitsanweisung {
             }
             if (v.dickeMm != null) {
                 String mm = Fmt.num(v.dickeMm);
-                if (e.such.matches(".*(?<![\\d,])" + Pattern.quote(mm) + "\\s*mm.*")) score += 5;
+                if (atext.matches(".*(?<![\\d,])" + Pattern.quote(mm) + "\\s*mm.*")) score += 5;
                 else if (e.a.h != null && Math.abs(e.a.h * 10 - v.dickeMm) < 0.1) score += 5;
             }
             if (e.a.bestand != null && e.a.bestand > 0) score += 1;
