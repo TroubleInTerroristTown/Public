@@ -113,6 +113,16 @@ public class ScreenshotTest {
         ShadowLooper.idleMainLooper();
         png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "4_platte");
 
+        ShadowDialog.getLatestDialog().dismiss();
+        Position neuP = new Position();
+        neuP.typ = Position.PLATTE;
+        new PositionDialog(ed, neuP, true, java.util.Collections.emptySet(), (x, y) -> {}).show();
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "6_plattenauswahl");
+        ShadowDialog.getLatestDialog().dismiss();
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "7_platte_neu");
+
         // Tabelle seitlich gescrollt (Mengen-Spalten)
         android.widget.HorizontalScrollView hs = findHs(ed.getWindow().getDecorView(), 1);
         if (hs != null) { hs.scrollTo(Ui.dp(ed, 190), 0); ShadowLooper.idleMainLooper(); }

@@ -134,7 +134,7 @@ public class EditorActivity extends Activity {
         table.addView(hBody, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         body.addView(table);
 
-        emptyText = Ui.text(this, "Noch keine Positionen.\n\nUnten über „+ Stückholz“, „+ Laufmeter“ oder „+ Platten“ hinzufügen.\n\nTipp: Eine Zeile antippen zum Bearbeiten, lange drücken für Einfügen (auch Abschnitts-Überschriften), Verschieben, Kopieren, Löschen.",
+        emptyText = Ui.text(this, "Noch keine Positionen.\n\nUnten über „+ Stückholz“, „+ Laufmeter“ oder „+ Platten m²“ hinzufügen.\n\nTipp: Eine Zeile antippen zum Bearbeiten, lange drücken für Einfügen (auch Abschnitts-Überschriften), Verschieben, Kopieren, Löschen.",
                 15, Ui.GRAU, false);
         emptyText.setGravity(Gravity.CENTER);
         int ep = Ui.dp(this, 32);
@@ -162,7 +162,7 @@ public class EditorActivity extends Activity {
         bar.setPadding(bp, bp, bp, bp);
         bar.addView(addButton("+ Stückholz", Position.HOLZ));
         bar.addView(addButton("+ Laufmeter", Position.LFM));
-        bar.addView(addButton("+ Platten", Position.PLATTE));
+        bar.addView(addButton("+ Platten m²", Position.PLATTE));
         root.addView(bar);
         return root;
     }

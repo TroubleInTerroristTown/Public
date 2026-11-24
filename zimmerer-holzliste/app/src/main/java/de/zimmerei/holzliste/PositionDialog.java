@@ -43,7 +43,8 @@ public class PositionDialog {
     };
 
     static final String[] PLATTEN = {
-            "OSB/3", "OSB/4", "Spanplatte P5 (V100)", "Dreischichtplatte Fichte", "Sperrholz Birke",
+            "OSB/3", "OSB/3 N+F", "Gipskarton GKB", "Gipskarton GKF (Feuerschutz)", "Gipskarton GKBI (imprägniert)",
+            "Gipsfaserplatte", "Dreischichtplatte Fichte", "Dreischicht-Schalungsplatte", "OSB/4", "Spanplatte P5 (V100)", "Dreischichtplatte Fichte", "Sperrholz Birke",
             "Holzfaserdämmplatte", "DWD/MDF-Unterdeckplatte", "MDF", "Gipsfaserplatte", "Zementgebundene Spanplatte"
     };
 
@@ -123,6 +124,17 @@ public class PositionDialog {
         // --- Plattenformat
         groupPlatte = new LinearLayout(act);
         groupPlatte.setOrientation(LinearLayout.VERTICAL);
+        Button waehlen = new Button(act);
+        waehlen.setText("Platte auswählen  ▾");
+        waehlen.setAllCaps(false);
+        waehlen.setTextSize(15);
+        waehlen.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        waehlen.setTextColor(Ui.WEISS);
+        waehlen.setBackground(Ui.rounded(Ui.GRUEN, 0, Ui.dp(act, 8), 0));
+        LinearLayout.LayoutParams lpW = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 44));
+        lpW.topMargin = Ui.dp(act, 12);
+        waehlen.setOnClickListener(v -> plattenAuswahl());
+        groupPlatte.addView(waehlen, lpW);
         groupPlatte.addView(section("Plattenformat"));
         LinearLayout rp = row();
         ePB = num(p.isPlatte() ? Fmt.num(p.breite) : "", "cm");
@@ -218,6 +230,29 @@ public class PositionDialog {
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         d.show();
         eBez.requestFocus();
+        if (neu && p.isPlatte() && eL.getText().length() == 0 && ePB.getText().length() == 0) plattenAuswahl();
+    }
+
+    /** Öffnet die Schnellauswahl gängiger / eigener Platten und übernimmt die Werte in die Felder. */
+    private void plattenAuswahl() {
+        Position akt = new Position();
+        akt.typ = Position.PLATTE;
+        leseAusPlatte(akt);
+        PlattenAuswahl.Vorlage aktuell = PlattenAuswahl.neu(eHolzart.getText().toString().trim(),
+                eBez.getText().toString().trim(), akt.laenge, akt.breite, akt.hoehe == null ? null : akt.hoehe * 10);
+        PlattenAuswahl.zeigen(act, aktuell, v -> {
+            eHolzart.setText(v.material);
+            eHolzart.dismissDropDown();
+            eL.setText(Fmt.num(v.laenge));
+            ePB.setText(Fmt.num(v.breite));
+            eDicke.setText(Fmt.num(v.dicke));
+            eFl.setText("");
+            if (eBez.getText().toString().trim().isEmpty() && v.bezeichnung != null) {
+                eBez.setText(v.bezeichnung);
+                eBez.dismissDropDown();
+            }
+            eStk.requestFocus();
+        });
     }
 
     /** Übernimmt die Plattenfelder (Breite cm, Dicke mm → cm, Fläche m²) in die Position. */

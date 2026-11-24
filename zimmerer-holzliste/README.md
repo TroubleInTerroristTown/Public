@@ -11,7 +11,7 @@ Zebra-Streifen, Summen, fixierte Kopfzeile, AutoFilter, Druckeinrichtung A4 quer
 - **Positionsarten**
   - *Holz (Stück)*: Stück × Länge, Querschnitt B/H → Laufmeter und m³ automatisch
   - *Laufmeterholz*: Latten, Schalung, Bretter … mit Gesamt-Laufmeter → m³ automatisch
-  - *Platten* (Plattenwerkstoffe wie OSB, Spanplatte, Dreischicht, Holzfaser): Stück × Länge [m] × Breite [cm]
+  - *Platten m²* (Schnellauswahl gängiger OSB/3-, Gips- und Dreischichtplatten, eigene Platten speicherbar; Plattenwerkstoffe wie OSB, Spanplatte, Dreischicht, Holzfaser): Stück × Länge [m] × Breite [cm]
     → **m²**, mit Dicke [mm] → m³. Alternativ die Fläche direkt in m² eingeben.
   - *Abschnitt*: Überschrift wie „Dachstuhl“, „Decke EG“ (über langes Drücken → Einfügen oder Menü)
 - **Fertigmaß** (z. B. gehobelt) zusätzlich zum Rohmaß
