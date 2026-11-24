@@ -11,3 +11,6 @@ A;N;300300;00;Dreischichtplatte Fichte A/B 27 mm;5000 x 2050 mm;1;0;M2;000003450
 A;N;400100;00;Holzbauschraube 8x240;Senkkopf;1;2;STK;000004500;40;400;;
 A;L;100160;;;;;;;;;;;
 A;N;500100;00;Rauhspund Fichte 24x146 mm;;1;0;M;000000280;20;200;;
+A;N;600100;00;Mineralwolle Zwischensparrendämmung 035 140 mm;Paket = 5,2 m2;1;0;M2;000000890;60;600;;
+A;N;600200;00;Zementmörtel MG III 25 kg;;1;0;SA;000000695;60;610;;
+A;N;600300;00;Dampfbremsfolie sd 2 m 1,5x50 m;Rolle = 75 m2;1;0;RO;000004990;60;620;;

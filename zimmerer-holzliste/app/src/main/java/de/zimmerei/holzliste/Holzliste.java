@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Eine komplette Holzliste (Kopfdaten + Positionen). */
+/** Eine komplette Materialliste (Kopfdaten + Positionen). Klassenname aus der Holzliste-Version beibehalten. */
 public class Holzliste {
 
     public String id;
@@ -58,6 +58,26 @@ public class Holzliste {
         return s;
     }
 
+    /** Summe aller Beträge in € (nur Positionen mit Preis). */
+    public double summeBetrag() {
+        double s = 0;
+        for (Position p : positionen) {
+            Double b = p.getBetrag();
+            if (b != null) s += b;
+        }
+        return s;
+    }
+
+    public boolean hatPreise() {
+        for (Position p : positionen) if (p.getBetrag() != null) return true;
+        return false;
+    }
+
+    public boolean hatTyp(String typ) {
+        for (Position p : positionen) if (typ.equals(p.typ)) return true;
+        return false;
+    }
+
     public boolean hatPlatten() {
         for (Position p : positionen) if (p.isPlatte()) return true;
         return false;
@@ -94,7 +114,7 @@ public class Holzliste {
 
     public String titel() {
         if (projekt != null && !projekt.trim().isEmpty()) return projekt.trim();
-        return "Holzliste ohne Namen";
+        return "Liste ohne Namen";
     }
 
     public JSONObject toJson() throws JSONException {

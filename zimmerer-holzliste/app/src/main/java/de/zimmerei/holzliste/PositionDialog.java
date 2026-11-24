@@ -2,7 +2,6 @@ package de.zimmerei.holzliste;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.res.ColorStateList;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -14,8 +13,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,56 +21,77 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/** Eingabe-Dialog für eine Position (Holz, Laufmeterholz oder Abschnitt). */
+/**
+ * Eingabe-Dialog für eine Position. Zeigt nur die Felder, die für die gewählte Art nötig sind;
+ * Preis, Bemerkung und Fertigmaß liegen unter „Weitere Angaben“.
+ */
 public class PositionDialog {
 
     public interface Callback {
-        /** @param weitere true = "Speichern & nächste" gedrückt */
+        /** @param weitere true = "+ Nächste" gedrückt */
         void onSave(Position p, boolean weitere);
     }
 
-    static final String[] BEZEICHNUNGEN = {
+    static final String[] BEZ_HOLZ = {
             "Sparren", "Firstpfette", "Mittelpfette", "Fußpfette", "Pfette", "Schwelle", "Rähm", "Stiel",
             "Riegel", "Strebe", "Kopfband", "Zange", "Kehlbalken", "Deckenbalken", "Wechsel", "Gratsparren",
-            "Kehlsparren", "Aufschiebling", "Stichbalken", "Bundbalken", "Ortgangbrett", "Traufbohle",
-            "Dachlatten", "Konterlatten", "Traglattung", "Rauhspund", "Schalung", "Rhombusleisten",
-            "Bretter", "Bohlen", "Stützen", "Unterzug", "Kantholz", "Lattung",
-            "OSB-Platten", "Dachschalung OSB", "Spanplatten", "Dreischichtplatten", "Sperrholzplatten",
-            "Holzfaserdämmplatten", "Unterdeckplatten", "MDF-Platten", "Wandbeplankung", "Bodenplatten"
+            "Kehlsparren", "Aufschiebling", "Stichbalken", "Bundbalken", "Stützen", "Unterzug", "Kantholz",
+            "Ortgangbrett", "Traufbohle", "Bohlen"
+    };
+    static final String[] BEZ_LFM = {
+            "Dachlatten", "Konterlatten", "Traglattung", "Lattung", "Rauhspund", "Schalung", "Rhombusleisten",
+            "Bretter", "Boden-/Fasebretter", "Deckleisten", "Fassadenschalung", "Kantholz"
+    };
+    static final String[] BEZ_PLATTE = {
+            "Dachschalung", "Wandbeplankung", "Bodenplatten", "Deckenbekleidung", "OSB-Platten", "Gipskartonplatten",
+            "Gipsfaserplatten", "Dreischichtplatten", "Holzfaserdämmplatten", "Unterdeckplatten", "Spanplatten"
+    };
+    static final String[] BEZ_MATERIAL = {
+            "Schrauben", "Nägel", "Klammern", "Winkelverbinder", "Balkenschuhe", "Sparrenpfettenanker", "Lochband",
+            "Dämmung", "Zwischensparrendämmung", "Dampfbremse", "Unterspannbahn", "Klebeband", "Dichtband",
+            "Kartuschen Kleber", "Montageschaum", "Silikon", "Mörtel", "Beton", "Estrich", "Dachziegel",
+            "Dachrinne", "Fallrohr", "Bauschrauben", "Holzschutz/Lasur", "Folie"
     };
 
     static final String[] PLATTEN = {
-            "OSB/3", "OSB/3 N+F", "Gipskarton GKB", "Gipskarton GKF (Feuerschutz)", "Gipskarton GKBI (imprägniert)",
-            "Gipsfaserplatte", "Dreischichtplatte Fichte", "Dreischicht-Schalungsplatte", "OSB/4", "Spanplatte P5 (V100)", "Dreischichtplatte Fichte", "Sperrholz Birke",
-            "Holzfaserdämmplatte", "DWD/MDF-Unterdeckplatte", "MDF", "Gipsfaserplatte", "Zementgebundene Spanplatte"
+            "OSB/3", "OSB/3 N+F", "OSB/4", "Gipskarton GKB", "Gipskarton GKF (Feuerschutz)", "Gipskarton GKBI (imprägniert)",
+            "Gipsfaserplatte", "Dreischichtplatte Fichte", "Dreischicht-Schalungsplatte", "Spanplatte P5 (V100)",
+            "Sperrholz Birke", "Holzfaserdämmplatte", "DWD/MDF-Unterdeckplatte", "MDF", "Zementgebundene Spanplatte"
     };
 
     static final String[] HOLZARTEN = {
             "KVH NSi C24", "KVH Si C24", "BSH GL24h", "BSH GL28h", "Duobalken C24", "Triobalken C24",
             "Fichte/Tanne S10", "Fichte S10 imprägniert", "Fichte", "Lärche", "Douglasie", "Eiche",
-            "Kiefer", "Brettsperrholz", "OSB/3"
+            "Kiefer", "Brettsperrholz"
+    };
+
+    static final String[] MATERIALIEN = {
+            "Holzbauschraube 6×200", "Spanplattenschraube 5×60", "Mineralwolle WLG 035", "Holzfaser flexibel",
+            "Dampfbremsfolie sd 2 m", "Unterdeckbahn diffusionsoffen", "Klebeband innen", "Zementmörtel",
+            "Transportbeton C25/30"
     };
 
     private final Activity act;
     private final Position p;
     private final Callback cb;
     private final boolean neu;
-    private final Collection<String> bekannteHolzarten;
+    private final Collection<String> bekannteMaterialien;
 
-    private RadioGroup typGroup;
-    private AutoCompleteTextView eBez;
-    private EditText eStk, eL, eLfm, eB, eH, eFb, eFh, eBem, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs;
-    private AutoCompleteTextView eHolzart;
-    private LinearLayout rowStkL, rowLfm, groupMasse, groupHolz, groupPlatte;
-    private TextView tLabelBez, tErgebnis, tLabelHolzart;
-    private Button katalogBtn;
+    private String typ;
+    private AlertDialog dialog;
+    private TextView tTyp, tLabelBez, tLabelMat, tErgebnis, tMehr;
+    private AutoCompleteTextView eBez, eMat, eEinh, ePackName, ePreisEinh;
+    private EditText eStk, eL, eLfm, eB, eH, eFb, eFh, eBem, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs,
+            eMenge, eMatVs, ePack, ePreis, eArtNr;
+    private LinearLayout rowStkL, rowLfm, groupQuer, groupPlatte, groupMaterial, groupFertig, groupMehr, groupMasse;
 
-    public PositionDialog(Activity act, Position p, boolean neu, Collection<String> bekannteHolzarten, Callback cb) {
+    public PositionDialog(Activity act, Position p, boolean neu, Collection<String> bekannteMaterialien, Callback cb) {
         this.act = act;
         this.p = p;
         this.neu = neu;
         this.cb = cb;
-        this.bekannteHolzarten = bekannteHolzarten;
+        this.bekannteMaterialien = bekannteMaterialien;
+        this.typ = p.typ;
     }
 
     public void show() {
@@ -81,75 +99,69 @@ public class PositionDialog {
         LinearLayout root = new LinearLayout(act);
         root.setOrientation(LinearLayout.VERTICAL);
         int pad = Ui.dp(act, 20);
-        root.setPadding(pad, Ui.dp(act, 8), pad, Ui.dp(act, 4));
+        root.setPadding(pad, Ui.dp(act, 4), pad, Ui.dp(act, 4));
         sv.addView(root);
 
-        // --- Typ
-        typGroup = new RadioGroup(act);
-        typGroup.setOrientation(RadioGroup.HORIZONTAL);
-        addTyp("Stückholz", Position.HOLZ, 1);
-        addTyp("Laufmeter", Position.LFM, 2);
-        addTyp("Platten", Position.PLATTE, 4);
-        if (p.isTitel()) addTyp("Abschnitt", Position.TITEL, 3);
-        root.addView(typGroup);
+        // --- Art (mit „ändern“)
+        tTyp = Ui.text(act, "", 14, Ui.PRIMAER, true);
+        tTyp.setPadding(Ui.dp(act, 12), Ui.dp(act, 8), Ui.dp(act, 12), Ui.dp(act, 8));
+        tTyp.setBackground(Ui.rounded(Ui.FLAECHE, 0, Ui.dp(act, 8), 0));
+        tTyp.setOnClickListener(v -> artWaehlen());
+        if (!p.isTitel()) root.addView(tTyp, full());
+
+        // --- Händlerkatalog
+        Button katalogBtn = button("🔍  Beim Händler suchen (mit Preis)", Ui.WEISS, Ui.PRIMAER, Ui.PRIMAER);
+        katalogBtn.setOnClickListener(v -> ausKatalog());
+        LinearLayout.LayoutParams lpK = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 48));
+        lpK.topMargin = Ui.dp(act, 10);
+        if (!p.isTitel()) root.addView(katalogBtn, lpK);
 
         // --- Bezeichnung
-        tLabelBez = label("Bezeichnung");
+        tLabelBez = label("Was?");
         root.addView(tLabelBez);
         eBez = new AutoCompleteTextView(act);
         eBez.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        eBez.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, BEZEICHNUNGEN));
         eBez.setThreshold(1);
+        eBez.setTextSize(18);
         eBez.setText(p.bezeichnung);
-        eBez.setHint("z. B. Sparren");
         root.addView(eBez, full());
 
-        // --- Händlerkatalog (DATANORM)
-        katalogBtn = new Button(act);
-        katalogBtn.setText("Aus Händlerkatalog (DATANORM)  ▾");
-        katalogBtn.setAllCaps(false);
-        katalogBtn.setTextSize(14);
-        katalogBtn.setTextColor(Ui.BRAUN);
-        katalogBtn.setBackground(Ui.rounded(Ui.BEIGE, Ui.BRAUN_HELL, Ui.dp(act, 8), Ui.dp(act, 1)));
-        LinearLayout.LayoutParams lpK = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 42));
-        lpK.topMargin = Ui.dp(act, 10);
-        katalogBtn.setOnClickListener(v -> ausKatalog());
-        root.addView(katalogBtn, lpK);
-
-        groupMasse = new LinearLayout(act);
-        groupMasse.setOrientation(LinearLayout.VERTICAL);
+        groupMasse = vertical();
         root.addView(groupMasse);
 
-        // --- Stück / Länge
+        // --- Balken: Stück / Länge
         rowStkL = row();
         eStk = num(Fmt.num(p.stueck), "Stück");
         eL = num(Fmt.num(p.laenge), "m");
-        rowStkL.addView(field("Stück", eStk));
-        rowStkL.addView(field("Länge [m]", eL));
+        rowStkL.addView(field("Wie viele Stück?", eStk));
+        rowStkL.addView(field("Länge je Stück [m]", eL));
         groupMasse.addView(rowStkL);
 
-        // --- Laufmeter
+        // --- Latten: Laufmeter
         rowLfm = row();
         eLfm = num(Fmt.num(p.laufmeter), "m");
-        rowLfm.addView(field("Laufmeter gesamt [m]", eLfm));
+        rowLfm.addView(field("Wie viele Meter insgesamt?", eLfm));
         groupMasse.addView(rowLfm);
 
-        // --- Plattenformat
-        groupPlatte = new LinearLayout(act);
-        groupPlatte.setOrientation(LinearLayout.VERTICAL);
-        Button waehlen = new Button(act);
-        waehlen.setText("Platte auswählen  ▾");
-        waehlen.setAllCaps(false);
-        waehlen.setTextSize(15);
-        waehlen.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
-        waehlen.setTextColor(Ui.WEISS);
-        waehlen.setBackground(Ui.rounded(Ui.GRUEN, 0, Ui.dp(act, 8), 0));
-        LinearLayout.LayoutParams lpW = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 44));
+        // --- Querschnitt (Balken + Latten)
+        groupQuer = vertical();
+        groupQuer.addView(section("Querschnitt"));
+        LinearLayout rq = row();
+        eB = num(p.isPlatte() ? "" : Fmt.num(p.breite), "cm");
+        eH = num(p.isPlatte() ? "" : Fmt.num(p.hoehe), "cm");
+        rq.addView(field("Breite [cm]", eB));
+        rq.addView(field("Höhe [cm]", eH));
+        groupQuer.addView(rq);
+        groupMasse.addView(groupQuer);
+
+        // --- Platten
+        groupPlatte = vertical();
+        Button waehlen = button("▦  Platte auswählen (OSB, Gips …)", Ui.WEISS, Ui.GRUEN, Ui.GRUEN);
+        LinearLayout.LayoutParams lpW = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, Ui.dp(act, 46));
         lpW.topMargin = Ui.dp(act, 12);
         waehlen.setOnClickListener(v -> plattenAuswahl());
         groupPlatte.addView(waehlen, lpW);
-        // Zu belegende Fläche
-        groupPlatte.addView(section("Zu belegende Fläche"));
+        groupPlatte.addView(section("Welche Fläche wird belegt?"));
         boolean altEintrag = p.isPlatte() && !p.hatFlaechenEingabe() && p.stueck != null; // ältere Version
         LinearLayout rfl = row();
         eFlL = num(p.isPlatte() ? Fmt.num(p.flL) : "", "m");
@@ -159,14 +171,12 @@ public class PositionDialog {
         groupPlatte.addView(rfl);
         LinearLayout rfd = row();
         eFl = num(p.isPlatte() ? (altEintrag ? Fmt.num(p.getFlaeche()) : Fmt.num(p.flaeche)) : "", "m²");
-        String vs = p.isPlatte() && p.verschnitt != null ? Fmt.num(p.verschnitt) : (neu || altEintrag ? (altEintrag ? "0" : "10") : "");
+        String vs = p.isPlatte() && p.verschnitt != null ? Fmt.num(p.verschnitt) : (altEintrag ? "0" : "10");
         eVs = num(vs, "%");
-        rfd.addView(field("oder Fläche [m²]", eFl));
+        rfd.addView(field("oder gleich m²", eFl));
         rfd.addView(field("Verschnitt [%]", eVs));
         groupPlatte.addView(rfd);
-
-        // Plattenformat
-        groupPlatte.addView(section("Plattenformat"));
+        groupPlatte.addView(section("Plattengröße"));
         LinearLayout rp = row();
         ePL = num(p.isPlatte() && p.laenge != null ? Fmt.num(p.laenge * 100) : "", "cm");
         ePB = num(p.isPlatte() ? Fmt.num(p.breite) : "", "cm");
@@ -177,134 +187,175 @@ public class PositionDialog {
         groupPlatte.addView(rp);
         groupMasse.addView(groupPlatte);
 
-        // --- Rohmaß + Fertigmaß (nur Hölzer)
-        groupHolz = new LinearLayout(act);
-        groupHolz.setOrientation(LinearLayout.VERTICAL);
-        groupMasse.addView(groupHolz);
-        groupHolz.addView(section("Rohmaß (Querschnitt)"));
-        LinearLayout rq = row();
-        eB = num(p.isPlatte() ? "" : Fmt.num(p.breite), "cm");
-        eH = num(p.isPlatte() ? "" : Fmt.num(p.hoehe), "cm");
-        rq.addView(field("Breite [cm]", eB));
-        rq.addView(field("Höhe [cm]", eH));
-        groupHolz.addView(rq);
+        // --- Material
+        groupMaterial = vertical();
+        LinearLayout rm = row();
+        eMenge = num(Fmt.num(p.menge), "Menge");
+        eEinh = auto(Einheit.ALLE, p.einheit, "Stk");
+        rm.addView(field("Wie viel?", eMenge));
+        rm.addView(field("Einheit", eEinh));
+        groupMaterial.addView(rm);
+        LinearLayout rmv = row();
+        eMatVs = num(p.isMaterial() ? Fmt.num(p.verschnitt) : "", "0");
+        rmv.addView(field("Reserve / Verschnitt [%]", eMatVs));
+        groupMaterial.addView(rmv);
+        groupMaterial.addView(section("Packung (optional) – z. B. Paket à 5,2 m²"));
+        LinearLayout rpk = row();
+        ePack = num(Fmt.num(p.packInhalt), "Inhalt");
+        ePackName = auto(Einheit.PACKUNGEN, p.packName, "Paket");
+        rpk.addView(field("Inhalt je Packung", ePack));
+        rpk.addView(field("Packung", ePackName));
+        groupMaterial.addView(rpk);
+        groupMasse.addView(groupMaterial);
 
-        // --- Fertigmaß
-        groupHolz.addView(section("Fertigmaß (optional, z. B. gehobelt)"));
+        // --- Material / Qualität
+        tLabelMat = label("");
+        groupMasse.addView(tLabelMat);
+        eMat = new AutoCompleteTextView(act);
+        eMat.setThreshold(0);
+        eMat.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        eMat.setText(p.holzart);
+        eMat.setOnFocusChangeListener((v, has) -> { if (has && eMat.getText().length() == 0) eMat.showDropDown(); });
+        eMat.setOnClickListener(v -> eMat.showDropDown());
+        groupMasse.addView(eMat, full());
+
+        // --- Ergebnis
+        tErgebnis = Ui.text(act, "", 16, Ui.DUNKEL, true);
+        tErgebnis.setGravity(Gravity.CENTER);
+        int pp = Ui.dp(act, 12);
+        tErgebnis.setPadding(pp, pp, pp, pp);
+        tErgebnis.setBackground(Ui.rounded(Ui.SUMME, 0, Ui.dp(act, 8), 0));
+        LinearLayout.LayoutParams lpE = full();
+        lpE.topMargin = Ui.dp(act, 14);
+        groupMasse.addView(tErgebnis, lpE);
+
+        // --- Weitere Angaben (Preis, Bemerkung, Fertigmaß)
+        tMehr = Ui.text(act, "", 15, Ui.PRIMAER, true);
+        tMehr.setPadding(Ui.dp(act, 4), Ui.dp(act, 16), 0, Ui.dp(act, 8));
+        tMehr.setOnClickListener(v -> setMehr(groupMehr.getVisibility() != View.VISIBLE));
+        groupMasse.addView(tMehr);
+        groupMehr = vertical();
+        LinearLayout rpr = row();
+        ePreis = num(p.preis == null ? "" : Fmt.fix(p.preis, 2), "€");
+        ePreisEinh = auto(Einheit.ALLE, p.preisEinheit, "");
+        rpr.addView(field("Preis [€]", ePreis));
+        rpr.addView(field("je", ePreisEinh));
+        groupMehr.addView(rpr);
+        groupMehr.addView(label("Artikelnummer"));
+        eArtNr = new EditText(act);
+        eArtNr.setInputType(InputType.TYPE_CLASS_TEXT);
+        eArtNr.setText(p.artikelNr);
+        groupMehr.addView(eArtNr, full());
+        groupMehr.addView(label("Bemerkung"));
+        eBem = new EditText(act);
+        eBem.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        eBem.setText(p.bemerkung);
+        eBem.setHint("z. B. gehobelt, imprägniert, Farbe …");
+        groupMehr.addView(eBem, full());
+        groupFertig = vertical();
+        groupFertig.addView(section("Fertigmaß (z. B. gehobelt)"));
         LinearLayout rf = row();
         eFb = num(Fmt.num(p.fertigB), "cm");
         eFh = num(Fmt.num(p.fertigH), "cm");
         rf.addView(field("Breite [cm]", eFb));
         rf.addView(field("Höhe [cm]", eFh));
-        groupHolz.addView(rf);
-
-        // --- Holzart / Bemerkung
-        tLabelHolzart = label("Holzart / Qualität");
-        groupMasse.addView(tLabelHolzart);
-        eHolzart = new AutoCompleteTextView(act);
-        Set<String> ha = new LinkedHashSet<>(bekannteHolzarten);
-        if (p.isPlatte()) for (String s : PLATTEN) ha.add(s);
-        for (String s : HOLZARTEN) ha.add(s);
-        if (!p.isPlatte()) for (String s : PLATTEN) ha.add(s);
-        eHolzart.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, ha.toArray(new String[0])));
-        eHolzart.setThreshold(0);
-        eHolzart.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        eHolzart.setText(p.holzart);
-        eHolzart.setHint("z. B. KVH NSi C24");
-        eHolzart.setOnFocusChangeListener((v, has) -> { if (has && eHolzart.getText().length() == 0) eHolzart.showDropDown(); });
-        eHolzart.setOnClickListener(v -> eHolzart.showDropDown());
-        groupMasse.addView(eHolzart, full());
-
-        groupMasse.addView(label("Bemerkung"));
-        eBem = new EditText(act);
-        eBem.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-        eBem.setText(p.bemerkung);
-        eBem.setHint("z. B. gehobelt, imprägniert, gefast");
-        groupMasse.addView(eBem, full());
-
-        // --- Ergebnis
-        tErgebnis = Ui.text(act, "", 15, Ui.BRAUN, true);
-        tErgebnis.setGravity(Gravity.CENTER);
-        int pp = Ui.dp(act, 10);
-        tErgebnis.setPadding(pp, pp, pp, pp);
-        tErgebnis.setBackground(Ui.rounded(Ui.BEIGE, 0, Ui.dp(act, 8), 0));
-        LinearLayout.LayoutParams lpE = full();
-        lpE.topMargin = Ui.dp(act, 12);
-        groupMasse.addView(tErgebnis, lpE);
+        groupFertig.addView(rf);
+        groupMehr.addView(groupFertig);
+        groupMasse.addView(groupMehr);
+        setMehr(p.preis != null || !leer(p.bemerkung) || !leer(p.artikelNr) || p.hasFertigmass());
 
         TextWatcher tw = new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int a, int b, int c) {}
             public void onTextChanged(CharSequence s, int a, int b, int c) {}
             public void afterTextChanged(Editable s) { updateErgebnis(); }
         };
-        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs}) e.addTextChangedListener(tw);
+        for (EditText e : zahlenFelder()) e.addTextChangedListener(tw);
+        for (EditText e : new EditText[]{eEinh, ePackName, ePreisEinh}) e.addTextChangedListener(tw);
 
-        typGroup.setOnCheckedChangeListener((g, id) -> updateTyp());
-        typGroup.check(p.isTitel() ? 3 : p.isPlatte() ? 4 : p.isLfm() ? 2 : 1);
         updateTyp();
 
         AlertDialog.Builder b = new AlertDialog.Builder(act)
-                .setTitle(neu ? "Neue Position" : "Position bearbeiten")
+                .setTitle(p.isTitel() ? "Überschrift" : neu ? "Neu hinzufügen" : "Ändern")
                 .setView(sv)
                 .setPositiveButton("Speichern", null)
                 .setNegativeButton("Abbrechen", null);
-        if (neu) b.setNeutralButton("+ Nächste", null);
-        AlertDialog d = b.create();
-        d.setOnShowListener(x -> {
-            Button ok = d.getButton(AlertDialog.BUTTON_POSITIVE);
-            ok.setOnClickListener(v -> { if (uebernehmen()) { d.dismiss(); cb.onSave(p, false); } });
-            Button next = d.getButton(AlertDialog.BUTTON_NEUTRAL);
-            if (next != null) next.setOnClickListener(v -> { if (uebernehmen()) { d.dismiss(); cb.onSave(p, true); } });
+        if (neu && !p.isTitel()) b.setNeutralButton("+ Nächste", null);
+        dialog = b.create();
+        dialog.setOnShowListener(x -> {
+            Button ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            ok.setOnClickListener(v -> { if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, false); } });
+            Button next = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
+            if (next != null) next.setOnClickListener(v -> { if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, true); } });
         });
-        if (d.getWindow() != null) d.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+        if (dialog.getWindow() != null) dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
-        d.show();
+        dialog.show();
         eBez.requestFocus();
         if (neu && p.isPlatte() && ePL.getText().length() == 0 && ePB.getText().length() == 0) plattenAuswahl();
     }
 
-    /** Übernimmt einen Artikel aus dem Händlerkatalog in die Felder. */
+    // ---------------------------------------------------------------- Aktionen
+
+    private void artWaehlen() {
+        String[] typen = {Position.HOLZ, Position.LFM, Position.PLATTE, Position.MATERIAL};
+        String[] namen = new String[typen.length];
+        for (int i = 0; i < typen.length; i++) namen[i] = Ui.symbol(typen[i]) + "  " + Position.typName(typen[i]);
+        new AlertDialog.Builder(act).setTitle("Art ändern")
+                .setItems(namen, (d, w) -> { typ = typen[w]; updateTyp(); }).show();
+    }
+
+    /** Sucht einen Artikel im Händlerkatalog und öffnet den Dialog mit den übernommenen Werten neu. */
     private void ausKatalog() {
-        String t = typ();
-        KatalogAuswahl.zeigen(act, Position.PLATTE.equals(t), a -> {
-            if (a.platte && !Position.PLATTE.equals(typ())) typGroup.check(4);
-            else if (!a.platte && Position.PLATTE.equals(typ())) typGroup.check("m".equals(a.einheit) && a.l == null ? 2 : 1);
-            eHolzart.setText(a.text);
-            eHolzart.dismissDropDown();
-            if (a.platte) {
-                if (a.l != null) ePL.setText(Fmt.num(a.l * 100));
-                if (a.pb != null) ePB.setText(Fmt.num(a.pb));
-                if (a.h != null) eDicke.setText(Fmt.num(a.h * 10));
-            } else {
-                if (a.b != null) eB.setText(Fmt.num(a.b));
-                if (a.h != null) eH.setText(Fmt.num(a.h));
-                if (a.l != null && Position.HOLZ.equals(typ())) eL.setText(Fmt.num(a.l));
-            }
-            String bem = eBem.getText().toString().trim();
-            String nr = "Art.-Nr. " + a.nr;
-            if (!bem.contains(nr)) eBem.setText(bem.isEmpty() ? nr : bem + "; " + nr);
-            if (eBez.getText().toString().trim().isEmpty()) {
-                eBez.setText(a.text);
-                eBez.dismissDropDown();
-            }
+        if (!zahlenOk()) return;
+        lesen(p);
+        KatalogAuswahl.zeigen(act, typ, a -> {
+            anwenden(p, a);
+            dialog.dismiss();
+            new PositionDialog(act, p, neu, bekannteMaterialien, cb).show();
             Toast.makeText(act, "Übernommen: " + a.text + (a.preis != null ? " (" + a.preisText() + ")" : ""), Toast.LENGTH_LONG).show();
         });
+    }
+
+    /** Übernimmt einen Händlerartikel in die Position (Art, Material, Maße, Preis, Artikelnummer). */
+    static void anwenden(Position p, Datanorm.Artikel a) {
+        String t = a.typ();
+        p.typ = t;
+        p.holzart = a.text;
+        if (p.bezeichnung == null || p.bezeichnung.trim().isEmpty()) p.bezeichnung = a.text;
+        switch (t) {
+            case Position.PLATTE:
+                p.laenge = a.l; p.breite = a.pb; p.hoehe = a.h;
+                if (p.verschnitt == null) p.verschnitt = 10.0;
+                break;
+            case Position.HOLZ:
+                p.breite = a.b; p.hoehe = a.h;
+                if (a.l != null) p.laenge = a.l;
+                break;
+            case Position.LFM:
+                p.breite = a.b; p.hoehe = a.h;
+                break;
+            default:
+                p.einheit = a.einheit == null || a.einheit.isEmpty() ? "Stk" : a.einheit;
+        }
+        p.preis = a.preis;
+        p.preisEinheit = a.einheit == null ? "" : a.einheit;
+        p.artikelNr = a.nr;
     }
 
     /** Öffnet die Schnellauswahl gängiger / eigener Platten und übernimmt die Werte in die Felder. */
     private void plattenAuswahl() {
         Position akt = new Position();
         akt.typ = Position.PLATTE;
-        leseAusPlatte(akt);
-        PlattenAuswahl.Vorlage aktuell = PlattenAuswahl.neu(eHolzart.getText().toString().trim(),
-                eBez.getText().toString().trim(), akt.laenge, akt.breite, akt.hoehe == null ? null : akt.hoehe * 10);
+        lesePlatte(akt);
+        PlattenAuswahl.Vorlage aktuell = PlattenAuswahl.neu(txt(eMat), txt(eBez), akt.laenge, akt.breite,
+                akt.hoehe == null ? null : akt.hoehe * 10);
         PlattenAuswahl.zeigen(act, aktuell, v -> {
-            eHolzart.setText(v.material);
-            eHolzart.dismissDropDown();
+            eMat.setText(v.material);
+            eMat.dismissDropDown();
             ePL.setText(v.laenge == null ? "" : Fmt.num(v.laenge * 100));
             ePB.setText(Fmt.num(v.breite));
             eDicke.setText(Fmt.num(v.dicke));
-            if (eBez.getText().toString().trim().isEmpty() && v.bezeichnung != null) {
+            if (txt(eBez).isEmpty() && v.bezeichnung != null) {
                 eBez.setText(v.bezeichnung);
                 eBez.dismissDropDown();
             }
@@ -312,8 +363,135 @@ public class PositionDialog {
         });
     }
 
-    /** Übernimmt die Plattenfelder (Breite cm, Dicke mm → cm, Fläche m²) in die Position. */
-    private void leseAusPlatte(Position x) {
+    // ---------------------------------------------------------------- Anzeige
+
+    private void setMehr(boolean offen) {
+        groupMehr.setVisibility(offen ? View.VISIBLE : View.GONE);
+        tMehr.setText((offen ? "▾  " : "▸  ") + "Weitere Angaben (Preis, Bemerkung" + (holzig() ? ", Fertigmaß)" : ")"));
+    }
+
+    private boolean holzig() {
+        return Position.HOLZ.equals(typ) || Position.LFM.equals(typ);
+    }
+
+    private void updateTyp() {
+        boolean titel = Position.TITEL.equals(typ);
+        boolean platte = Position.PLATTE.equals(typ), material = Position.MATERIAL.equals(typ);
+        tTyp.setText(Ui.symbol(typ) + "  " + Position.typName(typ) + "      ändern ▾");
+        tTyp.setTextColor(Ui.farbe(typ));
+        groupMasse.setVisibility(titel ? View.GONE : View.VISIBLE);
+        rowStkL.setVisibility(Position.HOLZ.equals(typ) ? View.VISIBLE : View.GONE);
+        rowLfm.setVisibility(Position.LFM.equals(typ) ? View.VISIBLE : View.GONE);
+        groupQuer.setVisibility(holzig() ? View.VISIBLE : View.GONE);
+        groupFertig.setVisibility(holzig() ? View.VISIBLE : View.GONE);
+        groupPlatte.setVisibility(platte ? View.VISIBLE : View.GONE);
+        groupMaterial.setVisibility(material ? View.VISIBLE : View.GONE);
+        if (groupMehr != null) setMehr(groupMehr.getVisibility() == View.VISIBLE);
+
+        tLabelBez.setText(titel ? "Überschrift (z. B. Dachstuhl, Dämmung, Decke EG)" : "Was? (Bezeichnung)");
+        String[] bez = platte ? BEZ_PLATTE : material ? BEZ_MATERIAL : Position.LFM.equals(typ) ? BEZ_LFM : BEZ_HOLZ;
+        eBez.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, bez));
+        eBez.setHint(titel ? "z. B. Dachstuhl" : "z. B. " + bez[0]);
+
+        tLabelMat.setText(platte ? "Plattenmaterial" : material ? "Produkt / Material" : "Holzart / Qualität");
+        Set<String> ha = new LinkedHashSet<>(bekannteMaterialien);
+        for (String s : platte ? PLATTEN : material ? MATERIALIEN : HOLZARTEN) ha.add(s);
+        eMat.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, ha.toArray(new String[0])));
+        eMat.setHint(platte ? "z. B. OSB/3" : material ? "z. B. Mineralwolle 140 mm" : "z. B. KVH NSi C24");
+        updateErgebnis();
+    }
+
+    private void updateErgebnis() {
+        if (tErgebnis == null || ePreisEinh == null) return;
+        Position t = new Position();
+        lesen(t);
+        ePreisEinh.setHint(t.getPreisEinheit().isEmpty() ? "Einheit" : t.getPreisEinheit());
+        StringBuilder e = new StringBuilder();
+        switch (typ) {
+            case Position.PLATTE: {
+                double fl = t.getFlaeche(), vsp = t.verschnitt == null ? 0 : t.verschnitt;
+                Double n = t.getPlattenAnzahl();
+                e.append(Fmt.fix(fl, 2)).append(" m²");
+                if (vsp != 0) e.append(" + ").append(Fmt.num(vsp)).append(" % = ").append(Fmt.fix(fl * (1 + vsp / 100), 2)).append(" m²");
+                if (n != null) {
+                    e.append("\n→ Du brauchst ").append(Fmt.fix(n, 0)).append(n == 1 ? " Platte" : " Platten");
+                    e.append("\n(je ").append(Fmt.fix(t.getPlattenFlaecheEinzeln(), 3)).append(" m², zusammen ")
+                            .append(Fmt.fix(t.getPlattenFlaecheGesamt(), 2)).append(" m²)");
+                } else if (fl > 0) {
+                    e.append("\nPlattengröße eingeben → Anzahl wird berechnet");
+                } else {
+                    e.append("\nFläche eingeben: Länge × Breite oder m²");
+                }
+                break;
+            }
+            case Position.MATERIAL: {
+                Double bed = t.getBedarf();
+                if (bed == null) { e.append("Menge eingeben"); break; }
+                String einh = Einheit.norm(t.einheit);
+                if (t.verschnitt != null && t.verschnitt != 0)
+                    e.append(Fmt.mengeText(t.menge)).append(" ").append(einh).append(" + ").append(Fmt.num(t.verschnitt)).append(" % = ");
+                e.append(Fmt.mengeText(bed)).append(" ").append(einh);
+                Double pk = t.getPackungen();
+                if (pk != null) e.append("\n→ Du brauchst ").append(Fmt.num(pk)).append(" ").append(t.packNameOderStandard())
+                        .append(" à ").append(Fmt.mengeText(t.packInhalt)).append(" ").append(einh);
+                break;
+            }
+            case Position.LFM:
+                e.append("= ").append(Fmt.fix(t.getLaufmeterGesamt(), 2)).append(" m  ·  ").append(Fmt.fix(t.getVolumen(), 3)).append(" m³");
+                break;
+            default:
+                e.append("= ").append(Fmt.fix(t.getLaufmeterGesamt(), 2)).append(" m  ·  ").append(Fmt.fix(t.getVolumen(), 3)).append(" m³");
+        }
+        if (t.preis != null) {
+            Double b = t.getBetrag();
+            e.append("\n").append(b != null ? "Preis: " + Fmt.euro(b)
+                    : "Preis: Einheit „" + t.getPreisEinheit() + "“ passt nicht zur Menge");
+        }
+        tErgebnis.setText(e.toString());
+    }
+
+    // ---------------------------------------------------------------- Werte lesen
+
+    /** Liest alle Felder der aktuellen Art in x (nicht passende Felder werden geleert). */
+    private void lesen(Position x) {
+        x.typ = typ;
+        x.bezeichnung = txt(eBez);
+        if (Position.TITEL.equals(typ)) return;
+        x.holzart = txt(eMat);
+        x.bemerkung = txt(eBem);
+        x.artikelNr = txt(eArtNr);
+        x.preis = Fmt.parse(ePreis.getText().toString());
+        x.preisEinheit = txt(ePreisEinh);
+        x.stueck = null; x.laenge = null; x.laufmeter = null; x.breite = null; x.hoehe = null;
+        x.flaeche = null; x.flL = null; x.flB = null; x.verschnitt = null; x.fertigB = null; x.fertigH = null;
+        x.menge = null; x.einheit = ""; x.packInhalt = null; x.packName = "";
+        switch (typ) {
+            case Position.HOLZ:
+                x.stueck = Fmt.parse(eStk.getText().toString());
+                x.laenge = Fmt.parse(eL.getText().toString());
+                // fall through
+            case Position.LFM:
+                if (Position.LFM.equals(typ)) x.laufmeter = Fmt.parse(eLfm.getText().toString());
+                x.breite = Fmt.parse(eB.getText().toString());
+                x.hoehe = Fmt.parse(eH.getText().toString());
+                x.fertigB = Fmt.parse(eFb.getText().toString());
+                x.fertigH = Fmt.parse(eFh.getText().toString());
+                break;
+            case Position.PLATTE:
+                lesePlatte(x);
+                break;
+            case Position.MATERIAL:
+                x.menge = Fmt.parse(eMenge.getText().toString());
+                x.einheit = txt(eEinh).isEmpty() ? "Stk" : Einheit.norm(txt(eEinh));
+                x.verschnitt = Fmt.parse(eMatVs.getText().toString());
+                x.packInhalt = Fmt.parse(ePack.getText().toString());
+                x.packName = txt(ePackName);
+                break;
+        }
+    }
+
+    /** Plattenfelder (Länge cm → m, Breite cm, Dicke mm → cm, Fläche m²). */
+    private void lesePlatte(Position x) {
         Double cm = Fmt.parse(ePL.getText().toString());
         x.laenge = cm == null ? null : cm / 100.0;
         x.breite = Fmt.parse(ePB.getText().toString());
@@ -326,120 +504,73 @@ public class PositionDialog {
         x.stueck = null; // wird aus Fläche + Verschnitt berechnet
     }
 
-    private String typ() {
-        int id = typGroup.getCheckedRadioButtonId();
-        return id == 3 ? Position.TITEL : id == 4 ? Position.PLATTE : id == 2 ? Position.LFM : Position.HOLZ;
+    private EditText[] zahlenFelder() {
+        return new EditText[]{eStk, eL, eLfm, eB, eH, eFb, eFh, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs, eMenge, eMatVs, ePack, ePreis};
     }
 
-    private void updateTyp() {
-        String t = typ();
-        boolean titel = Position.TITEL.equals(t);
-        groupMasse.setVisibility(titel ? View.GONE : View.VISIBLE);
-        katalogBtn.setVisibility(titel ? View.GONE : View.VISIBLE);
-        boolean platte = Position.PLATTE.equals(t);
-        rowStkL.setVisibility(Position.HOLZ.equals(t) ? View.VISIBLE : View.GONE);
-        rowLfm.setVisibility(Position.LFM.equals(t) ? View.VISIBLE : View.GONE);
-        groupPlatte.setVisibility(platte ? View.VISIBLE : View.GONE);
-        groupHolz.setVisibility(platte ? View.GONE : View.VISIBLE);
-        tLabelHolzart.setText(platte ? "Material / Qualität" : "Holzart / Qualität");
-        eHolzart.setHint(platte ? "z. B. OSB/3" : "z. B. KVH NSi C24");
-        eBez.setHint(platte ? "z. B. Dachschalung OSB" : "z. B. Sparren");
-        tLabelBez.setText(titel ? "Abschnitt / Überschrift (z. B. Dachstuhl, Decke EG)" : "Bezeichnung");
-        updateErgebnis();
-    }
-
-    private void updateErgebnis() {
-        Position tmp = new Position();
-        tmp.typ = typ();
-        tmp.stueck = Fmt.parse(eStk.getText().toString());
-        tmp.laenge = Fmt.parse(eL.getText().toString());
-        tmp.laufmeter = Fmt.parse(eLfm.getText().toString());
-        tmp.breite = Fmt.parse(eB.getText().toString());
-        tmp.hoehe = Fmt.parse(eH.getText().toString());
-        if (tmp.isPlatte()) {
-            leseAusPlatte(tmp);
-            double fl = tmp.getFlaeche(), vsp = tmp.verschnitt == null ? 0 : tmp.verschnitt;
-            Double n = tmp.getPlattenAnzahl();
-            StringBuilder e = new StringBuilder();
-            e.append(Fmt.fix(fl, 2)).append(" m²");
-            if (vsp != 0) e.append(" + ").append(Fmt.num(vsp)).append(" % = ").append(Fmt.fix(fl * (1 + vsp / 100), 2)).append(" m²");
-            if (n != null) {
-                e.append("\n→ ").append(Fmt.fix(n, 0)).append(n == 1 ? " Platte" : " Platten")
-                        .append(" à ").append(Fmt.fix(tmp.getPlattenFlaecheEinzeln(), 3)).append(" m²");
-                e.append("\n= ").append(Fmt.fix(tmp.getPlattenFlaecheGesamt(), 2)).append(" m² Platten · ")
-                        .append(Fmt.fix(tmp.getVolumen(), 3)).append(" m³");
-            } else if (fl > 0) {
-                e.append("\nPlattenformat eingeben → Plattenanzahl wird berechnet");
-            } else {
-                e.append("\nFläche eingeben: Länge × Breite oder m²");
-            }
-            tErgebnis.setText(e.toString());
-            return;
-        }
-        tErgebnis.setText("= " + Fmt.fix(tmp.getLaufmeterGesamt(), 2) + " lfm   ·   " + Fmt.fix(tmp.getVolumen(), 3) + " m³");
-    }
-
-    private boolean uebernehmen() {
-        String t = typ();
-        String bez = eBez.getText().toString().trim();
-        if (Position.TITEL.equals(t) && bez.isEmpty()) {
-            Toast.makeText(act, "Bitte eine Überschrift eingeben", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, eFb, eFh, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs}) {
+    private boolean zahlenOk() {
+        for (EditText e : zahlenFelder()) {
             String s = e.getText().toString().trim();
             if (!s.isEmpty() && Fmt.parse(s) == null) {
+                if (e.getParent() != null) setMehr(groupMehr.getVisibility() == View.VISIBLE || e == ePreis);
                 e.setError("Ungültige Zahl");
                 e.requestFocus();
                 return false;
             }
         }
-        p.typ = t;
-        p.bezeichnung = bez;
-        if (Position.TITEL.equals(t)) return true;
-        boolean mitLaenge = Position.HOLZ.equals(t) || Position.PLATTE.equals(t);
-        p.stueck = mitLaenge ? Fmt.parse(eStk.getText().toString()) : null;
-        p.laenge = mitLaenge ? Fmt.parse(eL.getText().toString()) : null;
-        p.flaeche = null;
-        p.flL = null;
-        p.flB = null;
-        p.verschnitt = null;
-        p.laufmeter = Position.LFM.equals(t) ? Fmt.parse(eLfm.getText().toString()) : null;
-        p.breite = Fmt.parse(eB.getText().toString());
-        p.hoehe = Fmt.parse(eH.getText().toString());
-        p.fertigB = Fmt.parse(eFb.getText().toString());
-        p.fertigH = Fmt.parse(eFh.getText().toString());
-        if (Position.PLATTE.equals(t)) {
-            leseAusPlatte(p);
-            p.fertigB = null;
-            p.fertigH = null;
+        return true;
+    }
+
+    private boolean uebernehmen() {
+        String bez = txt(eBez);
+        if (Position.TITEL.equals(typ) && bez.isEmpty()) {
+            Toast.makeText(act, "Bitte eine Überschrift eingeben", Toast.LENGTH_SHORT).show();
+            return false;
         }
-        p.holzart = eHolzart.getText().toString().trim();
-        p.bemerkung = eBem.getText().toString().trim();
+        if (!zahlenOk()) return false;
+        lesen(p);
         return true;
     }
 
     // ---------------------------------------------------------------- Layout-Helfer
 
-    private void addTyp(String text, String typ, int id) {
-        RadioButton rb = new RadioButton(act);
-        rb.setId(id);
-        rb.setText(text);
-        rb.setTextSize(13);
-        rb.setButtonTintList(ColorStateList.valueOf(Ui.BRAUN));
-        RadioGroup.LayoutParams lp = new RadioGroup.LayoutParams(0, RadioGroup.LayoutParams.WRAP_CONTENT, 1);
-        typGroup.addView(rb, lp);
+    private static boolean leer(String s) { return s == null || s.trim().isEmpty(); }
+
+    private static String txt(EditText e) { return e.getText().toString().trim(); }
+
+    private Button button(String text, int textColor, int fill, int stroke) {
+        Button b = new Button(act);
+        b.setText(text);
+        b.setAllCaps(false);
+        b.setTextSize(15);
+        b.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+        b.setTextColor(textColor);
+        b.setBackground(Ui.rounded(fill, stroke, Ui.dp(act, 8), Ui.dp(act, 1)));
+        return b;
+    }
+
+    private AutoCompleteTextView auto(String[] werte, String wert, String hint) {
+        AutoCompleteTextView a = new AutoCompleteTextView(act);
+        a.setAdapter(new ArrayAdapter<>(act, android.R.layout.simple_dropdown_item_1line, werte));
+        a.setThreshold(0);
+        a.setInputType(InputType.TYPE_CLASS_TEXT);
+        a.setText(wert == null ? "" : wert);
+        a.setHint(hint);
+        a.setTextSize(17);
+        a.setOnFocusChangeListener((v, has) -> { if (has) a.showDropDown(); });
+        a.setOnClickListener(v -> a.showDropDown());
+        return a;
     }
 
     private TextView label(String s) {
-        TextView t = Ui.text(act, s, 12, Ui.GRAU, false);
-        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 10), 0, 0);
+        TextView t = Ui.text(act, s, 13, Ui.GRAU, false);
+        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 12), 0, 0);
         return t;
     }
 
     private TextView section(String s) {
-        TextView t = Ui.text(act, s, 13, Ui.BRAUN, true);
-        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 14), 0, 0);
+        TextView t = Ui.text(act, s, 14, Ui.PRIMAER, true);
+        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 16), 0, 0);
         return t;
     }
 
@@ -449,12 +580,19 @@ public class PositionDialog {
         return l;
     }
 
-    private LinearLayout field(String label, EditText e) {
+    private LinearLayout vertical() {
         LinearLayout l = new LinearLayout(act);
         l.setOrientation(LinearLayout.VERTICAL);
+        return l;
+    }
+
+    private LinearLayout field(String label, EditText e) {
+        LinearLayout l = vertical();
         l.addView(label(label));
         l.addView(e, full());
-        l.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1);
+        lp.setMarginEnd(Ui.dp(act, 6));
+        l.setLayoutParams(lp);
         return l;
     }
 
@@ -463,6 +601,7 @@ public class PositionDialog {
         Ui.decimalInput(e);
         e.setText(value);
         e.setHint(hint);
+        e.setTextSize(18);
         e.setGravity(Gravity.END);
         return e;
     }

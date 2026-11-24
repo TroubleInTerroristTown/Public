@@ -5,7 +5,8 @@ import java.util.List;
 
 /**
  * Wandelt eingefügten Text (z. B. aus Excel kopiert) in Positionen um.
- * Spalten: Bezeichnung; Stück; Breite; Höhe; Länge; Holzart; Bemerkung
+ * Spalten: Bezeichnung; Stück/Menge; Breite; Höhe; Länge; Material; Bemerkung; Einheit
+ * Mit Einheit (z. B. "Sack", "kg") und ohne Querschnitt → sonstiges Material.
  */
 public final class ClipboardImport {
 
@@ -23,6 +24,7 @@ public final class ClipboardImport {
             Double l = f.length > 4 ? Fmt.parse(f[4]) : null;
             String holzart = f.length > 5 ? f[5].trim() : "";
             String bem = f.length > 6 ? f[6].trim() : "";
+            String einh = f.length > 7 ? f[7].trim() : "";
 
             boolean keineZahlen = stk == null && b == null && h == null && l == null;
             if (keineZahlen) {
@@ -41,7 +43,11 @@ public final class ClipboardImport {
             p.hoehe = h;
             p.holzart = holzart;
             p.bemerkung = bem;
-            if (stk == null && l != null) {
+            if (!einh.isEmpty() && b == null && h == null) {
+                p.typ = Position.MATERIAL;
+                p.menge = stk != null ? stk : l;
+                p.einheit = Einheit.norm(einh);
+            } else if (stk == null && l != null) {
                 p.typ = Position.LFM;
                 p.laufmeter = l;
             } else {

@@ -23,20 +23,43 @@ public final class Ui {
 
     private Ui() {}
 
-    public static final int BRAUN = Color.parseColor("#5D4037");
-    public static final int BRAUN_DUNKEL = Color.parseColor("#3E2723");
-    public static final int BRAUN_HELL = Color.parseColor("#D7CCC8");
-    public static final int BEIGE = Color.parseColor("#EFEBE9");
-    public static final int HINTERGRUND = Color.parseColor("#F5F1EE");
-    public static final int ZEBRA = Color.parseColor("#FAF7F5");
+    public static final int PRIMAER = Color.parseColor("#1E4E79");
+    public static final int DUNKEL = Color.parseColor("#12324F");
+    public static final int HELL = Color.parseColor("#C5D5E4");
+    public static final int FLAECHE = Color.parseColor("#E8F0F7");
+    public static final int HINTERGRUND = Color.parseColor("#F1F4F7");
+    public static final int ZEBRA = Color.parseColor("#F8FAFB");
     public static final int WEISS = Color.WHITE;
-    public static final int TEXT = Color.parseColor("#212121");
-    public static final int GRAU = Color.parseColor("#757575");
-    public static final int LINIE = Color.parseColor("#E0D7D3");
-    public static final int AKZENT = Color.parseColor("#EF8F00");
+    public static final int TEXT = Color.parseColor("#1B1F23");
+    public static final int GRAU = Color.parseColor("#66707A");
+    public static final int LINIE = Color.parseColor("#DCE2E8");
+    public static final int AKZENT = Color.parseColor("#E67E22");
     public static final int BLAU = Color.parseColor("#1565C0");
     public static final int GRUEN = Color.parseColor("#2E7D32");
+    public static final int HOLZ = Color.parseColor("#8D5A2B");
+    public static final int LILA = Color.parseColor("#6A4C93");
     public static final int SUMME = Color.parseColor("#FFF3E0");
+
+    /** Farbe je Positionsart (für Symbol und Mengen-Anzeige). */
+    public static int farbe(String typ) {
+        switch (typ) {
+            case Position.LFM: return AKZENT;
+            case Position.PLATTE: return GRUEN;
+            case Position.MATERIAL: return LILA;
+            default: return HOLZ;
+        }
+    }
+
+    /** Symbol je Positionsart. */
+    public static String symbol(String typ) {
+        switch (typ) {
+            case Position.LFM: return "📏";
+            case Position.PLATTE: return "▦";
+            case Position.MATERIAL: return "📦";
+            case Position.TITEL: return "≡";
+            default: return "🪵";
+        }
+    }
 
     public static int dp(Context c, float dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, c.getResources().getDisplayMetrics()));
@@ -64,7 +87,7 @@ public final class Ui {
 
     /** Hintergrund mit Berührungs-Effekt. */
     public static Drawable touchBg(int color) {
-        return new RippleDrawable(ColorStateList.valueOf(Color.parseColor("#33795548")),
+        return new RippleDrawable(ColorStateList.valueOf(Color.parseColor("#331E4E79")),
                 new ColorDrawable(color), new ColorDrawable(Color.WHITE));
     }
 

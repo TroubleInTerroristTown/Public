@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Rendert die wichtigsten Bildschirme als PNG (build/screenshots) und prüft den Excel-Export.
+ * Rendert die wichtigsten Bildschirme als PNG (build/screenshots) und prüft Berechnung, DATANORM-Import und Excel-Export.
  * Ausführen: gradle testReleaseUnitTest
  */
 @RunWith(RobolectricTestRunner.class)
@@ -57,7 +57,23 @@ public class ScreenshotTest {
         h.positionen.add(platte("Dachschalung", 12.5, 9.0, null, 10.0, 2.50, 67.5, 22.0, "OSB/3 N+F", "N+F"));
         h.positionen.add(platte("Wandbeplankung innen", 7.5, 2.6, null, 10.0, 2.50, 125.0, 15.0, "OSB/3", ""));
         h.positionen.add(platte("Decke OG", null, null, 48.0, 15.0, 2.00, 125.0, 12.5, "Gipskarton GKB", ""));
+        h.positionen.add(p(Position.TITEL, "Dämmung & Kleinteile", null, null, null, null, null, null, null, "", ""));
+        Position d = material("Zwischensparrendämmung", 96.0, "m²", 5.0, 5.2, "Paket", "Mineralwolle 035 140 mm");
+        d.preis = 8.90; d.preisEinheit = "m²"; d.artikelNr = "600100";
+        h.positionen.add(d);
+        Position s = material("Holzbauschrauben 8×240", 3.0, "Paket", null, null, "", "Senkkopf, 50 Stk/Paket");
+        s.preis = 22.50;
+        h.positionen.add(s);
+        h.positionen.add(material("Dampfbremse", 2.0, "Rolle", null, null, "", "sd 2 m, 1,5 × 50 m"));
+        h.positionen.add(material("Zementmörtel MG III", 11.5, "Sack", null, null, "", "25 kg"));
         return h;
+    }
+
+    static Position material(String bez, Double menge, String einh, Double vs, Double pack, String packName, String mat) {
+        Position x = new Position();
+        x.typ = Position.MATERIAL; x.bezeichnung = bez; x.menge = menge; x.einheit = einh; x.verschnitt = vs;
+        x.packInhalt = pack; x.packName = packName; x.holzart = mat;
+        return x;
     }
 
     /** n-ter HorizontalScrollView im Baum (0 = Kopf, 1 = Tabelle). */
@@ -65,6 +81,16 @@ public class ScreenshotTest {
         java.util.List<android.widget.HorizontalScrollView> l = new java.util.ArrayList<>();
         sammle(v, l);
         return l.size() > n ? l.get(n) : null;
+    }
+
+    private static android.widget.ScrollView findSv(View v) {
+        if (v instanceof android.widget.ScrollView) return (android.widget.ScrollView) v;
+        if (v instanceof android.view.ViewGroup)
+            for (int i = 0; i < ((android.view.ViewGroup) v).getChildCount(); i++) {
+                android.widget.ScrollView s = findSv(((android.view.ViewGroup) v).getChildAt(i));
+                if (s != null) return s;
+            }
+        return null;
     }
 
     private static void sammle(View v, java.util.List<android.widget.HorizontalScrollView> l) {
@@ -107,7 +133,7 @@ public class ScreenshotTest {
         i.putExtra(EditorActivity.EXTRA_ID, h.id);
         EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
         ShadowLooper.idleMainLooper();
-        png(ed.getWindow().getDecorView(), "2_holzliste");
+        png(ed.getWindow().getDecorView(), "2_liste");
 
         new PositionDialog(ed, h.positionen.get(1).copy(), false, java.util.Collections.emptySet(), (x, y) -> {}).show();
         ShadowLooper.idleMainLooper();
@@ -129,17 +155,27 @@ public class ScreenshotTest {
         ShadowLooper.idleMainLooper();
         png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "7_platte_neu");
 
-        // Tabelle seitlich gescrollt (Mengen-Spalten)
-        android.widget.HorizontalScrollView hs = findHs(ed.getWindow().getDecorView(), 1);
-        if (hs != null) { hs.scrollTo(Ui.dp(ed, 190), 0); ShadowLooper.idleMainLooper(); }
-        View sv = hs == null ? null : (View) hs.getParent().getParent().getParent();
-        if (sv instanceof android.widget.ScrollView) { ((android.widget.ScrollView) sv).scrollTo(0, 100000); ShadowLooper.idleMainLooper(); }
-        png(ed.getWindow().getDecorView(), "5_holzliste_rechts");
+        // Liste nach unten gescrollt (Material + Summe)
+        android.widget.ScrollView sv = findSv(ed.getWindow().getDecorView());
+        if (sv != null) { sv.scrollTo(0, 100000); ShadowLooper.idleMainLooper(); }
+        png(ed.getWindow().getDecorView(), "5_liste_unten");
+
+        // Auswahl „Was möchtest du hinzufügen?“
+        ShadowDialog.getLatestDialog().dismiss();
+        ed.hinzufuegen(h.positionen.size());
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "9_hinzufuegen");
+        ShadowDialog.getLatestDialog().dismiss();
+
+        // Material-Dialog
+        new PositionDialog(ed, h.positionen.get(15).copy(), false, java.util.Collections.emptySet(), (x, y) -> {}).show();
+        ShadowLooper.idleMainLooper();
+        png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "10_material");
 
         // DATANORM-Katalog importieren und Auswahl anzeigen
         Datanorm.Ergebnis dn = Datanorm.lesen(getClass().getResourceAsStream("/DATANORM.001"), "DATANORM.001");
         org.junit.Assert.assertEquals("Holzhandel Mustermann GmbH", dn.haendler);
-        org.junit.Assert.assertEquals(10, dn.artikel.size()); // 11 A-Sätze, einer gelöscht (L)
+        org.junit.Assert.assertEquals(13, dn.artikel.size()); // 14 A-Sätze, einer gelöscht (L)
         Datanorm.Artikel kvh = dn.artikel.get(0);
         org.junit.Assert.assertEquals(6.0, kvh.b, 1e-9);
         org.junit.Assert.assertEquals(12.0, kvh.h, 1e-9);
@@ -153,11 +189,12 @@ public class ScreenshotTest {
         org.junit.Assert.assertEquals(1.5, osb.h, 1e-9);
         org.junit.Assert.assertTrue(dn.artikel.get(2).text.contains("imprägniert"));
         Katalog.speichern(ed, dn);
-        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "kvh 6/12", false, 10).size());
-        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "osb 15", true, 10).size());
+        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "kvh 6/12", Position.HOLZ, 10).size());
+        org.junit.Assert.assertEquals(1, Katalog.suche(Katalog.alle(ed), "osb 15", Position.PLATTE, 10).size());
+        org.junit.Assert.assertEquals(4, Katalog.suche(Katalog.alle(ed), "", Position.MATERIAL, 10).size());
 
         ShadowDialog.getLatestDialog().dismiss();
-        KatalogAuswahl.zeigen(ed, false, a -> {});
+        KatalogAuswahl.zeigen(ed, null, a -> {});
         for (int k = 0; k < 10; k++) { ShadowLooper.idleMainLooper(); Thread.sleep(100); }
         ShadowLooper.idleMainLooper();
         png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "8_katalog");
@@ -171,5 +208,10 @@ public class ScreenshotTest {
         org.junit.Assert.assertEquals(7.0, h.positionen.get(12).getPlattenAnzahl(), 0);
         // 48 m² + 15 % = 55,2 / 2,5 = 22,08 → 23 Platten
         org.junit.Assert.assertEquals(23.0, h.positionen.get(13).getPlattenAnzahl(), 0);
+        // Dämmung 96 m² + 5 % = 100,8 m² / 5,2 = 19,38 → 20 Pakete; Preis je m²: 20 × 5,2 × 8,90
+        org.junit.Assert.assertEquals(20.0, h.positionen.get(15).getPackungen(), 0);
+        org.junit.Assert.assertEquals(925.60, h.positionen.get(15).getBetrag(), 1e-6);
+        // Mörtel 11,5 Sack → 12 Sack
+        org.junit.Assert.assertEquals("12 Sack", h.positionen.get(18).bestellText());
     }
 }

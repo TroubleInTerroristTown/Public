@@ -55,6 +55,13 @@ public final class Datanorm {
             return sb.toString();
         }
 
+        /** Passende Positionsart für diesen Artikel. */
+        public String typ() {
+            if (platte && l != null && pb != null) return Position.PLATTE;
+            if (b != null && h != null) return "m".equals(einheit) && l == null ? Position.LFM : Position.HOLZ;
+            return Position.MATERIAL;
+        }
+
         public String preisText() {
             if (preis == null) return "";
             return Fmt.fix(preis, 2) + " €" + (einheit.isEmpty() ? "" : " / " + einheit) + (netto ? " netto" : "");
@@ -148,15 +155,7 @@ public final class Datanorm {
     }
 
     static String einheit(String s) {
-        String u = s.trim().toUpperCase(Locale.ROOT);
-        switch (u) {
-            case "M2": case "QM": case "M²": return "m²";
-            case "M3": case "CBM": case "M³": return "m³";
-            case "M": case "LFM": case "LM": return "m";
-            case "STK": case "ST": case "STCK": return "Stk";
-            case "": return "";
-            default: return s.trim();
-        }
+        return Einheit.norm(s);
     }
 
     // ------------------------------------------------------------------ Maße erkennen
@@ -167,7 +166,9 @@ public final class Datanorm {
     private static final Pattern LAENGE = Pattern.compile("(?<![\\w.,])(?:l\\s*=?\\s*)?" + ZAHL + "\\s*(m|mm)(?![a-z0-9²³])");
     private static final Pattern DICKE = Pattern.compile("(?<![\\w.,x])" + ZAHL + "\\s*mm(?![a-z0-9²³])");
     private static final Pattern KLEINTEIL = Pattern.compile(
-            "schraube|nagel|nägel|klammer|winkel|verbinder|anker|dübel|bolzen|mutter|scheibe|beschlag|band|folie|kleber|dichtband");
+            "schraube|nagel|nägel|klammer|winkel|verbinder|anker|dübel|bolzen|mutter|scheibe|beschlag|band|folie|kleber|dichtband"
+            + "|mörtel|zement|beton|putz|estrich|farbe|lasur|lack|silikon|acryl|schaum|kartusche|eimer|sack|bahn|vlies"
+            + "|dämmung|mineralwolle|glaswolle|steinwolle|rinne|rohr|ziegel|pfanne|stein|kies|sand|splitt|kg\\b");
     private static final Pattern PLATTE = Pattern.compile(
             "osb|platte|gips|gk[bfi]|spanpl|dreischicht|3-?schicht|mdf|sperrholz|multiplex|fermacell|holzfaser|dwd|hdf|furnier|zementgeb");
 

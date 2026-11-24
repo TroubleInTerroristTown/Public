@@ -19,7 +19,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -34,7 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-/** Bearbeitung einer Holzliste in Tabellenform mit fixierter Bezeichnungs-Spalte. */
+/** Bearbeitung einer Materialliste: Positionen als große, gut lesbare Karten. */
 public class EditorActivity extends Activity {
 
     public static final String EXTRA_ID = "id";
@@ -42,16 +41,8 @@ public class EditorActivity extends Activity {
     static final String XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final int REQ_SAVE = 42;
 
-    // Spalten rechts neben der fixierten Bezeichnung
-    private static final String[] COL_HEAD = {"Stk", "B\ncm", "H/D\ncm", "L\nm", "Lfm\nm", "Fläche\nm²", "Vol.\nm³", "Fertig\nB/H cm", "Holzart / Material", "Bemerkung"};
-    private static final int[] COL_W = {42, 46, 50, 56, 70, 70, 70, 80, 140, 180};
-    private static final int COL_TEXT = 8; // ab hier linksbündige Textspalten
-    private static final int LEFT_W = 140;
-    private static final int ROW_H = 50, TITEL_H = 38;
-
     private Holzliste liste;
-    private LinearLayout leftCol, rightCol;
-    private HorizontalScrollView hHead, hBody;
+    private LinearLayout karten;
     private TextView kopfTitel, kopfInfo, sumText, emptyText;
 
     @Override
@@ -59,7 +50,7 @@ public class EditorActivity extends Activity {
         super.onCreate(state);
         liste = Storage.laden(this, getIntent().getStringExtra(EXTRA_ID));
         if (liste == null) {
-            Toast.makeText(this, "Holzliste nicht gefunden", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Liste nicht gefunden", Toast.LENGTH_LONG).show();
             finish();
             return;
         }
@@ -76,243 +67,254 @@ public class EditorActivity extends Activity {
         root.setOrientation(LinearLayout.VERTICAL);
         root.setBackgroundColor(Ui.HINTERGRUND);
 
-        // --- Kopfbereich
+        // --- Kopfbereich (antippen = Kopfdaten ändern)
         LinearLayout kopf = new LinearLayout(this);
         kopf.setOrientation(LinearLayout.VERTICAL);
-        int p = Ui.dp(this, 14);
-        kopf.setPadding(p, Ui.dp(this, 10), p, Ui.dp(this, 10));
+        int p = Ui.dp(this, 16);
+        kopf.setPadding(p, Ui.dp(this, 12), p, Ui.dp(this, 12));
         kopf.setBackground(Ui.touchBg(Ui.WEISS));
         kopf.setOnClickListener(v -> kopfdatenDialog());
-        kopfTitel = Ui.text(this, "", 18, Ui.BRAUN_DUNKEL, true);
-        kopfInfo = Ui.text(this, "", 13, Ui.GRAU, false);
+        kopfTitel = Ui.text(this, "", 20, Ui.DUNKEL, true);
+        kopfInfo = Ui.text(this, "", 14, Ui.GRAU, false);
         kopf.addView(kopfTitel);
         kopf.addView(kopfInfo);
         root.addView(kopf);
         root.addView(Ui.divider(this, false));
 
-        // --- Tabellenkopf
-        LinearLayout head = new LinearLayout(this);
-        head.setOrientation(LinearLayout.HORIZONTAL);
-        head.setBackgroundColor(Ui.BRAUN);
-        TextView hl = Ui.cell(this, "Pos.  Bezeichnung", LEFT_W, Gravity.START, true, Ui.WEISS);
-        hl.setTextSize(13);
-        hl.setElevation(Ui.dp(this, 2));
-        hl.setBackgroundColor(Ui.BRAUN);
-        head.addView(hl);
-        head.addView(sep(Ui.BRAUN_DUNKEL));
-        hHead = new HorizontalScrollView(this);
-        hHead.setHorizontalScrollBarEnabled(false);
-        LinearLayout headCells = new LinearLayout(this);
-        headCells.setOrientation(LinearLayout.HORIZONTAL);
-        for (int i = 0; i < COL_HEAD.length; i++) {
-            TextView t = Ui.cell(this, COL_HEAD[i], COL_W[i], i >= COL_TEXT ? Gravity.START : Gravity.END, true, Ui.WEISS);
-            t.setSingleLine(false);
-            t.setMaxLines(2);
-            t.setTextSize(12);
-            headCells.addView(t);
-        }
-        hHead.addView(headCells, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, Ui.dp(this, 44)));
-        head.addView(hHead, new LinearLayout.LayoutParams(0, Ui.dp(this, 44), 1));
-        root.addView(head, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 44)));
-
-        // --- Tabellenkörper
+        // --- Positionen als Karten
         ScrollView vScroll = new ScrollView(this);
         vScroll.setFillViewport(true);
         LinearLayout body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout table = new LinearLayout(this);
-        table.setOrientation(LinearLayout.HORIZONTAL);
-        leftCol = new LinearLayout(this);
-        leftCol.setOrientation(LinearLayout.VERTICAL);
-        leftCol.setElevation(Ui.dp(this, 2));
-        leftCol.setBackgroundColor(Ui.WEISS);
-        table.addView(leftCol, new LinearLayout.LayoutParams(Ui.dp(this, LEFT_W), ViewGroup.LayoutParams.WRAP_CONTENT));
-        hBody = new HorizontalScrollView(this);
-        rightCol = new LinearLayout(this);
-        rightCol.setOrientation(LinearLayout.VERTICAL);
-        hBody.addView(rightCol);
-        table.addView(hBody, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        body.addView(table);
+        int lp = Ui.dp(this, 10);
+        body.setPadding(lp, Ui.dp(this, 6), lp, Ui.dp(this, 12));
+        karten = new LinearLayout(this);
+        karten.setOrientation(LinearLayout.VERTICAL);
+        body.addView(karten);
 
-        emptyText = Ui.text(this, "Noch keine Positionen.\n\nUnten über „+ Stückholz“, „+ Laufmeter“ oder „+ Platten m²“ hinzufügen.\n\nTipp: Eine Zeile antippen zum Bearbeiten, lange drücken für Einfügen (auch Abschnitts-Überschriften), Verschieben, Kopieren, Löschen.",
-                15, Ui.GRAU, false);
+        emptyText = Ui.text(this, "Die Liste ist noch leer.\n\nTippe unten auf  „＋ Hinzufügen“.\n\n"
+                        + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.",
+                17, Ui.GRAU, false);
         emptyText.setGravity(Gravity.CENTER);
-        int ep = Ui.dp(this, 32);
-        emptyText.setPadding(ep, ep, ep, ep);
+        int ep = Ui.dp(this, 28);
+        emptyText.setPadding(ep, ep * 2, ep, ep);
         body.addView(emptyText);
-
         vScroll.addView(body);
         root.addView(vScroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
-        hBody.setOnScrollChangeListener((v, x, y, ox, oy) -> { if (hHead.getScrollX() != x) hHead.scrollTo(x, 0); });
-        hHead.setOnScrollChangeListener((v, x, y, ox, oy) -> { if (hBody.getScrollX() != x) hBody.scrollTo(x, 0); });
-
-        // --- Summenleiste
+        // --- Summenleiste (antippen = Details)
         root.addView(Ui.divider(this, false));
-        sumText = Ui.text(this, "", 14, Ui.BRAUN_DUNKEL, false);
-        sumText.setBackgroundColor(Ui.SUMME);
-        sumText.setPadding(p, Ui.dp(this, 8), p, Ui.dp(this, 8));
+        sumText = Ui.text(this, "", 15, Ui.DUNKEL, false);
+        sumText.setBackground(Ui.touchBg(Ui.SUMME));
+        sumText.setPadding(p, Ui.dp(this, 10), p, Ui.dp(this, 10));
+        sumText.setOnClickListener(v -> summenDetails());
         root.addView(sumText, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        // --- Buttonleiste
+        // --- Ein großer Knopf zum Hinzufügen
         LinearLayout bar = new LinearLayout(this);
-        bar.setOrientation(LinearLayout.HORIZONTAL);
         bar.setBackgroundColor(Ui.WEISS);
-        int bp = Ui.dp(this, 6);
+        int bp = Ui.dp(this, 10);
         bar.setPadding(bp, bp, bp, bp);
-        bar.addView(addButton("+ Stückholz", Position.HOLZ));
-        bar.addView(addButton("+ Laufmeter", Position.LFM));
-        bar.addView(addButton("+ Platten m²", Position.PLATTE));
+        Button add = new Button(this);
+        add.setText("＋  Hinzufügen");
+        add.setAllCaps(false);
+        add.setTextSize(19);
+        add.setTypeface(Typeface.DEFAULT_BOLD);
+        add.setTextColor(Ui.WEISS);
+        add.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        add.setOnClickListener(v -> hinzufuegen(liste.positionen.size()));
+        bar.addView(add, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58)));
         root.addView(bar);
         return root;
-    }
-
-    private View sep(int color) {
-        View v = new View(this);
-        v.setBackgroundColor(color);
-        v.setLayoutParams(new LinearLayout.LayoutParams(1, ViewGroup.LayoutParams.MATCH_PARENT));
-        return v;
-    }
-
-    private Button addButton(String text, String typ) {
-        Button b = new Button(this);
-        b.setText(text);
-        b.setAllCaps(false);
-        b.setTextSize(14);
-        b.setTypeface(Typeface.DEFAULT_BOLD);
-        boolean primary = Position.HOLZ.equals(typ);
-        b.setTextColor(primary ? Ui.WEISS : Ui.BRAUN);
-        b.setBackground(Ui.rounded(primary ? Ui.BRAUN : Ui.BEIGE, primary ? 0 : Ui.BRAUN_HELL, Ui.dp(this, 8), Ui.dp(this, 1)));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, Ui.dp(this, 46), 1);
-        lp.setMargins(Ui.dp(this, 4), 0, Ui.dp(this, 4), 0);
-        b.setLayoutParams(lp);
-        b.setOnClickListener(v -> neuePosition(typ, liste.positionen.size()));
-        return b;
     }
 
     // ================================================================ Darstellung
 
     private void render() {
-        setTitle("Holzliste");
+        setTitle("Materialliste");
         kopfTitel.setText(liste.titel());
         StringBuilder info = new StringBuilder();
         anhang(info, liste.kunde);
         anhang(info, liste.bauteil);
         anhang(info, liste.datum);
-        if (info.length() == 0) info.append("Kopfdaten antippen zum Bearbeiten (Projekt, Kunde, Datum …)");
-        kopfInfo.setText(info);
+        kopfInfo.setText(info.length() == 0 ? "✎ Antippen: Projekt, Kunde, Datum eintragen" : info + "   ✎");
 
-        leftCol.removeAllViews();
-        rightCol.removeAllViews();
-        int zeile = 0;
+        karten.removeAllViews();
         for (int i = 0; i < liste.positionen.size(); i++) {
             Position p = liste.positionen.get(i);
-            final int idx = i;
-            View.OnClickListener click = v -> bearbeiten(idx);
-            View.OnLongClickListener longClick = v -> { aktionen(idx); return true; };
-
-            if (p.isTitel()) {
-                zeile = 0;
-                int h = Ui.dp(this, TITEL_H);
-                TextView l = Ui.text(this, p.bezeichnung, 14, Ui.BRAUN, true);
-                l.setMaxLines(2);
-                l.setLineSpacing(0, 0.9f);
-                l.setEllipsize(android.text.TextUtils.TruncateAt.END);
-                l.setGravity(Gravity.CENTER_VERTICAL);
-                l.setPadding(Ui.dp(this, 10), 0, Ui.dp(this, 4), 0);
-                l.setBackground(Ui.touchBg(Ui.BEIGE));
-                l.setOnClickListener(click);
-                l.setOnLongClickListener(longClick);
-                leftCol.addView(l, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h));
-                View r = new View(this);
-                r.setBackground(Ui.touchBg(Ui.BEIGE));
-                r.setOnClickListener(click);
-                r.setOnLongClickListener(longClick);
-                rightCol.addView(r, new LinearLayout.LayoutParams(totalRightWidth(), h));
-                leftCol.addView(Ui.divider(this, false));
-                rightCol.addView(line());
-                continue;
-            }
-
-            int bg = (zeile++ % 2 == 1) ? Ui.ZEBRA : Ui.WEISS;
-            int h = Ui.dp(this, ROW_H);
-
-            // linke, fixierte Zelle: Pos + Bezeichnung + Holzart
-            LinearLayout l = new LinearLayout(this);
-            l.setOrientation(LinearLayout.HORIZONTAL);
-            l.setBackground(Ui.touchBg(bg));
-            l.setOnClickListener(click);
-            l.setOnLongClickListener(longClick);
-            TextView pos = Ui.text(this, String.valueOf(liste.posNummer(i)), 12, Ui.GRAU, false);
-            pos.setGravity(Gravity.CENTER);
-            l.addView(pos, new LinearLayout.LayoutParams(Ui.dp(this, 30), ViewGroup.LayoutParams.MATCH_PARENT));
-            LinearLayout txt = new LinearLayout(this);
-            txt.setOrientation(LinearLayout.VERTICAL);
-            txt.setGravity(Gravity.CENTER_VERTICAL);
-            TextView bez = Ui.text(this, p.bezeichnung.isEmpty() ? "(ohne Bezeichnung)" : p.bezeichnung, 15,
-                    p.bezeichnung.isEmpty() ? Ui.GRAU : Ui.TEXT, true);
-            bez.setSingleLine(true);
-            bez.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            Double anz = p.isPlatte() ? p.getPlattenAnzahl() : null;
-            String sub = (p.isPlatte() ? (anz != null ? Fmt.fix(anz, 0) + " Platten" : "Platte")
-                    + (p.verschnitt != null && p.verschnitt != 0 ? " +" + Fmt.num(p.verschnitt) + "%" : "")
-                    : p.isLfm() ? "Laufmeter" : "Stück") + (p.holzart.isEmpty() ? "" : " · " + p.holzart);
-            TextView art = Ui.text(this, sub, 11, p.isPlatte() ? Ui.GRUEN : p.isLfm() ? Ui.AKZENT : Ui.GRAU, false);
-            art.setSingleLine(true);
-            art.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            txt.addView(bez);
-            txt.addView(art);
-            txt.setPadding(0, 0, Ui.dp(this, 6), 0);
-            l.addView(txt, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1));
-            leftCol.addView(l, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, h));
-            leftCol.addView(Ui.divider(this, false));
-
-            // rechte Zellen
-            LinearLayout r = new LinearLayout(this);
-            r.setOrientation(LinearLayout.HORIZONTAL);
-            r.setBackground(Ui.touchBg(bg));
-            r.setOnClickListener(click);
-            r.setOnLongClickListener(longClick);
-            boolean platte = p.isPlatte();
-            Double stk = platte ? p.getPlattenAnzahl() : p.stueck;
-            boolean mitStk = p.isHolz() || (platte && stk != null);
-            boolean mitL = p.isHolz() || (platte && p.laenge != null);
-            r.addView(Ui.cell(this, mitStk ? Fmt.num(stk) : "–", COL_W[0], Gravity.END, true, mitStk ? (platte ? Ui.GRUEN : Ui.TEXT) : Ui.LINIE));
-            r.addView(Ui.cell(this, Fmt.num(p.breite), COL_W[1], Gravity.END, false, Ui.TEXT));
-            r.addView(Ui.cell(this, Fmt.num(p.hoehe), COL_W[2], Gravity.END, false, Ui.TEXT));
-            r.addView(Ui.cell(this, mitL ? (p.laenge == null ? "" : Fmt.fix(p.laenge, 2)) : "–", COL_W[3], Gravity.END, false, mitL ? Ui.TEXT : Ui.LINIE));
-            r.addView(Ui.cell(this, platte ? "–" : Fmt.fix(p.getLaufmeterGesamt(), 2), COL_W[4], Gravity.END, p.isLfm(),
-                    platte ? Ui.LINIE : p.isLfm() ? Ui.TEXT : Ui.GRAU));
-            r.addView(Ui.cell(this, platte ? Fmt.fix(p.getFlaeche(), 2) : "–", COL_W[5], Gravity.END, platte, platte ? Ui.GRUEN : Ui.LINIE));
-            r.addView(Ui.cell(this, Fmt.fix(p.getVolumen(), 3), COL_W[6], Gravity.END, true, Ui.BRAUN));
-            r.addView(Ui.cell(this, p.hasFertigmass() ? Fmt.querschnitt(p.fertigB, p.fertigH) : "", COL_W[7], Gravity.END, false, Ui.BLAU));
-            r.addView(Ui.cell(this, p.holzart, COL_W[8], Gravity.START, false, Ui.TEXT));
-            TextView bem = Ui.cell(this, p.bemerkung, COL_W[9], Gravity.START, false, Ui.GRAU);
-            bem.setTextSize(13);
-            r.addView(bem);
-            rightCol.addView(r, new LinearLayout.LayoutParams(totalRightWidth(), h));
-            rightCol.addView(line());
+            karten.addView(p.isTitel() ? ueberschrift(p, i) : karte(p, i));
         }
         emptyText.setVisibility(liste.positionen.isEmpty() ? View.VISIBLE : View.GONE);
-
-        sumText.setText("Stückhölzer: " + Fmt.fix(liste.summeVolumen(Position.HOLZ), 3) + " m³  (" + Fmt.fix(liste.summeStueck(), 0) + " Stk)\n"
-                + "Laufmeterhölzer: " + Fmt.fix(liste.summeLaufmeter(Position.LFM), 2) + " lfm · " + Fmt.fix(liste.summeVolumen(Position.LFM), 3) + " m³\n"
-                + (liste.hatPlatten() ? "Platten: " + Fmt.fix(liste.summeFlaeche(), 2) + " m² Fläche → " + Fmt.fix(liste.summeStueck(Position.PLATTE), 0)
-                        + " Stk · " + Fmt.fix(liste.summeVolumen(Position.PLATTE), 3) + " m³\n" : "")
-                + "GESAMT: " + Fmt.fix(liste.summeVolumen(null), 3) + " m³");
+        sumText.setText(summenKurz());
     }
 
-    private View line() {
-        View v = new View(this);
-        v.setBackgroundColor(Ui.LINIE);
-        v.setLayoutParams(new LinearLayout.LayoutParams(totalRightWidth(), 1));
-        return v;
+    private View ueberschrift(Position p, int idx) {
+        LinearLayout l = new LinearLayout(this);
+        l.setOrientation(LinearLayout.HORIZONTAL);
+        l.setGravity(Gravity.CENTER_VERTICAL);
+        l.setPadding(Ui.dp(this, 6), Ui.dp(this, 14), 0, Ui.dp(this, 2));
+        TextView t = Ui.text(this, p.bezeichnung.toUpperCase(Locale.GERMANY), 15, Ui.PRIMAER, true);
+        t.setLetterSpacing(0.04f);
+        l.addView(t, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        l.addView(mehrKnopf(idx));
+        l.setOnClickListener(v -> bearbeiten(idx));
+        l.setOnLongClickListener(v -> { aktionen(idx); return true; });
+        return l;
     }
 
-    private int totalRightWidth() {
-        int w = 0;
-        for (int c : COL_W) w += c;
-        return Ui.dp(this, w);
+    private View karte(Position p, int idx) {
+        int farbe = Ui.farbe(p.typ);
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.HORIZONTAL);
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        android.graphics.drawable.GradientDrawable bg = Ui.rounded(Ui.WEISS, Ui.LINIE, Ui.dp(this, 10), 1);
+        card.setBackground(new android.graphics.drawable.RippleDrawable(
+                android.content.res.ColorStateList.valueOf(Ui.HELL), bg, null));
+        card.setOnClickListener(v -> bearbeiten(idx));
+        card.setOnLongClickListener(v -> { aktionen(idx); return true; });
+
+        // links: Symbol + Bestellmenge
+        LinearLayout links = new LinearLayout(this);
+        links.setOrientation(LinearLayout.VERTICAL);
+        links.setGravity(Gravity.CENTER);
+        links.setBackground(Ui.rounded(Ui.FLAECHE, 0, Ui.dp(this, 10), 0));
+        links.setPadding(Ui.dp(this, 4), Ui.dp(this, 8), Ui.dp(this, 4), Ui.dp(this, 8));
+        TextView sym = Ui.text(this, Ui.symbol(p.typ), 22, farbe, false);
+        sym.setGravity(Gravity.CENTER);
+        String menge = p.bestellText();
+        TextView m = Ui.text(this, menge.isEmpty() ? "?" : menge, 15, menge.isEmpty() ? Ui.GRAU : farbe, true);
+        m.setGravity(Gravity.CENTER);
+        m.setMaxLines(2);
+        links.addView(sym);
+        links.addView(m);
+        LinearLayout.LayoutParams lpL = new LinearLayout.LayoutParams(Ui.dp(this, 96), ViewGroup.LayoutParams.MATCH_PARENT);
+        lpL.setMargins(Ui.dp(this, 6), Ui.dp(this, 6), Ui.dp(this, 4), Ui.dp(this, 6));
+        card.addView(links, lpL);
+
+        // Mitte: Bezeichnung + Details
+        LinearLayout mitte = new LinearLayout(this);
+        mitte.setOrientation(LinearLayout.VERTICAL);
+        mitte.setPadding(Ui.dp(this, 8), Ui.dp(this, 10), 0, Ui.dp(this, 10));
+        String bezText = p.bezeichnung.isEmpty() ? (p.holzart.isEmpty() ? "(ohne Bezeichnung)" : p.holzart) : p.bezeichnung;
+        TextView bez = Ui.text(this, liste.posNummer(idx) + ".  " + bezText, 17, Ui.TEXT, true);
+        bez.setMaxLines(2);
+        bez.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        mitte.addView(bez);
+        String det = details(p);
+        if (!det.isEmpty()) {
+            TextView d = Ui.text(this, det, 14, Ui.GRAU, false);
+            d.setMaxLines(3);
+            mitte.addView(d);
+        }
+        String werte = werte(p);
+        if (!werte.isEmpty()) {
+            TextView w = Ui.text(this, werte, 14, Ui.DUNKEL, true);
+            w.setPadding(0, Ui.dp(this, 2), 0, 0);
+            mitte.addView(w);
+        }
+        card.addView(mitte, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        card.addView(mehrKnopf(idx));
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.setMargins(0, Ui.dp(this, 4), 0, Ui.dp(this, 4));
+        card.setLayoutParams(lp);
+        return card;
+    }
+
+    private TextView mehrKnopf(int idx) {
+        TextView t = Ui.text(this, "⋮", 26, Ui.GRAU, true);
+        t.setGravity(Gravity.CENTER);
+        t.setBackground(Ui.touchBg(android.graphics.Color.TRANSPARENT));
+        t.setOnClickListener(v -> aktionen(idx));
+        t.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(this, 44), Ui.dp(this, 56)));
+        return t;
+    }
+
+    /** Zeile unter der Bezeichnung: Material und Maße in Klartext. */
+    static String details(Position p) {
+        StringBuilder sb = new StringBuilder();
+        if (!p.holzart.isEmpty() && !p.holzart.equals(p.bezeichnung)) sb.append(p.holzart);
+        String mass = "";
+        if (p.isHolz() || p.isLfm()) {
+            if (p.breite != null || p.hoehe != null) mass = Fmt.num(p.breite) + " × " + Fmt.num(p.hoehe) + " cm";
+            if (p.isHolz() && p.laenge != null) mass += (mass.isEmpty() ? "" : ", ") + Fmt.fix(p.laenge, 2) + " m lang";
+            if (p.hasFertigmass()) mass += " (fertig " + Fmt.querschnitt(p.fertigB, p.fertigH) + ")";
+        } else if (p.isPlatte()) {
+            if (p.laenge != null && p.breite != null) mass = Fmt.num(p.laenge * 100) + " × " + Fmt.num(p.breite) + " cm";
+            if (p.hoehe != null) mass += (mass.isEmpty() ? "" : ", ") + Fmt.num(p.hoehe * 10) + " mm";
+            mass += (mass.isEmpty() ? "" : "  ·  ") + "für " + Fmt.fix(p.getFlaeche(), 2) + " m²"
+                    + (p.verschnitt != null && p.verschnitt != 0 ? " + " + Fmt.num(p.verschnitt) + " %" : "");
+        } else if (p.isMaterial()) {
+            Double b = p.getBedarf();
+            if (p.hatPackung() && b != null)
+                mass = "Bedarf " + Fmt.mengeText(b) + " " + Einheit.norm(p.einheit) + ", " + p.packNameOderStandard()
+                        + " à " + Fmt.mengeText(p.packInhalt) + " " + Einheit.norm(p.einheit);
+            else if (p.verschnitt != null && p.verschnitt != 0 && p.menge != null)
+                mass = Fmt.mengeText(p.menge) + " " + Einheit.norm(p.einheit) + " + " + Fmt.num(p.verschnitt) + " % Reserve";
+        }
+        if (!mass.isEmpty()) sb.append(sb.length() > 0 ? "\n" : "").append(mass);
+        if (!p.bemerkung.isEmpty()) sb.append(sb.length() > 0 ? "\n" : "").append("„").append(p.bemerkung).append("“");
+        return sb.toString();
+    }
+
+    /** Rechenwerte (m, m³, €) für die Karte. */
+    static String werte(Position p) {
+        StringBuilder sb = new StringBuilder();
+        if (p.isHolz() || p.isLfm()) {
+            if (p.getLaufmeterGesamt() > 0 && p.isHolz()) sb.append(Fmt.fix(p.getLaufmeterGesamt(), 2)).append(" m  ·  ");
+            if (p.getVolumen() > 0) sb.append(Fmt.fix(p.getVolumen(), 3)).append(" m³");
+        } else if (p.isPlatte() && p.getPlattenFlaecheGesamt() > 0) {
+            sb.append(Fmt.fix(p.getPlattenFlaecheGesamt(), 2)).append(" m² Platten");
+        }
+        Double b = p.getBetrag();
+        if (b != null) {
+            String s = sb.toString().replaceAll("[ ·]+$", "");
+            sb.setLength(0);
+            sb.append(s).append(s.isEmpty() ? "" : "  ·  ").append(Fmt.euro(b));
+        }
+        return sb.toString().replaceAll("[ ·]+$", "");
+    }
+
+    private String summenKurz() {
+        if (liste.anzahlPositionen() == 0) return "Noch keine Positionen";
+        StringBuilder sb = new StringBuilder();
+        sb.append(liste.anzahlPositionen()).append(" Positionen");
+        double holz = liste.summeVolumen(Position.HOLZ) + liste.summeVolumen(Position.LFM);
+        if (holz > 0) sb.append("  ·  Holz ").append(Fmt.fix(holz, 2)).append(" m³");
+        if (liste.hatPlatten()) sb.append("  ·  ").append(Fmt.fix(liste.summeStueck(Position.PLATTE), 0)).append(" Platten");
+        if (liste.hatPreise()) sb.append("\nSumme: ").append(Fmt.euro(liste.summeBetrag())).append(" (netto)");
+        sb.append("   ›");
+        return sb.toString();
+    }
+
+    private void summenDetails() {
+        StringBuilder sb = new StringBuilder();
+        if (liste.hatTyp(Position.HOLZ))
+            sb.append("Balken & Kanthölzer:\n   ").append(Fmt.fix(liste.summeStueck(Position.HOLZ), 0)).append(" Stück · ")
+                    .append(Fmt.fix(liste.summeLaufmeter(Position.HOLZ), 2)).append(" m · ")
+                    .append(Fmt.fix(liste.summeVolumen(Position.HOLZ), 3)).append(" m³\n\n");
+        if (liste.hatTyp(Position.LFM))
+            sb.append("Latten & Bretter:\n   ").append(Fmt.fix(liste.summeLaufmeter(Position.LFM), 2)).append(" m · ")
+                    .append(Fmt.fix(liste.summeVolumen(Position.LFM), 3)).append(" m³\n\n");
+        if (liste.hatPlatten())
+            sb.append("Platten:\n   ").append(Fmt.fix(liste.summeStueck(Position.PLATTE), 0)).append(" Platten für ")
+                    .append(Fmt.fix(liste.summeFlaeche(), 2)).append(" m² Fläche · ")
+                    .append(Fmt.fix(liste.summeVolumen(Position.PLATTE), 3)).append(" m³\n\n");
+        if (liste.hatTyp(Position.MATERIAL)) {
+            sb.append("Sonstiges Material:\n");
+            for (Position p : liste.positionen)
+                if (p.isMaterial()) sb.append("   ").append(p.bestellText()).append("  ")
+                        .append(p.bezeichnung.isEmpty() ? p.holzart : p.bezeichnung).append("\n");
+            sb.append("\n");
+        }
+        double m3 = liste.summeVolumen(null);
+        if (m3 > 0) sb.append("Holz gesamt: ").append(Fmt.fix(m3, 3)).append(" m³\n");
+        if (liste.hatPreise()) sb.append("Summe: ").append(Fmt.euro(liste.summeBetrag())).append(" netto\n(nur Positionen mit Preis)");
+        new AlertDialog.Builder(this).setTitle("Zusammenfassung")
+                .setMessage(sb.length() == 0 ? "Noch keine Positionen." : sb.toString().trim())
+                .setPositiveButton("OK", null)
+                .setNeutralButton("Excel senden", (d, w) -> exportTeilen())
+                .show();
     }
 
     private static void anhang(StringBuilder sb, String s) {
@@ -332,7 +334,7 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Bearbeiten
 
-    private Set<String> bekannteHolzarten() {
+    private Set<String> bekannteMaterialien() {
         Set<String> s = new LinkedHashSet<>();
         for (int i = liste.positionen.size() - 1; i >= 0; i--) {
             String h = liste.positionen.get(i).holzart;
@@ -341,29 +343,88 @@ public class EditorActivity extends Activity {
         return s;
     }
 
-    /** Neue Position an Index einfügen. Holzart/Querschnitt werden von der vorherigen gleichartigen Position übernommen. */
-    private void neuePosition(String typ, int index) {
-        Position p = new Position();
-        p.typ = typ;
-        if (!Position.TITEL.equals(typ)) {
+    private static final String KATALOG = "katalog";
+
+    /** Auswahl „Was möchtest du hinzufügen?“ mit großen Kacheln. */
+    void hinzufuegen(int index) {
+        String[][] items = {
+                {Position.HOLZ, Ui.symbol(Position.HOLZ), "Balken & Kanthölzer", "Sparren, Pfetten, Stiele … – Stückzahl × Länge"},
+                {Position.LFM, Ui.symbol(Position.LFM), "Latten & Bretter", "Dachlatten, Schalung, Bretter … – in Metern"},
+                {Position.PLATTE, Ui.symbol(Position.PLATTE), "Platten", "OSB, Gipskarton, Dreischicht … – Fläche eingeben, Anzahl wird berechnet"},
+                {Position.MATERIAL, Ui.symbol(Position.MATERIAL), "Sonstiges Material", "Schrauben, Dämmung, Folie, Mörtel, Säcke …"},
+                {KATALOG, "🔍", "Beim Händler suchen", "Artikel aus der Artikelliste deines Händlers – mit Preis"},
+                {Position.TITEL, Ui.symbol(Position.TITEL), "Überschrift", "z. B. „Dachstuhl“ oder „Dämmung“ – macht die Liste übersichtlicher"},
+        };
+        android.widget.BaseAdapter ad = new android.widget.BaseAdapter() {
+            @Override public int getCount() { return items.length; }
+            @Override public Object getItem(int i) { return items[i]; }
+            @Override public long getItemId(int i) { return i; }
+
+            @Override
+            public View getView(int i, View convert, ViewGroup parent) {
+                String[] it = items[i];
+                LinearLayout l = new LinearLayout(EditorActivity.this);
+                l.setOrientation(LinearLayout.HORIZONTAL);
+                l.setGravity(Gravity.CENTER_VERTICAL);
+                int pd = Ui.dp(EditorActivity.this, 12);
+                l.setPadding(Ui.dp(EditorActivity.this, 20), pd, pd, pd);
+                int farbe = KATALOG.equals(it[0]) ? Ui.PRIMAER : Position.TITEL.equals(it[0]) ? Ui.GRAU : Ui.farbe(it[0]);
+                TextView sym = Ui.text(EditorActivity.this, it[1], 28, farbe, true);
+                sym.setGravity(Gravity.CENTER);
+                l.addView(sym, new LinearLayout.LayoutParams(Ui.dp(EditorActivity.this, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
+                LinearLayout t = new LinearLayout(EditorActivity.this);
+                t.setOrientation(LinearLayout.VERTICAL);
+                t.setPadding(Ui.dp(EditorActivity.this, 12), 0, 0, 0);
+                t.addView(Ui.text(EditorActivity.this, it[2], 18, Ui.TEXT, true));
+                t.addView(Ui.text(EditorActivity.this, it[3], 14, Ui.GRAU, false));
+                l.addView(t);
+                return l;
+            }
+        };
+        new AlertDialog.Builder(this).setTitle("Was möchtest du hinzufügen?")
+                .setAdapter(ad, (d, w) -> {
+                    String typ = items[w][0];
+                    if (KATALOG.equals(typ)) {
+                        KatalogAuswahl.zeigen(this, null, a -> {
+                            Position p = new Position();
+                            PositionDialog.anwenden(p, a);
+                            neuePosition(p, index);
+                        });
+                    } else {
+                        Position p = new Position();
+                        p.typ = typ;
+                        neuePosition(p, index);
+                    }
+                })
+                .setNegativeButton("Abbrechen", null).show();
+    }
+
+    /** Neue Position an Index einfügen. Das Material wird von der vorherigen gleichartigen Position übernommen. */
+    private void neuePosition(Position p, int index) {
+        if (!p.isTitel() && p.holzart.isEmpty()) {
             for (int i = Math.min(index, liste.positionen.size()) - 1; i >= 0; i--) {
                 Position v = liste.positionen.get(i);
-                if (v.isTitel() || v.isPlatte() != Position.PLATTE.equals(typ)) continue;
+                if (!v.typ.equals(p.typ)) continue;
                 p.holzart = v.holzart;
+                if (p.isMaterial() && p.einheit.isEmpty()) p.einheit = v.einheit;
                 break;
             }
         }
-        new PositionDialog(this, p, true, bekannteHolzarten(), (pos, weitere) -> {
+        new PositionDialog(this, p, true, bekannteMaterialien(), (pos, weitere) -> {
             int at = Math.min(index, liste.positionen.size());
             liste.positionen.add(at, pos);
             speichern();
-            if (weitere) neuePosition(Position.TITEL.equals(pos.typ) ? Position.HOLZ : pos.typ, at + 1);
+            if (weitere) {
+                Position n = new Position();
+                n.typ = pos.typ;
+                neuePosition(n, at + 1);
+            }
         }).show();
     }
 
     private void bearbeiten(int i) {
         Position p = liste.positionen.get(i).copy();
-        new PositionDialog(this, p, false, bekannteHolzarten(), (pos, weitere) -> {
+        new PositionDialog(this, p, false, bekannteMaterialien(), (pos, weitere) -> {
             liste.positionen.set(i, pos);
             speichern();
         }).show();
@@ -372,30 +433,23 @@ public class EditorActivity extends Activity {
     private void aktionen(int i) {
         Position p = liste.positionen.get(i);
         String name = p.bezeichnung.isEmpty() ? "Position" : p.bezeichnung;
-        String[] items = {"Bearbeiten", "Neue Zeile darüber einfügen", "Neue Zeile darunter einfügen",
-                "Duplizieren (Kopie darunter)", "Nach oben verschieben", "Nach unten verschieben", "Löschen"};
+        String[] items = {"✎   Ändern", "⧉   Kopieren (Kopie darunter)", "↑   Nach oben schieben", "↓   Nach unten schieben",
+                "＋  Neue Zeile hier darüber", "＋  Neue Zeile hier darunter", "🗑   Löschen"};
         new AlertDialog.Builder(this).setTitle(name).setItems(items, (d, w) -> {
             switch (w) {
                 case 0: bearbeiten(i); break;
-                case 1: typWahl(i); break;
-                case 2: typWahl(i + 1); break;
-                case 3: liste.positionen.add(i + 1, p.copy()); speichern(); break;
-                case 4: if (i > 0) { liste.positionen.add(i - 1, liste.positionen.remove(i)); speichern(); } break;
-                case 5: if (i < liste.positionen.size() - 1) { liste.positionen.add(i + 1, liste.positionen.remove(i)); speichern(); } break;
+                case 1: liste.positionen.add(i + 1, p.copy()); speichern(); break;
+                case 2: if (i > 0) { liste.positionen.add(i - 1, liste.positionen.remove(i)); speichern(); } break;
+                case 3: if (i < liste.positionen.size() - 1) { liste.positionen.add(i + 1, liste.positionen.remove(i)); speichern(); } break;
+                case 4: hinzufuegen(i); break;
+                case 5: hinzufuegen(i + 1); break;
                 case 6:
-                    new AlertDialog.Builder(this).setMessage("„" + name + "“ löschen?")
+                    new AlertDialog.Builder(this).setMessage("„" + name + "“ wirklich löschen?")
                             .setPositiveButton("Löschen", (x, y) -> { liste.positionen.remove(i); speichern(); })
                             .setNegativeButton("Abbrechen", null).show();
                     break;
             }
         }).show();
-    }
-
-    private void typWahl(int index) {
-        String[] items = {"Stückholz", "Laufmeterholz", "Plattenwerkstoff", "Abschnitt / Überschrift"};
-        String[] typen = {Position.HOLZ, Position.LFM, Position.PLATTE, Position.TITEL};
-        new AlertDialog.Builder(this).setTitle("Was einfügen?")
-                .setItems(items, (d, w) -> neuePosition(typen[w], index)).show();
     }
 
     private void kopfdatenDialog() {
@@ -447,10 +501,11 @@ public class EditorActivity extends Activity {
         if (cm != null && cm.hasPrimaryClip() && cm.getPrimaryClip() != null && cm.getPrimaryClip().getItemCount() > 0)
             txt = cm.getPrimaryClip().getItemAt(0).coerceToText(this);
         String hilfe = "Jede Zeile = eine Position, Spalten getrennt mit Tabulator (z. B. aus Excel kopiert) oder Semikolon:\n\n"
-                + "Bezeichnung; Stück; Breite; Höhe; Länge; Holzart; Bemerkung\n\n"
-                + "• Ohne Stück, aber mit Länge → Laufmeterholz (Länge = Laufmeter)\n"
-                + "• Nur Text in der Zeile → Abschnitt\n\n"
-                + "Beispiel:\nSparren;24;8;20;7,40;KVH C24\nDachlatten;;3;5;620;Fichte S10";
+                + "Bezeichnung; Stück/Menge; Breite; Höhe; Länge; Material; Bemerkung; Einheit\n\n"
+                + "• Ohne Stück, aber mit Länge → Latten & Bretter (Länge = Meter gesamt)\n"
+                + "• Mit Einheit (z. B. Sack, kg, Paket) → sonstiges Material\n"
+                + "• Nur Text in der Zeile → Überschrift\n\n"
+                + "Beispiel:\nSparren;24;8;20;7,40;KVH C24\nDachlatten;;3;5;620;Fichte S10\nSchrauben 6×200;3;;;;;;Paket";
         if (txt == null || txt.toString().trim().isEmpty()) {
             new AlertDialog.Builder(this).setTitle("Zwischenablage ist leer").setMessage(hilfe)
                     .setPositiveButton("OK", null).show();
@@ -476,7 +531,7 @@ public class EditorActivity extends Activity {
         n = n.replaceAll("[^A-Za-z0-9ÄÖÜäöüß _-]", "").trim().replace(' ', '_');
         if (n.length() > 40) n = n.substring(0, 40);
         String d = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY).format(new Date());
-        return "Holzliste_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
+        return "Materialliste_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
     }
 
     private void exportSpeichern() {
@@ -525,8 +580,8 @@ public class EditorActivity extends Activity {
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType(XLSX_MIME);
             s.putExtra(Intent.EXTRA_STREAM, uri);
-            s.putExtra(Intent.EXTRA_SUBJECT, "Holzliste " + liste.titel());
-            s.putExtra(Intent.EXTRA_TEXT, "Holzliste " + liste.titel() + " – " + Fmt.fix(liste.summeVolumen(null), 3) + " m³");
+            s.putExtra(Intent.EXTRA_SUBJECT, "Materialliste " + liste.titel());
+            s.putExtra(Intent.EXTRA_TEXT, "Materialliste " + liste.titel());
             s.setClipData(ClipData.newRawUri("", uri));
             s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(s, "Excel-Datei senden an …"));
@@ -555,17 +610,17 @@ public class EditorActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem s = menu.add(0, M_SAVE, 0, "Excel speichern");
+        MenuItem s = menu.add(0, M_SAVE, 0, "Als Excel speichern");
         s.setIcon(R.drawable.ic_save);
         s.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        MenuItem t = menu.add(0, M_SHARE, 1, "Excel teilen / senden");
+        MenuItem t = menu.add(0, M_SHARE, 1, "Excel senden (WhatsApp, E-Mail …)");
         t.setIcon(R.drawable.ic_share);
         t.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         menu.add(0, M_OPEN, 2, "In Excel öffnen");
-        menu.add(0, M_KOPF, 3, "Kopfdaten bearbeiten");
-        menu.add(0, M_PASTE, 4, "Zeilen aus Zwischenablage einfügen");
-        menu.add(0, M_TITEL, 5, "Abschnitt-Überschrift anfügen");
-        menu.add(0, M_KATALOG, 6, "Händlerkataloge (DATANORM) …");
+        menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
+        menu.add(0, M_TITEL, 4, "Überschrift anfügen");
+        menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
+        menu.add(0, M_KATALOG, 6, "Händler-Artikellisten (DATANORM) …");
         return true;
     }
 
@@ -579,7 +634,7 @@ public class EditorActivity extends Activity {
             case M_KOPF: kopfdatenDialog(); return true;
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
-            case M_TITEL: neuePosition(Position.TITEL, liste.positionen.size()); return true;
+            case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -312,7 +312,7 @@ public class XlsxWriter {
         put(zip, "docProps/app.xml",
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
                         + "<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\">"
-                        + "<Application>Holzliste</Application></Properties>");
+                        + "<Application>Materialliste</Application></Properties>");
         put(zip, "xl/workbook.xml", workbookXml());
         put(zip, "xl/_rels/workbook.xml.rels", workbookRels());
         put(zip, "xl/styles.xml", stylesXml());

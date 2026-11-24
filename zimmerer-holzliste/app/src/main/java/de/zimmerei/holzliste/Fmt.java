@@ -27,6 +27,16 @@ public final class Fmt {
         return new DecimalFormat("0.###", DE).format(d);
     }
 
+    /** Menge mit höchstens 2 Nachkommastellen, z. B. 620 / 12,6 / 4,25 */
+    public static String mengeText(double d) {
+        return new DecimalFormat("#,##0.##", DE).format(d);
+    }
+
+    /** Geldbetrag, z. B. 1.234,50 € */
+    public static String euro(double d) {
+        return fix(d, 2) + " €";
+    }
+
     /** Eingabe-Text -> Zahl. Akzeptiert Komma und Punkt. Leer/ungültig -> null. */
     public static Double parse(String s) {
         if (s == null) return null;

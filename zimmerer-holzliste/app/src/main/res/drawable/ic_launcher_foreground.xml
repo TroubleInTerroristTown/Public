@@ -2,18 +2,16 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp" android:height="108dp"
     android:viewportWidth="108" android:viewportHeight="108">
-    <!-- Kantholz-Stirnseite -->
-    <path android:fillColor="#E8C38A"
-        android:pathData="M30,30 h48 a4,4 0 0 1 4,4 v40 a4,4 0 0 1 -4,4 h-48 a4,4 0 0 1 -4,-4 v-40 a4,4 0 0 1 4,-4 z" />
-    <!-- Jahresringe -->
-    <path android:strokeColor="#B9853F" android:strokeWidth="2.2" android:fillColor="#00000000"
-        android:pathData="M54,54 m-22,0 a22,20 0 1,0 44,0 a22,20 0 1,0 -44,0" />
-    <path android:strokeColor="#B9853F" android:strokeWidth="2.2" android:fillColor="#00000000"
-        android:pathData="M54,54 m-14,0 a14,12.5 0 1,0 28,0 a14,12.5 0 1,0 -28,0" />
-    <path android:strokeColor="#B9853F" android:strokeWidth="2.2" android:fillColor="#00000000"
-        android:pathData="M54,54 m-6.5,0 a6.5,5.5 0 1,0 13,0 a6.5,5.5 0 1,0 -13,0" />
-    <path android:fillColor="#8D5A2B" android:pathData="M54,54 m-2,0 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0" />
-    <!-- Rahmen -->
-    <path android:strokeColor="#8D5A2B" android:strokeWidth="2.5" android:fillColor="#00000000"
-        android:pathData="M30,30 h48 a4,4 0 0 1 4,4 v40 a4,4 0 0 1 -4,4 h-48 a4,4 0 0 1 -4,-4 v-40 a4,4 0 0 1 4,-4 z" />
+    <!-- Klemmbrett -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M34,30 h40 a4,4 0 0 1 4,4 v42 a4,4 0 0 1 -4,4 h-40 a4,4 0 0 1 -4,-4 v-42 a4,4 0 0 1 4,-4 z" />
+    <path android:fillColor="#E67E22"
+        android:pathData="M45,26 h18 a2,2 0 0 1 2,2 v6 h-22 v-6 a2,2 0 0 1 2,-2 z" />
+    <!-- Haken + Zeilen -->
+    <path android:strokeColor="#2E7D32" android:strokeWidth="3" android:fillColor="#00000000"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:pathData="M38,44 l3,3 l5,-6 M38,56 l3,3 l5,-6 M38,68 l3,3 l5,-6" />
+    <path android:strokeColor="#1E4E79" android:strokeWidth="3" android:fillColor="#00000000"
+        android:strokeLineCap="round"
+        android:pathData="M51,45 h20 M51,57 h20 M51,69 h14" />
 </vector>

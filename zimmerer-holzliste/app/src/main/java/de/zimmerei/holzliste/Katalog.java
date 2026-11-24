@@ -120,13 +120,13 @@ public final class Katalog {
 
     /**
      * Suche: alle Wörter müssen vorkommen. Maße wie "8/20" oder "80x200" werden auch über die
-     * erkannten Maße gefunden. typFilter: null = alle, true = nur Platten, false = nur Hölzer.
+     * erkannten Maße gefunden. typFilter: null = alle, sonst Positionsart (Position.HOLZ …; HOLZ umfasst auch LFM).
      */
-    public static List<Eintrag> suche(List<Eintrag> alle, String query, Boolean typFilter, int max) {
+    public static List<Eintrag> suche(List<Eintrag> alle, String query, String typFilter, int max) {
         String[] woerter = query.toLowerCase(Locale.GERMANY).trim().split("\\s+");
         List<Eintrag> out = new ArrayList<>();
         for (Eintrag e : alle) {
-            if (typFilter != null && e.a.platte != typFilter) continue;
+            if (typFilter != null && !passtTyp(e.a.typ(), typFilter)) continue;
             boolean ok = true;
             for (String w : woerter) {
                 if (w.isEmpty()) continue;
@@ -138,6 +138,12 @@ public final class Katalog {
             }
         }
         return out;
+    }
+
+    static boolean passtTyp(String artikelTyp, String filter) {
+        boolean holz = Position.HOLZ.equals(filter) || Position.LFM.equals(filter);
+        if (holz) return Position.HOLZ.equals(artikelTyp) || Position.LFM.equals(artikelTyp);
+        return filter.equals(artikelTyp);
     }
 
     /** "8/20", "8x20", "80/200" (mm) passen auf den erkannten Querschnitt. */

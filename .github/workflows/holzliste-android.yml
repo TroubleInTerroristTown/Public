@@ -1,4 +1,4 @@
-name: Holzliste Android-App bauen
+name: Materialliste Android-App bauen
 
 on:
   push:
@@ -33,24 +33,35 @@ jobs:
       - name: APK bauen
         run: gradle assembleRelease --no-daemon --stacktrace
 
+      - name: Tests + Screenshots
+        continue-on-error: true
+        run: gradle testReleaseUnitTest --no-daemon
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Screenshots
+          path: zimmerer-holzliste/app/build/screenshots/
+
       - name: APK umbenennen
-        run: cp app/build/outputs/apk/release/app-release.apk Holzliste.apk
+        run: cp app/build/outputs/apk/release/app-release.apk Materialliste.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Holzliste-APK
-          path: zimmerer-holzliste/Holzliste.apk
+          name: Materialliste-APK
+          path: zimmerer-holzliste/Materialliste.apk
 
       - name: Als Release veröffentlichen (Download direkt am Handy)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: holzliste-v1.0.${{ github.run_number }}
-          name: Holzliste App 1.0.${{ github.run_number }}
+          tag_name: materialliste-v2.0.${{ github.run_number }}
+          name: Materialliste App 2.0.${{ github.run_number }}
           target_commitish: ${{ github.sha }}
           prerelease: false
           make_latest: true
-          files: zimmerer-holzliste/Holzliste.apk
+          files: zimmerer-holzliste/Materialliste.apk
           body: |
-            Android-App „Holzliste“ für Zimmerer.
-            Installation: Holzliste.apk am Handy herunterladen und öffnen
+            Android-App „Materialliste“ (früher „Holzliste“) für Holz, Platten und Baustoffe.
+            Installation: Materialliste.apk am Handy herunterladen und öffnen
             (ggf. „Installation aus unbekannten Quellen“ für den Browser erlauben).
+            Installiert sich über die alte Holzliste – alle Listen und Kataloge bleiben erhalten.

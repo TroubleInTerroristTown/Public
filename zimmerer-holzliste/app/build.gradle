@@ -12,7 +12,7 @@ android {
         targetSdk 34
         // Build-Nummer aus GitHub Actions, damit Updates über die alte Version installiert werden können
         versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
-        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+        versionName "2.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
     }
 
     signingConfigs {

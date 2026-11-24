@@ -40,13 +40,13 @@ public final class KatalogAuswahl {
 
     // ------------------------------------------------------------------ Suche / Auswahl
 
-    /** @param platten true = Plattenartikel zuerst filtern, false = Hölzer, null = alle */
-    public static void zeigen(Activity act, Boolean platten, Callback cb) {
+    /** @param typ Positionsart, nach der vorgefiltert wird (abschaltbar), null = alle */
+    public static void zeigen(Activity act, String typ, Callback cb) {
         if (Katalog.liste(act).isEmpty()) {
             new AlertDialog.Builder(act).setTitle("Kein Händlerkatalog vorhanden")
-                    .setMessage("Importiere zuerst eine DATANORM-Datei deines Holz- oder Baustoffhändlers "
-                            + "(z. B. DATANORM.001 oder eine ZIP-Datei). Die Datei bekommst du beim Händler "
-                            + "– meist per E-Mail oder im Kundenportal.")
+                    .setMessage("Lade zuerst die Artikelliste deines Holz- oder Baustoffhändlers in die App "
+                            + "(DATANORM-Datei, z. B. DATANORM.001 oder eine ZIP-Datei).\n\nDie Datei bekommst du beim Händler "
+                            + "– meist per E-Mail oder im Kundenportal. Danach kannst du hier Artikel mit Preis suchen.")
                     .setPositiveButton("Datei importieren", (d, w) -> importStarten(act))
                     .setNegativeButton("Abbrechen", null).show();
             return;
@@ -58,16 +58,18 @@ public final class KatalogAuswahl {
         root.setPadding(pad, Ui.dp(act, 4), pad, 0);
 
         EditText such = new EditText(act);
-        such.setHint("Suchen: z. B. KVH 8/20, OSB 22, Latte …");
+        such.setHint("Suchen: z. B. KVH 8/20, OSB 22, Schrauben, Dämmung …");
+        such.setTextSize(18);
         such.setInputType(InputType.TYPE_CLASS_TEXT);
         such.setSingleLine(true);
         root.addView(such, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         CheckBox nurTyp = new CheckBox(act);
-        nurTyp.setText(platten == null ? "" : platten ? "Nur Plattenwerkstoffe" : "Nur Hölzer (keine Platten)");
-        nurTyp.setChecked(platten != null);
-        nurTyp.setButtonTintList(ColorStateList.valueOf(Ui.BRAUN));
-        nurTyp.setVisibility(platten == null ? View.GONE : View.VISIBLE);
+        nurTyp.setText(typ == null ? "" : "Nur " + Position.typName(Position.LFM.equals(typ) ? Position.HOLZ : typ)
+                + (Position.HOLZ.equals(typ) || Position.LFM.equals(typ) ? ", Latten & Bretter" : "") + " zeigen");
+        nurTyp.setChecked(typ != null);
+        nurTyp.setButtonTintList(ColorStateList.valueOf(Ui.PRIMAER));
+        nurTyp.setVisibility(typ == null ? View.GONE : View.VISIBLE);
         root.addView(nurTyp);
 
         TextView info = Ui.text(act, "", 12, Ui.GRAU, false);
@@ -89,14 +91,14 @@ public final class KatalogAuswahl {
                 LinearLayout l = new LinearLayout(act);
                 l.setOrientation(LinearLayout.VERTICAL);
                 l.setPadding(Ui.dp(act, 4), Ui.dp(act, 8), Ui.dp(act, 4), Ui.dp(act, 8));
-                TextView t = Ui.text(act, e.a.text, 15, Ui.TEXT, true);
+                TextView t = Ui.text(act, Ui.symbol(e.a.typ()) + "  " + e.a.text, 16, Ui.TEXT, true);
                 l.addView(t);
                 StringBuilder sb = new StringBuilder();
                 String m = e.a.masse();
                 if (!m.isEmpty()) sb.append(m).append("  ·  ");
                 if (e.a.preis != null) sb.append(e.a.preisText()).append("  ·  ");
                 sb.append("Nr. ").append(e.a.nr);
-                TextView s = Ui.text(act, sb.toString(), 12, e.a.platte ? Ui.GRUEN : Ui.BRAUN, false);
+                TextView s = Ui.text(act, sb.toString(), 13, Ui.farbe(e.a.typ()), false);
                 l.addView(s);
                 TextView h = Ui.text(act, e.haendler, 11, Ui.GRAU, false);
                 l.addView(h);
@@ -119,7 +121,7 @@ public final class KatalogAuswahl {
             if (alle[0] == null) return;
             int g = ++gen[0];
             String q = such.getText().toString();
-            Boolean filter = nurTyp.isChecked() ? platten : null;
+            String filter = nurTyp.isChecked() ? typ : null;
             new Thread(() -> {
                 List<Katalog.Eintrag> r = Katalog.suche(alle[0], q, filter, 300);
                 ui.post(() -> {
@@ -156,10 +158,10 @@ public final class KatalogAuswahl {
     public static void verwalten(Activity act) {
         List<Katalog.Info> l = Katalog.liste(act);
         List<String> items = new ArrayList<>();
-        items.add("＋  DATANORM-Datei importieren …");
+        items.add("＋  Artikelliste vom Händler laden (DATANORM) …");
         for (Katalog.Info i : l)
             items.add(i.name + "\n" + i.anzahl + " Artikel · importiert " + DateFormat.format("dd.MM.yyyy", i.datum));
-        new AlertDialog.Builder(act).setTitle("Händlerkataloge (DATANORM)")
+        new AlertDialog.Builder(act).setTitle("Händler-Artikellisten (DATANORM)")
                 .setItems(items.toArray(new String[0]), (d, w) -> {
                     if (w == 0) { importStarten(act); return; }
                     Katalog.Info i = l.get(w - 1);
@@ -216,14 +218,17 @@ public final class KatalogAuswahl {
                             + "Unterstützt wird DATANORM 4 (Dateien DATANORM.001, .002 … oder als ZIP).";
                 } else {
                     Katalog.Info info = Katalog.speichern(act, e);
-                    int platten = 0, mitMass = 0;
+                    int holz = 0, platten = 0, material = 0;
                     for (Datanorm.Artikel a : e.artikel) {
-                        if (a.platte) platten++;
-                        if (!a.masse().isEmpty()) mitMass++;
+                        String at = a.typ();
+                        if (Position.PLATTE.equals(at)) platten++;
+                        else if (Position.MATERIAL.equals(at)) material++;
+                        else holz++;
                     }
                     meldung = info.anzahl + " Artikel von „" + info.name + "“ importiert.\n\n"
-                            + "davon " + platten + " Plattenwerkstoffe\n"
-                            + mitMass + " Artikel mit erkannten Maßen";
+                            + holz + " Hölzer (Balken, Latten, Bretter)\n"
+                            + platten + " Platten\n"
+                            + material + " sonstige Materialien";
                     ok = true;
                 }
             } catch (Exception ex) {

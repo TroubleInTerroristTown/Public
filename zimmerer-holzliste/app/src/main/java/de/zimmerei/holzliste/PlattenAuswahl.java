@@ -125,9 +125,9 @@ public final class PlattenAuswahl {
                 Object o = items.get(i);
                 int pad = Ui.dp(act, 20);
                 if (o instanceof String) {
-                    TextView t = Ui.text(act, ((String) o).toUpperCase(), 12, Ui.BRAUN, true);
+                    TextView t = Ui.text(act, ((String) o).toUpperCase(), 12, Ui.PRIMAER, true);
                     t.setPadding(pad, Ui.dp(act, 14), pad, Ui.dp(act, 4));
-                    t.setBackgroundColor(Ui.BEIGE);
+                    t.setBackgroundColor(Ui.FLAECHE);
                     return t;
                 }
                 LinearLayout l = new LinearLayout(act);
@@ -144,7 +144,7 @@ public final class PlattenAuswahl {
                     String txt = aktion == A_FREI ? "✎  Eigene Platte eintragen (Felder frei ausfüllen)"
                             : aktion == A_SPEICHERN ? "＋  Aktuelle Eingabe als eigene Platte speichern"
                             : "🗑  Eigene Platten löschen …";
-                    TextView a = Ui.text(act, txt, 15, aktion == A_LOESCHEN ? Ui.GRAU : Ui.BRAUN, true);
+                    TextView a = Ui.text(act, txt, 15, aktion == A_LOESCHEN ? Ui.GRAU : Ui.PRIMAER, true);
                     l.addView(a);
                 }
                 return l;

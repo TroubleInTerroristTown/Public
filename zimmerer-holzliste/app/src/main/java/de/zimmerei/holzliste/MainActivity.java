@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-/** Startbildschirm: Übersicht aller gespeicherten Holzlisten. */
+/** Startbildschirm: Übersicht aller gespeicherten Materiallisten. */
 public class MainActivity extends Activity {
 
     private final List<Holzliste> listen = new ArrayList<>();
@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         lv.setOnItemClickListener((parent, v, pos, id) -> oeffnen(listen.get(pos), false));
         lv.setOnItemLongClickListener((parent, v, pos, id) -> { aktionen(listen.get(pos)); return true; });
 
-        leer = Ui.text(this, "Noch keine Holzliste angelegt.\n\nTippe unten auf „Neue Holzliste“.", 16, Ui.GRAU, false);
+        leer = Ui.text(this, "Noch keine Liste angelegt.\n\nTippe unten auf  „＋ Neue Liste“.\n\nJede Baustelle / jedes Projekt bekommt eine eigene Liste.", 16, Ui.GRAU, false);
         leer.setGravity(Gravity.CENTER);
         leer.setPadding(Ui.dp(this, 32), 0, Ui.dp(this, 32), 0);
 
@@ -55,18 +55,19 @@ public class MainActivity extends Activity {
         root.addView(frame, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
         Button neu = new Button(this);
-        neu.setText("+  Neue Holzliste");
+        neu.setText("＋  Neue Liste");
         neu.setAllCaps(false);
-        neu.setTextSize(17);
+        neu.setTextSize(19);
         neu.setTypeface(Typeface.DEFAULT_BOLD);
         neu.setTextColor(Ui.WEISS);
-        neu.setBackground(Ui.rounded(Ui.BRAUN, 0, Ui.dp(this, 10), 0));
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 54));
+        neu.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
         lp.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), Ui.dp(this, 14));
         neu.setOnClickListener(v -> neueListe());
         root.addView(neu, lp);
 
         setContentView(root);
+        setTitle("Meine Materiallisten");
     }
 
     @Override
@@ -95,10 +96,10 @@ public class MainActivity extends Activity {
 
     private void aktionen(Holzliste h) {
         new AlertDialog.Builder(this).setTitle(h.titel())
-                .setItems(new String[]{"Öffnen", "Duplizieren", "Löschen"}, (d, w) -> {
+                .setItems(new String[]{"Öffnen", "Kopieren (als Vorlage)", "Löschen"}, (d, w) -> {
                     if (w == 0) oeffnen(h, false);
                     else if (w == 1) { Storage.duplizieren(this, h); onResume(); }
-                    else new AlertDialog.Builder(this).setMessage("Holzliste „" + h.titel() + "“ wirklich löschen?")
+                    else new AlertDialog.Builder(this).setMessage("Liste „" + h.titel() + "“ wirklich löschen?")
                                 .setPositiveButton("Löschen", (x, y) -> { Storage.loeschen(this, h.id); onResume(); })
                                 .setNegativeButton("Abbrechen", null).show();
                 }).show();
@@ -106,7 +107,7 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        menu.add(0, 1, 0, "Händlerkataloge (DATANORM) …");
+        menu.add(0, 1, 0, "Händler-Artikellisten (DATANORM) …");
         return true;
     }
 
@@ -139,7 +140,7 @@ public class MainActivity extends Activity {
 
             LinearLayout left = new LinearLayout(MainActivity.this);
             left.setOrientation(LinearLayout.VERTICAL);
-            TextView t = Ui.text(MainActivity.this, h.titel(), 17, Ui.BRAUN_DUNKEL, true);
+            TextView t = Ui.text(MainActivity.this, h.titel(), 18, Ui.DUNKEL, true);
             StringBuilder sub = new StringBuilder();
             if (h.kunde != null && !h.kunde.isEmpty()) sub.append(h.kunde);
             if (h.bauteil != null && !h.bauteil.isEmpty()) sub.append(sub.length() > 0 ? " · " : "").append(h.bauteil);
@@ -154,8 +155,10 @@ public class MainActivity extends Activity {
             LinearLayout right = new LinearLayout(MainActivity.this);
             right.setOrientation(LinearLayout.VERTICAL);
             right.setGravity(Gravity.END);
-            TextView m3 = Ui.text(MainActivity.this, Fmt.fix(h.summeVolumen(null), 3) + " m³", 16, Ui.BRAUN, true);
-            TextView n = Ui.text(MainActivity.this, h.anzahlPositionen() + " Pos.", 12, Ui.GRAU, false);
+            String wert = h.hatPreise() ? Fmt.euro(h.summeBetrag())
+                    : h.summeVolumen(null) > 0 ? Fmt.fix(h.summeVolumen(null), 2) + " m³" : "";
+            TextView m3 = Ui.text(MainActivity.this, wert, 16, Ui.PRIMAER, true);
+            TextView n = Ui.text(MainActivity.this, h.anzahlPositionen() + (h.anzahlPositionen() == 1 ? " Position" : " Positionen"), 12, Ui.GRAU, false);
             m3.setGravity(Gravity.END);
             n.setGravity(Gravity.END);
             right.addView(m3);
