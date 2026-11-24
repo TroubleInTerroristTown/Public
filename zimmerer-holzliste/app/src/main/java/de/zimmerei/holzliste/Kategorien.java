@@ -46,8 +46,12 @@ public final class Kategorien {
     private static final Pattern[] MUSTER = new Pattern[REGELN.length];
 
     static {
+        // Kein Pattern.UNICODE_CHARACTER_CLASS: Android kennt das Flag nicht (Absturz beim Start).
+        // Stattdessen \\b als Wortgrenze mit Umlauten (ä, ö, ü, ß zählen als Buchstaben) nachbauen.
+        String w = "[\\p{L}\\p{N}_]";
+        String grenze = "(?:(?<=" + w + ")(?!" + w + ")|(?<!" + w + ")(?=" + w + "))";
         for (int i = 0; i < REGELN.length; i++)
-            MUSTER[i] = Pattern.compile("(" + REGELN[i][1] + ")", Pattern.UNICODE_CHARACTER_CLASS);
+            MUSTER[i] = Pattern.compile("(" + ((String) REGELN[i][1]).replace("\\b", grenze) + ")");
     }
 
     /** Kategorie für einen Artikeltext, "Sonstiges" wenn nichts passt. */

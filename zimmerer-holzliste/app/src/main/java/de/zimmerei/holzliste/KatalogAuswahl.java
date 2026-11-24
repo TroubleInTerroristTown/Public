@@ -271,8 +271,8 @@ public final class KatalogAuswahl {
                             + material + " sonstige Materialien";
                     ok = true;
                 }
-            } catch (Exception ex) {
-                meldung = "Fehler beim Einlesen: " + ex.getMessage();
+            } catch (Throwable ex) { // auch Fehler wie OutOfMemoryError, damit die App nie abstürzt
+                meldung = "Fehler beim Einlesen: " + (ex.getMessage() == null ? ex.toString() : ex.getMessage());
             }
             String m = meldung;
             boolean erfolg = ok;
