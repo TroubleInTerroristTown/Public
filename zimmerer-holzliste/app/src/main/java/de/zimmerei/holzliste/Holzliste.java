@@ -21,6 +21,14 @@ public class Holzliste {
     public String notiz = "";
     public long geaendert;
     public final List<Position> positionen = new ArrayList<>();
+    /** Reiter „Werkzeug“: was auf die Baustelle mit muss (zum Abhaken beim Laden). */
+    public final List<Werkzeug> werkzeug = new ArrayList<>();
+
+    public int anzahlEingepackt() {
+        int n = 0;
+        for (Werkzeug w : werkzeug) if (w.eingepackt) n++;
+        return n;
+    }
 
     public double summeVolumen(String typ) {
         double s = 0;
@@ -131,6 +139,9 @@ public class Holzliste {
         JSONArray a = new JSONArray();
         for (Position p : positionen) a.put(p.toJson());
         o.put("positionen", a);
+        JSONArray w = new JSONArray();
+        for (Werkzeug x : werkzeug) w.put(x.toJson());
+        o.put("werkzeug", w);
         return o;
     }
 
@@ -149,6 +160,13 @@ public class Holzliste {
             for (int i = 0; i < a.length(); i++) {
                 JSONObject p = a.optJSONObject(i);
                 if (p != null) h.positionen.add(Position.fromJson(p));
+            }
+        }
+        JSONArray w = o.optJSONArray("werkzeug");
+        if (w != null) {
+            for (int i = 0; i < w.length(); i++) {
+                JSONObject x = w.optJSONObject(i);
+                if (x != null) h.werkzeug.add(Werkzeug.fromJson(x));
             }
         }
         return h;

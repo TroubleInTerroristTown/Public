@@ -158,7 +158,22 @@ public final class AwImport {
             box.addView(schritte);
         }
 
-        CheckBox kopfF = kopf, schritteF = schritte;
+        // Werkzeug passend zu allen Vorschlägen und Arbeitsschritten
+        Holzliste probe = new Holzliste();
+        probe.positionen.addAll(Arbeitsanweisung.positionen(erg));
+        probe.werkzeug.addAll(liste.werkzeug);
+        probe.positionen.addAll(liste.positionen);
+        List<Werkzeug.Vorschlag> wz = Werkzeug.vorschlagen(probe, erg.arbeitsschritte);
+        CheckBox werkzeug = null;
+        if (!wz.isEmpty()) {
+            StringBuilder s = new StringBuilder();
+            for (int i = 0; i < wz.size() && i < 5; i++) s.append(i > 0 ? ", " : "").append(wz.get(i).name);
+            if (wz.size() > 5) s.append(" … und ").append(wz.size() - 5).append(" weitere");
+            werkzeug = checkbox(act, "🔧 Werkzeug-Liste vorschlagen (" + wz.size() + ")", s.toString(), true, false);
+            box.addView(werkzeug);
+        }
+
+        CheckBox kopfF = kopf, schritteF = schritte, werkzeugF = werkzeug;
         new AlertDialog.Builder(act).setTitle("📄 Aus der Arbeitsanweisung")
                 .setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
@@ -186,15 +201,23 @@ public final class AwImport {
                         for (String s : erg.arbeitsschritte) n.append("\n• ").append(s);
                         liste.notiz = n.toString();
                     }
+                    int wzAnz = 0;
+                    if (werkzeugF != null && werkzeugF.isChecked()) {
+                        for (Werkzeug.Vorschlag v : Werkzeug.vorschlagen(liste, erg.arbeitsschritte)) {
+                            liste.werkzeug.add(new Werkzeug(v.name, ""));
+                            wzAnz++;
+                        }
+                    }
                     fertig.geaendert();
                     int anz = 0;
                     for (Position x : neu) if (!x.isTitel()) anz++;
-                    Toast.makeText(act, anz + " Positionen übernommen – bitte Mengen prüfen", Toast.LENGTH_LONG).show();
+                    Toast.makeText(act, anz + " Positionen" + (wzAnz > 0 ? " und " + wzAnz + " Werkzeuge" : "")
+                            + " übernommen – bitte Mengen prüfen", Toast.LENGTH_LONG).show();
                 })
                 .setNegativeButton("Abbrechen", null).show();
     }
 
-    private static CheckBox checkbox(Activity act, String titel, String unter, boolean an, boolean fett) {
+    static CheckBox checkbox(Activity act, String titel, String unter, boolean an, boolean fett) {
         CheckBox c = new CheckBox(act);
         CharSequence text = titel;
         if (unter != null && !unter.isEmpty()) {

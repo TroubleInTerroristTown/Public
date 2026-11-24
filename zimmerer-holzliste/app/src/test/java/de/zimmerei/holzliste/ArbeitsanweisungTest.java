@@ -176,4 +176,45 @@ public class ArbeitsanweisungTest {
         assertNotNull(ShadowDialog.getLatestDialog());
         ScreenshotTest.png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "11_arbeitsanweisung");
     }
+
+    /** Werkzeug-Reiter: Vorschläge, Speichern, Ansicht. */
+    @Test
+    public void werkzeug() throws Exception {
+        Arbeitsanweisung.Ergebnis e = Arbeitsanweisung.auswerten(LV, inventar(), "26-00001-AW BV Mustermann Balkon.pdf");
+        Holzliste h = new Holzliste();
+        h.projekt = e.projekt;
+        h.positionen.addAll(Arbeitsanweisung.positionen(e));
+        List<Werkzeug.Vorschlag> v = Werkzeug.vorschlagen(h, e.arbeitsschritte);
+        List<String> namen = new ArrayList<>();
+        for (Werkzeug.Vorschlag x : v) namen.add(x.name);
+        assertTrue(namen.toString(), namen.contains("Kappsäge"));            // wegen Holz
+        assertTrue(namen.toString(), namen.contains("Pinsel & Farbroller")); // wegen Lasur
+        assertTrue(namen.toString(), namen.contains("Säbelsäge"));           // wegen „Demontage des alten Geländers“
+        for (Werkzeug.Vorschlag x : v) h.werkzeug.add(new Werkzeug(x.name, ""));
+        h.werkzeug.get(0).eingepackt = true;
+        h.werkzeug.get(1).anzahl = 2;
+        assertTrue(Werkzeug.vorschlagen(h, e.arbeitsschritte).isEmpty()); // nichts doppelt
+
+        Storage.speichern(RuntimeEnvironment.getApplication(), h);
+        Holzliste geladen = Storage.laden(RuntimeEnvironment.getApplication(), h.id);
+        assertEquals(h.werkzeug.size(), geladen.werkzeug.size());
+        assertTrue(geladen.werkzeug.get(0).eingepackt);
+        assertEquals(Integer.valueOf(2), geladen.werkzeug.get(1).anzahl);
+
+        android.app.Activity main = Robolectric.buildActivity(MainActivity.class).setup().get();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(main.getWindow().getDecorView(), "12_start");
+
+        Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
+        i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        org.robolectric.android.controller.ActivityController<EditorActivity> c = Robolectric.buildActivity(EditorActivity.class, i).setup();
+        EditorActivity ed = c.get();
+        // auf den Reiter „Werkzeug“ umschalten (zweiter Reiter-Knopf)
+        android.view.ViewGroup root = (android.view.ViewGroup) ed.findViewById(android.R.id.content);
+        android.view.ViewGroup layout = (android.view.ViewGroup) root.getChildAt(0);
+        android.view.ViewGroup reiter = (android.view.ViewGroup) layout.getChildAt(2);
+        reiter.getChildAt(1).performClick();
+        ShadowLooper.idleMainLooper();
+        ScreenshotTest.png(ed.getWindow().getDecorView(), "13_werkzeug");
+    }
 }

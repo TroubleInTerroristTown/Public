@@ -45,7 +45,7 @@ public class MainActivity extends Activity {
         lv.setOnItemClickListener((parent, v, pos, id) -> oeffnen(listen.get(pos), false));
         lv.setOnItemLongClickListener((parent, v, pos, id) -> { aktionen(listen.get(pos)); return true; });
 
-        leer = Ui.text(this, "Noch keine Liste angelegt.\n\nTippe unten auf  „＋ Neue Liste“.\n\nJede Baustelle / jedes Projekt bekommt eine eigene Liste.", 16, Ui.GRAU, false);
+        leer = Ui.text(this, "Noch keine Liste angelegt.\n\nTippe unten auf  „📄 Neue Liste aus Arbeitsanweisung“ (PDF)\noder auf  „＋ Neue Liste“.\n\nJede Baustelle / jedes Projekt bekommt eine eigene Liste.", 16, Ui.GRAU, false);
         leer.setGravity(Gravity.CENTER);
         leer.setPadding(Ui.dp(this, 32), 0, Ui.dp(this, 32), 0);
 
@@ -53,6 +53,19 @@ public class MainActivity extends Activity {
         frame.addView(lv);
         frame.addView(leer, new android.widget.FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.addView(frame, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+
+        // Arbeitsanweisung ganz oben: der schnellste Weg zur fertigen Liste
+        Button aw = new Button(this);
+        aw.setText("📄  Neue Liste aus Arbeitsanweisung");
+        aw.setAllCaps(false);
+        aw.setTextSize(18);
+        aw.setTypeface(Typeface.DEFAULT_BOLD);
+        aw.setTextColor(Ui.WEISS);
+        aw.setBackground(Ui.rounded(Ui.PRIMAER, 0, Ui.dp(this, 12), 0));
+        LinearLayout.LayoutParams lpAw = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
+        lpAw.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), 0);
+        aw.setOnClickListener(v -> neueListe(true));
+        root.addView(aw, lpAw);
 
         Button neu = new Button(this);
         neu.setText("＋  Neue Liste");
@@ -63,7 +76,7 @@ public class MainActivity extends Activity {
         neu.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
         lp.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), Ui.dp(this, 14));
-        neu.setOnClickListener(v -> neueListe());
+        neu.setOnClickListener(v -> neueListe(false));
         root.addView(neu, lp);
 
         setContentView(root);
@@ -79,12 +92,16 @@ public class MainActivity extends Activity {
         leer.setVisibility(listen.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    private void neueListe() {
+    private void neueListe(boolean ausAw) {
         Holzliste h = new Holzliste();
         h.datum = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY).format(new Date());
         h.bearbeiter = getSharedPreferences("einstellungen", MODE_PRIVATE).getString("bearbeiter", "");
         Storage.speichern(this, h);
-        oeffnen(h, true);
+        Intent i = new Intent(this, EditorActivity.class);
+        i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        i.putExtra(EditorActivity.EXTRA_NEU, true);
+        i.putExtra(EditorActivity.EXTRA_AW, ausAw);
+        startActivity(i);
     }
 
     private void oeffnen(Holzliste h, boolean neu) {

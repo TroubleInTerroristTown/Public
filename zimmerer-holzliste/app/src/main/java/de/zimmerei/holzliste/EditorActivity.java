@@ -38,12 +38,18 @@ public class EditorActivity extends Activity {
 
     public static final String EXTRA_ID = "id";
     public static final String EXTRA_NEU = "neu";
+    /** Neue Liste direkt aus einer Arbeitsanweisung (PDF-Auswahl öffnet sich sofort). */
+    public static final String EXTRA_AW = "aw";
+    private static final String STATE_REITER = "reiter_werkzeug";
     static final String XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final int REQ_SAVE = 42;
 
     private Holzliste liste;
     private LinearLayout karten;
     private TextView kopfTitel, kopfInfo, sumText, emptyText;
+    private boolean werkzeugModus;
+    private LinearLayout reiterLeiste;
+    private Button addBtn, vorschlagBtn;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -55,9 +61,17 @@ public class EditorActivity extends Activity {
             return;
         }
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        werkzeugModus = state != null && state.getBoolean(STATE_REITER, false);
         setContentView(buildLayout());
         render();
-        if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog();
+        if (state == null && getIntent().getBooleanExtra(EXTRA_AW, false)) AwImport.starten(this, 0);
+        else if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle out) {
+        super.onSaveInstanceState(out);
+        out.putBoolean(STATE_REITER, werkzeugModus);
     }
 
     // ================================================================ Layout
@@ -81,6 +95,13 @@ public class EditorActivity extends Activity {
         root.addView(kopf);
         root.addView(Ui.divider(this, false));
 
+        // --- Reiter Material / Werkzeug
+        reiterLeiste = new LinearLayout(this);
+        reiterLeiste.setOrientation(LinearLayout.HORIZONTAL);
+        reiterLeiste.setBackgroundColor(Ui.HINTERGRUND);
+        reiterLeiste.setPadding(Ui.dp(this, 10), Ui.dp(this, 8), Ui.dp(this, 10), Ui.dp(this, 2));
+        root.addView(reiterLeiste);
+
         // --- Positionen als Karten
         ScrollView vScroll = new ScrollView(this);
         vScroll.setFillViewport(true);
@@ -92,9 +113,7 @@ public class EditorActivity extends Activity {
         karten.setOrientation(LinearLayout.VERTICAL);
         body.addView(karten);
 
-        emptyText = Ui.text(this, "Die Liste ist noch leer.\n\nTippe unten auf  „＋ Hinzufügen“.\n\n"
-                        + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.",
-                17, Ui.GRAU, false);
+        emptyText = Ui.text(this, LEER_MATERIAL, 17, Ui.GRAU, false);
         emptyText.setGravity(Gravity.CENTER);
         int ep = Ui.dp(this, 28);
         emptyText.setPadding(ep, ep * 2, ep, ep);
@@ -115,15 +134,29 @@ public class EditorActivity extends Activity {
         bar.setBackgroundColor(Ui.WEISS);
         int bp = Ui.dp(this, 10);
         bar.setPadding(bp, bp, bp, bp);
-        Button add = new Button(this);
-        add.setText("＋  Hinzufügen");
-        add.setAllCaps(false);
-        add.setTextSize(19);
-        add.setTypeface(Typeface.DEFAULT_BOLD);
-        add.setTextColor(Ui.WEISS);
-        add.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
-        add.setOnClickListener(v -> hinzufuegen(liste.positionen.size()));
-        bar.addView(add, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58)));
+        vorschlagBtn = new Button(this);
+        vorschlagBtn.setText("💡 Vorschlagen");
+        vorschlagBtn.setAllCaps(false);
+        vorschlagBtn.setTextSize(17);
+        vorschlagBtn.setTypeface(Typeface.DEFAULT_BOLD);
+        vorschlagBtn.setTextColor(Ui.PRIMAER);
+        vorschlagBtn.setBackground(Ui.rounded(Ui.WEISS, Ui.PRIMAER, Ui.dp(this, 12), Ui.dp(this, 2)));
+        vorschlagBtn.setOnClickListener(v -> WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern));
+        LinearLayout.LayoutParams lpV = new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1);
+        lpV.setMarginEnd(Ui.dp(this, 8));
+        bar.addView(vorschlagBtn, lpV);
+        addBtn = new Button(this);
+        addBtn.setText("＋  Hinzufügen");
+        addBtn.setAllCaps(false);
+        addBtn.setTextSize(19);
+        addBtn.setTypeface(Typeface.DEFAULT_BOLD);
+        addBtn.setTextColor(Ui.WEISS);
+        addBtn.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        addBtn.setOnClickListener(v -> {
+            if (werkzeugModus) WerkzeugAnsicht.bearbeiten(this, liste, -1, this::speichern);
+            else hinzufuegen(liste.positionen.size());
+        });
+        bar.addView(addBtn, new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1));
         root.addView(bar);
         return root;
     }
@@ -139,11 +172,34 @@ public class EditorActivity extends Activity {
         anhang(info, liste.datum);
         kopfInfo.setText(info.length() == 0 ? "✎ Antippen: Projekt, Kunde, Datum eintragen" : info + "   ✎");
 
+        reiterLeiste.removeAllViews();
+        TextView tMat = WerkzeugAnsicht.reiter(this, "📦 Material (" + liste.anzahlPositionen() + ")", !werkzeugModus);
+        TextView tWz = WerkzeugAnsicht.reiter(this, "🔧 Werkzeug" + (liste.werkzeug.isEmpty() ? ""
+                : " (" + liste.anzahlEingepackt() + "/" + liste.werkzeug.size() + ")"), werkzeugModus);
+        tMat.setOnClickListener(v -> { werkzeugModus = false; render(); });
+        tWz.setOnClickListener(v -> { werkzeugModus = true; render(); });
+        LinearLayout.LayoutParams lpR = new LinearLayout.LayoutParams(0, Ui.dp(this, 44), 1);
+        lpR.setMarginEnd(Ui.dp(this, 8));
+        reiterLeiste.addView(tMat, lpR);
+        reiterLeiste.addView(tWz, new LinearLayout.LayoutParams(0, Ui.dp(this, 44), 1));
+
         karten.removeAllViews();
+        vorschlagBtn.setVisibility(werkzeugModus ? View.VISIBLE : View.GONE);
+        addBtn.setText(werkzeugModus ? "＋  Werkzeug" : "＋  Hinzufügen");
+        if (werkzeugModus) {
+            for (int i = 0; i < liste.werkzeug.size(); i++) karten.addView(WerkzeugAnsicht.karte(this, liste, i, this::speichern));
+            emptyText.setText("Noch kein Werkzeug eingetragen.\n\nTippe auf  „💡 Vorschlagen“ – die App schlägt Werkzeug passend zum Material "
+                    + "und zu den Arbeitsschritten vor.\n\nBeim Laden: Karte antippen = eingepackt ✓");
+            emptyText.setVisibility(liste.werkzeug.isEmpty() ? View.VISIBLE : View.GONE);
+            int n = liste.werkzeug.size(), e = liste.anzahlEingepackt();
+            sumText.setText(n == 0 ? "Noch kein Werkzeug" : e == n ? "✓ Alles eingepackt (" + n + ")   ›" : e + " von " + n + " eingepackt   ›");
+            return;
+        }
         for (int i = 0; i < liste.positionen.size(); i++) {
             Position p = liste.positionen.get(i);
             karten.addView(p.isTitel() ? ueberschrift(p, i) : karte(p, i));
         }
+        emptyText.setText(LEER_MATERIAL);
         emptyText.setVisibility(liste.positionen.isEmpty() ? View.VISIBLE : View.GONE);
         sumText.setText(summenKurz());
     }
@@ -288,7 +344,18 @@ public class EditorActivity extends Activity {
         return sb.toString();
     }
 
+    private static final String LEER_MATERIAL = "Die Liste ist noch leer.\n\nTippe unten auf  „＋ Hinzufügen“ – "
+            + "oder lies eine Arbeitsanweisung (PDF) ein.\n\n"
+            + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.";
+
     private void summenDetails() {
+        if (werkzeugModus) {
+            if (liste.anzahlEingepackt() == 0) return;
+            new AlertDialog.Builder(this).setMessage("Alle Häkchen beim Werkzeug entfernen (für die nächste Fahrt)?")
+                    .setPositiveButton("Häkchen entfernen", (d, w) -> { for (Werkzeug x : liste.werkzeug) x.eingepackt = false; speichern(); })
+                    .setNegativeButton("Abbrechen", null).show();
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         if (liste.hatTyp(Position.HOLZ))
             sb.append("Balken & Kanthölzer:\n   ").append(Fmt.fix(liste.summeStueck(Position.HOLZ), 0)).append(" Stück · ")
@@ -350,12 +417,12 @@ public class EditorActivity extends Activity {
     /** Auswahl „Was möchtest du hinzufügen?“ mit großen Kacheln. */
     void hinzufuegen(int index) {
         String[][] items = {
+                {AW, "📄", "Aus Arbeitsanweisung (PDF)", "Überschriften, Material und Werkzeug aus einer PDF vorschlagen lassen"},
                 {Position.HOLZ, Ui.symbol(Position.HOLZ), "Balken & Kanthölzer", "Sparren, Pfetten, Stiele … – Stückzahl × Länge"},
                 {Position.LFM, Ui.symbol(Position.LFM), "Latten & Bretter", "Dachlatten, Schalung, Bretter … – in Metern"},
                 {Position.PLATTE, Ui.symbol(Position.PLATTE), "Platten", "OSB, Gipskarton, Dreischicht … – Fläche eingeben, Anzahl wird berechnet"},
                 {Position.MATERIAL, Ui.symbol(Position.MATERIAL), "Sonstiges Material", "Schrauben, Dämmung, Folie, Mörtel, Säcke …"},
                 {KATALOG, "🔍", "Aus Artikelliste suchen", "Deine Inventarliste oder Händlerliste – nach Kategorien sortiert"},
-                {AW, "📄", "Aus Arbeitsanweisung (PDF)", "Überschriften und Material-Vorschläge aus einer PDF – ohne Internet"},
                 {Position.TITEL, Ui.symbol(Position.TITEL), "Überschrift", "z. B. „Dachstuhl“ oder „Dämmung“ – macht die Liste übersichtlicher"},
         };
         android.widget.BaseAdapter ad = new android.widget.BaseAdapter() {
@@ -612,7 +679,7 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Menü
 
-    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7, M_AW = 8;
+    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7, M_AW = 8, M_WZ = 9;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -625,7 +692,8 @@ public class EditorActivity extends Activity {
         menu.add(0, M_OPEN, 2, "In Excel öffnen");
         menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
         menu.add(0, M_TITEL, 4, "Überschrift anfügen");
-        menu.add(0, M_AW, 5, "Arbeitsanweisung (PDF) einlesen …");
+        menu.add(0, M_AW, 2, "📄 Arbeitsanweisung (PDF) einlesen …");
+        menu.add(0, M_WZ, 3, "💡 Werkzeug vorschlagen …");
         menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
         menu.add(0, M_KATALOG, 6, "Artikellisten (Inventar / DATANORM) …");
         return true;
@@ -642,6 +710,7 @@ public class EditorActivity extends Activity {
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
             case M_AW: AwImport.starten(this, liste.positionen.size()); return true;
+            case M_WZ: werkzeugModus = true; render(); WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
             case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);

@@ -71,6 +71,7 @@ public final class Storage {
         Holzliste copy = Holzliste.fromJson(safeJson(h));
         copy.id = null;
         copy.projekt = (h.projekt == null ? "" : h.projekt) + " (Kopie)";
+        for (Werkzeug w : copy.werkzeug) w.eingepackt = false; // Vorlage: neu abhaken
         speichern(c, copy);
         return copy;
     }
