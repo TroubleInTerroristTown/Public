@@ -9,8 +9,9 @@ import org.json.JSONObject;
  * Typen:
  *  - HOLZ   : Stückholz mit Stückzahl, Querschnitt (B/H in cm) und Länge (m)
  *  - LFM    : Laufmeterholz (Latten, Bretter, Schalung ...) – Querschnitt + Gesamt-Laufmeter
- *  - PLATTE : Plattenwerkstoff (OSB, Spanplatte, Dreischicht ...) – Stück × Länge (m) × Breite (cm)
- *             = Fläche in m², Dicke in hoehe (cm). Alternativ Fläche direkt in m².
+ *  - PLATTE : Plattenwerkstoff (OSB, Gips, Dreischicht ...). Eingabe der zu belegenden Fläche
+ *             (Länge × Breite in m oder direkt m²) + Verschnitt %; Plattenformat in laenge (m),
+ *             breite (cm), hoehe (cm = Dicke). Die Plattenanzahl wird aufgerundet berechnet.
  *  - TITEL  : Abschnitts-Überschrift (z. B. "Dachstuhl", "Pfetten")
  */
 public class Position {
@@ -26,7 +27,9 @@ public class Position {
     public Double breite;     // cm (Rohmaß; bei Platten: Plattenbreite)
     public Double hoehe;      // cm (Rohmaß; bei Platten: Dicke)
     public Double laenge;     // m  (HOLZ und PLATTE)
-    public Double flaeche;    // m² (nur PLATTE, direkte Eingabe ohne Format)
+    public Double flaeche;    // m² (nur PLATTE: zu belegende Fläche direkt)
+    public Double flL, flB;   // m  (nur PLATTE: zu belegende Fläche Länge × Breite)
+    public Double verschnitt; // %  (nur PLATTE)
     public Double laufmeter;  // m  (nur LFM, Eingabe)
     public Double fertigB;    // cm (Fertigmaß)
     public Double fertigH;    // cm (Fertigmaß)
@@ -38,14 +41,37 @@ public class Position {
     public boolean isHolz() { return HOLZ.equals(typ); }
     public boolean isPlatte() { return PLATTE.equals(typ); }
 
-    /** Platte: Fläche wird direkt angegeben (kein vollständiges Format L × B). */
-    public boolean isFlaecheDirekt() { return isPlatte() && (laenge == null || breite == null) && flaeche != null; }
+    /** Platte: zu belegende Fläche wurde angegeben (L × B oder m²). */
+    public boolean hatFlaechenEingabe() {
+        return isPlatte() && ((flL != null && flB != null) || flaeche != null);
+    }
 
-    /** Fläche in m² (nur Platten). */
+    /** Zu belegende Netto-Fläche in m² (nur Platten). */
     public double getFlaeche() {
         if (!isPlatte()) return 0;
-        if (isFlaecheDirekt()) return flaeche;
-        return v(stueck) * v(laenge) * v(breite) / 100.0;
+        if (flL != null && flB != null) return flL * flB;
+        if (flaeche != null) return flaeche;
+        return v(stueck) * v(laenge) * v(breite) / 100.0; // ältere Einträge: Stück × Format
+    }
+
+    /** Fläche einer Platte in m² (0 wenn Format unbekannt). */
+    public double getPlattenFlaecheEinzeln() {
+        return isPlatte() && laenge != null && breite != null ? laenge * breite / 100.0 : 0;
+    }
+
+    /** Benötigte Plattenanzahl inkl. Verschnitt (aufgerundet), null wenn nicht berechenbar. */
+    public Double getPlattenAnzahl() {
+        if (!isPlatte()) return null;
+        if (!hatFlaechenEingabe()) return stueck;
+        double pf = getPlattenFlaecheEinzeln();
+        if (pf <= 0) return null;
+        return Math.ceil(getFlaeche() * (1 + v(verschnitt) / 100.0) / pf - 1e-9);
+    }
+
+    /** Bestellte Plattenfläche in m² (Anzahl × Plattenfläche). */
+    public double getPlattenFlaecheGesamt() {
+        Double n = getPlattenAnzahl();
+        return n == null ? 0 : n * getPlattenFlaecheEinzeln();
     }
 
     private static double v(Double d) { return d == null ? 0 : d; }
@@ -60,7 +86,11 @@ public class Position {
     /** Volumen (Rohmaß) in m³. */
     public double getVolumen() {
         if (isTitel()) return 0;
-        if (isPlatte()) return getFlaeche() * v(hoehe) / 100.0;
+        if (isPlatte()) {
+            Double n = getPlattenAnzahl();
+            if (n != null && getPlattenFlaecheEinzeln() > 0) return n * getPlattenFlaecheEinzeln() * v(hoehe) / 100.0;
+            return getFlaeche() * (1 + v(verschnitt) / 100.0) * v(hoehe) / 100.0;
+        }
         return getLaufmeterGesamt() * v(breite) * v(hoehe) / 10000.0;
     }
 
@@ -69,7 +99,7 @@ public class Position {
     public Position copy() {
         Position p = new Position();
         p.typ = typ; p.bezeichnung = bezeichnung; p.stueck = stueck; p.breite = breite;
-        p.hoehe = hoehe; p.laenge = laenge; p.laufmeter = laufmeter; p.flaeche = flaeche; p.fertigB = fertigB;
+        p.hoehe = hoehe; p.laenge = laenge; p.laufmeter = laufmeter; p.flaeche = flaeche; p.flL = flL; p.flB = flB; p.verschnitt = verschnitt; p.fertigB = fertigB;
         p.fertigH = fertigH; p.holzart = holzart; p.bemerkung = bemerkung;
         return p;
     }
@@ -84,6 +114,9 @@ public class Position {
         put(o, "l", laenge);
         put(o, "lfm", laufmeter);
         put(o, "fl", flaeche);
+        put(o, "flL", flL);
+        put(o, "flB", flB);
+        put(o, "vs", verschnitt);
         put(o, "fb", fertigB);
         put(o, "fh", fertigH);
         o.put("holzart", holzart);
@@ -101,6 +134,9 @@ public class Position {
         p.laenge = get(o, "l");
         p.laufmeter = get(o, "lfm");
         p.flaeche = get(o, "fl");
+        p.flL = get(o, "flL");
+        p.flB = get(o, "flB");
+        p.verschnitt = get(o, "vs");
         p.fertigB = get(o, "fb");
         p.fertigH = get(o, "fh");
         p.holzart = o.optString("holzart", "");

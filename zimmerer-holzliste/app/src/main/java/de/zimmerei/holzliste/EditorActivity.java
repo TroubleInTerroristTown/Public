@@ -253,7 +253,10 @@ public class EditorActivity extends Activity {
                     p.bezeichnung.isEmpty() ? Ui.GRAU : Ui.TEXT, true);
             bez.setSingleLine(true);
             bez.setEllipsize(android.text.TextUtils.TruncateAt.END);
-            String sub = (p.isPlatte() ? "Platte" : p.isLfm() ? "Laufmeter" : "Stück") + (p.holzart.isEmpty() ? "" : " · " + p.holzart);
+            Double anz = p.isPlatte() ? p.getPlattenAnzahl() : null;
+            String sub = (p.isPlatte() ? (anz != null ? Fmt.fix(anz, 0) + " Platten" : "Platte")
+                    + (p.verschnitt != null && p.verschnitt != 0 ? " +" + Fmt.num(p.verschnitt) + "%" : "")
+                    : p.isLfm() ? "Laufmeter" : "Stück") + (p.holzart.isEmpty() ? "" : " · " + p.holzart);
             TextView art = Ui.text(this, sub, 11, p.isPlatte() ? Ui.GRUEN : p.isLfm() ? Ui.AKZENT : Ui.GRAU, false);
             art.setSingleLine(true);
             art.setEllipsize(android.text.TextUtils.TruncateAt.END);
@@ -271,9 +274,10 @@ public class EditorActivity extends Activity {
             r.setOnClickListener(click);
             r.setOnLongClickListener(longClick);
             boolean platte = p.isPlatte();
-            boolean mitStk = (p.isHolz() || platte) && !p.isFlaecheDirekt();
+            Double stk = platte ? p.getPlattenAnzahl() : p.stueck;
+            boolean mitStk = p.isHolz() || (platte && stk != null);
             boolean mitL = p.isHolz() || (platte && p.laenge != null);
-            r.addView(Ui.cell(this, mitStk ? Fmt.num(p.stueck) : "–", COL_W[0], Gravity.END, true, mitStk ? Ui.TEXT : Ui.LINIE));
+            r.addView(Ui.cell(this, mitStk ? Fmt.num(stk) : "–", COL_W[0], Gravity.END, true, mitStk ? (platte ? Ui.GRUEN : Ui.TEXT) : Ui.LINIE));
             r.addView(Ui.cell(this, Fmt.num(p.breite), COL_W[1], Gravity.END, false, Ui.TEXT));
             r.addView(Ui.cell(this, Fmt.num(p.hoehe), COL_W[2], Gravity.END, false, Ui.TEXT));
             r.addView(Ui.cell(this, mitL ? (p.laenge == null ? "" : Fmt.fix(p.laenge, 2)) : "–", COL_W[3], Gravity.END, false, mitL ? Ui.TEXT : Ui.LINIE));
@@ -293,7 +297,8 @@ public class EditorActivity extends Activity {
 
         sumText.setText("Stückhölzer: " + Fmt.fix(liste.summeVolumen(Position.HOLZ), 3) + " m³  (" + Fmt.fix(liste.summeStueck(), 0) + " Stk)\n"
                 + "Laufmeterhölzer: " + Fmt.fix(liste.summeLaufmeter(Position.LFM), 2) + " lfm · " + Fmt.fix(liste.summeVolumen(Position.LFM), 3) + " m³\n"
-                + (liste.hatPlatten() ? "Platten: " + Fmt.fix(liste.summeFlaeche(), 2) + " m² · " + Fmt.fix(liste.summeVolumen(Position.PLATTE), 3) + " m³\n" : "")
+                + (liste.hatPlatten() ? "Platten: " + Fmt.fix(liste.summeFlaeche(), 2) + " m² Fläche → " + Fmt.fix(liste.summeStueck(Position.PLATTE), 0)
+                        + " Stk · " + Fmt.fix(liste.summeVolumen(Position.PLATTE), 3) + " m³\n" : "")
                 + "GESAMT: " + Fmt.fix(liste.summeVolumen(null), 3) + " m³");
     }
 

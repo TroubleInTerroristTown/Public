@@ -38,15 +38,23 @@ public class Holzliste {
 
     public double summeStueck(String typ) {
         double s = 0;
-        for (Position p : positionen)
-            if ((typ == null ? (p.isHolz() || p.isPlatte()) : typ.equals(p.typ)) && p.stueck != null && !p.isFlaecheDirekt())
-                s += p.stueck;
+        for (Position p : positionen) {
+            if (!(typ == null ? (p.isHolz() || p.isPlatte()) : typ.equals(p.typ))) continue;
+            Double n = p.isPlatte() ? p.getPlattenAnzahl() : (p.isHolz() ? p.stueck : null);
+            if (n != null) s += n;
+        }
         return s;
     }
 
     public double summeFlaeche() {
         double s = 0;
         for (Position p : positionen) s += p.getFlaeche();
+        return s;
+    }
+
+    public double summePlattenFlaecheGesamt() {
+        double s = 0;
+        for (Position p : positionen) s += p.getPlattenFlaecheGesamt();
         return s;
     }
 

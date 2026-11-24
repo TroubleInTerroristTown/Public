@@ -54,11 +54,9 @@ public class ScreenshotTest {
         h.positionen.add(p(Position.LFM, "Konterlatten", null, 4.0, 6.0, null, 185.0, null, null, "Fichte S10 imprägniert", ""));
         h.positionen.add(p(Position.LFM, "Rauhspund", null, 14.0, 2.4, null, 95.5, 13.5, 2.2, "Fichte", ""));
         h.positionen.add(p(Position.TITEL, "Plattenwerkstoffe", null, null, null, null, null, null, null, "", ""));
-        h.positionen.add(p(Position.PLATTE, "Dachschalung OSB", 32.0, 67.5, 2.2, 2.50, null, null, null, "OSB/3", "N+F"));
-        h.positionen.add(p(Position.PLATTE, "Wandbeplankung", 18.0, 125.0, 1.5, 2.50, null, null, null, "OSB/3", ""));
-        Position fl = p(Position.PLATTE, "Holzfaserdämmung Aufdach", null, null, 10.0, null, null, null, null, "Holzfaserdämmplatte", "Verschnitt 5 %");
-        fl.flaeche = 142.5;
-        h.positionen.add(fl);
+        h.positionen.add(platte("Dachschalung", 12.5, 9.0, null, 10.0, 2.50, 67.5, 22.0, "OSB/3 N+F", "N+F"));
+        h.positionen.add(platte("Wandbeplankung innen", 7.5, 2.6, null, 10.0, 2.50, 125.0, 15.0, "OSB/3", ""));
+        h.positionen.add(platte("Decke OG", null, null, 48.0, 15.0, 2.00, 125.0, 12.5, "Gipskarton GKB", ""));
         return h;
     }
 
@@ -73,6 +71,14 @@ public class ScreenshotTest {
         if (v instanceof android.widget.HorizontalScrollView) l.add((android.widget.HorizontalScrollView) v);
         if (v instanceof android.view.ViewGroup)
             for (int i = 0; i < ((android.view.ViewGroup) v).getChildCount(); i++) sammle(((android.view.ViewGroup) v).getChildAt(i), l);
+    }
+
+    static Position platte(String bez, Double flL, Double flB, Double fl, Double vs,
+                           Double lM, Double bCm, Double dMm, String mat, String bem) {
+        Position x = new Position();
+        x.typ = Position.PLATTE; x.bezeichnung = bez; x.flL = flL; x.flB = flB; x.flaeche = fl; x.verschnitt = vs;
+        x.laenge = lM; x.breite = bCm; x.hoehe = dMm / 10.0; x.holzart = mat; x.bemerkung = bem;
+        return x;
     }
 
     private static void png(View v, String name) throws Exception {
@@ -109,7 +115,7 @@ public class ScreenshotTest {
         png(d.getWindow().getDecorView(), "3_position");
         d.dismiss();
 
-        new PositionDialog(ed, h.positionen.get(12).copy(), false, java.util.Collections.emptySet(), (x, y) -> {}).show();
+        new PositionDialog(ed, h.positionen.get(11).copy(), false, java.util.Collections.emptySet(), (x, y) -> {}).show();
         ShadowLooper.idleMainLooper();
         png(ShadowDialog.getLatestDialog().getWindow().getDecorView(), "4_platte");
 
@@ -133,5 +139,11 @@ public class ScreenshotTest {
         File xlsx = new File("build/screenshots/test.xlsx");
         try (FileOutputStream out = new FileOutputStream(xlsx)) { HolzlisteExcel.write(h, out); }
         assertTrue(xlsx.length() > 1000);
+        // 12,5 × 9 = 112,5 m² + 10 % = 123,75 m² / (2,5 × 0,675 = 1,6875 m²) = 73,33 → 74 Platten
+        org.junit.Assert.assertEquals(74.0, h.positionen.get(11).getPlattenAnzahl(), 0);
+        // 7,5 × 2,6 = 19,5 m² + 10 % = 21,45 / 3,125 = 6,86 → 7 Platten
+        org.junit.Assert.assertEquals(7.0, h.positionen.get(12).getPlattenAnzahl(), 0);
+        // 48 m² + 15 % = 55,2 / 2,5 = 22,08 → 23 Platten
+        org.junit.Assert.assertEquals(23.0, h.positionen.get(13).getPlattenAnzahl(), 0);
     }
 }

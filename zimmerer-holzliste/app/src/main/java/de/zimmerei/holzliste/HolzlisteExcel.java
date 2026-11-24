@@ -27,11 +27,12 @@ public final class HolzlisteExcel {
 
     // Spalten (A … N)
     static final int C_POS = 0, C_BEZ = 1, C_ART = 2, C_STK = 3, C_B = 4, C_H = 5, C_L = 6,
-            C_LFM = 7, C_M2 = 8, C_M3 = 9, C_FB = 10, C_FH = 11, C_HOLZART = 12, C_BEM = 13;
+            C_LFM = 7, C_M2 = 8, C_VS = 9, C_M3 = 10, C_FB = 11, C_FH = 12, C_HOLZART = 13, C_BEM = 14;
     static final int LAST_COL = C_BEM;
 
     // Spaltenbuchstaben für Formeln
-    private static final String D = "D", E = "E", F = "F", G = "G", H = "H", I = "I", J = "J";
+    private static final String D = "D", E = "E", F = "F", G = "G", H = "H", I = "I", VS = "J", K = "K";
+    private static final String GRUEN = "FF2E7D32";
 
     static final String ART_HOLZ = "Stk", ART_LFM = "lfm", ART_PLATTE = "Platte";
 
@@ -62,7 +63,7 @@ public final class HolzlisteExcel {
 
         // Spaltenbreiten (Zeichen)
         s.width(C_POS, 5.5).width(C_BEZ, 32).width(C_ART, 7).width(C_STK, 7)
-                .width(C_B, 8).width(C_H, 11).width(C_L, 9).width(C_LFM, 11).width(C_M2, 11).width(C_M3, 11)
+                .width(C_B, 8).width(C_H, 11).width(C_L, 9).width(C_LFM, 11).width(C_M2, 11).width(C_VS, 10).width(C_M3, 11)
                 .width(C_FB, 8).width(C_FH, 8).width(C_HOLZART, 22).width(C_BEM, 28);
 
         XlsxWriter.Style base = style();
@@ -105,7 +106,7 @@ public final class HolzlisteExcel {
         XlsxWriter.Style head = base.bold().size(10).fill(BRAUN_HELL).align("center").wrap()
                 .border("thin").borderColor("FFA1887F").bottomMedium();
         String[] heads = {"Pos.", "Bezeichnung", "Art", "Stück", "Breite\n[cm]", "Höhe/Dicke\n[cm]", "Länge\n[m]",
-                "Laufmeter\n[m]", "Fläche\n[m²]", "Volumen\n[m³]", "Breite\n[cm]", "Höhe\n[cm]", "Holzart / Material", "Bemerkung"};
+                "Laufmeter\n[m]", "Fläche\n[m²]", "Verschnitt\n[%]", "Volumen\n[m³]", "Breite\n[cm]", "Höhe\n[cm]", "Holzart / Material", "Bemerkung"};
         for (int c = 0; c < heads.length; c++) s.set(r, c, heads[c], c == C_BEZ || c >= C_HOLZART ? head.align("left") : head);
         s.height(r, 30);
         s.freeze(r + 1, C_BEZ + 1);
@@ -144,21 +145,28 @@ public final class HolzlisteExcel {
             s.set(r, C_H, p.hoehe, num.fmt(FMT_DIM));
 
             if (p.isPlatte()) {
-                boolean direkt = p.isFlaecheDirekt();
-                s.set(r, C_STK, direkt ? null : p.stueck, ctr.fmt(FMT_STK).bold());
                 s.set(r, C_L, p.laenge, num.fmt(FMT_L));
                 s.set(r, C_LFM, null, num);
-                if (direkt) {
-                    s.set(r, C_M2, p.flaeche, num.fmt(FMT_M2).bold());
+                Double anzahl = p.getPlattenAnzahl();
+                if (p.hatFlaechenEingabe()) {
+                    // zu belegende Fläche + Verschnitt → Plattenanzahl (aufgerundet)
+                    s.set(r, C_M2, p.getFlaeche(), num.fmt(FMT_M2).bold());
+                    s.set(r, C_VS, p.verschnitt, num.fmt(FMT_DIM));
+                    s.formula(r, C_STK, "IF(OR(" + I + n + "=\"\"," + G + n + "=\"\"," + E + n + "=\"\"),\"\","
+                                    + "ROUNDUP(" + I + n + "*(1+N(" + VS + n + ")/100)/(" + G + n + "*" + E + n + "/100)-0.000000001,0))",
+                            anzahl, ctr.fmt(FMT_STK).bold().color(GRUEN));
                 } else {
+                    // ältere Einträge: Stückzahl direkt
+                    s.set(r, C_STK, p.stueck, ctr.fmt(FMT_STK).bold());
                     s.formula(r, C_M2, "IF(AND(" + D + n + "=\"\"," + G + n + "=\"\"," + E + n + "=\"\"),\"\","
                                     + D + n + "*" + G + n + "*" + E + n + "/100)",
-                            p.stueck == null && p.laenge == null && p.breite == null ? null : p.getFlaeche(),
-                            num.fmt(FMT_M2).bold());
+                            p.stueck == null ? null : p.getFlaeche(), num.fmt(FMT_M2).bold());
+                    s.set(r, C_VS, null, num);
                 }
-                s.formula(r, C_M3, "IF(" + I + n + "=\"\",\"\"," + I + n + "*" + F + n + "/100)",
-                        p.getFlaeche() == 0 && p.flaeche == null && p.stueck == null ? null : p.getVolumen(),
-                        num.fmt(FMT_M3).bold());
+                s.formula(r, C_M3, "IF(AND(N(" + D + n + ")>0," + G + n + "<>\"\"," + E + n + "<>\"\"),"
+                                + D + n + "*" + G + n + "*" + E + n + "*" + F + n + "/10000,"
+                                + "IF(" + I + n + "=\"\",\"\"," + I + n + "*(1+N(" + VS + n + ")/100)*" + F + n + "/100))",
+                        p.getVolumen(), num.fmt(FMT_M3).bold());
             } else {
                 if (p.isHolz()) {
                     s.set(r, C_STK, p.stueck, ctr.fmt(FMT_STK).bold());
@@ -171,6 +179,7 @@ public final class HolzlisteExcel {
                     s.set(r, C_LFM, p.laufmeter, num.fmt(FMT_LFM).bold());
                 }
                 s.set(r, C_M2, null, num);
+                s.set(r, C_VS, null, num);
                 s.formula(r, C_M3, "IF(" + H + n + "=\"\",\"\"," + H + n + "*" + E + n + "*" + F + n + "/10000)",
                         p.getLaufmeterGesamt() == 0 && p.laufmeter == null && p.stueck == null ? null : p.getVolumen(),
                         num.fmt(FMT_M3).bold());
@@ -178,7 +187,10 @@ public final class HolzlisteExcel {
             s.set(r, C_FB, p.fertigB, num.fmt(FMT_DIM).color(BLAU));
             s.set(r, C_FH, p.fertigH, num.fmt(FMT_DIM).color(BLAU));
             s.set(r, C_HOLZART, p.holzart, c0);
-            s.set(r, C_BEM, p.bemerkung, c0.wrap().size(9));
+            String bem = p.bemerkung == null ? "" : p.bemerkung;
+            if (p.isPlatte() && p.flL != null && p.flB != null)
+                bem = "Fläche " + Fmt.num(p.flL) + " × " + Fmt.num(p.flB) + " m" + (bem.isEmpty() ? "" : "; " + bem);
+            s.set(r, C_BEM, bem, c0.wrap().size(9));
             s.height(r, 18);
             r++;
         }
@@ -195,7 +207,7 @@ public final class HolzlisteExcel {
         String stk = D + a + ":" + D + b;
         String lfm = H + a + ":" + H + b;
         String m2 = I + a + ":" + I + b;
-        String m3 = J + a + ":" + J + b;
+        String m3 = K + a + ":" + K + b;
 
         XlsxWriter.Style sumLbl = base.bold().fill(SUMME).border("thin").borderColor("FFFFCC80");
         XlsxWriter.Style sumNum = sumLbl.align("right");
@@ -229,8 +241,8 @@ public final class HolzlisteExcel {
                 "SUM(" + m3 + ")", h.summeVolumen(null));
         s.height(r, 22);
         r += 2;
-        s.set(r, C_POS, "Hinweis: Volumen nach Rohmaß (Breite × Höhe × Laufmeter); Platten: Fläche × Dicke. "
-                        + "Platten-Fläche = Stück × Länge × Breite. Fertigmaße in Blau.",
+        s.set(r, C_POS, "Hinweis: Volumen nach Rohmaß (Breite × Höhe × Laufmeter); Platten: Plattenanzahl = "
+                        + "Fläche × (1 + Verschnitt) ÷ Plattenformat, aufgerundet; Volumen = Plattenanzahl × Format × Dicke. Fertigmaße in Blau.",
                 base.italic().size(8).color(GRAU));
 
         s.headerFooter("&\"Calibri,Fett\"Holzliste – " + h.titel(),
@@ -274,9 +286,9 @@ public final class HolzlisteExcel {
     static String format(Position p) {
         if (!p.isPlatte()) return Fmt.querschnitt(p.breite, p.hoehe) + " cm";
         String dicke = p.hoehe == null ? "" : Fmt.num(p.hoehe * 10) + " mm";
-        if (p.isFlaecheDirekt() || (p.laenge == null && p.breite == null)) return dicke.isEmpty() ? "Platte" : dicke;
-        String fmt = (p.laenge == null ? "–" : Fmt.num(p.laenge)) + " × "
-                + (p.breite == null ? "–" : Fmt.num(p.breite / 100.0)) + " m";
+        if (p.laenge == null && p.breite == null) return dicke.isEmpty() ? "Platte" : dicke;
+        String fmt = (p.laenge == null ? "–" : Fmt.num(p.laenge * 100)) + " × "
+                + (p.breite == null ? "–" : Fmt.num(p.breite)) + " cm";
         return dicke.isEmpty() ? fmt : fmt + " · " + dicke;
     }
 
@@ -304,7 +316,7 @@ public final class HolzlisteExcel {
         Map<String, List<Position>> gruppen = new LinkedHashMap<>();
         for (Position p : h.positionen) {
             if (p.isTitel()) continue;
-            String key = (p.isPlatte() ? "P" + (p.isFlaecheDirekt() ? "d" : "f") + Fmt.num(p.laenge) : "H")
+            String key = (p.isPlatte() ? "P" + Fmt.num(p.laenge) : "H")
                     + "\u0000" + norm(p.holzart) + "\u0000" + Fmt.num(p.breite) + "\u0000" + Fmt.num(p.hoehe);
             List<Position> l = gruppen.get(key);
             if (l == null) { l = new ArrayList<>(); gruppen.put(key, l); }
@@ -313,9 +325,9 @@ public final class HolzlisteExcel {
 
         String sh = "Holzliste!";
         int a = first + 1, b = last + 1;
-        String colC = col(sh, "C", a, b), colM = col(sh, "M", a, b), colE = col(sh, "E", a, b), colF = col(sh, "F", a, b);
+        String colC = col(sh, "C", a, b), colM = col(sh, "N", a, b), colE = col(sh, "E", a, b), colF = col(sh, "F", a, b);
         String colG = col(sh, "G", a, b), colD = col(sh, "D", a, b), colH = col(sh, "H", a, b);
-        String colI = col(sh, "I", a, b), colJ = col(sh, "J", a, b);
+        String colI = col(sh, "I", a, b), colJ = col(sh, "K", a, b);
 
         XlsxWriter.Style cell = base.border("thin").borderColor("FFD0D0D0");
         int start = ++r;
@@ -324,7 +336,8 @@ public final class HolzlisteExcel {
             Position p0 = l.get(0);
             double stk = 0, lfm = 0, m2 = 0, m3 = 0;
             for (Position p : l) {
-                if ((p.isHolz() || (p.isPlatte() && !p.isFlaecheDirekt())) && p.stueck != null) stk += p.stueck;
+                Double n = p.isPlatte() ? p.getPlattenAnzahl() : (p.isHolz() ? p.stueck : null);
+                if (n != null) stk += n;
                 lfm += p.getLaufmeterGesamt();
                 m2 += p.getFlaeche();
                 m3 += p.getVolumen();

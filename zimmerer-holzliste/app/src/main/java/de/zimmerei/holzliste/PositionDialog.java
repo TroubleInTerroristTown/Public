@@ -62,7 +62,7 @@ public class PositionDialog {
 
     private RadioGroup typGroup;
     private AutoCompleteTextView eBez;
-    private EditText eStk, eL, eLfm, eB, eH, eFb, eFh, eBem, ePB, eDicke, eFl;
+    private EditText eStk, eL, eLfm, eB, eH, eFb, eFh, eBem, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs;
     private AutoCompleteTextView eHolzart;
     private LinearLayout rowStkL, rowLfm, groupMasse, groupHolz, groupPlatte;
     private TextView tLabelBez, tErgebnis, tLabelHolzart;
@@ -135,16 +135,33 @@ public class PositionDialog {
         lpW.topMargin = Ui.dp(act, 12);
         waehlen.setOnClickListener(v -> plattenAuswahl());
         groupPlatte.addView(waehlen, lpW);
+        // Zu belegende Fläche
+        groupPlatte.addView(section("Zu belegende Fläche"));
+        boolean altEintrag = p.isPlatte() && !p.hatFlaechenEingabe() && p.stueck != null; // ältere Version
+        LinearLayout rfl = row();
+        eFlL = num(p.isPlatte() ? Fmt.num(p.flL) : "", "m");
+        eFlB = num(p.isPlatte() ? Fmt.num(p.flB) : "", "m");
+        rfl.addView(field("Länge [m]", eFlL));
+        rfl.addView(field("Breite [m]", eFlB));
+        groupPlatte.addView(rfl);
+        LinearLayout rfd = row();
+        eFl = num(p.isPlatte() ? (altEintrag ? Fmt.num(p.getFlaeche()) : Fmt.num(p.flaeche)) : "", "m²");
+        String vs = p.isPlatte() && p.verschnitt != null ? Fmt.num(p.verschnitt) : (neu || altEintrag ? (altEintrag ? "0" : "10") : "");
+        eVs = num(vs, "%");
+        rfd.addView(field("oder Fläche [m²]", eFl));
+        rfd.addView(field("Verschnitt [%]", eVs));
+        groupPlatte.addView(rfd);
+
+        // Plattenformat
         groupPlatte.addView(section("Plattenformat"));
         LinearLayout rp = row();
+        ePL = num(p.isPlatte() && p.laenge != null ? Fmt.num(p.laenge * 100) : "", "cm");
         ePB = num(p.isPlatte() ? Fmt.num(p.breite) : "", "cm");
         eDicke = num(p.isPlatte() && p.hoehe != null ? Fmt.num(p.hoehe * 10) : "", "mm");
+        rp.addView(field("Länge [cm]", ePL));
         rp.addView(field("Breite [cm]", ePB));
         rp.addView(field("Dicke [mm]", eDicke));
         groupPlatte.addView(rp);
-        groupPlatte.addView(label("oder Fläche direkt [m²] (ohne Stück/Format)"));
-        eFl = num(p.isPlatte() ? Fmt.num(p.flaeche) : "", "m²");
-        groupPlatte.addView(eFl, full());
         groupMasse.addView(groupPlatte);
 
         // --- Rohmaß + Fertigmaß (nur Hölzer)
@@ -207,7 +224,7 @@ public class PositionDialog {
             public void onTextChanged(CharSequence s, int a, int b, int c) {}
             public void afterTextChanged(Editable s) { updateErgebnis(); }
         };
-        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, ePB, eDicke, eFl}) e.addTextChangedListener(tw);
+        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs}) e.addTextChangedListener(tw);
 
         typGroup.setOnCheckedChangeListener((g, id) -> updateTyp());
         typGroup.check(p.isTitel() ? 3 : p.isPlatte() ? 4 : p.isLfm() ? 2 : 1);
@@ -230,7 +247,7 @@ public class PositionDialog {
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         d.show();
         eBez.requestFocus();
-        if (neu && p.isPlatte() && eL.getText().length() == 0 && ePB.getText().length() == 0) plattenAuswahl();
+        if (neu && p.isPlatte() && ePL.getText().length() == 0 && ePB.getText().length() == 0) plattenAuswahl();
     }
 
     /** Öffnet die Schnellauswahl gängiger / eigener Platten und übernimmt die Werte in die Felder. */
@@ -243,26 +260,29 @@ public class PositionDialog {
         PlattenAuswahl.zeigen(act, aktuell, v -> {
             eHolzart.setText(v.material);
             eHolzart.dismissDropDown();
-            eL.setText(Fmt.num(v.laenge));
+            ePL.setText(v.laenge == null ? "" : Fmt.num(v.laenge * 100));
             ePB.setText(Fmt.num(v.breite));
             eDicke.setText(Fmt.num(v.dicke));
-            eFl.setText("");
             if (eBez.getText().toString().trim().isEmpty() && v.bezeichnung != null) {
                 eBez.setText(v.bezeichnung);
                 eBez.dismissDropDown();
             }
-            eStk.requestFocus();
+            (eFlL.getText().length() == 0 && eFl.getText().length() == 0 ? eFlL : eVs).requestFocus();
         });
     }
 
     /** Übernimmt die Plattenfelder (Breite cm, Dicke mm → cm, Fläche m²) in die Position. */
     private void leseAusPlatte(Position x) {
-        x.stueck = Fmt.parse(eStk.getText().toString());
-        x.laenge = Fmt.parse(eL.getText().toString());
+        Double cm = Fmt.parse(ePL.getText().toString());
+        x.laenge = cm == null ? null : cm / 100.0;
         x.breite = Fmt.parse(ePB.getText().toString());
         Double mm = Fmt.parse(eDicke.getText().toString());
         x.hoehe = mm == null ? null : mm / 10.0;
+        x.flL = Fmt.parse(eFlL.getText().toString());
+        x.flB = Fmt.parse(eFlB.getText().toString());
         x.flaeche = Fmt.parse(eFl.getText().toString());
+        x.verschnitt = Fmt.parse(eVs.getText().toString());
+        x.stueck = null; // wird aus Fläche + Verschnitt berechnet
     }
 
     private String typ() {
@@ -275,7 +295,7 @@ public class PositionDialog {
         boolean titel = Position.TITEL.equals(t);
         groupMasse.setVisibility(titel ? View.GONE : View.VISIBLE);
         boolean platte = Position.PLATTE.equals(t);
-        rowStkL.setVisibility(Position.HOLZ.equals(t) || platte ? View.VISIBLE : View.GONE);
+        rowStkL.setVisibility(Position.HOLZ.equals(t) ? View.VISIBLE : View.GONE);
         rowLfm.setVisibility(Position.LFM.equals(t) ? View.VISIBLE : View.GONE);
         groupPlatte.setVisibility(platte ? View.VISIBLE : View.GONE);
         groupHolz.setVisibility(platte ? View.GONE : View.VISIBLE);
@@ -296,7 +316,22 @@ public class PositionDialog {
         tmp.hoehe = Fmt.parse(eH.getText().toString());
         if (tmp.isPlatte()) {
             leseAusPlatte(tmp);
-            tErgebnis.setText("= " + Fmt.fix(tmp.getFlaeche(), 2) + " m²   ·   " + Fmt.fix(tmp.getVolumen(), 3) + " m³");
+            double fl = tmp.getFlaeche(), vsp = tmp.verschnitt == null ? 0 : tmp.verschnitt;
+            Double n = tmp.getPlattenAnzahl();
+            StringBuilder e = new StringBuilder();
+            e.append(Fmt.fix(fl, 2)).append(" m²");
+            if (vsp != 0) e.append(" + ").append(Fmt.num(vsp)).append(" % = ").append(Fmt.fix(fl * (1 + vsp / 100), 2)).append(" m²");
+            if (n != null) {
+                e.append("\n→ ").append(Fmt.fix(n, 0)).append(n == 1 ? " Platte" : " Platten")
+                        .append(" à ").append(Fmt.fix(tmp.getPlattenFlaecheEinzeln(), 3)).append(" m²");
+                e.append("\n= ").append(Fmt.fix(tmp.getPlattenFlaecheGesamt(), 2)).append(" m² Platten · ")
+                        .append(Fmt.fix(tmp.getVolumen(), 3)).append(" m³");
+            } else if (fl > 0) {
+                e.append("\nPlattenformat eingeben → Plattenanzahl wird berechnet");
+            } else {
+                e.append("\nFläche eingeben: Länge × Breite oder m²");
+            }
+            tErgebnis.setText(e.toString());
             return;
         }
         tErgebnis.setText("= " + Fmt.fix(tmp.getLaufmeterGesamt(), 2) + " lfm   ·   " + Fmt.fix(tmp.getVolumen(), 3) + " m³");
@@ -309,7 +344,7 @@ public class PositionDialog {
             Toast.makeText(act, "Bitte eine Überschrift eingeben", Toast.LENGTH_SHORT).show();
             return false;
         }
-        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, eFb, eFh, ePB, eDicke, eFl}) {
+        for (EditText e : new EditText[]{eStk, eL, eLfm, eB, eH, eFb, eFh, ePL, ePB, eDicke, eFl, eFlL, eFlB, eVs}) {
             String s = e.getText().toString().trim();
             if (!s.isEmpty() && Fmt.parse(s) == null) {
                 e.setError("Ungültige Zahl");
@@ -324,6 +359,9 @@ public class PositionDialog {
         p.stueck = mitLaenge ? Fmt.parse(eStk.getText().toString()) : null;
         p.laenge = mitLaenge ? Fmt.parse(eL.getText().toString()) : null;
         p.flaeche = null;
+        p.flL = null;
+        p.flB = null;
+        p.verschnitt = null;
         p.laufmeter = Position.LFM.equals(t) ? Fmt.parse(eLfm.getText().toString()) : null;
         p.breite = Fmt.parse(eB.getText().toString());
         p.hoehe = Fmt.parse(eH.getText().toString());
