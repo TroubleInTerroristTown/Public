@@ -209,6 +209,12 @@ final class AufgabenAnsicht {
             int vor = einfuegenBei < 0 ? liste.aufgaben.size() - 1 : einfuegenBei - 1;
             if (vor >= 0 && vor < liste.aufgaben.size()) a.abschnitt = liste.aufgaben.get(vor).abschnitt;
             a.heute = heuteModus(liste);
+            if (letzte != null) {
+                a.abschnitt = letzte.abschnitt;
+                a.prio = letzte.prio;
+                a.heute = letzte.heute;
+                letzte = null;
+            }
         }
         ScrollView sv = new ScrollView(act);
         LinearLayout l = new LinearLayout(act);
@@ -247,16 +253,31 @@ final class AufgabenAnsicht {
                     View sel = rg.findViewById(rg.getCheckedRadioButtonId());
                     if (sel != null) a.prio = (Integer) sel.getTag();
                     a.heute = cHeute.isChecked();
+                    int neuBei = -1;
                     if (idx >= 0) liste.aufgaben.set(idx, a);
                     else if (einfuegenBei < 0 || einfuegenBei > liste.aufgaben.size()) liste.aufgaben.add(a);
-                    else liste.aufgaben.add(einfuegenBei, a);
+                    else { liste.aufgaben.add(einfuegenBei, a); neuBei = einfuegenBei + 1; }
                     geaendert.run();
+                    // Neue Aufgabe: gleich das Fenster für die nächste Aufgabe öffnen (beenden mit „Abbrechen“)
+                    if (idx < 0) {
+                        android.widget.Toast.makeText(act, "✓ Aufgabe hinzugefügt – nächste Aufgabe", android.widget.Toast.LENGTH_SHORT).show();
+                        naechste(act, liste, neuBei, a, geaendert);
+                    }
                 })
                 .setNegativeButton("Abbrechen", null).create();
         d.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         d.show();
         eText.requestFocus();
     }
+
+    /** Öffnet die Eingabe für die nächste Aufgabe mit gleichem Abschnitt, gleicher Dringlichkeit und „Heute“. */
+    private static void naechste(Activity act, Holzliste liste, int einfuegenBei, Aufgabe vorher, Runnable geaendert) {
+        letzte = vorher;
+        bearbeiten(act, liste, -1, einfuegenBei, geaendert);
+    }
+
+    /** Vorlage für die nächste Aufgabe bei fortlaufender Eingabe (wird nach Gebrauch gelöscht). */
+    private static Aufgabe letzte;
 
     private static EditText feld(Activity act, LinearLayout parent, String label, String wert) {
         TextView t = Ui.text(act, label, 12, Ui.GRAU, false);

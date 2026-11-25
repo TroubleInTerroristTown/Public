@@ -617,9 +617,12 @@ public class EditorActivity extends Activity {
             int at = Math.min(index, liste.positionen.size());
             liste.positionen.add(at, pos);
             speichern();
-            if (weitere) {
+            // Neue Position (außer Überschrift): gleich die nächste Eingabe öffnen (beenden mit „Abbrechen“)
+            if (weitere || !pos.isTitel()) {
                 Position n = new Position();
                 n.typ = pos.typ;
+                if (pos.isMaterial()) n.einheit = pos.einheit;
+                Toast.makeText(this, "✓ Gespeichert – nächste Eingabe", Toast.LENGTH_SHORT).show();
                 neuePosition(n, at + 1);
             }
         }).show();
