@@ -30,6 +30,9 @@ public class PositionDialog {
     public interface Callback {
         /** @param weitere true = „Weiter ›“ gedrückt (nächste Eingabe öffnen) */
         void onSave(Position p, boolean weitere);
+
+        /** Wird aufgerufen, wenn in der Eingabe ein Artikel aus der Artikelliste übernommen wurde. */
+        default void artikelGewaehlt() {}
     }
 
     static final String[] BEZ_HOLZ = {
@@ -329,6 +332,7 @@ public class PositionDialog {
         lesen(p);
         KatalogAuswahl.zeigen(act, typ, a -> {
             anwenden(p, a);
+            cb.artikelGewaehlt();
             dialog.dismiss();
             new PositionDialog(act, p, neu, bekannteMaterialien, cb).show();
             Toast.makeText(act, "Übernommen: " + a.text + (a.preis != null ? " (" + a.preisText() + ")" : ""), Toast.LENGTH_LONG).show();

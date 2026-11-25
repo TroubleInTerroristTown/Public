@@ -389,7 +389,7 @@ public class EditorActivity extends Activity {
                         KatalogAuswahl.zeigen(this, null, a -> {
                             Position p = new Position();
                             PositionDialog.anwenden(p, a);
-                            neuePosition(p, index);
+                            neuePosition(p, index, true);
                         });
                     } else {
                         Position p = new Position();
@@ -400,8 +400,14 @@ public class EditorActivity extends Activity {
                 .setNegativeButton("Abbrechen", null).show();
     }
 
-    /** Neue Position an Index einfügen. Das Material wird von der vorherigen gleichartigen Position übernommen. */
-    private void neuePosition(Position p, int index) {
+    private void neuePosition(Position p, int index) { neuePosition(p, index, false); }
+
+    /**
+     * Neue Position an Index einfügen (fortlaufende Eingabe). Das Material wird von der vorherigen
+     * gleichartigen Position übernommen. Kam die Position aus der Artikelliste, öffnet „Weiter ›“
+     * direkt wieder die Artikelsuche für den nächsten Artikel.
+     */
+    private void neuePosition(Position p, int index, boolean ausArtikelliste) {
         if (!p.isTitel() && p.holzart.isEmpty()) {
             for (int i = Math.min(index, liste.positionen.size()) - 1; i >= 0; i--) {
                 Position v = liste.positionen.get(i);
@@ -411,12 +417,24 @@ public class EditorActivity extends Activity {
                 break;
             }
         }
-        new PositionDialog(this, p, true, bekannteMaterialien(), (pos, weitere) -> {
-            int at = Math.min(index, liste.positionen.size());
-            liste.positionen.add(at, pos);
-            speichern();
-            if (weitere) {
-                // Fortlaufende Eingabe: Material, bei Platten Format + Verschnitt, bei Material die Einheit übernehmen
+        final boolean[] artikel = {ausArtikelliste};
+        new PositionDialog(this, p, true, bekannteMaterialien(), new PositionDialog.Callback() {
+            @Override
+            public void artikelGewaehlt() { artikel[0] = true; }
+
+            @Override
+            public void onSave(Position pos, boolean weitere) {
+                int at = Math.min(index, liste.positionen.size());
+                liste.positionen.add(at, pos);
+                speichern();
+                if (!weitere) return;
+                Toast.makeText(EditorActivity.this, "✓ " + (pos.bezeichnung.isEmpty() ? "Gespeichert" : pos.bezeichnung + " gespeichert")
+                        + (artikel[0] ? " – nächster Artikel" : " – nächste Eingabe"), Toast.LENGTH_SHORT).show();
+                if (artikel[0]) {
+                    naechsterArtikel(at + 1);
+                    return;
+                }
+                // Material, bei Platten Format + Verschnitt, bei sonstigem Material die Einheit übernehmen
                 Position n = new Position();
                 n.typ = pos.typ;
                 n.holzart = pos.holzart;
@@ -427,11 +445,18 @@ public class EditorActivity extends Activity {
                     n.verschnitt = pos.verschnitt;
                 }
                 if (pos.isMaterial()) n.einheit = pos.einheit;
-                Toast.makeText(this, "✓ " + (pos.bezeichnung.isEmpty() ? "Gespeichert" : pos.bezeichnung + " gespeichert")
-                        + " – nächste Eingabe", Toast.LENGTH_SHORT).show();
                 neuePosition(n, at + 1);
             }
         }).show();
+    }
+
+    /** Öffnet die Artikelsuche; der gewählte Artikel wird als nächste Position eingegeben. */
+    private void naechsterArtikel(int index) {
+        KatalogAuswahl.zeigen(this, null, a -> {
+            Position n = new Position();
+            PositionDialog.anwenden(n, a);
+            neuePosition(n, index, true);
+        });
     }
 
     private void bearbeiten(int i) {

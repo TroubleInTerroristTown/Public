@@ -79,6 +79,91 @@ public class FortlaufendeEingabeTest {
         assertSame(d2, ShadowDialog.getLatestDialog());   // kein neuer Dialog
     }
 
+    private EditorActivity editor(Holzliste h) {
+        Storage.speichern(RuntimeEnvironment.getApplication(), h);
+        Intent i = new Intent(RuntimeEnvironment.getApplication(), EditorActivity.class);
+        i.putExtra(EditorActivity.EXTRA_ID, h.id);
+        EditorActivity ed = Robolectric.buildActivity(EditorActivity.class, i).setup().get();
+        ShadowLooper.idleMainLooper();
+        return ed;
+    }
+
+    /** Sonstiges Material: „Weiter ›“ öffnet die nächste Eingabe, Material + Einheit werden übernommen. */
+    @Test
+    public void materialFortlaufend() throws Exception {
+        Holzliste h = new Holzliste();
+        EditorActivity ed = editor(h);
+        Method neu = EditorActivity.class.getDeclaredMethod("neuePosition", Position.class, int.class);
+        neu.setAccessible(true);
+        Position p = new Position();
+        p.typ = Position.MATERIAL;
+        neu.invoke(ed, p, 0);
+        ShadowLooper.idleMainLooper();
+
+        AlertDialog d1 = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertEquals("Weiter ›", d1.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString());
+        java.util.List<android.widget.EditText> felder = new java.util.ArrayList<>();
+        sammleEdit(d1.getWindow().getDecorView(), felder);
+        findAuto(d1.getWindow().getDecorView()).setText("Holzbauschrauben 8x240");
+        // Material + Einheit über die Felder setzen: Einheit/Material sind AutoCompleteTextViews
+        java.util.List<AutoCompleteTextView> autos = new java.util.ArrayList<>();
+        sammleAuto(d1.getWindow().getDecorView(), autos);
+        for (android.widget.EditText e : felder)
+            if ("Menge".equals(String.valueOf(e.getHint()))) e.setText("200");
+        for (AutoCompleteTextView a : autos)
+            if (String.valueOf(a.getHint()).toLowerCase().contains("stk") || String.valueOf(a.getHint()).toLowerCase().contains("einheit")) a.setText("Stk");
+        d1.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        assertEquals(1, Storage.laden(ed, h.id).positionen.size());
+        Position erste = Storage.laden(ed, h.id).positionen.get(0);
+        assertEquals(Position.MATERIAL, erste.typ);
+        AlertDialog d2 = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotSame(d1, d2);
+        assertTrue(d2.isShowing());
+        assertEquals("Weiter ›", d2.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString());
+        // nächste Eingabe ist wieder sonstiges Material mit gleicher Einheit
+        d2.getButton(AlertDialog.BUTTON_NEUTRAL).performClick(); // Fertig ohne Eingabe
+        ShadowLooper.idleMainLooper();
+        assertEquals(1, Storage.laden(ed, h.id).positionen.size());
+    }
+
+    /** Aus der Artikelliste: „Weiter ›“ öffnet direkt wieder die Artikelsuche. */
+    @Test
+    public void artikellisteFortlaufend() throws Exception {
+        Datanorm.Ergebnis dn = Datanorm.lesen(getClass().getResourceAsStream("/DATANORM.001"), "DATANORM.001");
+        Katalog.speichern(RuntimeEnvironment.getApplication(), dn);
+        Holzliste h = new Holzliste();
+        EditorActivity ed = editor(h);
+        Method neu = EditorActivity.class.getDeclaredMethod("neuePosition", Position.class, int.class, boolean.class);
+        neu.setAccessible(true);
+        Position p = new Position();
+        PositionDialog.anwenden(p, dn.artikel.get(0));
+        neu.invoke(ed, p, 0, true);
+        ShadowLooper.idleMainLooper();
+
+        AlertDialog d1 = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertEquals("Weiter ›", d1.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString());
+        d1.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        assertEquals(1, Storage.laden(ed, h.id).positionen.size());
+        AlertDialog suche = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotSame(d1, suche);
+        assertTrue(suche.isShowing());
+        assertEquals("Artikel suchen", String.valueOf(org.robolectric.Shadows.shadowOf(suche).getTitle()));
+    }
+
+    private static void sammleEdit(View v, java.util.List<android.widget.EditText> l) {
+        if (v instanceof android.widget.EditText) l.add((android.widget.EditText) v);
+        if (v instanceof ViewGroup)
+            for (int i = 0; i < ((ViewGroup) v).getChildCount(); i++) sammleEdit(((ViewGroup) v).getChildAt(i), l);
+    }
+
+    private static void sammleAuto(View v, java.util.List<AutoCompleteTextView> l) {
+        if (v instanceof AutoCompleteTextView) l.add((AutoCompleteTextView) v);
+        if (v instanceof ViewGroup)
+            for (int i = 0; i < ((ViewGroup) v).getChildCount(); i++) sammleAuto(((ViewGroup) v).getChildAt(i), l);
+    }
+
     private static void png(View v, String name) throws Exception {
         android.graphics.Bitmap bmp = android.graphics.Bitmap.createBitmap(v.getWidth(), v.getHeight(), android.graphics.Bitmap.Config.ARGB_8888);
         v.draw(new android.graphics.Canvas(bmp));
