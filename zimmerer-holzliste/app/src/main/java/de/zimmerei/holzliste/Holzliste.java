@@ -19,8 +19,28 @@ public class Holzliste {
     public String datum = "";
     public String bearbeiter = "";
     public String notiz = "";
+    /** Eingelesene Arbeitsanweisung: Dateiname und Datum (die PDF selbst liegt privat in der App, siehe AwImport.pdfDatei). */
+    public String awDatei = "";
+    public String awDatum = "";
     public long geaendert;
     public final List<Position> positionen = new ArrayList<>();
+    /** Reiter „Werkzeug“: was auf die Baustelle mit muss (zum Abhaken beim Laden). */
+    public final List<Werkzeug> werkzeug = new ArrayList<>();
+
+    /** Reiter „Aufgaben“: To-do-Liste (z. B. aus den Positionen der Arbeitsanweisung). */
+    public final List<Aufgabe> aufgaben = new ArrayList<>();
+
+    public int anzahlErledigt() {
+        int n = 0;
+        for (Aufgabe a : aufgaben) if (a.erledigt) n++;
+        return n;
+    }
+
+    public int anzahlEingepackt() {
+        int n = 0;
+        for (Werkzeug w : werkzeug) if (w.eingepackt) n++;
+        return n;
+    }
 
     public double summeVolumen(String typ) {
         double s = 0;
@@ -127,10 +147,18 @@ public class Holzliste {
         o.put("datum", datum);
         o.put("bearbeiter", bearbeiter);
         o.put("notiz", notiz);
+        o.put("awDatei", awDatei);
+        o.put("awDatum", awDatum);
         o.put("geaendert", geaendert);
         JSONArray a = new JSONArray();
         for (Position p : positionen) a.put(p.toJson());
         o.put("positionen", a);
+        JSONArray w = new JSONArray();
+        for (Werkzeug x : werkzeug) w.put(x.toJson());
+        o.put("werkzeug", w);
+        JSONArray au = new JSONArray();
+        for (Aufgabe x : aufgaben) au.put(x.toJson());
+        o.put("aufgaben", au);
         return o;
     }
 
@@ -143,12 +171,28 @@ public class Holzliste {
         h.datum = o.optString("datum", "");
         h.bearbeiter = o.optString("bearbeiter", "");
         h.notiz = o.optString("notiz", "");
+        h.awDatei = o.optString("awDatei", "");
+        h.awDatum = o.optString("awDatum", "");
         h.geaendert = o.optLong("geaendert", 0);
         JSONArray a = o.optJSONArray("positionen");
         if (a != null) {
             for (int i = 0; i < a.length(); i++) {
                 JSONObject p = a.optJSONObject(i);
                 if (p != null) h.positionen.add(Position.fromJson(p));
+            }
+        }
+        JSONArray w = o.optJSONArray("werkzeug");
+        if (w != null) {
+            for (int i = 0; i < w.length(); i++) {
+                JSONObject x = w.optJSONObject(i);
+                if (x != null) h.werkzeug.add(Werkzeug.fromJson(x));
+            }
+        }
+        JSONArray au = o.optJSONArray("aufgaben");
+        if (au != null) {
+            for (int i = 0; i < au.length(); i++) {
+                JSONObject x = au.optJSONObject(i);
+                if (x != null) h.aufgaben.add(Aufgabe.fromJson(x));
             }
         }
         return h;

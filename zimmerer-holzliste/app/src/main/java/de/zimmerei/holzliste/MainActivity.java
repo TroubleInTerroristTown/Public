@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private final List<Holzliste> listen = new ArrayList<>();
     private BaseAdapter adapter;
     private TextView leer;
+    private TextView stempel;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -45,7 +46,7 @@ public class MainActivity extends Activity {
         lv.setOnItemClickListener((parent, v, pos, id) -> oeffnen(listen.get(pos), false));
         lv.setOnItemLongClickListener((parent, v, pos, id) -> { aktionen(listen.get(pos)); return true; });
 
-        leer = Ui.text(this, "Noch keine Liste angelegt.\n\nTippe unten auf  „＋ Neue Liste“.\n\nJede Baustelle / jedes Projekt bekommt eine eigene Liste.", 16, Ui.GRAU, false);
+        leer = Ui.text(this, "Noch keine Baustelle angelegt.\n\nTippe unten auf  „📄 Neue Baustelle aus PDF“ (Arbeitsanweisung)\noder auf  „＋ Neue Baustelle“.\n\nJede Baustelle hat Material, Werkzeug und Aufgaben.", 16, Ui.GRAU, false);
         leer.setGravity(Gravity.CENTER);
         leer.setPadding(Ui.dp(this, 32), 0, Ui.dp(this, 32), 0);
 
@@ -54,20 +55,44 @@ public class MainActivity extends Activity {
         frame.addView(leer, new android.widget.FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         root.addView(frame, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 
+        // Zeiterfassung: Leiste mit dem aktuellen Stand, antippen öffnet „⏱ Stunden“
+        stempel = Ui.text(this, "", 16, Ui.PRIMAER, true);
+        stempel.setGravity(Gravity.CENTER_VERTICAL);
+        stempel.setPadding(Ui.dp(this, 16), 0, Ui.dp(this, 16), 0);
+        stempel.setOnClickListener(v -> startActivity(new Intent(this, ZeitActivity.class)));
+        LinearLayout.LayoutParams lpSt = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 52));
+        lpSt.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), 0);
+        root.addView(stempel, lpSt);
+
+        // Arbeitsanweisung ganz oben: der schnellste Weg zur fertigen Liste
+        Button aw = new Button(this);
+        aw.setText("📄  Neue Baustelle aus PDF");
+        aw.setAllCaps(false);
+        aw.setTextSize(19);
+        aw.setMaxLines(1);
+        aw.setAutoSizeTextTypeUniformWithConfiguration(12, 19, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        aw.setTypeface(Typeface.DEFAULT_BOLD);
+        aw.setTextColor(Ui.WEISS);
+        aw.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        LinearLayout.LayoutParams lpAw = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
+        lpAw.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), 0);
+        aw.setOnClickListener(v -> neueListe(true));
+        root.addView(aw, lpAw);
+
         Button neu = new Button(this);
-        neu.setText("＋  Neue Liste");
+        neu.setText("＋  Neue Baustelle");
         neu.setAllCaps(false);
-        neu.setTextSize(19);
+        neu.setTextSize(17);
         neu.setTypeface(Typeface.DEFAULT_BOLD);
-        neu.setTextColor(Ui.WEISS);
-        neu.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        neu.setTextColor(Ui.PRIMAER);
+        neu.setBackground(Ui.rounded(Ui.WEISS, Ui.PRIMAER, Ui.dp(this, 12), Ui.dp(this, 2)));
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58));
         lp.setMargins(Ui.dp(this, 14), Ui.dp(this, 8), Ui.dp(this, 14), Ui.dp(this, 14));
-        neu.setOnClickListener(v -> neueListe());
+        neu.setOnClickListener(v -> neueListe(false));
         root.addView(neu, lp);
 
         setContentView(root);
-        setTitle("Meine Materiallisten");
+        setTitle("Meine Baustellen");
     }
 
     @Override
@@ -77,20 +102,41 @@ public class MainActivity extends Activity {
         listen.addAll(Storage.alle(this));
         adapter.notifyDataSetChanged();
         leer.setVisibility(listen.isEmpty() ? View.VISIBLE : View.GONE);
+        stempelAnzeigen();
     }
 
-    private void neueListe() {
+    private void stempelAnzeigen() {
+        java.util.List<Zeiteintrag> z = Zeiten.alle(this);
+        Zeiteintrag lauf = Zeiten.laufend(z);
+        long jetzt = ZeitActivity.jetzt();
+        long t0 = ZeitActivity.tagesStart(jetzt);
+        int heute = Zeiten.summeMin(Zeiten.zeitraum(z, t0, Zeiten.plusTage(t0, 1), null), jetzt);
+        int farbe = lauf == null ? Ui.PRIMAER : lauf.inPause() ? Ui.AKZENT : Ui.GRUEN;
+        stempel.setText(lauf == null ? "⏱  Stunden · heute " + Zeiten.hMin(heute) + "   ›"
+                : (lauf.inPause() ? "☕  Pause" : "●  Läuft seit " + Zeiten.uhr(lauf.start))
+                + (lauf.baustelle.isEmpty() ? "" : " · " + lauf.baustelle) + "   ›");
+        stempel.setTextColor(farbe);
+        stempel.setSingleLine(true);
+        stempel.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        stempel.setBackground(Ui.rounded(Ui.WEISS, farbe, Ui.dp(this, 12), Ui.dp(this, 2)));
+    }
+
+    private void neueListe(boolean ausAw) {
         Holzliste h = new Holzliste();
         h.datum = new SimpleDateFormat("dd.MM.yyyy", Locale.GERMANY).format(new Date());
         h.bearbeiter = getSharedPreferences("einstellungen", MODE_PRIVATE).getString("bearbeiter", "");
         Storage.speichern(this, h);
-        oeffnen(h, true);
+        Intent i = new Intent(this, BaustelleActivity.class);
+        i.putExtra(BaustelleActivity.EXTRA_ID, h.id);
+        i.putExtra(BaustelleActivity.EXTRA_NEU, true);
+        i.putExtra(BaustelleActivity.EXTRA_AW, ausAw);
+        startActivity(i);
     }
 
     private void oeffnen(Holzliste h, boolean neu) {
-        Intent i = new Intent(this, EditorActivity.class);
-        i.putExtra(EditorActivity.EXTRA_ID, h.id);
-        i.putExtra(EditorActivity.EXTRA_NEU, neu);
+        Intent i = new Intent(this, BaustelleActivity.class);
+        i.putExtra(BaustelleActivity.EXTRA_ID, h.id);
+        i.putExtra(BaustelleActivity.EXTRA_NEU, neu);
         startActivity(i);
     }
 
@@ -99,7 +145,7 @@ public class MainActivity extends Activity {
                 .setItems(new String[]{"Öffnen", "Kopieren (als Vorlage)", "Löschen"}, (d, w) -> {
                     if (w == 0) oeffnen(h, false);
                     else if (w == 1) { Storage.duplizieren(this, h); onResume(); }
-                    else new AlertDialog.Builder(this).setMessage("Liste „" + h.titel() + "“ wirklich löschen?")
+                    else new AlertDialog.Builder(this).setMessage("Baustelle „" + h.titel() + "“ wirklich löschen?")
                                 .setPositiveButton("Löschen", (x, y) -> { Storage.loeschen(this, h.id); onResume(); })
                                 .setNegativeButton("Abbrechen", null).show();
                 }).show();
@@ -108,12 +154,14 @@ public class MainActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(android.view.Menu menu) {
         menu.add(0, 1, 0, "Artikellisten (Inventar / DATANORM) …");
+        menu.add(0, 2, 1, "⏱ Stunden / Zeiterfassung");
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         if (item.getItemId() == 1) { KatalogAuswahl.verwalten(this); return true; }
+        if (item.getItemId() == 2) { startActivity(new Intent(this, ZeitActivity.class)); return true; }
         return super.onOptionsItemSelected(item);
     }
 
@@ -149,6 +197,15 @@ public class MainActivity extends Activity {
             TextView g = Ui.text(MainActivity.this, "geändert " + DateFormat.format("dd.MM.yyyy HH:mm", h.geaendert), 11, Ui.GRAU, false);
             left.addView(t);
             if (sub.length() > 0) left.addView(s);
+            StringBuilder stand = new StringBuilder();
+            if (!h.werkzeug.isEmpty()) stand.append("🔧 ").append(h.anzahlEingepackt()).append("/").append(h.werkzeug.size()).append(" dabei");
+            if (!h.aufgaben.isEmpty()) stand.append(stand.length() > 0 ? "   " : "").append("✅ ").append(h.anzahlErledigt()).append("/")
+                    .append(h.aufgaben.size()).append(" erledigt");
+            if (stand.length() > 0) {
+                TextView st = Ui.text(MainActivity.this, stand.toString(), 13, Ui.PRIMAER, true);
+                st.setPadding(0, Ui.dp(MainActivity.this, 3), 0, Ui.dp(MainActivity.this, 1));
+                left.addView(st);
+            }
             left.addView(g);
             card.addView(left, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
 

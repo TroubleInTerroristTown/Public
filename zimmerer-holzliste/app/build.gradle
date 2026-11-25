@@ -42,6 +42,13 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
+    packaging {
+        resources {
+            // PdfBox bringt BouncyCastle mit; dessen Jars enthalten dieselbe Manifest-Datei mehrfach
+            excludes += ['META-INF/versions/9/OSGI-INF/MANIFEST.MF']
+        }
+    }
+
     lint {
         abortOnError false
     }
@@ -59,6 +66,8 @@ android {
 }
 
 dependencies {
+    // PDF-Text lesen (Arbeitsanweisung einlesen, ohne Internet)
+    implementation 'com.tom-roush:pdfbox-android:2.0.27.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.robolectric:robolectric:4.14.1'
 }

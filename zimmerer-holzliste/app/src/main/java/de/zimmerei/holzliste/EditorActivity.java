@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -28,8 +29,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -38,12 +41,22 @@ public class EditorActivity extends Activity {
 
     public static final String EXTRA_ID = "id";
     public static final String EXTRA_NEU = "neu";
+    /** Neue Liste direkt aus einer Arbeitsanweisung (PDF-Auswahl öffnet sich sofort). */
+    public static final String EXTRA_AW = "aw";
+    /** Welcher Ast der Baustelle gezeigt wird: R_MATERIAL, R_WERKZEUG oder R_AUFGABEN. */
+    public static final String EXTRA_REITER = "reiter";
     static final String XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     private static final int REQ_SAVE = 42;
 
     private Holzliste liste;
     private LinearLayout karten;
     private TextView kopfTitel, kopfInfo, sumText, emptyText;
+    static final int R_MATERIAL = 0, R_WERKZEUG = 1, R_AUFGABEN = 2;
+    private int reiter = R_MATERIAL;
+    private Button addBtn, vorschlagBtn;
+    /** Material: Auswahl-Modus mit Kästchen (mehrere Zeilen auf einmal löschen oder bestellen). */
+    private boolean auswahlModus;
+    private final Set<Position> auswahl = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
 
     @Override
     protected void onCreate(Bundle state) {
@@ -55,9 +68,12 @@ public class EditorActivity extends Activity {
             return;
         }
         if (getActionBar() != null) getActionBar().setDisplayHomeAsUpEnabled(true);
+        reiter = getIntent().getIntExtra(EXTRA_REITER, R_MATERIAL);
+        AufgabenAnsicht.modusHeute = null; // je Baustelle neu: Heute, wenn etwas für heute ausgewählt ist
         setContentView(buildLayout());
         render();
-        if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog();
+        if (state == null && getIntent().getBooleanExtra(EXTRA_AW, false)) AwImport.starten(this, 0);
+        else if (state == null && getIntent().getBooleanExtra(EXTRA_NEU, false)) kopfdatenDialog(this, liste, this::speichern);
     }
 
     // ================================================================ Layout
@@ -73,7 +89,7 @@ public class EditorActivity extends Activity {
         int p = Ui.dp(this, 16);
         kopf.setPadding(p, Ui.dp(this, 12), p, Ui.dp(this, 12));
         kopf.setBackground(Ui.touchBg(Ui.WEISS));
-        kopf.setOnClickListener(v -> kopfdatenDialog());
+        kopf.setOnClickListener(v -> kopfdatenDialog(this, liste, this::speichern));
         kopfTitel = Ui.text(this, "", 20, Ui.DUNKEL, true);
         kopfInfo = Ui.text(this, "", 14, Ui.GRAU, false);
         kopf.addView(kopfTitel);
@@ -92,9 +108,7 @@ public class EditorActivity extends Activity {
         karten.setOrientation(LinearLayout.VERTICAL);
         body.addView(karten);
 
-        emptyText = Ui.text(this, "Die Liste ist noch leer.\n\nTippe unten auf  „＋ Hinzufügen“.\n\n"
-                        + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.",
-                17, Ui.GRAU, false);
+        emptyText = Ui.text(this, LEER_MATERIAL, 17, Ui.GRAU, false);
         emptyText.setGravity(Gravity.CENTER);
         int ep = Ui.dp(this, 28);
         emptyText.setPadding(ep, ep * 2, ep, ep);
@@ -115,15 +129,36 @@ public class EditorActivity extends Activity {
         bar.setBackgroundColor(Ui.WEISS);
         int bp = Ui.dp(this, 10);
         bar.setPadding(bp, bp, bp, bp);
-        Button add = new Button(this);
-        add.setText("＋  Hinzufügen");
-        add.setAllCaps(false);
-        add.setTextSize(19);
-        add.setTypeface(Typeface.DEFAULT_BOLD);
-        add.setTextColor(Ui.WEISS);
-        add.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
-        add.setOnClickListener(v -> hinzufuegen(liste.positionen.size()));
-        bar.addView(add, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Ui.dp(this, 58)));
+        vorschlagBtn = new Button(this);
+        vorschlagBtn.setText("💡 Vorschlagen");
+        vorschlagBtn.setAllCaps(false);
+        vorschlagBtn.setTextSize(17);
+        vorschlagBtn.setTypeface(Typeface.DEFAULT_BOLD);
+        vorschlagBtn.setTextColor(Ui.PRIMAER);
+        vorschlagBtn.setBackground(Ui.rounded(Ui.WEISS, Ui.PRIMAER, Ui.dp(this, 12), Ui.dp(this, 2)));
+        vorschlagBtn.setOnClickListener(v -> {
+            if (reiter == R_MATERIAL && auswahlModus) auswahlBeenden();
+            else if (reiter == R_AUFGABEN && AufgabenAnsicht.heuteModus(liste) && !liste.aufgaben.isEmpty()) AufgabenAnsicht.heuteWaehlen(this, liste, this::speichern);
+            else if (reiter == R_AUFGABEN) AwImport.starten(this, liste.positionen.size());
+            else WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern);
+        });
+        LinearLayout.LayoutParams lpV = new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1);
+        lpV.setMarginEnd(Ui.dp(this, 8));
+        bar.addView(vorschlagBtn, lpV);
+        addBtn = new Button(this);
+        addBtn.setText("＋  Hinzufügen");
+        addBtn.setAllCaps(false);
+        addBtn.setTextSize(19);
+        addBtn.setTypeface(Typeface.DEFAULT_BOLD);
+        addBtn.setTextColor(Ui.WEISS);
+        addBtn.setBackground(Ui.rounded(Ui.AKZENT, 0, Ui.dp(this, 12), 0));
+        addBtn.setOnClickListener(v -> {
+            if (reiter == R_WERKZEUG) WerkzeugAnsicht.bearbeiten(this, liste, -1, this::speichern);
+            else if (reiter == R_AUFGABEN) AufgabenAnsicht.bearbeiten(this, liste, -1, -1, this::speichern);
+            else if (auswahlModus) auswahlLoeschen();
+            else hinzufuegen(liste.positionen.size());
+        });
+        bar.addView(addBtn, new LinearLayout.LayoutParams(0, Ui.dp(this, 58), 1));
         root.addView(bar);
         return root;
     }
@@ -131,7 +166,7 @@ public class EditorActivity extends Activity {
     // ================================================================ Darstellung
 
     private void render() {
-        setTitle("Materialliste");
+        setTitle(reiter == R_WERKZEUG ? "🔧 Werkzeug" : reiter == R_AUFGABEN ? "✅ Aufgaben" : "📦 Material");
         kopfTitel.setText(liste.titel());
         StringBuilder info = new StringBuilder();
         anhang(info, liste.kunde);
@@ -140,12 +175,44 @@ public class EditorActivity extends Activity {
         kopfInfo.setText(info.length() == 0 ? "✎ Antippen: Projekt, Kunde, Datum eintragen" : info + "   ✎");
 
         karten.removeAllViews();
+        boolean heute = reiter == R_AUFGABEN && AufgabenAnsicht.heuteModus(liste) && !liste.aufgaben.isEmpty();
+        vorschlagBtn.setVisibility(reiter == R_MATERIAL && !auswahlModus ? View.GONE : View.VISIBLE);
+        vorschlagBtn.setText(reiter == R_MATERIAL ? "✕ Fertig" : heute ? "☀️ Für heute wählen" : reiter == R_AUFGABEN ? "📄 Aus PDF" : "💡 Vorschlagen");
+        addBtn.setText(reiter == R_WERKZEUG ? "＋  Werkzeug" : reiter == R_AUFGABEN ? "＋  Aufgabe"
+                : auswahlModus ? "🗑  Löschen (" + auswahl.size() + ")" : "＋  Hinzufügen");
+        addBtn.setBackground(Ui.rounded(auswahlModus && reiter == R_MATERIAL ? android.graphics.Color.parseColor("#C62828") : Ui.AKZENT,
+                0, Ui.dp(this, 12), 0));
+        if (reiter == R_WERKZEUG) {
+            WerkzeugAnsicht.zeigen(this, liste, karten, this::speichern);
+            emptyText.setText("Noch kein Werkzeug eingetragen.\n\nTippe auf  „💡 Vorschlagen“ – die App schlägt Werkzeug passend zum Material "
+                    + "und zu den Arbeitsschritten vor.\n\nBeim Laden: Karte antippen = eingepackt ✓");
+            emptyText.setVisibility(liste.werkzeug.isEmpty() ? View.VISIBLE : View.GONE);
+            int n = liste.werkzeug.size(), e = liste.anzahlEingepackt();
+            sumText.setText(n == 0 ? "Noch kein Werkzeug" : e == n ? "✓ Alles eingepackt (" + n + ")   ›" : e + " von " + n + " eingepackt   ›");
+            return;
+        }
+        if (reiter == R_AUFGABEN) {
+            AufgabenAnsicht.zeigen(this, liste, karten, this::speichern);
+            emptyText.setText("Noch keine Aufgaben.\n\nTippe auf  „📄 Aus PDF“ – aus den Positionen und Arbeitsschritten der "
+                    + "Arbeitsanweisung wird eine To-do-Liste.\n\nErledigt: Karte antippen ✓");
+            emptyText.setVisibility(liste.aufgaben.isEmpty() ? View.VISIBLE : View.GONE);
+            int n = liste.aufgaben.size(), e = liste.anzahlErledigt();
+            if (heute) {
+                int nH = AufgabenAnsicht.anzahlHeute(liste, false), eH = AufgabenAnsicht.anzahlHeute(liste, true);
+                sumText.setText(nH == 0 ? "Heute: noch nichts ausgewählt   ›" : eH == nH ? "☀️ Heute alles erledigt (" + nH + ") · Neuer Tag   ›"
+                        : "☀️ Heute: " + eH + " von " + nH + " erledigt   ›");
+            } else {
+                sumText.setText(n == 0 ? "Noch keine Aufgaben" : e == n ? "✓ Alles erledigt (" + n + ")   ›" : e + " von " + n + " erledigt   ›");
+            }
+            return;
+        }
         for (int i = 0; i < liste.positionen.size(); i++) {
             Position p = liste.positionen.get(i);
             karten.addView(p.isTitel() ? ueberschrift(p, i) : karte(p, i));
         }
+        emptyText.setText(LEER_MATERIAL);
         emptyText.setVisibility(liste.positionen.isEmpty() ? View.VISIBLE : View.GONE);
-        sumText.setText(summenKurz());
+        sumText.setText(auswahlModus ? auswahl.size() + " ausgewählt  ·  Alle / keine   ›" : summenKurz());
     }
 
     private View ueberschrift(Position p, int idx) {
@@ -156,9 +223,16 @@ public class EditorActivity extends Activity {
         TextView t = Ui.text(this, p.bezeichnung.toUpperCase(Locale.GERMANY), 15, Ui.PRIMAER, true);
         t.setLetterSpacing(0.04f);
         l.addView(t, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        if (auswahlModus) {
+            CheckBox cb = auswahlKaestchen(p);
+            cb.setOnClickListener(v -> abschnittWaehlen(idx, cb.isChecked()));
+            l.addView(cb);
+            l.setOnClickListener(v -> abschnittWaehlen(idx, !auswahl.contains(p)));
+            return l;
+        }
         l.addView(mehrKnopf(idx));
         l.setOnClickListener(v -> bearbeiten(idx));
-        l.setOnLongClickListener(v -> { aktionen(idx); return true; });
+        l.setOnLongClickListener(v -> { auswahlStarten(p); return true; });
         return l;
     }
 
@@ -170,8 +244,11 @@ public class EditorActivity extends Activity {
         android.graphics.drawable.GradientDrawable bg = Ui.rounded(Ui.WEISS, Ui.LINIE, Ui.dp(this, 10), 1);
         card.setBackground(new android.graphics.drawable.RippleDrawable(
                 android.content.res.ColorStateList.valueOf(Ui.HELL), bg, null));
-        card.setOnClickListener(v -> bearbeiten(idx));
-        card.setOnLongClickListener(v -> { aktionen(idx); return true; });
+        boolean gewaehlt = auswahlModus && auswahl.contains(p);
+        if (gewaehlt) bg.setColor(Ui.FLAECHE);
+        if (auswahlModus) card.setOnClickListener(v -> umschalten(p));
+        else card.setOnClickListener(v -> bearbeiten(idx));
+        card.setOnLongClickListener(v -> { if (!auswahlModus) auswahlStarten(p); return true; });
         card.setMinimumHeight(Ui.dp(this, 84));
 
         // links: Symbol + Bestellmenge
@@ -214,12 +291,103 @@ public class EditorActivity extends Activity {
             mitte.addView(w);
         }
         card.addView(mitte, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        card.addView(mehrKnopf(idx));
+        if (auswahlModus) {
+            CheckBox cb = auswahlKaestchen(p);
+            cb.setOnClickListener(v -> umschalten(p));
+            card.addView(cb);
+        } else {
+            card.addView(mehrKnopf(idx));
+        }
 
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.setMargins(0, Ui.dp(this, 4), 0, Ui.dp(this, 4));
         card.setLayoutParams(lp);
         return card;
+    }
+
+    // ---------------------------------------------------------------- Auswahl-Modus (Material)
+
+    private CheckBox auswahlKaestchen(Position p) {
+        CheckBox cb = new CheckBox(this);
+        cb.setChecked(auswahl.contains(p));
+        cb.setScaleX(1.3f);
+        cb.setScaleY(1.3f);
+        cb.setLayoutParams(new LinearLayout.LayoutParams(Ui.dp(this, 52), Ui.dp(this, 56)));
+        return cb;
+    }
+
+    private void auswahlStarten(Position erste) {
+        auswahlModus = true;
+        auswahl.clear();
+        if (erste != null) {
+            int i = liste.positionen.indexOf(erste);
+            if (erste.isTitel() && i >= 0) { abschnittWaehlen(i, true); return; }
+            auswahl.add(erste);
+        }
+        invalidateOptionsMenu();
+        render();
+    }
+
+    private void auswahlBeenden() {
+        auswahlModus = false;
+        auswahl.clear();
+        invalidateOptionsMenu();
+        render();
+    }
+
+    private void umschalten(Position p) {
+        if (!auswahl.remove(p)) auswahl.add(p);
+        render();
+    }
+
+    /** Überschrift antippen = ganzen Abschnitt (bis zur nächsten Überschrift) an- oder abwählen. */
+    private void abschnittWaehlen(int idx, boolean an) {
+        for (int i = idx; i < liste.positionen.size(); i++) {
+            Position p = liste.positionen.get(i);
+            if (i > idx && p.isTitel()) break;
+            if (an) auswahl.add(p); else auswahl.remove(p);
+        }
+        auswahlModus = true;
+        invalidateOptionsMenu();
+        render();
+    }
+
+    private void auswahlLoeschen() {
+        if (auswahl.isEmpty()) { Toast.makeText(this, "Erst Zeilen ankreuzen", Toast.LENGTH_SHORT).show(); return; }
+        int n = auswahl.size();
+        new AlertDialog.Builder(this).setMessage(n + (n == 1 ? " Zeile" : " Zeilen") + " wirklich löschen?")
+                .setPositiveButton("Löschen", (d, w) -> {
+                    liste.positionen.removeIf(auswahl::contains);
+                    auswahlModus = false;
+                    auswahl.clear();
+                    invalidateOptionsMenu();
+                    speichern();
+                    Toast.makeText(this, n + " gelöscht", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Abbrechen", null).show();
+    }
+
+    /** Nur die angekreuzten Zeilen als Bestellliste senden. */
+    private void auswahlSenden() {
+        if (auswahl.isEmpty()) { Toast.makeText(this, "Erst Zeilen ankreuzen", Toast.LENGTH_SHORT).show(); return; }
+        Holzliste teil = new Holzliste();
+        teil.id = liste.id;
+        teil.projekt = liste.projekt;
+        teil.kunde = liste.kunde;
+        teil.bauteil = liste.bauteil;
+        teil.datum = liste.datum;
+        teil.bearbeiter = liste.bearbeiter;
+        for (Position p : liste.positionen) if (auswahl.contains(p)) teil.positionen.add(p);
+        exportQuelle = teil;
+        exportArt = Bestellliste.ALLES;
+        exportTeilen();
+        exportQuelle = null;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (auswahlModus) { auswahlBeenden(); return; }
+        super.onBackPressed();
     }
 
     private TextView mehrKnopf(int idx) {
@@ -288,7 +456,37 @@ public class EditorActivity extends Activity {
         return sb.toString();
     }
 
+    private static final String LEER_MATERIAL = "Die Liste ist noch leer.\n\nTippe unten auf  „＋ Hinzufügen“ – "
+            + "oder lies eine Arbeitsanweisung (PDF) ein.\n\n"
+            + "Tipp: Eine Zeile antippen = ändern.\nÜber  ⋮  kannst du kopieren, verschieben oder löschen.";
+
     private void summenDetails() {
+        if (reiter == R_MATERIAL && auswahlModus) {
+            boolean alle = true;
+            for (Position p : liste.positionen) if (!auswahl.contains(p)) alle = false;
+            auswahl.clear();
+            if (!alle) auswahl.addAll(liste.positionen);
+            render();
+            return;
+        }
+        if (reiter == R_AUFGABEN && AufgabenAnsicht.heuteModus(liste)) {
+            AufgabenAnsicht.neuerTag(this, liste, this::speichern);
+            return;
+        }
+        if (reiter == R_AUFGABEN) {
+            if (liste.anzahlErledigt() == 0) return;
+            new AlertDialog.Builder(this).setMessage("Alle Aufgaben wieder als offen markieren?")
+                    .setPositiveButton("Häkchen entfernen", (d, w) -> { for (Aufgabe x : liste.aufgaben) x.erledigt = false; speichern(); })
+                    .setNegativeButton("Abbrechen", null).show();
+            return;
+        }
+        if (reiter == R_WERKZEUG) {
+            if (liste.anzahlEingepackt() == 0) return;
+            new AlertDialog.Builder(this).setMessage("Alle Häkchen beim Werkzeug entfernen (für die nächste Fahrt)?")
+                    .setPositiveButton("Häkchen entfernen", (d, w) -> { for (Werkzeug x : liste.werkzeug) x.eingepackt = false; speichern(); })
+                    .setNegativeButton("Abbrechen", null).show();
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         if (liste.hatTyp(Position.HOLZ))
             sb.append("Balken & Kanthölzer:\n   ").append(Fmt.fix(liste.summeStueck(Position.HOLZ), 0)).append(" Stück · ")
@@ -345,10 +543,12 @@ public class EditorActivity extends Activity {
     }
 
     private static final String KATALOG = "katalog";
+    private static final String AW = "aw";
 
     /** Auswahl „Was möchtest du hinzufügen?“ mit großen Kacheln. */
     void hinzufuegen(int index) {
         String[][] items = {
+                {AW, "📄", "Aus Arbeitsanweisung (PDF)", "Überschriften, Material und Werkzeug aus einer PDF vorschlagen lassen"},
                 {Position.HOLZ, Ui.symbol(Position.HOLZ), "Balken & Kanthölzer", "Sparren, Pfetten, Stiele … – Stückzahl × Länge"},
                 {Position.LFM, Ui.symbol(Position.LFM), "Latten & Bretter", "Dachlatten, Schalung, Bretter … – in Metern"},
                 {Position.PLATTE, Ui.symbol(Position.PLATTE), "Platten", "OSB, Gipskarton, Dreischicht … – Fläche eingeben, Anzahl wird berechnet"},
@@ -369,7 +569,7 @@ public class EditorActivity extends Activity {
                 l.setGravity(Gravity.CENTER_VERTICAL);
                 int pd = Ui.dp(EditorActivity.this, 12);
                 l.setPadding(Ui.dp(EditorActivity.this, 20), pd, pd, pd);
-                int farbe = KATALOG.equals(it[0]) ? Ui.PRIMAER : Position.TITEL.equals(it[0]) ? Ui.GRAU : Ui.farbe(it[0]);
+                int farbe = KATALOG.equals(it[0]) || AW.equals(it[0]) ? Ui.PRIMAER : Position.TITEL.equals(it[0]) ? Ui.GRAU : Ui.farbe(it[0]);
                 TextView sym = Ui.text(EditorActivity.this, it[1], 28, farbe, true);
                 sym.setGravity(Gravity.CENTER);
                 l.addView(sym, new LinearLayout.LayoutParams(Ui.dp(EditorActivity.this, 48), ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -385,7 +585,9 @@ public class EditorActivity extends Activity {
         new AlertDialog.Builder(this).setTitle("Was möchtest du hinzufügen?")
                 .setAdapter(ad, (d, w) -> {
                     String typ = items[w][0];
-                    if (KATALOG.equals(typ)) {
+                    if (AW.equals(typ)) {
+                        AwImport.starten(this, index);
+                    } else if (KATALOG.equals(typ)) {
                         KatalogAuswahl.zeigen(this, null, a -> {
                             Position p = new Position();
                             PositionDialog.anwenden(p, a);
@@ -415,9 +617,12 @@ public class EditorActivity extends Activity {
             int at = Math.min(index, liste.positionen.size());
             liste.positionen.add(at, pos);
             speichern();
-            if (weitere) {
+            // Neue Position (außer Überschrift): gleich die nächste Eingabe öffnen (beenden mit „Abbrechen“)
+            if (weitere || !pos.isTitel()) {
                 Position n = new Position();
                 n.typ = pos.typ;
+                if (pos.isMaterial()) n.einheit = pos.einheit;
+                Toast.makeText(this, "✓ Gespeichert – nächste Eingabe", Toast.LENGTH_SHORT).show();
                 neuePosition(n, at + 1);
             }
         }).show();
@@ -453,23 +658,24 @@ public class EditorActivity extends Activity {
         }).show();
     }
 
-    private void kopfdatenDialog() {
-        SharedPreferences prefs = getSharedPreferences("einstellungen", MODE_PRIVATE);
-        ScrollView sv = new ScrollView(this);
-        LinearLayout l = new LinearLayout(this);
+    /** Kopfdaten der Baustelle bearbeiten (auch von der Baustellen-Übersicht aus). */
+    static void kopfdatenDialog(Activity act, Holzliste liste, Runnable fertig) {
+        SharedPreferences prefs = act.getSharedPreferences("einstellungen", MODE_PRIVATE);
+        ScrollView sv = new ScrollView(act);
+        LinearLayout l = new LinearLayout(act);
         l.setOrientation(LinearLayout.VERTICAL);
-        int pad = Ui.dp(this, 20);
-        l.setPadding(pad, Ui.dp(this, 8), pad, 0);
+        int pad = Ui.dp(act, 20);
+        l.setPadding(pad, Ui.dp(act, 8), pad, 0);
         sv.addView(l);
-        EditText eProjekt = feld(l, "Projekt / Bauvorhaben", liste.projekt);
-        EditText eKunde = feld(l, "Kunde / Bauherr", liste.kunde);
-        EditText eBauteil = feld(l, "Bauteil (z. B. Dachstuhl, Carport)", liste.bauteil);
-        EditText eDatum = feld(l, "Datum", liste.datum);
+        EditText eProjekt = feld(act, l, "Projekt / Bauvorhaben", liste.projekt);
+        EditText eKunde = feld(act, l, "Kunde / Bauherr", liste.kunde);
+        EditText eBauteil = feld(act, l, "Bauteil (z. B. Dachstuhl, Carport)", liste.bauteil);
+        EditText eDatum = feld(act, l, "Datum", liste.datum);
         String bearb = liste.bearbeiter == null || liste.bearbeiter.isEmpty() ? prefs.getString("bearbeiter", "") : liste.bearbeiter;
-        EditText eBearb = feld(l, "Bearbeiter", bearb);
-        EditText eNotiz = feld(l, "Notiz", liste.notiz);
+        EditText eBearb = feld(act, l, "Bearbeiter", bearb);
+        EditText eNotiz = feld(act, l, "Notiz", liste.notiz);
         eNotiz.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-        new AlertDialog.Builder(this).setTitle("Kopfdaten").setView(sv)
+        new AlertDialog.Builder(act).setTitle("Kopfdaten").setView(sv)
                 .setPositiveButton("Übernehmen", (d, w) -> {
                     liste.projekt = eProjekt.getText().toString().trim();
                     liste.kunde = eKunde.getText().toString().trim();
@@ -478,16 +684,16 @@ public class EditorActivity extends Activity {
                     liste.bearbeiter = eBearb.getText().toString().trim();
                     liste.notiz = eNotiz.getText().toString().trim();
                     prefs.edit().putString("bearbeiter", liste.bearbeiter).apply();
-                    speichern();
+                    fertig.run();
                 })
                 .setNegativeButton("Abbrechen", null).show();
     }
 
-    private EditText feld(LinearLayout parent, String label, String value) {
-        TextView t = Ui.text(this, label, 12, Ui.GRAU, false);
-        t.setPadding(Ui.dp(this, 4), Ui.dp(this, 10), 0, 0);
+    private static EditText feld(Activity act, LinearLayout parent, String label, String value) {
+        TextView t = Ui.text(act, label, 12, Ui.GRAU, false);
+        t.setPadding(Ui.dp(act, 4), Ui.dp(act, 10), 0, 0);
         parent.addView(t);
-        EditText e = new EditText(this);
+        EditText e = new EditText(act);
         e.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         e.setText(value);
         parent.addView(e);
@@ -527,12 +733,40 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Excel-Export
 
+    /** -1 = komplette Liste (wie bisher), sonst Bestellliste.HOLZ / MATERIAL / ALLES. */
+    private int exportArt = -1;
+
+    /** Fragt, was exportiert wird: schlichte Bestellliste(n) oder die komplette Liste. */
+    private void exportWahl(Runnable weiter) {
+        int nH = Bestellliste.anzahl(liste, Bestellliste.HOLZ), nM = Bestellliste.anzahl(liste, Bestellliste.MATERIAL);
+        List<String> texte = new ArrayList<>();
+        List<Integer> arten = new ArrayList<>();
+        if (nH > 0) { texte.add("🪵 Holzliste zum Bestellen (" + nH + " Pos.)\nBalken, Latten, Bretter, Platten"); arten.add(Bestellliste.HOLZ); }
+        if (nM > 0) { texte.add("🧱 Materialliste zum Bestellen (" + nM + " Pos.)\nBaustoffe, Schrauben, Dämmung …"); arten.add(Bestellliste.MATERIAL); }
+        if (nH > 0 && nM > 0) { texte.add("📋 Holz + Material in einer Bestellliste"); arten.add(Bestellliste.ALLES); }
+        texte.add("📑 Komplett (mit Abschnitten, Volumen, Preisen)");
+        arten.add(-1);
+        new AlertDialog.Builder(this).setTitle("Was soll in die Excel-Datei?")
+                .setItems(texte.toArray(new String[0]), (d, w) -> { exportArt = arten.get(w); weiter.run(); })
+                .setNegativeButton("Abbrechen", null).show();
+    }
+
+    /** Was exportiert wird (null = die ganze Liste; sonst z. B. nur die angekreuzten Zeilen). */
+    private Holzliste exportQuelle;
+
+    private void schreiben(OutputStream out) throws java.io.IOException {
+        Holzliste q = exportQuelle == null ? liste : exportQuelle;
+        if (exportArt < 0) HolzlisteExcel.write(q, out);
+        else Bestellliste.write(q, exportArt, out);
+    }
+
     private String dateiname() {
         String n = liste.projekt == null ? "" : liste.projekt.trim();
         n = n.replaceAll("[^A-Za-z0-9ÄÖÜäöüß _-]", "").trim().replace(' ', '_');
         if (n.length() > 40) n = n.substring(0, 40);
         String d = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMANY).format(new Date());
-        return "Materialliste_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
+        String art = exportArt < 0 ? "Materialliste" : Bestellliste.titel(exportArt);
+        return art + "_" + (n.isEmpty() ? "" : n + "_") + d + ".xlsx";
     }
 
     private void exportSpeichern() {
@@ -551,11 +785,12 @@ public class EditorActivity extends Activity {
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
         if (KatalogAuswahl.onActivityResult(this, req, res, data)) return;
+        if (AwImport.onActivityResult(this, req, res, data, liste, this::speichern)) return;
         if (req == REQ_SAVE && res == RESULT_OK && data != null && data.getData() != null) {
             Uri uri = data.getData();
             try (OutputStream out = getContentResolver().openOutputStream(uri, "wt")) {
                 if (out == null) throw new java.io.IOException("Datei kann nicht geöffnet werden");
-                HolzlisteExcel.write(liste, out);
+                schreiben(out);
                 Toast.makeText(this, "Excel-Datei gespeichert ✓", Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 Toast.makeText(this, "Fehler beim Speichern: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -570,7 +805,7 @@ public class EditorActivity extends Activity {
         if (alt != null) for (File f : alt) f.delete();
         File f = new File(dir, dateiname());
         try (FileOutputStream out = new FileOutputStream(f)) {
-            HolzlisteExcel.write(liste, out);
+            schreiben(out);
         }
         return ExportProvider.uriFor(f.getName());
     }
@@ -581,8 +816,9 @@ public class EditorActivity extends Activity {
             Intent s = new Intent(Intent.ACTION_SEND);
             s.setType(XLSX_MIME);
             s.putExtra(Intent.EXTRA_STREAM, uri);
-            s.putExtra(Intent.EXTRA_SUBJECT, "Materialliste " + liste.titel());
-            s.putExtra(Intent.EXTRA_TEXT, "Materialliste " + liste.titel());
+            String betreff = (exportArt < 0 ? "Materialliste" : Bestellliste.titel(exportArt)) + " " + liste.titel();
+            s.putExtra(Intent.EXTRA_SUBJECT, betreff);
+            s.putExtra(Intent.EXTRA_TEXT, betreff);
             s.setClipData(ClipData.newRawUri("", uri));
             s.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(Intent.createChooser(s, "Excel-Datei senden an …"));
@@ -607,10 +843,23 @@ public class EditorActivity extends Activity {
 
     // ================================================================ Menü
 
-    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7;
+    private static final int M_SAVE = 1, M_SHARE = 2, M_OPEN = 3, M_KOPF = 4, M_PASTE = 5, M_TITEL = 6, M_KATALOG = 7, M_AW = 8, M_WZ = 9,
+            M_AUSWAHL = 10, M_AUSW_SENDEN = 11, M_AUSW_LOESCHEN = 12;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (reiter != R_MATERIAL) { // Werkzeug & Aufgaben: kein Excel-Export, der ist nur fürs Material
+            if (reiter == R_WERKZEUG) menu.add(0, M_WZ, 0, "💡 Werkzeug vorschlagen …");
+            else menu.add(0, M_AW, 0, "📄 Arbeitsanweisung (PDF) einlesen …");
+            menu.add(0, M_KOPF, 1, "Projekt / Kunde / Datum ändern");
+            return true;
+        }
+        if (auswahlModus) {
+            menu.add(0, M_AUSW_SENDEN, 0, "📤 Angekreuzte als Bestellliste senden");
+            menu.add(0, M_AUSW_LOESCHEN, 1, "🗑 Angekreuzte löschen");
+            return true;
+        }
+        menu.add(0, M_AUSWAHL, 1, "☑ Mehrere auswählen …");
         MenuItem s = menu.add(0, M_SAVE, 0, "Als Excel speichern");
         s.setIcon(R.drawable.ic_save);
         s.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
@@ -620,6 +869,7 @@ public class EditorActivity extends Activity {
         menu.add(0, M_OPEN, 2, "In Excel öffnen");
         menu.add(0, M_KOPF, 3, "Projekt / Kunde / Datum ändern");
         menu.add(0, M_TITEL, 4, "Überschrift anfügen");
+        menu.add(0, M_AW, 2, "📄 Arbeitsanweisung (PDF) einlesen …");
         menu.add(0, M_PASTE, 5, "Zeilen aus Zwischenablage einfügen");
         menu.add(0, M_KATALOG, 6, "Artikellisten (Inventar / DATANORM) …");
         return true;
@@ -628,13 +878,18 @@ public class EditorActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home: finish(); return true;
-            case M_SAVE: exportSpeichern(); return true;
-            case M_SHARE: exportTeilen(); return true;
-            case M_OPEN: exportOeffnen(); return true;
-            case M_KOPF: kopfdatenDialog(); return true;
+            case android.R.id.home: if (auswahlModus) auswahlBeenden(); else finish(); return true;
+            case M_AUSWAHL: auswahlStarten(null); return true;
+            case M_AUSW_SENDEN: auswahlSenden(); return true;
+            case M_AUSW_LOESCHEN: auswahlLoeschen(); return true;
+            case M_SAVE: exportWahl(this::exportSpeichern); return true;
+            case M_SHARE: exportWahl(this::exportTeilen); return true;
+            case M_OPEN: exportWahl(this::exportOeffnen); return true;
+            case M_KOPF: kopfdatenDialog(this, liste, this::speichern); return true;
             case M_PASTE: ausZwischenablage(); return true;
             case M_KATALOG: KatalogAuswahl.verwalten(this); return true;
+            case M_AW: AwImport.starten(this, liste.positionen.size()); return true;
+            case M_WZ: WerkzeugAnsicht.vorschlaege(this, liste, null, this::speichern); return true;
             case M_TITEL: { Position t = new Position(); t.typ = Position.TITEL; neuePosition(t, liste.positionen.size()); } return true;
         }
         return super.onOptionsItemSelected(item);

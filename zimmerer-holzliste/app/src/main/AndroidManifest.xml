@@ -20,10 +20,20 @@
         </activity>
 
         <activity
+            android:name=".BaustelleActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
             android:name=".EditorActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".BaustelleActivity"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ZeitActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
 
         <provider
             android:name=".ExportProvider"

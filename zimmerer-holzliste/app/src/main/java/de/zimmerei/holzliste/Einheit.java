@@ -23,12 +23,12 @@ public final class Einheit {
             case "": return "";
             case "M2": case "QM": case "M²": case "QUADRATMETER": return "m²";
             case "M3": case "CBM": case "M³": case "KUBIKMETER": return "m³";
-            case "M": case "LFM": case "LM": case "MTR": case "METER": return "m";
+            case "M": case "LFM": case "LFDM": case "LFD.M": case "LM": case "MTR": case "METER": return "m";
             case "STK": case "ST": case "STCK": case "STÜCK": case "STUECK": case "PCE": case "PCS": case "PLATTE": case "PLATTEN": return "Stk";
             case "KG": case "KILO": return "kg";
             case "T": case "TO": case "TONNE": return "t";
             case "L": case "LTR": case "LITER": return "l";
-            case "SA": case "SCK": case "SACK": return "Sack";
+            case "SA": case "SAC": case "SCK": case "SACK": return "Sack";
             case "PAK": case "PAKET":  case "PA": case "PCK": case "PACK": return "Paket";
             case "RO": case "ROL": case "ROLLE": case "RLL": return "Rolle";
             case "EI": case "EIM": case "EIMER": return "Eimer";

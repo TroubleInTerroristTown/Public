@@ -285,7 +285,7 @@ public final class KatalogAuswahl {
         return true;
     }
 
-    private static String dateiname(Activity act, Uri uri) {
+    static String dateiname(Activity act, Uri uri) {
         try (Cursor c = act.getContentResolver().query(uri, new String[]{OpenableColumns.DISPLAY_NAME}, null, null, null)) {
             if (c != null && c.moveToFirst()) return c.getString(0);
         } catch (Exception ignored) {

@@ -50,7 +50,10 @@ public class ExportProvider extends ContentProvider {
         return c;
     }
 
-    @Override public String getType(Uri uri) { return EditorActivity.XLSX_MIME; }
+    @Override public String getType(Uri uri) {
+        String n = uri.getLastPathSegment();
+        return n != null && n.toLowerCase().endsWith(".pdf") ? "application/pdf" : EditorActivity.XLSX_MIME;
+    }
     @Override public Uri insert(Uri uri, ContentValues v) { throw new UnsupportedOperationException(); }
     @Override public int delete(Uri uri, String s, String[] a) { return 0; }
     @Override public int update(Uri uri, ContentValues v, String s, String[] a) { return 0; }
