@@ -174,6 +174,11 @@ final class WerkzeugAnsicht {
                     if (w.name.isEmpty()) return;
                     if (idx < 0) liste.werkzeug.add(w); else liste.werkzeug.set(idx, w);
                     geaendert.run();
+                    // Neues Werkzeug: gleich das Fenster für das nächste öffnen (beenden mit „Abbrechen“)
+                    if (idx < 0) {
+                        android.widget.Toast.makeText(act, "✓ " + w.name + " hinzugefügt – nächstes Werkzeug", android.widget.Toast.LENGTH_SHORT).show();
+                        bearbeiten(act, liste, -1, geaendert);
+                    }
                 })
                 .setNegativeButton("Abbrechen", null);
         if (idx < 0) b.setNeutralButton("Weiteres", (d, x) -> {

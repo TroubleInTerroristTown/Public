@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
-/** Nach dem Hinzufügen einer Aufgabe bzw. eines Materials öffnet sich sofort die nächste Eingabe. */
+/** Nach dem Hinzufügen einer Aufgabe bzw. eines Werkzeugs öffnet sich sofort die nächste Eingabe; Material wie bisher. */
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 34, qualifiers = "w393dp-h851dp-port-xxhdpi")
 public class FortlaufendHinzufuegenTest {
@@ -73,7 +73,42 @@ public class FortlaufendHinzufuegenTest {
     }
 
     @Test
-    public void materialNacheinander() throws Exception {
+    public void werkzeugNacheinander() {
+        Holzliste h = new Holzliste();
+        h.projekt = "Test";
+        EditorActivity ed = editor(h);
+        int vorher = h.werkzeug.size();
+        WerkzeugAnsicht.bearbeiten(ed, h, -1, () -> {});
+        ShadowLooper.idleMainLooper();
+
+        AlertDialog d1 = (AlertDialog) ShadowDialog.getLatestDialog();
+        felder(d1)[0].setText("Kettensäge");
+        d1.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        assertEquals(vorher + 1, h.werkzeug.size());
+
+        // nächstes Werkzeug ist sofort offen
+        AlertDialog d2 = (AlertDialog) ShadowDialog.getLatestDialog();
+        assertNotSame(d1, d2);
+        assertTrue(d2.isShowing());
+        assertEquals("", felder(d2)[0].getText().toString());
+        felder(d2)[0].setText("Akkuschrauber");
+        d2.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        assertEquals(vorher + 2, h.werkzeug.size());
+
+        // Abbrechen beendet
+        AlertDialog d3 = (AlertDialog) ShadowDialog.getLatestDialog();
+        d3.getButton(AlertDialog.BUTTON_NEGATIVE).performClick();
+        ShadowLooper.idleMainLooper();
+        assertFalse(d3.isShowing());
+        assertEquals(vorher + 2, h.werkzeug.size());
+        assertSame(d3, ShadowDialog.getLatestDialog());
+    }
+
+    /** Material bleibt wie bisher: „Speichern“ schließt die Eingabe. */
+    @Test
+    public void materialWieBisher() throws Exception {
         Holzliste h = new Holzliste();
         h.projekt = "Test";
         EditorActivity ed = editor(h);
@@ -89,15 +124,8 @@ public class FortlaufendHinzufuegenTest {
         d1.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
         ShadowLooper.idleMainLooper();
         assertEquals(1, Storage.laden(ed, h.id).positionen.size());
-
-        // nächste Material-Eingabe ist sofort offen
-        AlertDialog d2 = (AlertDialog) ShadowDialog.getLatestDialog();
-        assertNotSame(d1, d2);
-        assertTrue(d2.isShowing());
-        d2.getButton(AlertDialog.BUTTON_NEGATIVE).performClick(); // Abbrechen = fertig
-        ShadowLooper.idleMainLooper();
-        assertFalse(d2.isShowing());
-        assertEquals(1, Storage.laden(ed, h.id).positionen.size());
+        assertFalse(d1.isShowing());
+        assertSame(d1, ShadowDialog.getLatestDialog()); // keine neue Eingabe geöffnet
     }
 
     private static EditText[] felder(AlertDialog d) {
