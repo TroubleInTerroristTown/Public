@@ -416,8 +416,19 @@ public class EditorActivity extends Activity {
             liste.positionen.add(at, pos);
             speichern();
             if (weitere) {
+                // Fortlaufende Eingabe: Material, bei Platten Format + Verschnitt, bei Material die Einheit übernehmen
                 Position n = new Position();
                 n.typ = pos.typ;
+                n.holzart = pos.holzart;
+                if (pos.isPlatte()) {
+                    n.laenge = pos.laenge;
+                    n.breite = pos.breite;
+                    n.hoehe = pos.hoehe;
+                    n.verschnitt = pos.verschnitt;
+                }
+                if (pos.isMaterial()) n.einheit = pos.einheit;
+                Toast.makeText(this, "✓ " + (pos.bezeichnung.isEmpty() ? "Gespeichert" : pos.bezeichnung + " gespeichert")
+                        + " – nächste Eingabe", Toast.LENGTH_SHORT).show();
                 neuePosition(n, at + 1);
             }
         }).show();

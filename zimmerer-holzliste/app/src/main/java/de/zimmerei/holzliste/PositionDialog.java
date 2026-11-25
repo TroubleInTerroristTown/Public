@@ -28,7 +28,7 @@ import java.util.Set;
 public class PositionDialog {
 
     public interface Callback {
-        /** @param weitere true = "+ Nächste" gedrückt */
+        /** @param weitere true = „Weiter ›“ gedrückt (nächste Eingabe öffnen) */
         void onSave(Position p, boolean weitere);
     }
 
@@ -277,15 +277,34 @@ public class PositionDialog {
         AlertDialog.Builder b = new AlertDialog.Builder(act)
                 .setTitle(p.isTitel() ? "Überschrift" : neu ? "Neu hinzufügen" : "Ändern")
                 .setView(sv)
-                .setPositiveButton("Speichern", null)
+                .setPositiveButton(fortlaufend() ? "Weiter ›" : "Speichern", null)
                 .setNegativeButton("Abbrechen", null);
-        if (neu && !p.isTitel()) b.setNeutralButton("+ Nächste", null);
+        if (fortlaufend()) b.setNeutralButton("Fertig", null);
         dialog = b.create();
         dialog.setOnShowListener(x -> {
             Button ok = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            ok.setOnClickListener(v -> { if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, false); } });
-            Button next = dialog.getButton(AlertDialog.BUTTON_NEUTRAL);
-            if (next != null) next.setOnClickListener(v -> { if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, true); } });
+            for (int bt : new int[]{AlertDialog.BUTTON_POSITIVE, AlertDialog.BUTTON_NEGATIVE, AlertDialog.BUTTON_NEUTRAL}) {
+                Button k = dialog.getButton(bt);
+                if (k != null) { k.setAllCaps(false); k.setTextSize(15); }
+            }
+            ok.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
+            if (fortlaufend()) {
+                // Neue Position: speichern und sofort die nächste Eingabe öffnen
+                ok.setOnClickListener(v -> {
+                    if (eingabeLeer()) {
+                        Toast.makeText(act, "Noch nichts eingegeben – zum Beenden „Fertig“ tippen", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, true); }
+                });
+                // Fertig: aktuelle Eingabe (falls vorhanden) speichern und beenden
+                dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> {
+                    if (eingabeLeer()) { dialog.dismiss(); return; }
+                    if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, false); }
+                });
+            } else {
+                ok.setOnClickListener(v -> { if (uebernehmen()) { dialog.dismiss(); cb.onSave(p, false); } });
+            }
         });
         if (dialog.getWindow() != null) dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
                 | WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
@@ -518,6 +537,22 @@ public class PositionDialog {
                 return false;
             }
         }
+        return true;
+    }
+
+    /** Neue Einträge (außer Überschriften) werden fortlaufend erfasst: „Weiter ›“ öffnet die nächste Eingabe. */
+    private boolean fortlaufend() { return neu && !p.isTitel(); }
+
+    /** true, wenn in der Eingabe noch nichts Wesentliches steht (vorbelegtes Material/Format zählt nicht). */
+    private boolean eingabeLeer() {
+        if (!txt(eBez).isEmpty()) return false;
+        EditText[] felder;
+        if (Position.PLATTE.equals(typ)) felder = new EditText[]{eFl, eFlL, eFlB};
+        else if (Position.LFM.equals(typ)) felder = new EditText[]{eLfm, eB, eH};
+        else if (Position.MATERIAL.equals(typ)) felder = new EditText[]{eMenge};
+        else felder = new EditText[]{eStk, eL, eB, eH};
+        for (EditText e : felder)
+            if (e != null && !txt(e).isEmpty()) return false;
         return true;
     }
 
